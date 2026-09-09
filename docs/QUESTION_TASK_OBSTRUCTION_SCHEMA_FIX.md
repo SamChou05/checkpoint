@@ -40,3 +40,7 @@ plans confirms unchanged questions, prompts, model settings and teaching schema,
 with only the nullable choice-ID schema altered. Serialized requests now total
 227,662 UTF-8 bytes, maximum 27,394. Native service acceptance and content accuracy
 remain unproven until the corrected live run.
+
+The [corrected run subsequently completed all 20 calls](QUESTION_TASK_OBSTRUCTION_RESULTS.md),
+confirming native compatibility and both response contracts. Its full semantic
+qualification failed; the schema fix is not itself a correctness improvement.

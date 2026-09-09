@@ -1,0 +1,1746 @@
+{
+  "experiment": "frozen-task-obstruction-v1",
+  "status": "completed",
+  "source_revision": "728b6155014c02ad0023c4f7022ccef19e5589e5",
+  "source_sha256": {
+    "complete_question_solution.py": "72bb99b3efeab3cbe2d87526009045c205b6ac588d5c749f21937442db12e188",
+    "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "generation_diagnostics.py": "2e4353c07b5452acc538de56d643ff3a3f391c6aaa0005a48962955267da041a",
+    "lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "question_generation.py": "aa64b8b36ce3533a426790bd7d12610fd7d97dda895aed71771dbe7c15650cc6",
+    "question_quality.py": "90318121bf1f049eb9e305f219c5f7e748742f9a148104067818e6a8f4c2e87d",
+    "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "question_verification.py": "b5a8ba907be0f664af899018e3a45aa9bed4c8bbfac0ca280da6bb80917860b2",
+    "request_contract.py": "fac35010e0560b9c040b171c9e51257c9ec7196d5092dfa88b6a89699e85ea38",
+    "service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "skill_maps.py": "dea47900f703ed4a91440fe1ef4b7bbcbbe3609ca64abac115bb25427f27358b",
+    "smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "verification_policy.py": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+    "web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "evals/checkpoint_source_authoring_eval.py": "4652325286df72f4803def84794f9ae7a74a62f3e17a0c4228a9aadc06aff545",
+    "evals/checkpoint_model_comparison.py": "04caeda857a7ddd942779a278acd309d8e690a5640e8db6856c516fee6984a01",
+    "evals/checkpoint_full_pipeline_smoke.py": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+    "evals/checkpoint_learning_eval.py": "0b1e7c7821166cfe464ae8942635380a7ac4a2083cac4ba4c74ff67d707eb67c",
+    "evals/checkpoint_prompt_ablation.py": "6492e674b3edc65d1fdaffe059e6c5f1b7a140d73fb82d2892b4c0924694be79",
+    "evals/checkpoint_solution_compatibility_eval.py": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+    "evals/checkpoint_claim_evidence_trial.py": "b662963170f458783ea52336e4fd69c5490ff6fdb692cf0ab8c12d53db063d74",
+    "evals/claim_evidence_review.py": "86359b73d4f90725b31fdb48b7f1703449854c4af45d1fff9b74de4c4c32725f",
+    "evals/grounding_transport.py": "3d69d039b085cb80251c61e929e624a9969919dff3aaadb754c84325feab6b76",
+    "evals/claim_evidence_schema.py": "a226df963b7bc9108188113ec22fda0a1ce9ced76503f5d730a04e73f5211811",
+    "evals/acquired_source_review.py": "2471382ff68841e6bc76d736d1d9ff65970f218f7916c976a6b73803807b0715",
+    "evals/question_immutable_review.py": "38b4405673655d624820623e0b6335c3538ae33421b6e3abf954a0b49b5cc91f",
+    "evals/question_complete_author.py": "6c8f4fa70e0fceac58ea620c14814702872c8d4c3ac99db57cb1047a4f88ec86",
+    "evals/checkpoint_author_latency_probe.py": "089713524f6236df8c58e3d97c927cb5ef518230bfbc4ef8f27374d87847fe9a",
+    "evals/checkpoint_immutable_review_eval.py": "0303e2120097b1b5ecd47bee4da64ee6147532814353cf38e38ec45e695994b9",
+    "evals/split_evidence_review.py": "1106ba6769fbd9d92ff28ba73f951b2f90558c153d53ccec342692b67c4cda58",
+    "evals/task_obstruction_review.py": "24f8497e0960af1e8b749d31dd83a8977ed8a8c5d31eda494a399ff821615cd8"
+  },
+  "plan_canonical_sha256": "a53c97525d26fb74f0f382d3e74ed7cbd43216fcbe0b84d83feb13e927c06142",
+  "raw_local_capture_sha256": "5b170e3bb1146aaa7d8ec37d6d4e1d5bedbe8e0a7c0cc0ccfef3f5dcf2e1665c",
+  "raw_local_capture_bytes": 845504,
+  "origin": {
+    "capture_sha256": "f136a693f4fef8e72a6217924d1984021c0bbab1a46d3b4853fc60fe4d2f5a27",
+    "plan_sha256": "6ae4c21692590c48c29d747380572dfd42ba0ff5adfc18fd3f4d4e7874e34fc6",
+    "source_revision": "cb41f487f8a9bc2beb6d93bd86ee23593b0b5da7"
+  },
+  "controls_fixture_sha256": "bca393ca3d531f9bcd734a06742dd62b7645318f1240bc2e1593a8c5d953fcd7",
+  "model_calls": 20,
+  "fetches": 0,
+  "known_usage": {
+    "inputTokens": 66574,
+    "outputTokens": 5454
+  },
+  "sdk_seconds_sum": 116.36796095879981,
+  "worker_seconds_sum": 127.39612333307741,
+  "scope": "Derived summary of corrected twenty-call qualification only. Earlier authentication/validation attempts and the separate validation diagnostic remain recorded elsewhere. Source passages, source-bearing requests, model quotations and reasons/issues are omitted; original local capture and plan retain them. Not a raw or standalone replay archive. Declared judgments and reference identities do not establish truth; summed intervals are not measured end-to-end wall time.",
+  "calls": [
+    {
+      "index_zero_based": 0,
+      "case_id": "dough_reference",
+      "role": "choices",
+      "request_sha256": "3618f4c69b2559ae69e55b8b5148dcfe6960e00efc9cbbfd0073780a45ca0d00",
+      "input_utf8_bytes": 27394,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "54b923d8fc00307c4f865f2601d0a1c3bfc9f1814c2033b941eef57247a6671b",
+      "response_text_characters": 1975,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 8082,
+        "outputTokens": 506,
+        "totalTokens": 8588
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 16.910275082977023,
+      "process_elapsed_seconds": 17.645504500018433,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 1,
+      "case_id": "dough_reference",
+      "role": "teaching",
+      "request_sha256": "0ee3b56a178ea2ae251315c1df221326ca4be1c4a5a8a8941cf9df4efcd7a5c8",
+      "input_utf8_bytes": 25703,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "d2042c16cf1d82af4be021e0d8a153abb9fb33f67e21fd1e387c1111951396c3",
+      "response_text_characters": 1846,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 7337,
+        "outputTokens": 420,
+        "totalTokens": 7757
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 10.262541375006549,
+      "process_elapsed_seconds": 10.819371165998746,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 2,
+      "case_id": "hotel_reference",
+      "role": "choices",
+      "request_sha256": "7767f9c7f04065a2475b7e0fc043f8290f999a260c51377a52b75c2528870796",
+      "input_utf8_bytes": 13718,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "804132eee7e441a058b2f7db6b9ac348444cd40dd904dc3ac5d1a1112f6ff2c5",
+      "response_text_characters": 1545,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 4406,
+        "outputTokens": 393,
+        "totalTokens": 4799
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 7.405635624949355,
+      "process_elapsed_seconds": 7.946525457955431,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 3,
+      "case_id": "hotel_reference",
+      "role": "teaching",
+      "request_sha256": "ce5e85c2b1d7235296464b670f69a0124d09a9564db3520b60c576953e4bb751",
+      "input_utf8_bytes": 11953,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "82a08695a0ee74ef05b0fefb397bdc4313b048f6ab3dff4e5c70aae38bffa303",
+      "response_text_characters": 577,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 3649,
+        "outputTokens": 142,
+        "totalTokens": 3791
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 3.975282666971907,
+      "process_elapsed_seconds": 4.515101042052265,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 4,
+      "case_id": "butter_reference",
+      "role": "choices",
+      "request_sha256": "8547a33d98cf7b040aa05e31cf9f734bf463d1970672f15c2ccb160061a35b93",
+      "input_utf8_bytes": 17361,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "df39ee7eb57ca9101c5127f294153139625008d90d86f6d8868a3d67f5bba13e",
+      "response_text_characters": 1588,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 5351,
+        "outputTokens": 402,
+        "totalTokens": 5753
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 8.48935808299575,
+      "process_elapsed_seconds": 9.022832666989416,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 5,
+      "case_id": "butter_reference",
+      "role": "teaching",
+      "request_sha256": "24f67c3428b3455ca82e759e3a7546ea0f9b9b03c9f861b67d2b7726885ceec9",
+      "input_utf8_bytes": 15647,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "abe2064582ed4dfc106263cd6b4a78d1e29fdce9a7c1e5d73658dccbafa35f05",
+      "response_text_characters": 698,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 4604,
+        "outputTokens": 159,
+        "totalTokens": 4763
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 4.3993901669746265,
+      "process_elapsed_seconds": 4.937455750012305,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 6,
+      "case_id": "plant_tissue",
+      "role": "choices",
+      "request_sha256": "3a7dcfd027d50ef289a181c2c061e8bd977506394bf38cf57bd4bd9996435b46",
+      "input_utf8_bytes": 26454,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "33f0817e839bf1be4cb9a0497d07e94fbb359084f3eb8522af3895768bc8d248",
+      "response_text_characters": 1710,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 7640,
+        "outputTokens": 436,
+        "totalTokens": 8076
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 8.176840249972884,
+      "process_elapsed_seconds": 8.707040084002074,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 7,
+      "case_id": "plant_tissue",
+      "role": "teaching",
+      "request_sha256": "4085a0242c0d2cb5294d13aa5443ba52c7725484ee506f2b8a665b809ce2d4b5",
+      "input_utf8_bytes": 24763,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "6e844f688b59712f529616bb6537ae1fb9104d2a0572616725e0c67dd93af29e",
+      "response_text_characters": 626,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 6905,
+        "outputTokens": 155,
+        "totalTokens": 7060
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 3.612913999997545,
+      "process_elapsed_seconds": 4.20485970802838,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 8,
+      "case_id": "spinner_probability_reason",
+      "role": "choices",
+      "request_sha256": "4a4ee74824f841ca6bb13575a54e18ee4ed25d9f7b0b066a9fc048c7040e2ce8",
+      "input_utf8_bytes": 6401,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "790d9f78d6e21ff6cd3f360fc2c10f8315d61253a827e7bda9e638e44a93979b",
+      "response_text_characters": 1359,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1938,
+        "outputTokens": 307,
+        "totalTokens": 2245
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 5.919419249985367,
+      "process_elapsed_seconds": 6.496144999982789,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 9,
+      "case_id": "spinner_probability_reason",
+      "role": "teaching",
+      "request_sha256": "23665a1e6227544a69c3ba5ac4703fc0aa9d6b80a15a72479e05ac5ba6243b97",
+      "input_utf8_bytes": 4485,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "b5c3d9a8fab8c5e83406a8a3108eeb4ddc9639be0b27945da767f0ddc6202244",
+      "response_text_characters": 1172,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1152,
+        "outputTokens": 278,
+        "totalTokens": 1430
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 6.138402374985162,
+      "process_elapsed_seconds": 6.697548916970845,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 10,
+      "case_id": "recipe_water_scaling",
+      "role": "choices",
+      "request_sha256": "4f324ed6a2ee113c11f3b69748e3168089c302b16dbb17c1cabb636d0d826c21",
+      "input_utf8_bytes": 6409,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "e74d9d59d36d09138f7c7c13c37e090f110bd5ee26d148779cde264360d6ebb7",
+      "response_text_characters": 796,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1960,
+        "outputTokens": 258,
+        "totalTokens": 2218
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 3.90355929202633,
+      "process_elapsed_seconds": 4.417765374993905,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 11,
+      "case_id": "recipe_water_scaling",
+      "role": "teaching",
+      "request_sha256": "e75f0fc2fca2978f8fc3a211bbb83574d441acc50b9c8b64bf895343fc145977",
+      "input_utf8_bytes": 4518,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "c75c95ff4143c02ef1285a61468acb2a7e46132f0779476591b120452599a849",
+      "response_text_characters": 358,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1194,
+        "outputTokens": 90,
+        "totalTokens": 1284
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 2.1143070419784635,
+      "process_elapsed_seconds": 2.6520901250187308,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 12,
+      "case_id": "python_assignment_reason",
+      "role": "choices",
+      "request_sha256": "53b27b71be0ed18c4f10e1a946345a21b07d2370a3d2850406bb59a0cfee2d70",
+      "input_utf8_bytes": 6330,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "69b4cef1992f8f5b1a1ccb2649cc3c395d8e353e432a077a2c5d7ca3b97eb901",
+      "response_text_characters": 1178,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1947,
+        "outputTokens": 306,
+        "totalTokens": 2253
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 5.178550541982986,
+      "process_elapsed_seconds": 5.726677999948151,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 13,
+      "case_id": "python_assignment_reason",
+      "role": "teaching",
+      "request_sha256": "6e6b00285bd333f36ae373e11999dd02c3ac37ab850fe43f4698c12e9b35399b",
+      "input_utf8_bytes": 4381,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "e01f868e146cdf9d2c08a148ef747e397f621d2efc65f4109ffd6fbaaf355093",
+      "response_text_characters": 1062,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1163,
+        "outputTokens": 273,
+        "totalTokens": 1436
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 4.676187542034313,
+      "process_elapsed_seconds": 5.228760375001002,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 14,
+      "case_id": "python_copy_result",
+      "role": "choices",
+      "request_sha256": "b434cf9a0b461aa85df1bd4e4f68dc474cf0fd9648579f83b790600496ea529b",
+      "input_utf8_bytes": 6284,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "be6e8e8b0cfc9e27c65096086e27388c697357aa9c4637eaddc02800b533a6b2",
+      "response_text_characters": 762,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1941,
+        "outputTokens": 236,
+        "totalTokens": 2177
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 4.651343083009124,
+      "process_elapsed_seconds": 5.18391258304473,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 15,
+      "case_id": "python_copy_result",
+      "role": "teaching",
+      "request_sha256": "df33e3ade764be950e612d04b8e35cde386d6cb177205e277e6a8cc27debe418",
+      "input_utf8_bytes": 4387,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "4dff335a3a9c12a4c94b34624998fbcc6680d54dbf5b496b071f00c00a61c64d",
+      "response_text_characters": 381,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1166,
+        "outputTokens": 104,
+        "totalTokens": 1270
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 2.434169624990318,
+      "process_elapsed_seconds": 2.9640486250282265,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 16,
+      "case_id": "first_quarter_cause",
+      "role": "choices",
+      "request_sha256": "e1e1c22b4e40afc1b9bc9779291204c420bdc6570b6a2cf3f1c12b2c19c09b18",
+      "input_utf8_bytes": 6363,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "8d335623ea19f2994b9a272a334be9dff6cf787bc58074800125ef4560d3b0ad",
+      "response_text_characters": 1243,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1926,
+        "outputTokens": 285,
+        "totalTokens": 2211
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 5.124565999954939,
+      "process_elapsed_seconds": 5.653272833034862,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 17,
+      "case_id": "first_quarter_cause",
+      "role": "teaching",
+      "request_sha256": "965b3bfe959fe4cb035217596f86e1e75b08da3d5bdb482aef1fcb7740dc8ff3",
+      "input_utf8_bytes": 4474,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "03a0963a8cb59170d2b791855b41a59c943dcd85052be2d83cedfa22ec299af2",
+      "response_text_characters": 1211,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1143,
+        "outputTokens": 264,
+        "totalTokens": 1407
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 5.68266108300304,
+      "process_elapsed_seconds": 6.205431292008143,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 18,
+      "case_id": "cycling_average_speed",
+      "role": "choices",
+      "request_sha256": "d68cba8d1b94c148ec34e5bb02b0c1e62719e0fa9e2213bd8a1650e8c39f5af0",
+      "input_utf8_bytes": 6240,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "5cee4ec344460c6c7998033e74a639fd214ee46204636355437142821b1b21e6",
+      "response_text_sha256": "6a2671039ea2f83c71ba8efe1639ec4d90ca3198448fcb38c69b85d7a6c4565a",
+      "response_text_characters": 1226,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1912,
+        "outputTokens": 296,
+        "totalTokens": 2208
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 4.378149833006319,
+      "process_elapsed_seconds": 4.911869332951028,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    },
+    {
+      "index_zero_based": 19,
+      "case_id": "cycling_average_speed",
+      "role": "teaching",
+      "request_sha256": "b512071123e06621506241f95cd25b0c9ce3507770ddc3fed78795f433616a38",
+      "input_utf8_bytes": 4397,
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "additional_model_request_fields": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "output_config_sha256": "ac20d706b1a2bfdefc094d6a6c34cafcd05a04d6fd9dac6495b54e601c754c94",
+      "response_text_sha256": "aca18841f9fdae8d3cb502e7e30931092c662d07ed0549f5c5acb3f9da982faa",
+      "response_text_characters": 605,
+      "native_schema_valid": true,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1158,
+        "outputTokens": 144,
+        "totalTokens": 1302
+      },
+      "stop_reason": "end_turn",
+      "sdk_elapsed_seconds": 2.9344080419978127,
+      "process_elapsed_seconds": 3.4599105000379495,
+      "local_worker_reaped": true,
+      "group_cleanup_confirmed": true
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "dough_reference",
+      "question_sha256": "f234c1e7832ad68afc8f0c7bdfce5b87888f307de8aeb21db58e5f652421020b",
+      "source_packet_sha256": "ed7341905d45f814b503c0f9846e6cfb6cd6003b081dec6ab280d9b62ae75994",
+      "source_units": {
+        "S1U1": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 1619,
+          "original_end": 3602,
+          "text_sha256": "43c1cbf462c3673e429104896d415bdd4d4f41dfa58ef43c372988a358d87554"
+        },
+        "S1U2": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 3602,
+          "original_end": 5588,
+          "text_sha256": "4e2e83c4606838377a15406217d92e53eef79873a5610a7d4dad36126b803f50"
+        },
+        "S1U3": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 5588,
+          "original_end": 7379,
+          "text_sha256": "d4e7be0b30904766a0748c4c50d9ac008bf70235ec430446e9f424d4bfb48b73"
+        },
+        "S1U4": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 7379,
+          "original_end": 9378,
+          "text_sha256": "4805db6b18093847db38cb65dcaf3a28dd049649cab575538d1c7a907f835e46"
+        },
+        "S1U5": {
+          "source_record_sha256": "2dd02d82a274096a87fee50f1642703577f6d70946a1b22a1b4e210b335a4897",
+          "original_start": 9378,
+          "original_end": 9619,
+          "text_sha256": "d39a46e98e1bac7c8e80d8589df378cbe35d48791b64b61049946cd9aacabb88"
+        },
+        "S2U1": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 16000,
+          "original_end": 17824,
+          "text_sha256": "8cc6c70b5cf4a03d1fda356dde43ffa5489498bc7c30050dd7e08631f66aaa79"
+        },
+        "S2U2": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 17824,
+          "original_end": 19784,
+          "text_sha256": "b80144805ecda77f3dd4b794ca4dc104f7faf453eabd0df6056e4b576c1d29de"
+        },
+        "S2U3": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 19784,
+          "original_end": 21683,
+          "text_sha256": "835a9ae658839dd64f4cea7d1d70dc90560145200efdc2ff1fa04dc8e386011e"
+        },
+        "S2U4": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 21683,
+          "original_end": 23611,
+          "text_sha256": "aa38df56a9bc300c8463b6d1a286c9c031438d5bee8f9d267cd538ca679aadf6"
+        },
+        "S2U5": {
+          "source_record_sha256": "0f26e8a8cb89891498444d0582bfaa52b9ed5a775f7d09900c1c862c68a58cbb",
+          "original_start": 23611,
+          "original_end": 24000,
+          "text_sha256": "00db4351381a96bf7a02951a5737786a22f23fc5bc744686554a18d98b587411"
+        }
+      },
+      "candidate": {
+        "question_sha256": "f234c1e7832ad68afc8f0c7bdfce5b87888f307de8aeb21db58e5f652421020b",
+        "source_packet_sha256": "ed7341905d45f814b503c0f9846e6cfb6cd6003b081dec6ab280d9b62ae75994",
+        "eligible": false,
+        "reason": "teaching_refuted",
+        "supported_choice_ids": [
+          "A"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "f234c1e7832ad68afc8f0c7bdfce5b87888f307de8aeb21db58e5f652421020b",
+            "source_packet_sha256": "ed7341905d45f814b503c0f9846e6cfb6cd6003b081dec6ab280d9b62ae75994",
+            "payload_sha256": "799cc6619466e5dc03a40fcca11f17c700971066c77d42f8c02ee2c8c0f0d297",
+            "source_units_sha256": "87e49f3593322ab28675152ec3f9c546d5f6304938d1f4cd120324b322b2924b"
+          },
+          "assessments": {
+            "A": {
+              "status": "supported",
+              "reason_sha256": "13176ea4f5d249e1a0334c7fdc200af7820046147a5405c46e93e0a3fe92907b",
+              "reason_characters": 552,
+              "evidence_ids": [
+                "S1U2",
+                "S2U4"
+              ]
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "ba11a4afbcd720ccf66cb111f99cdfa6230c0f41a1217e85fa43a0102f89d040",
+              "reason_characters": 418,
+              "evidence_ids": [
+                "S2U3",
+                "S2U4"
+              ]
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "19f20ebd51e0343e4490dc5909ffcf53e6e4f4603c26ce8ccf755ceb7da01cf3",
+              "reason_characters": 294,
+              "evidence_ids": [
+                "S1U2",
+                "S2U1"
+              ]
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "c95ba730f9727bde5be21dbc5a452ea4402b2200a216592f5a6d768f5e9a5db0",
+              "reason_characters": 265,
+              "evidence_ids": [
+                "S1U2",
+                "S2U4"
+              ]
+            }
+          },
+          "task_obstruction": {
+            "status": "none",
+            "choice_id": null,
+            "reason_sha256": "622747ddda55169fa65ec2b27f6cc59f4909ea710e39e57c537cf9b43f1a7ee4",
+            "reason_characters": 111
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "f234c1e7832ad68afc8f0c7bdfce5b87888f307de8aeb21db58e5f652421020b",
+            "source_packet_sha256": "ed7341905d45f814b503c0f9846e6cfb6cd6003b081dec6ab280d9b62ae75994",
+            "payload_sha256": "799cc6619466e5dc03a40fcca11f17c700971066c77d42f8c02ee2c8c0f0d297",
+            "source_units_sha256": "87e49f3593322ab28675152ec3f9c546d5f6304938d1f4cd120324b322b2924b"
+          },
+          "assessments": {
+            "main": {
+              "status": "refuted",
+              "reason_sha256": "160d8e5494596d56168f6ee27696b38cad81069d0e0125b0b101793ab1b955db",
+              "reason_characters": 1277,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            }
+          },
+          "issues_count": 1,
+          "issues_sha256": "1e2d2dd6bc2f987741058d2dd4bc594885085bb06e4955644f838b967a3d293d",
+          "difficulty": 3
+        }
+      }
+    },
+    {
+      "case_id": "hotel_reference",
+      "question_sha256": "75d9d2d015b964d539aeedeb65edc10f381993feca94a4eff4f2e9384e81e247",
+      "source_packet_sha256": "d5bdacfe9a463ddacf88e5ea583ec20c0c7496fd5066315a44bf68c3bec5f9d0",
+      "source_units": {
+        "S1U1": {
+          "source_record_sha256": "3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08",
+          "original_start": 0,
+          "original_end": 1898,
+          "text_sha256": "a025db5b1432dbe99c702fc21f4aaaf7f7d965df4fa2c10855e98d0569db4f63"
+        },
+        "S1U2": {
+          "source_record_sha256": "3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08",
+          "original_start": 1898,
+          "original_end": 3888,
+          "text_sha256": "4e965f98145826c6a1387d2c86659141dd5202a584da007b92d76be2744dd465"
+        },
+        "S1U3": {
+          "source_record_sha256": "3d2164e23b708c59f1835c64cfc59a40530d7ddb2dfaae1975c948249db71f08",
+          "original_start": 3888,
+          "original_end": 4915,
+          "text_sha256": "a5cf80e8e6bb0bf562e5d71fd2444f62201f947d83a1b8ca67a7cf7292f79b8b"
+        }
+      },
+      "candidate": {
+        "question_sha256": "75d9d2d015b964d539aeedeb65edc10f381993feca94a4eff4f2e9384e81e247",
+        "source_packet_sha256": "d5bdacfe9a463ddacf88e5ea583ec20c0c7496fd5066315a44bf68c3bec5f9d0",
+        "eligible": true,
+        "reason": null,
+        "supported_choice_ids": [
+          "A"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "75d9d2d015b964d539aeedeb65edc10f381993feca94a4eff4f2e9384e81e247",
+            "source_packet_sha256": "d5bdacfe9a463ddacf88e5ea583ec20c0c7496fd5066315a44bf68c3bec5f9d0",
+            "payload_sha256": "38b385ca6ff7f1a29ec83af1594939aaba1ef24542cf52027af41fcfea6c3372",
+            "source_units_sha256": "4b89eb20f9d411bb6fd28f1868df8462d424bc80d09c96bb21f70c669f19eb79"
+          },
+          "assessments": {
+            "A": {
+              "status": "supported",
+              "reason_sha256": "1a72f117b44971b4c7896f9ef014b2f8fb9f4186eb4f8d6d7a404fe08c51fb17",
+              "reason_characters": 360,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2"
+              ]
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "6e9d3954b39f3ef93af2ed5b266d075a6d4e33a688c2d184181f7515fc07627e",
+              "reason_characters": 231,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "d76c91476327841cb3dba6a50b28399ad2a6f5113e80285b27979c90baaa2321",
+              "reason_characters": 231,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "59cd1c6f401ca1f9b4f4041a41d170735f93a892e351bc3d6a1bae719df60de4",
+              "reason_characters": 295,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2"
+              ]
+            }
+          },
+          "task_obstruction": {
+            "status": "none",
+            "choice_id": null,
+            "reason_sha256": "6b4f24e3376a3869bb7834ab9f86dbc281d7290f33ca4246ea414f76794e61e7",
+            "reason_characters": 107
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "75d9d2d015b964d539aeedeb65edc10f381993feca94a4eff4f2e9384e81e247",
+            "source_packet_sha256": "d5bdacfe9a463ddacf88e5ea583ec20c0c7496fd5066315a44bf68c3bec5f9d0",
+            "payload_sha256": "38b385ca6ff7f1a29ec83af1594939aaba1ef24542cf52027af41fcfea6c3372",
+            "source_units_sha256": "4b89eb20f9d411bb6fd28f1868df8462d424bc80d09c96bb21f70c669f19eb79"
+          },
+          "assessments": {
+            "main": {
+              "status": "supported",
+              "reason_sha256": "8c1a17f1f867cc0c13496833977d3b4cd7a47f0cc806ce97ae53045c312d04af",
+              "reason_characters": 474,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2"
+              ]
+            }
+          },
+          "issues_count": 0,
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "difficulty": 2
+        }
+      }
+    },
+    {
+      "case_id": "butter_reference",
+      "question_sha256": "f1a0ec005cdb88db3aeb4ebbde8aeb99c74162634e885dac8dfb26039055d0b6",
+      "source_packet_sha256": "79cc79aeee8ecb18c07345b2b4afe336088233f1a344f1fa75b519d7a8cf5001",
+      "source_units": {
+        "S1U1": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 1619,
+          "original_end": 3602,
+          "text_sha256": "43c1cbf462c3673e429104896d415bdd4d4f41dfa58ef43c372988a358d87554"
+        },
+        "S1U2": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 3602,
+          "original_end": 5588,
+          "text_sha256": "4e2e83c4606838377a15406217d92e53eef79873a5610a7d4dad36126b803f50"
+        },
+        "S1U3": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 5588,
+          "original_end": 7379,
+          "text_sha256": "d4e7be0b30904766a0748c4c50d9ac008bf70235ec430446e9f424d4bfb48b73"
+        },
+        "S1U4": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 7379,
+          "original_end": 9378,
+          "text_sha256": "4805db6b18093847db38cb65dcaf3a28dd049649cab575538d1c7a907f835e46"
+        },
+        "S1U5": {
+          "source_record_sha256": "5800f2f26a9a6b9cd1c137b3afac67f65653790ac04bb278554b8cdad30f9bca",
+          "original_start": 9378,
+          "original_end": 9619,
+          "text_sha256": "d39a46e98e1bac7c8e80d8589df378cbe35d48791b64b61049946cd9aacabb88"
+        }
+      },
+      "candidate": {
+        "question_sha256": "f1a0ec005cdb88db3aeb4ebbde8aeb99c74162634e885dac8dfb26039055d0b6",
+        "source_packet_sha256": "79cc79aeee8ecb18c07345b2b4afe336088233f1a344f1fa75b519d7a8cf5001",
+        "eligible": true,
+        "reason": null,
+        "supported_choice_ids": [
+          "A"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "f1a0ec005cdb88db3aeb4ebbde8aeb99c74162634e885dac8dfb26039055d0b6",
+            "source_packet_sha256": "79cc79aeee8ecb18c07345b2b4afe336088233f1a344f1fa75b519d7a8cf5001",
+            "payload_sha256": "d15c7566630f65154810607d25c778a455566d35e83007726739aaf597f001ec",
+            "source_units_sha256": "2ffb090da486dd020b79dd4a54ca1ba0c4927ea5f4010f6649b8d16de1937544"
+          },
+          "assessments": {
+            "A": {
+              "status": "supported",
+              "reason_sha256": "69c257528241c436eb9854ae554b08492b0b57dcb0f4ca91c1f78487b810f15d",
+              "reason_characters": 395,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "ca7390fee49af3cf1968e8d524d2cf85839213599a7ca741569820852d633e4d",
+              "reason_characters": 276,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "f11d6abe10ab5d0ed359035999fc90774e92e1a447f852e2967464653220e982",
+              "reason_characters": 255,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "24d3a54e6a348d31aad53cdb4e2c6c40fa298256e89ed8e2b5c34bee1f6338c8",
+              "reason_characters": 249,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            }
+          },
+          "task_obstruction": {
+            "status": "none",
+            "choice_id": null,
+            "reason_sha256": "186283c375509bb07eac971a1a7aae0e34fef34fc26b8f89727473043eada99d",
+            "reason_characters": 106
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "f1a0ec005cdb88db3aeb4ebbde8aeb99c74162634e885dac8dfb26039055d0b6",
+            "source_packet_sha256": "79cc79aeee8ecb18c07345b2b4afe336088233f1a344f1fa75b519d7a8cf5001",
+            "payload_sha256": "d15c7566630f65154810607d25c778a455566d35e83007726739aaf597f001ec",
+            "source_units_sha256": "2ffb090da486dd020b79dd4a54ca1ba0c4927ea5f4010f6649b8d16de1937544"
+          },
+          "assessments": {
+            "main": {
+              "status": "supported",
+              "reason_sha256": "528102c86b239a6f936899530df589c386d9e5c3b3496e75671b032f4973669f",
+              "reason_characters": 602,
+              "evidence_ids": [
+                "S1U2"
+              ]
+            }
+          },
+          "issues_count": 0,
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "difficulty": 2
+        }
+      }
+    },
+    {
+      "case_id": "plant_tissue",
+      "question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+      "source_packet_sha256": "3ec820edca438ffe02e2e0c44ba372cb9703d59099be2844e3fe222c381ba58e",
+      "source_units": {
+        "S1U1": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 4000,
+          "original_end": 5900,
+          "text_sha256": "ee4be464a8cdfc25a766d524e298b247ce831ab0938c850ab09d5faf3eee63cf"
+        },
+        "S1U2": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 5900,
+          "original_end": 7562,
+          "text_sha256": "80467b7306348f64ebd09782f7bcb403030aea0eb2a3ef52324a91a56f875443"
+        },
+        "S1U3": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 7562,
+          "original_end": 9561,
+          "text_sha256": "2e0bfeabe1e08c2c0a9ee0a8ddd1efdaa6c599467b6a926c74c820e3c7af61f0"
+        },
+        "S1U4": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 9561,
+          "original_end": 11429,
+          "text_sha256": "819d3681b21bb417a5fa5fa001f83f68fdc7d011eedfa8ce4fd1cf6708a82128"
+        },
+        "S1U5": {
+          "source_record_sha256": "154cbf83dd4ecfecab737b5027c71186b7b1954fcd044c254487d1b1d5a66a31",
+          "original_start": 11429,
+          "original_end": 12000,
+          "text_sha256": "5cbea6fb8e1b06aa71186a7170aac1cb2c7d91f06c0b6a2dafb376a06f6118a0"
+        },
+        "S2U1": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 0,
+          "original_end": 1986,
+          "text_sha256": "b5f189118967df7094098273a587089c0627f0e30cb8bdb6cd5010d707a068bf"
+        },
+        "S2U2": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 1986,
+          "original_end": 3982,
+          "text_sha256": "6de55d15fd17684910d63b67e1bfe8b731fc0722ff4f4cb0b84f42a63ea1c9cd"
+        },
+        "S2U3": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 3982,
+          "original_end": 5899,
+          "text_sha256": "c9fb5de3944267fd00f2f02537e6f244906ee8cdba13fd10afe13ecdec2f8e77"
+        },
+        "S2U4": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 5899,
+          "original_end": 7624,
+          "text_sha256": "1c1423fda21fa4f41314ebae3c8b2eac1fe4c3960cfca3ba0626bef7ccdfdcaa"
+        },
+        "S2U5": {
+          "source_record_sha256": "732da6c9e4f6c976e38c4e12d7d39ee60a5d9daea5d45405ea23067d41acf006",
+          "original_start": 7624,
+          "original_end": 8000,
+          "text_sha256": "bb2d0d79d016ac2521c9f31c904111876442d7c30b1ded145594ea18ed00e767"
+        }
+      },
+      "candidate": {
+        "question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+        "source_packet_sha256": "3ec820edca438ffe02e2e0c44ba372cb9703d59099be2844e3fe222c381ba58e",
+        "eligible": true,
+        "reason": null,
+        "supported_choice_ids": [
+          "C"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+            "source_packet_sha256": "3ec820edca438ffe02e2e0c44ba372cb9703d59099be2844e3fe222c381ba58e",
+            "payload_sha256": "a60616f837c60e1cbe9628438eb76b5fcf1ab255a27d06d16689551afcec2e65",
+            "source_units_sha256": "27672c26ab68200282c9a4b824e3cc6c20b58d1246f2b9968a33a463bbee3714"
+          },
+          "assessments": {
+            "A": {
+              "status": "refuted",
+              "reason_sha256": "56ef54272c7c7e096d2ae5dde8186dd54830c21b218d8ab276eaec8f10223eb9",
+              "reason_characters": 220,
+              "evidence_ids": [
+                "S2U3",
+                "S2U4"
+              ]
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "3de0e589c245d0dfe377b20e4d01f49afd850e8434405180cecdd082f93fa40b",
+              "reason_characters": 350,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2"
+              ]
+            },
+            "C": {
+              "status": "supported",
+              "reason_sha256": "24f0b8ed37c77b0273b07280612baca2266c1b6c264f3fcc6a8f83cbf80334b7",
+              "reason_characters": 388,
+              "evidence_ids": [
+                "S1U2",
+                "S1U3",
+                "S2U3",
+                "S2U4"
+              ]
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "358512d90dfea9a7d1314deb85c02576527274caa59276bfb699503f57d9f801",
+              "reason_characters": 291,
+              "evidence_ids": [
+                "S1U1",
+                "S1U2"
+              ]
+            }
+          },
+          "task_obstruction": {
+            "status": "none",
+            "choice_id": null,
+            "reason_sha256": "1a76a3c28857be29810d1a07d656a7f46b2bd9888521314239776e5831f93d56",
+            "reason_characters": 112
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "b64fb656bdd64d63e5c93d104d46be383774fbce7421aee601136e0764c2676c",
+            "source_packet_sha256": "3ec820edca438ffe02e2e0c44ba372cb9703d59099be2844e3fe222c381ba58e",
+            "payload_sha256": "a60616f837c60e1cbe9628438eb76b5fcf1ab255a27d06d16689551afcec2e65",
+            "source_units_sha256": "27672c26ab68200282c9a4b824e3cc6c20b58d1246f2b9968a33a463bbee3714"
+          },
+          "assessments": {
+            "main": {
+              "status": "supported",
+              "reason_sha256": "8deff64f62b77f75bbd2379678d2c20ca4702ad9982d82b1c49d2072bff740fb",
+              "reason_characters": 509,
+              "evidence_ids": [
+                "S1U2",
+                "S1U3",
+                "S2U3",
+                "S2U4"
+              ]
+            }
+          },
+          "issues_count": 0,
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "difficulty": 2
+        }
+      }
+    },
+    {
+      "case_id": "spinner_probability_reason",
+      "question_sha256": "61c540d9a7bc1de07d2a3bb5da2d43318425db6094de75912bf7f1687080a1bf",
+      "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+      "source_units": {},
+      "candidate": {
+        "question_sha256": "61c540d9a7bc1de07d2a3bb5da2d43318425db6094de75912bf7f1687080a1bf",
+        "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+        "eligible": false,
+        "reason": "answer_disagreement",
+        "supported_choice_ids": [
+          "B"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "61c540d9a7bc1de07d2a3bb5da2d43318425db6094de75912bf7f1687080a1bf",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "bd36b142dc1f874776bec06777a45aeb19b86f6f3c821bd2bb23c8e83affabcf",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "A": {
+              "status": "refuted",
+              "reason_sha256": "99dac2fc57aeb1a6ca42592d4f1219260f34ad7485ad80d76a27012d7079c91b",
+              "reason_characters": 164,
+              "evidence_ids": []
+            },
+            "B": {
+              "status": "supported",
+              "reason_sha256": "4a2b5cb5f81bc3d950d8305dbb679a7257f3789d995c5be56b22494490c253b7",
+              "reason_characters": 280,
+              "evidence_ids": []
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "dc31b057603457170920452ef05ec11660e84cdc1bc15beebc1409545bfb042a",
+              "reason_characters": 205,
+              "evidence_ids": []
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "8d00e21e04516bc89f7dd06c2422f3e58c85fd1e3f3f03bc8998f4da8be3555b",
+              "reason_characters": 189,
+              "evidence_ids": []
+            }
+          },
+          "task_obstruction": {
+            "status": "answered_by_choice",
+            "choice_id": "B",
+            "reason_sha256": "2298f55e550c1402420e747a9dbcf6f34afed6d45f9fb3dc93e21e4aed274da6",
+            "reason_characters": 225
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "61c540d9a7bc1de07d2a3bb5da2d43318425db6094de75912bf7f1687080a1bf",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "bd36b142dc1f874776bec06777a45aeb19b86f6f3c821bd2bb23c8e83affabcf",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "main": {
+              "status": "refuted",
+              "reason_sha256": "93436480adc3b108324e6ec45c230a61ebe7fa3ed58ae94315ccfd759fcc8f64",
+              "reason_characters": 622,
+              "evidence_ids": []
+            }
+          },
+          "issues_count": 2,
+          "issues_sha256": "394873594791da53f205636034ad97bb510b83d5e92d3de6ad8225d789cfadac",
+          "difficulty": 2
+        }
+      }
+    },
+    {
+      "case_id": "recipe_water_scaling",
+      "question_sha256": "00dee005d5d6920a17f36c746e9e4f5188cfb84fed715924ff390d835d88676a",
+      "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+      "source_units": {},
+      "candidate": {
+        "question_sha256": "00dee005d5d6920a17f36c746e9e4f5188cfb84fed715924ff390d835d88676a",
+        "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+        "eligible": true,
+        "reason": null,
+        "supported_choice_ids": [
+          "B"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "00dee005d5d6920a17f36c746e9e4f5188cfb84fed715924ff390d835d88676a",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "9ba3b71e423d9fd49c2e8c941d146821d9f6ab5b057d22f6de5ecf75d645774c",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "A": {
+              "status": "refuted",
+              "reason_sha256": "117def69c7cc48cf60c27ebe9ab35c1f044ab85b9033ec0d2185afb407780abc",
+              "reason_characters": 108,
+              "evidence_ids": []
+            },
+            "B": {
+              "status": "supported",
+              "reason_sha256": "02723cc2217dd4b2f5e179b3dcfe684bad02516fd9076a4d62bde7248e7efa5a",
+              "reason_characters": 112,
+              "evidence_ids": []
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "4dc894a87f0e8ef7a13974a2dbfa88ba1ef6f5ab5337103244f70ef5c73d1e20",
+              "reason_characters": 130,
+              "evidence_ids": []
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "beba5dd1d087e7e32ac595bb7fe9102dd4b29926e3322a20fae8dcab6f3b3079",
+              "reason_characters": 94,
+              "evidence_ids": []
+            }
+          },
+          "task_obstruction": {
+            "status": "none",
+            "choice_id": null,
+            "reason_sha256": "2a8753536fc92cfc4a7706801b511a45c2c63a362ec8d898af0b13935fb361c0",
+            "reason_characters": 69
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "00dee005d5d6920a17f36c746e9e4f5188cfb84fed715924ff390d835d88676a",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "9ba3b71e423d9fd49c2e8c941d146821d9f6ab5b057d22f6de5ecf75d645774c",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "main": {
+              "status": "supported",
+              "reason_sha256": "80ecd0ac89e532fe6f331a17355a3c3c004bafb9fd2023a879b7992f53301ebd",
+              "reason_characters": 268,
+              "evidence_ids": []
+            }
+          },
+          "issues_count": 0,
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "difficulty": 2
+        }
+      }
+    },
+    {
+      "case_id": "python_assignment_reason",
+      "question_sha256": "ee883ccd5015af8dfb339367c6086b14320b998376301bb19bb6b1fe7910b42b",
+      "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+      "source_units": {},
+      "candidate": {
+        "question_sha256": "ee883ccd5015af8dfb339367c6086b14320b998376301bb19bb6b1fe7910b42b",
+        "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+        "eligible": false,
+        "reason": "answer_disagreement",
+        "supported_choice_ids": [
+          "D"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "ee883ccd5015af8dfb339367c6086b14320b998376301bb19bb6b1fe7910b42b",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "c0eb1fcf5cb054e86de11dbf46ba5ab38300a2e50ae5e90867330bc5e9e01138",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "A": {
+              "status": "refuted",
+              "reason_sha256": "3e9c619bb5165ded7e5a83ebeaef0f91be1fd4ebaa54a36386356ba83613e2e0",
+              "reason_characters": 150,
+              "evidence_ids": []
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "b935f1eaff10db0fa83d25ac3508f244e18720000abc82d159793d012d30cc4f",
+              "reason_characters": 125,
+              "evidence_ids": []
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "1389414fc10d93c8b51f4840de243d1dffb0d32027a7fa9b6e283485b3daf060",
+              "reason_characters": 121,
+              "evidence_ids": []
+            },
+            "D": {
+              "status": "supported",
+              "reason_sha256": "12bd2b45bf9ddebf1607cd963c9f72f9d4142cbfaf2d454dcc437f50693147fe",
+              "reason_characters": 225,
+              "evidence_ids": []
+            }
+          },
+          "task_obstruction": {
+            "status": "answered_by_choice",
+            "choice_id": "D",
+            "reason_sha256": "dd2680404a9b1ffcb408d48eaffdc50bcbf2c98c7a786043b5987434ebee7d71",
+            "reason_characters": 261
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "ee883ccd5015af8dfb339367c6086b14320b998376301bb19bb6b1fe7910b42b",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "c0eb1fcf5cb054e86de11dbf46ba5ab38300a2e50ae5e90867330bc5e9e01138",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "main": {
+              "status": "refuted",
+              "reason_sha256": "5acb1e9271c0ad48b10d05da1a22f25eeacbc83f19f1b4e3dcc45b0388b74c7b",
+              "reason_characters": 410,
+              "evidence_ids": []
+            }
+          },
+          "issues_count": 3,
+          "issues_sha256": "6f66b306a3725b20f128d576efe9a3311ab5db21ac8237e993ed659ea6739195",
+          "difficulty": 2
+        }
+      }
+    },
+    {
+      "case_id": "python_copy_result",
+      "question_sha256": "0700610de6afa48efc77e2cacbf9222f221748a22df29b8e06ef94b46ef07a8b",
+      "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+      "source_units": {},
+      "candidate": {
+        "question_sha256": "0700610de6afa48efc77e2cacbf9222f221748a22df29b8e06ef94b46ef07a8b",
+        "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+        "eligible": true,
+        "reason": null,
+        "supported_choice_ids": [
+          "C"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "0700610de6afa48efc77e2cacbf9222f221748a22df29b8e06ef94b46ef07a8b",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "ecd8bedd14cbbcaad30a472b65defe5ebbdf22379cda5f71ec037a36b438943b",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "A": {
+              "status": "refuted",
+              "reason_sha256": "c69b27bf23b4d796bf7a1cd6ca3497efa72b6b2b1c0e0ed3b798dc455a36596f",
+              "reason_characters": 75,
+              "evidence_ids": []
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "7d6b2e08b66c26cae2532f20d2d9de0f37640606fe113ea3d8accefcc22a6e7a",
+              "reason_characters": 133,
+              "evidence_ids": []
+            },
+            "C": {
+              "status": "supported",
+              "reason_sha256": "4c1adce952bec3dcf5cac09af4efd88dfa0db4d22ce9d427060964eb5f88265f",
+              "reason_characters": 116,
+              "evidence_ids": []
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "13da2de36dc70b8488d9fec7bfbecc23872dc8d6d8009a3c9073f7e8c4b1c6f7",
+              "reason_characters": 100,
+              "evidence_ids": []
+            }
+          },
+          "task_obstruction": {
+            "status": "none",
+            "choice_id": null,
+            "reason_sha256": "e171dfafb7e74afa7213f0a0f801d2dba66d10c982cab4f79b03a5c9154ff768",
+            "reason_characters": 55
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "0700610de6afa48efc77e2cacbf9222f221748a22df29b8e06ef94b46ef07a8b",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "ecd8bedd14cbbcaad30a472b65defe5ebbdf22379cda5f71ec037a36b438943b",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "main": {
+              "status": "supported",
+              "reason_sha256": "cdfcce9b047552d619c56b7a5b6d99c781cd41ee157c23185b6e24861febdde5",
+              "reason_characters": 291,
+              "evidence_ids": []
+            }
+          },
+          "issues_count": 0,
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "difficulty": 2
+        }
+      }
+    },
+    {
+      "case_id": "first_quarter_cause",
+      "question_sha256": "355acbd0d4c530eb7b4ed22094eadcd5fcf46f51511826194a434c37babfa0c5",
+      "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+      "source_units": {},
+      "candidate": {
+        "question_sha256": "355acbd0d4c530eb7b4ed22094eadcd5fcf46f51511826194a434c37babfa0c5",
+        "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+        "eligible": false,
+        "reason": "teaching_refuted",
+        "supported_choice_ids": [
+          "B"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "355acbd0d4c530eb7b4ed22094eadcd5fcf46f51511826194a434c37babfa0c5",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "f352309898c2f4416b4aa0a3de08167237f3e987bd651f459d5be8e06e74f7f2",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "A": {
+              "status": "refuted",
+              "reason_sha256": "71d8b53683995353034b83fa25dd5a784f0f8e41b39519998cb376c9117f35c9",
+              "reason_characters": 190,
+              "evidence_ids": []
+            },
+            "B": {
+              "status": "supported",
+              "reason_sha256": "db53762362b1327cae9d6807191ff9ceb290908c35dc0fa945e5be0c197318fd",
+              "reason_characters": 332,
+              "evidence_ids": []
+            },
+            "C": {
+              "status": "refuted",
+              "reason_sha256": "ef87866c16a63c1e5b2de2d7a3e7e5b89ec4b363e132980befb67e14e2cc0582",
+              "reason_characters": 182,
+              "evidence_ids": []
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "40e41993a405636085097d091b6411085c04ee0964531599ca17bbfc4bae71ae",
+              "reason_characters": 148,
+              "evidence_ids": []
+            }
+          },
+          "task_obstruction": {
+            "status": "none",
+            "choice_id": null,
+            "reason_sha256": "e5d15639ae7e0d6472d5044e2782222ecf1fa107e45f7c8807833164339b3ec3",
+            "reason_characters": 108
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "355acbd0d4c530eb7b4ed22094eadcd5fcf46f51511826194a434c37babfa0c5",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "f352309898c2f4416b4aa0a3de08167237f3e987bd651f459d5be8e06e74f7f2",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "main": {
+              "status": "refuted",
+              "reason_sha256": "b0cc0fa4f5254fb6ada4b12b345877cbfca7ec3b7dc3af3aa2e669ea80a51291",
+              "reason_characters": 562,
+              "evidence_ids": []
+            }
+          },
+          "issues_count": 2,
+          "issues_sha256": "9f8bd2b3d93ea5f2b87244208efd073178711e1e60242087f3ff22c78fa35153",
+          "difficulty": 2
+        }
+      }
+    },
+    {
+      "case_id": "cycling_average_speed",
+      "question_sha256": "f214342874e8872c1bc12680d5867ff91d175007734f72d34da15e2e9c0c34ba",
+      "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+      "source_units": {},
+      "candidate": {
+        "question_sha256": "f214342874e8872c1bc12680d5867ff91d175007734f72d34da15e2e9c0c34ba",
+        "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+        "eligible": true,
+        "reason": null,
+        "supported_choice_ids": [
+          "C"
+        ],
+        "scope": "Declared task-obstruction, choice and teaching gates with exact reference identities; not factual certification."
+      },
+      "reviews": {
+        "choices": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "f214342874e8872c1bc12680d5867ff91d175007734f72d34da15e2e9c0c34ba",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "28aa6aa2a4b355709746128ee6a46e2cf3b14fdb7113e7266c7d9d3b2ad1acb1",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "A": {
+              "status": "refuted",
+              "reason_sha256": "6c0e2e495b2a18afb42465e6f236bf1be0c77405ddbd53889c87e017b1dfed1d",
+              "reason_characters": 161,
+              "evidence_ids": []
+            },
+            "B": {
+              "status": "refuted",
+              "reason_sha256": "ad244c11424e26a98a3c2bb7fcbfc157dfe359037de652511418f700396ebd7b",
+              "reason_characters": 164,
+              "evidence_ids": []
+            },
+            "C": {
+              "status": "supported",
+              "reason_sha256": "336eb78482a2adc1d0b6189d5a791ecc16307c6b8ad9d11acf4e72a997d19cc2",
+              "reason_characters": 219,
+              "evidence_ids": []
+            },
+            "D": {
+              "status": "refuted",
+              "reason_sha256": "897e3b5e6dda08ea78a154ef2bd066c1e50fd38352c51f9ef3f7f67aaa496f5f",
+              "reason_characters": 157,
+              "evidence_ids": []
+            }
+          },
+          "task_obstruction": {
+            "status": "answered_by_choice",
+            "choice_id": "C",
+            "reason_sha256": "bd8abbf5f00cdcd21d9759ef29f8431940064b902064bf25f2e2af3560e70e95",
+            "reason_characters": 229
+          }
+        },
+        "teaching": {
+          "format_valid": true,
+          "binding": {
+            "question_sha256": "f214342874e8872c1bc12680d5867ff91d175007734f72d34da15e2e9c0c34ba",
+            "source_packet_sha256": "1b600a7f984a18cf640b13ddda76825f08f1cc6b038e088cf69255d731c6d7b9",
+            "payload_sha256": "28aa6aa2a4b355709746128ee6a46e2cf3b14fdb7113e7266c7d9d3b2ad1acb1",
+            "source_units_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          "assessments": {
+            "main": {
+              "status": "supported",
+              "reason_sha256": "fecb86500480f0c6321c5a4f2539f1f4bd47907c3053a94b006eee36f657f740",
+              "reason_characters": 515,
+              "evidence_ids": []
+            }
+          },
+          "issues_count": 0,
+          "issues_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "difficulty": 2
+        }
+      }
+    }
+  ]
+}
