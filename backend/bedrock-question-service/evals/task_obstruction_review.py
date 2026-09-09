@@ -126,8 +126,10 @@ def output_config(role):
                     {
                         "status": {"type": "string", "enum": list(OBSTRUCTIONS)},
                         "choiceId": {
-                            "type": ["string", "null"],
-                            "enum": [*LETTERS, None],
+                            "anyOf": [
+                                {"type": "string", "enum": list(LETTERS)},
+                                {"type": "null"},
+                            ],
                         },
                         "reason": {"type": "string"},
                     }

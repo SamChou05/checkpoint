@@ -446,6 +446,47 @@ class TaskObstructionTests(unittest.TestCase):
         self.assertIn("not factual certification", result["scope"])
 
     @unittest.skipIf(jsonschema is None, "Optional schema validator is unavailable.")
+    def test_native_nullable_choice_id_preserves_values_with_typed_union_branches(self):
+        config = adapter.output_config("choices")
+        schema = json.loads(config["textFormat"]["structure"]["jsonSchema"]["schema"])
+        identifier_schema = schema["properties"]["taskObstruction"]["properties"][
+            "choiceId"
+        ]
+        # The live service rejected the old mixed enum on a type array, although
+        # a general JSON Schema validator accepts it. Keep each enum on its own
+        # scalar-type branch without changing the set of permitted values.
+        self.assertEqual(set(identifier_schema), {"anyOf"})
+        for branch in identifier_schema["anyOf"]:
+            self.assertIsInstance(branch["type"], str)
+        previous_schema = {
+            "type": ["string", "null"],
+            "enum": ["A", "B", "C", "D", None],
+        }
+        previous_validator = jsonschema.Draft202012Validator(previous_schema)
+        current_validator = jsonschema.Draft202012Validator(identifier_schema)
+        accepted = ["A", "B", "C", "D", None]
+        rejected = [
+            "",
+            "a",
+            "E",
+            "null",
+            True,
+            False,
+            0,
+            1,
+            0.0,
+            [],
+            ["A"],
+            {},
+            {"id": "A"},
+        ]
+        for permitted, values in ((True, accepted), (False, rejected)):
+            for value in values:
+                with self.subTest(value=value, permitted=permitted):
+                    self.assertEqual(previous_validator.is_valid(value), permitted)
+                    self.assertEqual(current_validator.is_valid(value), permitted)
+
+    @unittest.skipIf(jsonschema is None, "Optional schema validator is unavailable.")
     def test_static_native_schemas_accept_contract_and_reject_extra_fields(self):
         for role in ("choices", "teaching"):
             config = adapter.output_config(role)

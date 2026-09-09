@@ -1,4 +1,12 @@
-# Task-obstruction qualification awaits renewed AWS credentials
+# Task-obstruction qualification: operational attempts
+
+AWS sign-in was renewed on September 9. A separately recorded attempt using the
+original frozen plan then stopped at its first request with a schema validation
+error. The [compatibility diagnosis and correction](QUESTION_TASK_OBSTRUCTION_SCHEMA_FIX.md)
+preserve that failure and its exact-request diagnostic. No model responses or
+correctness measurements are available from either operational attempt below.
+
+## September 8 authentication failure
 
 The [ten-case qualification](QUESTION_TASK_OBSTRUCTION_PROTOCOL.md) did not
 reach a model. Its first local worker failed while obtaining credentials; the
@@ -32,7 +40,6 @@ the application gates and experiment mechanics. They do not show that models
 correctly classify a false premise or an incorrect explanation. The candidate
 remains eval-only and the broader correctness issue remains unresolved.
 
-A renewed AWS sign-in is required for a separately recorded attempt using the
-same frozen questions and requests. Preserve this failed attempt; do not resume
-or overwrite its capture. No assessment should credit an authentication failure
-as detection of a defective item.
+This failed attempt remains preserved; it was not resumed or overwritten.
+No assessment should credit an authentication failure as detection of a
+defective item.

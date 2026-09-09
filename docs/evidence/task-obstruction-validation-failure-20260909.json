@@ -1,0 +1,41 @@
+{
+  "scope": "Public derived service-validation evidence. Two separately recorded single SDK attempts: first qualification attempt and one exact-request error diagnostic. No model response or content score. Source-bearing requests omitted; local captures retain originals. No headers or credentials retained.",
+  "source_revision": "8b23eabd010477c2027f1df1563926aa220e1371",
+  "plan_sha256": "28dfc43909fb7f2d322f440a3b7683c6a8a77310ea90614d257baad324ed92fe",
+  "capture_bytes": 518490,
+  "capture_sha256": "a94c4d8c78d8b45e109cbc0ba2b82fce11e067ab2643d52ff78fb5645d23e393",
+  "capture_status": "operational_failure",
+  "qualification_worker_launches": 1,
+  "qualification_provider_dispatch_attempts": 1,
+  "model_responses": 0,
+  "completed_cases": 0,
+  "fetches": 0,
+  "first_request_sha256": "3b7882547314735d7fc49087d2f522e387bc5fd7f36bfdd1cdccb187a67ce278",
+  "observation": {
+    "status": "operational_failure",
+    "error_type": "ValidationException",
+    "provider_dispatch_attempted": true,
+    "usage_known": false,
+    "local_process_group_id": 83339,
+    "local_worker_reaped": true,
+    "worker_exitcode": -15,
+    "local_process_group_cleanup_confirmed": true,
+    "termination_attempted": true,
+    "process_elapsed_seconds": 1.1625337500008754,
+    "remote_completion": "unknown"
+  },
+  "no_client_replay_exact": true,
+  "diagnostic_capture_bytes": 28454,
+  "diagnostic_capture_sha256": "10bc5e7d6baf464f289ccd3e5a8ffc5837eaaeffd190c8abc4fa01f7ca130f5b",
+  "diagnostic": {
+    "scope": "Separate one-request service-validation diagnostic; not a resumed qualification or content score. Native client one-attempt policy, 300-second read timeout and local alarm. No headers or credentials retained.",
+    "plan_sha256": "28dfc43909fb7f2d322f440a3b7683c6a8a77310ea90614d257baad324ed92fe",
+    "request_sha256": "3b7882547314735d7fc49087d2f522e387bc5fd7f36bfdd1cdccb187a67ce278",
+    "status": "provider_error",
+    "provider_dispatch_attempted": true,
+    "error_type": "ValidationException",
+    "error_code": "ValidationException",
+    "error_message": "The model returned the following errors: output_config.format.schema: Invalid schema: Enum value 'A' does not match declared type '['string', 'null']'",
+    "elapsed_seconds": 1.1451790829887614
+  }
+}

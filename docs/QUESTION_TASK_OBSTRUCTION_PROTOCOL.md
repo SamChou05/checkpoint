@@ -97,3 +97,10 @@ Independent review also found that Python equality equated an integer source
 offset with a Boolean. The new adapter now compares canonical JSON bytes;
 a regression reproduced that exact-record gap before the fix and passes after
 it. This is record integrity, not a demonstrated model accuracy improvement.
+
+September 9 compatibility correction: after the provider rejected the original
+nullable enum representation, [the equivalent union form](QUESTION_TASK_OBSTRUCTION_SCHEMA_FIX.md)
+passed 973 backend tests and the same local schema/request checks. The corrected
+20 requests total 227,662 bytes, maximum 27,394. Questions, prompts and semantic
+gates are unchanged. The corrected run requires a new committed-source plan and
+capture; both earlier operational failures remain preserved.
