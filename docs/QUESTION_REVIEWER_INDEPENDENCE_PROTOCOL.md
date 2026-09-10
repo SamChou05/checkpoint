@@ -112,8 +112,10 @@ remains open regardless of this selected diagnostic's outcome.
 
 ## Preparation status
 
-This document is prospective; no calls have run under this protocol. Commit and
-verify the runner, tests and protocol before freezing the plan. Verify source
+This document was frozen prospectively in `040d0e5`, before calls. The single
+comparison is now complete; see [the results](QUESTION_REVIEWER_INDEPENDENCE_RESULTS.md).
+The preparation required committing and verifying the runner, tests and protocol
+before freezing the plan. Verify source
 and dependency hashes, exact paired request deltas and the independent-assessment
 freeze before dispatch. Record the final plan hash and one fresh capture path in
 the result artifact. The experiment does not depend on the unactivated Opus 5

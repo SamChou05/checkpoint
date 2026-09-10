@@ -1,0 +1,108 @@
+{
+  "status": "clear",
+  "completed_utc": "2026-09-10T06:38:24.685967+00:00",
+  "scope": "Bounded final results/evidence audit. No new semantic adjudication, provider calls, research, test-suite runs, or runtime/policy changes. Only this audit artifact was written.",
+  "findings": [],
+  "checks": {
+    "in_memory_summary_object_matches": true,
+    "in_memory_summary_serialized_bytes_match": true,
+    "manifest_all_22_other_files_match_bytes_and_sha256": true,
+    "both_phase_freezes_match_with_documented_export_basename_aliases": true,
+    "all_24_occurrences_join_exactly_to_12_original_subjects_and_both_frozen_assessments": true,
+    "goal_sources_question_key_main_and_all_four_feedback_rows_match_exact_available_packet_content": true,
+    "all_five_unavailable_slots_preserved_in_both_assessments_and_summary": true,
+    "independent_complete_labels_match_supported_key_main_and_four_feedback_statuses": true,
+    "data_binding_and_count_assertions": 210,
+    "failed_data_binding_and_count_assertions": 0,
+    "prose_headline_counts_and_operational_numbers_match_frozen_evidence": true,
+    "bayes_equal_true_false_positive_prevalence_equation_checked_exactly": true,
+    "new_correctness_audit_and_handoff_entries_match_result_scope": true
+  },
+  "counts": {
+    "arms": {
+      "solver_context": {
+        "calls": 5,
+        "inputTokens": 14877,
+        "outputTokens": 3148,
+        "adaptation_pass_calls": 5,
+        "planned_item_occurrences": 12,
+        "correlated_reviews": 12,
+        "local_policy_returns": 11,
+        "uncontested_control_returns": 7,
+        "clear_spreadsheet_defect_approvals": 1,
+        "clear_spreadsheet_defect_returns": 1,
+        "independent_supported_complete_feedback": 4,
+        "root_supported_complete_feedback": 6
+      },
+      "withheld_solver_context": {
+        "calls": 5,
+        "inputTokens": 11392,
+        "outputTokens": 3343,
+        "adaptation_pass_calls": 4,
+        "planned_item_occurrences": 12,
+        "correlated_reviews": 7,
+        "local_policy_returns": 7,
+        "uncontested_control_returns": 5,
+        "clear_spreadsheet_defect_approvals": 1,
+        "clear_spreadsheet_defect_returns": 1,
+        "independent_supported_complete_feedback": 5,
+        "root_supported_complete_feedback": 5
+      }
+    },
+    "raw_review_records": 26,
+    "planned_occurrences": 24,
+    "correlated_positive_reviews": 19,
+    "unavailable_treatment_subjects": [
+      "item08",
+      "item09",
+      "item10",
+      "item11",
+      "item12"
+    ],
+    "paired_correlated_subjects": 7,
+    "paired_same_declared_answer": 7,
+    "independent_complete_feedback": 9,
+    "root_complete_feedback": 11,
+    "input_tokens": 26269,
+    "output_tokens": 6491
+  },
+  "interpretation_checks": [
+    "Both arms approve and locally return item04; the unrequested third spreadsheet operand is the predeclared clear-defect endpoint, not a post-response ambiguity exclusion.",
+    "The sole control-arm policy exclusion is item10 at model difficulty 2 versus requested minimum 3. It remains included in content assessment and is not credited as a factual rejection.",
+    "The final treatment response is syntactically valid and satisfies the static schema, but meaningful rejected feedback fails native adaptation and duplicate review indexes independently violate correlation. None of its seven raw records is selected or repaired; five subject slots remain unavailable.",
+    "Independent/root hospital, marble, ecology and ice-cream scope interpretations remain distinct. Completion-rate wording disagreement is preserved. Descriptive complete-feedback counts do not replace the prospective criterion.",
+    "Ecology 75 is retained as correct under the production-ratio interpretation. Distractor arithmetic/teaching defects are distinct from the original convention ambiguity.",
+    "Bayes and survey teaching defects occur in the supplied-context final batch; missing treatment counterparts cannot establish a paired teaching improvement.",
+    "Both arms share conditional reviewer instructions and the documented historical-envelope migration. The intervention removes the full independentSolutions field, not reasoning text alone, while the historical solver gate remains enforced.",
+    "The selected one-run reviewer diagnostic and local simulated returns are not fresh generation, normal production delivery, calibrated difficulty, a general accuracy rate, or measured learning gains. No production promotion is claimed.",
+    "Plan-audit completion after launch and incomplete assessor context blinding are explicitly disclosed in the companion evidence. No stronger blinding or fully independent pre-dispatch certification is inferred."
+  ],
+  "limitations": [
+    "This audit validates exact frozen evidence, joins, counts and reporting; it does not independently repeat domain adjudication.",
+    "Source/SDK bindings and nine actual policy replays are referenced to the unchanged independently audited capture and operational audit; they were not rerun in this final prose audit.",
+    "The 22-entry manifest is the checked pre-addition snapshot. Adding this audit requires the parent to refresh the manifest; the audit does not attempt a recursive self-hash."
+  ],
+  "references_sha256": {
+    "docs/QUESTION_REVIEWER_INDEPENDENCE_RESULTS.md": "fe121ae75a9b4dc8ede1f271705fefa1a4033519aae6d55b9ff48e7b56c39613",
+    "docs/QUESTION_CORRECTNESS_AUDIT.md": "a98cf3b4b395279f385a9d13dec533ab20061c1c3c4d836544e2c540a13d5a5b",
+    "docs/QUESTION_DELIVERY_PAUSE_HANDOFF.md": "433181d5f5916dfebedfc86460433da92fef911443be50fa56f9784b71afbec0",
+    "docs/evidence/reviewer-independence-20260910/summary.json": "d96144106a4db3d59134e52e0d1804657d49c14571bb7156730971ae21f167bf",
+    "docs/evidence/reviewer-independence-20260910/summarize.py": "230b2b7390ae557b73b421f7b1a8988fdd3dc5d221377177993761487dd36216",
+    "docs/evidence/reviewer-independence-20260910/manifest.json": "f87dec74dd23e55517314479961d6504907a5cd13153e063cbed4bc024b32a43",
+    "docs/evidence/reviewer-independence-20260910/independent-feedback.json": "d8bed606acb73c3db56610d94a933628fb0e42d7237f28146eb66f1b472e7bf8",
+    "docs/evidence/reviewer-independence-20260910/root-feedback-notes.json": "99a2189ce2696df3cfe9aa4ba060f4505b24100acfb39e2f642a76f34b6b3e25",
+    "docs/evidence/reviewer-independence-20260910/second-pass-freeze.json": "ca12524ea8c70b6f278dd3593043b7b6f645d944ca4f6b1aba4ad5f643ef3f8d",
+    "docs/evidence/reviewer-independence-20260910/first-pass-freeze.json": "a044e81af5014c2c263f1380247ff25f0405c82ba1ef2abdfa09c0fac8980b50",
+    "docs/evidence/reviewer-independence-20260910/mapping.json": "286ed45c00c71961cfa103d73992c6a19b9c064b0077cbccd5ad804d1f2a1c95",
+    "docs/evidence/reviewer-independence-20260910/feedback-mapping.json": "0d39d63860d607318a902abc11c30ff0916a60f5267f6b1fe4db2e2d9f446445",
+    "docs/evidence/reviewer-independence-20260910/reviews.json": "a9716788729c9b99f63a5fa6fc5bb8066f569bb37e0ae70ca985cb1cd0bb2c27",
+    "docs/evidence/reviewer-independence-20260910/capture.json": "49baaee19270e20afe6830881c7c06dd91266c332f7acd86d8aaad11e1e9c9ce",
+    "docs/evidence/reviewer-independence-20260910/plan.json": "e1ca397129c552ef1d6227df40be303b959fcec5ad3ffe1359a663ac654f1bfc",
+    "docs/evidence/reviewer-independence-20260910/operational-audit.json": "2844215ac04449ee75fcf5d4d6121800348b93766dfb2ab6c3efe719cac8ef95",
+    "docs/evidence/reviewer-independence-20260910/plan-audit.json": "b72c32be11c603193f3989bbe4041d0b75800286bbbe05632fcf681fa21ea50f",
+    "docs/evidence/reviewer-independence-20260910/root-pre-response-notes.json": "9ef8b544e229d149212e07aeb541d32c2b647514169370801bdbbc8ff2881ba5",
+    "docs/evidence/reviewer-independence-20260910/README.md": "fed0481cdd002c1b3ae3d35b0229781664075380c1346fe5d633aad15de6f674"
+  },
+  "provider_calls": 0,
+  "evidence_or_source_writes": 0
+}

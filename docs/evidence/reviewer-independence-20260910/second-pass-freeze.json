@@ -1,0 +1,11 @@
+{
+  "frozen_utc": "2026-09-10T06:27:27.903635+00:00",
+  "scope": "Both feedback assessments saved before final paired semantic summary. Independent assessor reports reading only masked packet plus its first-pass subjects/assessment. Root masking limits recorded in root notes.",
+  "files": {
+    "reviews.json": "a9716788729c9b99f63a5fa6fc5bb8066f569bb37e0ae70ca985cb1cd0bb2c27",
+    "private-mapping.json": "0d39d63860d607318a902abc11c30ff0916a60f5267f6b1fe4db2e2d9f446445",
+    "binding.json": "4dc068d785755c0d74bab3c105c1833c8e1e5dceb97b89a63be8d68d9e77e984",
+    "independent-feedback.json": "d8bed606acb73c3db56610d94a933628fb0e42d7237f28146eb66f1b472e7bf8",
+    "root-feedback-notes.json": "99a2189ce2696df3cfe9aa4ba060f4505b24100acfb39e2f642a76f34b6b3e25"
+  }
+}

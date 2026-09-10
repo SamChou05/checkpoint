@@ -1,0 +1,18 @@
+{
+  "status": "completed",
+  "calls": 10,
+  "input_tokens": 26269,
+  "output_tokens": 6491,
+  "sdk_seconds_sum": 96.74432987417094,
+  "worker_seconds_sum": 104.82911333302036,
+  "request_bytes": 105595,
+  "max_output_tokens": 1368,
+  "raw_review_records": 26,
+  "schema_pass": 10,
+  "adaptation_pass": 9,
+  "stage_validation_pass": 9,
+  "known_usage": 10,
+  "all_end_turn": true,
+  "all_clean": true,
+  "terminations": 0
+}

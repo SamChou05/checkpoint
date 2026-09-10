@@ -1,0 +1,1494 @@
+{
+  "packet_path": "/tmp/checkpoint-reviewer-independence-feedback-20260910/reviews.json",
+  "packet_sha256": "a9716788729c9b99f63a5fa6fc5bb8066f569bb37e0ae70ca985cb1cd0bb2c27",
+  "prior_subjects_sha256": "cb108e0ba675775fcdd68aab7b89b80fcb5d9cf81ddb38651366d8350b3294b8",
+  "prior_assessment_sha256": "9957446ec00fbdab8dc963cfd82f4285a10527e37edfba7f27490603c072a50d",
+  "scope": "Independent feedback assessment frozen before arm/key/solver/policy unmasking. Only reviews.json and this assessor's earlier subjects.json and independent-subjects.json were read. No private mapping, binding, capture, plan, branch code, or other results were inspected. Earlier conversation context exists; full context blindness is not claimed.",
+  "support_statuses": {
+    "supported": "The statement or answer is supported under the preserved first-pass interpretation; clarity limitations may be noted separately.",
+    "unsupported": "Contains an unestablished or false material claim, endorses an invalid calculation, or rejects the literal diagnostic answer through added assumptions.",
+    "partially_supported": "Includes correct facts/calculations but also a material unsupported qualification, implication or denominator description.",
+    "conditional": "Sound under a conventional interpretation or explicit model that the literal stem does not establish; not counted as unconditional support.",
+    "unavailable": "No correlated review content was supplied; no semantic acceptance or rejection inferred."
+  },
+  "negative_verdict_rule": "A bare valid:false could show a rejection decision but not which defect was detected. This packet contains no available valid:false reviews.",
+  "items": [
+    {
+      "id": "010f7c7469f5",
+      "prior_subject_id": "item04",
+      "verdict_assessment": "approved_invalid_item",
+      "key_support": {
+        "status": "unsupported",
+        "answer": "=$A$1*B$1*$A3",
+        "issues": [
+          "No offered formula expresses the stated two-factor operation. Every option adds A3 or $A$3, even though A3:A6 contain Q1-Q4 labels.",
+          "The stem also uses $B$1 while describing regional filling across columns. Whether this is merely an address or a required anchor does not rescue any choice.",
+          "Difficulty describes the intended reference task; an invalid item has no defensible learner-performance difficulty."
+        ]
+      },
+      "main_support": {
+        "status": "unsupported",
+        "explanation": "Each of the three operands needs its own anchor strategy: the shared constant needs full anchoring, the regional target needs its row fixed but column free, and the quarter factor needs its column fixed but row free.",
+        "issues": [
+          "The stem calls for two numeric operands, A1 and B1. This main invents a third required operand and treats the quarter-label cells as another multiplicative factor. Anchoring that invented factor does not solve the supplied task."
+        ]
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "=$A1*B$1*$A3",
+          "explanation": "$A1 leaves the row of the quarter-factor cell relative, so copying down shifts it away from A1; the quarter factor must be fully fixed as $A$1.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The stated anchor-motion fact is correct, although it does not rescue an item with an unrequested extra operand in every choice."
+        },
+        {
+          "choice": "=$A$1*B1*$A$3",
+          "explanation": "B1 is fully relative so copying down shifts its row off row 1; $A$3 fully fixes the quarter row so copying down never picks up Q2–Q4.",
+          "status": "partially_supported",
+          "issues": [
+            "The reference-motion descriptions are correct. Treating failure to pick up Q2-Q4 as a defect in this multiplication presupposes an unrequested quarter-label operand."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "=$A$1*B$1*$A3",
+          "explanation": "$A$1 locks the shared quarter factor; B$1 keeps row 1 fixed while the column shifts right for each region; $A3 keeps column A fixed while the row shifts down for each quarter.",
+          "status": "partially_supported",
+          "issues": [
+            "The individual anchors behave as described, but these true mechanics do not justify multiplying by A3. The explanation endorses an extra operand absent from the requested calculation."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "=$A$1*$B$1*A3",
+          "explanation": "$B$1 fully fixes the regional target so every column uses North's value; A3 is fully relative so copying right shifts its column away from A, losing the quarter factors.",
+          "status": "unsupported",
+          "issues": [
+            "The $B$1 and A3 copy mechanics are correct, but the phrase losing the quarter factors falsely treats A3:A6 as numeric factors; the stem identifies them as Q1-Q4 labels."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        }
+      ],
+      "issues": [
+        "The stem calls for two numeric operands, A1 and B1. This main invents a third required operand and treats the quarter-label cells as another multiplicative factor. Anchoring that invented factor does not solve the supplied task.",
+        "Choice 2: The reference-motion descriptions are correct. Treating failure to pick up Q2-Q4 as a defect in this multiplication presupposes an unrequested quarter-label operand.",
+        "Choice 3: The individual anchors behave as described, but these true mechanics do not justify multiplying by A3. The explanation endorses an extra operand absent from the requested calculation.",
+        "Choice 4: The $B$1 and A3 copy mechanics are correct, but the phrase losing the quarter factors falsely treats A3:A6 as numeric factors; the stem identifies them as Q1-Q4 labels."
+      ],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: invalid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 4 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "033ebb18393e",
+      "prior_subject_id": "item10",
+      "verdict_assessment": "unavailable_no_semantic_verdict",
+      "key_support": {
+        "status": "unavailable",
+        "answer": null,
+        "issues": [
+          "No correlated review is available."
+        ]
+      },
+      "main_support": {
+        "status": "unavailable",
+        "explanation": null,
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Ice cream consumption causes drowning",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "Drowning causes people to buy more ice cream",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "The correlation is probably a statistical fluke",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "A third factor (like hot weather) likely explains both patterns",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        }
+      ],
+      "issues": [
+        "A null review is missing format/operational evidence, not a model rejection or demonstrated defect detection."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: invalid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration."
+      ]
+    },
+    {
+      "id": "0f416a6a0366",
+      "prior_subject_id": "item12",
+      "verdict_assessment": "approved_valid_item_with_teaching_defects",
+      "key_support": {
+        "status": "supported",
+        "answer": "Satisfied customers may be more likely to respond than dissatisfied ones",
+        "issues": []
+      },
+      "main_support": {
+        "status": "unsupported",
+        "explanation": "With only a 20% response rate, non-response bias is the dominant concern; dissatisfied customers are systematically less likely to respond, skewing the 80% figure upward.",
+        "issues": [
+          "The 20% response rate establishes nonresponse, not serious bias or its direction. The claim that dissatisfied customers are systematically less likely to respond is not supplied or demonstrated. The exact answer correctly says may, but the teaching changes that possibility to fact."
+        ]
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "The sample size of 2,000 is too small",
+          "explanation": "2,000 respondents is statistically large enough for reliable estimates; sample size is not the primary concern here.",
+          "status": "unsupported",
+          "issues": [
+            "A sample count of 2,000 is not sufficient to certify reliable estimates regardless of selection design, desired precision or subgroup analysis. The correct objection to the distractor is that size alone does not establish inadequacy, not that reliability is guaranteed."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "Email surveys are inherently unreliable",
+          "explanation": "The medium is not the core problem; the specific issue is who chooses to respond, not the delivery channel.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement either rejects an unwarranted universal claim about email or correctly checks the 1,600-of-2,000 arithmetic without asserting a proven bias direction."
+        },
+        {
+          "choice": "80% is mathematically impossible with 10,000 customers",
+          "explanation": "80% of 2,000 respondents equals 1,600 satisfied customers, which is entirely possible within a pool of 10,000.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement either rejects an unwarranted universal claim about email or correctly checks the 1,600-of-2,000 arithmetic without asserting a proven bias direction."
+        },
+        {
+          "choice": "Satisfied customers may be more likely to respond than dissatisfied ones",
+          "explanation": "A 20% response rate creates serious non-response bias: dissatisfied customers are less motivated to reply, inflating the reported satisfaction figure.",
+          "status": "unsupported",
+          "issues": [
+            "A 20% response rate does not itself create or demonstrate serious response bias. Dissatisfied customers being less motivated, and the resulting upward direction of bias, are invented facts."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        }
+      ],
+      "issues": [
+        "The 20% response rate establishes nonresponse, not serious bias or its direction. The claim that dissatisfied customers are systematically less likely to respond is not supplied or demonstrated. The exact answer correctly says may, but the teaching changes that possibility to fact.",
+        "Choice 1: A sample count of 2,000 is not sufficient to certify reliable estimates regardless of selection design, desired precision or subgroup analysis. The correct objection to the distractor is that size alone does not establish inadequacy, not that reliability is guaranteed.",
+        "Choice 4: A 20% response rate does not itself create or demonstrate serious response bias. Dissatisfied customers being less motivated, and the resulting upward direction of bias, are invented facts."
+      ],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 3 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "1887e045002e",
+      "prior_subject_id": "item01",
+      "verdict_assessment": "approved_valid_item_with_supported_feedback",
+      "key_support": {
+        "status": "supported",
+        "answer": "=$A4*D$1",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "Mixed references let each component move or stay independently. $A fixes the column while the row adjusts with fill direction; $1 fixes the row while the column adjusts. Applying both offsets (+2 rows, +2 columns) yields =$A4*D$1.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "=$A4*D$1",
+          "explanation": "$A fixes the column at A; the relative row 2 shifts +2 to 4. B is relative so it shifts +2 columns to D; $1 fixes the row at 1. Both anchors behave correctly.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The copy displacement and preservation of the original dollar-sign anchors match the independent first-pass translation."
+        },
+        {
+          "choice": "=$A2*D$1",
+          "explanation": "The row in $A2 is relative and must shift +2 rows when filled down to row 4, giving $A4, not $A2.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The copy displacement and preservation of the original dollar-sign anchors match the independent first-pass translation."
+        },
+        {
+          "choice": "=$A4*B$1",
+          "explanation": "The column in B$1 is relative and must shift +2 columns when filled right to column D, giving D$1, not B$1.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The copy displacement and preservation of the original dollar-sign anchors match the independent first-pass translation."
+        },
+        {
+          "choice": "=A4*D1",
+          "explanation": "Both dollar signs are dropped; $A must keep the column fixed at A and $1 must keep the row fixed at 1.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The copy displacement and preservation of the original dollar-sign anchors match the independent first-pass translation."
+        }
+      ],
+      "issues": [],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 3 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "1bf111ced1eb",
+      "prior_subject_id": "item11",
+      "verdict_assessment": "unavailable_no_semantic_verdict",
+      "key_support": {
+        "status": "unavailable",
+        "answer": null,
+        "issues": [
+          "No correlated review is available."
+        ]
+      },
+      "main_support": {
+        "status": "unavailable",
+        "explanation": null,
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "About 51%",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "About 18%",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "About 9%",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "About 30%",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        }
+      ],
+      "issues": [
+        "A null review is missing format/operational evidence, not a model rejection or demonstrated defect detection."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: ambiguous.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration."
+      ]
+    },
+    {
+      "id": "23594771f3e8",
+      "prior_subject_id": "item07",
+      "verdict_assessment": "approved_valid_item_with_supported_feedback",
+      "key_support": {
+        "status": "supported",
+        "answer": "The response counts do not establish whether everyone eligible responded.",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "The survey data reports only how many responded and their preferences. The total eligible population is never stated, so no conclusion about full participation can be drawn.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Every eligible person preferred design A.",
+          "explanation": "30 respondents preferred design B, directly contradicting this claim.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement supports the distinction between reported responses and an unknown total eligible population; no unwarranted yes/no census conclusion is asserted."
+        },
+        {
+          "choice": "Yes, all eligible people responded.",
+          "explanation": "The data gives response counts but provides no information about the total number of eligible people, so this cannot be confirmed.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement supports the distinction between reported responses and an unknown total eligible population; no unwarranted yes/no census conclusion is asserted."
+        },
+        {
+          "choice": "No, some eligible people did not respond.",
+          "explanation": "Without knowing the total eligible population, non-response cannot be established; all eligible people could have responded.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement supports the distinction between reported responses and an unknown total eligible population; no unwarranted yes/no census conclusion is asserted."
+        },
+        {
+          "choice": "The response counts do not establish whether everyone eligible responded.",
+          "explanation": "The 80 responses reveal preferences but say nothing about the size of the eligible population, so participation completeness is indeterminate.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement supports the distinction between reported responses and an unknown total eligible population; no unwarranted yes/no census conclusion is asserted."
+        }
+      ],
+      "issues": [],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 3 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "288a71403924",
+      "prior_subject_id": "item02",
+      "verdict_assessment": "approved_valid_item_with_supported_feedback",
+      "key_support": {
+        "status": "supported",
+        "answer": "=$A2*B$1",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "To always use the rate in column A, the column must be fixed ($A) while the row stays relative. To always use the amount in row 1, the row must be fixed ($1) while the column stays relative. Only =$A2*B$1 satisfies both constraints.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "=A2*B1",
+          "explanation": "Fully relative; filling right shifts the rate column away from A, and filling down shifts the amount row away from row 1.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly identifies which component must remain fixed or move in the stated horizontal and vertical fills."
+        },
+        {
+          "choice": "=$A2*B$1",
+          "explanation": "$A locks column A for rates regardless of fill direction; $1 locks row 1 for amounts; both relative components adjust correctly as the formula fills.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly identifies which component must remain fixed or move in the stated horizontal and vertical fills."
+        },
+        {
+          "choice": "=A$2*$B1",
+          "explanation": "$2 locks row 2 for rates (wrong when filling down) and $B locks column B for amounts (wrong when filling right).",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly identifies which component must remain fixed or move in the stated horizontal and vertical fills."
+        },
+        {
+          "choice": "=$A$2*B$1",
+          "explanation": "$A$2 is fully absolute; filling down to rows 3–5 still references A2 instead of A3, A4, A5, giving the wrong rate.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly identifies which component must remain fixed or move in the stated horizontal and vertical fills."
+        }
+      ],
+      "issues": [],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 3 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "32127fc2b19d",
+      "prior_subject_id": "item09",
+      "verdict_assessment": "approved_valid_item_with_teaching_defects",
+      "key_support": {
+        "status": "supported",
+        "answer": "About 9%",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "Applying Bayes' theorem with a 1/1000 base rate shows that false positives (~999) swamp true positives (~99), yielding only ~9% posterior probability despite 99% test accuracy.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "About 99%",
+          "explanation": "This ignores the base rate; with 1/1000 prevalence, false positives vastly outnumber true positives even with a 99% accurate test.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement is consistent with sensitivity 0.99, specificity 0.99 and prior prevalence 0.001, distinguishing the conditional posterior from the test characteristics."
+        },
+        {
+          "choice": "About 50%",
+          "explanation": "50% would require roughly equal true and false positives, implying ~50% prevalence, far above the stated 1/1000.",
+          "status": "unsupported",
+          "issues": [
+            "Equal true and false positive rates with sensitivity 0.99 and false-positive probability 0.01 require 0.99p=0.01(1-p), giving p=0.01 (1% prevalence), not approximately 50%. At 50% prevalence the positive predictive value would be 99%."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "About 1%",
+          "explanation": "1% is near the raw base rate and ignores the updating power of a positive test result; Bayes' theorem gives ~9%.",
+          "status": "partially_supported",
+          "issues": [
+            "The Bayes result around 9% is correct. The stated raw prevalence is 0.1%, not 1%; calling 1% near the raw base rate is imprecise and can reinforce a tenfold base-rate conversion mistake. This is a teaching-quality caveat separate from the definite error in the 50% feedback."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "About 9%",
+          "explanation": "Bayes' theorem: (0.99×0.001)/[(0.99×0.001)+(0.01×0.999)]≈0.00099/0.01098≈9%; the low base rate dominates.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement is consistent with sensitivity 0.99, specificity 0.99 and prior prevalence 0.001, distinguishing the conditional posterior from the test characteristics."
+        }
+      ],
+      "issues": [
+        "Choice 2: Equal true and false positive rates with sensitivity 0.99 and false-positive probability 0.01 require 0.99p=0.01(1-p), giving p=0.01 (1% prevalence), not approximately 50%. At 50% prevalence the positive predictive value would be 99%.",
+        "Choice 3: The Bayes result around 9% is correct. The stated raw prevalence is 0.1%, not 1%; calling 1% near the raw base rate is imprecise and can reinforce a tenfold base-rate conversion mistake. This is a teaching-quality caveat separate from the definite error in the 50% feedback."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "The main counts 99 true positives and 999 false positives correspond to an illustrative cohort of 100,000; the ratio is correct. The cohort size is omitted in the main, a clarity limitation, but the definite semantic error lies in the 50%-answer feedback.",
+        "Reviewer difficulty 4 differs from retained independent difficulty 3."
+      ]
+    },
+    {
+      "id": "48af7fdde1a5",
+      "prior_subject_id": "item05",
+      "verdict_assessment": "approved_item_with_unresolved_interpretation",
+      "key_support": {
+        "status": "conditional",
+        "answer": "Zooplankton annual production is 75 g/m²/year.",
+        "issues": [
+          "The stem supplies mass production in g/m²/year, while the supplied ecology context concerns energy-transfer efficiency. It does not explicitly define efficiency on a biomass-mass basis or give energy content per gram.",
+          "Under an explicitly mass-based production ratio, 75 would be the unique answer. Under the energetic definition in the cited source, equal energy density cannot be silently assumed. This is an interpretation-dependent item rather than four ordinary false distractors.",
+          "The annual production need not equal standing biomass; an inverted biomass relationship is not itself impossible."
+        ]
+      },
+      "main_support": {
+        "status": "conditional",
+        "explanation": "Transfer efficiency applies to annual production, not standing biomass. Multiplying phytoplankton annual production (300 g/m²/year) by the stated 25% efficiency yields 75 g/m²/year; the other choices misuse standing biomass or an unstated default efficiency.",
+        "issues": [
+          "The 75 g/m²/year calculation requires a mass-production definition of transfer efficiency or an energy-per-gram conversion assumption. The first-pass units ambiguity remains unresolved. The separate choice explanations also contain unconditional arithmetic/rate errors."
+        ]
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Zooplankton annual production is 75 g/m²/year.",
+          "explanation": "Applying the stated 25% transfer efficiency to phytoplankton annual production (300 × 0.25 = 75 g/m²/year) gives this value correctly.",
+          "status": "conditional",
+          "issues": [
+            "The arithmetic 300*0.25=75 is correct, but applying an energetic efficiency directly to mass production needs the unit interpretation identified in the first pass."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "Zooplankton annual production is 150 g/m²/year.",
+          "explanation": "This equals the zooplankton standing biomass, not a production figure derived from transfer efficiency; it conflates biomass with annual production.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The stated numerical stock relationship or illustrative 25%-of-stock error is correct and does not establish that standing biomass equals annual production."
+        },
+        {
+          "choice": "Zooplankton annual production is 37.5 g/m²/year.",
+          "explanation": "This would result from applying 25% to the phytoplankton standing biomass (30 × 1.25 ≠ 37.5; actually 30 × 1.25 = 37.5), incorrectly using standing biomass instead of annual production as the base.",
+          "status": "unsupported",
+          "issues": [
+            "25% of 30 is 7.5, not 37.5. The written expression uses 1.25 (125%) rather than 0.25 and contains both 30*1.25 != 37.5 and its negating correction. The feedback misidentifies the base/rate mistake even after its self-correction. 37.5 equals 25% of the 150 zooplankton stock."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "Zooplankton annual production is 7.5 g/m²/year.",
+          "explanation": "This appears to apply a 10% default efficiency (300 × 0.025 = 7.5) rather than the explicitly stated 25%, ignoring the given transfer efficiency.",
+          "status": "unsupported",
+          "issues": [
+            "0.025 means 2.5%, not the stated 10% default. Ten percent of 300 is 30, not 7.5. The equality 300*0.025=7.5 is correct but contradicts the verbal rate description."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        }
+      ],
+      "issues": [
+        "The 75 g/m²/year calculation requires a mass-production definition of transfer efficiency or an energy-per-gram conversion assumption. The first-pass units ambiguity remains unresolved. The separate choice explanations also contain unconditional arithmetic/rate errors.",
+        "Choice 1: The arithmetic 300*0.25=75 is correct, but applying an energetic efficiency directly to mass production needs the unit interpretation identified in the first pass.",
+        "Choice 3: 25% of 30 is 7.5, not 37.5. The written expression uses 1.25 (125%) rather than 0.25 and contains both 30*1.25 != 37.5 and its negating correction. The feedback misidentifies the base/rate mistake even after its self-correction. 37.5 equals 25% of the 150 zooplankton stock.",
+        "Choice 4: 0.025 means 2.5%, not the stated 10% default. Ten percent of 300 is 30, not 7.5. The equality 300*0.025=7.5 is correct but contradicts the verbal rate description."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: ambiguous.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Under a mass-production-ratio reading, 300*0.25=75; that conventional reading is retained alongside the original energetic-unit ambiguity. Arithmetic feedback defects are assessed separately and can persist even under the favorable reading."
+      ]
+    },
+    {
+      "id": "4cba3caa9e23",
+      "prior_subject_id": "item10",
+      "verdict_assessment": "approved_invalid_item",
+      "key_support": {
+        "status": "unsupported",
+        "answer": "A third factor (like hot weather) likely explains both patterns",
+        "issues": [
+          "None of the choices states the warranted limitation: association alone does not identify the causal explanation. The final choice would become sound if framed as a possible explanation rather than an established likely one.",
+          "Most warranted is comparative, but a weak alternative set does not supply missing evidence for a particular causal account. This verdict follows the requested no-added-assumptions assessment.",
+          "An observational association is not itself impossible or invalid; the problem is the unsupported conclusions offered as answers."
+        ]
+      },
+      "main_support": {
+        "status": "unsupported",
+        "explanation": "A correlation between two variables is best explained by a common cause when a plausible confounder exists; hot weather drives both ice cream sales and drowning rates, making direct causation unwarranted.",
+        "issues": [
+          "A plausible confounder does not by itself establish that a correlation is best explained by that common cause. The main asserts hot weather drives this particular association without supplied causal evidence. Direct causation is unproven; it is not ruled out by the existence of a plausible alternative."
+        ]
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Ice cream consumption causes drowning",
+          "explanation": "Correlation alone does not establish causation, and a plausible confounding variable makes a direct causal claim unwarranted.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement correctly treats the reported association as insufficient to establish direct causation."
+        },
+        {
+          "choice": "Drowning causes people to buy more ice cream",
+          "explanation": "This reverses causality implausibly and is supported by neither the data nor any reasonable mechanism.",
+          "status": "partially_supported",
+          "issues": [
+            "The association does not support reverse causation. The additional claim that no reasonable mechanism exists is broader than the evidence supplied and is unnecessary to reject it as a warranted conclusion."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "The correlation is probably a statistical fluke",
+          "explanation": "A well-known common cause (hot weather) explains the pattern; dismissing it as a fluke is less warranted than identifying the confounder.",
+          "status": "unsupported",
+          "issues": [
+            "The review treats hot weather as the identified cause of this specific association. No such finding or measurement was provided. The data also do not establish that the association is probably a fluke."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "A third factor (like hot weather) likely explains both patterns",
+          "explanation": "Hot weather independently increases both swimming activity and ice cream consumption, creating a spurious correlation — the most warranted conclusion.",
+          "status": "unsupported",
+          "issues": [
+            "Hot weather is a plausible common-cause hypothesis, but the feedback asserts it creates this spurious association as a settled account. The first-pass missing-evidence problem remains."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        }
+      ],
+      "issues": [
+        "A plausible confounder does not by itself establish that a correlation is best explained by that common cause. The main asserts hot weather drives this particular association without supplied causal evidence. Direct causation is unproven; it is not ruled out by the existence of a plausible alternative.",
+        "Choice 2: The association does not support reverse causation. The additional claim that no reasonable mechanism exists is broader than the evidence supplied and is unnecessary to reject it as a warranted conclusion.",
+        "Choice 3: The review treats hot weather as the identified cause of this specific association. No such finding or measurement was provided. The data also do not establish that the association is probably a fluke.",
+        "Choice 4: Hot weather is a plausible common-cause hypothesis, but the feedback asserts it creates this spurious association as a settled account. The first-pass missing-evidence problem remains."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: invalid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 2 differs from retained independent difficulty 3."
+      ]
+    },
+    {
+      "id": "508913a7a1dd",
+      "prior_subject_id": "item06",
+      "verdict_assessment": "approved_valid_item_with_supported_feedback",
+      "key_support": {
+        "status": "supported",
+        "answer": "Team B",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "Completion rate is tasks completed divided by tasks assigned. Converting each to a percentage: A=30%, B=35%, C=20%, D=30%, making Team B the clear leader.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Team A",
+          "explanation": "30/100 = 30%, which is lower than Team B's 35%.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The numerator, denominator, percentage and comparison agree with the independently calculated observed proportions."
+        },
+        {
+          "choice": "Team B",
+          "explanation": "21/60 = 35%, the highest completion rate among all four teams.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The numerator, denominator, percentage and comparison agree with the independently calculated observed proportions."
+        },
+        {
+          "choice": "Team C",
+          "explanation": "16/80 = 20%, the lowest completion rate of the four teams.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The numerator, denominator, percentage and comparison agree with the independently calculated observed proportions."
+        },
+        {
+          "choice": "Team D",
+          "explanation": "27/90 = 30%, equal to Team A but below Team B's 35%.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The numerator, denominator, percentage and comparison agree with the independently calculated observed proportions."
+        }
+      ],
+      "issues": [],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration."
+      ]
+    },
+    {
+      "id": "519de38c39d1",
+      "prior_subject_id": "item04",
+      "verdict_assessment": "approved_invalid_item",
+      "key_support": {
+        "status": "unsupported",
+        "answer": "=$A$1*B$1*$A3",
+        "issues": [
+          "No offered formula expresses the stated two-factor operation. Every option adds A3 or $A$3, even though A3:A6 contain Q1-Q4 labels.",
+          "The stem also uses $B$1 while describing regional filling across columns. Whether this is merely an address or a required anchor does not rescue any choice.",
+          "Difficulty describes the intended reference task; an invalid item has no defensible learner-performance difficulty."
+        ]
+      },
+      "main_support": {
+        "status": "unsupported",
+        "explanation": "Each factor needs specific anchoring: the quarter factor A1 is fully fixed ($A$1), the regional target must shift across columns but stay on row 1 (B$1), and the quarter label must stay in column A but shift down rows ($A3).",
+        "issues": [
+          "The main explicitly treats the quarter label as a required third multiplicative factor. The stem requests the product of the A1 quarter factor and B1 regional target only; Q1-Q4 are labels, not a third numeric factor."
+        ]
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "=$A1*B$1*$A3",
+          "explanation": "$A1 fixes the column but not the row, so filling down shifts the row away from A1 instead of staying locked on it.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The stated anchor-motion fact is correct, although it does not rescue an item with an unrequested extra operand in every choice."
+        },
+        {
+          "choice": "=$A$1*B1*$A$3",
+          "explanation": "B1 has no row anchor, so filling down shifts it off row 1; $A$3 locks the row, so filling down never picks up Q2–Q4.",
+          "status": "partially_supported",
+          "issues": [
+            "The motion of B1 and $A$3 is correctly described. The explanation still treats retrieving Q2-Q4 labels as a requirement of a multiplication that never asks for that third operand."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "=$A$1*B$1*$A3",
+          "explanation": "$A$1 stays fixed on the quarter factor; B$1 moves across columns to pick up each regional target while staying on row 1; $A3 stays in column A while moving down through Q1–Q4.",
+          "status": "partially_supported",
+          "issues": [
+            "The reference movements are true but fail to justify multiplying by the quarter labels at all. Correctly anchoring an invented operand does not make the selected formula satisfy the stem."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "=$A$1*$B$1*A3",
+          "explanation": "$B$1 locks both column and row, so filling across never picks up the regional targets in C1, D1, or E1.",
+          "status": "conditional",
+          "issues": [
+            "The $B$1 reference stays fixed, as stated. Calling C1-E1 regional targets follows an intended table-layout interpretation not explicitly supplied; in any case this explanation does not address the extra quarter-label operand in every choice."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        }
+      ],
+      "issues": [
+        "The main explicitly treats the quarter label as a required third multiplicative factor. The stem requests the product of the A1 quarter factor and B1 regional target only; Q1-Q4 are labels, not a third numeric factor.",
+        "Choice 2: The motion of B1 and $A$3 is correctly described. The explanation still treats retrieving Q2-Q4 labels as a requirement of a multiplication that never asks for that third operand.",
+        "Choice 3: The reference movements are true but fail to justify multiplying by the quarter labels at all. Correctly anchoring an invented operand does not make the selected formula satisfy the stem.",
+        "Choice 4: The $B$1 reference stays fixed, as stated. Calling C1-E1 regional targets follows an intended table-layout interpretation not explicitly supplied; in any case this explanation does not address the extra quarter-label operand in every choice."
+      ],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: invalid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 4 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "532720a6f865",
+      "prior_subject_id": "item03",
+      "verdict_assessment": "approved_valid_item_with_supported_feedback",
+      "key_support": {
+        "status": "supported",
+        "answer": "=$N2/12",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "The target column N must never shift when filling right, so the column needs a dollar sign ($N). The row must adjust when filling down, so it stays relative. Only =$N2/12 satisfies both requirements.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "=N2/12",
+          "explanation": "N is relative; filling right shifts the column away from N to O, P, etc., losing the target value.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly describes reference movement for the specified fill direction; fixed column N and a changing category row are required."
+        },
+        {
+          "choice": "=$N2/12",
+          "explanation": "$N locks column N so filling right always reads the target; the relative row adjusts down for each category's own row.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly describes reference movement for the specified fill direction; fixed column N and a changing category row are required."
+        },
+        {
+          "choice": "=N$2/12",
+          "explanation": "N is relative so filling right still drifts away from column N, and $2 locks row 2 so filling down always uses row 2's target instead of each category's row.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly describes reference movement for the specified fill direction; fixed column N and a changing category row are required."
+        },
+        {
+          "choice": "=$N$2/12",
+          "explanation": "Fully absolute; filling down always references row 2's target instead of each category's own row.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly describes reference movement for the specified fill direction; fixed column N and a changing category row are required."
+        }
+      ],
+      "issues": [],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 3 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "867f53e097bf",
+      "prior_subject_id": "item01",
+      "verdict_assessment": "approved_valid_item_with_supported_feedback",
+      "key_support": {
+        "status": "supported",
+        "answer": "=$A4*D$1",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "Mixed references =$A2 and B$1 each fix one component. Filling right 2 and down 2 adjusts only the unfixed components: relative row 2→4 and relative column B→D.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "=$A4*D$1",
+          "explanation": "Filling right 2 columns moves the relative column B→D; filling down 2 rows moves the relative row 2→4. The dollar signs keep column A and row 1 fixed, giving =$A4*D$1.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The copy displacement and preservation of the original dollar-sign anchors match the independent first-pass translation."
+        },
+        {
+          "choice": "=$A2*D$1",
+          "explanation": "The column displacement is correct (B→D) but the row in $A2 did not adjust downward, ignoring the 2-row fill displacement.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The copy displacement and preservation of the original dollar-sign anchors match the independent first-pass translation."
+        },
+        {
+          "choice": "=$A4*B$1",
+          "explanation": "The row adjustment is correct ($A2→$A4) but the column in B$1 did not adjust rightward, ignoring the 2-column fill displacement.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The copy displacement and preservation of the original dollar-sign anchors match the independent first-pass translation."
+        },
+        {
+          "choice": "=A4*D1",
+          "explanation": "Both adjustments are numerically correct but the dollar signs are dropped, changing the reference type and making this a different formula.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The copy displacement and preservation of the original dollar-sign anchors match the independent first-pass translation."
+        }
+      ],
+      "issues": [],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 3 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "a1ebdb90e7c7",
+      "prior_subject_id": "item05",
+      "verdict_assessment": "approved_item_with_unresolved_interpretation",
+      "key_support": {
+        "status": "conditional",
+        "answer": "Zooplankton annual production is 75 g/m²/year.",
+        "issues": [
+          "The stem supplies mass production in g/m²/year, while the supplied ecology context concerns energy-transfer efficiency. It does not explicitly define efficiency on a biomass-mass basis or give energy content per gram.",
+          "Under an explicitly mass-based production ratio, 75 would be the unique answer. Under the energetic definition in the cited source, equal energy density cannot be silently assumed. This is an interpretation-dependent item rather than four ordinary false distractors.",
+          "The annual production need not equal standing biomass; an inverted biomass relationship is not itself impossible."
+        ]
+      },
+      "main_support": {
+        "status": "unsupported",
+        "explanation": "Transfer efficiency links production at successive trophic levels, so zooplankton production = 25% × 300 g/m²/year = 75 g/m²/year. The distractors each misapply the efficiency to a biomass value rather than to annual production.",
+        "issues": [
+          "The mass-production calculation retains the first-pass energy-versus-mass ambiguity. Additionally, even under the favorable mass-ratio reading, not every distractor applies the efficiency to a biomass value: 150 directly copies the zooplankton stock or corresponds to 50% of 300, whereas 37.5 and 7.5 are the two 25%-of-stock mistakes. The final universal statement overgeneralizes their mechanisms."
+        ]
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Zooplankton annual production is 75 g/m²/year.",
+          "explanation": "Correctly applies the 25% transfer efficiency to phytoplankton annual production: 0.25 × 300 = 75 g/m²/year.",
+          "status": "conditional",
+          "issues": [
+            "Correct multiplication under a mass-based ratio; the literal energy-to-mass conversion remains unspecified."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "Zooplankton annual production is 150 g/m²/year.",
+          "explanation": "Equals the zooplankton standing biomass figure, confusing a biomass snapshot with annual production; would require 50% efficiency.",
+          "status": "conditional",
+          "issues": [
+            "150 numerically matches the standing stock, and production differs from standing biomass. Requiring 50% efficiency follows only if production efficiency is evaluated directly in these mass units; it is not established for energetic efficiency with unknown energy densities."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "Zooplankton annual production is 37.5 g/m²/year.",
+          "explanation": "Applies 25% to zooplankton standing biomass (150) instead of phytoplankton annual production.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The stated numerical stock relationship or illustrative 25%-of-stock error is correct and does not establish that standing biomass equals annual production."
+        },
+        {
+          "choice": "Zooplankton annual production is 7.5 g/m²/year.",
+          "explanation": "Applies 25% to phytoplankton standing biomass (30) instead of phytoplankton annual production.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The stated numerical stock relationship or illustrative 25%-of-stock error is correct and does not establish that standing biomass equals annual production."
+        }
+      ],
+      "issues": [
+        "The mass-production calculation retains the first-pass energy-versus-mass ambiguity. Additionally, even under the favorable mass-ratio reading, not every distractor applies the efficiency to a biomass value: 150 directly copies the zooplankton stock or corresponds to 50% of 300, whereas 37.5 and 7.5 are the two 25%-of-stock mistakes. The final universal statement overgeneralizes their mechanisms.",
+        "Choice 1: Correct multiplication under a mass-based ratio; the literal energy-to-mass conversion remains unspecified.",
+        "Choice 2: 150 numerically matches the standing stock, and production differs from standing biomass. Requiring 50% efficiency follows only if production efficiency is evaluated directly in these mass units; it is not established for energetic efficiency with unknown energy densities."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: ambiguous.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Under a mass-production-ratio reading, 300*0.25=75; that conventional reading is retained alongside the original energetic-unit ambiguity. Arithmetic feedback defects are assessed separately and can persist even under the favorable reading."
+      ]
+    },
+    {
+      "id": "ac738ca615d2",
+      "prior_subject_id": "item06",
+      "verdict_assessment": "approved_valid_item_with_teaching_defects",
+      "key_support": {
+        "status": "supported",
+        "answer": "Team B",
+        "issues": []
+      },
+      "main_support": {
+        "status": "partially_supported",
+        "explanation": "Divide tasks completed by tasks attempted for each team: A=30%, B=35%, C=20%, D=30%. Team B's rate is strictly the highest.",
+        "issues": [
+          "The percentages and ordering are correct. The main relabels each stated total as tasks attempted; the stem only supplies completed tasks out of a total. Completion among all tasks and success among attempted tasks can differ if some tasks remain unattempted. The denominator wording therefore teaches an unestablished condition."
+        ]
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Team A",
+          "explanation": "30/100 = 30%, which is lower than Team B's 35%.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The numerator, denominator, percentage and comparison agree with the independently calculated observed proportions."
+        },
+        {
+          "choice": "Team B",
+          "explanation": "21/60 = 35%, the highest rate among all four teams.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The numerator, denominator, percentage and comparison agree with the independently calculated observed proportions."
+        },
+        {
+          "choice": "Team C",
+          "explanation": "16/80 = 20%, the lowest rate of all four teams.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The numerator, denominator, percentage and comparison agree with the independently calculated observed proportions."
+        },
+        {
+          "choice": "Team D",
+          "explanation": "27/90 = 30%, equal to Team A but still below Team B's 35%.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The numerator, denominator, percentage and comparison agree with the independently calculated observed proportions."
+        }
+      ],
+      "issues": [
+        "The percentages and ordering are correct. The main relabels each stated total as tasks attempted; the stem only supplies completed tasks out of a total. Completion among all tasks and success among attempted tasks can differ if some tasks remain unattempted. The denominator wording therefore teaches an unestablished condition."
+      ],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration."
+      ]
+    },
+    {
+      "id": "b926d9b6d09e",
+      "prior_subject_id": "item03",
+      "verdict_assessment": "approved_valid_item_with_supported_feedback",
+      "key_support": {
+        "status": "supported",
+        "answer": "=$N2/12",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "The target value is always in column N but must follow the row when filling down, so only the column needs anchoring: =$N2/12.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "=N2/12",
+          "explanation": "A fully relative reference shifts the column when filling right, so cells in columns C–M would reference O2, P2, … instead of staying in column N.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly describes reference movement for the specified fill direction; fixed column N and a changing category row are required."
+        },
+        {
+          "choice": "=$N2/12",
+          "explanation": "Locking the column with $ keeps the reference in column N for every column the formula fills into, while the row adjusts correctly when filling down.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly describes reference movement for the specified fill direction; fixed column N and a changing category row are required."
+        },
+        {
+          "choice": "=N$2/12",
+          "explanation": "Locking the row fixes the reference to row 2 for all rows, so filling down to rows 3–10 would still read from row 2 instead of the correct category row.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly describes reference movement for the specified fill direction; fixed column N and a changing category row are required."
+        },
+        {
+          "choice": "=$N$2/12",
+          "explanation": "Locking both components fixes the reference to N2 for every cell in the table, ignoring both the column fill and the row fill.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly describes reference movement for the specified fill direction; fixed column N and a changing category row are required."
+        }
+      ],
+      "issues": [],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "The fully absolute-reference feedback accurately describes unchanged reference components. The relevant defect is the fixed row; fixing column N is desirable. This imprecision is not counted as a separate false statement.",
+        "Reviewer difficulty 3 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "bf887435db44",
+      "prior_subject_id": "item02",
+      "verdict_assessment": "approved_valid_item_with_supported_feedback",
+      "key_support": {
+        "status": "supported",
+        "answer": "=$A2*B$1",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "To always reference the rate in column A (fixed column, variable row) and the amount in row 1 (fixed row, variable column), use mixed references =$A2 and B$1.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "=A2*B1",
+          "explanation": "Both references are fully relative; filling right shifts the rate column away from A and filling down shifts the amount row away from row 1.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly identifies which component must remain fixed or move in the stated horizontal and vertical fills."
+        },
+        {
+          "choice": "=$A2*B$1",
+          "explanation": "=$A2 locks column A so the rate stays in column A when filling right; B$1 locks row 1 so the amount stays in row 1 when filling down. Both adjust correctly in the other direction.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly identifies which component must remain fixed or move in the stated horizontal and vertical fills."
+        },
+        {
+          "choice": "=A$2*$B1",
+          "explanation": "This locks the rate to row 2 and the amount to column B, which is the opposite of what is needed; filling down loses the correct rate and filling right loses the correct amount.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly identifies which component must remain fixed or move in the stated horizontal and vertical fills."
+        },
+        {
+          "choice": "=$A$2*B$1",
+          "explanation": "Locking both components of A2 means the rate never changes when filling down, so every row uses A2's rate instead of the row-specific rate.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The explanation correctly identifies which component must remain fixed or move in the stated horizontal and vertical fills."
+        }
+      ],
+      "issues": [],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 3 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "c1fd3509ec7f",
+      "prior_subject_id": "item07",
+      "verdict_assessment": "approved_valid_item_with_supported_feedback",
+      "key_support": {
+        "status": "supported",
+        "answer": "The response counts do not establish whether everyone eligible responded.",
+        "issues": []
+      },
+      "main_support": {
+        "status": "supported",
+        "explanation": "The stem provides only response counts, not the size of the eligible population. Without that baseline, no conclusion about complete or incomplete participation is warranted.",
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Every eligible person preferred design A.",
+          "explanation": "Preferences of respondents say nothing about who was eligible or whether all eligible people responded.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement supports the distinction between reported responses and an unknown total eligible population; no unwarranted yes/no census conclusion is asserted."
+        },
+        {
+          "choice": "Yes, all eligible people responded.",
+          "explanation": "The survey data records only who did respond; it cannot confirm that no eligible person was omitted.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement supports the distinction between reported responses and an unknown total eligible population; no unwarranted yes/no census conclusion is asserted."
+        },
+        {
+          "choice": "No, some eligible people did not respond.",
+          "explanation": "The data shows 80 responses but gives no information about the eligible population size, so non-response cannot be confirmed either.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement supports the distinction between reported responses and an unknown total eligible population; no unwarranted yes/no census conclusion is asserted."
+        },
+        {
+          "choice": "The response counts do not establish whether everyone eligible responded.",
+          "explanation": "Without knowing the total eligible population, the 80 response counts alone cannot determine whether participation was complete or partial.",
+          "status": "supported",
+          "issues": [],
+          "assessment_reason": "The statement supports the distinction between reported responses and an unknown total eligible population; no unwarranted yes/no census conclusion is asserted."
+        }
+      ],
+      "issues": [],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Reviewer difficulty 3 differs from retained independent difficulty 2."
+      ]
+    },
+    {
+      "id": "db20e964f5d5",
+      "prior_subject_id": "item11",
+      "verdict_assessment": "approved_item_with_unresolved_interpretation",
+      "key_support": {
+        "status": "conditional",
+        "answer": "About 18%",
+        "issues": [
+          "Returning the first marble restores the bag composition, but does not by itself logically force the second draw to be independent or either draw to be uniform.",
+          "Under the ordinary introductory-probability convention of random sampling with replacement, About 18% is sound. Under the requested strict no-added-assumptions reading, the selection mechanism remains unspecified. This is recorded as ambiguity rather than a arithmetic failure."
+        ]
+      },
+      "main_support": {
+        "status": "conditional",
+        "explanation": "Conditioning on 'at least one red' restricts the sample space: divide P(both red)=0.09 by P(at least one red)=0.51 to get ≈18%.",
+        "issues": [
+          "The computation is correct under independent uniform random sampling with replacement: 0.09/0.51=3/17≈17.65%. The main does not supply or acknowledge the sampling convention absent from the literal stem; the first-pass ambiguity remains."
+        ]
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "About 51%",
+          "explanation": "51% is P(at least one red), the denominator of the conditional probability, not the conditional probability itself.",
+          "status": "conditional",
+          "issues": [
+            "51% is the at-least-one-red probability under independent uniform sampling; that model is conventional but unstated."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "About 18%",
+          "explanation": "P(RR)=0.09, P(at least one R)=0.51; conditional probability=0.09/0.51≈17.6%≈18%.",
+          "status": "conditional",
+          "issues": [
+            "Both probabilities and the 17.6% approximation are correct under independent uniform sampling."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "About 9%",
+          "explanation": "9% is the unconditional P(both red)=0.3², ignoring the conditioning on at least one draw being red.",
+          "status": "conditional",
+          "issues": [
+            "0.3²=9% is correct for two independent uniform red draws; conditioning then changes the probability."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "About 30%",
+          "explanation": "30% is the single-draw probability of red, not the conditional probability that both draws were red.",
+          "status": "conditional",
+          "issues": [
+            "The 30% single-draw probability and its distinction from the desired conditional probability are correct under uniform random drawing."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        }
+      ],
+      "issues": [
+        "The computation is correct under independent uniform random sampling with replacement: 0.09/0.51=3/17≈17.65%. The main does not supply or acknowledge the sampling convention absent from the literal stem; the first-pass ambiguity remains.",
+        "Choice 1: 51% is the at-least-one-red probability under independent uniform sampling; that model is conventional but unstated.",
+        "Choice 2: Both probabilities and the 17.6% approximation are correct under independent uniform sampling.",
+        "Choice 3: 0.3²=9% is correct for two independent uniform red draws; conditioning then changes the probability.",
+        "Choice 4: The 30% single-draw probability and its distinction from the desired conditional probability are correct under uniform random drawing."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: ambiguous.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "The standard independent-uniform interpretation yields 3/17≈17.65%; its correctness is preserved as conditional evidence, not converted into unconditional literal support.",
+        "Reviewer difficulty 4 differs from retained independent difficulty 3."
+      ]
+    },
+    {
+      "id": "e333d5a519b3",
+      "prior_subject_id": "item12",
+      "verdict_assessment": "unavailable_no_semantic_verdict",
+      "key_support": {
+        "status": "unavailable",
+        "answer": null,
+        "issues": [
+          "No correlated review is available."
+        ]
+      },
+      "main_support": {
+        "status": "unavailable",
+        "explanation": null,
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "The sample size of 2,000 is too small",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "Email surveys are inherently unreliable",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "80% is mathematically impossible with 10,000 customers",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "Satisfied customers may be more likely to respond than dissatisfied ones",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        }
+      ],
+      "issues": [
+        "A null review is missing format/operational evidence, not a model rejection or demonstrated defect detection."
+      ],
+      "difficulty": 2,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration."
+      ]
+    },
+    {
+      "id": "eeecb30cfbd0",
+      "prior_subject_id": "item09",
+      "verdict_assessment": "unavailable_no_semantic_verdict",
+      "key_support": {
+        "status": "unavailable",
+        "answer": null,
+        "issues": [
+          "No correlated review is available."
+        ]
+      },
+      "main_support": {
+        "status": "unavailable",
+        "explanation": null,
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "About 99%",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "About 50%",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "About 1%",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "About 9%",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        }
+      ],
+      "issues": [
+        "A null review is missing format/operational evidence, not a model rejection or demonstrated defect detection."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration."
+      ]
+    },
+    {
+      "id": "efe31373a1a4",
+      "prior_subject_id": "item08",
+      "verdict_assessment": "unavailable_no_semantic_verdict",
+      "key_support": {
+        "status": "unavailable",
+        "answer": null,
+        "issues": [
+          "No correlated review is available."
+        ]
+      },
+      "main_support": {
+        "status": "unavailable",
+        "explanation": null,
+        "issues": []
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Large Hospital",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "Both about equally",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "Cannot be determined from the information given",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        },
+        {
+          "choice": "Small Hospital",
+          "explanation": null,
+          "status": "unavailable",
+          "issues": [
+            "No review feedback is available."
+          ]
+        }
+      ],
+      "issues": [
+        "A null review is missing format/operational evidence, not a model rejection or demonstrated defect detection."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration."
+      ]
+    },
+    {
+      "id": "fbee065f3cb3",
+      "prior_subject_id": "item08",
+      "verdict_assessment": "approval_not_supported_under_literal_scope",
+      "key_support": {
+        "status": "unsupported",
+        "answer": "Small Hospital",
+        "issues": [
+          "Strictly evaluated without added assumptions, the diagnostic answer is sound. A familiar textbook interpretation adds a common near-half Bernoulli birth model and favors Small Hospital. Keep that conditional result distinct from the literal answer.",
+          "Even under a model, likely counts and guaranteed observed counts are different; the defect is the absent model, not merely ordinary sampling randomness.",
+          "The review selects Small Hospital; the first pass selected the available cannot-determine answer under the requested literal scope."
+        ]
+      },
+      "main_support": {
+        "status": "conditional",
+        "explanation": "Smaller samples have greater relative variability, so extreme proportions occur more often. This is the classic law of small numbers / sampling variability result.",
+        "issues": [
+          "The sampling-variability explanation works under an added common near-half independent-birth model. Sample sizes alone do not establish this model or the greater-than-60% tail ordering. The main must not be credited as a model-free justification."
+        ]
+      },
+      "choice_feedback_support": [
+        {
+          "choice": "Large Hospital",
+          "explanation": "Larger daily samples produce proportions closer to the true 50%, making extreme deviations like >60% boys less frequent.",
+          "status": "unsupported",
+          "issues": [
+            "The stem does not supply a true 50% birth-sex probability or common independent sampling. Larger samples having a smaller >60% upper tail depends on that added model."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "Both about equally",
+          "explanation": "The hospitals' very different daily volumes (45 vs 15) produce substantially different variability, so outcomes cannot be equally frequent.",
+          "status": "unsupported",
+          "issues": [
+            "Even under the conventional independent near-half model, different expected tail frequencies do not make equal observed annual counts impossible. The claim outcomes cannot be equally frequent is false."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "Cannot be determined from the information given",
+          "explanation": "Sampling theory directly predicts smaller samples show more extreme proportions; the given information is sufficient.",
+          "status": "unsupported",
+          "issues": [
+            "The given sample sizes do not independently establish the probability model needed to predict these tail frequencies. This explicitly dismisses the first-pass sound diagnostic answer by adding assumptions."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        },
+        {
+          "choice": "Small Hospital",
+          "explanation": "With only 15 births per day, random variation is large relative to sample size, making days exceeding 60% boys far more probable.",
+          "status": "conditional",
+          "issues": [
+            "The higher tail probability for 15 rather than 45 births is correct under a common near-half independent-birth model; those conditions are not established by the stem."
+          ],
+          "assessment_reason": "See the exact material conditions or defects in issues."
+        }
+      ],
+      "issues": [
+        "The sampling-variability explanation works under an added common near-half independent-birth model. Sample sizes alone do not establish this model or the greater-than-60% tail ordering. The main must not be credited as a model-free justification.",
+        "Choice 1: The stem does not supply a true 50% birth-sex probability or common independent sampling. Larger samples having a smaller >60% upper tail depends on that added model.",
+        "Choice 2: Even under the conventional independent near-half model, different expected tail frequencies do not make equal observed annual counts impossible. The claim outcomes cannot be equally frequent is false.",
+        "Choice 3: The given sample sizes do not independently establish the probability model needed to predict these tail frequencies. This explicitly dismisses the first-pass sound diagnostic answer by adding assumptions.",
+        "Choice 4: The higher tail probability for 15 rather than 45 births is correct under a common near-half independent-birth model; those conditions are not established by the stem."
+      ],
+      "difficulty": 3,
+      "notes": [
+        "Original item assessment retained: valid.",
+        "Difficulty retained from the first pass; this is a qualitative assessment, not learner calibration.",
+        "Under an added common p≈0.5 independent-birth model, the smaller hospital has the larger daily >60% tail probability. That conditional result does not justify declaring the supplied data sufficient."
+      ]
+    }
+  ],
+  "summary": {
+    "approved_invalid_item": [
+      "010f7c7469f5",
+      "4cba3caa9e23",
+      "519de38c39d1"
+    ],
+    "unavailable_no_semantic_verdict": [
+      "033ebb18393e",
+      "1bf111ced1eb",
+      "e333d5a519b3",
+      "eeecb30cfbd0",
+      "efe31373a1a4"
+    ],
+    "approved_valid_item_with_teaching_defects": [
+      "0f416a6a0366",
+      "32127fc2b19d",
+      "ac738ca615d2"
+    ],
+    "approved_valid_item_with_supported_feedback": [
+      "1887e045002e",
+      "23594771f3e8",
+      "288a71403924",
+      "508913a7a1dd",
+      "532720a6f865",
+      "867f53e097bf",
+      "b926d9b6d09e",
+      "bf887435db44",
+      "c1fd3509ec7f"
+    ],
+    "approved_item_with_unresolved_interpretation": [
+      "48af7fdde1a5",
+      "a1ebdb90e7c7",
+      "db20e964f5d5"
+    ],
+    "approval_not_supported_under_literal_scope": [
+      "fbee065f3cb3"
+    ]
+  },
+  "calculation_evidence": {
+    "bayes_posterior_at_stated_prevalence": "11/122",
+    "prevalence_required_for_PPV_one_half_with_99_percent_sensitivity_specificity": "Solve 0.99p=0.01(1-p), obtaining p=0.01; at p=0.5, PPV=0.99.",
+    "ecology_arithmetic": {
+      "0.25*30": 7.5,
+      "1.25*30": 37.5,
+      "0.25*150": 37.5,
+      "0.10*300": 30,
+      "0.025*300": 7.5
+    },
+    "independent_uniform_marble_posterior": "(0.3*0.3)/(1-0.7*0.7)=3/17≈0.17647"
+  },
+  "evidence_references": "Primary documentation and first-pass countermodels remain recorded in the earlier independent-subjects.json; no new external facts were needed to establish the definite arithmetic, reference or unsupported-claim defects."
+}

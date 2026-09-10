@@ -1,0 +1,97 @@
+{
+  "scope": "Exact archived evidence file bytes; interpretation and operational limits are documented in README and results. The manifest excludes itself. The final independent result audit verified the 22 prior entries; this refresh additionally binds that audit.",
+  "files": {
+    "README.md": {
+      "bytes": 3030,
+      "sha256": "fed0481cdd002c1b3ae3d35b0229781664075380c1346fe5d633aad15de6f674"
+    },
+    "access-preflight.json": {
+      "bytes": 324,
+      "sha256": "530d3905fb6381acb9b4bb92889c602cfa9b6b24c9f8a1e0d80f74fce886d236"
+    },
+    "capture.json": {
+      "bytes": 671951,
+      "sha256": "49baaee19270e20afe6830881c7c06dd91266c332f7acd86d8aaad11e1e9c9ce"
+    },
+    "dispatch-record.json": {
+      "bytes": 843,
+      "sha256": "a1e9573807c55c9c4390d843c766669b04cd67082ca443fb5c6170e327df70e9"
+    },
+    "feedback-binding.json": {
+      "bytes": 421,
+      "sha256": "4dc068d785755c0d74bab3c105c1833c8e1e5dceb97b89a63be8d68d9e77e984"
+    },
+    "feedback-mapping.json": {
+      "bytes": 4633,
+      "sha256": "0d39d63860d607318a902abc11c30ff0916a60f5267f6b1fe4db2e2d9f446445"
+    },
+    "first-pass-freeze.json": {
+      "bytes": 503,
+      "sha256": "a044e81af5014c2c263f1380247ff25f0405c82ba1ef2abdfa09c0fac8980b50"
+    },
+    "independent-feedback.json": {
+      "bytes": 82355,
+      "sha256": "d8bed606acb73c3db56610d94a933628fb0e42d7237f28146eb66f1b472e7bf8"
+    },
+    "independent-subjects.json": {
+      "bytes": 28299,
+      "sha256": "9957446ec00fbdab8dc963cfd82f4285a10527e37edfba7f27490603c072a50d"
+    },
+    "mapping.json": {
+      "bytes": 1568,
+      "sha256": "286ed45c00c71961cfa103d73992c6a19b9c064b0077cbccd5ad804d1f2a1c95"
+    },
+    "operational-audit.json": {
+      "bytes": 20200,
+      "sha256": "2844215ac04449ee75fcf5d4d6121800348b93766dfb2ab6c3efe719cac8ef95"
+    },
+    "operational-summary.json": {
+      "bytes": 423,
+      "sha256": "e23474acbeb0ad528bf36306135b17984d77fb9f7aa80c0683a4821dd1959cfd"
+    },
+    "plan-audit.json": {
+      "bytes": 11091,
+      "sha256": "b72c32be11c603193f3989bbe4041d0b75800286bbbe05632fcf681fa21ea50f"
+    },
+    "plan.json": {
+      "bytes": 581696,
+      "sha256": "e1ca397129c552ef1d6227df40be303b959fcec5ad3ffe1359a663ac654f1bfc"
+    },
+    "preparation-tests.txt": {
+      "bytes": 972,
+      "sha256": "e2a4c8cb5cd3f8593686bb59f87d40f6605d76aa15d1868c1b8144aed501d4e3"
+    },
+    "results-audit.json": {
+      "bytes": 7884,
+      "sha256": "8c0ec5689c570ac5416cfbfc1bf7133981998cba064f81c477327839cb00982b"
+    },
+    "reviews.json": {
+      "bytes": 70815,
+      "sha256": "a9716788729c9b99f63a5fa6fc5bb8066f569bb37e0ae70ca985cb1cd0bb2c27"
+    },
+    "root-feedback-notes.json": {
+      "bytes": 7411,
+      "sha256": "99a2189ce2696df3cfe9aa4ba060f4505b24100acfb39e2f642a76f34b6b3e25"
+    },
+    "root-pre-response-notes.json": {
+      "bytes": 2017,
+      "sha256": "9ef8b544e229d149212e07aeb541d32c2b647514169370801bdbbc8ff2881ba5"
+    },
+    "second-pass-freeze.json": {
+      "bytes": 770,
+      "sha256": "ca12524ea8c70b6f278dd3593043b7b6f645d944ca4f6b1aba4ad5f643ef3f8d"
+    },
+    "subjects.json": {
+      "bytes": 22596,
+      "sha256": "cb108e0ba675775fcdd68aab7b89b80fcb5d9cf81ddb38651366d8350b3294b8"
+    },
+    "summarize.py": {
+      "bytes": 5880,
+      "sha256": "230b2b7390ae557b73b421f7b1a8988fdd3dc5d221377177993761487dd36216"
+    },
+    "summary.json": {
+      "bytes": 23566,
+      "sha256": "d96144106a4db3d59134e52e0d1804657d49c14571bb7156730971ae21f167bf"
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "scope": "Root feedback audit from opaque reviews packet before reading arm mapping. Root learned final-slot operational details from the independent operational auditor near completion, so full arm blinding is not claimed. Pre-response subject interpretations remain unchanged. Null rows are not semantic catches.",
+  "frozen_utc": "2026-09-10T06:21:24.036508+00:00",
+  "reviews_packet_sha256": "a9716788729c9b99f63a5fa6fc5bb8066f569bb37e0ae70ca985cb1cd0bb2c27",
+  "calculations": {
+    "bayes_posterior": 0.09016393442622951,
+    "prevalence_for_equal_true_false_positives": 0.01,
+    "marble_conditional": 0.1764705882352941
+  },
+  "assessments": [
+    {
+      "id": "010f7c7469f5",
+      "assessment": "material_issue",
+      "issues": [
+        "Approves the unrequested third operand and treats quarter text labels as numerical factors. Main and supporting choice feedback reinterpret the two-factor task."
+      ],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "033ebb18393e",
+      "assessment": "unavailable_no_correlated_review",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 0
+    },
+    {
+      "id": "0f416a6a0366",
+      "assessment": "material_issue",
+      "issues": [
+        "Main asserts dissatisfied customers are systematically less likely to respond; neither direction nor actual bias is established. Correct-choice feedback turns possible bias into definite serious bias. The sample-size explanation overpromises reliability merely from n=2000."
+      ],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "1887e045002e",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "1bf111ced1eb",
+      "assessment": "unavailable_no_correlated_review",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 0
+    },
+    {
+      "id": "23594771f3e8",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "288a71403924",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "32127fc2b19d",
+      "assessment": "material_issue",
+      "issues": [
+        "The 50% posterior distractor explanation falsely implies roughly50% prevalence: sensitivity0.99 and specificity0.99 require prevalence0.01 for equal true/false positives. The 1% distractor is ten times the 0.1% base rate and is not the stated raw base rate. The selected approximately9% answer is correct."
+      ],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "48af7fdde1a5",
+      "assessment": "material_issue",
+      "issues": [
+        "37.5 explanation confuses applying25% with multiplying by1.25, includes a self-contradictory calculation, and picks the wrong biomass base. 7.5 explanation calls0.025 a10% efficiency. Correct 75 arithmetic does not rescue these teaching errors."
+      ],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "4cba3caa9e23",
+      "assessment": "material_issue",
+      "issues": [
+        "Main teaches that the existence of a plausible confounder makes a common cause the best explanation of a correlation; plausibility alone does not establish that general rule. Choice feedback presents the specific confounder as established by the study. Preserve original conventional-answer plausibility separately."
+      ],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "508913a7a1dd",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "519de38c39d1",
+      "assessment": "material_issue",
+      "issues": [
+        "Approves the unrequested third operand; main explicitly calls A3 a quarter label while still multiplying it."
+      ],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "532720a6f865",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "867f53e097bf",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "a1ebdb90e7c7",
+      "assessment": "material_issue",
+      "issues": [
+        "Each individual distractor explanation describes a plausible numerical mistake, but the main overgeneralizes that all distractors apply efficiency to biomass:150 simply repeats standing biomass rather than applying25% to a supplied biomass number. Original efficiency-unit scope remains conditional."
+      ],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "ac738ca615d2",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "Main uses attempted where the stem gives total tasks; calculation and completion-rate concept remain clear. Do not turn this wording into a demonstrated arithmetic defect.",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "b926d9b6d09e",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "AbsoluteN2 indeed ignores both displacements; context clearly explains the column should stay fixed. Do not count that phrasing as a false reference rule.",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "bf887435db44",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "c1fd3509ec7f",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "Selected answer/main sound. First distractor feedback is less direct than noting the30designB respondents but does not justify a new factual-error label.",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "db20e964f5d5",
+      "assessment": "supported_under_predeclared_interpretation",
+      "issues": [],
+      "notes": "All calculations and feedback sound under the conventional independent uniform-draw interpretation recorded before responses.",
+      "choice_feedback_reviewed": 4
+    },
+    {
+      "id": "e333d5a519b3",
+      "assessment": "unavailable_no_correlated_review",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 0
+    },
+    {
+      "id": "eeecb30cfbd0",
+      "assessment": "unavailable_no_correlated_review",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 0
+    },
+    {
+      "id": "efe31373a1a4",
+      "assessment": "unavailable_no_correlated_review",
+      "issues": [],
+      "notes": "",
+      "choice_feedback_reviewed": 0
+    },
+    {
+      "id": "fbee065f3cb3",
+      "assessment": "material_issue",
+      "issues": [
+        "Preserve original hospital-model assumptions as a scope concern. Independently, different sample variability does not mean observed outcomes cannot be equally frequent: realized annual counts can coincide."
+      ],
+      "notes": "",
+      "choice_feedback_reviewed": 4
+    }
+  ]
+}

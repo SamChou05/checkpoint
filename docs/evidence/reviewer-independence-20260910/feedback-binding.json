@@ -1,0 +1,9 @@
+{
+  "capture_canonical_sha256": "e0de0046b468f330f6c82c52728dd2e5e1b1ca798b66d6e35d8e5882cb6bb3d0",
+  "plan_sha256": "183b3a645c38cff16e8a945ad5bb66f01be4625402b2dcfb1c9cc7090520ea91",
+  "planned_item_occurrences": 24,
+  "files": {
+    "reviews.json": "a9716788729c9b99f63a5fa6fc5bb8066f569bb37e0ae70ca985cb1cd0bb2c27",
+    "private-mapping.json": "0d39d63860d607318a902abc11c30ff0916a60f5267f6b1fe4db2e2d9f446445"
+  }
+}

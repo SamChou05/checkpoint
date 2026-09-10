@@ -1,0 +1,15 @@
+{
+  "plan_path": "/tmp/checkpoint-reviewer-independence-plan-20260910/plan.json",
+  "plan_canonical_sha256": "183b3a645c38cff16e8a945ad5bb66f01be4625402b2dcfb1c9cc7090520ea91",
+  "plan_byte_sha256": "e1ca397129c552ef1d6227df40be303b959fcec5ad3ffe1359a663ac654f1bfc",
+  "single_capture_path": "/tmp/checkpoint-reviewer-independence-live-20260910/capture.json",
+  "source_revision": "040d0e53eef6e1dc516fa19bd92b7ac8cf3204ba",
+  "current_model_read_only_access": "AVAILABLE",
+  "first_pass_freeze_sha256": "a044e81af5014c2c263f1380247ff25f0405c82ba1ef2abdfa09c0fac8980b50",
+  "maximum_calls": 10,
+  "maximum_output_tokens_total": 60000,
+  "maximum_serialized_request_bytes_total": 327680,
+  "no_model_agreement_change": true,
+  "no_production_deployment": true,
+  "repeat_policy": "one run; stop on operational failure; no retries or repairs"
+}

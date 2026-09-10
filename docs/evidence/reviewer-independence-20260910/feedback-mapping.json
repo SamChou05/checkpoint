@@ -1,0 +1,194 @@
+[
+  {
+    "id": "010f7c7469f5",
+    "position": 3,
+    "item_index": 0,
+    "arm": "solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 5
+  },
+  {
+    "id": "033ebb18393e",
+    "position": 9,
+    "item_index": 2,
+    "arm": "withheld_solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  },
+  {
+    "id": "0f416a6a0366",
+    "position": 8,
+    "item_index": 4,
+    "arm": "solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  },
+  {
+    "id": "1887e045002e",
+    "position": 0,
+    "item_index": 0,
+    "arm": "solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 2
+  },
+  {
+    "id": "1bf111ced1eb",
+    "position": 9,
+    "item_index": 3,
+    "arm": "withheld_solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  },
+  {
+    "id": "23594771f3e8",
+    "position": 7,
+    "item_index": 1,
+    "arm": "solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 1
+  },
+  {
+    "id": "288a71403924",
+    "position": 0,
+    "item_index": 1,
+    "arm": "solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 2
+  },
+  {
+    "id": "32127fc2b19d",
+    "position": 8,
+    "item_index": 1,
+    "arm": "solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  },
+  {
+    "id": "48af7fdde1a5",
+    "position": 5,
+    "item_index": 0,
+    "arm": "withheld_solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 23
+  },
+  {
+    "id": "4cba3caa9e23",
+    "position": 8,
+    "item_index": 2,
+    "arm": "solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  },
+  {
+    "id": "508913a7a1dd",
+    "position": 6,
+    "item_index": 0,
+    "arm": "withheld_solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 1
+  },
+  {
+    "id": "519de38c39d1",
+    "position": 2,
+    "item_index": 0,
+    "arm": "withheld_solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 5
+  },
+  {
+    "id": "532720a6f865",
+    "position": 0,
+    "item_index": 2,
+    "arm": "solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 2
+  },
+  {
+    "id": "867f53e097bf",
+    "position": 1,
+    "item_index": 0,
+    "arm": "withheld_solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 2
+  },
+  {
+    "id": "a1ebdb90e7c7",
+    "position": 4,
+    "item_index": 0,
+    "arm": "solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 23
+  },
+  {
+    "id": "ac738ca615d2",
+    "position": 7,
+    "item_index": 0,
+    "arm": "solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 1
+  },
+  {
+    "id": "b926d9b6d09e",
+    "position": 1,
+    "item_index": 2,
+    "arm": "withheld_solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 2
+  },
+  {
+    "id": "bf887435db44",
+    "position": 1,
+    "item_index": 1,
+    "arm": "withheld_solver_context",
+    "origin_path": "delivery-feedback-20260909/capture.json",
+    "call_index": 2
+  },
+  {
+    "id": "c1fd3509ec7f",
+    "position": 6,
+    "item_index": 1,
+    "arm": "withheld_solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 1
+  },
+  {
+    "id": "db20e964f5d5",
+    "position": 8,
+    "item_index": 3,
+    "arm": "solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  },
+  {
+    "id": "e333d5a519b3",
+    "position": 9,
+    "item_index": 4,
+    "arm": "withheld_solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  },
+  {
+    "id": "eeecb30cfbd0",
+    "position": 9,
+    "item_index": 1,
+    "arm": "withheld_solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  },
+  {
+    "id": "efe31373a1a4",
+    "position": 9,
+    "item_index": 0,
+    "arm": "withheld_solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  },
+  {
+    "id": "fbee065f3cb3",
+    "position": 8,
+    "item_index": 0,
+    "arm": "solver_context",
+    "origin_path": "runtime-qualification-capture-20260908.json",
+    "call_index": 4
+  }
+]

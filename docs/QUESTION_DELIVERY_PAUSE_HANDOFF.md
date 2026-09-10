@@ -1,17 +1,32 @@
 # Pause handoff — September 9, 2026
 
-This pause was superseded by an explicit active-goal continuation. Current
-work is in `/tmp/checkpoint-native-qualification-20260909`, on
-`codex/native-output-qualification`. Read
-`docs/QUESTION_NATIVE_STAGE_PROBE_RESULTS.md` before following the historical
-next steps below. Native integration and the ten-call downstream diagnostic
-are complete, with frozen runtime `751bdaa`. Original run handle 10264 exited
-zero; no restart is needed. Every response passed formatting, but exact local
-policy replay accepted a defective spreadsheet item. Production settings remain
-unchanged. The next correctness work concerns preserving the original facts
-and requested operation during verification, informed by the existing failed
-obstruction and complete-choice experiments. Fresh generation, author/skill-map
-native compatibility and production-wide qualification remain unproven.
+The active goal resumed after the user's latest progress/pause check. Current
+work is in `/tmp/checkpoint-premise-witness-20260909`, on
+`codex/premise-witness`. Read `docs/QUESTION_REVIEWER_INDEPENDENCE_RESULTS.md`
+before following any historical next steps below. The new ten-call comparison
+is terminal: handle 58234 exited zero, and every worker was reaped. Its frozen
+source milestone `040d0e5` is committed and pushed. Do not restart this capture.
+
+The new experiment tests a previously unisolated information flow: supplying
+versus withholding the prior solver records from the default reviewer, with
+otherwise identical current native instructions. Both arms still return the
+unequivocally defective spreadsheet item. Withholding also supplies incorrect
+ecology feedback and loses a five-item batch to invalid review records. It is
+not qualified for production. Source preparation passed 82 targeted tests;
+source/policy/export audits and both assessment phases are saved in
+`docs/evidence/reviewer-independence-20260910/`. Production settings remain
+unchanged. The prior native-stage diagnostic at `751bdaa` is also complete.
+
+Next, prepare a stronger-model comparison using the current complete-choice
+and teaching contracts, rather than adding another equivalent assumptions
+critic or repeating context removal. The existing Opus 5 runner still uses the
+historical stem-only/legacy contract and needs a prospective update. Its AWS
+commercial model agreement remains unaccepted; do not accept it without the
+user's explicit authorization. Other preparation can proceed independently.
+Fresh generation, broader subject coverage, normal-runtime delivery, native
+author/skill-map qualification and learning gains remain unproven. The broader
+goal is active and incomplete; this handoff does not change its app-managed
+status or promise background work after the user pauses it.
 
 The user requested current progress and a suitable pause point. The latest live
 comparison, independent assessments, and local bank/client checks are complete.

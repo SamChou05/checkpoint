@@ -1,0 +1,585 @@
+{
+  "scope": "Selected paired diagnostic, not a production accuracy estimate. All12 subjects remain in each arm. Five unavailable treatment slots are format losses, not semantic catches. Independent and root interpretation differences are preserved; complete-feedback counts are descriptive and not new success thresholds.",
+  "plan_sha256": "183b3a645c38cff16e8a945ad5bb66f01be4625402b2dcfb1c9cc7090520ea91",
+  "capture_byte_sha256": "49baaee19270e20afe6830881c7c06dd91266c332f7acd86d8aaad11e1e9c9ce",
+  "arms": {
+    "solver_context": {
+      "calls": 5,
+      "inputTokens": 14877,
+      "outputTokens": 3148,
+      "adaptation_pass_calls": 5,
+      "planned_item_occurrences": 12,
+      "correlated_reviews": 12,
+      "local_policy_returns": 11,
+      "uncontested_control_returns": 7,
+      "clear_spreadsheet_defect_approvals": 1,
+      "clear_spreadsheet_defect_returns": 1,
+      "independent_supported_complete_feedback": 4,
+      "root_supported_complete_feedback": 6
+    },
+    "withheld_solver_context": {
+      "calls": 5,
+      "inputTokens": 11392,
+      "outputTokens": 3343,
+      "adaptation_pass_calls": 4,
+      "planned_item_occurrences": 12,
+      "correlated_reviews": 7,
+      "local_policy_returns": 7,
+      "uncontested_control_returns": 5,
+      "clear_spreadsheet_defect_approvals": 1,
+      "clear_spreadsheet_defect_returns": 1,
+      "independent_supported_complete_feedback": 5,
+      "root_supported_complete_feedback": 5
+    }
+  },
+  "paired_correlated_subjects": 7,
+  "paired_same_declared_answer": 7,
+  "pairs": [
+    {
+      "subject_id": "item01",
+      "both_correlated": true,
+      "same_declared_answer": true,
+      "arms": {
+        "solver_context": {
+          "subject_id": "item01",
+          "arm": "solver_context",
+          "position": 0,
+          "opaque_review_id": "1887e045002e",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "=$A4*D$1",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_supported_feedback",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        },
+        "withheld_solver_context": {
+          "subject_id": "item01",
+          "arm": "withheld_solver_context",
+          "position": 1,
+          "opaque_review_id": "867f53e097bf",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "=$A4*D$1",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_supported_feedback",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        }
+      }
+    },
+    {
+      "subject_id": "item02",
+      "both_correlated": true,
+      "same_declared_answer": true,
+      "arms": {
+        "solver_context": {
+          "subject_id": "item02",
+          "arm": "solver_context",
+          "position": 0,
+          "opaque_review_id": "288a71403924",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "=$A2*B$1",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_supported_feedback",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        },
+        "withheld_solver_context": {
+          "subject_id": "item02",
+          "arm": "withheld_solver_context",
+          "position": 1,
+          "opaque_review_id": "bf887435db44",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "=$A2*B$1",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_supported_feedback",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        }
+      }
+    },
+    {
+      "subject_id": "item03",
+      "both_correlated": true,
+      "same_declared_answer": true,
+      "arms": {
+        "solver_context": {
+          "subject_id": "item03",
+          "arm": "solver_context",
+          "position": 0,
+          "opaque_review_id": "532720a6f865",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "=$N2/12",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_supported_feedback",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        },
+        "withheld_solver_context": {
+          "subject_id": "item03",
+          "arm": "withheld_solver_context",
+          "position": 1,
+          "opaque_review_id": "b926d9b6d09e",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "=$N2/12",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_supported_feedback",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        }
+      }
+    },
+    {
+      "subject_id": "item04",
+      "both_correlated": true,
+      "same_declared_answer": true,
+      "arms": {
+        "withheld_solver_context": {
+          "subject_id": "item04",
+          "arm": "withheld_solver_context",
+          "position": 2,
+          "opaque_review_id": "519de38c39d1",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "=$A$1*B$1*$A3",
+          "model_difficulty": 4,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_invalid_item",
+          "independent_main_support": "unsupported",
+          "independent_choice_support_counts": {
+            "supported": 1,
+            "partially_supported": 2,
+            "conditional": 1
+          },
+          "root_feedback_assessment": "material_issue",
+          "root_feedback_issues": [
+            "Approves the unrequested third operand; main explicitly calls A3 a quarter label while still multiplying it."
+          ]
+        },
+        "solver_context": {
+          "subject_id": "item04",
+          "arm": "solver_context",
+          "position": 3,
+          "opaque_review_id": "010f7c7469f5",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "=$A$1*B$1*$A3",
+          "model_difficulty": 4,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_invalid_item",
+          "independent_main_support": "unsupported",
+          "independent_choice_support_counts": {
+            "supported": 1,
+            "partially_supported": 2,
+            "unsupported": 1
+          },
+          "root_feedback_assessment": "material_issue",
+          "root_feedback_issues": [
+            "Approves the unrequested third operand and treats quarter text labels as numerical factors. Main and supporting choice feedback reinterpret the two-factor task."
+          ]
+        }
+      }
+    },
+    {
+      "subject_id": "item05",
+      "both_correlated": true,
+      "same_declared_answer": true,
+      "arms": {
+        "solver_context": {
+          "subject_id": "item05",
+          "arm": "solver_context",
+          "position": 4,
+          "opaque_review_id": "a1ebdb90e7c7",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "Zooplankton annual production is 75 g/m²/year.",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_item_with_unresolved_interpretation",
+          "independent_main_support": "unsupported",
+          "independent_choice_support_counts": {
+            "conditional": 2,
+            "supported": 2
+          },
+          "root_feedback_assessment": "material_issue",
+          "root_feedback_issues": [
+            "Each individual distractor explanation describes a plausible numerical mistake, but the main overgeneralizes that all distractors apply efficiency to biomass:150 simply repeats standing biomass rather than applying25% to a supplied biomass number. Original efficiency-unit scope remains conditional."
+          ]
+        },
+        "withheld_solver_context": {
+          "subject_id": "item05",
+          "arm": "withheld_solver_context",
+          "position": 5,
+          "opaque_review_id": "48af7fdde1a5",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "Zooplankton annual production is 75 g/m²/year.",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_item_with_unresolved_interpretation",
+          "independent_main_support": "conditional",
+          "independent_choice_support_counts": {
+            "conditional": 1,
+            "supported": 1,
+            "unsupported": 2
+          },
+          "root_feedback_assessment": "material_issue",
+          "root_feedback_issues": [
+            "37.5 explanation confuses applying25% with multiplying by1.25, includes a self-contradictory calculation, and picks the wrong biomass base. 7.5 explanation calls0.025 a10% efficiency. Correct 75 arithmetic does not rescue these teaching errors."
+          ]
+        }
+      }
+    },
+    {
+      "subject_id": "item06",
+      "both_correlated": true,
+      "same_declared_answer": true,
+      "arms": {
+        "withheld_solver_context": {
+          "subject_id": "item06",
+          "arm": "withheld_solver_context",
+          "position": 6,
+          "opaque_review_id": "508913a7a1dd",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "Team B",
+          "model_difficulty": 2,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_supported_feedback",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        },
+        "solver_context": {
+          "subject_id": "item06",
+          "arm": "solver_context",
+          "position": 7,
+          "opaque_review_id": "ac738ca615d2",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "Team B",
+          "model_difficulty": 2,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_teaching_defects",
+          "independent_main_support": "partially_supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        }
+      }
+    },
+    {
+      "subject_id": "item07",
+      "both_correlated": true,
+      "same_declared_answer": true,
+      "arms": {
+        "withheld_solver_context": {
+          "subject_id": "item07",
+          "arm": "withheld_solver_context",
+          "position": 6,
+          "opaque_review_id": "c1fd3509ec7f",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "The response counts do not establish whether everyone eligible responded.",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_supported_feedback",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        },
+        "solver_context": {
+          "subject_id": "item07",
+          "arm": "solver_context",
+          "position": 7,
+          "opaque_review_id": "23594771f3e8",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "The response counts do not establish whether everyone eligible responded.",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_supported_feedback",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        }
+      }
+    },
+    {
+      "subject_id": "item08",
+      "both_correlated": false,
+      "same_declared_answer": false,
+      "arms": {
+        "solver_context": {
+          "subject_id": "item08",
+          "arm": "solver_context",
+          "position": 8,
+          "opaque_review_id": "fbee065f3cb3",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "Small Hospital",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approval_not_supported_under_literal_scope",
+          "independent_main_support": "conditional",
+          "independent_choice_support_counts": {
+            "unsupported": 3,
+            "conditional": 1
+          },
+          "root_feedback_assessment": "material_issue",
+          "root_feedback_issues": [
+            "Preserve original hospital-model assumptions as a scope concern. Independently, different sample variability does not mean observed outcomes cannot be equally frequent: realized annual counts can coincide."
+          ]
+        },
+        "withheld_solver_context": {
+          "subject_id": "item08",
+          "arm": "withheld_solver_context",
+          "position": 9,
+          "opaque_review_id": "efe31373a1a4",
+          "correlated_review_available": false,
+          "declared_valid": null,
+          "declared_answer": null,
+          "model_difficulty": null,
+          "local_policy_return": false,
+          "independent_verdict_assessment": "unavailable_no_semantic_verdict",
+          "independent_main_support": "unavailable",
+          "independent_choice_support_counts": {
+            "unavailable": 4
+          },
+          "root_feedback_assessment": "unavailable_no_correlated_review",
+          "root_feedback_issues": []
+        }
+      }
+    },
+    {
+      "subject_id": "item09",
+      "both_correlated": false,
+      "same_declared_answer": false,
+      "arms": {
+        "solver_context": {
+          "subject_id": "item09",
+          "arm": "solver_context",
+          "position": 8,
+          "opaque_review_id": "32127fc2b19d",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "About 9%",
+          "model_difficulty": 4,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_teaching_defects",
+          "independent_main_support": "supported",
+          "independent_choice_support_counts": {
+            "supported": 2,
+            "unsupported": 1,
+            "partially_supported": 1
+          },
+          "root_feedback_assessment": "material_issue",
+          "root_feedback_issues": [
+            "The 50% posterior distractor explanation falsely implies roughly50% prevalence: sensitivity0.99 and specificity0.99 require prevalence0.01 for equal true/false positives. The 1% distractor is ten times the 0.1% base rate and is not the stated raw base rate. The selected approximately9% answer is correct."
+          ]
+        },
+        "withheld_solver_context": {
+          "subject_id": "item09",
+          "arm": "withheld_solver_context",
+          "position": 9,
+          "opaque_review_id": "eeecb30cfbd0",
+          "correlated_review_available": false,
+          "declared_valid": null,
+          "declared_answer": null,
+          "model_difficulty": null,
+          "local_policy_return": false,
+          "independent_verdict_assessment": "unavailable_no_semantic_verdict",
+          "independent_main_support": "unavailable",
+          "independent_choice_support_counts": {
+            "unavailable": 4
+          },
+          "root_feedback_assessment": "unavailable_no_correlated_review",
+          "root_feedback_issues": []
+        }
+      }
+    },
+    {
+      "subject_id": "item10",
+      "both_correlated": false,
+      "same_declared_answer": false,
+      "arms": {
+        "solver_context": {
+          "subject_id": "item10",
+          "arm": "solver_context",
+          "position": 8,
+          "opaque_review_id": "4cba3caa9e23",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "A third factor (like hot weather) likely explains both patterns",
+          "model_difficulty": 2,
+          "local_policy_return": false,
+          "independent_verdict_assessment": "approved_invalid_item",
+          "independent_main_support": "unsupported",
+          "independent_choice_support_counts": {
+            "supported": 1,
+            "partially_supported": 1,
+            "unsupported": 2
+          },
+          "root_feedback_assessment": "material_issue",
+          "root_feedback_issues": [
+            "Main teaches that the existence of a plausible confounder makes a common cause the best explanation of a correlation; plausibility alone does not establish that general rule. Choice feedback presents the specific confounder as established by the study. Preserve original conventional-answer plausibility separately."
+          ]
+        },
+        "withheld_solver_context": {
+          "subject_id": "item10",
+          "arm": "withheld_solver_context",
+          "position": 9,
+          "opaque_review_id": "033ebb18393e",
+          "correlated_review_available": false,
+          "declared_valid": null,
+          "declared_answer": null,
+          "model_difficulty": null,
+          "local_policy_return": false,
+          "independent_verdict_assessment": "unavailable_no_semantic_verdict",
+          "independent_main_support": "unavailable",
+          "independent_choice_support_counts": {
+            "unavailable": 4
+          },
+          "root_feedback_assessment": "unavailable_no_correlated_review",
+          "root_feedback_issues": []
+        }
+      }
+    },
+    {
+      "subject_id": "item11",
+      "both_correlated": false,
+      "same_declared_answer": false,
+      "arms": {
+        "solver_context": {
+          "subject_id": "item11",
+          "arm": "solver_context",
+          "position": 8,
+          "opaque_review_id": "db20e964f5d5",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "About 18%",
+          "model_difficulty": 4,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_item_with_unresolved_interpretation",
+          "independent_main_support": "conditional",
+          "independent_choice_support_counts": {
+            "conditional": 4
+          },
+          "root_feedback_assessment": "supported_under_predeclared_interpretation",
+          "root_feedback_issues": []
+        },
+        "withheld_solver_context": {
+          "subject_id": "item11",
+          "arm": "withheld_solver_context",
+          "position": 9,
+          "opaque_review_id": "1bf111ced1eb",
+          "correlated_review_available": false,
+          "declared_valid": null,
+          "declared_answer": null,
+          "model_difficulty": null,
+          "local_policy_return": false,
+          "independent_verdict_assessment": "unavailable_no_semantic_verdict",
+          "independent_main_support": "unavailable",
+          "independent_choice_support_counts": {
+            "unavailable": 4
+          },
+          "root_feedback_assessment": "unavailable_no_correlated_review",
+          "root_feedback_issues": []
+        }
+      }
+    },
+    {
+      "subject_id": "item12",
+      "both_correlated": false,
+      "same_declared_answer": false,
+      "arms": {
+        "solver_context": {
+          "subject_id": "item12",
+          "arm": "solver_context",
+          "position": 8,
+          "opaque_review_id": "0f416a6a0366",
+          "correlated_review_available": true,
+          "declared_valid": true,
+          "declared_answer": "Satisfied customers may be more likely to respond than dissatisfied ones",
+          "model_difficulty": 3,
+          "local_policy_return": true,
+          "independent_verdict_assessment": "approved_valid_item_with_teaching_defects",
+          "independent_main_support": "unsupported",
+          "independent_choice_support_counts": {
+            "unsupported": 2,
+            "supported": 2
+          },
+          "root_feedback_assessment": "material_issue",
+          "root_feedback_issues": [
+            "Main asserts dissatisfied customers are systematically less likely to respond; neither direction nor actual bias is established. Correct-choice feedback turns possible bias into definite serious bias. The sample-size explanation overpromises reliability merely from n=2000."
+          ]
+        },
+        "withheld_solver_context": {
+          "subject_id": "item12",
+          "arm": "withheld_solver_context",
+          "position": 9,
+          "opaque_review_id": "e333d5a519b3",
+          "correlated_review_available": false,
+          "declared_valid": null,
+          "declared_answer": null,
+          "model_difficulty": null,
+          "local_policy_return": false,
+          "independent_verdict_assessment": "unavailable_no_semantic_verdict",
+          "independent_main_support": "unavailable",
+          "independent_choice_support_counts": {
+            "unavailable": 4
+          },
+          "root_feedback_assessment": "unavailable_no_correlated_review",
+          "root_feedback_issues": []
+        }
+      }
+    }
+  ],
+  "prospective_result": "Does not qualify withholding: both arms return the unequivocally defective spreadsheet item; treatment loses five subjects to malformed review records and supplies additional incorrect ecology arithmetic. No production intervention follows."
+}
