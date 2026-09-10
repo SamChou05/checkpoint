@@ -112,6 +112,9 @@ do not erase those conditions when checking a choice or writing feedback.
 
 COMPLETE_REVIEW_SYSTEM_PROMPT = _REVIEW_CORE_PROMPT + """
 
+Do not add fields to the envelope or review items. A rejected item may contain
+only index, valid:false, and answer:""; never add a competing verdict or repair.
+
 An independent solver assessed every exact offered choice against the complete
 question. Its independentSolutions records contain a judgment and concise reason
 for each choice. The application admitted only items with one declared supported
@@ -343,10 +346,14 @@ def verify_questions(
             return []
     else:
         try:
-            reviews = _strict_json_object(raw).get("reviews")
+            review_payload = _strict_json_object(raw)
         except ProviderError:
             record_quality(request_metrics, "review", "invalid_json", len(questions))
             return []
+        if set(review_payload) != {"reviews"}:
+            record_quality(request_metrics, "review", "invalid_envelope", len(questions))
+            return []
+        reviews = review_payload["reviews"]
     if not isinstance(reviews, list) or len(reviews) != len(questions):
         record_quality(request_metrics, "review", "invalid_envelope", len(questions))
         return []
@@ -356,6 +363,14 @@ def verify_questions(
             record_quality(
                 request_metrics, "review", "invalid_envelope", len(questions)
             )
+            return []
+        if not authored_solution and set(item) - {
+            "index", "valid", "answer", "difficulty", "explanation", "choiceExplanations",
+        }:
+            # Extra fields can contain competing verdicts or proposed repairs.
+            # Never silently discard them while approving the declared answer.
+            # Negative reviews may still omit learner-facing feedback fields.
+            record_quality(request_metrics, "review", "invalid_envelope", len(questions))
             return []
         index = item.get("index")
         if (

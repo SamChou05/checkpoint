@@ -324,12 +324,12 @@ class CompleteQuestionVerificationTests(unittest.TestCase):
                     lambda *_: json.dumps({"reviews": [approved(self.question, **change)]}),
                 ), [])
 
-    def test_only_complete_success_overwrites_forged_policy_with_revision_two(self):
+    def test_only_complete_success_overwrites_authored_policy_with_revision_two(self):
         for forged in (None, True, 1, 2, 99, "2"):
             question = {**self.question, "verificationPolicyRevision": forged}
             accepted = self.run_complete(
                 [question], self.matching_solver,
-                lambda *_: json.dumps({"reviews": [approved(question, verificationPolicyRevision=99)]}),
+                lambda *_: json.dumps({"reviews": [approved(question)]}),
             )
             self.assertEqual(accepted[0]["verificationVersion"], 1)
             self.assertIs(type(accepted[0]["verificationPolicyRevision"]), int)

@@ -52,7 +52,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
             **changes,
         }
 
-    def test_legacy_full_path_owns_revision_one_regardless_of_authored_or_model_metadata(
+    def test_legacy_full_path_owns_revision_one_regardless_of_authored_or_solver_metadata(
         self,
     ):
         for forged in (True, 0, 1, 99, "1"):
@@ -66,7 +66,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
                 )
                 reviewer = mock.Mock(
                     return_value=json.dumps(
-                        {"reviews": [self.review(verificationPolicyRevision=99)]}
+                        {"reviews": [self.review()]}
                     )
                 )
                 accepted = verify_questions(
@@ -92,13 +92,39 @@ class VerificationPolicyTests(QuestionBankTestCase):
                     question["verificationPolicyRevision"] = forged
                 reviewer = mock.Mock(
                     return_value=json.dumps(
-                        {"reviews": [self.review(verificationPolicyRevision=1)]}
+                        {"reviews": [self.review()]}
                     )
                 )
                 accepted = verify_questions([question], self.request, reviewer)
                 self.assertEqual(len(accepted), 1)
                 self.assertEqual(accepted[0]["verificationVersion"], 1)
                 self.assertNotIn("verificationPolicyRevision", accepted[0])
+
+    def test_legacy_and_review_only_reject_reviewer_policy_metadata(self):
+        question = {**self.question, "verificationPolicyRevision": 99}
+        original = copy.deepcopy(question)
+        for legacy_solver in (False, True):
+            for metadata in (
+                {"verificationPolicyRevision": 1},
+                {"verificationVersion": 1},
+            ):
+                with self.subTest(legacy_solver=legacy_solver, metadata=metadata):
+                    solver = mock.Mock(return_value=json.dumps({
+                        "solutions": [self.solution()],
+                    })) if legacy_solver else None
+                    reviewer = mock.Mock(return_value=json.dumps({
+                        "reviews": [self.review(**metadata)],
+                    }))
+                    self.assertEqual(
+                        verify_questions(
+                            [question], self.request, reviewer, solve=solver
+                        ),
+                        [],
+                    )
+                    self.assertEqual(question, original)
+                    reviewer.assert_called_once()
+                    if solver is not None:
+                        solver.assert_called_once()
 
     def test_forged_author_metadata_does_not_survive_sanitization_and_full_generation_stamps_after_three_stages(
         self,

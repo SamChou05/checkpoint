@@ -126,7 +126,10 @@ def _extract_json_object(text: str) -> dict[str, Any]:
 
 def _parse_provider_json(candidate: str) -> dict[str, Any] | None:
     try:
-        parsed = json.loads(candidate, object_pairs_hook=_unique_json_object)
+        parsed = json.loads(
+            candidate, object_pairs_hook=_unique_json_object,
+            parse_constant=_reject_json_constant, parse_float=_finite_json_float,
+        )
     except ValueError:
         return None
 
