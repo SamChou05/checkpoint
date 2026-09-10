@@ -1,5 +1,23 @@
 # Pause handoff — September 9, 2026
 
+## September 10 solver-order preparation
+
+The next experiment is now implemented in `evals/checkpoint_solver_order.py`;
+read `QUESTION_SOLVER_ORDER_PROTOCOL.md`. It compares the current complete-choice
+solver against the same prompt/schema with reason before judgment, preserving
+all subject content, Sonnet 4.6 settings and admission gates. Five historical
+full batches plus three new transfer pairs contain 22 questions: 20 scored and
+two explicitly ambiguous. Two arms and two repetitions total 32 planned calls.
+Independent key-blind control assessment agrees on every scored choice and is
+archived in `docs/evidence/solver-order-preparation-20260910/`.
+
+No inference or deployment has occurred. The read-only AWS identity check
+reported an expired session, and an asynchronous request to renew `aws login`
+is pending. Finish the source/plan freeze and observe renewed access before any
+execution; never repeat a frozen plan with an existing execution claim. A
+successful ordering diagnostic would still need fresh full-workflow validation
+and would not itself complete the broader correctness goal.
+
 ## September 10 completed stage attribution
 
 Read `QUESTION_STAGE_ATTRIBUTION_RESULTS.md` and the committed

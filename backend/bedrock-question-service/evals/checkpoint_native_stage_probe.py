@@ -258,6 +258,7 @@ def run_frozen_jobs(plan, directory, *, cli_credentials=False, observer=None, co
     report = {"plan": plan, "plan_sha256": approved_hash, "status": "running", "calls": [],
               "results": [{"position": j["position"], "status": "unattempted"} for j in plan["jobs"]]}
     persistence_failed = False
+    active_position = None
 
     def persist():
         nonlocal persistence_failed
@@ -270,10 +271,12 @@ def run_frozen_jobs(plan, directory, *, cli_credentials=False, observer=None, co
     persist()
     try:
         for job in plan["jobs"]:
+            active_position = None
             call = {"position": job["position"], "archived_call_index": job["archived_call_index"],
                     "request_sha256": job["request_sha256"], "status": "launch_intent",
                     "provider_dispatch_attempted": None, "usage_known": False, "lifecycle": []}
             report["calls"].append(call)
+            active_position = job["position"]
             persist()  # No worker may exist before the exact planned request is durable.
 
             def progress(state):
@@ -307,6 +310,14 @@ def run_frozen_jobs(plan, directory, *, cli_credentials=False, observer=None, co
             report["status"] = "completed"
     except Exception as error:
         report.update(status="operational_failure", error_type=type(error).__name__)
+        if active_position is not None:
+            call = report["calls"][-1]
+            if call["status"] == "launch_intent":
+                call["status"] = "operational_failure"
+            report["results"][active_position] = {
+                "position": active_position, "status": "operational_failure",
+                "error_type": type(error).__name__, "semantic_assessment": "unavailable",
+            }
     finally:
         persist()
     return report

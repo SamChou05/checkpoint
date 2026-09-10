@@ -1,0 +1,1440 @@
+{
+  "experiment": "solver-judgment-reason-order-v1",
+  "batches": [
+    {
+      "batch_id": "historical_solver_call_01",
+      "kind": "historical",
+      "subject": {
+        "goal": {
+          "title": "Build Excel formulas that copy correctly across a worksheet",
+          "category": "Spreadsheets",
+          "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+          "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+          "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+          "questionDirective": "",
+          "preferredQuestionStyle": "Multiple Choice",
+          "needsSkillMap": false,
+          "contentTopics": [
+            "Combine relative",
+            "absolute and mixed A1 references when copying or filling formulas across both ro"
+          ]
+        },
+        "skillMap": null,
+        "sourceDocuments": [
+          {
+            "name": "Microsoft Excel reference rules: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+            "truncated": true
+          }
+        ],
+        "items": [
+          {
+            "index": 0,
+            "prompt": "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+            "choices": [
+              "=$A4*D$1",
+              "=$A2*D$1",
+              "=$A4*B$1",
+              "=A4*D1"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          {
+            "index": 1,
+            "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+            "choices": [
+              "=A2*B1",
+              "=$A2*B$1",
+              "=A$2*$B1",
+              "=$A$2*B$1"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          {
+            "index": 2,
+            "prompt": "Cell C3 contains =$B$3+C$2. This is filled right to E3, then that result is filled down to E5. What formula is in E5?",
+            "choices": [
+              "=$D$3+E$2",
+              "=$B$3+E$2",
+              "=$B$5+E$4",
+              "=$B$3+E$4"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          {
+            "index": 3,
+            "prompt": "A price matrix has regions in A2:A6 and products in B1:F1. Cell B2 should calculate price with =B$1*$A2. The user accidentally enters =B1*A2 and fills to F6. Which cells show correct results?",
+            "choices": [
+              "Only column B",
+              "Only row 2",
+              "Only B2",
+              "The entire range B2:F6"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          {
+            "index": 4,
+            "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+            "choices": [
+              "=N2/12",
+              "=$N2/12",
+              "=N$2/12",
+              "=$N$2/12"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          }
+        ]
+      },
+      "assessment": {
+        "items": [
+          {
+            "index": 0,
+            "key": "=$A4*D$1",
+            "expected_choices": [
+              {
+                "choice": "=$A4*D$1",
+                "judgment": "supported",
+                "rationale": "The copy moves +2 columns and +2 rows; fixed A and row 1 stay fixed, yielding $A4 and D$1."
+              },
+              {
+                "choice": "=$A2*D$1",
+                "judgment": "refuted",
+                "rationale": "The relative row of $A2 must advance to 4."
+              },
+              {
+                "choice": "=$A4*B$1",
+                "judgment": "refuted",
+                "rationale": "The relative column of B$1 must advance to D."
+              },
+              {
+                "choice": "=A4*D1",
+                "judgment": "refuted",
+                "rationale": "Copying retains the original fixed-column A and fixed-row 1 anchors."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-b.json",
+              "byte_sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+              "item_id": "sbe5c66ef7323",
+              "reason": "The fill moves two columns right and two rows down. A is fixed while its row changes to 4; the row-1 reference keeps row 1 and advances from B to D."
+            }
+          },
+          {
+            "index": 1,
+            "key": "=$A2*B$1",
+            "expected_choices": [
+              {
+                "choice": "=A2*B1",
+                "judgment": "refuted",
+                "rationale": "The unanchored references drift away from rate column A and sales row 1."
+              },
+              {
+                "choice": "=$A2*B$1",
+                "judgment": "supported",
+                "rationale": "Fix rate column A and sales row 1 while allowing the other components to follow the fill."
+              },
+              {
+                "choice": "=A$2*$B1",
+                "judgment": "refuted",
+                "rationale": "This fixes rate row 2 and sales column B, the opposite required components."
+              },
+              {
+                "choice": "=$A$2*B$1",
+                "judgment": "refuted",
+                "rationale": "Fixing rate row 2 prevents following rates down rows."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-a.json",
+              "byte_sha256": "1f488070ef58a31cc8ebf1ed3bc1c6ef8e4039436b24b1223d22c647d3a885f1",
+              "item_id": "sf6d459fb7686",
+              "reason": "Filling across requires fixing rate column A; filling down requires fixing sales row 1. The remaining components must stay relative."
+            }
+          },
+          {
+            "index": 2,
+            "key": "=$B$3+E$2",
+            "expected_choices": [
+              {
+                "choice": "=$D$3+E$2",
+                "judgment": "refuted",
+                "rationale": "Absolute $B$3 must remain B3; copying cannot turn its column into D."
+              },
+              {
+                "choice": "=$B$3+E$2",
+                "judgment": "supported",
+                "rationale": "Absolute B3 remains fixed, while C$2 becomes E$2 and keeps row 2."
+              },
+              {
+                "choice": "=$B$5+E$4",
+                "judgment": "refuted",
+                "rationale": "Both absolute row 3 and fixed row 2 have been changed incorrectly."
+              },
+              {
+                "choice": "=$B$3+E$4",
+                "judgment": "refuted",
+                "rationale": "The fixed row of E$2 cannot advance to row 4."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-b.json",
+              "byte_sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+              "item_id": "s362d86f45071",
+              "reason": "The absolute B3 reference remains fixed. The relative column of C$2 advances to E on the rightward fill, and its fixed row remains 2 on the downward fill."
+            }
+          },
+          {
+            "index": 3,
+            "key": "Only B2",
+            "expected_choices": [
+              {
+                "choice": "Only column B",
+                "judgment": null,
+                "rationale": "Only B2 retains the required input references. If “correct results” means numerical equality, however, the answer depends on unspecified cell values: all four offered patterns are possible. This is an ambiguity between formula-reference correctness and actual numerical outcomes, not a claim that all four patterns occur simultaneously."
+              },
+              {
+                "choice": "Only row 2",
+                "judgment": null,
+                "rationale": "Only B2 retains the required input references. If “correct results” means numerical equality, however, the answer depends on unspecified cell values: all four offered patterns are possible. This is an ambiguity between formula-reference correctness and actual numerical outcomes, not a claim that all four patterns occur simultaneously."
+              },
+              {
+                "choice": "Only B2",
+                "judgment": null,
+                "rationale": "Only B2 retains the required input references. If “correct results” means numerical equality, however, the answer depends on unspecified cell values: all four offered patterns are possible. This is an ambiguity between formula-reference correctness and actual numerical outcomes, not a claim that all four patterns occur simultaneously."
+              },
+              {
+                "choice": "The entire range B2:F6",
+                "judgment": null,
+                "rationale": "Only B2 retains the required input references. If “correct results” means numerical equality, however, the answer depends on unspecified cell values: all four offered patterns are possible. This is an ambiguity between formula-reference correctness and actual numerical outcomes, not a claim that all four patterns occur simultaneously."
+              }
+            ],
+            "premise_verdict": "ambiguous",
+            "eligibility_expected": null,
+            "scorable": false,
+            "assessment_caveat": "Material interpretation uncertainty is preserved; all exact per-choice judgments and gate eligibility are unscored.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-a.json",
+              "byte_sha256": "1f488070ef58a31cc8ebf1ed3bc1c6ef8e4039436b24b1223d22c647d3a885f1",
+              "item_id": "s14c814a70cce",
+              "reason": "Only B2 retains the required input references. If “correct results” means numerical equality, however, the answer depends on unspecified cell values: all four offered patterns are possible. This is an ambiguity between formula-reference correctness and actual numerical outcomes, not a claim that all four patterns occur simultaneously."
+            }
+          },
+          {
+            "index": 4,
+            "key": "=$N2/12",
+            "expected_choices": [
+              {
+                "choice": "=N2/12",
+                "judgment": "refuted",
+                "rationale": "Relative column N moves away from the target column on a rightward fill."
+              },
+              {
+                "choice": "=$N2/12",
+                "judgment": "supported",
+                "rationale": "Fixed column N retains the target column and the relative row follows each category."
+              },
+              {
+                "choice": "=N$2/12",
+                "judgment": "refuted",
+                "rationale": "Column N drifts across and fixed row 2 fails to follow categories down."
+              },
+              {
+                "choice": "=$N$2/12",
+                "judgment": "refuted",
+                "rationale": "Fixed row 2 keeps using the first category target on downward fill."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-b.json",
+              "byte_sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+              "item_id": "sd4db3f0c55b6",
+              "reason": "Column N must stay fixed across months, while the row must follow the category on downward fill. Only $N2 has both required properties."
+            }
+          }
+        ]
+      },
+      "provenance": {
+        "path": "docs/evidence/delivery-feedback-20260909/capture.json",
+        "byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+        "canonical_sha256": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2",
+        "call_index": 1,
+        "operation_index": 0,
+        "request_sha256": "29ca690f76eb1f968305052f9b227c85144d5bff8744b79d21d22b28dcbaa9fc",
+        "subject_sha256": "5d0e12396d76cbe574d3a331958f4b903ed86f9c23bbd4a918d32c1fb0ddcb20",
+        "trace_path": "docs/evidence/stage-attribution-20260910/trace.json",
+        "trace_byte_sha256": "7995727d3a09230fd662300f601aae466265278a8710c08f103a9582fd675e06",
+        "occurrences": [
+          {
+            "index": 0,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:0:0:0"
+          },
+          {
+            "index": 1,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:0:0:1"
+          },
+          {
+            "index": 2,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:0:0:2"
+          },
+          {
+            "index": 3,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:0:0:3"
+          },
+          {
+            "index": 4,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:0:0:4"
+          }
+        ]
+      }
+    },
+    {
+      "batch_id": "historical_solver_call_04",
+      "kind": "historical",
+      "subject": {
+        "goal": {
+          "title": "Build Excel formulas that copy correctly across a worksheet",
+          "category": "Spreadsheets",
+          "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+          "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+          "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+          "questionDirective": "",
+          "preferredQuestionStyle": "Multiple Choice",
+          "needsSkillMap": false,
+          "contentTopics": [
+            "Combine relative",
+            "absolute and mixed A1 references when copying or filling formulas across both ro"
+          ]
+        },
+        "skillMap": null,
+        "sourceDocuments": [
+          {
+            "name": "Microsoft Excel reference rules: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+            "truncated": true
+          }
+        ],
+        "items": [
+          {
+            "index": 0,
+            "prompt": "A gradebook has student names in A2:A20 and assignment scores in B2:F20. Cell G2 calculates the average of B2:F2. The formula must fill down to G20. Which formula in G2 works correctly?",
+            "choices": [
+              "=AVERAGE(B$2:F$2)",
+              "=AVERAGE($B2:$F2)",
+              "=AVERAGE(B2:F2)",
+              "=AVERAGE($B$2:$F$2)"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          {
+            "index": 1,
+            "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+            "choices": [
+              "=$A1*B$1*$A3",
+              "=$A$1*B1*$A$3",
+              "=$A$1*B$1*$A3",
+              "=$A$1*$B$1*A3"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          }
+        ]
+      },
+      "assessment": {
+        "items": [
+          {
+            "index": 0,
+            "key": "=AVERAGE(B2:F2)",
+            "expected_choices": [
+              {
+                "choice": "=AVERAGE(B$2:F$2)",
+                "judgment": "refuted",
+                "rationale": "The fixed row keeps averaging row 2 for every student."
+              },
+              {
+                "choice": "=AVERAGE($B2:$F2)",
+                "judgment": "supported",
+                "rationale": "The row remains relative; fixed columns make no difference during exclusively downward copying."
+              },
+              {
+                "choice": "=AVERAGE(B2:F2)",
+                "judgment": "supported",
+                "rationale": "The row remains relative; columns remain B:F because there is no horizontal displacement."
+              },
+              {
+                "choice": "=AVERAGE($B$2:$F$2)",
+                "judgment": "refuted",
+                "rationale": "The fully fixed range always averages the first student row."
+              }
+            ],
+            "premise_verdict": "multiple_supported",
+            "eligibility_expected": false,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-b.json",
+              "byte_sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+              "item_id": "s7f28b6c7b8aa",
+              "reason": "Both options keep the row relative. Because filling is exclusively downward, the column letters remain B and F whether they are relative or absolute. The other two choices incorrectly keep row 2 fixed."
+            }
+          },
+          {
+            "index": 1,
+            "key": "=$A$1*B$1*$A3",
+            "expected_choices": [
+              {
+                "choice": "=$A1*B$1*$A3",
+                "judgment": "refuted",
+                "rationale": "The additional A3 operand is a quarter label, not an input to the stated two-factor product."
+              },
+              {
+                "choice": "=$A$1*B1*$A$3",
+                "judgment": "refuted",
+                "rationale": "The additional fixed A3 operand is a quarter label; it is not a stated numeric multiplier."
+              },
+              {
+                "choice": "=$A$1*B$1*$A3",
+                "judgment": "refuted",
+                "rationale": "The additional A3 operand is a quarter label, not an input to the stated two-factor product."
+              },
+              {
+                "choice": "=$A$1*$B$1*A3",
+                "judgment": "refuted",
+                "rationale": "The additional A3 operand is a quarter label, not an input to the stated two-factor product."
+              }
+            ],
+            "premise_verdict": "zero_supported",
+            "eligibility_expected": false,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-a.json",
+              "byte_sha256": "1f488070ef58a31cc8ebf1ed3bc1c6ef8e4039436b24b1223d22c647d3a885f1",
+              "item_id": "sb5f0a4d23ad4",
+              "reason": "The stated calculation multiplies the factor in A1 by the target in B1. Every option additionally multiplies by A3, which is explicitly a quarter label (Q1), not a stated numeric multiplier. None implements the stated two-input calculation."
+            }
+          }
+        ]
+      },
+      "provenance": {
+        "path": "docs/evidence/delivery-feedback-20260909/capture.json",
+        "byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+        "canonical_sha256": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2",
+        "call_index": 4,
+        "operation_index": 0,
+        "request_sha256": "795d91e8848c5342993d806353974e9ddd7f8c203fff8cd92b89d673d1290947",
+        "subject_sha256": "cc61d8886bba9193010a10e0d2823a689de9712e703a88337638ca1df25af21c",
+        "trace_path": "docs/evidence/stage-attribution-20260910/trace.json",
+        "trace_byte_sha256": "7995727d3a09230fd662300f601aae466265278a8710c08f103a9582fd675e06",
+        "occurrences": [
+          {
+            "index": 0,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:0:3:0"
+          },
+          {
+            "index": 1,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:0:3:1"
+          }
+        ]
+      }
+    },
+    {
+      "batch_id": "historical_solver_call_09",
+      "kind": "historical",
+      "subject": {
+        "goal": {
+          "title": "Build Excel formulas that copy correctly across a worksheet",
+          "category": "Spreadsheets",
+          "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+          "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+          "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+          "questionDirective": "",
+          "preferredQuestionStyle": "Multiple Choice",
+          "needsSkillMap": false,
+          "contentTopics": [
+            "Combine relative",
+            "absolute and mixed A1 references when copying or filling formulas across both ro"
+          ]
+        },
+        "skillMap": null,
+        "sourceDocuments": [
+          {
+            "name": "Microsoft Excel reference rules: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+            "truncated": true
+          }
+        ],
+        "items": [
+          {
+            "index": 0,
+            "prompt": "A budget sheet tracks monthly expenses. Row 1 contains category names (B1:E1). Column A lists months (A2:A13). Cell B2 should calculate January's Food budget using a rate from F1 and a multiplier from G2, then fill across all categories and down all months. Which formula belongs in B2?",
+            "choices": [
+              "=B2*$G2*$F$1",
+              "=B2*G2*F1",
+              "=B2*G$2*$F$1",
+              "=$B$2*$G$2*F1"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          {
+            "index": 1,
+            "prompt": "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+            "choices": [
+              "=$F4+G$2",
+              "=B8+G$2",
+              "=$F8+G$6",
+              "=$F8+C$2"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          {
+            "index": 2,
+            "prompt": "A sales report has regional targets in column C (C2:C6) and monthly actuals in row 2 (D2:G2). Cell D3 should calculate variance from target using the region's target and the month's actual, then fill across months and down regions. Which formula belongs in D3?",
+            "choices": [
+              "=D2-C3",
+              "=$D$2-$C$3",
+              "=$D2-C$3",
+              "=D$2-$C3"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          {
+            "index": 3,
+            "prompt": "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+            "choices": [
+              "=K$9+$O5",
+              "=K$5+$L9",
+              "=N$9+$L5",
+              "=N$5+$L9"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          {
+            "index": 4,
+            "prompt": "A gradebook has assignment weights in row 3 (B3:E3) and student scores in column A (A4:A8). Cell B4 should calculate weighted score using the student's score and the assignment's weight, then fill across assignments and down students. Which formula belongs in B4?",
+            "choices": [
+              "=$A4*B$3",
+              "=A4*B3",
+              "=$A$4*$B$3",
+              "=A$4*$B3"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          }
+        ]
+      },
+      "assessment": {
+        "items": [
+          {
+            "index": 0,
+            "key": "=B2*$G2*$F$1",
+            "expected_choices": [
+              {
+                "choice": "=B2*$G2*$F$1",
+                "judgment": "refuted",
+                "rationale": "Entered in B2, the formula directly refers to B2, creating an unstated circular calculation."
+              },
+              {
+                "choice": "=B2*G2*F1",
+                "judgment": "refuted",
+                "rationale": "Entered in B2, the formula directly refers to B2, creating an unstated circular calculation."
+              },
+              {
+                "choice": "=B2*G$2*$F$1",
+                "judgment": "refuted",
+                "rationale": "Entered in B2, the formula directly refers to B2, creating an unstated circular calculation."
+              },
+              {
+                "choice": "=$B$2*$G$2*F1",
+                "judgment": "refuted",
+                "rationale": "Entered in B2, the formula directly refers to B2, creating an unstated circular calculation."
+              }
+            ],
+            "premise_verdict": "zero_supported",
+            "eligibility_expected": false,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-a.json",
+              "byte_sha256": "1f488070ef58a31cc8ebf1ed3bc1c6ef8e4039436b24b1223d22c647d3a885f1",
+              "item_id": "sd3ec4b37c9a6",
+              "reason": "All four choices entered in B2 refer directly to B2, creating a circular reference. The stem supplies no independent base-budget input or intentional iterative model, so none is an ordinary valid formula for the described calculation."
+            }
+          },
+          {
+            "index": 1,
+            "key": "=$F8+C$2",
+            "expected_choices": [
+              {
+                "choice": "=$F4+G$2",
+                "judgment": "refuted",
+                "rationale": "The relative row and relative column have not followed the displacement."
+              },
+              {
+                "choice": "=B8+G$2",
+                "judgment": "refuted",
+                "rationale": "Column F was anchored and must stay F; relative G must move left to C."
+              },
+              {
+                "choice": "=$F8+G$6",
+                "judgment": "refuted",
+                "rationale": "The relative G column must move to C and its fixed row must remain 2."
+              },
+              {
+                "choice": "=$F8+C$2",
+                "judgment": "supported",
+                "rationale": "Four rows down and four columns left yields fixed-column $F8 and fixed-row C$2."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-b.json",
+              "byte_sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+              "item_id": "s963259e3ab1b",
+              "reason": "Copy displacement is four columns left and four rows down. The fixed F column stays F, its row becomes 8, and the relative G column becomes C while its row stays 2."
+            }
+          },
+          {
+            "index": 2,
+            "key": "=D$2-$C3",
+            "expected_choices": [
+              {
+                "choice": "=D2-C3",
+                "judgment": "refuted",
+                "rationale": "The actual row and target column drift when the formula is filled."
+              },
+              {
+                "choice": "=$D$2-$C$3",
+                "judgment": "refuted",
+                "rationale": "Fully fixed inputs cannot follow changing month columns and region rows."
+              },
+              {
+                "choice": "=$D2-C$3",
+                "judgment": "refuted",
+                "rationale": "This fixes the actual column and target row rather than actual row and target column."
+              },
+              {
+                "choice": "=D$2-$C3",
+                "judgment": "supported",
+                "rationale": "D$2 follows month columns on row 2; $C3 follows region rows in column C."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario. The offered formulas all use actual minus target; the expected answer preserves that listed interpretation and the stated input anchors.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-b.json",
+              "byte_sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+              "item_id": "sea341b3380b3",
+              "reason": "The monthly actual reference must move across columns but stay on row 2; the regional target must stay in column C but move down rows. D$2 and $C3 provide those anchors. The listed formulas all use actual minus target, so no competing sign convention creates an additional listed answer."
+            }
+          },
+          {
+            "index": 3,
+            "key": "=N$5+$L9",
+            "expected_choices": [
+              {
+                "choice": "=K$9+$O5",
+                "judgment": "refuted",
+                "rationale": "Fixed row 5 and fixed column L cannot change to row 9 and column O."
+              },
+              {
+                "choice": "=K$5+$L9",
+                "judgment": "refuted",
+                "rationale": "The relative K column must move right to N."
+              },
+              {
+                "choice": "=N$9+$L5",
+                "judgment": "refuted",
+                "rationale": "The first fixed row and second relative row have been handled incorrectly."
+              },
+              {
+                "choice": "=N$5+$L9",
+                "judgment": "supported",
+                "rationale": "Three columns right and four rows down turns K$5 into N$5 and $L5 into $L9."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-b.json",
+              "byte_sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+              "item_id": "s24ae8c02f9b3",
+              "reason": "Copy displacement is three columns right and four rows down. K has a relative column and fixed row; L has a fixed column and relative row."
+            }
+          },
+          {
+            "index": 4,
+            "key": "=$A4*B$3",
+            "expected_choices": [
+              {
+                "choice": "=$A4*B$3",
+                "judgment": "supported",
+                "rationale": "Fix score column A and weight row 3 while allowing student rows and assignment columns to vary."
+              },
+              {
+                "choice": "=A4*B3",
+                "judgment": "refuted",
+                "rationale": "Both input references drift in the dimensions that must stay fixed."
+              },
+              {
+                "choice": "=$A$4*$B$3",
+                "judgment": "refuted",
+                "rationale": "Fully fixed inputs do not follow different students or assignments."
+              },
+              {
+                "choice": "=A$4*$B3",
+                "judgment": "refuted",
+                "rationale": "The score row and weight column are fixed instead of the required score column and weight row."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-a.json",
+              "byte_sha256": "1f488070ef58a31cc8ebf1ed3bc1c6ef8e4039436b24b1223d22c647d3a885f1",
+              "item_id": "sec3d670be44d",
+              "reason": "The score must remain in column A while following students down rows; the weight must remain in row 3 while following assignments across columns."
+            }
+          }
+        ]
+      },
+      "provenance": {
+        "path": "docs/evidence/delivery-feedback-20260909/capture.json",
+        "byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+        "canonical_sha256": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2",
+        "call_index": 9,
+        "operation_index": 1,
+        "request_sha256": "190bcd45298cf7687a72f65fd3b17bd6bbc117ec6e3a54cb96de4bd4411db5c8",
+        "subject_sha256": "45dcc7c245f23c0e422131b4553499fdc9d5d37567d4ad52e93ec1a658eb2044",
+        "trace_path": "docs/evidence/stage-attribution-20260910/trace.json",
+        "trace_byte_sha256": "7995727d3a09230fd662300f601aae466265278a8710c08f103a9582fd675e06",
+        "occurrences": [
+          {
+            "index": 0,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:1:8:0"
+          },
+          {
+            "index": 1,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:1:8:1"
+          },
+          {
+            "index": 2,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:1:8:2"
+          },
+          {
+            "index": 3,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:1:8:3"
+          },
+          {
+            "index": 4,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:1:8:4"
+          }
+        ]
+      }
+    },
+    {
+      "batch_id": "historical_solver_call_12",
+      "kind": "historical",
+      "subject": {
+        "goal": {
+          "title": "Interpret map distances and scale after resizing",
+          "category": "Geography",
+          "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+          "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+          "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+          "questionDirective": "",
+          "preferredQuestionStyle": "Multiple Choice",
+          "needsSkillMap": false,
+          "contentTopics": [
+            "Combine map-to-ground unit conversion",
+            "route measurements and uniform changes in printed size. Distinguish a printed nu"
+          ]
+        },
+        "skillMap": null,
+        "sourceDocuments": [
+          {
+            "name": "Ordnance Survey map distance: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+            "truncated": true
+          },
+          {
+            "name": "Penn State map reproduction: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+            "truncated": true
+          }
+        ],
+        "items": [
+          {
+            "index": 0,
+            "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along the curves. The map is then photocopied at 150% enlargement. What ground distance does the original 8 cm measurement represent?",
+            "choices": [
+              "5 km",
+              "2 km",
+              "3 km",
+              "1.33 km"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine map-to-ground unit conversion"
+          }
+        ]
+      },
+      "assessment": {
+        "items": [
+          {
+            "index": 0,
+            "key": "2 km",
+            "expected_choices": [
+              {
+                "choice": "5 km",
+                "judgment": "refuted",
+                "rationale": "The original measurement gives 8 × 25,000 cm = 2 km, not 5 km."
+              },
+              {
+                "choice": "2 km",
+                "judgment": "supported",
+                "rationale": "The original 8 cm represents 200,000 cm = 2 km; later enlargement does not change that measurement."
+              },
+              {
+                "choice": "3 km",
+                "judgment": "refuted",
+                "rationale": "Multiplying by the later enlargement factor changes a measurement explicitly made on the original."
+              },
+              {
+                "choice": "1.33 km",
+                "judgment": "refuted",
+                "rationale": "Dividing by the later enlargement factor changes a measurement explicitly made on the original."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-a.json",
+              "byte_sha256": "1f488070ef58a31cc8ebf1ed3bc1c6ef8e4039436b24b1223d22c647d3a885f1",
+              "item_id": "s3ecfab632241",
+              "reason": "The question asks about the original measurement, so the later enlargement does not change its represented ground distance."
+            }
+          }
+        ]
+      },
+      "provenance": {
+        "path": "docs/evidence/delivery-feedback-20260909/capture.json",
+        "byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+        "canonical_sha256": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2",
+        "call_index": 12,
+        "operation_index": 2,
+        "request_sha256": "0689ff6521bef41d88c980a398ec5e5dc9f0e6e3a3495c2f5c508b5be4cf3b83",
+        "subject_sha256": "25bcaee7647eb16b786bcb85b19dd68f54a94a6ba01ac0c0a1aebfc0eaf44117",
+        "trace_path": "docs/evidence/stage-attribution-20260910/trace.json",
+        "trace_byte_sha256": "7995727d3a09230fd662300f601aae466265278a8710c08f103a9582fd675e06",
+        "occurrences": [
+          {
+            "index": 0,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:2:11:0"
+          }
+        ]
+      }
+    },
+    {
+      "batch_id": "historical_solver_call_27",
+      "kind": "historical",
+      "subject": {
+        "goal": {
+          "title": "Reason about energy flow through food webs",
+          "category": "Ecology",
+          "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+          "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+          "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+          "questionDirective": "",
+          "preferredQuestionStyle": "Multiple Choice",
+          "needsSkillMap": false,
+          "contentTopics": [
+            "Combine explicitly described feeding links",
+            "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+          ]
+        },
+        "skillMap": null,
+        "sourceDocuments": [
+          {
+            "name": "OpenStax food-web structure: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+            "truncated": true
+          },
+          {
+            "name": "OpenStax trophic production: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+            "truncated": true
+          }
+        ],
+        "items": [
+          {
+            "index": 0,
+            "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+            "choices": [
+              "400 kJ/m²/year",
+              "800 kJ/m²/year",
+              "2,000 kJ/m²/year",
+              "160 kJ/m²/year"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine explicitly described feeding links"
+          },
+          {
+            "index": 1,
+            "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+            "choices": [
+              "625 kJ/m²/year",
+              "1,250 kJ/m²/year",
+              "2,500 kJ/m²/year",
+              "12,500 kJ/m²/year"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Distinguish energy flow over time from a snapsho"
+          },
+          {
+            "index": 2,
+            "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+            "choices": [
+              "10%",
+              "15%",
+              "25%",
+              "Cannot be determined from the information given"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "trophic production and stated transfer efficienc"
+          }
+        ]
+      },
+      "assessment": {
+        "items": [
+          {
+            "index": 0,
+            "key": "160 kJ/m²/year",
+            "expected_choices": [
+              {
+                "choice": "400 kJ/m²/year",
+                "judgment": null,
+                "rationale": "The shrimp description fails to specify a coherent quantitative pathway. “Zooplankton-eating shrimp” places a zooplankton-to-shrimp transfer before small fish, while “receive 2,000 ... from algae” can describe an indirect basal origin, a direct feeding link, or received food energy rather than shrimp production. Under the stated zooplankton-feeding pathway with 20% at every production transfer, shrimp production would be 400, not 2,000, and the two fish routes yield 96, which is absent. The listed 160 results only if 2,000 is treated as shrimp production already available to small fish and the extra zooplankton transfer is bypassed. Treating shrimp as also feeding directly on algae introduces an additional stated-by-interpretation route whose contribution through their zooplankton diet still needs accounting. No listed answer is warranted across these meanings without repairing the pathway or the meaning of “receive”."
+              },
+              {
+                "choice": "800 kJ/m²/year",
+                "judgment": null,
+                "rationale": "The shrimp description fails to specify a coherent quantitative pathway. “Zooplankton-eating shrimp” places a zooplankton-to-shrimp transfer before small fish, while “receive 2,000 ... from algae” can describe an indirect basal origin, a direct feeding link, or received food energy rather than shrimp production. Under the stated zooplankton-feeding pathway with 20% at every production transfer, shrimp production would be 400, not 2,000, and the two fish routes yield 96, which is absent. The listed 160 results only if 2,000 is treated as shrimp production already available to small fish and the extra zooplankton transfer is bypassed. Treating shrimp as also feeding directly on algae introduces an additional stated-by-interpretation route whose contribution through their zooplankton diet still needs accounting. No listed answer is warranted across these meanings without repairing the pathway or the meaning of “receive”."
+              },
+              {
+                "choice": "2,000 kJ/m²/year",
+                "judgment": null,
+                "rationale": "The shrimp description fails to specify a coherent quantitative pathway. “Zooplankton-eating shrimp” places a zooplankton-to-shrimp transfer before small fish, while “receive 2,000 ... from algae” can describe an indirect basal origin, a direct feeding link, or received food energy rather than shrimp production. Under the stated zooplankton-feeding pathway with 20% at every production transfer, shrimp production would be 400, not 2,000, and the two fish routes yield 96, which is absent. The listed 160 results only if 2,000 is treated as shrimp production already available to small fish and the extra zooplankton transfer is bypassed. Treating shrimp as also feeding directly on algae introduces an additional stated-by-interpretation route whose contribution through their zooplankton diet still needs accounting. No listed answer is warranted across these meanings without repairing the pathway or the meaning of “receive”."
+              },
+              {
+                "choice": "160 kJ/m²/year",
+                "judgment": null,
+                "rationale": "The shrimp description fails to specify a coherent quantitative pathway. “Zooplankton-eating shrimp” places a zooplankton-to-shrimp transfer before small fish, while “receive 2,000 ... from algae” can describe an indirect basal origin, a direct feeding link, or received food energy rather than shrimp production. Under the stated zooplankton-feeding pathway with 20% at every production transfer, shrimp production would be 400, not 2,000, and the two fish routes yield 96, which is absent. The listed 160 results only if 2,000 is treated as shrimp production already available to small fish and the extra zooplankton transfer is bypassed. Treating shrimp as also feeding directly on algae introduces an additional stated-by-interpretation route whose contribution through their zooplankton diet still needs accounting. No listed answer is warranted across these meanings without repairing the pathway or the meaning of “receive”."
+              }
+            ],
+            "premise_verdict": "ambiguous",
+            "eligibility_expected": null,
+            "scorable": false,
+            "assessment_caveat": "Material interpretation uncertainty is preserved; all exact per-choice judgments and gate eligibility are unscored.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-b.json",
+              "byte_sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+              "item_id": "sc2b9a6dd9575",
+              "reason": "The shrimp description fails to specify a coherent quantitative pathway. “Zooplankton-eating shrimp” places a zooplankton-to-shrimp transfer before small fish, while “receive 2,000 ... from algae” can describe an indirect basal origin, a direct feeding link, or received food energy rather than shrimp production. Under the stated zooplankton-feeding pathway with 20% at every production transfer, shrimp production would be 400, not 2,000, and the two fish routes yield 96, which is absent. The listed 160 results only if 2,000 is treated as shrimp production already available to small fish and the extra zooplankton transfer is bypassed. Treating shrimp as also feeding directly on algae introduces an additional stated-by-interpretation route whose contribution through their zooplankton diet still needs accounting. No listed answer is warranted across these meanings without repairing the pathway or the meaning of “receive”."
+            }
+          },
+          {
+            "index": 1,
+            "key": "625 kJ/m²/year",
+            "expected_choices": [
+              {
+                "choice": "625 kJ/m²/year",
+                "judgment": "supported",
+                "rationale": "Applying the stated common 25% efficiency over the two displayed links gives 10,000 × .25 × .25 = 625."
+              },
+              {
+                "choice": "1,250 kJ/m²/year",
+                "judgment": "refuted",
+                "rationale": "This does not equal the product of two successive 25% transfer factors."
+              },
+              {
+                "choice": "2,500 kJ/m²/year",
+                "judgment": "refuted",
+                "rationale": "This counts one transfer, reaching minnows rather than pike."
+              },
+              {
+                "choice": "12,500 kJ/m²/year",
+                "judgment": "refuted",
+                "rationale": "Production cannot increase above the producer value through these two 25% transfers."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario. Uses the conventional reading that the unqualified 25% applies to both displayed transfers.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-a.json",
+              "byte_sha256": "1f488070ef58a31cc8ebf1ed3bc1c6ef8e4039436b24b1223d22c647d3a885f1",
+              "item_id": "s58b32355408e",
+              "reason": "The unqualified transfer efficiency is naturally the common rate for each of the two displayed trophic links. Standing biomass is not an input to this production calculation."
+            }
+          },
+          {
+            "index": 2,
+            "key": "10%",
+            "expected_choices": [
+              {
+                "choice": "10%",
+                "judgment": "supported",
+                "rationale": "For the explicitly listed plant-to-snail branch, 800 / 8,000 × 100% = 10%."
+              },
+              {
+                "choice": "15%",
+                "judgment": "refuted",
+                "rationale": "This is the plant-to-crab production ratio, not the requested snail ratio."
+              },
+              {
+                "choice": "25%",
+                "judgment": "refuted",
+                "rationale": "This combines the crab and snail receiving branches instead of isolating snails."
+              },
+              {
+                "choice": "Cannot be determined from the information given",
+                "judgment": "refuted",
+                "rationale": "The listed producer and snail productions determine this branch ratio under the supplied convention."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Retrospective assistant assessment, not human-expert ground truth. Refuted means this option does not answer the stated question; it need not be impossible in every unrelated scenario.",
+            "original_assessment": {
+              "path": "docs/evidence/stage-attribution-20260910/assessment-b.json",
+              "byte_sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+              "item_id": "sce8a5eb2dcdd",
+              "reason": "Within the explicitly listed food web, the plant-to-snail production ratio is 800/8,000. Crab and snail production are separate receiving branches; adding crab production would calculate a different combined ratio. No unreported snail food source is assumed."
+            }
+          }
+        ]
+      },
+      "provenance": {
+        "path": "docs/evidence/delivery-feedback-20260909/capture.json",
+        "byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+        "canonical_sha256": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2",
+        "call_index": 27,
+        "operation_index": 5,
+        "request_sha256": "9ab80269a6276caec46d689073c881f01d714c4d313b8fd82cb9bad56dc52e3a",
+        "subject_sha256": "0c2b6226b01c3c8cc5a5b307f456ae79cf94cdae05bd2f12f873f4ed98185a5b",
+        "trace_path": "docs/evidence/stage-attribution-20260910/trace.json",
+        "trace_byte_sha256": "7995727d3a09230fd662300f601aae466265278a8710c08f103a9582fd675e06",
+        "occurrences": [
+          {
+            "index": 0,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:5:26:0"
+          },
+          {
+            "index": 1,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:5:26:1"
+          },
+          {
+            "index": 2,
+            "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:5:26:4"
+          }
+        ]
+      }
+    },
+    {
+      "batch_id": "transfer_english_agreement",
+      "kind": "transfer",
+      "subject": {
+        "goal": {
+          "title": "Use subject–verb agreement in standard written English",
+          "currentLevel": "I know the basics and want to check precise applications.",
+          "focusAreas": "Subject–verb agreement in affirmative present-tense declarative sentences",
+          "learningTarget": "Subject–verb agreement in affirmative present-tense declarative sentences",
+          "contentTopics": [
+            "Subject–verb agreement in affirmative present-tense declarative sentences"
+          ]
+        },
+        "skillMap": null,
+        "sourceDocuments": [],
+        "items": [
+          {
+            "index": 0,
+            "prompt": "Which sentence has standard English subject–verb agreement?",
+            "choices": [
+              "The list of names are on the desk.",
+              "The list of names is on the desk.",
+              "The list of names am on the desk.",
+              "The list of names be on the desk."
+            ],
+            "topic": "Subject–verb agreement in affirmative present-tense declarative sentences"
+          },
+          {
+            "index": 1,
+            "prompt": "Which sentence has standard English subject–verb agreement?",
+            "choices": [
+              "Each of the boxes is sealed.",
+              "The boxes are sealed.",
+              "Each of the boxes are sealed.",
+              "The boxes is sealed."
+            ],
+            "topic": "Subject–verb agreement in affirmative present-tense declarative sentences"
+          }
+        ]
+      },
+      "assessment": {
+        "items": [
+          {
+            "index": 0,
+            "key": "The list of names is on the desk.",
+            "expected_choices": [
+              {
+                "choice": "The list of names are on the desk.",
+                "judgment": "refuted",
+                "rationale": "The singular subject list requires is, not are."
+              },
+              {
+                "choice": "The list of names is on the desk.",
+                "judgment": "supported",
+                "rationale": "The singular subject list agrees with is; the intervening plural names does not control agreement."
+              },
+              {
+                "choice": "The list of names am on the desk.",
+                "judgment": "refuted",
+                "rationale": "Am agrees with first-person singular I, not the third-person singular list."
+              },
+              {
+                "choice": "The list of names be on the desk.",
+                "judgment": "refuted",
+                "rationale": "Bare be is not the standard finite present form in this affirmative declarative."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Locally authored prospective basic control. This is a declared expected judgment, not an observed model result or calibrated difficulty."
+          },
+          {
+            "index": 1,
+            "key": "Each of the boxes is sealed.",
+            "expected_choices": [
+              {
+                "choice": "Each of the boxes is sealed.",
+                "judgment": "supported",
+                "rationale": "Each is grammatically singular and agrees with is."
+              },
+              {
+                "choice": "The boxes are sealed.",
+                "judgment": "supported",
+                "rationale": "The plural subject boxes agrees with are."
+              },
+              {
+                "choice": "Each of the boxes are sealed.",
+                "judgment": "refuted",
+                "rationale": "The singular head each does not agree with are."
+              },
+              {
+                "choice": "The boxes is sealed.",
+                "judgment": "refuted",
+                "rationale": "The plural subject boxes does not agree with is."
+              }
+            ],
+            "premise_verdict": "multiple_supported",
+            "eligibility_expected": false,
+            "scorable": true,
+            "assessment_caveat": "Locally authored prospective basic control. This is a declared expected judgment, not an observed model result or calibrated difficulty."
+          }
+        ]
+      },
+      "provenance": {
+        "path": null,
+        "byte_sha256": null,
+        "subject_sha256": "0ccee2dea536f02937ddfbd08aaef5dff2a831061d8dc85b173c530322c77a5c",
+        "note": "New literal controls authored locally for this fixture; no historical model output or external source copied. Standard written English and affirmative declarative context are stated in the goal.",
+        "occurrences": []
+      }
+    },
+    {
+      "batch_id": "transfer_fictional_badges",
+      "kind": "transfer",
+      "subject": {
+        "goal": {
+          "title": "Apply a small fictional rule system",
+          "currentLevel": "I know the basics and want to check precise applications.",
+          "focusAreas": "Derive permissions and exclusions from explicit fictional rules",
+          "learningTarget": "Derive permissions and exclusions from explicit fictional rules",
+          "contentTopics": [
+            "Derive permissions and exclusions from explicit fictional rules"
+          ]
+        },
+        "skillMap": null,
+        "sourceDocuments": [
+          {
+            "name": "Fictional badge rules",
+            "text": "Fictional badge rules: Each person has exactly one badge, either amber or violet. Every amber-badge holder is permitted to enter Room R. No violet-badge holder is permitted to enter Room R. These are the complete badge and entry-permission rules for this exercise.",
+            "truncated": false
+          }
+        ],
+        "items": [
+          {
+            "index": 0,
+            "prompt": "Ivo has a violet badge. Under the supplied rules, which statement must follow?",
+            "choices": [
+              "Ivo is permitted to enter Room R.",
+              "Ivo has both badge colors.",
+              "Ivo is not permitted to enter Room R.",
+              "Ivo has an amber badge."
+            ],
+            "topic": "Derive permissions and exclusions from explicit fictional rules"
+          },
+          {
+            "index": 1,
+            "prompt": "Mina has an amber badge. Under the supplied rules, which statement must follow?",
+            "choices": [
+              "Mina has a violet badge.",
+              "Mina is not permitted to enter Room R.",
+              "Mina has both badge colors.",
+              "Mina has no badge."
+            ],
+            "topic": "Derive permissions and exclusions from explicit fictional rules"
+          }
+        ]
+      },
+      "assessment": {
+        "items": [
+          {
+            "index": 0,
+            "key": "Ivo is not permitted to enter Room R.",
+            "expected_choices": [
+              {
+                "choice": "Ivo is permitted to enter Room R.",
+                "judgment": "refuted",
+                "rationale": "The violet rule expressly excludes this permission."
+              },
+              {
+                "choice": "Ivo has both badge colors.",
+                "judgment": "refuted",
+                "rationale": "Exactly one badge rules out having both colors."
+              },
+              {
+                "choice": "Ivo is not permitted to enter Room R.",
+                "judgment": "supported",
+                "rationale": "The explicit violet rule prohibits entry permission."
+              },
+              {
+                "choice": "Ivo has an amber badge.",
+                "judgment": "refuted",
+                "rationale": "Having the violet badge and exactly one badge rules out amber."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Locally authored prospective basic control. This is a declared expected judgment, not an observed model result or calibrated difficulty."
+          },
+          {
+            "index": 1,
+            "key": "Mina is not permitted to enter Room R.",
+            "expected_choices": [
+              {
+                "choice": "Mina has a violet badge.",
+                "judgment": "refuted",
+                "rationale": "Exactly one badge and the stated amber badge rule out violet."
+              },
+              {
+                "choice": "Mina is not permitted to enter Room R.",
+                "judgment": "refuted",
+                "rationale": "Every amber holder is permitted to enter; the offered negation is false."
+              },
+              {
+                "choice": "Mina has both badge colors.",
+                "judgment": "refuted",
+                "rationale": "Exactly one badge rules out both colors."
+              },
+              {
+                "choice": "Mina has no badge.",
+                "judgment": "refuted",
+                "rationale": "The stem explicitly supplies an amber badge."
+              }
+            ],
+            "premise_verdict": "zero_supported",
+            "eligibility_expected": false,
+            "scorable": true,
+            "assessment_caveat": "Locally authored prospective basic control. This is a declared expected judgment, not an observed model result or calibrated difficulty."
+          }
+        ]
+      },
+      "provenance": {
+        "path": null,
+        "byte_sha256": null,
+        "subject_sha256": "a1e8ece5df6956caacc71338e8b2d7fb564724765efc93c09d54e99a5ff42742",
+        "note": "New self-contained fictional rules and controls authored locally. The key on the defective item is deliberately unsupported and appears only in assessment.",
+        "occurrences": []
+      }
+    },
+    {
+      "batch_id": "transfer_python_list_aliasing",
+      "kind": "transfer",
+      "subject": {
+        "goal": {
+          "title": "Trace simple Python list operations",
+          "currentLevel": "I know the basics and want to check precise applications.",
+          "focusAreas": "Python 3 list aliasing, copying and append output",
+          "learningTarget": "Python 3 list aliasing, copying and append output",
+          "contentTopics": [
+            "Python 3 list aliasing, copying and append output"
+          ]
+        },
+        "skillMap": null,
+        "sourceDocuments": [],
+        "items": [
+          {
+            "index": 0,
+            "prompt": "In Python 3, what does this print?\na = [1, 2]\nb = a\nb.append(3)\nprint(a)",
+            "choices": [
+              "[1, 2]",
+              "[3]",
+              "[1, 2, 3]",
+              "[1, 2, [3]]"
+            ],
+            "topic": "Python 3 list aliasing, copying and append output"
+          },
+          {
+            "index": 1,
+            "prompt": "In Python 3, what does this print?\na = [1, 2]\nb = a.copy()\nb.append(3)\nprint(a)",
+            "choices": [
+              "[1, 2, 3]",
+              "[3]",
+              "[]",
+              "[1, 2, [3]]"
+            ],
+            "topic": "Python 3 list aliasing, copying and append output"
+          }
+        ]
+      },
+      "assessment": {
+        "items": [
+          {
+            "index": 0,
+            "key": "[1, 2, 3]",
+            "expected_choices": [
+              {
+                "choice": "[1, 2]",
+                "judgment": "refuted",
+                "rationale": "Both names reference the same list, so the append changes what a prints."
+              },
+              {
+                "choice": "[3]",
+                "judgment": "refuted",
+                "rationale": "Append adds to the existing list rather than replacing its contents."
+              },
+              {
+                "choice": "[1, 2, 3]",
+                "judgment": "supported",
+                "rationale": "Both names reference the same list and append adds the integer 3."
+              },
+              {
+                "choice": "[1, 2, [3]]",
+                "judgment": "refuted",
+                "rationale": "The argument is integer 3, not a list containing 3."
+              }
+            ],
+            "premise_verdict": "unique",
+            "eligibility_expected": true,
+            "scorable": true,
+            "assessment_caveat": "Locally authored prospective basic control. This is a declared expected judgment, not an observed model result or calibrated difficulty."
+          },
+          {
+            "index": 1,
+            "key": "[1, 2, 3]",
+            "expected_choices": [
+              {
+                "choice": "[1, 2, 3]",
+                "judgment": "refuted",
+                "rationale": "The append modifies the copied list b; a still prints [1, 2], which is not offered."
+              },
+              {
+                "choice": "[3]",
+                "judgment": "refuted",
+                "rationale": "The original a is neither replaced nor modified and still contains 1 and 2."
+              },
+              {
+                "choice": "[]",
+                "judgment": "refuted",
+                "rationale": "Nothing clears the original list a."
+              },
+              {
+                "choice": "[1, 2, [3]]",
+                "judgment": "refuted",
+                "rationale": "The original a is unchanged, and no nested list is appended."
+              }
+            ],
+            "premise_verdict": "zero_supported",
+            "eligibility_expected": false,
+            "scorable": true,
+            "assessment_caveat": "Locally authored prospective basic control. This is a declared expected judgment, not an observed model result or calibrated difficulty."
+          }
+        ]
+      },
+      "provenance": {
+        "path": null,
+        "byte_sha256": null,
+        "subject_sha256": "79ef4cc9e11e3ff1090816af2bd6a982b673d1e6301a78e80c1c2b9e98470810",
+        "note": "New literal Python 3 controls authored locally; verified with the local Python interpreter before freeze. No model-generated content or prior response is reused.",
+        "occurrences": []
+      }
+    }
+  ]
+}

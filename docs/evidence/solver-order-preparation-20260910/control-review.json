@@ -1,0 +1,922 @@
+{
+  "review_type": "Independent prospective subject and exact-choice validation",
+  "review_date": "2026-09-10",
+  "packet_path": "/tmp/checkpoint-solver-order-control-packet-20260910.json",
+  "evidence_boundary": "Read only the supplied key-blind packet. Did not inspect fixture keys, expected judgments, prior captures, prior responses, or other assessments. No model-provider or external-source calls. Python snippets were additionally executed locally for deterministic verification. No repository files were edited.",
+  "choice_index_base": 0,
+  "status_meanings": {
+    "supported": "The choice is correct under the literal subject, its supplied facts, and ordinary domain semantics.",
+    "refuted": "The choice conflicts with the specified facts or required operation under the stated reading.",
+    "uncertain": "A material missing fact or ambiguity prevents the literal choice from being established or excluded; conditional interpretations are documented."
+  },
+  "overall_validity_standard": "A valid_unique_answer item has exactly one supported exact choice and no material ambiguity. Multiple supported answers, no supported answer, or material uncertainty prevents treating the item as a clean single-select control.",
+  "batches": [
+    {
+      "batch_id": "historical_solver_call_01",
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=$A4*D$1",
+              "status": "supported",
+              "rationale": "The displacement from B2 to D4 is two columns right and two rows down. $A2 becomes $A4 and B$1 becomes D$1."
+            },
+            {
+              "choice_index": 1,
+              "text": "=$A2*D$1",
+              "status": "refuted",
+              "rationale": "The relative row in $A2 must increase from 2 to 4."
+            },
+            {
+              "choice_index": 2,
+              "text": "=$A4*B$1",
+              "status": "refuted",
+              "rationale": "The relative column in B$1 must increase from B to D."
+            },
+            {
+              "choice_index": 3,
+              "text": "=A4*D1",
+              "status": "refuted",
+              "rationale": "Copying retains the original dollar signs; it does not remove the column-A and row-1 anchors."
+            }
+          ],
+          "supported_choice_indices": [
+            0
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "=$A4*D$1",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "The copied formula is fully determined by the supplied A1-reference rules."
+          }
+        },
+        {
+          "index": 1,
+          "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=A2*B1",
+              "status": "refuted",
+              "rationale": "Without anchors, filling right moves the rate out of column A and filling down moves the sales amount out of row 1."
+            },
+            {
+              "choice_index": 1,
+              "text": "=$A2*B$1",
+              "status": "supported",
+              "rationale": "The rate stays in column A while following the destination row; the sales amount stays in row 1 while following the destination column."
+            },
+            {
+              "choice_index": 2,
+              "text": "=A$2*$B1",
+              "status": "refuted",
+              "rationale": "This fixes the rate row and sales column, the opposite of the required relationships."
+            },
+            {
+              "choice_index": 3,
+              "text": "=$A$2*B$1",
+              "status": "refuted",
+              "rationale": "The fixed rate row 2 prevents the rate from following subsequent destination rows."
+            }
+          ],
+          "supported_choice_indices": [
+            1
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "=$A2*B$1",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "Only one formula preserves both stated relationships across rows and columns."
+          }
+        },
+        {
+          "index": 2,
+          "prompt": "Cell C3 contains =$B$3+C$2. This is filled right to E3, then that result is filled down to E5. What formula is in E5?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=$D$3+E$2",
+              "status": "refuted",
+              "rationale": "The absolute $B$3 reference cannot become $D$3."
+            },
+            {
+              "choice_index": 1,
+              "text": "=$B$3+E$2",
+              "status": "supported",
+              "rationale": "Moving right changes C$2 to E$2, and moving down leaves both $B$3 and E$2 fixed in their anchored rows."
+            },
+            {
+              "choice_index": 2,
+              "text": "=$B$5+E$4",
+              "status": "refuted",
+              "rationale": "Neither the absolute row 3 nor the anchored row 2 changes when copied."
+            },
+            {
+              "choice_index": 3,
+              "text": "=$B$3+E$4",
+              "status": "refuted",
+              "rationale": "The anchored row 2 in E$2 cannot become row 4."
+            }
+          ],
+          "supported_choice_indices": [
+            1
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "=$B$3+E$2",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "Each reference retains its anchors across both copy operations."
+          }
+        },
+        {
+          "index": 3,
+          "prompt": "A price matrix has regions in A2:A6 and products in B1:F1. Cell B2 should calculate price with =B$1*$A2. The user accidentally enters =B1*A2 and fills to F6. Which cells show correct results?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "Only column B",
+              "status": "uncertain",
+              "rationale": "Column B retains the proper header column but its unanchored header row changes below B2. It is not guaranteed correct; particular numeric values can nevertheless make only column B correct."
+            },
+            {
+              "choice_index": 1,
+              "text": "Only row 2",
+              "status": "uncertain",
+              "rationale": "Row 2 retains the proper header row but its unanchored region column changes to the right of B2. It is not guaranteed correct; particular numeric values can nevertheless make only row 2 correct."
+            },
+            {
+              "choice_index": 2,
+              "text": "Only B2",
+              "status": "uncertain",
+              "rationale": "Only B2 is guaranteed to use exactly the intended input references. The stronger literal claim that no other cell has a correct numeric result depends on unspecified values."
+            },
+            {
+              "choice_index": 3,
+              "text": "The entire range B2:F6",
+              "status": "uncertain",
+              "rationale": "The entire range does not preserve the intended references, but its numeric results can coincide with the intended results, for example when every numeric row and column factor is 1."
+            }
+          ],
+          "supported_choice_indices": [],
+          "uncertain_choice_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "independent_answer": "Only B2 preserves both intended input references; no exclusive numeric-results option is entailed.",
+          "overall_validity": {
+            "status": "ambiguous_stem",
+            "rationale": "The stem asks which cells show correct results without supplying numeric inputs or saying which references are guaranteed to match. Only B2 has guaranteed matching input references, but all four offered result patterns can occur for some numeric inputs."
+          }
+        },
+        {
+          "index": 4,
+          "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=N2/12",
+              "status": "refuted",
+              "rationale": "The relative N column changes when the formula is filled across."
+            },
+            {
+              "choice_index": 1,
+              "text": "=$N2/12",
+              "status": "supported",
+              "rationale": "The $N anchor preserves the target column and the relative row follows each category."
+            },
+            {
+              "choice_index": 2,
+              "text": "=N$2/12",
+              "status": "refuted",
+              "rationale": "This allows the target column to change while incorrectly fixing its row."
+            },
+            {
+              "choice_index": 3,
+              "text": "=$N$2/12",
+              "status": "refuted",
+              "rationale": "This incorrectly uses row 2 for every category."
+            }
+          ],
+          "supported_choice_indices": [
+            1
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "=$N2/12",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "The category target must remain in column N and follow the destination row."
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "historical_solver_call_04",
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A gradebook has student names in A2:A20 and assignment scores in B2:F20. Cell G2 calculates the average of B2:F2. The formula must fill down to G20. Which formula in G2 works correctly?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=AVERAGE(B$2:F$2)",
+              "status": "refuted",
+              "rationale": "Anchoring both range rows to 2 repeats the first student's average when filled down."
+            },
+            {
+              "choice_index": 1,
+              "text": "=AVERAGE($B2:$F2)",
+              "status": "supported",
+              "rationale": "Fixing the columns is harmless for a downward fill, and the unanchored rows follow each student."
+            },
+            {
+              "choice_index": 2,
+              "text": "=AVERAGE(B2:F2)",
+              "status": "supported",
+              "rationale": "A purely downward fill changes the rows while leaving the columns unchanged, so this also works."
+            },
+            {
+              "choice_index": 3,
+              "text": "=AVERAGE($B$2:$F$2)",
+              "status": "refuted",
+              "rationale": "The fully absolute range remains on row 2 for all students."
+            }
+          ],
+          "supported_choice_indices": [
+            1,
+            2
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "=AVERAGE($B2:$F2) and =AVERAGE(B2:F2)",
+          "overall_validity": {
+            "status": "invalid_multiple_answers",
+            "rationale": "Two offered formulas work for the stated downward-only fill; the question is not uniquely answerable as single-select multiple choice."
+          }
+        },
+        {
+          "index": 1,
+          "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=$A1*B$1*$A3",
+              "status": "refuted",
+              "rationale": "This adds an unstated A3 factor and also lets the stated fixed A1 factor move down."
+            },
+            {
+              "choice_index": 1,
+              "text": "=$A$1*B1*$A$3",
+              "status": "refuted",
+              "rationale": "This adds an unstated A3 factor and lets the regional target row move down."
+            },
+            {
+              "choice_index": 2,
+              "text": "=$A$1*B$1*$A3",
+              "status": "refuted",
+              "rationale": "Although its anchors could fit a different three-factor problem, it multiplies by A3 in addition to the two inputs actually requested."
+            },
+            {
+              "choice_index": 3,
+              "text": "=$A$1*$B$1*A3",
+              "status": "refuted",
+              "rationale": "This adds an unstated A3 factor, allows that factor to move into other columns, and fixes B1 rather than following any regional targets across columns."
+            }
+          ],
+          "supported_choice_indices": [],
+          "uncertain_choice_indices": [],
+          "independent_answer": "No offered formula. At B3 the stated two-input calculation is A1*B1; a quarter-label multiplier is not authorized.",
+          "overall_validity": {
+            "status": "invalid_no_answer",
+            "rationale": "Every option multiplies by A3 even though the requested calculation mentions only A1 and B1. A3 is explicitly a quarter label (Q1), not a supplied numeric multiplier. Even if the regional-target anchoring is interpreted generously, no option computes the stated two-factor product."
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "historical_solver_call_09",
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A budget sheet tracks monthly expenses. Row 1 contains category names (B1:E1). Column A lists months (A2:A13). Cell B2 should calculate January's Food budget using a rate from F1 and a multiplier from G2, then fill across all categories and down all months. Which formula belongs in B2?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=B2*$G2*$F$1",
+              "status": "refuted",
+              "rationale": "Placed in B2, this formula directly references B2 itself; the stem supplies no previous B2 input or iterative calculation."
+            },
+            {
+              "choice_index": 1,
+              "text": "=B2*G2*F1",
+              "status": "refuted",
+              "rationale": "This directly references B2 itself and also fails to keep the F1 rate and column-G multiplier anchored appropriately."
+            },
+            {
+              "choice_index": 2,
+              "text": "=B2*G$2*$F$1",
+              "status": "refuted",
+              "rationale": "This directly references B2 itself and incorrectly fixes the multiplier row to 2."
+            },
+            {
+              "choice_index": 3,
+              "text": "=$B$2*$G$2*F1",
+              "status": "refuted",
+              "rationale": "This directly references B2 itself, fixes the multiplier to one row, and lets the rate move with copying."
+            }
+          ],
+          "supported_choice_indices": [],
+          "uncertain_choice_indices": [],
+          "independent_answer": "No offered formula; =$F$1*$G2 implements the stated rate-times-row-multiplier relationship.",
+          "overall_validity": {
+            "status": "invalid_no_answer",
+            "rationale": "All offered formulas introduce an unstated self-reference in the output cell. Ordinary calculation from the specified rate and row multiplier would not include B2 as an input."
+          }
+        },
+        {
+          "index": 1,
+          "prompt": "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=$F4+G$2",
+              "status": "refuted",
+              "rationale": "The copy displacement is four columns left and four rows down, so the relative components cannot remain unchanged."
+            },
+            {
+              "choice_index": 1,
+              "text": "=B8+G$2",
+              "status": "refuted",
+              "rationale": "Column F is absolute and must remain F; the unanchored G column must move left to C."
+            },
+            {
+              "choice_index": 2,
+              "text": "=$F8+G$6",
+              "status": "refuted",
+              "rationale": "G$2 has a relative column and an absolute row, so it must become C$2, not G$6."
+            },
+            {
+              "choice_index": 3,
+              "text": "=$F8+C$2",
+              "status": "supported",
+              "rationale": "$F4 becomes $F8, while G$2 becomes C$2."
+            }
+          ],
+          "supported_choice_indices": [
+            3
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "=$F8+C$2",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "The two mixed references respond independently to the copy displacement."
+          }
+        },
+        {
+          "index": 2,
+          "prompt": "A sales report has regional targets in column C (C2:C6) and monthly actuals in row 2 (D2:G2). Cell D3 should calculate variance from target using the region's target and the month's actual, then fill across months and down regions. Which formula belongs in D3?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=D2-C3",
+              "status": "refuted",
+              "rationale": "The actuals row would move down and the target column would move right."
+            },
+            {
+              "choice_index": 1,
+              "text": "=$D$2-$C$3",
+              "status": "refuted",
+              "rationale": "Both inputs remain fixed instead of following their respective month and region."
+            },
+            {
+              "choice_index": 2,
+              "text": "=$D2-C$3",
+              "status": "refuted",
+              "rationale": "This fixes the wrong component of each reference: the actual column and the target row."
+            },
+            {
+              "choice_index": 3,
+              "text": "=D$2-$C3",
+              "status": "supported",
+              "rationale": "D$2 follows the month column while staying in row 2; $C3 follows the region row while staying in column C."
+            }
+          ],
+          "supported_choice_indices": [
+            3
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "=D$2-$C3",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "Only one offered formula preserves the specified actuals-row and target-column relationships for actual minus target."
+          }
+        },
+        {
+          "index": 3,
+          "prompt": "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=K$9+$O5",
+              "status": "refuted",
+              "rationale": "K$5 must change its relative column to N while keeping row 5; $L5 must keep column L while changing its row to 9."
+            },
+            {
+              "choice_index": 1,
+              "text": "=K$5+$L9",
+              "status": "refuted",
+              "rationale": "The relative K column must move three columns right to N."
+            },
+            {
+              "choice_index": 2,
+              "text": "=N$9+$L5",
+              "status": "refuted",
+              "rationale": "The anchored row 5 cannot become 9, while the relative row in $L5 must become 9."
+            },
+            {
+              "choice_index": 3,
+              "text": "=N$5+$L9",
+              "status": "supported",
+              "rationale": "The displacement is three columns right and four rows down, producing N$5+$L9."
+            }
+          ],
+          "supported_choice_indices": [
+            3
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "=N$5+$L9",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "The copied formula is determined by the stated displacement and mixed anchors."
+          }
+        },
+        {
+          "index": 4,
+          "prompt": "A gradebook has assignment weights in row 3 (B3:E3) and student scores in column A (A4:A8). Cell B4 should calculate weighted score using the student's score and the assignment's weight, then fill across assignments and down students. Which formula belongs in B4?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "=$A4*B$3",
+              "status": "supported",
+              "rationale": "$A4 follows each student row while staying in column A; B$3 follows each assignment column while staying in row 3."
+            },
+            {
+              "choice_index": 1,
+              "text": "=A4*B3",
+              "status": "refuted",
+              "rationale": "The student column would move right and the weight row would move down."
+            },
+            {
+              "choice_index": 2,
+              "text": "=$A$4*$B$3",
+              "status": "refuted",
+              "rationale": "Both inputs would remain fixed on the first student and assignment."
+            },
+            {
+              "choice_index": 3,
+              "text": "=A$4*$B3",
+              "status": "refuted",
+              "rationale": "This fixes the student row and assignment column, reversing the required anchoring."
+            }
+          ],
+          "supported_choice_indices": [
+            0
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "=$A4*B$3",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "Only one formula preserves both specified input relationships."
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "historical_solver_call_12",
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along the curves. The map is then photocopied at 150% enlargement. What ground distance does the original 8 cm measurement represent?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "5 km",
+              "status": "refuted",
+              "rationale": "The original measurement converts to 200,000 cm, not 500,000 cm."
+            },
+            {
+              "choice_index": 1,
+              "text": "2 km",
+              "status": "supported",
+              "rationale": "8 cm times 25,000 is 200,000 cm, which is 2 km. Later enlargement does not change what the original measurement represents."
+            },
+            {
+              "choice_index": 2,
+              "text": "3 km",
+              "status": "refuted",
+              "rationale": "3 km would incorrectly apply the old numerical scale to the enlarged 12 cm line, rather than convert the original 8 cm measurement."
+            },
+            {
+              "choice_index": 3,
+              "text": "1.33 km",
+              "status": "refuted",
+              "rationale": "Dividing by the enlargement factor is unnecessary for the explicitly original measurement."
+            }
+          ],
+          "supported_choice_indices": [
+            1
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "2 km",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "The original measurement and its original scale determine the ground distance directly."
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "historical_solver_call_27",
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "400 kJ/m²/year",
+              "status": "refuted",
+              "rationale": "400 is the small-fish production on the simple algae-to-zooplankton-to-small-fish path; it omits the mandatory final 20% transfer to large fish. It also does not resolve the extra shrimp path."
+            },
+            {
+              "choice_index": 1,
+              "text": "800 kJ/m²/year",
+              "status": "refuted",
+              "rationale": "800 can arise as small-fish production if 2,000 units at zooplankton and a separately asserted 2,000 units at shrimp are each multiplied by 20%; it omits the final transfer to large fish."
+            },
+            {
+              "choice_index": 2,
+              "text": "2,000 kJ/m²/year",
+              "status": "refuted",
+              "rationale": "2,000 is the first-transfer amount from 10,000 at 20%, not the amount after the mandatory later transfers into small and large fish."
+            },
+            {
+              "choice_index": 3,
+              "text": "160 kJ/m²/year",
+              "status": "uncertain",
+              "rationale": "160 follows only if the shrimp's 2,000 is treated as a separate, fully available shrimp-energy contribution alongside 2,000 at zooplankton: (2,000+2,000)*0.2*0.2. The stem instead calls the shrimp zooplankton-eating and says their energy is received from algae, leaving the feeding path and possible shared-energy counting unresolved."
+            }
+          ],
+          "supported_choice_indices": [],
+          "uncertain_choice_indices": [
+            3
+          ],
+          "independent_answer": "No uniquely entailed offered value. 160 is conditional on an unstated interpretation of shrimp energy; the simple stated chain alone yields 80 kJ/m²/year.",
+          "overall_validity": {
+            "status": "ambiguous_or_inconsistent",
+            "rationale": "The algae-to-zooplankton-to-small-fish-to-large-fish path yields 80. The supplied shrimp amount does not specify a consistent additional production pathway: shrimp eating zooplankton introduces an extra transfer, whereas treating 2,000 as an independent shrimp pool can give 160. The statement neither resolves the shrimp's direct versus indirect algae input nor allocates energy along the shared zooplankton paths. No choice is unconditionally supported."
+          }
+        },
+        {
+          "index": 1,
+          "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "625 kJ/m²/year",
+              "status": "supported",
+              "rationale": "There are two transfers: 10,000*0.25*0.25 = 625 kJ/m²/year."
+            },
+            {
+              "choice_index": 1,
+              "text": "1,250 kJ/m²/year",
+              "status": "refuted",
+              "rationale": "1,250 is not the result of the two stated 25% transfers; the standing-biomass ratio does not substitute for production efficiency."
+            },
+            {
+              "choice_index": 2,
+              "text": "2,500 kJ/m²/year",
+              "status": "refuted",
+              "rationale": "2,500 is production at minnows after only the first transfer."
+            },
+            {
+              "choice_index": 3,
+              "text": "12,500 kJ/m²/year",
+              "status": "refuted",
+              "rationale": "12,500 exceeds the initial producer production and does not follow from the stated transfer efficiency."
+            }
+          ],
+          "supported_choice_indices": [
+            0
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "625 kJ/m²/year",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "Applying the given transfer efficiency at the two feeding links gives a unique production value; biomass is irrelevant to that calculation."
+          }
+        },
+        {
+          "index": 2,
+          "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "10%",
+              "status": "supported",
+              "rationale": "The supplied definition compares receiving production with preceding production: 800/8,000*100 = 10%."
+            },
+            {
+              "choice_index": 1,
+              "text": "15%",
+              "status": "refuted",
+              "rationale": "15% is the plants-to-crabs production ratio, not the plants-to-snails ratio."
+            },
+            {
+              "choice_index": 2,
+              "text": "25%",
+              "status": "refuted",
+              "rationale": "25% combines crab and snail production and therefore answers a different production-ratio question."
+            },
+            {
+              "choice_index": 3,
+              "text": "Cannot be determined from the information given",
+              "status": "refuted",
+              "rationale": "Both plant and snail production are supplied for matching area and time units, so the stated production-ratio definition is directly applicable."
+            }
+          ],
+          "supported_choice_indices": [
+            0
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "10%",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "The relevant production ratio is explicitly determined by the source definition and the given quantities."
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "transfer_english_agreement",
+      "items": [
+        {
+          "index": 0,
+          "prompt": "Which sentence has standard English subject–verb agreement?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "The list of names are on the desk.",
+              "status": "refuted",
+              "rationale": "The grammatical head of the subject is singular list; the plural noun inside of names does not license are."
+            },
+            {
+              "choice_index": 1,
+              "text": "The list of names is on the desk.",
+              "status": "supported",
+              "rationale": "Singular third-person list takes is in an affirmative present-tense declarative sentence."
+            },
+            {
+              "choice_index": 2,
+              "text": "The list of names am on the desk.",
+              "status": "refuted",
+              "rationale": "Am agrees with first-person singular I, not third-person singular the list."
+            },
+            {
+              "choice_index": 3,
+              "text": "The list of names be on the desk.",
+              "status": "refuted",
+              "rationale": "Bare be is not the standard finite present-tense declarative form required for the list in this sentence."
+            }
+          ],
+          "supported_choice_indices": [
+            1
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "The list of names is on the desk.",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "The supplied goal specifies standard written English and affirmative present-tense declaratives, which removes dialectal or subjunctive alternatives."
+          }
+        },
+        {
+          "index": 1,
+          "prompt": "Which sentence has standard English subject–verb agreement?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "Each of the boxes is sealed.",
+              "status": "supported",
+              "rationale": "Each is the singular head of the subject and correctly takes is."
+            },
+            {
+              "choice_index": 1,
+              "text": "The boxes are sealed.",
+              "status": "supported",
+              "rationale": "The plural subject the boxes correctly takes are."
+            },
+            {
+              "choice_index": 2,
+              "text": "Each of the boxes are sealed.",
+              "status": "refuted",
+              "rationale": "The singular head each requires is in the specified standard written register; the intervening boxes does not control agreement."
+            },
+            {
+              "choice_index": 3,
+              "text": "The boxes is sealed.",
+              "status": "refuted",
+              "rationale": "The plural subject the boxes requires are, not is."
+            }
+          ],
+          "supported_choice_indices": [
+            0,
+            1
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "Each of the boxes is sealed. / The boxes are sealed.",
+          "overall_validity": {
+            "status": "invalid_multiple_answers",
+            "rationale": "Two distinct offered sentences have standard subject–verb agreement, so there is no unique single-select answer."
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "transfer_fictional_badges",
+      "items": [
+        {
+          "index": 0,
+          "prompt": "Ivo has a violet badge. Under the supplied rules, which statement must follow?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "Ivo is permitted to enter Room R.",
+              "status": "refuted",
+              "rationale": "The complete rules expressly deny Room R permission to every violet-badge holder."
+            },
+            {
+              "choice_index": 1,
+              "text": "Ivo has both badge colors.",
+              "status": "refuted",
+              "rationale": "Exactly one of the two badge colors is allowed; Ivo already has violet."
+            },
+            {
+              "choice_index": 2,
+              "text": "Ivo is not permitted to enter Room R.",
+              "status": "supported",
+              "rationale": "The no-violet-permission rule directly entails this statement for Ivo."
+            },
+            {
+              "choice_index": 3,
+              "text": "Ivo has an amber badge.",
+              "status": "refuted",
+              "rationale": "Exactly-one exclusivity plus Ivo's violet badge rules out amber."
+            }
+          ],
+          "supported_choice_indices": [
+            2
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "Ivo is not permitted to enter Room R.",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "The fictional rules determine both badge exclusivity and the permission consequence without outside assumptions."
+          }
+        },
+        {
+          "index": 1,
+          "prompt": "Mina has an amber badge. Under the supplied rules, which statement must follow?",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "Mina has a violet badge.",
+              "status": "refuted",
+              "rationale": "Mina already has amber, and exactly one badge color is permitted."
+            },
+            {
+              "choice_index": 1,
+              "text": "Mina is not permitted to enter Room R.",
+              "status": "refuted",
+              "rationale": "Every amber-badge holder is permitted to enter Room R, so the negation is false."
+            },
+            {
+              "choice_index": 2,
+              "text": "Mina has both badge colors.",
+              "status": "refuted",
+              "rationale": "The exactly-one rule excludes holding both colors."
+            },
+            {
+              "choice_index": 3,
+              "text": "Mina has no badge.",
+              "status": "refuted",
+              "rationale": "Mina is explicitly stated to have an amber badge, and everyone has exactly one badge."
+            }
+          ],
+          "supported_choice_indices": [],
+          "uncertain_choice_indices": [],
+          "independent_answer": "No offered statement. Mina is permitted to enter Room R.",
+          "overall_validity": {
+            "status": "invalid_no_answer",
+            "rationale": "All offered statements conflict with the complete supplied rules. The true permission consequence is omitted."
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "transfer_python_list_aliasing",
+      "items": [
+        {
+          "index": 0,
+          "prompt": "In Python 3, what does this print?\na = [1, 2]\nb = a\nb.append(3)\nprint(a)",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "[1, 2]",
+              "status": "refuted",
+              "rationale": "b = a creates an alias for the same list, so appending through b also changes the list observed through a."
+            },
+            {
+              "choice_index": 1,
+              "text": "[3]",
+              "status": "refuted",
+              "rationale": "append retains the original list elements and adds one new element."
+            },
+            {
+              "choice_index": 2,
+              "text": "[1, 2, 3]",
+              "status": "supported",
+              "rationale": "Both names refer to the same list; appending the integer 3 yields [1, 2, 3]."
+            },
+            {
+              "choice_index": 3,
+              "text": "[1, 2, [3]]",
+              "status": "refuted",
+              "rationale": "The appended object is the integer 3, not a nested list [3]."
+            }
+          ],
+          "supported_choice_indices": [
+            2
+          ],
+          "uncertain_choice_indices": [],
+          "independent_answer": "[1, 2, 3]",
+          "overall_validity": {
+            "status": "valid_unique_answer",
+            "rationale": "Python 3 assignment aliases this list and append mutates it in place. The exact supplied snippet was also executed locally and printed [1, 2, 3]."
+          }
+        },
+        {
+          "index": 1,
+          "prompt": "In Python 3, what does this print?\na = [1, 2]\nb = a.copy()\nb.append(3)\nprint(a)",
+          "choices": [
+            {
+              "choice_index": 0,
+              "text": "[1, 2, 3]",
+              "status": "refuted",
+              "rationale": "a.copy() produces a separate outer list, so appending to b does not append to a."
+            },
+            {
+              "choice_index": 1,
+              "text": "[3]",
+              "status": "refuted",
+              "rationale": "The original a retains its original elements 1 and 2."
+            },
+            {
+              "choice_index": 2,
+              "text": "[]",
+              "status": "refuted",
+              "rationale": "No operation removes or clears elements of a."
+            },
+            {
+              "choice_index": 3,
+              "text": "[1, 2, [3]]",
+              "status": "refuted",
+              "rationale": "No object is appended to a; in addition, the object appended to b is the integer 3, not a list."
+            }
+          ],
+          "supported_choice_indices": [],
+          "uncertain_choice_indices": [],
+          "independent_answer": "No offered output. The program prints [1, 2].",
+          "overall_validity": {
+            "status": "invalid_no_answer",
+            "rationale": "The exact output is [1, 2], which is absent from all choices. The exact supplied snippet was also executed locally and printed [1, 2]."
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "batch_count": 8,
+    "item_count": 22,
+    "validity_counts": {
+      "valid_unique_answer": 14,
+      "ambiguous_stem": 1,
+      "invalid_multiple_answers": 2,
+      "invalid_no_answer": 4,
+      "ambiguous_or_inconsistent": 1
+    }
+  },
+  "packet_sha256": "fc457d6c8e3d72b40e25505427ab9c583c9348cb455de06f76f3da3b9158e6f6"
+}
