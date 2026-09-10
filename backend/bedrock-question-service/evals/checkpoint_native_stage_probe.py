@@ -244,6 +244,16 @@ def content_observation(job, state):
 
 def run_probe(plan_path, approved_hash, directory, *, cli_credentials=False, observer=None):
     plan = load_frozen_plan(plan_path, approved_hash)
+    return run_frozen_jobs(plan, directory, cli_credentials=cli_credentials, observer=observer)
+
+
+def run_frozen_jobs(plan, directory, *, cli_credentials=False, observer=None, content_observer=None):
+    """Run an already validated fixed plan using the bounded downstream observer.
+
+    Callers own frozen-plan validation. This helper neither chooses extra jobs
+    nor retries content failures, and preserves the existing native admission.
+    """
+    approved_hash = _hash(plan)
     directory.mkdir(parents=True, exist_ok=False, mode=0o700)
     report = {"plan": plan, "plan_sha256": approved_hash, "status": "running", "calls": [],
               "results": [{"position": j["position"], "status": "unattempted"} for j in plan["jobs"]]}
@@ -286,7 +296,8 @@ def run_probe(plan_path, approved_hash, directory, *, cli_credentials=False, obs
             usable = runtime._usable_observation(state)
             call["status"] = "completed" if usable else "operational_failure"
             report["results"][job["position"]] = {
-                "position": job["position"], "status": call["status"], **content_observation(job, state),
+                "position": job["position"], "status": call["status"],
+                **(content_observer or content_observation)(job, state),
             }
             persist()
             if not usable or persistence_failed:

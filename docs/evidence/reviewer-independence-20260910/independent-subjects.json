@@ -1,0 +1,594 @@
+{
+  "packet_path": "/tmp/checkpoint-reviewer-independence-assessment-20260910/subjects.json",
+  "packet_sha256": "cb108e0ba675775fcdd68aab7b89b80fcb5d9cf81ddb38651366d8350b3294b8",
+  "scope": "Independent assistant assessment before fresh experiment responses. Only subjects.json was inspected from this packet directory. Authored keys, prior solver reasons, teaching, mappings and arm information were not inspected. Earlier conversation context exists, so this is not claimed to be fully context-blinded.",
+  "rubric": "1 recall; 2 direct application; 3 multistep; 4 complex; 5 expert. Difficulty is a qualitative judgment, not learner calibration.",
+  "choice_label_meaning": "Supported means the exact choice is warranted as an answer to this stem. Refuted means it fails that task or contradicts the stated conditions/calculation. Uncertain includes propositions that may be true but are not established; these are not automatically supported distractors.",
+  "method": "Literal assessment without silently adding substantive sampling, causal or unit-conversion assumptions; conventional classroom interpretations are recorded separately where materially different. Invalidity is not inferred merely from false distractors, a diagnostic answer, hypothetical premises, or a request for formula text rather than numeric output.",
+  "items": [
+    {
+      "id": "item01",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "=$A4*D$1",
+          "assessment": "supported",
+          "reason": "B2 to D4 moves two columns right and two rows down. $A2 becomes $A4; B$1 becomes D$1, preserving both dollar signs."
+        },
+        {
+          "index": 1,
+          "choice": "=$A2*D$1",
+          "assessment": "refuted",
+          "reason": "The row in $A2 is relative and must advance to 4; leaving it at 2 does not reproduce the copy."
+        },
+        {
+          "index": 2,
+          "choice": "=$A4*B$1",
+          "assessment": "refuted",
+          "reason": "The column in B$1 is relative and must advance from B to D."
+        },
+        {
+          "index": 3,
+          "choice": "=A4*D1",
+          "assessment": "refuted",
+          "reason": "Copying does not remove the original absolute column A and absolute row 1 anchors; the requested formula text retains those dollar signs."
+        }
+      ],
+      "selected_answer": "=$A4*D$1",
+      "exactly_one_sound_answer_without_added_assumptions": true,
+      "item_status": "valid",
+      "issues": [
+        "The months/products layout might contain text, making multiplication unhelpful, but this does not change which formula text appears. The task does not ask for a numeric result.",
+        "This is direct reference translation, not substantive multistep reasoning."
+      ],
+      "difficulty": 2,
+      "evidence": [
+        {
+          "source": "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel",
+          "source_scope": "Primary documentation: a dollar sign fixes its row or column component; relative components move with the copy displacement. Calculations below apply those rules to the supplied fictional cells."
+        },
+        {
+          "calculation": "copy displacement (column,row)=(+2,+2); $A2 -> $A4; B$1 -> D$1"
+        }
+      ]
+    },
+    {
+      "id": "item02",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "=A2*B1",
+          "assessment": "refuted",
+          "reason": "Unanchored references change the rate column during horizontal fill and the sales row during vertical fill; for example F5 would contain E5*F4."
+        },
+        {
+          "index": 1,
+          "choice": "=$A2*B$1",
+          "assessment": "supported",
+          "reason": "Fix column A for each row rate and row 1 for each column sale. In F5 this becomes $A5*F$1."
+        },
+        {
+          "index": 2,
+          "choice": "=A$2*$B1",
+          "assessment": "refuted",
+          "reason": "This fixes the wrong components: the rate row remains 2 and its column moves; the sales column remains B and its row moves."
+        },
+        {
+          "index": 3,
+          "choice": "=$A$2*B$1",
+          "assessment": "refuted",
+          "reason": "This fixes the rate at A2 for all rows; row 5 must reference A5 rather than A2."
+        }
+      ],
+      "selected_answer": "=$A2*B$1",
+      "exactly_one_sound_answer_without_added_assumptions": true,
+      "item_status": "valid",
+      "issues": [
+        "The numeric values need not be supplied because the question is about preserving reference relationships, not evaluating a commission amount.",
+        "Two anchors are required, but selecting their components is a direct application of the familiar rule."
+      ],
+      "difficulty": 2,
+      "evidence": [
+        {
+          "source": "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel",
+          "source_scope": "Primary documentation: a dollar sign fixes its row or column component; relative components move with the copy displacement. Calculations below apply those rules to the supplied fictional cells."
+        },
+        {
+          "calculation": "B2->F5=(+4 columns,+3 rows); desired references A5 and F1; =$A2*B$1 supplies exactly those references."
+        }
+      ]
+    },
+    {
+      "id": "item03",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "=N2/12",
+          "assessment": "refuted",
+          "reason": "The unanchored target column changes as the formula is filled right; it would reference Y10 at M10."
+        },
+        {
+          "index": 1,
+          "choice": "=$N2/12",
+          "assessment": "supported",
+          "reason": "Column N stays fixed while the row follows the category, giving $N10/12 at M10."
+        },
+        {
+          "index": 2,
+          "choice": "=N$2/12",
+          "assessment": "refuted",
+          "reason": "The target column moves and row 2 remains fixed, giving Y$2/12 at M10."
+        },
+        {
+          "index": 3,
+          "choice": "=$N$2/12",
+          "assessment": "refuted",
+          "reason": "This keeps every category tied to N2 rather than moving to the appropriate row."
+        }
+      ],
+      "selected_answer": "=$N2/12",
+      "exactly_one_sound_answer_without_added_assumptions": true,
+      "item_status": "valid",
+      "issues": [
+        "This is a direct mixed-reference application. The stem explicitly defines division by 12, so there is no need to infer a financial allocation rule."
+      ],
+      "difficulty": 2,
+      "evidence": [
+        {
+          "source": "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel",
+          "source_scope": "Primary documentation: a dollar sign fixes its row or column component; relative components move with the copy displacement. Calculations below apply those rules to the supplied fictional cells."
+        },
+        {
+          "calculation": "B2->M10=(+11 columns,+8 rows); N2->$N10 is required when column N is fixed."
+        }
+      ]
+    },
+    {
+      "id": "item04",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "=$A1*B$1*$A3",
+          "assessment": "refuted",
+          "reason": "Adds multiplication by A3, which the stem identifies as a quarter label, not a numeric factor. It also fails to keep the A1 row fixed when filled down."
+        },
+        {
+          "index": 1,
+          "choice": "=$A$1*B1*$A$3",
+          "assessment": "refuted",
+          "reason": "Adds the unrequested $A$3 quarter label as a third factor and permits the regional-target row to move."
+        },
+        {
+          "index": 2,
+          "choice": "=$A$1*B$1*$A3",
+          "assessment": "refuted",
+          "reason": "Even with suitable anchors for A1 and row-1 regional targets, this multiplies by the unrequested quarter label A3. It is not the stated two-factor calculation."
+        },
+        {
+          "index": 3,
+          "choice": "=$A$1*$B$1*A3",
+          "assessment": "refuted",
+          "reason": "Adds the unrequested A3 quarter label as a third factor; the fully fixed B1 reference would also not follow regional columns if that was intended."
+        }
+      ],
+      "selected_answer": null,
+      "exactly_one_sound_answer_without_added_assumptions": false,
+      "item_status": "invalid",
+      "issues": [
+        "No offered formula expresses the stated two-factor operation. Every option adds A3 or $A$3, even though A3:A6 contain Q1-Q4 labels.",
+        "The stem also uses $B$1 while describing regional filling across columns. Whether this is merely an address or a required anchor does not rescue any choice.",
+        "Difficulty describes the intended reference task; an invalid item has no defensible learner-performance difficulty."
+      ],
+      "difficulty": 2,
+      "evidence": [
+        {
+          "source": "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel",
+          "source_scope": "Primary documentation: a dollar sign fixes its row or column component; relative components move with the copy displacement. Calculations below apply those rules to the supplied fictional cells."
+        },
+        {
+          "calculation": "At B3 the stated multiplication needs the values in A1 and B1 only. All four displayed options have three multiplicative references and include A3."
+        }
+      ]
+    },
+    {
+      "id": "item05",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "Zooplankton annual production is 75 g/m²/year.",
+          "assessment": "uncertain",
+          "reason": "75 follows if 25% is explicitly a biomass-production ratio in matching mass units, or if energy density per gram is equal. An energetic transfer efficiency alone does not establish that mass production."
+        },
+        {
+          "index": 1,
+          "choice": "Zooplankton annual production is 150 g/m²/year.",
+          "assessment": "uncertain",
+          "reason": "Standing biomass 150 g/m² is not annual production, so it does not establish this answer. The value could occur under other production/energy-density conditions; it is not ruled out by the stated stocks alone."
+        },
+        {
+          "index": 2,
+          "choice": "Zooplankton annual production is 37.5 g/m²/year.",
+          "assessment": "uncertain",
+          "reason": "Multiplying the 150 g/m² standing stock by 25% is not a production calculation. But without the mass-to-energy relationship, this annual-production value is not categorically impossible."
+        },
+        {
+          "index": 3,
+          "choice": "Zooplankton annual production is 7.5 g/m²/year.",
+          "assessment": "uncertain",
+          "reason": "Multiplying the 30 g/m² standing stock by 25% does not produce annual production. As with the other values, missing production-unit interpretation prevents a definitive exclusion."
+        }
+      ],
+      "selected_answer": null,
+      "exactly_one_sound_answer_without_added_assumptions": false,
+      "item_status": "ambiguous",
+      "issues": [
+        "The stem supplies mass production in g/m²/year, while the supplied ecology context concerns energy-transfer efficiency. It does not explicitly define efficiency on a biomass-mass basis or give energy content per gram.",
+        "Under an explicitly mass-based production ratio, 75 would be the unique answer. Under the energetic definition in the cited source, equal energy density cannot be silently assumed. This is an interpretation-dependent item rather than four ordinary false distractors.",
+        "The annual production need not equal standing biomass; an inverted biomass relationship is not itself impossible."
+      ],
+      "difficulty": 3,
+      "evidence": [
+        {
+          "source": "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems",
+          "source_scope": "The ecological-efficiency section defines TLTE as energy transfer between successive levels and illustrates production in kcal/m²/year. It separately discusses biomass."
+        },
+        {
+          "calculation": "If E_p and E_z are energy per gram, energetic efficiency gives P_z_mass = 0.25*300*(E_p/E_z) = 75*(E_p/E_z). For ratios 1, 2, 0.5 and 0.1 the four offered production values respectively result. This is a dimensional countermodel, not a claim about measured pond energy densities."
+        }
+      ]
+    },
+    {
+      "id": "item06",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "Team A",
+          "assessment": "refuted",
+          "reason": "30/100=30%, below Team B's 35%."
+        },
+        {
+          "index": 1,
+          "choice": "Team B",
+          "assessment": "supported",
+          "reason": "21/60=35%, exceeding 30%, 20% and 30% for the other teams."
+        },
+        {
+          "index": 2,
+          "choice": "Team C",
+          "assessment": "refuted",
+          "reason": "16/80=20%, the lowest of the four observed rates."
+        },
+        {
+          "index": 3,
+          "choice": "Team D",
+          "assessment": "refuted",
+          "reason": "27/90=30%, tied with Team A and below Team B."
+        }
+      ],
+      "selected_answer": "Team B",
+      "exactly_one_sound_answer_without_added_assumptions": true,
+      "item_status": "valid",
+      "issues": [
+        "This asks about observed proportions only. Unequal task counts or possible future performance do not invalidate the comparison.",
+        "The calculation is direct despite requiring four ratios."
+      ],
+      "difficulty": 2,
+      "evidence": [
+        {
+          "calculation": {
+            "A": "3/10",
+            "B": "7/20",
+            "C": "1/5",
+            "D": "3/10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "item07",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "Every eligible person preferred design A.",
+          "assessment": "refuted",
+          "reason": "This does not answer the participation question and is not supported by the preferences reported; 30 recorded responses prefer B rather than A."
+        },
+        {
+          "index": 1,
+          "choice": "Yes, all eligible people responded.",
+          "assessment": "uncertain",
+          "reason": "All eligible people could have responded if there were exactly 80 eligible people, but the eligible population size is not given."
+        },
+        {
+          "index": 2,
+          "choice": "No, some eligible people did not respond.",
+          "assessment": "uncertain",
+          "reason": "Some eligible people could be missing if more than 80 were eligible, but the counts alone do not show that."
+        },
+        {
+          "index": 3,
+          "choice": "The response counts do not establish whether everyone eligible responded.",
+          "assessment": "supported",
+          "reason": "The same 80 responses are compatible with either full participation or a larger eligible population with nonrespondents. The required population denominator is absent."
+        }
+      ],
+      "selected_answer": "The response counts do not establish whether everyone eligible responded.",
+      "exactly_one_sound_answer_without_added_assumptions": true,
+      "item_status": "valid",
+      "issues": [
+        "This is a valid cannot-determine item; possible yes/no outcomes do not make either one a warranted answer.",
+        "The universal-preference option is a weak, largely nonresponsive distractor, but that does not eliminate the unique sound answer."
+      ],
+      "difficulty": 2,
+      "evidence": [
+        {
+          "calculation": "Countermodels: 80 eligible with all 80 responding; or 100 eligible with the same 80 responding. Both preserve the supplied response counts."
+        }
+      ]
+    },
+    {
+      "id": "item08",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "Large Hospital",
+          "assessment": "uncertain",
+          "reason": "A larger hospital can have more such days under some birth-probability or dependence models; the sizes alone do not establish this ordering."
+        },
+        {
+          "index": 1,
+          "choice": "Both about equally",
+          "assessment": "uncertain",
+          "reason": "Similar counts are possible, but equality is not established by the daily sample sizes."
+        },
+        {
+          "index": 2,
+          "choice": "Cannot be determined from the information given",
+          "assessment": "supported",
+          "reason": "No probability model links birth sex to hospital or day. Sizes alone do not determine which hospital is more likely to exceed this threshold on more days."
+        },
+        {
+          "index": 3,
+          "choice": "Small Hospital",
+          "assessment": "uncertain",
+          "reason": "This is the conventional answer under an additional common approximately one-half, independent-birth model. Those assumptions are not stated, and the ordering is not a model-free consequence of the sizes."
+        }
+      ],
+      "selected_answer": "Cannot be determined from the information given",
+      "exactly_one_sound_answer_without_added_assumptions": true,
+      "item_status": "valid",
+      "issues": [
+        "Strictly evaluated without added assumptions, the diagnostic answer is sound. A familiar textbook interpretation adds a common near-half Bernoulli birth model and favors Small Hospital. Keep that conditional result distinct from the literal answer.",
+        "Even under a model, likely counts and guaranteed observed counts are different; the defect is the absent model, not merely ordinary sampling randomness."
+      ],
+      "difficulty": 3,
+      "evidence": [
+        {
+          "calculation": {
+            "under_common_independent_p_0_5": {
+              "small_daily_tail": 0.15087890625,
+              "large_daily_tail": 0.0675782254228352
+            },
+            "under_common_independent_p_0_9": {
+              "small_daily_tail": 0.997750329914952,
+              "large_daily_tail": 0.9999998818496599
+            },
+            "scope": "Countermodels illustrate that sample size does not establish a universal ordering. p=0.9 is a mathematical countermodel, not an empirical claim about births."
+          }
+        }
+      ]
+    },
+    {
+      "id": "item09",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "About 99%",
+          "assessment": "refuted",
+          "reason": "99% is the sensitivity (and specificity), not the probability of disease among positive results when the stated prevalence is low."
+        },
+        {
+          "index": 1,
+          "choice": "About 50%",
+          "assessment": "refuted",
+          "reason": "There are about ten false positives for every true positive under the stated rates; equal posterior odds do not follow."
+        },
+        {
+          "index": 2,
+          "choice": "About 1%",
+          "assessment": "refuted",
+          "reason": "This confuses an unconditional error rate with the conditional probability asked. The computed posterior is about 9.02%."
+        },
+        {
+          "index": 3,
+          "choice": "About 9%",
+          "assessment": "supported",
+          "reason": "Among 100,000 people represented by the stated prevalence, 99 of 100 affected people and 999 of 99,900 unaffected people test positive. 99/(99+999)≈9.02%."
+        }
+      ],
+      "selected_answer": "About 9%",
+      "exactly_one_sound_answer_without_added_assumptions": true,
+      "item_status": "valid",
+      "issues": [
+        "The headline word accurate is potentially confusing, but the stem explicitly supplies both sensitivity and specificity, resolving that ambiguity.",
+        "This is a hypothetical probability calculation for the stated population, not an individual medical-risk estimate."
+      ],
+      "difficulty": 3,
+      "evidence": [
+        {
+          "calculation": {
+            "posterior_exact": "11/122",
+            "posterior_decimal": 0.09016393442622951,
+            "true_positives_per_100000": 99,
+            "false_positives_per_100000": 999
+          }
+        }
+      ]
+    },
+    {
+      "id": "item10",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "Ice cream consumption causes drowning",
+          "assessment": "uncertain",
+          "reason": "An observed city-level association does not establish this causal direction or an individual consumption effect."
+        },
+        {
+          "index": 1,
+          "choice": "Drowning causes people to buy more ice cream",
+          "assessment": "uncertain",
+          "reason": "The reported association also does not establish reverse causation."
+        },
+        {
+          "index": 2,
+          "choice": "The correlation is probably a statistical fluke",
+          "assessment": "uncertain",
+          "reason": "No uncertainty analysis, sample size or replication evidence supports calling the association probably a fluke."
+        },
+        {
+          "index": 3,
+          "choice": "A third factor (like hot weather) likely explains both patterns",
+          "assessment": "uncertain",
+          "reason": "A common cause such as weather is a plausible hypothesis, but the study information does not establish that a third factor is likely the explanation. This choice strengthens a possibility into an unsupported likelihood judgment."
+        }
+      ],
+      "selected_answer": null,
+      "exactly_one_sound_answer_without_added_assumptions": false,
+      "item_status": "invalid",
+      "issues": [
+        "None of the choices states the warranted limitation: association alone does not identify the causal explanation. The final choice would become sound if framed as a possible explanation rather than an established likely one.",
+        "Most warranted is comparative, but a weak alternative set does not supply missing evidence for a particular causal account. This verdict follows the requested no-added-assumptions assessment.",
+        "An observational association is not itself impossible or invalid; the problem is the unsupported conclusions offered as answers."
+      ],
+      "difficulty": 3,
+      "evidence": [
+        {
+          "source": "https://itl.nist.gov/div898/handbook/eda/section3/eda33q.htm",
+          "source_scope": "Primary methodological guidance distinguishes observed association from an established causal mechanism. The particular hot-weather account is not demonstrated by the supplied study description."
+        }
+      ]
+    },
+    {
+      "id": "item11",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "About 51%",
+          "assessment": "uncertain",
+          "reason": "Under independent uniform draws, 51% is the probability of at least one red, not both conditional on at least one. Without a specified sampling model, it cannot be categorically excluded."
+        },
+        {
+          "index": 1,
+          "choice": "About 18%",
+          "assessment": "uncertain",
+          "reason": "This is the unique intended answer under independent uniform sampling: 0.09/0.51≈17.65%. The stem says replacement but does not explicitly state random independent selection."
+        },
+        {
+          "index": 2,
+          "choice": "About 9%",
+          "assessment": "uncertain",
+          "reason": "Under independent uniform sampling, 9% is the unconditional probability of two reds, not the requested conditional probability. Without independence, the conditional probability need not follow that calculation."
+        },
+        {
+          "index": 3,
+          "choice": "About 30%",
+          "assessment": "uncertain",
+          "reason": "Under independent uniform sampling, 30% is a single-draw probability. Conditioning on at least one of two draws being red gives a different result; other dependent selection mechanisms remain unspecified."
+        }
+      ],
+      "selected_answer": null,
+      "exactly_one_sound_answer_without_added_assumptions": false,
+      "item_status": "ambiguous",
+      "issues": [
+        "Returning the first marble restores the bag composition, but does not by itself logically force the second draw to be independent or either draw to be uniform.",
+        "Under the ordinary introductory-probability convention of random sampling with replacement, About 18% is sound. Under the requested strict no-added-assumptions reading, the selection mechanism remains unspecified. This is recorded as ambiguity rather than a arithmetic failure."
+      ],
+      "difficulty": 3,
+      "evidence": [
+        {
+          "source": "https://openstax.org/books/introductory-statistics-2e/pages/3-2-independent-and-mutually-exclusive-events",
+          "source_scope": "The text presents the conventional sampling-with-replacement model as independent and defines independence mathematically; examples include random or shuffled sampling. This supports the conventional intended reading while distinguishing independence from physically replacing an item."
+        },
+        {
+          "calculation": {
+            "under_independent_uniform_sampling": {
+              "both_red": "9/100",
+              "at_least_one_red": "51/100",
+              "conditional_exact": "3/17",
+              "conditional_decimal": 0.17647058823529413
+            },
+            "dependence_countermodel": "Even if each draw has marginal red probability 0.3, the joint red-red probability q can vary from 0 to 0.3. Then P(both red | at least one red)=q/(0.6-q), which is not fixed by replacement alone."
+          }
+        }
+      ]
+    },
+    {
+      "id": "item12",
+      "choices": [
+        {
+          "index": 0,
+          "choice": "The sample size of 2,000 is too small",
+          "assessment": "refuted",
+          "reason": "A count of 2,000 does not by itself establish inadequate sample size; no precision requirement is stated, and response bias is a separate issue."
+        },
+        {
+          "index": 1,
+          "choice": "Email surveys are inherently unreliable",
+          "assessment": "refuted",
+          "reason": "Email as a mode is not intrinsically sufficient to make every survey unreliable. The concrete issue here is selective nonresponse."
+        },
+        {
+          "index": 2,
+          "choice": "80% is mathematically impossible with 10,000 customers",
+          "assessment": "refuted",
+          "reason": "80% is arithmetically possible: 1,600 of 2,000 respondents, or 8,000 of 10,000 people, are integer counts."
+        },
+        {
+          "index": 3,
+          "choice": "Satisfied customers may be more likely to respond than dissatisfied ones",
+          "assessment": "supported",
+          "reason": "Only 20% of invited purchasers responded, and satisfaction could affect response propensity. The option correctly states a possible source of selection bias, not that its direction has been proven."
+        }
+      ],
+      "selected_answer": "Satisfied customers may be more likely to respond than dissatisfied ones",
+      "exactly_one_sound_answer_without_added_assumptions": true,
+      "item_status": "valid",
+      "issues": [
+        "The 80% can accurately describe respondents while failing to represent all purchasers; this option raises a valid generalization concern rather than disproving the respondent statistic.",
+        "Several distractors are weak or absolute, especially the mathematical-impossibility option; the item is still answerable."
+      ],
+      "difficulty": 2,
+      "evidence": [
+        {
+          "calculation": {
+            "response_fraction": "2000/10000 = 20%",
+            "satisfied_respondents_if_exact": "0.8*2000 = 1600"
+          },
+          "countermodel": "The unobserved 8,000 customers may have a different satisfaction distribution. For example, 0% versus 100% satisfaction among them yields different purchaser-population rates while preserving the respondent figure."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "valid": [
+      "item01",
+      "item02",
+      "item03",
+      "item06",
+      "item07",
+      "item08",
+      "item09",
+      "item12"
+    ],
+    "invalid": [
+      "item04",
+      "item10"
+    ],
+    "ambiguous": [
+      "item05",
+      "item11"
+    ],
+    "uncertain": []
+  }
+}

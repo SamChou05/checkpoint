@@ -1,0 +1,12 @@
+{
+  "checked_utc": "2026-09-10T06:05:13.874047+00:00",
+  "model": "anthropic.claude-sonnet-4-6",
+  "agreementAvailability": {
+    "status": "AVAILABLE"
+  },
+  "authorizationStatus": "AUTHORIZED",
+  "entitlementAvailability": "AVAILABLE",
+  "regionAvailability": "AVAILABLE",
+  "inference_calls": 0,
+  "account_changes": 0
+}

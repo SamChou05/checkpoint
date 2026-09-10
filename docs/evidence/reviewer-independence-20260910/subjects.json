@@ -1,0 +1,386 @@
+{
+  "scope": "Unchanged archived reviewer subjects. No authored keys, prior solver outputs, teaching or verdicts. Assess literal validity and all choices before any fresh responses.",
+  "subjects": [
+    {
+      "id": "item01",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+        "choices": [
+          "=$A4*D$1",
+          "=$A2*D$1",
+          "=$A4*B$1",
+          "=A4*D1"
+        ],
+        "topic": "Combine relative, absolute and mixed A1 referenc"
+      }
+    },
+    {
+      "id": "item02",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+        "choices": [
+          "=A2*B1",
+          "=$A2*B$1",
+          "=A$2*$B1",
+          "=$A$2*B$1"
+        ],
+        "topic": "Combine relative, absolute and mixed A1 referenc"
+      }
+    },
+    {
+      "id": "item03",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+        "choices": [
+          "=N2/12",
+          "=$N2/12",
+          "=N$2/12",
+          "=$N$2/12"
+        ],
+        "topic": "Combine relative, absolute and mixed A1 referenc"
+      }
+    },
+    {
+      "id": "item04",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+        "choices": [
+          "=$A1*B$1*$A3",
+          "=$A$1*B1*$A$3",
+          "=$A$1*B$1*$A3",
+          "=$A$1*$B$1*A3"
+        ],
+        "topic": "Combine relative, absolute and mixed A1 referenc"
+      }
+    },
+    {
+      "id": "item05",
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+        "contentTopics": [
+          "Combine explicitly described feeding links",
+          "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "question": {
+        "prompt": "A pond ecosystem has phytoplankton with standing biomass 30 g/m² and annual production of 300 g/m²/year. Zooplankton have standing biomass 150 g/m². Transfer efficiency from phytoplankton to zooplankton is 25%. Which conclusion about zooplankton annual production is valid?",
+        "choices": [
+          "Zooplankton annual production is 75 g/m²/year.",
+          "Zooplankton annual production is 150 g/m²/year.",
+          "Zooplankton annual production is 37.5 g/m²/year.",
+          "Zooplankton annual production is 7.5 g/m²/year."
+        ],
+        "topic": "Distinguish energy flow over time from a snapsho"
+      }
+    },
+    {
+      "id": "item06",
+      "goal": {
+        "title": "Reason carefully about evidence and stated rules",
+        "category": "",
+        "focusAreas": "Distinguish warranted conclusions from possible conclusions, contradictions and comparisons.",
+        "currentLevel": "",
+        "learningTarget": "Reason carefully about evidence and stated rules",
+        "contentTopics": [
+          "Distinguish warranted conclusions from possible conclusions",
+          "contradictions and comparisons."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "question": {
+        "prompt": "Teams A, B, C and D completed 30 of 100, 21 of 60, 16 of 80 and 27 of 90 tasks respectively. Which team had the highest observed completion rate?",
+        "choices": [
+          "Team A",
+          "Team B",
+          "Team C",
+          "Team D"
+        ],
+        "topic": "Observed proportions"
+      }
+    },
+    {
+      "id": "item07",
+      "goal": {
+        "title": "Reason carefully about evidence and stated rules",
+        "category": "",
+        "focusAreas": "Distinguish warranted conclusions from possible conclusions, contradictions and comparisons.",
+        "currentLevel": "",
+        "learningTarget": "Reason carefully about evidence and stated rules",
+        "contentTopics": [
+          "Distinguish warranted conclusions from possible conclusions",
+          "contradictions and comparisons."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "question": {
+        "prompt": "A survey recorded 80 responses: 50 preferred design A and 30 preferred design B. Were all people eligible for this survey included among those 80 respondents?",
+        "choices": [
+          "Every eligible person preferred design A.",
+          "Yes, all eligible people responded.",
+          "No, some eligible people did not respond.",
+          "The response counts do not establish whether everyone eligible responded."
+        ],
+        "topic": "Survey participation"
+      }
+    },
+    {
+      "id": "item08",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "question": {
+        "prompt": "A city has two hospitals: Large Hospital delivers 45 babies daily, Small Hospital delivers 15. Over one year, each hospital records the days when more than 60% of births were boys. Which hospital likely recorded more such days?",
+        "choices": [
+          "Large Hospital",
+          "Both about equally",
+          "Cannot be determined from the information given",
+          "Small Hospital"
+        ],
+        "topic": "sampling"
+      }
+    },
+    {
+      "id": "item09",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "question": {
+        "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+        "choices": [
+          "About 99%",
+          "About 50%",
+          "About 1%",
+          "About 9%"
+        ],
+        "topic": "base rates and distinguishing a possible conclus"
+      }
+    },
+    {
+      "id": "item10",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "question": {
+        "prompt": "A study finds that cities with more ice cream sales have higher drowning rates. A news headline claims 'Ice cream consumption increases drowning risk.' What is the most warranted conclusion?",
+        "choices": [
+          "Ice cream consumption causes drowning",
+          "Drowning causes people to buy more ice cream",
+          "The correlation is probably a statistical fluke",
+          "A third factor (like hot weather) likely explains both patterns"
+        ],
+        "topic": "causal claims"
+      }
+    },
+    {
+      "id": "item11",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "question": {
+        "prompt": "A bag contains 30 red and 70 blue marbles. You draw one marble, note its color, return it, and draw again. Given that at least one draw was red, what is the probability both draws were red?",
+        "choices": [
+          "About 51%",
+          "About 18%",
+          "About 9%",
+          "About 30%"
+        ],
+        "topic": "Conditional probability"
+      }
+    },
+    {
+      "id": "item12",
+      "goal": {
+        "title": "Understand probability and evidence in everyday decisions",
+        "category": "",
+        "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+        "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+        "learningTarget": "Understand probability and evidence in everyday decisions",
+        "contentTopics": [
+          "Conditional probability",
+          "sampling",
+          "causal claims",
+          "base rates and distinguishing a possible conclusion from a warranted one."
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "question": {
+        "prompt": "A company reports that 80% of surveyed customers are 'satisfied.' The survey was sent by email to 10,000 recent purchasers; 2,000 responded. Which concern most warrants skepticism about the 80% figure?",
+        "choices": [
+          "The sample size of 2,000 is too small",
+          "Email surveys are inherently unreliable",
+          "80% is mathematically impossible with 10,000 customers",
+          "Satisfied customers may be more likely to respond than dissatisfied ones"
+        ],
+        "topic": "sampling"
+      }
+    }
+  ]
+}

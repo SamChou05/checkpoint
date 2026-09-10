@@ -1,0 +1,14 @@
+...............usage: python -m unittest [-h] --output OUTPUT [--plan PLAN]
+                          [--plan-sha256 PLAN_SHA256] [--execute]
+                          [--aws-cli-credentials]
+python -m unittest: error: Execution requires the frozen plan and exact canonical hash.
+...{"plan_sha256": "dc82afa162de15d27fc13898fce438c9b3eb7cfc3607ab5c6c1f41c6ef300c86", "maximum_calls": 2, "execute": false}
+................................................................
+----------------------------------------------------------------------
+Ran 82 tests in 8.704s
+
+OK
+{"status": "prepared", "sha256": "1ca59933b10ee6d15a9dc3b10065417b5e358b224e2e440142034f08327d8bca"}
+{"status": "prepared", "sha256": "cae4f2cc80835dd8bedccbc75ea35935cfa39fd0877e93a87c194a5bf571dec0"}
+{"status": "prepared", "sha256": "942a873a136fd1f537fd0c20bb967ee155a4d085cafc817555118f670089b47e"}
+{"status": "prepared", "sha256": "504daf890afd6f1fff8ff887d7b9276b6ebf975124ae0761fbdc9d14247b4890"}

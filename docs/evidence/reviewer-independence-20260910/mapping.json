@@ -1,0 +1,74 @@
+[
+  {
+    "id": "item01",
+    "archive": "delivery-feedback-20260909/capture.json",
+    "call_index": 2,
+    "item_index": 0
+  },
+  {
+    "id": "item02",
+    "archive": "delivery-feedback-20260909/capture.json",
+    "call_index": 2,
+    "item_index": 1
+  },
+  {
+    "id": "item03",
+    "archive": "delivery-feedback-20260909/capture.json",
+    "call_index": 2,
+    "item_index": 2
+  },
+  {
+    "id": "item04",
+    "archive": "delivery-feedback-20260909/capture.json",
+    "call_index": 5,
+    "item_index": 0
+  },
+  {
+    "id": "item05",
+    "archive": "delivery-feedback-20260909/capture.json",
+    "call_index": 23,
+    "item_index": 0
+  },
+  {
+    "id": "item06",
+    "archive": "runtime-qualification-capture-20260908.json",
+    "call_index": 1,
+    "item_index": 0
+  },
+  {
+    "id": "item07",
+    "archive": "runtime-qualification-capture-20260908.json",
+    "call_index": 1,
+    "item_index": 1
+  },
+  {
+    "id": "item08",
+    "archive": "runtime-qualification-capture-20260908.json",
+    "call_index": 4,
+    "item_index": 0
+  },
+  {
+    "id": "item09",
+    "archive": "runtime-qualification-capture-20260908.json",
+    "call_index": 4,
+    "item_index": 1
+  },
+  {
+    "id": "item10",
+    "archive": "runtime-qualification-capture-20260908.json",
+    "call_index": 4,
+    "item_index": 2
+  },
+  {
+    "id": "item11",
+    "archive": "runtime-qualification-capture-20260908.json",
+    "call_index": 4,
+    "item_index": 3
+  },
+  {
+    "id": "item12",
+    "archive": "runtime-qualification-capture-20260908.json",
+    "call_index": 4,
+    "item_index": 4
+  }
+]

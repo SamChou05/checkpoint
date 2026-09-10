@@ -1,0 +1,22 @@
+{
+  "scope": "Root pre-response interpretation notes. Root has historical task context; these are independent reasoning notes, not a fully blinded expert assessment.",
+  "clear_defect": [
+    "item04"
+  ],
+  "uncontested_valid_controls": [
+    "item01",
+    "item02",
+    "item03",
+    "item06",
+    "item07",
+    "item09",
+    "item12"
+  ],
+  "interpretation_concerns": {
+    "item05": "75 follows if the explicitly supplied efficiency is a ratio of annual biomass production. Energy-based trophic efficiency would require comparable biomass energy content. Preserve this scope ambiguity; do not label 75 an arithmetic error.",
+    "item08": "Small Hospital is the conventional answer under comparable approximately-half birth probabilities and independent births. Those distributional assumptions are unstated. The explicit cannot-determine alternative makes a literal reading defensible. Preserve both rather than calling the conventional answer a demonstrated falsehood.",
+    "item10": "A third-factor explanation is the conventional and plausible answer using ordinary real-world knowledge. Association alone does not establish its specific likelihood. Treat the word likely as a scope concern rather than proof hot weather cannot explain the pattern. Definitive causal teaching would overclaim.",
+    "item11": "Replacement and random uniform drawing conventionally yield 0.09/(1-0.49)=3/17, about18%. Randomness is not explicit, but drawing marbles in a probability exercise conventionally supplies it. Preserve this convention distinction; do not claim an arithmetic defect or credit rejection purely for unstated randomness."
+  },
+  "comparison_rule": "The extra spreadsheet operand is the primary unambiguous defective-item endpoint. Report other interpretation concerns separately from clear defects. No new exclusion of the seven uncontested valid controls or new unsupported teaching is allowed for a promising diagnostic. Report all twelve items and both assessments; no relabeling after responses."
+}

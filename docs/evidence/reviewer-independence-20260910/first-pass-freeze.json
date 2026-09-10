@@ -1,0 +1,10 @@
+{
+  "frozen_utc": "2026-09-10T06:04:42.977969+00:00",
+  "files": {
+    "subjects.json": "cb108e0ba675775fcdd68aab7b89b80fcb5d9cf81ddb38651366d8350b3294b8",
+    "mapping.json": "286ed45c00c71961cfa103d73992c6a19b9c064b0077cbccd5ad804d1f2a1c95",
+    "independent-subjects.json": "9957446ec00fbdab8dc963cfd82f4285a10527e37edfba7f27490603c072a50d",
+    "root-pre-response-notes.json": "9ef8b544e229d149212e07aeb541d32c2b647514169370801bdbbc8ff2881ba5"
+  },
+  "model_responses_for_this_experiment": "none"
+}
