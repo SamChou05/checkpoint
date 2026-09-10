@@ -1,0 +1,57 @@
+{
+  "created_at": "2026-09-10T00:50:22.607832+00:00",
+  "scope": "Root teaching review before opening arm/key mapping or reading either teaching assessment. Root knew preparation examples; separate from the two fresh masked assessors.",
+  "teaching_byte_sha256": "c0738b5a59d4f087b4b3fdeb0c33324a35b226baf8001cf733bf10cfee3e5309",
+  "items": [
+    {
+      "id": "q01",
+      "fully_supported": false,
+      "reason": "Bar-only arithmetic is correct but main assumes the inconsistent4.5cm bar is valid and discards the relation between original ratio and150%resize. It also fails to resolve whether12cm was measured before or after copying."
+    },
+    {
+      "id": "q02",
+      "fully_supported": false,
+      "reason": "Main converts receiver diet shares into fractions of prey production.48and6sum54but have an88.9:11.1 ratio, contradicting the asserted60:40 share if treated as received production contributions. It has not established a minimum."
+    },
+    {
+      "id": "q03",
+      "fully_supported": false,
+      "reason": "Main states co-resizing makes the2cmbarvalid while ignoring that1km at the original ratio is10cm and should be8cm after80%resize. Correct division under selected premises does not reconcile the inconsistent task."
+    },
+    {
+      "id": "q04",
+      "fully_supported": false,
+      "reason": "Formula translation is sound, but the last clause falsely calls E5 a sum of Q3 Jan-Apr sales. Rows4and5 are repeated cumulative sums over prior formula rows, not new monthly sales data. Q3 does not mean Jan-Apr. A label does not change the referenced data."
+    },
+    {
+      "id": "q05",
+      "fully_supported": true,
+      "reason": "Main accurately explains unchanged distance, co-resized bar and original8cm*.25km/cm=2km. It does not fix the low cognitive demand or weak distractors."
+    },
+    {
+      "id": "q06",
+      "fully_supported": true,
+      "reason": "Main consistently rescales5cmto4cm, retains1.25km perbar, computes2.5km for8cm and contrasts the stale ratio. It could additionally explain that the representative fraction decreases, but its written claims are supported."
+    },
+    {
+      "id": "q07",
+      "fully_supported": false,
+      "reason": "Main traces toC5and then assertsD5has aformula without any described operation reachingD5. The final column change is an invented step."
+    },
+    {
+      "id": "q08",
+      "fully_supported": false,
+      "reason": "Main begins by asserting columnAcontainsprices, although the unchangedstemputsproductnames there. Its otherwise recognizable mixed-reference reasoning answers a repaired task."
+    },
+    {
+      "id": "q09",
+      "fully_supported": true,
+      "reason": "Main correctly explains each mixed anchor and both fill directions. It explains why alternatives either freeze needed variation or permit wrong references. No extra factual sideclaim detected."
+    },
+    {
+      "id": "q10",
+      "fully_supported": false,
+      "reason": "Main turns a possible turnover mechanism into an established cause and asserts phytoplankton production sustains all shellfish biomass without energy-density, feeding, steady-state or historical information. It correctly rejects the unsupported efficiency claim and thermodynamic inference, but those valid clauses do not establish its key."
+    }
+  ]
+}

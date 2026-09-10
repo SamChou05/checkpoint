@@ -1,0 +1,324 @@
+{
+  "experiment": "fresh-author-checked-examples-v1",
+  "audit_date": "2026-09-09",
+  "scope": "Operational and format audit only; no question correctness, teaching, difficulty or distractor assessment.",
+  "capture": {
+    "path": "/tmp/checkpoint-author-examples-live-20260909/capture.json",
+    "bytes": 251917,
+    "byte_sha256": "9053f1e1dfe11b12a62aba1573293b932b2ed135a24b04877951b663c99e06f5",
+    "status": "completed"
+  },
+  "frozen_plan": {
+    "path": "/tmp/checkpoint-author-examples-plan-20260909.json",
+    "canonical_sha256": "1163b513776b9747f64facc008466e6aee72661521026984603a4d364c92b1dc",
+    "source_revision": "2d10ce9544b7b9b2a029b0f5ac4bb66e226a9640",
+    "source_hashes_matched_worktree_and_commit": 35,
+    "dependencies": {
+      "python": "3.12.11",
+      "boto3": "1.43.89",
+      "botocore": "1.43.89"
+    },
+    "dependencies_match": true,
+    "requests_match_frozen_plan": true,
+    "request_bytes_total": 89892
+  },
+  "calls_completed": 6,
+  "provider_dispatches_observed": 6,
+  "known_usage_calls": 6,
+  "known_usage_totals": {
+    "inputTokens": 16825,
+    "outputTokens": 4535
+  },
+  "unknown_usage_calls": 0,
+  "sdk_elapsed_seconds_sum": 51.08800854202127,
+  "sdk_elapsed_seconds_range": [
+    4.5323731250246055,
+    16.420960999967065
+  ],
+  "process_elapsed_seconds_sum": 55.1614255819004,
+  "process_elapsed_seconds_range": [
+    5.068563582957722,
+    17.009740999958012
+  ],
+  "all_workers_reaped_and_process_groups_cleaned": true,
+  "all_worker_exitcodes_zero": true,
+  "termination_attempts": 0,
+  "all_response_stop_reasons_end_turn": true,
+  "strict_whole_object_responses": 5,
+  "strict_format_failures": 1,
+  "parseable_raw_item_occurrences": 10,
+  "requested_item_slots": 12,
+  "unparseable_response_requested_slots": 2,
+  "exact_no_client_replay": true,
+  "provider_calls_by_auditor": 0,
+  "raw_final_text_preserved_in_capture_for_all_calls": true,
+  "malformed_raw_text_artifacts": [
+    {
+      "job_index": 5,
+      "path": "/tmp/checkpoint-author-examples-malformed-job-5-20260909.txt",
+      "bytes": 5154,
+      "sha256": "ca2e737f1f1d4466da78dfa4312f50166280f622286afa36e80c0de5e0375893",
+      "unchanged_from_captured_final_text": true
+    }
+  ],
+  "outcomes": [
+    {
+      "status": "completed",
+      "provider_dispatch_attempted": true,
+      "error_type": null,
+      "remote_completion": "response_observed",
+      "usage_known": true,
+      "sdk_elapsed_seconds": 4.799740207963623,
+      "process_elapsed_seconds": 6.084902792004868,
+      "worker_exitcode": 0,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "job_index": 0,
+      "case_id": "excel_reference_copy_constraints",
+      "arm": "no_examples",
+      "request_sha256": "06b0fccee7e6040f1d1edc4e6d2c3d6ca2653c64b59efd752ecb6cecfdc650af",
+      "input_utf8_bytes": 12503,
+      "call_status": "observed",
+      "usage": {
+        "inputTokens": 2292,
+        "outputTokens": 668,
+        "totalTokens": 2960
+      },
+      "content_valid": true,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 0,
+      "raw_final_text_bytes": 2422,
+      "raw_final_text_sha256": "14e7927a353facc48e8aea852c6d101a6f9605bd6e5c7d4f01408a10a6842076",
+      "format": {
+        "strict_whole_object_valid": true,
+        "questions_list_present": true,
+        "raw_item_occurrences": 2,
+        "raw_item_types": [
+          "dict",
+          "dict"
+        ]
+      }
+    },
+    {
+      "status": "completed",
+      "provider_dispatch_attempted": true,
+      "error_type": null,
+      "remote_completion": "response_observed",
+      "usage_known": true,
+      "sdk_elapsed_seconds": 4.643074250023346,
+      "process_elapsed_seconds": 5.202009040978737,
+      "worker_exitcode": 0,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "job_index": 1,
+      "case_id": "excel_reference_copy_constraints",
+      "arm": "checked_examples",
+      "request_sha256": "28e0f25f8aa55d6c08498d5e863f5662d4efd00dbe1dfa7020b5d14b2f439ede",
+      "input_utf8_bytes": 16103,
+      "call_status": "observed",
+      "usage": {
+        "inputTokens": 3029,
+        "outputTokens": 607,
+        "totalTokens": 3636
+      },
+      "content_valid": true,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 0,
+      "raw_final_text_bytes": 2138,
+      "raw_final_text_sha256": "9922d9235ad12109d047545b349b652d77d799b54c1062e70c73d8bb262c23ef",
+      "format": {
+        "strict_whole_object_valid": true,
+        "questions_list_present": true,
+        "raw_item_occurrences": 2,
+        "raw_item_types": [
+          "dict",
+          "dict"
+        ]
+      }
+    },
+    {
+      "status": "completed",
+      "provider_dispatch_attempted": true,
+      "error_type": null,
+      "remote_completion": "response_observed",
+      "usage_known": true,
+      "sdk_elapsed_seconds": 4.5323731250246055,
+      "process_elapsed_seconds": 5.068563582957722,
+      "worker_exitcode": 0,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "job_index": 2,
+      "case_id": "map_scale_distance_resizing",
+      "arm": "checked_examples",
+      "request_sha256": "f1465601b4afa4d43a8c50265ed75dbdaebd4f66518c6d3a79516b55fbe6312a",
+      "input_utf8_bytes": 17082,
+      "call_status": "observed",
+      "usage": {
+        "inputTokens": 3248,
+        "outputTokens": 604,
+        "totalTokens": 3852
+      },
+      "content_valid": true,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 0,
+      "raw_final_text_bytes": 2399,
+      "raw_final_text_sha256": "11dcb63fc957ff2caa8b31c962ae6e04e2585a9e9afea2c07ae5d4531938a9e2",
+      "format": {
+        "strict_whole_object_valid": true,
+        "questions_list_present": true,
+        "raw_item_occurrences": 2,
+        "raw_item_types": [
+          "dict",
+          "dict"
+        ]
+      }
+    },
+    {
+      "status": "completed",
+      "provider_dispatch_attempted": true,
+      "error_type": null,
+      "remote_completion": "response_observed",
+      "usage_known": true,
+      "sdk_elapsed_seconds": 11.961802792036906,
+      "process_elapsed_seconds": 12.507439957989845,
+      "worker_exitcode": 0,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "job_index": 3,
+      "case_id": "map_scale_distance_resizing",
+      "arm": "no_examples",
+      "request_sha256": "3d4201393401b52b18de79cad047d800ef7bd51bfe6d209d7f29f13533e5028a",
+      "input_utf8_bytes": 13482,
+      "call_status": "observed",
+      "usage": {
+        "inputTokens": 2511,
+        "outputTokens": 686,
+        "totalTokens": 3197
+      },
+      "content_valid": true,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 0,
+      "raw_final_text_bytes": 2631,
+      "raw_final_text_sha256": "f24f66e6c9f1d03dda4bb824e89a7514c22f3e88dea5d34f202dbb3fe96b8ed9",
+      "format": {
+        "strict_whole_object_valid": true,
+        "questions_list_present": true,
+        "raw_item_occurrences": 2,
+        "raw_item_types": [
+          "dict",
+          "dict"
+        ]
+      }
+    },
+    {
+      "status": "completed",
+      "provider_dispatch_attempted": true,
+      "error_type": null,
+      "remote_completion": "response_observed",
+      "usage_known": true,
+      "sdk_elapsed_seconds": 8.730057167005725,
+      "process_elapsed_seconds": 9.288769208011217,
+      "worker_exitcode": 0,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "job_index": 4,
+      "case_id": "food_web_energy_constraints",
+      "arm": "no_examples",
+      "request_sha256": "e94126d6773103ed0dcb623ec8691efa347b7130187b267a4d709bab51f4dcf6",
+      "input_utf8_bytes": 13561,
+      "call_status": "observed",
+      "usage": {
+        "inputTokens": 2504,
+        "outputTokens": 698,
+        "totalTokens": 3202
+      },
+      "content_valid": true,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 0,
+      "raw_final_text_bytes": 2990,
+      "raw_final_text_sha256": "9fe3228b12667203989f5e84271d5f786ceff65c25b41382d0d26f052abaf6b8",
+      "format": {
+        "strict_whole_object_valid": true,
+        "questions_list_present": true,
+        "raw_item_occurrences": 2,
+        "raw_item_types": [
+          "dict",
+          "dict"
+        ]
+      }
+    },
+    {
+      "status": "completed",
+      "provider_dispatch_attempted": true,
+      "error_type": null,
+      "remote_completion": "response_observed",
+      "usage_known": true,
+      "sdk_elapsed_seconds": 16.420960999967065,
+      "process_elapsed_seconds": 17.009740999958012,
+      "worker_exitcode": 0,
+      "local_worker_reaped": true,
+      "local_process_group_cleanup_confirmed": true,
+      "termination_attempted": false,
+      "job_index": 5,
+      "case_id": "food_web_energy_constraints",
+      "arm": "checked_examples",
+      "request_sha256": "6cb5e8cdcf5210517f7b17abd1f9d816a9dfbf28e237a61d086257b27653d9a6",
+      "input_utf8_bytes": 17161,
+      "call_status": "observed",
+      "usage": {
+        "inputTokens": 3241,
+        "outputTokens": 1272,
+        "totalTokens": 4513
+      },
+      "content_valid": true,
+      "stop_reason": "end_turn",
+      "reasoning_content_block_count": 0,
+      "raw_final_text_bytes": 5154,
+      "raw_final_text_sha256": "ca2e737f1f1d4466da78dfa4312f50166280f622286afa36e80c0de5e0375893",
+      "format": {
+        "strict_whole_object_valid": false,
+        "error_type": "ProviderError",
+        "error_message": "Provider response was not a complete JSON object.",
+        "raw_item_occurrences": null,
+        "failure_kind": "duplicate_object_member",
+        "syntax_decodes_with_standard_json_loads": true,
+        "duplicate_member_records": [
+          {
+            "object_path": "$.questions[0]",
+            "member_name": "explanation",
+            "occurrences": 2,
+            "values_in_source_order": [
+              {
+                "characters": 2174,
+                "utf8_bytes": 2192,
+                "sha256": "2e65be8f1a718f854a4d8aad0138b5a8ff1eaeffce9b9a68a3446e0d41b9d78c"
+              },
+              {
+                "characters": 407,
+                "utf8_bytes": 407,
+                "sha256": "3852a62a653f547eb9372b4b42614455cc5783ef900a7e0c9e0164240cf2ae82"
+              }
+            ]
+          }
+        ],
+        "strict_parser_error_type": "ProviderError",
+        "silent_last_wins_caveat": "Default json.loads silently keeps only the last explanation member. This is a duplicate-member ambiguity, not a JSON syntax failure. Neither explanation value was selected, repaired or promoted into assessment candidates; the unchanged raw response retains both."
+      }
+    }
+  ],
+  "limitations": [
+    "Captured final text is the existing projector output; this audit does not claim preservation of the full wire response.",
+    "A completed end_turn response and content_valid flag describe the transport response contract, not valid question JSON or semantic correctness.",
+    "The malformed final response is not repaired or split into candidate questions. Its requested slots remain format failures.",
+    "SDK and process times cover their respective local observation intervals; summed process times are not exact total experiment wall time.",
+    "The final response is syntactically decodable by standard json.loads but repeats one explanation member. Strict rejection prevents silent last-member selection; calling this syntax-invalid JSON would be inaccurate."
+  ],
+  "maximum_observed_output_tokens": 1272,
+  "maximum_output_tokens_per_call": 6000,
+  "all_observed_output_usage_below_output_allowance": true
+}

@@ -1,0 +1,108 @@
+{
+  "created_at": "2026-09-10T00:35:26.337226+00:00",
+  "scope": "Independent scoped exact arithmetic and coordinate checks. No Excel application or ecology simulation was run; these observations do not establish overall MCQ validity.",
+  "checks": [
+    {
+      "id": "q01",
+      "original_1km_bar_cm": "2",
+      "resized_1km_bar_cm": "3",
+      "stated_resized_bar_cm": "4.5",
+      "bar_only_12cm_distance_km": "8/3",
+      "conclusion": "The stated bar length contradicts the numerical scale and resize factor. Using only that bar gives8/3km."
+    },
+    {
+      "id": "q03",
+      "original_1km_bar_cm": "10",
+      "resized_1km_bar_cm": "8",
+      "stated_resized_bar_cm": "2",
+      "ratio_resize_only_distance_km": "15/8",
+      "bar_only_distance_km": "15/2",
+      "conclusion": "Conflicting premises produce15/8km or15/2km; neither reconciliation is licensed."
+    },
+    {
+      "id": "q04",
+      "source": "B3",
+      "destination": "E5",
+      "column_displacement": 3,
+      "row_displacement": 2,
+      "source_references": [
+        "$B2",
+        "B2"
+      ],
+      "translated_references": [
+        "$B4",
+        "E4"
+      ],
+      "formula": "=SUM($B4:E4)",
+      "scope": "Coordinate arithmetic applies anchors. It does not evaluate a spreadsheet or infer quarter totals."
+    },
+    {
+      "id": "q05",
+      "original_distance_km": "2",
+      "resized_distance_km": "2",
+      "conclusion": "Both specified representations give2km; no new ground distance is created by copying."
+    },
+    {
+      "id": "q06",
+      "resized_bar_cm": "4",
+      "distance_km": "5/2",
+      "original_representative_fraction": "1/25000",
+      "resized_representative_fraction": "1/31250",
+      "fraction_decreases": true
+    },
+    {
+      "id": "q07",
+      "filled_columns": [
+        "B",
+        "C"
+      ],
+      "filled_rows": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "queried_cell": "D5",
+      "query_reached_by_described_fill": false
+    },
+    {
+      "id": "q02",
+      "incorrect_weighted_value": "54",
+      "conditional_scenario": "If prey contributions cannot exceed10% of their total production, and receiver production contributions have exact60:40 shares, an upper bound is min(80/.6,15/.4). These availability assumptions are a diagnostic scenario, not facts supplied by the stem.",
+      "conditional_upper_bound": "75/2",
+      "conclusion": "54 does not follow as a minimum. The weighted formula multiplies receiver diet shares into prey-source production."
+    },
+    {
+      "id": "q10",
+      "sum_consumer_production_over_producer_production": "2/25",
+      "scope": "This is8%, but the numerator combines consumer levels. It is not a justified single-trophic-level efficiency, and neither a causal turnover explanation nor required energy per gram follows from it."
+    },
+    {
+      "id": "q04",
+      "teaching_counterexample": {
+        "scope": "One permitted numerical dataset, using only the described cumulative formulas; pure Python sums, no Excel application.",
+        "B2_to_E2": [
+          1,
+          0,
+          0,
+          0
+        ],
+        "B3_to_E3": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "B4_to_E4": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "E5": 10,
+        "actual_Jan_to_Apr_sales": 1
+      },
+      "conclusion": "A correct formula translation does not make its result Q3 Jan-Apr sales. With this permitted input E5 is10, while actual Jan-Apr sales total1."
+    }
+  ]
+}

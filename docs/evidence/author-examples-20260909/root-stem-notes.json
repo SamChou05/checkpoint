@@ -1,0 +1,65 @@
+{
+  "phase": "Independent root inspection of stems and choices before reading teaching, keys or arms. Root knows experiment design and examples; this is not a fresh masked assessor.",
+  "created_at": "2026-09-10T00:33:41.287408+00:00",
+  "stems_byte_sha256": "b3c66002b0384a92fc8edbae47a9a1152a0f2bfe2fa19729606bb466b96d95c2",
+  "items": [
+    {
+      "id": "q01",
+      "supported_choices": [],
+      "note": "Inconsistent calibration: original 1:50000 makes a 1km bar 2cm, hence 3cm after150% resizing, not4.5cm. Also12cm measurement shifts from before to after copying. Applying the stated bar in isolation gives2.6667km, rounded2.7; that does not reconcile all premises."
+    },
+    {
+      "id": "q02",
+      "supported_choices": [],
+      "note": "Diet shares at the receiver do not specify what fraction of each prey production is available or consumed. Weighted54=.1*(.6*800+.4*150) treats receiver diet shares as prey-production allocations. With fixed60:40 production contributions and maxima80and15, the maximum is37.5 (15/.4), not an identified positive minimum. Actual lower availability can support less. The claimed minimum cannot be derived."
+    },
+    {
+      "id": "q03",
+      "supported_choices": [],
+      "note": "Original1:10000 gives a1km bar10cm, resized80% gives8cm, not2cm. The numerical reproduction gives1.875km; bar alone gives7.5km. No basis chooses one conflicting premise."
+    },
+    {
+      "id": "q04",
+      "supported_choices": [
+        "=SUM($B4:E4)"
+      ],
+      "note": "Two-row/three-column displacement changes relative rows2to4 and terminal columnBtoE, preserving fixedB. Quarter labels add no required reasoning. Cognitive depth may be only routine formula translation; assessors should retain their independent difficulty judgment."
+    },
+    {
+      "id": "q05",
+      "supported_choices": [
+        "2.0 km"
+      ],
+      "note": "8cm at1:25000 is2000m; resized12cm has the same distance. Correct key can be obtained by one direct multiplication while ignoring resizing details.1.2and1.8 lack clear distinct plausible mistakes."
+    },
+    {
+      "id": "q06",
+      "supported_choices": [
+        "2.5 km, because the reduced scale bar remains valid while the printed ratio does not"
+      ],
+      "note": "Reduced bar4cm stillmeans1.25km, so8cmmeans2.5km. Representative fraction becomes1/31250 and decreases; its denominator increases. Choice3 confuses fraction with denominator. This is well-scoped on ordinary precise mathematical usage."
+    },
+    {
+      "id": "q07",
+      "supported_choices": [],
+      "note": "OnlyB2:C2 is filled down; no operation reachesD5 and its initial contents are absent. Cannot infer any offeredD5formula. Regions/months labels are also unsuitable numeric inputs, though formula text itself could still be entered."
+    },
+    {
+      "id": "q08",
+      "supported_choices": [],
+      "note": "ColumnA contains product names, not prices. No price location is supplied. All choices multiplyA2orrelativevariants as though it supplied prices; that is an unstated repair."
+    },
+    {
+      "id": "q09",
+      "supported_choices": [
+        "=$A2*B$1"
+      ],
+      "note": "Anchors preserve each rowrate fromcolA and columnsales fromrow1 throughout stated rectangle. Wrong options freezeboth, neither, or onlyone needed relationship. Application combines two anchors; level3 versus familiar routine template remains qualitative."
+    },
+    {
+      "id": "q10",
+      "supported_choices": [],
+      "note": "Standing biomass alone does not establish that rapid producer turnover caused larger consumer biomass. No steady-state, energy-density or closed-system assumptions supplied.400/5000=.08 sums consumers acrosslevels; it is not a single trophic transfer efficiency.8% as approximately10% is also imprecise and context-dependent. Other choices falsely infer thermodynamic violation or required flow from mass alone."
+    }
+  ]
+}

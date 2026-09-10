@@ -1,0 +1,174 @@
+{
+  "contexts": {
+    "c0": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table."
+      },
+      "sources": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ]
+    },
+    "c1": {
+      "goal": {
+        "title": "Interpret map distances and scale after resizing",
+        "category": "Geography",
+        "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+        "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+        "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region."
+      },
+      "sources": [
+        {
+          "name": "Ordnance Survey map distance: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+          "truncated": true
+        },
+        {
+          "name": "Penn State map reproduction: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+          "truncated": true
+        }
+      ]
+    },
+    "c2": {
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses."
+      },
+      "sources": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "q01",
+      "context_id": "c1",
+      "prompt": "A local walking map is printed with a scale bar labeled \"1 km\" and a numerical ratio 1:50,000. A hiker measures a winding trail as 12 cm along the bends using a string, then photocopies the map at 150% (linear). On the enlarged copy, the scale bar now measures 4.5 cm. What ground distance does the 12 cm trail measurement on the enlarged copy represent?",
+      "choices": [
+        "2.4 km",
+        "2.7 km",
+        "6.0 km",
+        "7.5 km"
+      ]
+    },
+    {
+      "id": "q02",
+      "context_id": "c2",
+      "prompt": "A food web diagram shows arrows from algae to zooplankton, from zooplankton to small fish, and from both zooplankton and small fish to large fish. Annual production is 10,000 kJ/m² for algae, 800 kJ/m² for zooplankton, and 150 kJ/m² for small fish. The large fish obtain 60% of their energy from zooplankton and 40% from small fish. If trophic transfer efficiency to large fish is 10% from each prey source, what is the minimum annual production of large fish supported by these pathways?",
+      "choices": [
+        "54 kJ/m²",
+        "80 kJ/m²",
+        "95 kJ/m²",
+        "150 kJ/m²"
+      ]
+    },
+    {
+      "id": "q03",
+      "context_id": "c1",
+      "prompt": "A park map shows a winding river path. A printed note states 'Scale 1:10,000' in the corner. The map is scanned and displayed on a tablet at 80% of original dimensions. A student traces the winding river with a string, then straightens it against a ruler: 15 cm on the tablet screen. The scale bar, also visible on the tablet, reads '1 km' next to a line that measures 2 cm on the tablet. What is the approximate ground length of the river path?",
+      "choices": [
+        "0.75 km",
+        "1.5 km",
+        "1.875 km",
+        "7.5 km"
+      ]
+    },
+    {
+      "id": "q04",
+      "context_id": "c0",
+      "prompt": "A table lists monthly sales in B2:M2 (Jan–Dec). In A3, the label 'Q1' appears; A4 has 'Q2'; A5 has 'Q3'; A6 has 'Q4'. Cell B3 contains =SUM($B2:B2) and is filled right to M3, then B3:M3 is filled down to rows 4–6. What formula appears in E5?",
+      "choices": [
+        "=SUM($B2:E2)",
+        "=SUM($B5:E5)",
+        "=SUM($B4:E4)",
+        "=SUM(B4:E4)"
+      ]
+    },
+    {
+      "id": "q05",
+      "context_id": "c1",
+      "prompt": "A local trail map is printed at 1:25,000. A straight 8 cm line between two trailheads represents the direct ground distance. The map is then photocopied at 150% of original width and height. A hiker measures the copied map with a ruler and finds the same two trailheads are now 12 cm apart. Using only the copied map and its scale bar (which was also enlarged), what ground distance does the 12 cm measurement represent?",
+      "choices": [
+        "1.2 km",
+        "1.8 km",
+        "2.0 km",
+        "3.0 km"
+      ]
+    },
+    {
+      "id": "q06",
+      "context_id": "c1",
+      "prompt": "A park map states \"Scale 1:25,000\" and includes a 5 cm scale bar labeled \"1.25 km.\" A student scans the map and reduces it to 80% width and height to fit a report. She then measures a straight 8 cm line between two gates on the reduced print. What is the most accurate statement about the ground distance between those gates?",
+      "choices": [
+        "2.0 km, using the stated 1:25,000 ratio",
+        "2.5 km, because the reduced scale bar remains valid while the printed ratio does not",
+        "2.5 km, because reducing a map increases its representative fraction",
+        "Cannot be determined without knowing the scanner resolution"
+      ]
+    },
+    {
+      "id": "q07",
+      "context_id": "c0",
+      "prompt": "A worksheet tracks monthly sales by region. Cell B2 contains =$A2*B$1, where column A lists regions and row 1 lists months. The formula is copied to C2, then the range B2:C2 is filled down to row 5. What formula appears in D5?",
+      "choices": [
+        "=$A5*D$1",
+        "=$A2*D$1",
+        "=A5*$D$1",
+        "=$A$5*D1"
+      ]
+    },
+    {
+      "id": "q08",
+      "context_id": "c0",
+      "prompt": "A price table has product names in column A (rows 2-10) and discount rates in row 1 (columns B-E). Cell B2 should calculate price × (1 − discount). Which formula in B2 will copy correctly to all cells B2:E10 so each product uses its own row's price and each column's discount rate?",
+      "choices": [
+        "=$A2*(1-B$1)",
+        "=A2*(1-$B$1)",
+        "=$A$2*(1-B$1)",
+        "=A$2*(1-$B1)"
+      ]
+    },
+    {
+      "id": "q09",
+      "context_id": "c0",
+      "prompt": "A commission table has rates in A2:A6 (5%–25%) and sales amounts in B1:F1 ($1000–$5000). Cell B2 must calculate commission for 5% of $1000. The formula will be filled down to B6 and right to F6, always using the rate from its row and the sales from its column. Which formula in B2 works correctly?",
+      "choices": [
+        "=$A$2*$B$1",
+        "=A2*B1",
+        "=$A2*B$1",
+        "=$A2*$B$1"
+      ]
+    },
+    {
+      "id": "q10",
+      "context_id": "c2",
+      "prompt": "In a coastal ecosystem, annual phytoplankton production is 5,000 kJ/m² and total consumer production across all levels is 400 kJ/m². A researcher measures standing biomass and finds 50 g/m² of phytoplankton but 800 g/m² of shellfish consumers. Which conclusion follows directly from these data?",
+      "choices": [
+        "Energy transfer efficiency from producers to consumers is approximately 10%",
+        "The small producer biomass supports larger consumer biomass because producers replenish rapidly",
+        "Consumer biomass exceeding producer biomass violates the second law of thermodynamics",
+        "Annual energy flow to consumers must exceed 5,000 kJ/m² to sustain 800 g/m² biomass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+{
+  "experiment": "fresh-author-checked-examples-v1",
+  "result": "passed",
+  "scope": "Independent integrity, join, aggregation, format and scoped arithmetic audit of already-frozen assessments. No new content adjudication or provider calls.",
+  "summary_sha256": "f8e0f2e2e49c6d2510f0f2c858683247103dc48bc4605a7cf117aeab12eb586c",
+  "capture_sha256": "9053f1e1dfe11b12a62aba1573293b932b2ed135a24b04877951b663c99e06f5",
+  "plan_canonical_sha256": "1163b513776b9747f64facc008466e6aee72661521026984603a4d364c92b1dc",
+  "artifact_sha256": {
+    "private-mapping.json": "0065a24301dd2074aa4dc56caa0d0d230b24c731a380d8d42978e7fcca2b0a9e",
+    "stems.json": "b3c66002b0384a92fc8edbae47a9a1152a0f2bfe2fa19729606bb466b96d95c2",
+    "teaching.json": "c0738b5a59d4f087b4b3fdeb0c33324a35b226baf8001cf733bf10cfee3e5309",
+    "stem-assessment-a.json": "b63fff15014e2d77206da088e21e29bde0326adc582ff3377d7d813f14581e50",
+    "stem-assessment-b.json": "d28263cec3b4578ab06fdf0b855a178cdecd93fa1430c7f57d5e4183edc383a4",
+    "teaching-assessment-a.json": "aafe6e218c7b78f8f8f64d08050ff6a28626e832c57c48578247d963af8e2329",
+    "teaching-assessment-b.json": "2a8ecf79e460fc68fb3d213ecaf880b9da4ca8e2019edfa6de77de4534c03bbf",
+    "phase-one-freeze.json": "11ee52f8ea590591cd84e0ccfc9c4d2f5ed51b01991cba68655d78e0cbcead10",
+    "phase-two-freeze.json": "6d74e2433b63effdcfea5603afa224daef723aafe4fa36712bdcc33c91460711",
+    "summary.json": "f8e0f2e2e49c6d2510f0f2c858683247103dc48bc4605a7cf117aeab12eb586c",
+    "native-checks.json": "cf12b01437d45bf770cb5f34f35243466dd47b5ac3b9485c369fb052aee37364",
+    "format-diagnostic.json": "486693a0fe6c9be232cf9f21488a3cac5b1b617b6b356b2925f1167409cb1fee",
+    "root-stem-notes.json": "bf0a4be52e64250f1ddc767459aa0f346f46bc91879fef03430f0ecfbe1b12ce",
+    "root-teaching-notes.json": "d9bfdf39cbfb7a103a8bee8c9fcf2b927435b57155dc3ae40f41ec9faa31a77d"
+  },
+  "current_limit_source_sha256": {
+    "question_quality.py": "764497658989ecc9430cc80757cdb5b9b28010a369b38062bbe2672bfc73eab1",
+    "question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "question_generation.py": "aa64b8b36ce3533a426790bd7d12610fd7d97dda895aed71771dbe7c15650cc6"
+  },
+  "limits": {
+    "stem": 320,
+    "choice": 140,
+    "main": 420,
+    "author_main_instruction": 320
+  },
+  "checks": {
+    "all_four_assessment_hashes_bound_and_unchanged": true,
+    "both_phase_freezes_match_files": true,
+    "phase_timestamp_order_correct": true,
+    "opaque_packets_exactly_match_raw_fields_and_goal_sources": true,
+    "no_unmasked_fields_in_stem_or_teaching_packets": true,
+    "all_ten_mapped_raw_occurrences_join_capture": true,
+    "all_item_components_recomputed_from_assessments": true,
+    "all_length_observations_recomputed_from_raw_text": true,
+    "all_arm_and_case_counts_recomputed_from_twelve_requested_slots": true,
+    "duplicate_response_preserved_and_no_value_selected": true
+  },
+  "computed_counts": {
+    "no_examples": {
+      "requested_slots": 6,
+      "raw_items_from_strict_responses": 6,
+      "slots_without_a_strict_raw_item": 0,
+      "basic_author_shape": 6,
+      "unique_authored_key_supported_both": 1,
+      "main_fully_supported_both": 1,
+      "three_plausible_distinct_distractors_both": 1,
+      "difficulty_at_least_3_both": 3,
+      "complete_content_both": 1,
+      "complete_with_current_lengths": 0,
+      "main_within_420": 0,
+      "main_within_author_instruction_320": 0,
+      "stem_and_choices_within_current_limits": 3,
+      "complete_content_by_assessor": [
+        1,
+        1
+      ]
+    },
+    "checked_examples": {
+      "requested_slots": 6,
+      "raw_items_from_strict_responses": 4,
+      "slots_without_a_strict_raw_item": 2,
+      "basic_author_shape": 4,
+      "unique_authored_key_supported_both": 3,
+      "main_fully_supported_both": 2,
+      "three_plausible_distinct_distractors_both": 2,
+      "difficulty_at_least_3_both": 1,
+      "complete_content_both": 1,
+      "complete_with_current_lengths": 0,
+      "main_within_420": 2,
+      "main_within_author_instruction_320": 0,
+      "stem_and_choices_within_current_limits": 2,
+      "complete_content_by_assessor": [
+        1,
+        1
+      ]
+    }
+  },
+  "computed_by_case": {
+    "c0": {
+      "no_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 0,
+        "complete_content_both": 0,
+        "complete_with_current_lengths": 0
+      },
+      "checked_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 2,
+        "complete_content_both": 1,
+        "complete_with_current_lengths": 0
+      }
+    },
+    "c1": {
+      "checked_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 1,
+        "complete_content_both": 0,
+        "complete_with_current_lengths": 0
+      },
+      "no_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 1,
+        "complete_content_both": 1,
+        "complete_with_current_lengths": 0
+      }
+    },
+    "c2": {
+      "no_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 0,
+        "complete_content_both": 0,
+        "complete_with_current_lengths": 0
+      },
+      "checked_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 0,
+        "complete_content_both": 0,
+        "complete_with_current_lengths": 0
+      }
+    }
+  },
+  "format_failed_job_indexes": [
+    5
+  ],
+  "duplicate_members": [
+    {
+      "path": "$.questions[0]",
+      "key": "explanation",
+      "occurrences": 2
+    }
+  ],
+  "format_failed_requested_slots": 2,
+  "native_arithmetic_checks": [
+    {
+      "record_index": 0,
+      "id": "q01",
+      "arithmetic_matches": true,
+      "checked_fields": [
+        "original_1km_bar_cm",
+        "resized_1km_bar_cm",
+        "stated_resized_bar_cm",
+        "bar_only_12cm_distance_km"
+      ]
+    },
+    {
+      "record_index": 1,
+      "id": "q03",
+      "arithmetic_matches": true,
+      "checked_fields": [
+        "original_1km_bar_cm",
+        "resized_1km_bar_cm",
+        "stated_resized_bar_cm",
+        "ratio_resize_only_distance_km",
+        "bar_only_distance_km"
+      ]
+    },
+    {
+      "record_index": 2,
+      "id": "q04",
+      "arithmetic_matches": true,
+      "checked_fields": [
+        "column_displacement",
+        "row_displacement",
+        "translated_references",
+        "formula"
+      ]
+    },
+    {
+      "record_index": 3,
+      "id": "q05",
+      "arithmetic_matches": true,
+      "checked_fields": [
+        "original_distance_km",
+        "resized_distance_km"
+      ]
+    },
+    {
+      "record_index": 4,
+      "id": "q06",
+      "arithmetic_matches": true,
+      "checked_fields": [
+        "resized_bar_cm",
+        "distance_km",
+        "original_representative_fraction",
+        "resized_representative_fraction",
+        "fraction_decreases"
+      ]
+    },
+    {
+      "record_index": 5,
+      "id": "q07",
+      "arithmetic_matches": true,
+      "checked_fields": [
+        "filled_columns",
+        "filled_rows",
+        "query_reached_by_described_fill"
+      ]
+    },
+    {
+      "record_index": 6,
+      "id": "q02",
+      "arithmetic_matches": true,
+      "checked_fields": [
+        "incorrect_weighted_value",
+        "conditional_upper_bound"
+      ]
+    },
+    {
+      "record_index": 7,
+      "id": "q10",
+      "arithmetic_matches": true,
+      "checked_fields": [
+        "sum_consumer_production_over_producer_production"
+      ]
+    },
+    {
+      "record_index": 8,
+      "id": "q04",
+      "arithmetic_matches": true,
+      "original_monthly_values": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "first_cumulative_row": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "second_cumulative_row": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "E5_sum": 10,
+      "actual_Jan_to_Apr_sum": 1,
+      "scope": "Pure cumulative arithmetic on one stated permitted input; no Excel application and no new content adjudication."
+    }
+  ],
+  "limitations": [
+    "The file hashes and recorded timestamp order establish artifact consistency, not independent proof of an assessor's prior access history.",
+    "Native calculations are scoped to the stated arithmetic and conditional scenarios; they are not runtime Excel execution or an ecology simulation.",
+    "This audit verifies that summaries reflect frozen judgments; it does not replace those judgments with another semantic assessment."
+  ],
+  "provider_calls": 0,
+  "other_artifacts_changed": false
+}

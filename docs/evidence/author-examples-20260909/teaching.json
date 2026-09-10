@@ -1,0 +1,44 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "explanation": "The scale bar was enlarged with the map, so it remains valid: 4.5 cm now represents 1 km, giving a new representative fraction of 1:22,222 (since 4.5 cm = 0.045 m and 1 km = 1,000 m; 0.045/1000 = 1/22222). The printed numerical ratio 1:50,000 is no longer valid because the map was resized. Converting 12 cm at the new scale: 12 cm × (1 km / 4.5 cm) = 2.667 km, or approximately 2.7 km. The winding measurement method is correct, but the scale used must match the reproduction."
+    },
+    {
+      "id": "q02",
+      "explanation": "First, calculate energy available to large fish from each source. From zooplankton: 800 kJ/m² × 10% = 80 kJ/m² total available, but large fish take only 60% of their diet from this source, so 80 × 0.60 = 48 kJ/m². From small fish: 150 kJ/m² × 10% = 15 kJ/m² available, and large fish take 40% from this source, so 15 × 0.40 = 6 kJ/m². Total large fish production = 48 + 6 = 54 kJ/m². The answer requires combining explicit feeding links with stated efficiencies and diet proportions."
+    },
+    {
+      "id": "q03",
+      "explanation": "The printed numerical scale 1:10,000 is no longer valid after non-100% resizing. The scale bar was resized with the map, so it remains usable: 2 cm on screen = 1 km ground. Thus 15 cm on screen represents (15 ÷ 2) × 1 km = 7.5 km. Using the invalid 1:10,000 ratio would give 1.5 km, but the resized display breaks that fixed ratio while the co-resized scale bar preserves correct proportion."
+    },
+    {
+      "id": "q04",
+      "explanation": "The original formula uses $B2 (absolute column B, relative row 2) and B2 (relative). When filled right across columns, $B2 stays fixed as $B2 while B2 becomes C2, D2, E2, etc. When filled down two rows (to row 5), the relative row components adjust: $B2 becomes $B4 and E2 becomes E4. Thus E5 contains =SUM($B4:E4), summing Q3's Jan–Apr sales."
+    },
+    {
+      "id": "q05",
+      "explanation": "The scale bar was enlarged with the map, so it remains valid: the enlarged bar still represents the same ground distance per its labeled length. The 150% linear enlargement makes 1 cm on the copy equal to what was 2/3 cm on the original, but the scale bar compensates for this. Alternatively, use the original scale: 8 cm × 25,000 = 200,000 cm = 2.0 km ground distance. The trailheads' actual separation hasn't changed, and the enlarged scale bar correctly indicates this."
+    },
+    {
+      "id": "q06",
+      "explanation": "The numerical ratio 1:25,000 was fixed at printing and does not automatically adjust; on the reduced map it is invalid. The scale bar was reduced proportionally (80% linear), so 5 cm × 0.80 = 4 cm now represents 1.25 km. The measured 8 cm line equals two scale-bar lengths (8 cm ÷ 4 cm = 2), so ground distance is 2 × 1.25 km = 2.5 km. Using the original numerical ratio would give 8 cm × 25,000 = 200,000 cm = 2 km, which is incorrect because the map was resized."
+    },
+    {
+      "id": "q07",
+      "explanation": "The original formula =$A2*B$1 uses mixed references: $A2 fixes column A (region) but allows the row to adjust, and B$1 fixes row 1 (month header) but allows the column to adjust. When copied from B2 to C2, the column shifts right by 1: $A2 becomes $A2 (column fixed), B$1 becomes C$1 (column shifts, row fixed). The formula in C2 is =$A2*C$1. When filled down to row 5, the row increases by 3: $A2 becomes $A5, C$1 stays C$1. Thus D5 contains =$A5*D$1."
+    },
+    {
+      "id": "q08",
+      "explanation": "The price is in column A, so the column must stay fixed while the row adjusts per product: $A2. The discount rate is in row 1, so the row must stay fixed while the column adjusts per rate: B$1. The formula =$A2*(1-B$1) preserves these relationships: copying across columns changes B$1 to C$1, D$1, E$1; copying down changes $A2 to $A3, $A4, etc. Other options either fix too much (preventing needed adjustments) or too little (causing wrong references)."
+    },
+    {
+      "id": "q09",
+      "explanation": "Filling down requires the rate column to stay fixed (A) while its row adjusts; filling right requires the sales row to stay fixed (1) while its column adjusts. $A2 fixes only the column A, allowing row 2 to become 3,4,5,6 when filled down. B$1 fixes only row 1, allowing column B to become C,D,E,F when filled right. The other options either break row/column relationships or use fully absolute references that prevent any adjustment."
+    },
+    {
+      "id": "q10",
+      "explanation": "Standing biomass and energy flow are different quantities. The small phytoplankton biomass supports larger consumer biomass because producers replenish rapidly (high turnover). This matches the source principle that inverted biomass pyramids do not indicate inverted energy pyramids. The 800 g/m² shellfish biomass is sustained by 5,000 kJ/m² annual production, not by stored biomass. The 10% efficiency claim is unsupported without knowing trophic-level production breakdown, and the consumer biomass exceeding producer biomass in a snapshot does not violate energy flow principles."
+    }
+  ]
+}

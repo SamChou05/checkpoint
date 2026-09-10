@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-10T00:41:04.234158+00:00",
+  "stage": "Both independent first passes finalized before teaching disclosure; neither assessor saw keys, arms, examples, authored mains, length outcomes, other assessments or root notes. Root notes are separate and root knew preparation examples.",
+  "file_sha256": {
+    "stems.json": "b3c66002b0384a92fc8edbae47a9a1152a0f2bfe2fa19729606bb466b96d95c2",
+    "teaching.json": "c0738b5a59d4f087b4b3fdeb0c33324a35b226baf8001cf733bf10cfee3e5309",
+    "stem-assessment-a.json": "b63fff15014e2d77206da088e21e29bde0326adc582ff3377d7d813f14581e50",
+    "stem-assessment-b.json": "d28263cec3b4578ab06fdf0b855a178cdecd93fa1430c7f57d5e4183edc383a4",
+    "root-stem-notes.json": "bf0a4be52e64250f1ddc767459aa0f346f46bc91879fef03430f0ecfbe1b12ce"
+  }
+}

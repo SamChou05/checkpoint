@@ -1,0 +1,657 @@
+{
+  "experiment": "fresh-author-checked-examples-v1",
+  "capture_byte_sha256": "9053f1e1dfe11b12a62aba1573293b932b2ed135a24b04877951b663c99e06f5",
+  "plan_sha256": "1163b513776b9747f64facc008466e6aee72661521026984603a4d364c92b1dc",
+  "assessor_order": [
+    "a",
+    "b"
+  ],
+  "scope": "All12requestedslots; strict duplicate-member response leaves2format-failed slots, without selecting either explanation or repairing content. Human-expert and learner validation not performed.",
+  "counts": {
+    "no_examples": {
+      "requested_slots": 6,
+      "raw_items_from_strict_responses": 6,
+      "slots_without_a_strict_raw_item": 0,
+      "basic_author_shape": 6,
+      "unique_authored_key_supported_both": 1,
+      "main_fully_supported_both": 1,
+      "three_plausible_distinct_distractors_both": 1,
+      "difficulty_at_least_3_both": 3,
+      "complete_content_both": 1,
+      "complete_with_current_lengths": 0,
+      "main_within_420": 0,
+      "main_within_author_instruction_320": 0,
+      "stem_and_choices_within_current_limits": 3,
+      "complete_content_by_assessor": [
+        1,
+        1
+      ]
+    },
+    "checked_examples": {
+      "requested_slots": 6,
+      "raw_items_from_strict_responses": 4,
+      "slots_without_a_strict_raw_item": 2,
+      "basic_author_shape": 4,
+      "unique_authored_key_supported_both": 3,
+      "main_fully_supported_both": 2,
+      "three_plausible_distinct_distractors_both": 2,
+      "difficulty_at_least_3_both": 1,
+      "complete_content_both": 1,
+      "complete_with_current_lengths": 0,
+      "main_within_420": 2,
+      "main_within_author_instruction_320": 0,
+      "stem_and_choices_within_current_limits": 2,
+      "complete_content_by_assessor": [
+        1,
+        1
+      ]
+    }
+  },
+  "by_case": {
+    "c0": {
+      "no_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 0,
+        "complete_content_both": 0,
+        "complete_with_current_lengths": 0
+      },
+      "checked_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 2,
+        "complete_content_both": 1,
+        "complete_with_current_lengths": 0
+      }
+    },
+    "c1": {
+      "no_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 1,
+        "complete_content_both": 1,
+        "complete_with_current_lengths": 0
+      },
+      "checked_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 1,
+        "complete_content_both": 0,
+        "complete_with_current_lengths": 0
+      }
+    },
+    "c2": {
+      "no_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 0,
+        "complete_content_both": 0,
+        "complete_with_current_lengths": 0
+      },
+      "checked_examples": {
+        "requested_slots": 2,
+        "unique_authored_key_supported_both": 0,
+        "complete_content_both": 0,
+        "complete_with_current_lengths": 0
+      }
+    }
+  },
+  "items": [
+    {
+      "id": "q01",
+      "arm": "no_examples",
+      "case": "c1",
+      "job_index": 3,
+      "raw_index": 0,
+      "requested_slot": true,
+      "raw_sha256": "6bbcfa18bf1a6c7343b2cd053ef49c5b60cbb5cbee927b2c3908ef68ada8fb22",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        false,
+        false
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        2,
+        2
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_by_assessor": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 354,
+      "choice_characters": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "main_characters": 477,
+      "stem_and_choices_within_current_limits": false,
+      "main_within_420": false,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    },
+    {
+      "id": "q02",
+      "arm": "no_examples",
+      "case": "c2",
+      "job_index": 4,
+      "raw_index": 0,
+      "requested_slot": true,
+      "raw_sha256": "e70ea9ea2bc7a782a22a193d556fb101f8c94d97fe0afc85033a56b40d46eaf0",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        false,
+        false
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        3,
+        3
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_by_assessor": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 488,
+      "choice_characters": [
+        8,
+        8,
+        8,
+        9
+      ],
+      "main_characters": 483,
+      "stem_and_choices_within_current_limits": false,
+      "main_within_420": false,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    },
+    {
+      "id": "q03",
+      "arm": "checked_examples",
+      "case": "c1",
+      "job_index": 2,
+      "raw_index": 1,
+      "requested_slot": true,
+      "raw_sha256": "f10f94f311f5a56239ed8abd27e39fdd28d8f889c4f663694bd66e7e3962e2bf",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        false,
+        false
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        2,
+        2
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_by_assessor": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 445,
+      "choice_characters": [
+        7,
+        6,
+        8,
+        6
+      ],
+      "main_characters": 391,
+      "stem_and_choices_within_current_limits": false,
+      "main_within_420": true,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    },
+    {
+      "id": "q04",
+      "arm": "checked_examples",
+      "case": "c0",
+      "job_index": 1,
+      "raw_index": 0,
+      "requested_slot": true,
+      "raw_sha256": "7e2ac12eaea58a2f490cf0b54753913173d56ca7a1553c1869ae5d955f50516f",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        true,
+        true
+      ],
+      "assessed_difficulty": [
+        3,
+        2
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_by_assessor": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 241,
+      "choice_characters": [
+        12,
+        12,
+        12,
+        11
+      ],
+      "main_characters": 343,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": true,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    },
+    {
+      "id": "q05",
+      "arm": "checked_examples",
+      "case": "c1",
+      "job_index": 2,
+      "raw_index": 0,
+      "requested_slot": true,
+      "raw_sha256": "0175878b34d3f7943d2752b75c22f8c262bc8d2992ef9e0f975f4fb0472b59a1",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        2,
+        2
+      ],
+      "main_fully_supported": [
+        true,
+        true
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_by_assessor": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 420,
+      "choice_characters": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "main_characters": 472,
+      "stem_and_choices_within_current_limits": false,
+      "main_within_420": false,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    },
+    {
+      "id": "q06",
+      "arm": "no_examples",
+      "case": "c1",
+      "job_index": 3,
+      "raw_index": 1,
+      "requested_slot": true,
+      "raw_sha256": "fd04b2ada444251d00ea3deaf459d84ce26762985b75b28626e2d67371c273b1",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        true,
+        true
+      ],
+      "assessed_difficulty": [
+        3,
+        3
+      ],
+      "main_fully_supported": [
+        true,
+        true
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_by_assessor": [
+        true,
+        true
+      ],
+      "complete_content_both": true,
+      "stem_characters": 325,
+      "choice_characters": [
+        39,
+        84,
+        68,
+        59
+      ],
+      "main_characters": 464,
+      "stem_and_choices_within_current_limits": false,
+      "main_within_420": false,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    },
+    {
+      "id": "q07",
+      "arm": "no_examples",
+      "case": "c0",
+      "job_index": 0,
+      "raw_index": 0,
+      "requested_slot": true,
+      "raw_sha256": "b41273d2106b4146de4bdabd6098ebf8b143b974aaa2581e35eb237920cbeb76",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        false,
+        false
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        2,
+        2
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_by_assessor": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 226,
+      "choice_characters": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "main_characters": 452,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    },
+    {
+      "id": "q08",
+      "arm": "no_examples",
+      "case": "c0",
+      "job_index": 0,
+      "raw_index": 1,
+      "requested_slot": true,
+      "raw_sha256": "393c3e61d90581e51af9466de056cb9e783f0e9aee716a89b225a295e03b4270",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        false,
+        false
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        2,
+        3
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_by_assessor": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 281,
+      "choice_characters": [
+        12,
+        12,
+        13,
+        12
+      ],
+      "main_characters": 453,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    },
+    {
+      "id": "q09",
+      "arm": "checked_examples",
+      "case": "c0",
+      "job_index": 1,
+      "raw_index": 1,
+      "requested_slot": true,
+      "raw_sha256": "32eb582b0cd625c3e5dedd20d6be1a9a602ddd94bff1aea60669015b649b2ed3",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        true,
+        true
+      ],
+      "assessed_difficulty": [
+        3,
+        3
+      ],
+      "main_fully_supported": [
+        true,
+        true
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_by_assessor": [
+        true,
+        true
+      ],
+      "complete_content_both": true,
+      "stem_characters": 297,
+      "choice_characters": [
+        10,
+        6,
+        8,
+        9
+      ],
+      "main_characters": 434,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    },
+    {
+      "id": "q10",
+      "arm": "no_examples",
+      "case": "c2",
+      "job_index": 4,
+      "raw_index": 1,
+      "requested_slot": true,
+      "raw_sha256": "e0dceb41ab85b7faea43a75cc53200ab6911e7c56a8d00af2522b1dc743f80e4",
+      "basic_author_shape": true,
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        false,
+        false
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        3,
+        3
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_by_assessor": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 294,
+      "choice_characters": [
+        75,
+        95,
+        85,
+        83
+      ],
+      "main_characters": 583,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_author_instruction_320": false,
+      "complete_with_current_lengths": false
+    }
+  ],
+  "artifact_sha256": {
+    "private-mapping.json": "0065a24301dd2074aa4dc56caa0d0d230b24c731a380d8d42978e7fcca2b0a9e",
+    "stems.json": "b3c66002b0384a92fc8edbae47a9a1152a0f2bfe2fa19729606bb466b96d95c2",
+    "teaching.json": "c0738b5a59d4f087b4b3fdeb0c33324a35b226baf8001cf733bf10cfee3e5309",
+    "stem-assessment-a.json": "b63fff15014e2d77206da088e21e29bde0326adc582ff3377d7d813f14581e50",
+    "stem-assessment-b.json": "d28263cec3b4578ab06fdf0b855a178cdecd93fa1430c7f57d5e4183edc383a4",
+    "teaching-assessment-a.json": "aafe6e218c7b78f8f8f64d08050ff6a28626e832c57c48578247d963af8e2329",
+    "teaching-assessment-b.json": "2a8ecf79e460fc68fb3d213ecaf880b9da4ca8e2019edfa6de77de4534c03bbf",
+    "phase-one-freeze.json": "11ee52f8ea590591cd84e0ccfc9c4d2f5ed51b01991cba68655d78e0cbcead10",
+    "phase-two-freeze.json": "6d74e2433b63effdcfea5603afa224daef723aafe4fa36712bdcc33c91460711"
+  }
+}

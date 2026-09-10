@@ -132,3 +132,16 @@ structural gates and a fallible final reviewer. A focused rerun of 23 verifier
 tests passed at this checkpoint; one intentionally documents that semantic
 limitation. This experiment investigates author quality rather than claiming
 that additional examples eliminate it. Deployed-version status was not checked.
+
+## Subsequent execution
+
+The active goal subsequently continued from this saved checkpoint. The
+[completed comparison](QUESTION_AUTHOR_EXAMPLES_RESULTS.md) made exactly six
+author calls from source `2d10ce9`. Five responses passed the strict whole-object
+parser, containing ten raw question objects; a duplicate-explanation response
+left two format-failed requested slots.
+Both independent assessment phases were frozen before disclosure as specified.
+The example arm had 3/6 supported-key observations versus 1/6 without examples, but complete
+content remained 1/6 in each arm and complete content within current lengths
+remained 0/6. The prospective design and earlier pause status above are retained
+as history, not rewritten to describe a successful intervention.

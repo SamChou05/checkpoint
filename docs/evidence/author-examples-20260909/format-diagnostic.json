@@ -1,0 +1,16 @@
+{
+  "raw_bytes": 5154,
+  "byte_sha256": "ca2e737f1f1d4466da78dfa4312f50166280f622286afa36e80c0de5e0375893",
+  "repair_performed": false,
+  "standard_json_loads_accepts_with_last_duplicate_wins": true,
+  "strict_parser_accepts": false,
+  "strict_failure_cause": "Duplicate explanation key in one question object. Ordinary json.loads would silently retain only the later value.",
+  "duplicate_keys": [
+    {
+      "key": "explanation",
+      "occurrences": 2
+    }
+  ],
+  "requested_slots_failed_format": 2,
+  "candidate_values_chosen_or_repaired": false
+}

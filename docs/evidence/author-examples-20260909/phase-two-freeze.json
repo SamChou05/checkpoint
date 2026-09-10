@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-10T00:51:58.195490+00:00",
+  "stage": "Both independent teaching passes finalized before revealing authored keys and arm mapping. First-phase files unchanged. Root teaching notes separately finalized before mapping disclosure.",
+  "file_sha256": {
+    "teaching-assessment-a.json": "aafe6e218c7b78f8f8f64d08050ff6a28626e832c57c48578247d963af8e2329",
+    "teaching-assessment-b.json": "2a8ecf79e460fc68fb3d213ecaf880b9da4ca8e2019edfa6de77de4534c03bbf",
+    "root-teaching-notes.json": "d9bfdf39cbfb7a103a8bee8c9fcf2b927435b57155dc3ae40f41ec9faa31a77d",
+    "phase-one-freeze.json": "11ee52f8ea590591cd84e0ccfc9c4d2f5ed51b01991cba68655d78e0cbcead10"
+  }
+}

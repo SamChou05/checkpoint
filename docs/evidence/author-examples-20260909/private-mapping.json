@@ -1,0 +1,335 @@
+{
+  "capture_byte_sha256": "9053f1e1dfe11b12a62aba1573293b932b2ed135a24b04877951b663c99e06f5",
+  "capture_bytes": 251917,
+  "plan_sha256": "1163b513776b9747f64facc008466e6aee72661521026984603a4d364c92b1dc",
+  "formats": [
+    {
+      "job_index": 0,
+      "text_sha256": "14e7927a353facc48e8aea852c6d101a6f9605bd6e5c7d4f01408a10a6842076",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 1,
+      "text_sha256": "9922d9235ad12109d047545b349b652d77d799b54c1062e70c73d8bb262c23ef",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 2,
+      "text_sha256": "11dcb63fc957ff2caa8b31c962ae6e04e2585a9e9afea2c07ae5d4531938a9e2",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 3,
+      "text_sha256": "f24f66e6c9f1d03dda4bb824e89a7514c22f3e88dea5d34f202dbb3fe96b8ed9",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 4,
+      "text_sha256": "9fe3228b12667203989f5e84271d5f786ceff65c25b41382d0d26f052abaf6b8",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 5,
+      "text_sha256": "ca2e737f1f1d4466da78dfa4312f50166280f622286afa36e80c0de5e0375893",
+      "strict_json_object": false,
+      "error_type": "ProviderError"
+    }
+  ],
+  "records": [
+    {
+      "job_index": 3,
+      "raw_index": 0,
+      "arm": "no_examples",
+      "context_id": "c1",
+      "raw_question": {
+        "prompt": "A local walking map is printed with a scale bar labeled \"1 km\" and a numerical ratio 1:50,000. A hiker measures a winding trail as 12 cm along the bends using a string, then photocopies the map at 150% (linear). On the enlarged copy, the scale bar now measures 4.5 cm. What ground distance does the 12 cm trail measurement on the enlarged copy represent?",
+        "explanation": "The scale bar was enlarged with the map, so it remains valid: 4.5 cm now represents 1 km, giving a new representative fraction of 1:22,222 (since 4.5 cm = 0.045 m and 1 km = 1,000 m; 0.045/1000 = 1/22222). The printed numerical ratio 1:50,000 is no longer valid because the map was resized. Converting 12 cm at the new scale: 12 cm × (1 km / 4.5 cm) = 2.667 km, or approximately 2.7 km. The winding measurement method is correct, but the scale used must match the reproduction.",
+        "expectedAnswer": "2.7 km",
+        "choices": [
+          "2.4 km",
+          "2.7 km",
+          "6.0 km",
+          "7.5 km"
+        ],
+        "topic": "Combine map-to-ground unit conversion",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Distinguish valid scale indicators after uniform resizing and apply to route measurements",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "6bbcfa18bf1a6c7343b2cd053ef49c5b60cbb5cbee927b2c3908ef68ada8fb22",
+      "requested_slot": true,
+      "id": "q01",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 4,
+      "raw_index": 0,
+      "arm": "no_examples",
+      "context_id": "c2",
+      "raw_question": {
+        "prompt": "A food web diagram shows arrows from algae to zooplankton, from zooplankton to small fish, and from both zooplankton and small fish to large fish. Annual production is 10,000 kJ/m² for algae, 800 kJ/m² for zooplankton, and 150 kJ/m² for small fish. The large fish obtain 60% of their energy from zooplankton and 40% from small fish. If trophic transfer efficiency to large fish is 10% from each prey source, what is the minimum annual production of large fish supported by these pathways?",
+        "explanation": "First, calculate energy available to large fish from each source. From zooplankton: 800 kJ/m² × 10% = 80 kJ/m² total available, but large fish take only 60% of their diet from this source, so 80 × 0.60 = 48 kJ/m². From small fish: 150 kJ/m² × 10% = 15 kJ/m² available, and large fish take 40% from this source, so 15 × 0.40 = 6 kJ/m². Total large fish production = 48 + 6 = 54 kJ/m². The answer requires combining explicit feeding links with stated efficiencies and diet proportions.",
+        "expectedAnswer": "54 kJ/m²",
+        "choices": [
+          "54 kJ/m²",
+          "80 kJ/m²",
+          "95 kJ/m²",
+          "150 kJ/m²"
+        ],
+        "topic": "Combine explicitly described feeding links",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "e70ea9ea2bc7a782a22a193d556fb101f8c94d97fe0afc85033a56b40d46eaf0",
+      "requested_slot": true,
+      "id": "q02",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 2,
+      "raw_index": 1,
+      "arm": "checked_examples",
+      "context_id": "c1",
+      "raw_question": {
+        "prompt": "A park map shows a winding river path. A printed note states 'Scale 1:10,000' in the corner. The map is scanned and displayed on a tablet at 80% of original dimensions. A student traces the winding river with a string, then straightens it against a ruler: 15 cm on the tablet screen. The scale bar, also visible on the tablet, reads '1 km' next to a line that measures 2 cm on the tablet. What is the approximate ground length of the river path?",
+        "choices": [
+          "0.75 km",
+          "1.5 km",
+          "1.875 km",
+          "7.5 km"
+        ],
+        "expectedAnswer": "7.5 km",
+        "explanation": "The printed numerical scale 1:10,000 is no longer valid after non-100% resizing. The scale bar was resized with the map, so it remains usable: 2 cm on screen = 1 km ground. Thus 15 cm on screen represents (15 ÷ 2) × 1 km = 7.5 km. Using the invalid 1:10,000 ratio would give 1.5 km, but the resized display breaks that fixed ratio while the co-resized scale bar preserves correct proportion.",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "topic": "Distinguish a printed numerical scale from a scale bar copied with the map",
+        "skillID": "2",
+        "objectiveID": "2",
+        "objective": "Distinguish a printed numerical scale from a scale bar copied with the map"
+      },
+      "raw_sha256": "f10f94f311f5a56239ed8abd27e39fdd28d8f889c4f663694bd66e7e3962e2bf",
+      "requested_slot": true,
+      "id": "q03",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 1,
+      "raw_index": 0,
+      "arm": "checked_examples",
+      "context_id": "c0",
+      "raw_question": {
+        "prompt": "A table lists monthly sales in B2:M2 (Jan–Dec). In A3, the label 'Q1' appears; A4 has 'Q2'; A5 has 'Q3'; A6 has 'Q4'. Cell B3 contains =SUM($B2:B2) and is filled right to M3, then B3:M3 is filled down to rows 4–6. What formula appears in E5?",
+        "explanation": "The original formula uses $B2 (absolute column B, relative row 2) and B2 (relative). When filled right across columns, $B2 stays fixed as $B2 while B2 becomes C2, D2, E2, etc. When filled down two rows (to row 5), the relative row components adjust: $B2 becomes $B4 and E2 becomes E4. Thus E5 contains =SUM($B4:E4), summing Q3's Jan–Apr sales.",
+        "expectedAnswer": "=SUM($B4:E4)",
+        "choices": [
+          "=SUM($B2:E2)",
+          "=SUM($B5:E5)",
+          "=SUM($B4:E4)",
+          "=SUM(B4:E4)"
+        ],
+        "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Predict copied formula results with mixed references spanning rows and columns",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "7e2ac12eaea58a2f490cf0b54753913173d56ca7a1553c1869ae5d955f50516f",
+      "requested_slot": true,
+      "id": "q04",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 2,
+      "raw_index": 0,
+      "arm": "checked_examples",
+      "context_id": "c1",
+      "raw_question": {
+        "prompt": "A local trail map is printed at 1:25,000. A straight 8 cm line between two trailheads represents the direct ground distance. The map is then photocopied at 150% of original width and height. A hiker measures the copied map with a ruler and finds the same two trailheads are now 12 cm apart. Using only the copied map and its scale bar (which was also enlarged), what ground distance does the 12 cm measurement represent?",
+        "choices": [
+          "1.2 km",
+          "1.8 km",
+          "2.0 km",
+          "3.0 km"
+        ],
+        "expectedAnswer": "2.0 km",
+        "explanation": "The scale bar was enlarged with the map, so it remains valid: the enlarged bar still represents the same ground distance per its labeled length. The 150% linear enlargement makes 1 cm on the copy equal to what was 2/3 cm on the original, but the scale bar compensates for this. Alternatively, use the original scale: 8 cm × 25,000 = 200,000 cm = 2.0 km ground distance. The trailheads' actual separation hasn't changed, and the enlarged scale bar correctly indicates this.",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "topic": "Combine map-to-ground unit conversion",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "route measurements and uniform changes in printed size"
+      },
+      "raw_sha256": "0175878b34d3f7943d2752b75c22f8c262bc8d2992ef9e0f975f4fb0472b59a1",
+      "requested_slot": true,
+      "id": "q05",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 3,
+      "raw_index": 1,
+      "arm": "no_examples",
+      "context_id": "c1",
+      "raw_question": {
+        "prompt": "A park map states \"Scale 1:25,000\" and includes a 5 cm scale bar labeled \"1.25 km.\" A student scans the map and reduces it to 80% width and height to fit a report. She then measures a straight 8 cm line between two gates on the reduced print. What is the most accurate statement about the ground distance between those gates?",
+        "explanation": "The numerical ratio 1:25,000 was fixed at printing and does not automatically adjust; on the reduced map it is invalid. The scale bar was reduced proportionally (80% linear), so 5 cm × 0.80 = 4 cm now represents 1.25 km. The measured 8 cm line equals two scale-bar lengths (8 cm ÷ 4 cm = 2), so ground distance is 2 × 1.25 km = 2.5 km. Using the original numerical ratio would give 8 cm × 25,000 = 200,000 cm = 2 km, which is incorrect because the map was resized.",
+        "expectedAnswer": "2.5 km, because the reduced scale bar remains valid while the printed ratio does not",
+        "choices": [
+          "2.0 km, using the stated 1:25,000 ratio",
+          "2.5 km, because the reduced scale bar remains valid while the printed ratio does not",
+          "2.5 km, because reducing a map increases its representative fraction",
+          "Cannot be determined without knowing the scanner resolution"
+        ],
+        "topic": "Distinguish a printed numerical scale from a scale bar copied with the map",
+        "skillID": "2",
+        "objectiveID": "2",
+        "objective": "Evaluate which scale indicator remains accurate after uniform resizing",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "fd04b2ada444251d00ea3deaf459d84ce26762985b75b28626e2d67371c273b1",
+      "requested_slot": true,
+      "id": "q06",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 0,
+      "raw_index": 0,
+      "arm": "no_examples",
+      "context_id": "c0",
+      "raw_question": {
+        "prompt": "A worksheet tracks monthly sales by region. Cell B2 contains =$A2*B$1, where column A lists regions and row 1 lists months. The formula is copied to C2, then the range B2:C2 is filled down to row 5. What formula appears in D5?",
+        "explanation": "The original formula =$A2*B$1 uses mixed references: $A2 fixes column A (region) but allows the row to adjust, and B$1 fixes row 1 (month header) but allows the column to adjust. When copied from B2 to C2, the column shifts right by 1: $A2 becomes $A2 (column fixed), B$1 becomes C$1 (column shifts, row fixed). The formula in C2 is =$A2*C$1. When filled down to row 5, the row increases by 3: $A2 becomes $A5, C$1 stays C$1. Thus D5 contains =$A5*D$1.",
+        "expectedAnswer": "=$A5*D$1",
+        "choices": [
+          "=$A5*D$1",
+          "=$A2*D$1",
+          "=A5*$D$1",
+          "=$A$5*D1"
+        ],
+        "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "b41273d2106b4146de4bdabd6098ebf8b143b974aaa2581e35eb237920cbeb76",
+      "requested_slot": true,
+      "id": "q07",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 0,
+      "raw_index": 1,
+      "arm": "no_examples",
+      "context_id": "c0",
+      "raw_question": {
+        "prompt": "A price table has product names in column A (rows 2-10) and discount rates in row 1 (columns B-E). Cell B2 should calculate price × (1 − discount). Which formula in B2 will copy correctly to all cells B2:E10 so each product uses its own row's price and each column's discount rate?",
+        "explanation": "The price is in column A, so the column must stay fixed while the row adjusts per product: $A2. The discount rate is in row 1, so the row must stay fixed while the column adjusts per rate: B$1. The formula =$A2*(1-B$1) preserves these relationships: copying across columns changes B$1 to C$1, D$1, E$1; copying down changes $A2 to $A3, $A4, etc. Other options either fix too much (preventing needed adjustments) or too little (causing wrong references).",
+        "expectedAnswer": "=$A2*(1-B$1)",
+        "choices": [
+          "=$A2*(1-B$1)",
+          "=A2*(1-$B$1)",
+          "=$A$2*(1-B$1)",
+          "=A$2*(1-$B1)"
+        ],
+        "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "393c3e61d90581e51af9466de056cb9e783f0e9aee716a89b225a295e03b4270",
+      "requested_slot": true,
+      "id": "q08",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 1,
+      "raw_index": 1,
+      "arm": "checked_examples",
+      "context_id": "c0",
+      "raw_question": {
+        "prompt": "A commission table has rates in A2:A6 (5%–25%) and sales amounts in B1:F1 ($1000–$5000). Cell B2 must calculate commission for 5% of $1000. The formula will be filled down to B6 and right to F6, always using the rate from its row and the sales from its column. Which formula in B2 works correctly?",
+        "explanation": "Filling down requires the rate column to stay fixed (A) while its row adjusts; filling right requires the sales row to stay fixed (1) while its column adjusts. $A2 fixes only the column A, allowing row 2 to become 3,4,5,6 when filled down. B$1 fixes only row 1, allowing column B to become C,D,E,F when filled right. The other options either break row/column relationships or use fully absolute references that prevent any adjustment.",
+        "expectedAnswer": "=$A2*B$1",
+        "choices": [
+          "=$A$2*$B$1",
+          "=A2*B1",
+          "=$A2*B$1",
+          "=$A2*$B$1"
+        ],
+        "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+        "skillID": "1",
+        "objectiveID": "2",
+        "objective": "Choose reference anchors that preserve row-and-column input relationships",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "32eb582b0cd625c3e5dedd20d6be1a9a602ddd94bff1aea60669015b649b2ed3",
+      "requested_slot": true,
+      "id": "q09",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 4,
+      "raw_index": 1,
+      "arm": "no_examples",
+      "context_id": "c2",
+      "raw_question": {
+        "prompt": "In a coastal ecosystem, annual phytoplankton production is 5,000 kJ/m² and total consumer production across all levels is 400 kJ/m². A researcher measures standing biomass and finds 50 g/m² of phytoplankton but 800 g/m² of shellfish consumers. Which conclusion follows directly from these data?",
+        "explanation": "Standing biomass and energy flow are different quantities. The small phytoplankton biomass supports larger consumer biomass because producers replenish rapidly (high turnover). This matches the source principle that inverted biomass pyramids do not indicate inverted energy pyramids. The 800 g/m² shellfish biomass is sustained by 5,000 kJ/m² annual production, not by stored biomass. The 10% efficiency claim is unsupported without knowing trophic-level production breakdown, and the consumer biomass exceeding producer biomass in a snapshot does not violate energy flow principles.",
+        "expectedAnswer": "The small producer biomass supports larger consumer biomass because producers replenish rapidly",
+        "choices": [
+          "Energy transfer efficiency from producers to consumers is approximately 10%",
+          "The small producer biomass supports larger consumer biomass because producers replenish rapidly",
+          "Consumer biomass exceeding producer biomass violates the second law of thermodynamics",
+          "Annual energy flow to consumers must exceed 5,000 kJ/m² to sustain 800 g/m² biomass"
+        ],
+        "topic": "Distinguish energy flow over time from a snapshot of standing biomass",
+        "skillID": "2",
+        "objectiveID": "2",
+        "objective": "Distinguish energy flow over time from a snapshot of standing biomass",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "e0dceb41ab85b7faea43a75cc53200ab6911e7c56a8d00af2522b1dc743f80e4",
+      "requested_slot": true,
+      "id": "q10",
+      "assessable_stem_choices": true
+    }
+  ]
+}

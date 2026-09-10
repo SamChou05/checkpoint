@@ -1,0 +1,136 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The bar-based arithmetic is correct conditionally, but the explanation silently chooses the inconsistent bar measurement over the original ratio and specified 150% enlargement. It also does not resolve the placement of the 12 cm measurement before photocopying in the opening sentence. There is no complete worked solution to all the stated premises.",
+      "unsupported_claims": [
+        "The claim that this particular 4.5 cm bar is a valid co-enlarged 1 km bar is inconsistent with the original 1:50,000 scale and 150% factor, which require a 3 cm bar.",
+        "The asserted new representative fraction of approximately 1:22,222 follows the 4.5 cm bar but cannot be the 150% enlargement of 1:50,000; that would be approximately 1:33,333.",
+        "The unqualified answer of 2.7 km assumes both that 12 cm is measured on the enlarged copy and that the contradictory bar measurement is authoritative."
+      ],
+      "necessary_qualifications": [
+        "12/4.5 = 2.666... km, rounded to 2.7 km, is conditional on accepting the stated copied bar and a copied-map 12 cm measurement.",
+        "The original numerical ratio no longer applies unchanged, but it still constrains the new ratio through the specified enlargement; it cannot simply be discarded.",
+        "The incompatible bar and numerical-scale premises, and the measurement chronology, must be acknowledged. No listed answer solves the whole unchanged stem."
+      ]
+    },
+    {
+      "id": "q02",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The explanation confuses percentages of the large fish diet with percentages of each prey source production used. Its calculated contributions do not have the stated diet proportions. It also never derives a minimum or states an assumption that could establish one.",
+      "unsupported_claims": [
+        "The inference that obtaining 60% of large-fish energy from zooplankton means multiplying the 80 kJ/m² source amount by 0.60 is unsupported.",
+        "The parallel inference that obtaining 40% from small fish means multiplying the 15 kJ/m² source amount by 0.40 is unsupported.",
+        "The resulting 48 and 6 kJ/m² contributions have diet shares of approximately 88.9% and 11.1%, contradicting the stated 60% and 40%.",
+        "The claim that annual large-fish production equals 54 kJ/m², and thus answers the requested minimum, is not established."
+      ],
+      "necessary_qualifications": [
+        "If source-specific efficiency is defined against each entire prey production, the contributions are 80 and 15 kJ/m², which conflict with the stipulated diet shares.",
+        "Under an additional available-energy allocation interpretation, the shares instead constrain a limiting maximum: 0.60L <= 80 and 0.40L <= 15, giving at most 37.5 kJ/m². This is not the requested minimum and is not offered.",
+        "The stem needs a consistent allocation/efficiency interpretation and a justified lower-bound condition before any positive minimum can be claimed."
+      ]
+    },
+    {
+      "id": "q03",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The explanation correctly computes the result from the stated screen bar, but it treats that bar as valid without checking its incompatibility with the original numerical scale and the explicit 80% reduction. Merely observing that the original printed ratio is no longer valid unchanged does not remove that contradiction.",
+      "unsupported_claims": [
+        "The assertion that this 2 cm bar is a usable proportional reproduction of the original 1 km bar conflicts with the original 1:10,000 scale and 80% dimensions.",
+        "The unqualified 7.5 km answer assumes the bar measurement is authoritative while silently dropping the incompatible reproduction constraint."
+      ],
+      "necessary_qualifications": [
+        "The original scale implies a 10 cm bar for 1 km, which becomes 8 cm at 80%; a 2 cm bar is inconsistent.",
+        "7.5 km follows the bar alone; 1.875 km follows the original numerical scale corrected for the stated reduction. Neither solves every premise.",
+        "1.5 km is indeed the result of incorrectly applying the original ratio unchanged, but identifying that error does not explain away the separate valid scale-correction result of 1.875 km."
+      ]
+    },
+    {
+      "id": "q04",
+      "fully_supported": false,
+      "worked_solution_complete": true,
+      "reason": "The reference-by-reference derivation of =SUM($B4:E4) is correct and complete for the actual formula question. The final interpretation of that formula as Q3 Jan–Apr sales is unsupported and false given the layout: only row 2 contains the stated sales inputs, while row 4 contains filled formulas.",
+      "unsupported_claims": [
+        "The statement that E5 sums Q3's Jan–Apr sales is not supported by the Q3 label in A5. E5 sums B4:E4, which are generated formulas from the earlier fills, not supplied Q3 monthly sales."
+      ],
+      "necessary_qualifications": [
+        "The correct formula follows the two-row, three-column copy displacement and the existing anchors, independently of the quarter labels.",
+        "The semantic claim about Q3 sales must be removed or explicitly identified as unsupported; the provided table does not describe such quarter-specific input data."
+      ]
+    },
+    {
+      "id": "q05",
+      "fully_supported": true,
+      "worked_solution_complete": true,
+      "reason": "All material claims follow the uniform enlargement and scale-bar conditions. The explanation correctly preserves represented ground distance and supplies the decisive complete conversion 8 cm × 25,000 = 200,000 cm = 2.0 km. The 2/3 relationship between copied and original lengths is also correct.",
+      "unsupported_claims": [],
+      "necessary_qualifications": []
+    },
+    {
+      "id": "q06",
+      "fully_supported": true,
+      "worked_solution_complete": true,
+      "reason": "The explanation correctly reduces the 5 cm bar to 4 cm while retaining its 1.25 km label, then converts the measured two bar lengths to 2.5 km. It also correctly explains why retaining the original printed ratio produces the wrong 2 km result. This establishes the complete true statement among the choices.",
+      "unsupported_claims": [],
+      "necessary_qualifications": []
+    },
+    {
+      "id": "q07",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The reference descriptions and intermediate formula in C2 are correct, and the described downward fill would yield =$A5*C$1 in C5. The final sentence jumps to D5 and changes C to D without a stated copy operation. The actual destination cell is untouched by all described actions.",
+      "unsupported_claims": [
+        "The conclusion that D5 contains =$A5*D$1 invents a fill or copy into column D.",
+        "The implication that filling B2:C2 down to row 5 can populate D5 is false."
+      ],
+      "necessary_qualifications": [
+        "The specified fill produces formulas only in columns B and C through row 5.",
+        "D5 retains its prior, unspecified contents; if it started empty it remains empty. No listed formula is guaranteed.",
+        "=$A5*D$1 is only the result of an additional hypothetical copy to D5, which cannot be silently added to the unchanged stem."
+      ]
+    },
+    {
+      "id": "q08",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The explanation silently repairs the missing price premise by asserting that prices are in column A, although the stem explicitly places product names there. The anchor discussion would be sound for a differently specified table, but it cannot establish a correct price formula for the unchanged table.",
+      "unsupported_claims": [
+        "The opening claim that the price is in column A contradicts the supplied description of that column as product names.",
+        "The claim that =$A2*(1-B$1) computes each product price after discount assumes an unreported numeric price in A2:A10."
+      ],
+      "necessary_qualifications": [
+        "The price-cell location is unspecified, so none of the offered formulas is warranted as a price calculation.",
+        "The mixed-anchor explanation is conditional on prices occupying column A; that condition is absent and cannot replace the product-name premise.",
+        "With ordinary text product names in column A, multiplying those cells will not produce the requested price."
+      ]
+    },
+    {
+      "id": "q09",
+      "fully_supported": true,
+      "worked_solution_complete": true,
+      "reason": "The explanation correctly identifies the fixed rate column with varying row and the fixed sales row with varying column. It describes the actual reference changes in both fill directions and thereby completely identifies =$A2*B$1. The general description of the alternative formulas is also supported.",
+      "unsupported_claims": [],
+      "necessary_qualifications": []
+    },
+    {
+      "id": "q10",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The distinction between standing biomass and energy flow, and the rejection of a thermodynamic violation, are supported. The explanation nevertheless upgrades rapid producer turnover from a compatible explanation to an observed causal fact. It also asserts a specific support relationship between total phytoplankton production and shellfish biomass that the data alone do not establish. The explanation therefore does not justify a listed conclusion that follows directly.",
+      "unsupported_claims": [
+        "The claim that the biomass inversion occurs because these producers replenish rapidly is not directly demonstrated by the annual energy production and one biomass snapshot.",
+        "The claim that the 800 g/m² of shellfish is sustained by the stated 5,000 kJ/m² annual phytoplankton production asserts adequacy and a specific support relationship without the required dietary, energy-budget, turnover, or temporal information.",
+        "The absolute phrasing not by stored biomass is misleading: consumers can consume energy stored in producer biomass, and the observation does not establish the relative contribution of existing stores and replenishment."
+      ],
+      "necessary_qualifications": [
+        "Rapid producer replenishment can explain an inverted biomass pyramid, but the supplied observations do not establish that particular mechanism as the cause.",
+        "The directly calculable aggregate ratio of total consumer production to producer production is 400/5,000 = 8%; it is not a reported production ratio between adjacent trophic levels.",
+        "The explanation is reasonable in withholding a specific trophic transfer efficiency without a level breakdown, but approximately 10% remains linguistically loose if the choice is read as an aggregate ratio. That ambiguity should be retained, not resolved by assuming a precise intended definition.",
+        "The supported conclusion is that the standing-biomass comparison does not by itself imply an inverted energy-flow pyramid or a violation of thermodynamics. That precise conclusion is not offered."
+      ]
+    }
+  ]
+}

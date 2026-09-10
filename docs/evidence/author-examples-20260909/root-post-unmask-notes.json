@@ -1,0 +1,11 @@
+{
+  "scope": "Root post-unmask inspection of the strict-format-failed raw response. Separate from both masked assessments; no discarded-value selection, repair, or credit to either failed requested slot.",
+  "job_index": 5,
+  "first_raw_question_observation": "The unchanged stem gives zooplankton production800. The first explanation recognizes800/10000=8%and that no offered answer follows, then proposes changing800to1200. A repeated explanation uses1200/10000=12%while the actual stem still says800. Thus the duplicate-field failure also contains a stale-stem/changed-evidence semantic error.",
+  "original_efficiency_percent": 8,
+  "replacement_efficiency_percent": 12,
+  "stem_changed_to_replacement": false,
+  "credit_for_format_failed_slots": 0,
+  "second_raw_question": "Preserved in exact raw response. Not separately scored after whole-response strict failure; no claim that every item in that response is semantically false.",
+  "example_intrusion_check": "Root inspected all ten parsed items plus the exact failed response after unmasking. All stay within their transfer subjects; no parcel-routing, Maya/Lena wording or copied experimental-design task detected. This is a qualitative inspection, not an automatic similarity guarantee."
+}

@@ -1,0 +1,342 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "supported_choices": [],
+      "premises_complete": false,
+      "choice_assessments": [
+        {
+          "choice": "2.4 km",
+          "correct": false,
+          "reason": "Neither the stated enlarged scale bar nor the numerical scale with the stated enlargement yields 2.4 km."
+        },
+        {
+          "choice": "2.7 km",
+          "correct": false,
+          "reason": "This is the rounded value of 12/4.5 km if the enlarged scale bar alone is used. It is only conditionally supported: that bar is incompatible with a 1:50,000 original enlarged by 150%, and the stem first places the 12 cm measurement before enlargement."
+        },
+        {
+          "choice": "6.0 km",
+          "correct": false,
+          "reason": "This follows for the originally measured 12 cm at 1:50,000. It does not follow for a 12 cm measurement on a 150% enlarged copy and conflicts with the stated enlarged bar."
+        },
+        {
+          "choice": "7.5 km",
+          "correct": false,
+          "reason": "No stated consistent scale interpretation gives 7.5 km."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "There is no coherent correct option against which to define three distractors. Two options instead correspond to different incompatible readings of the premises, and the other two have no clear, distinct misconception grounded in the stated measurements.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "The apparent bar-based solution is one routine proportion. Contradictory measurements do not turn that calculation into a well-posed higher-demand task.",
+      "notes": "At 1:50,000 a 1 km bar is originally 2 cm and must become 3 cm after 150% linear enlargement, not 4.5 cm. A 12 cm measurement on the consistently enlarged map would represent 4 km, which is absent. The original 12 cm trail would become 18 cm on the copy. No priority among the inconsistent facts is supplied. Conditional answers are explicitly not approved. No external source consulted."
+    },
+    {
+      "id": "q02",
+      "supported_choices": [],
+      "premises_complete": false,
+      "choice_assessments": [
+        {
+          "choice": "54 kJ/m²",
+          "correct": false,
+          "reason": "Computing 0.10(0.60×800 + 0.40×150) yields 54 but misuses the large fish's diet shares as fractions of prey production allocated to them. Those calculated contributions, 48 and 6, are not a 60:40 split. With a 40% small-fish contribution, production of 54 would require 21.6 from small fish, exceeding 10% of their 150 production."
+        },
+        {
+          "choice": "80 kJ/m²",
+          "correct": false,
+          "reason": "This is 10% of zooplankton production alone. It omits the required small-fish share and is not a minimum. A 40% small-fish contribution to 80 would be 32, exceeding the available 15 at 10% transfer."
+        },
+        {
+          "choice": "95 kJ/m²",
+          "correct": false,
+          "reason": "Adding 10% of both prey productions gives 80 + 15 = 95, but these contributions have an approximately 84:16 split, not 60:40. Such use of all prey production would also be a capacity calculation, not a minimum."
+        },
+        {
+          "choice": "150 kJ/m²",
+          "correct": false,
+          "reason": "This repeats small-fish production rather than applying transfer losses and the stated diet shares. Its required 60 contribution from small fish exceeds the 15 available at 10% transfer."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "The options resemble distinct calculation errors, but none is a warranted correct answer. They cannot form one correct answer plus three distractors.",
+      "goal_fit": true,
+      "difficulty": 3,
+      "difficulty_reason": "Correct interpretation requires distinguishing diet shares from prey-production allocation, combining separate transfer limits, and recognizing that capacity information does not supply a minimum production.",
+      "notes": "No allocation of prey production or positive lower production bound is stated. If the 60:40 shares apply to contributions to large-fish production, 0.4P <= 0.10×150 implies P <= 37.5. This is an upper bound, not the requested minimum; further allocation constraints, including zooplankton used by small fish, are not quantified. If 'energy' means intake rather than production, equal conversion assumptions are also needed to identify those shares with production. Either reading fails to warrant any listed positive minimum. A literal whole-source trophic-efficiency reading instead conflicts with the stipulated diet shares. No external source consulted."
+    },
+    {
+      "id": "q03",
+      "supported_choices": [],
+      "premises_complete": false,
+      "choice_assessments": [
+        {
+          "choice": "0.75 km",
+          "correct": false,
+          "reason": "Neither the stated bar nor the adjusted numerical scale yields this distance."
+        },
+        {
+          "choice": "1.5 km",
+          "correct": false,
+          "reason": "This applies the original 1:10,000 ratio directly to the reduced 15 cm measurement, ignoring the 80% linear resizing and the stated scale bar."
+        },
+        {
+          "choice": "1.875 km",
+          "correct": false,
+          "reason": "This follows from 15/0.8 = 18.75 original centimetres at 1:10,000. It is conditionally supported by the numerical scale and resizing but contradicts the given bar, which would yield 7.5 km."
+        },
+        {
+          "choice": "7.5 km",
+          "correct": false,
+          "reason": "This follows from the bar alone: 15 cm / 2 cm per km. It contradicts the stated original numerical scale and known 80% resizing, so it is not warranted by the complete premises."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Two choices are answers to incompatible subsets of the premises rather than one answer and a mistaken distractor. There is no coherent single key; 0.75 km also lacks a clear distinct error path.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "The apparent scale-bar task is a direct proportion; tracing bends is already done. The numerical-scale alternative is routine rescaling, and the contradiction does not establish a valid deeper assessment.",
+      "notes": "A 1 km bar at 1:10,000 is 10 cm originally and 8 cm at 80%, not 2 cm. The fact that an unchanged printed numerical ratio is no longer directly usable does not remove the original ratio's constraint when the exact resizing factor is known. Neither scale source is declared erroneous. No external source consulted."
+    },
+    {
+      "id": "q04",
+      "supported_choices": [
+        "=SUM($B4:E4)"
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "=SUM($B2:E2)",
+          "correct": false,
+          "reason": "This is the formula in E3 after the horizontal fill, before the two-row downward displacement. The row numbers have no dollar signs and must change."
+        },
+        {
+          "choice": "=SUM($B5:E5)",
+          "correct": false,
+          "reason": "The referenced row starts one row above the formula cell and remains one row above it. E5 therefore refers to row 4, not its own row 5."
+        },
+        {
+          "choice": "=SUM($B4:E4)",
+          "correct": true,
+          "reason": "B3 to E5 shifts three columns right and two rows down. The first endpoint keeps its fixed column B but changes row 2 to 4; the fully relative second endpoint changes B2 to E4."
+        },
+        {
+          "choice": "=SUM(B4:E4)",
+          "correct": false,
+          "reason": "The endpoints' positions are right, but copying preserves the dollar sign fixing the first endpoint's column. The resulting formula still contains $B4."
+        }
+      ],
+      "three_plausible_distinct_distractors": true,
+      "distractor_reason": "The alternatives respectively omit the vertical adjustment, confuse the reference's row offset with the destination row, and lose the fixed-column anchor. These produce distinct errors for a learner who recognizes dollar signs but struggles with copying.",
+      "goal_fit": true,
+      "difficulty": 3,
+      "difficulty_reason": "The learner must combine horizontal and vertical displacement while treating the two range endpoints differently: a mixed reference at the left and a fully relative reference at the right.",
+      "notes": "Quarter labels and the original sales layout are unnecessary to the reference transformation. Filled lower rows will refer to preceding formula rows, but no requirement says the formulas must implement meaningful quarterly totals; the requested formula itself is uniquely determined. No external source consulted."
+    },
+    {
+      "id": "q05",
+      "supported_choices": [
+        "2.0 km"
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "1.2 km",
+          "correct": false,
+          "reason": "This does not follow from the original 1:25,000 scale or its 150% enlargement."
+        },
+        {
+          "choice": "1.8 km",
+          "correct": false,
+          "reason": "This does not follow from the given direct separation and uniform enlargement."
+        },
+        {
+          "choice": "2.0 km",
+          "correct": true,
+          "reason": "The original direct separation is 8×25,000 cm = 200,000 cm = 2 km. Enlarging the map and its bar together changes the printed length to 12 cm but preserves the represented ground separation."
+        },
+        {
+          "choice": "3.0 km",
+          "correct": false,
+          "reason": "This multiplies 12 cm by the unchanged original numerical scale, ignoring that the map was enlarged."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "3.0 km is a strong and relevant error from reusing the original ratio. Neither 1.2 km nor 1.8 km has a comparably clear, distinct misconception derived from the stated scale and resizing, so three plausible distractors are not established.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "The original separation and scale directly give 2 km; all resizing measurements are consistent confirmations. No route interpretation or combination of independent constraints is necessary to select the answer.",
+      "notes": "The enlarged bar's measured length is not provided, but the original scale and enlargement fully determine the effective scale and the same endpoints' ground separation. The wording 'using only the copied map and its scale bar' is awkward as a paper calculation, yet does not make the distance underdetermined. No external source consulted."
+    },
+    {
+      "id": "q06",
+      "supported_choices": [
+        "2.5 km, because the reduced scale bar remains valid while the printed ratio does not"
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "2.0 km, using the stated 1:25,000 ratio",
+          "correct": false,
+          "reason": "The unchanged printed ratio describes the original map. Applying it to a reduced print understates the ground distance."
+        },
+        {
+          "choice": "2.5 km, because the reduced scale bar remains valid while the printed ratio does not",
+          "correct": true,
+          "reason": "The bar is reduced from 5 to 4 cm and still represents 1.25 km. The measured 8 cm is two bars, or 2.5 km. The unchanged printed 1:25,000 ratio no longer describes physical lengths on the reduced print."
+        },
+        {
+          "choice": "2.5 km, because reducing a map increases its representative fraction",
+          "correct": false,
+          "reason": "The distance is right but the explanation is wrong. Reduction changes the representative fraction from 1/25,000 to 1/31,250, which is smaller; only its denominator increases."
+        },
+        {
+          "choice": "Cannot be determined without knowing the scanner resolution",
+          "correct": false,
+          "reason": "The final linear reduction is explicitly known, and the scale bar is reduced with the map. Scanner resolution is unnecessary."
+        }
+      ],
+      "three_plausible_distinct_distractors": true,
+      "distractor_reason": "The alternatives target three distinct confusions: reusing an obsolete printed ratio, confusing the fraction with its denominator, and treating scanner resolution as required despite a known physical resizing factor.",
+      "goal_fit": true,
+      "difficulty": 3,
+      "difficulty_reason": "The learner must combine linear resizing with bar-based distance conversion and then discriminate between two numerically identical answers using the direction of change in the representative fraction.",
+      "notes": "Representative fraction is interpreted conventionally as the ratio itself, not as a colloquial name for its denominator. Under that ordinary convention the third choice's explanation is false. The stated original bar and numerical ratio agree. No external source consulted."
+    },
+    {
+      "id": "q07",
+      "supported_choices": [],
+      "premises_complete": false,
+      "choice_assessments": [
+        {
+          "choice": "=$A5*D$1",
+          "correct": false,
+          "reason": "This would result if B2 were copied to D5, but the stated operations affect only columns B and C. Nothing states that D5 receives this formula."
+        },
+        {
+          "choice": "=$A2*D$1",
+          "correct": false,
+          "reason": "D5 is not filled. Even under an unstated copy to D5, the relative row in $A2 would change to 5."
+        },
+        {
+          "choice": "=A5*$D$1",
+          "correct": false,
+          "reason": "D5 is not filled. This also changes the original reference anchors; ordinary copying preserves the fixed column in $A2 and the relative column in B$1."
+        },
+        {
+          "choice": "=$A$5*D1",
+          "correct": false,
+          "reason": "D5 is not filled. This also invents a fixed row for the first reference and removes the second reference's fixed row, neither of which copying does."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "There is no correct option because the destination cell lies outside the filled range. The presumed anchor-based alternatives assess an operation the stem never performs, and two arbitrarily change dollar-sign placement.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "The decisive literal reasoning is routine range tracking: filling B2:C2 down does not touch column D. Evaluating a hypothetical two-direction copy would assess a different, repaired stem.",
+      "notes": "D5 retains whatever content it had beforehand, and that content is not supplied; it cannot be assumed blank. Column A is described as regions and row 1 as months, which may also make the multiplication semantically odd, but the untouched destination alone defeats every option. No external source consulted."
+    },
+    {
+      "id": "q08",
+      "supported_choices": [],
+      "premises_complete": false,
+      "choice_assessments": [
+        {
+          "choice": "=$A2*(1-B$1)",
+          "correct": false,
+          "reason": "The anchors would preserve a row-specific input in column A and a column-specific rate in row 1, but column A is explicitly product names, not prices. The formula therefore does not calculate the requested price times one minus discount from the stated worksheet."
+        },
+        {
+          "choice": "=A2*(1-$B$1)",
+          "correct": false,
+          "reason": "It uses the product-name cell as price. It also lets that reference leave column A when copied right and fixes every column's discount to B1."
+        },
+        {
+          "choice": "=$A$2*(1-B$1)",
+          "correct": false,
+          "reason": "It uses product-name cell A2 as price and fixes that one cell for every product row."
+        },
+        {
+          "choice": "=A$2*(1-$B1)",
+          "correct": false,
+          "reason": "It uses a name as price and anchors the wrong components: the supposed price stays in row 2 while moving across columns, and the discount stays in column B while moving down rows."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "The anchor patterns would supply distinguishable mistakes in a different worksheet where column A held prices, but the actual worksheet has no stated price source and no correct choice. Three distractors around a valid key are therefore not established.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "For the literal stem, the missing price input is the decisive direct check. A repaired price-in-column-A task would require coordinating two mixed-reference relationships, but that repair is not part of this item.",
+      "notes": "The word 'price table' does not identify a price cell or override the explicit statement that column A contains product names. Ordinary product names are text and multiplying them ordinarily produces a value error. It is not legitimate to silently reinterpret names as numeric prices. No external source consulted."
+    },
+    {
+      "id": "q09",
+      "supported_choices": [
+        "=$A2*B$1"
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "=$A$2*$B$1",
+          "correct": false,
+          "reason": "Both cells remain fixed, so all destinations use the first row's rate and first column's sales amount."
+        },
+        {
+          "choice": "=A2*B1",
+          "correct": false,
+          "reason": "Both references move in both directions. Copying right moves the rate out of column A, and copying down moves the sales reference out of row 1."
+        },
+        {
+          "choice": "=$A2*B$1",
+          "correct": true,
+          "reason": "The fixed A column and relative rate row preserve each row's rate; the relative sales column and fixed row 1 preserve each column's sales amount. At F6 the formula becomes =$A6*F$1."
+        },
+        {
+          "choice": "=$A2*$B$1",
+          "correct": false,
+          "reason": "The rate changes correctly by row, but the fully fixed sales reference keeps every commission column tied to B1."
+        }
+      ],
+      "three_plausible_distinct_distractors": true,
+      "distractor_reason": "The choices distinguish freezing both inputs, leaving both inputs fully relative, and correctly handling the row input while over-fixing the column input. Their behavior across the table is meaningfully different.",
+      "goal_fit": true,
+      "difficulty": 3,
+      "difficulty_reason": "The learner must simultaneously satisfy two complementary relationships across a two-dimensional fill: keep the rate column fixed while its row changes and keep the sales row fixed while its column changes.",
+      "notes": "All input locations and required relationships are explicit. The selected formula also works whether the wording is understood as filling the whole rectangle or filling down and then extending rows right. No external source consulted."
+    },
+    {
+      "id": "q10",
+      "supported_choices": [],
+      "premises_complete": false,
+      "choice_assessments": [
+        {
+          "choice": "Energy transfer efficiency from producers to consumers is approximately 10%",
+          "correct": false,
+          "reason": "400/5,000 is 8%, but 400 is explicitly total production summed across all consumer levels, not production at the single receiving trophic level. It therefore does not establish the producer-to-primary-consumer trophic transfer efficiency. Calling 8% approximately 10% does not fix the aggregation problem."
+        },
+        {
+          "choice": "The small producer biomass supports larger consumer biomass because producers replenish rapidly",
+          "correct": false,
+          "reason": "Rapid producer turnover is a possible explanation for an inverted biomass pyramid, but these data do not directly establish that causal explanation. The stem supplies neither turnover measurements nor the relevant feeding, replenishment, steady-state, or energy-per-mass information."
+        },
+        {
+          "choice": "Consumer biomass exceeding producer biomass violates the second law of thermodynamics",
+          "correct": false,
+          "reason": "A snapshot of biomass is not an energy-flow rate. Greater consumer standing biomass does not by itself violate thermodynamics."
+        },
+        {
+          "choice": "Annual energy flow to consumers must exceed 5,000 kJ/m² to sustain 800 g/m² biomass",
+          "correct": false,
+          "reason": "A consumer standing mass cannot determine a required annual energy flow without additional metabolic, turnover, and energy-content information. A larger biomass stock does not imply a larger annual energy flow than producer production."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "No choice is directly entailed. In addition, the thermodynamics and required-excess-flow options substantially repeat the same stock-versus-flow confusion rather than supplying clearly independent misconceptions.",
+      "goal_fit": true,
+      "difficulty": 3,
+      "difficulty_reason": "Literal assessment requires distinguishing standing biomass from production, recognizing the difference between an aggregate over consumer levels and an adjacent-level efficiency, and separating a possible turnover explanation from an established causal conclusion.",
+      "notes": "The data directly show larger measured shellfish biomass than phytoplankton biomass and smaller aggregate consumer production than producer production. They are compatible with rapid producer replenishment but do not prove it. No unreported diet or steady state is assumed. A pedagogical expectation that inverted biomass is often explained by fast producer turnover is not enough for the wording 'follows directly.' No external source consulted."
+    }
+  ]
+}
