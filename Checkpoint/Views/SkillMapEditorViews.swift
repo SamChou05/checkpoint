@@ -589,7 +589,7 @@ struct SkillMapReviewView: View {
                         motionPolicy: motionPolicy
                     )
 
-                    SectionPanel {
+                    SectionPanel(style: .editorial) {
                         SkillMapListHeader()
 
                         VStack(spacing: 14) {
@@ -646,7 +646,7 @@ struct SkillMapReviewView: View {
                         focusedSkillID = nil
                         dismiss()
                     }
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                 }
 
                 ToolbarItemGroup(placement: .keyboard) {
@@ -672,7 +672,7 @@ struct SkillMapReviewView: View {
                 .disabled(!editorPresentation.actionEnabled)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
-                .background(.ultraThinMaterial)
+                .background(CheckpointTheme.panel)
             }
         }
         .onAppear {
@@ -933,7 +933,7 @@ struct SkillMapRepairView: View {
                         motionPolicy: motionPolicy
                     )
 
-                    SectionPanel {
+                    SectionPanel(style: .editorial) {
                         SkillMapListHeader()
 
                         VStack(spacing: 14) {
@@ -988,7 +988,7 @@ struct SkillMapRepairView: View {
                         focusedSkillID = nil
                         dismiss()
                     }
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                 }
 
                 ToolbarItemGroup(placement: .keyboard) {
@@ -1014,7 +1014,7 @@ struct SkillMapRepairView: View {
                 .disabled(!editorPresentation.actionEnabled)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
-                .background(.ultraThinMaterial)
+                .background(CheckpointTheme.panel)
             }
         }
         .onChange(of: validationAnnouncement) { _, message in
@@ -1175,7 +1175,7 @@ private struct SkillMapEditorHero: View {
                     identityIcon
 
                     Text("SKILL MAP")
-                        .font(.caption2.weight(.bold))
+                        .font(CheckpointTypography.eyebrow)
                         .tracking(0.9)
                         .foregroundStyle(accent)
                         .fixedSize(horizontal: true, vertical: true)
@@ -1207,7 +1207,7 @@ private struct SkillMapEditorHero: View {
 
             VStack(alignment: .leading, spacing: 1) {
                 Text("SKILL MAP")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.9)
                     .foregroundStyle(accent)
 
@@ -1451,12 +1451,12 @@ private struct EditableSkillNameRow: View {
             if dynamicTypeSize.isAccessibilitySize {
                 Label("Actions", systemImage: "ellipsis.circle")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .frame(minHeight: 44)
             } else {
                 Image(systemName: "ellipsis.circle")
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .frame(width: 44, height: 44)
             }
         }
@@ -1498,7 +1498,7 @@ private struct EditableSkillNameRow: View {
             .font(.caption.weight(.semibold))
             .foregroundStyle(CheckpointTheme.muted)
         }
-        .tint(CheckpointTheme.teal)
+        .tint(CheckpointTheme.accent)
     }
 
     private var statusTint: Color {
@@ -1509,7 +1509,7 @@ private struct EditableSkillNameRow: View {
         case .suggested, .newSkill:
             return CheckpointTheme.blue
         case .preservesProgress, .keepsHistory:
-            return CheckpointTheme.teal
+            return CheckpointTheme.success
         case .startsFresh:
             return CheckpointTheme.amber
         }
@@ -1534,16 +1534,16 @@ private struct AddSkillNameButton: View {
         Button(action: action) {
             Label("Add another skill", systemImage: "plus")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .background(
-                    CheckpointTheme.teal.opacity(0.08),
+                    CheckpointTheme.accent.opacity(0.08),
                     in: RoundedRectangle(cornerRadius: 10, style: .continuous)
                 )
                 .overlay {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .stroke(
-                            CheckpointTheme.teal.opacity(0.36),
+                            CheckpointTheme.accent.opacity(0.36),
                             style: StrokeStyle(lineWidth: 1, dash: [5, 4])
                         )
                 }

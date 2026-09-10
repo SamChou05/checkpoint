@@ -1685,18 +1685,18 @@ struct FirstRunMissingGoalRecoveryView: View {
             if !dynamicTypeSize.isAccessibilitySize {
                 Image(systemName: "scope")
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .frame(width: 58, height: 58)
                     .background(
-                        CheckpointTheme.teal.opacity(0.10),
-                        in: RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        CheckpointTheme.accent.opacity(0.10),
+                        in: RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
                     )
                     .accessibilityHidden(true)
             }
 
             VStack(spacing: 8) {
                 Text("Restore your goal")
-                    .font(.title2.bold())
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(CheckpointTheme.text)
 
                 Text("Checkpoint needs a current goal before you choose where protection should pause you.")
@@ -1729,7 +1729,7 @@ struct FirstRunMissingGoalRecoveryView: View {
             .padding(.horizontal, 24)
         }
         .padding(.bottom, 10)
-        .background(.ultraThinMaterial)
+        .background(CheckpointTheme.panel)
         .reportFirstRunMissingGoalRecoveryFrame(.actionBar, using: layoutReporter)
     }
 }

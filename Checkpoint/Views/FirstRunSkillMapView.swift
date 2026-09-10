@@ -151,10 +151,10 @@ struct FirstRunSkillMapView: View {
     }
 
     private var buildingState: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             HStack(alignment: .top, spacing: 14) {
                 ProgressView()
-                    .tint(CheckpointTheme.teal)
+                    .tint(CheckpointTheme.accent)
                     .padding(.top, 3)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 6) {
@@ -174,11 +174,11 @@ struct FirstRunSkillMapView: View {
     private func skillMap(_ map: GoalSkillMap) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("\(map.topics.count) skills to build")
-                .font(.headline)
+                .font(CheckpointTypography.sectionTitle)
                 .foregroundStyle(CheckpointTheme.text)
                 .accessibilityAddTraits(.isHeader)
 
-            SectionPanel(contentPadding: 14) {
+            SectionPanel(contentPadding: 14, style: .editorial) {
                 VStack(spacing: 0) {
                     ForEach(Array(map.topics.enumerated()), id: \.element.id) { index, topic in
                         skillRow(topic, index: index)
@@ -193,7 +193,7 @@ struct FirstRunSkillMapView: View {
 
             Button("Adjust goal or materials", action: onEditGoal)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .frame(minHeight: 44)
                 .disabled(reviewPresentation.blocksUnderlyingPresentations)
         }
@@ -215,12 +215,12 @@ struct FirstRunSkillMapView: View {
                 HStack(spacing: 12) {
                     Text("\(index + 1)")
                         .font(.subheadline.monospacedDigit().weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.teal)
+                        .foregroundStyle(CheckpointTheme.accent)
                         .frame(width: 30, height: 30)
-                        .background(CheckpointTheme.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 9))
+                        .background(CheckpointTheme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 9))
                         .accessibilityHidden(true)
                     Text(topic.name)
-                        .font(.subheadline.weight(.semibold))
+                        .font(.system(.headline, design: .serif))
                         .foregroundStyle(CheckpointTheme.text)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -259,7 +259,7 @@ struct FirstRunSkillMapView: View {
     }
 
     private var attentionState: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             Label("Your skill map isn't ready yet", systemImage: "exclamationmark.circle")
                 .font(.headline)
                 .foregroundStyle(CheckpointTheme.text)
@@ -301,7 +301,7 @@ struct FirstRunSkillMapView: View {
             } label: {
                 Label("Edit Skill Map", systemImage: "pencil")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .frame(maxWidth: .infinity, minHeight: 44)
             }
             .disabled(reviewPresentation.blocksUnderlyingPresentations || approval.didApprove)
@@ -309,7 +309,7 @@ struct FirstRunSkillMapView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .background(.ultraThinMaterial)
+        .background(CheckpointTheme.panel)
     }
 
     private var reviewBinding: Binding<SkillMapReviewContext?> {
