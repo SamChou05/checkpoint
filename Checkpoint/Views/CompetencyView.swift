@@ -444,13 +444,9 @@ struct ProgressNextFocusUpgradeCard: View {
 
     private var icon: some View {
         Image(systemName: "scope")
-            .font(.system(size: 18, weight: .bold))
-            .foregroundStyle(CheckpointTheme.blue)
-            .frame(width: 44, height: 44)
-            .background(
-                CheckpointTheme.blue.opacity(0.11),
-                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
-            )
+            .font(.system(size: 20, weight: .regular))
+            .foregroundStyle(CheckpointTheme.accent)
+            .frame(width: 32, height: 44)
             .accessibilityHidden(true)
     }
 
@@ -458,17 +454,17 @@ struct ProgressNextFocusUpgradeCard: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 7) {
                 Text(presentation.eyebrow)
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.85)
 
                 Text(presentation.planBadge)
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.55)
                     .padding(.horizontal, 7)
                     .padding(.vertical, 4)
-                    .background(CheckpointTheme.blue.opacity(0.11), in: Capsule())
+                    .background(CheckpointTheme.accent.opacity(0.11), in: Capsule())
             }
-            .foregroundStyle(CheckpointTheme.blue)
+            .foregroundStyle(CheckpointTheme.accent)
 
             Text(presentation.headline)
                 .font(.headline)
@@ -490,7 +486,7 @@ struct ProgressNextFocusUpgradeCard: View {
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.bold))
         }
-        .foregroundStyle(CheckpointTheme.blue)
+        .foregroundStyle(CheckpointTheme.accent)
         .fixedSize()
         .accessibilityHidden(true)
     }
@@ -1418,12 +1414,12 @@ struct CompetencyView: View {
         } else {
             VStack(alignment: .leading, spacing: 5) {
                 Text("YOUR LEARNING MAP")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(1)
                     .foregroundStyle(CheckpointTheme.muted)
 
                 Text("Progress starts with a clear goal")
-                    .font(.title2.weight(.bold))
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(CheckpointTheme.text)
             }
         }
@@ -1431,14 +1427,14 @@ struct CompetencyView: View {
 
     private var goalEyebrow: some View {
         Text("CURRENT GOAL")
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(1)
             .foregroundStyle(CheckpointTheme.muted)
     }
 
     private func goalTitle(_ goal: Goal) -> some View {
         Text(goal.title)
-            .font(.title2.weight(.bold))
+            .font(CheckpointTypography.sectionTitle)
             .foregroundStyle(CheckpointTheme.text)
             .lineLimit(usesStackedTypeLayout ? nil : 2)
             .fixedSize(horizontal: false, vertical: true)
@@ -1556,13 +1552,9 @@ struct CompetencyView: View {
 
     private var focusWinsIcon: some View {
         Image(systemName: "note.text")
-            .font(.system(size: 18, weight: .bold))
-            .foregroundStyle(CheckpointTheme.teal)
-            .frame(width: 44, height: 44)
-            .background(
-                CheckpointTheme.teal.opacity(0.11),
-                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
-            )
+            .font(.system(size: 20, weight: .regular))
+            .foregroundStyle(CheckpointTheme.accent)
+            .frame(width: 32, height: 44)
             .accessibilityHidden(true)
     }
 
@@ -1584,7 +1576,7 @@ struct CompetencyView: View {
     private var focusWinsChevron: some View {
         Image(systemName: "chevron.right")
             .font(.caption.weight(.bold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .accessibilityHidden(true)
     }
 
@@ -1606,31 +1598,22 @@ struct CompetencyView: View {
             coverageTrack
 
             Divider()
-                .overlay(CheckpointTheme.heroDivider)
+                .overlay(CheckpointTheme.hairline)
 
             heroSupportingMetrics
 
             Divider()
-                .overlay(CheckpointTheme.heroDivider)
+                .overlay(CheckpointTheme.hairline)
 
             progressNarrative
         }
-        .padding(20)
+        .padding(.vertical, 20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(CheckpointTheme.ink)
-                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-                .overlay(alignment: .topTrailing) {
-                    Circle()
-                        .fill(heroAccent.opacity(0.08))
-                        .frame(width: 180, height: 180)
-                        .blur(radius: 12)
-                        .offset(x: 82, y: -100)
-                        .allowsHitTesting(false)
-                }
-        )
-        .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 10)
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(CheckpointTheme.hairline)
+                .frame(height: 1)
+        }
         .accessibilityElement(children: .contain)
         .animation(
             CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
@@ -1653,7 +1636,7 @@ struct CompetencyView: View {
 
     private var coverageMetricContent: some View {
         Text("\(dashboardSummary.practicedSkillCount)/\(dashboardSummary.totalSkillCount)")
-            .font(.system(size: heroMetricSize, weight: .bold, design: .rounded))
+            .font(.system(size: heroMetricSize, weight: .regular, design: .serif))
             .foregroundStyle(heroText)
             .monospacedDigit()
             .contentTransition(.numericText())
@@ -1667,7 +1650,7 @@ struct CompetencyView: View {
                     ? "DRAFT SKILL COVERAGE"
                     : "ACTIVE SKILL COVERAGE"
             )
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(1)
                 .foregroundStyle(heroSecondaryText)
 
@@ -1689,14 +1672,14 @@ struct CompetencyView: View {
         GeometryReader { proxy in
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(CheckpointTheme.heroTrack)
+                    .fill(CheckpointTheme.hairline)
 
                 Capsule()
                     .fill(heroAccent)
                     .frame(width: proxy.size.width * dashboardSummary.coverageProgress)
             }
         }
-        .frame(height: 8)
+        .frame(height: 4)
         .accessibilityHidden(true)
         .animation(
             CheckpointMotion.animation(CheckpointMotion.change, reduceMotion: reduceMotion),
@@ -1733,7 +1716,8 @@ struct CompetencyView: View {
             heroMetric(
                 value: dashboardSummary.strongSkillCount,
                 label: "STRONG",
-                systemImage: "checkmark.seal.fill"
+                systemImage: "checkmark.seal.fill",
+                tint: CheckpointTheme.success
             )
         }
     }
@@ -1744,7 +1728,8 @@ struct CompetencyView: View {
             heroMetric(
                 value: dashboardSummary.calibratingSkillCount,
                 label: "CALIBRATING",
-                systemImage: "scope"
+                systemImage: "scope",
+                tint: CheckpointTheme.amber
             )
         }
     }
@@ -1757,23 +1742,23 @@ struct CompetencyView: View {
         )
     }
 
-    private func heroMetric(value: Int, label: String, systemImage: String) -> some View {
+    private func heroMetric(value: Int, label: String, systemImage: String, tint: Color) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Image(systemName: systemImage)
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(heroAccent)
+                    .foregroundStyle(tint)
                     .accessibilityHidden(true)
 
                 Text("\(value)")
-                    .font(.title3.weight(.bold))
+                    .font(.system(.title3, design: .serif))
                     .foregroundStyle(heroText)
                     .monospacedDigit()
                     .contentTransition(.numericText(value: Double(value)))
             }
 
             Text(label)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.7)
                 .foregroundStyle(heroSecondaryText)
                 .fixedSize(horizontal: true, vertical: true)
@@ -1871,7 +1856,7 @@ struct CompetencyView: View {
         description: String = "Skills stay in your map order. Open any area for its answer mix and latest signal.",
         showsCoverageSummary: Bool = false
     ) -> some View {
-        SectionPanel(title) {
+        SectionPanel(title, style: .editorial) {
             VStack(alignment: .leading, spacing: 0) {
                 if showsCoverageSummary {
                     learningMapSummary
@@ -1958,7 +1943,7 @@ struct CompetencyView: View {
 
     private var learningMapCoverageValue: some View {
         Text("\(dashboardSummary.practicedSkillCount)/\(dashboardSummary.totalSkillCount)")
-            .font(.title2.weight(.bold))
+            .font(CheckpointTypography.sectionTitle)
             .foregroundStyle(CheckpointTheme.text)
             .monospacedDigit()
             .contentTransition(.numericText())
@@ -2028,14 +2013,10 @@ struct CompetencyView: View {
 
     private var suggestedMapIdentity: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: "sparkles")
+            Image(systemName: "point.3.connected.trianglepath.dotted")
                 .font(.system(size: 17, weight: .bold))
                 .foregroundStyle(CheckpointTheme.blue)
                 .frame(width: 42, height: 42)
-                .background(
-                    CheckpointTheme.blue.opacity(0.11),
-                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-                )
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 3) {
@@ -2091,7 +2072,7 @@ struct CompetencyView: View {
         SectionPanel {
             HStack(alignment: .top, spacing: 14) {
                 ProgressView()
-                    .tint(CheckpointTheme.teal)
+                    .tint(CheckpointTheme.accent)
                     .frame(width: 42, height: 42)
 
                 VStack(alignment: .leading, spacing: 5) {
@@ -2130,14 +2111,10 @@ struct CompetencyView: View {
                     .font(.system(size: 21, weight: .semibold))
                     .foregroundStyle(CheckpointTheme.coral)
                     .frame(width: 48, height: 48)
-                    .background(
-                        CheckpointTheme.coral.opacity(0.11),
-                        in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    )
                     .accessibilityHidden(true)
 
                 Text(store.lastQuestionGenerationFailure?.title ?? "Practice isn't ready yet")
-                    .font(.title3.bold())
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(CheckpointTheme.text)
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityFocused(
@@ -2188,14 +2165,10 @@ struct CompetencyView: View {
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(CheckpointTheme.amber)
                     .frame(width: 48, height: 48)
-                    .background(
-                        CheckpointTheme.amber.opacity(0.11),
-                        in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    )
                     .accessibilityHidden(true)
 
                 Text("Set up your skill map")
-                    .font(.title3.bold())
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(CheckpointTheme.text)
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityFocused(
@@ -2220,16 +2193,12 @@ struct CompetencyView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Image(systemName: "scope")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .frame(width: 48, height: 48)
-                    .background(
-                        CheckpointTheme.teal.opacity(0.11),
-                        in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    )
                     .accessibilityHidden(true)
 
                 Text(store.goal == nil ? "Create your first goal" : "No progress signals yet")
-                    .font(.title3.bold())
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(CheckpointTheme.text)
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityFocused(
@@ -2462,15 +2431,15 @@ struct CompetencyView: View {
     }
 
     private var heroText: Color {
-        CheckpointTheme.heroText
+        CheckpointTheme.text
     }
 
     private var heroSecondaryText: Color {
-        CheckpointTheme.heroMuted
+        CheckpointTheme.muted
     }
 
     private var heroAccent: Color {
-        CheckpointTheme.heroSuccess
+        CheckpointTheme.accent
     }
 
 }
