@@ -9,6 +9,15 @@ import time
 from typing import Any, Callable
 
 from generation_diagnostics import quality_summary, record_quality
+from native_output_contracts import (
+    Contract,
+    adapt_native_response,
+    contract_metadata,
+    ensure_supported_model,
+    native_output_config,
+    native_prompt,
+    output_mode,
+)
 from question_bank_common import (
     DEFAULT_MAX_PROVIDER_CALLS,  # noqa: F401 - re-exported by lambda_function
     MIN_VERIFIED_PASS_CALLS,
@@ -141,6 +150,7 @@ def _generate_provider_payload(
                 model_id=model_id,
                 call_budget=call_budget,
                 request_metrics=request_metrics,
+                contract="question_author_v1",
             )
         except (
             SafetyInterventionError,
@@ -168,6 +178,7 @@ def _generate_provider_payload(
                 user_prompt=_json_retry_prompt(request, raw_text),
                 call_budget=call_budget,
                 request_metrics=request_metrics,
+                contract="question_author_v1",
             )
         except (
             SafetyInterventionError,
@@ -247,6 +258,11 @@ def _generate_sanitized_questions(
                     user_prompt=prompt,
                     call_budget=call_budget,
                     request_metrics=request_metrics,
+                    contract=(
+                        "authored_solution_reviewer_v1"
+                        if feedback_contract == "authored_solution"
+                        else "default_reviewer_v1"
+                    ),
                 ),
                 request_metrics=request_metrics,
                 solve=lambda system, prompt: _generate_with_bedrock(
@@ -257,9 +273,11 @@ def _generate_sanitized_questions(
                     user_prompt=prompt,
                     call_budget=call_budget,
                     request_metrics=request_metrics,
+                    contract="complete_choice_solver_v1",
                 ),
                 solver_contract="complete_choices",
                 feedback_contract=feedback_contract,
+                preserve_reviewed_text=output_mode() == "native",
             )
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its
@@ -338,10 +356,23 @@ def _generate_with_bedrock(
     system_prompt: str | None = None,
     call_budget: ProviderCallBudget | None = None,
     request_metrics: dict[str, Any] | None = None,
+    contract: Contract | None = None,
+    *,
+    legacy_transport: bool = False,
 ) -> str:
     guardrail_config = _guardrail_config()
     prompt = user_prompt or _user_prompt(normalized_request)
     resolved_system_prompt = system_prompt or _system_prompt()
+    if legacy_transport and contract is not None:
+        raise ServiceConfigurationError("Legacy transport cannot select a native stage contract.")
+    mode = "legacy" if legacy_transport else output_mode()
+    if mode == "native":
+        if contract is None:
+            raise ServiceConfigurationError(
+                "Native structured output requires an explicit stage contract."
+            )
+        ensure_supported_model(model_id)
+        resolved_system_prompt = native_prompt(resolved_system_prompt, contract)
     inference_config = {
         "maxTokens": _int_env("BEDROCK_MAX_TOKENS", DEFAULT_MAX_TOKENS, maximum=16_384),
     }
@@ -403,6 +434,8 @@ def _generate_with_bedrock(
         request["system"] = [{"text": resolved_system_prompt}]
     if guardrail_config is not None:
         request["guardrailConfig"] = guardrail_config
+    if mode == "native":
+        request["outputConfig"] = native_output_config(contract)
 
     client = (
         bedrock_client
@@ -425,6 +458,18 @@ def _generate_with_bedrock(
         response = client.converse(**request)
     except Exception as error:
         record_quality(request_metrics, "provider", "request_failed")
+        if mode == "native":
+            from botocore.exceptions import ClientError, ParamValidationError
+
+            if isinstance(error, ParamValidationError) or (
+                isinstance(error, ClientError)
+                and error.response.get("Error", {}).get("Code") == "ValidationException"
+            ):
+                record_quality(request_metrics, "provider", "native_request_invalid")
+                raise ServiceConfigurationError(
+                    "Bedrock rejected the native request; qualify the configured model, "
+                    "schema and packaged SDK before enabling native mode."
+                ) from error
         raise ProviderError("Bedrock invocation failed.") from error
     content = response.get("output", {}).get("message", {}).get("content", [])
     if request_metrics is not None:
@@ -445,6 +490,10 @@ def _generate_with_bedrock(
                 "stopReason": response.get("stopReason"),
                 "elapsedSeconds": round(time.monotonic() - call_started, 3),
                 "usage": response.get("usage", {}),
+                "structuredOutput": {
+                    "mode": mode,
+                    **(contract_metadata(contract) if contract else {}),
+                },
             }
         )
         usage = response.get("usage", {})
@@ -459,6 +508,11 @@ def _generate_with_bedrock(
     if response.get("stopReason") == "max_tokens":
         record_quality(request_metrics, "provider", "output_truncated")
         raise ProviderError("Bedrock output exhausted its token budget.")
+    if mode == "native" and response.get("stopReason") not in {
+        "end_turn", "stop_sequence"
+    }:
+        record_quality(request_metrics, "provider", "native_incomplete")
+        raise ProviderError("Bedrock native output did not complete normally.")
 
     text_parts = []
     for block in content:
@@ -471,7 +525,18 @@ def _generate_with_bedrock(
         record_quality(request_metrics, "provider", "empty_output")
         raise ProviderError("Bedrock returned an empty response.")
 
+    if mode == "native":
+        try:
+            return adapt_native_response(text, contract)
+        except ProviderError:
+            record_quality(request_metrics, "provider", "native_contract_invalid")
+            raise
     return text
+
+
+def _generate_legacy_with_bedrock(*args: Any, **kwargs: Any) -> str:
+    """Keep frozen evaluation contracts independent of the runtime rollout flag."""
+    return _generate_with_bedrock(*args, **kwargs, legacy_transport=True)
 
 
 def _uses_inline_instructions(model_id: str) -> bool:

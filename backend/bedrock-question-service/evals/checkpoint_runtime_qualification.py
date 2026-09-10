@@ -89,13 +89,13 @@ def _first_request(request, questions=None, *, settings=None):
             raise _RequestCaptured()
 
     def invoke(system, user):
-        return generation._generate_with_bedrock(
+        return generation._generate_legacy_with_bedrock(
             request, Client(), generation._verification_model_id(), user, system,
         )
 
     try:
         if questions is None:
-            generation._generate_with_bedrock(request, Client(), settings["BEDROCK_MODEL_ID"])
+            generation._generate_legacy_with_bedrock(request, Client(), settings["BEDROCK_MODEL_ID"])
         else:
             verify_questions(copy.deepcopy(questions), request, invoke, solve=invoke,
                              solver_contract="complete_choices")
@@ -164,7 +164,7 @@ def make_plan(packet, *, source_revision=None):
         if type(payload.get("targetCount")) is not int or payload["targetCount"] != 5:
             raise ValueError("Both operations must request five questions.")
     snapshot = _source_snapshot(source_revision)
-    with patch.dict(os.environ, SETTINGS):
+    with patch.dict(os.environ, {**SETTINGS, "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy"}):
         fixed_request = _normalize_request(copy.deepcopy(fixed["request"]))
         fresh_request = _normalize_request(copy.deepcopy(fresh["payload"]))
         questions = [copy.deepcopy(case["question"]) for case in cases]
@@ -233,7 +233,7 @@ def _make_authored_plan(packet, *, source_revision):
                 or any(not _same(constraints.get(k), v) for k, v in expected.items())):
             raise ValueError("Declared fixture limits must match the fixed execution contract.")
     operations = []
-    with patch.dict(os.environ, settings):
+    with patch.dict(os.environ, {**settings, "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy"}):
         for case in cases:
             payload = case.get("payload")
             if (type(payload) is not dict or type(payload.get("targetCount")) is not int
@@ -284,7 +284,7 @@ def _make_author_comparison_plan(packet, *, source_revision):
             if focused and not _same({k: v for k, v in settings.items() if k != profile_key},
                                      {k: v for k, v in base["settings"].items() if k != profile_key}):
                 raise ValueError("Focused author profiles may differ only in prompt variant.")
-            with patch.dict(os.environ, settings):
+            with patch.dict(os.environ, {**settings, "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy"}):
                 first = _first_request(job["request"], settings=settings)
             if not _same({k: v for k, v in first.items() if k != request_key},
                          {k: v for k, v in job["first_request"].items() if k != request_key}):
@@ -326,7 +326,7 @@ def _make_recheck_plan(packet, *, source_revision):
     if runtime != {k: v for k, v in prior["source_sha256"].items() if not k.startswith("evals/")}:
         raise ValueError("Runtime sources changed since the original capture.")
     settings = {**SETTINGS, "BEDROCK_THINKING_MAX_TOKENS": "6000"}
-    with patch.dict(os.environ, settings):
+    with patch.dict(os.environ, {**settings, "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy"}):
         # Normalize the original user payload, never the already normalized object.
         request = _normalize_request(copy.deepcopy(prior["fixture"]["fresh"]["payload"]))
         if not _same(request, prior["operations"][1]["request"]):
@@ -343,7 +343,7 @@ def _make_recheck_plan(packet, *, source_revision):
     operations = []
     for mode in ("disabled", "adaptive"):
         profile = {**settings, "BEDROCK_CLAUDE_THINKING": mode}
-        with patch.dict(os.environ, profile):
+        with patch.dict(os.environ, {**profile, "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy"}):
             initial = _first_request(request, questions, settings=profile)
         if any(not _same(initial[k], first[k]) for k in ("modelId", "system", "messages")):
             raise ValueError("The two arms must preserve identical solver subject input.")
@@ -573,7 +573,7 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
     client = _RuntimeClient(report, persist, observer, cli_credentials, replay and replay["calls"])
     for index, job in enumerate(plan["operations"]):
         settings = job.get("settings", plan["settings"])
-        with patch.dict(os.environ, settings), patch.object(caller, "SETTINGS", copy.deepcopy(settings)):
+        with patch.dict(os.environ, {**settings, "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy"}), patch.object(caller, "SETTINGS", copy.deepcopy(settings)):
             result = report["operations"][index]
             result["status"] = "running"
             context = _OperationContext(result, None if replay is None else replay["operations"][index]["remaining_milliseconds"])
@@ -587,7 +587,7 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
                 request = copy.deepcopy(job["request"])
                 if job["kind"] == "fixed":
                     def invoke(system, user):
-                        return generation._generate_with_bedrock(
+                        return generation._generate_legacy_with_bedrock(
                             request, client, generation._verification_model_id(), user, system,
                             budget, metrics,
                         )

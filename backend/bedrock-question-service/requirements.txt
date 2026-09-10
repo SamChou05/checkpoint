@@ -1,0 +1,4 @@
+# Package the SDK instead of relying on Lambda's preinstalled version. This
+# release models Bedrock Converse outputConfig.textFormat.
+boto3==1.43.91
+botocore==1.43.91

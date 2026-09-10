@@ -38,7 +38,7 @@ from evals.checkpoint_prompt_ablation import (  # noqa: E402
 )
 from question_generation import (  # noqa: E402
     ProviderCallBudget,
-    _generate_with_bedrock,
+    _generate_legacy_with_bedrock as _generate_with_bedrock,
     _system_prompt,
     _user_prompt,
 )

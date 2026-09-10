@@ -21,7 +21,7 @@ sys.path.insert(0, str(SERVICE_DIR))
 from question_generation import (  # noqa: E402
     ProviderCallBudget,
     _generate_sanitized_questions,
-    _generate_with_bedrock,
+    _generate_legacy_with_bedrock as _generate_with_bedrock,
     _model_attempts,
     _new_provider_call_budget,
     _question_coverage_payload,

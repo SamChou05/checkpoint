@@ -26,7 +26,7 @@ sys.path.insert(0, str(SERVICE_DIR))
 
 from question_generation import (  # noqa: E402
     ProviderCallBudget,
-    _generate_with_bedrock,
+    _generate_legacy_with_bedrock as _generate_with_bedrock,
     _provider_visible_request,
     _system_prompt,
     _user_prompt,

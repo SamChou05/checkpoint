@@ -17,7 +17,10 @@ from unittest.mock import patch
 SERVICE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SERVICE_DIR))
 
-from question_generation import ProviderCallBudget, _generate_with_bedrock  # noqa: E402
+from question_generation import (  # noqa: E402
+    ProviderCallBudget,
+    _generate_legacy_with_bedrock as _generate_with_bedrock,
+)
 from question_quality import _extract_json_object  # noqa: E402
 from question_verification import (  # noqa: E402
     REVIEW_SYSTEM_PROMPT,
