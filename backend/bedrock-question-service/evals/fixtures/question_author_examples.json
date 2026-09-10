@@ -1,0 +1,140 @@
+{
+  "experiment": "fresh-author-checked-examples-v1",
+  "prepared_date": "2026-09-09",
+  "input_contract": "Only cases[].payload supplies each transfer goal and source context. Each pair receives identical payload content. Demonstrations are separate experiment material; assessment_scope and this envelope are not author input. Supplied sources are selective assistant-written summaries, not acquired page records.",
+  "demonstrations": [
+    {
+      "id": "parcel_constraints",
+      "subject_context": "Fictional depot rules are supplied in full by the question. A complete assignment must respect capacity, parcel handling requirements, and the number of parcels each van can carry.",
+      "question": {
+        "prompt": "Ship parcels A (fragile, 6 kg) and B (ordinary, 7 kg). Each van makes one trip with at most one intact parcel. Fragile parcels need padding. Vans: P is padded, limit 4 kg; L is unpadded, limit 12 kg; Q is padded, limit 8 kg. Which assignment meets every rule?",
+        "choices": [
+          "A in P; B in L",
+          "A in L; B in Q",
+          "A in Q; B in L",
+          "A in Q; B in Q"
+        ],
+        "expectedAnswer": "A in Q; B in L",
+        "explanation": "A needs padding and 6 kg capacity, ruling out P and L, so A must use Q. B fits L's 12 kg limit and needs no padding. Reusing Q for B violates the one-parcel-per-van rule, even though Q could carry either parcel separately.",
+        "topic": "Combining routing constraints",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "experimental_confounding",
+      "subject_context": "Controlled-experiment reasoning. If two treatments always change together, that comparison alone does not separate their individual effects. Random assignment does not separate treatments bundled within the assigned groups.",
+      "question": {
+        "prompt": "Seedlings are randomly assigned to two groups. One receives fertilizer and 8 hours of light daily; the other receives no fertilizer and 4 hours of light. The first grows more on average. Which treatment change was responsible for this growth difference?",
+        "choices": [
+          "Fertilizer alone.",
+          "Longer lighting alone.",
+          "Both changes were necessary.",
+          "Cannot be determined from the information given."
+        ],
+        "expectedAnswer": "Cannot be determined from the information given.",
+        "explanation": "Fertilizer and light duration change together, so this comparison cannot isolate either effect or show both were necessary. Random assignment helps balance prior differences; it does not unbundle the treatments. Comparing groups where these factors vary separately would help distinguish their effects.",
+        "topic": "Interpreting experimental evidence",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "reference_preserving_revision",
+      "subject_context": "English reporting and reference. Interpret the sender and addressee of a message, preserve stated actions, and avoid inferring ownership merely from possession or lending.",
+      "question": {
+        "prompt": "Email from Maya to Lena: 'Thank you for lending me the notes.' Which standalone report preserves the message's roles and avoids adding facts about who owns the notes?",
+        "choices": [
+          "Maya thanked Lena for lending the notes.",
+          "Maya thanked Lena for lending notes that Lena owns.",
+          "Lena thanked Maya for lending the notes.",
+          "Maya thanked Lena for returning the notes."
+        ],
+        "expectedAnswer": "Maya thanked Lena for lending the notes.",
+        "explanation": "Maya wrote the message to Lena, so Maya gives the thanks and Lena lent the notes. Lending does not establish ownership, so claiming Lena owns them adds a fact. Swapping the names reverses the roles; returning asserts an action the message does not establish.",
+        "topic": "Preserving meaning while clarifying reference",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "excel_reference_copy_constraints",
+      "payload": {
+        "goal": {
+          "title": "Build Excel formulas that copy correctly across a worksheet",
+          "category": "Spreadsheets",
+          "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+          "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+          "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Microsoft Excel reference rules: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+            "truncated": true
+          }
+        ]
+      },
+      "assessment_scope": "Level 3 requires applying anchors to interacting input requirements or diagnosing the effects of a copy involving several reference components; naming a reference type alone is insufficient. Derive row and column displacements independently for each reference. Check the entire required destination range, not only the first cell. Distinguish copying a formula cell from moving cells or pasting formula text. Do not invent unseen cell values or treat accidental equality of values as equivalent reference behavior."
+    },
+    {
+      "case_id": "map_scale_distance_resizing",
+      "payload": {
+        "goal": {
+          "title": "Interpret map distances and scale after resizing",
+          "category": "Geography",
+          "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+          "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+          "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Ordnance Survey map distance: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+            "truncated": true
+          },
+          {
+            "name": "Penn State map reproduction: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+            "truncated": true
+          }
+        ]
+      },
+      "assessment_scope": "Level 3 requires combining measurement meaning, units and reproduction conditions or reconciling two representations; one direct scale multiplication is insufficient. Identify which copy and which path each measurement concerns. A bar is reliable after reproduction only when map and bar share the relevant scaling. Separate linear percentages from area percentages. Do not infer terrain-following walking distance from plan distance. The goal explicitly idealizes local scale as uniform; no unseen diagram or projection calculation is required."
+    },
+    {
+      "case_id": "food_web_energy_constraints",
+      "payload": {
+        "goal": {
+          "title": "Reason about energy flow through food webs",
+          "category": "Ecology",
+          "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+          "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+          "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "OpenStax food-web structure: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+            "truncated": true
+          },
+          {
+            "name": "OpenStax trophic production: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+            "truncated": true
+          }
+        ]
+      },
+      "assessment_scope": "Level 3 requires integrating feeding paths, the meaning of production or more than one transfer constraint; identifying a producer or performing one percentage multiplication is insufficient. Check every stated allocation and transfer denominator, with consistent area/time units. Do not apply a whole-level efficiency independently to overlapping branches and double-count energy. Require explicit assumptions for quantitative disturbance effects, a universal ten-percent transfer or a fixed species trophic position. A biomass snapshot alone cannot supply production rates."
+    }
+  ],
+  "assessment_contract": "Assess every raw item for complete premises, exactly one warranted answer, three distinct plausible distractors, a wholly supported worked main explanation, goal fit and actual difficulty at least 3. Preserve missing, malformed, duplicate, too-easy and incorrect candidates in requested-slot accounting. The exact transfer packets are fresh; broad subject areas are not claimed previously unseen. The small selected comparison cannot establish arbitrary-subject accuracy or learning gains."
+}

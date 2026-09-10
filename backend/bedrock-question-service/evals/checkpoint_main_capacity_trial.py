@@ -128,17 +128,18 @@ def make_plan(packet, *, source_revision=None):
     }
 
 
-def load_plan(path, approved_hash):
+def load_plan(path, approved_hash, *, plan_builder=make_plan):
     plan = json.loads(Path(path).read_text())
     if _hash(plan) != approved_hash or not _same(
-        plan, make_plan(plan["fixture"], source_revision=plan.get("source_revision"))
+        plan, plan_builder(plan["fixture"], source_revision=plan.get("source_revision"))
     ):
         raise ValueError("Exact frozen source, fixture, requests, settings and dependencies required.")
     return plan
 
 
-def run(plan, directory, *, cli_credentials=False, transport=caller.observe_request):
-    if not _same(plan, make_plan(plan["fixture"], source_revision=plan.get("source_revision"))):
+def run(plan, directory, *, cli_credentials=False, transport=caller.observe_request,
+        plan_builder=make_plan):
+    if not _same(plan, plan_builder(plan["fixture"], source_revision=plan.get("source_revision"))):
         raise ValueError("Plan no longer matches current sources.")
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
@@ -181,7 +182,7 @@ def run(plan, directory, *, cli_credentials=False, transport=caller.observe_requ
     return report
 
 
-def replay_capture(report):
+def replay_capture(report, *, plan_builder=make_plan):
     """Replay terminal captures through the same runner with no provider client."""
     if (
         type(report) is not dict or report.get("status") not in {"completed", "operational_failure"}
@@ -200,7 +201,8 @@ def replay_capture(report):
         return copy.deepcopy(call["observation"])
 
     with tempfile.TemporaryDirectory() as directory:
-        derived = run(report["plan"], Path(directory) / "replay", transport=transport)
+        derived = run(report["plan"], Path(directory) / "replay", transport=transport,
+                      plan_builder=plan_builder)
     if not _same(derived, report):
         raise ValueError("Replay differs; incomplete persistence captures cannot be promoted.")
     return derived
