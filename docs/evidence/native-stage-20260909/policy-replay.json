@@ -1,0 +1,1137 @@
+{
+  "scope": "Offline actual production-policy replay. Original historical author/solver outputs and exact replayed operation prefixes, followed by fresh native reviewer records. Not a fresh full native pipeline or production delivery. All returned questions and verification fields are local simulated audit outputs only; no storage or model calls.",
+  "source": {
+    "source_revision": "751bdaa3405d1c358103af51093018364365947e",
+    "source_sha256": {
+      "complete_question_solution.py": "72bb99b3efeab3cbe2d87526009045c205b6ac588d5c749f21937442db12e188",
+      "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "generation_diagnostics.py": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227",
+      "lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+      "native_output_contracts.py": "d43c0e223be0eb80a1ace46cb3373eff22a967a5970510a4f7b6aa8890802037",
+      "question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+      "question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+      "question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+      "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "question_generation.py": "b6ba12f9e384027a47513164ae7ddfec0e5eb9442cd41fbfff90608516b3f92f",
+      "question_quality.py": "764497658989ecc9430cc80757cdb5b9b28010a369b38062bbe2672bfc73eab1",
+      "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+      "question_verification.py": "76956ad8987d39b35738e9ba37d1c89bb72e5d8f06418030138c9dc63a529886",
+      "request_contract.py": "fac35010e0560b9c040b171c9e51257c9ec7196d5092dfa88b6a89699e85ea38",
+      "service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+      "smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+      "source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+      "verification_policy.py": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+      "web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+      "evals/acquired_source_review.py": "2471382ff68841e6bc76d736d1d9ff65970f218f7916c976a6b73803807b0715",
+      "evals/checkpoint_acquired_source_trial.py": "e7313e7b6a3967d06c2ca7a136282d94506e3335ca94afcd0d4c020aa0dc8905",
+      "evals/checkpoint_artifact_authoring_eval.py": "61e3597238f4ce2578f45ff5da152136135660702a4aafa972242db1526979c5",
+      "evals/checkpoint_artifact_observation_eval.py": "e430245004940e8e9ff80ef6d53f685259a83dfe25f10cc0fc44d68b2420afb0",
+      "evals/checkpoint_author_examples_trial.py": "2577bb09f3e1accc3a9e249a3816679d60a4f8a30a551048d25e7782607b089e",
+      "evals/checkpoint_author_latency_probe.py": "089713524f6236df8c58e3d97c927cb5ef518230bfbc4ef8f27374d87847fe9a",
+      "evals/checkpoint_author_schema_eval.py": "90470057415c4878f662381c7ad98f193148ee2cb86e7f7a183ca48fe003a482",
+      "evals/checkpoint_claim_evidence_trial.py": "b662963170f458783ea52336e4fd69c5490ff6fdb692cf0ab8c12d53db063d74",
+      "evals/checkpoint_complete_authoring_eval.py": "4c52d755193ac54e21213bb78fb9ab9f6ff7a508817e2441536137e90665d33e",
+      "evals/checkpoint_complete_solver_eval.py": "bd9699bd025f9db2fc4ac93c96e63ae1ff3632f7c7f9aa146563a78ef8b91abe",
+      "evals/checkpoint_delivery_check.py": "11037de14ada23f871ee9200f2765242d823ef9797ff2f27b359350866238697",
+      "evals/checkpoint_evidence_choice_audit.py": "c12262542fc556d9add4fb004ae6053bb775d2cc8102bb79a0b373e7ae6995bf",
+      "evals/checkpoint_evidence_eval.py": "e02594f784bf6fa0f0d8d186fd90014fb0db68322478f25b593f5250662fe904",
+      "evals/checkpoint_execution_evidence_eval.py": "55c19ebc0d4d5c338a7361f494d7ad2c66d71846b8a8fa65bb2aa8e5f3805c51",
+      "evals/checkpoint_full_pipeline_smoke.py": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+      "evals/checkpoint_immutable_review_eval.py": "0303e2120097b1b5ecd47bee4da64ee6147532814353cf38e38ec45e695994b9",
+      "evals/checkpoint_isolated_candidate_eval.py": "0ccb1cb0512efdea58846daa08fcce430e9f4a57f414fcb6bd73d807ced86756",
+      "evals/checkpoint_learning_eval.py": "452e9cab86d7f35aa3c3b9d7a60a777d32b64e4b3ff1fc2fc6c70b8a745638df",
+      "evals/checkpoint_main_capacity_trial.py": "ded8bc2c2a00872e5007dc511abd3ff206e339c6f30627c75f6fbbc7d251cd69",
+      "evals/checkpoint_model_comparison.py": "b4fe8ea3f76f64ff6cdec58acab3aaf8d37c0b4a4ea2008e2f26fcdf3413b564",
+      "evals/checkpoint_native_stage_probe.py": "9fcd84511488bb4e97feb801b88144d877e54a80ff84e3b35a0a05c89409cedf",
+      "evals/checkpoint_prompt_ablation.py": "8f252c95f9a6c21ca41128ca2d48d661ab462ee0057bdf7e83a7a3092ce31714",
+      "evals/checkpoint_question_eval.py": "f11311dc65a43a8d96f4b0fa204d73f0bb1e200379fd6db5f599e452a46a88c2",
+      "evals/checkpoint_runtime_qualification.py": "11a31d95f8be7b2b49f25d6b127070ab081a1c827663954fb59a24cd21332554",
+      "evals/checkpoint_solution_compatibility_eval.py": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+      "evals/checkpoint_solution_construction_eval.py": "6609e43ebffede8365b2d008e44daae6eb723ff43ea48e11ee139f0bd3dcf38b",
+      "evals/checkpoint_source_authoring_eval.py": "fd31a7a9862ef86eb35bc75da5f48cf17d934c3e9593694c68367606d95a92c1",
+      "evals/checkpoint_source_capture.py": "cf31bbd234f91b6dc7756ed3bba22dffd2aff018b5fd65bd7d53b81aefdb3f44",
+      "evals/checkpoint_stem_length_eval.py": "fbd81995999347dfad54798c019bec461cb35c2568d69598d4a98c7ade881d22",
+      "evals/claim_evidence_review.py": "86359b73d4f90725b31fdb48b7f1703449854c4af45d1fff9b74de4c4c32725f",
+      "evals/claim_evidence_schema.py": "a226df963b7bc9108188113ec22fda0a1ce9ced76503f5d730a04e73f5211811",
+      "evals/grounding_transport.py": "3d69d039b085cb80251c61e929e624a9969919dff3aaadb754c84325feab6b76",
+      "evals/html_artifact_question.py": "3bd0973a2a6ee6877f8474541c6c5bd2f505b67cee28893f4d4db37206e16e68",
+      "evals/observe_html_artifact.py": "f410ccba2819dcf6fbb18c19268a9371edc7a22ffceb8dc145fb40af80f8a9f2",
+      "evals/python_artifact_question.py": "6edd8ceddfb4188824f5bc9d842c464c7674180271b5c99575deb7155e079988",
+      "evals/question_complete_author.py": "6c8f4fa70e0fceac58ea620c14814702872c8d4c3ac99db57cb1047a4f88ec86",
+      "evals/question_complete_solver.py": "979143ace69739c7cf09e0534029d0ec8272fd826b57abf0829bbf2625c38e1e",
+      "evals/question_eval_scoring.py": "7126aa7a08efac527643a791e4cbd2a6e9806982cdace036645567a6153a6dd1",
+      "evals/question_immutable_review.py": "38b4405673655d624820623e0b6335c3538ae33421b6e3abf954a0b49b5cc91f",
+      "evals/question_solution_construction.py": "31592bd38d744cd096680786787d5aa6e1ac58690023d97827eec8848a4ab771",
+      "evals/split_evidence_review.py": "1106ba6769fbd9d92ff28ba73f951b2f90558c153d53ccec342692b67c4cda58",
+      "evals/task_obstruction_review.py": "24f8497e0960af1e8b749d31dd83a8977ed8a8c5d31eda494a399ff821615cd8",
+      "requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67"
+    },
+    "dependencies": {
+      "python": "3.12.11",
+      "boto3": "1.43.91",
+      "botocore": "1.43.91"
+    }
+  },
+  "helper_path": "/tmp/checkpoint-replay-native-review-20260909.py",
+  "helper_byte_sha256": "4ebb12b19c293e54d744c133ad217c208b71a72ba6a91a6b62248c4a66c42e16",
+  "native_capture": {
+    "path": "/tmp/checkpoint-native-stage-live-20260909/capture.json",
+    "byte_sha256": "8b8e0f887021f980ff292b7c69a6b5409ac6088316ecc6bda8f3fbd510b3c913",
+    "canonical_sha256": "a3b2d9a013a8ab977dde282d2dd59b3af6f7aa0d4726267fa90c0bc8bf7725c0"
+  },
+  "original_capture": {
+    "path": "/private/tmp/checkpoint-native-qualification-20260909/docs/evidence/delivery-feedback-20260909/capture.json",
+    "byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+    "canonical_sha256": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2"
+  },
+  "reconstructions": {
+    "5": {
+      "candidates": [
+        {
+          "prompt": "A gradebook has student names in A2:A20 and assignment scores in B2:F20. Cell G2 calculates the average of B2:F2. The formula must fill down to G20. Which formula in G2 works correctly?",
+          "expectedAnswer": "=AVERAGE(B2:F2)",
+          "choices": [
+            "=AVERAGE(B2:F2)",
+            "=AVERAGE($B$2:$F$2)",
+            "=AVERAGE(B$2:F$2)",
+            "=AVERAGE($B2:$F2)"
+          ],
+          "explanation": "The range B2:F2 uses relative references so it shifts to B3:F3, B4:F4, etc. when filled down. Absolute references ($B$2:$F$2) would keep the same range for every student, and mixed references would cause errors.",
+          "topic": "Combine relative, absolute and mixed A1 referenc",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+          "expectedAnswer": "=$A$1*B$1*$A3",
+          "choices": [
+            "=$A$1*B$1*$A3",
+            "=$A$1*$B$1*A3",
+            "=$A1*B$1*$A3",
+            "=$A$1*B1*$A$3"
+          ],
+          "explanation": "$A$1 stays fixed for all cells. B$1 locks the row so it becomes C$1, D$1, E$1 when filled across but stays row 1 when filled down. A3 needs its column locked ($A3) so it stays column A when filled across, but the row stays relative to become A4, A5, A6 when filled down.",
+          "topic": "Combine relative, absolute and mixed A1 referenc",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      ],
+      "request": {
+        "goal": {
+          "title": "Build Excel formulas that copy correctly across a worksheet",
+          "category": "Spreadsheets",
+          "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+          "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+          "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+          "contentTopics": [
+            "Combine relative",
+            "absolute and mixed A1 references when copying or filling formulas across both ro"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [
+          "Cell C3 contains =$B$3+C$2. This is filled right to E3, then that result is filled down to E5. What formula is in E5?",
+          "A price matrix has regions in A2:A6 and products in B1:F1. Cell B2 should calculate price with =B$1*$A2. The user accidentally enters =B1*A2 and fills to F6. Which cells show correct results?",
+          "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+          "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+          "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?"
+        ],
+        "existingQuestionCoverage": [
+          {
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "prompt": "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+            "expectedAnswer": "=$A4*D$1",
+            "choices": [
+              "=$A4*D$1",
+              "=$A2*D$1",
+              "=$A4*B$1",
+              "=A4*D1"
+            ],
+            "difficulty": 3
+          },
+          {
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+            "expectedAnswer": "=$A2*B$1",
+            "choices": [
+              "=$A2*B$1",
+              "=A$2*$B1",
+              "=$A$2*B$1",
+              "=A2*B1"
+            ],
+            "difficulty": 3
+          },
+          {
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+            "expectedAnswer": "=$N2/12",
+            "choices": [
+              "=$N2/12",
+              "=N$2/12",
+              "=$N$2/12",
+              "=N2/12"
+            ],
+            "difficulty": 3
+          }
+        ],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [
+          {
+            "name": "Microsoft Excel reference rules: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+            "truncated": true
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": [],
+        "previousAttemptFeedback": {
+          "review": {
+            "solver_zero_supported": 2
+          }
+        }
+      },
+      "candidate_provenance": [
+        {
+          "candidate_index": 0,
+          "candidate": {
+            "prompt": "A gradebook has student names in A2:A20 and assignment scores in B2:F20. Cell G2 calculates the average of B2:F2. The formula must fill down to G20. Which formula in G2 works correctly?",
+            "expectedAnswer": "=AVERAGE(B2:F2)",
+            "choices": [
+              "=AVERAGE(B2:F2)",
+              "=AVERAGE($B$2:$F$2)",
+              "=AVERAGE(B$2:F$2)",
+              "=AVERAGE($B2:$F2)"
+            ],
+            "explanation": "The range B2:F2 uses relative references so it shifts to B3:F3, B4:F4, etc. when filled down. Absolute references ($B$2:$F$2) would keep the same range for every student, and mixed references would cause errors.",
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "author_call_index": 3,
+          "author_response_item_index": 0,
+          "raw_authored_question": {
+            "prompt": "A gradebook has student names in A2:A20 and assignment scores in B2:F20. Cell G2 calculates the average of B2:F2. The formula must fill down to G20. Which formula in G2 works correctly?",
+            "explanation": "The range B2:F2 uses relative references so it shifts to B3:F3, B4:F4, etc. when filled down. Absolute references ($B$2:$F$2) would keep the same range for every student, and mixed references would cause errors.",
+            "expectedAnswer": "=AVERAGE(B2:F2)",
+            "choices": [
+              "=AVERAGE(B2:F2)",
+              "=AVERAGE($B$2:$F$2)",
+              "=AVERAGE(B$2:F$2)",
+              "=AVERAGE($B2:$F2)"
+            ],
+            "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+            "skillID": "Combine relative",
+            "objectiveID": "absolute and mixed A1 references when copying or filling formulas across both ro",
+            "objective": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "exact_prompt_choices_and_key_match": true,
+          "exact_authored_explanation_match": true,
+          "original_solver_record": {
+            "index": 0,
+            "choices": [
+              {
+                "choice": "=AVERAGE(B$2:F$2)",
+                "judgment": "refuted",
+                "reason": "The row numbers are fixed at 2 with $. When filled down to G3, the formula still references B2:F2 instead of B3:F3, so each row would average row 2's scores rather than its own row."
+              },
+              {
+                "choice": "=AVERAGE($B2:$F2)",
+                "judgment": "supported",
+                "reason": "Columns B and F are fixed with $ so the range stays in columns B–F regardless of copy direction. Row numbers are relative, so filling down from G2 to G3 adjusts to $B3:$F3, correctly averaging each student's own row. Filling across is not required here."
+              },
+              {
+                "choice": "=AVERAGE(B2:F2)",
+                "judgment": "supported",
+                "reason": "Both row and column are relative. Filling down from G2 to G3 shifts the reference to B3:F3, correctly averaging each row's scores. Since the formula only fills down (not across), the column adjustment doesn't cause errors."
+              },
+              {
+                "choice": "=AVERAGE($B$2:$F$2)",
+                "judgment": "refuted",
+                "reason": "Both row and column are fully fixed. Every cell G2:G20 would average the same range B2:F2, giving every student the same (row-2) average instead of their own scores."
+              }
+            ]
+          },
+          "original_solver_gate_rejection": "solver_multiple_supported"
+        },
+        {
+          "candidate_index": 1,
+          "candidate": {
+            "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+            "expectedAnswer": "=$A$1*B$1*$A3",
+            "choices": [
+              "=$A$1*B$1*$A3",
+              "=$A$1*$B$1*A3",
+              "=$A1*B$1*$A3",
+              "=$A$1*B1*$A$3"
+            ],
+            "explanation": "$A$1 stays fixed for all cells. B$1 locks the row so it becomes C$1, D$1, E$1 when filled across but stays row 1 when filled down. A3 needs its column locked ($A3) so it stays column A when filled across, but the row stays relative to become A4, A5, A6 when filled down.",
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "author_call_index": 3,
+          "author_response_item_index": 1,
+          "raw_authored_question": {
+            "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+            "explanation": "$A$1 stays fixed for all cells. B$1 locks the row so it becomes C$1, D$1, E$1 when filled across but stays row 1 when filled down. A3 needs its column locked ($A3) so it stays column A when filled across, but the row stays relative to become A4, A5, A6 when filled down.",
+            "expectedAnswer": "=$A$1*B$1*$A3",
+            "choices": [
+              "=$A$1*B$1*$A3",
+              "=$A$1*$B$1*A3",
+              "=$A1*B$1*$A3",
+              "=$A$1*B1*$A$3"
+            ],
+            "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+            "skillID": "Combine relative",
+            "objectiveID": "absolute and mixed A1 references when copying or filling formulas across both ro",
+            "objective": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "exact_prompt_choices_and_key_match": true,
+          "exact_authored_explanation_match": true,
+          "original_solver_record": {
+            "index": 1,
+            "choices": [
+              {
+                "choice": "=$A1*B$1*$A3",
+                "judgment": "refuted",
+                "reason": "$A1 fixes column A but leaves row relative; copying down shifts it correctly, but copying right also keeps column A—OK. However B$1 fixes row 1 but leaves column relative—copying right shifts to C$1, D$1, etc., which would reference regional targets in C1, D1… not the stated regional target in $B$1. Also $A3 is correct for the quarter factor. But the regional target anchor is wrong per the stated requirement of $B$1."
+              },
+              {
+                "choice": "=$A$1*B1*$A$3",
+                "judgment": "refuted",
+                "reason": "$A$1 is the quarter factor (fully fixed—OK). B1 is fully relative; copying right shifts column (B1→C1) and copying down shifts row (B1→B2), so it doesn't stay locked to row 1 for the regional target. $A$3 fully fixes the quarter factor cell, so copying down won't pick up Q2–Q4. Multiple anchors are wrong."
+              },
+              {
+                "choice": "=$A$1*B$1*$A3",
+                "judgment": "supported",
+                "reason": "$A$1 is fully fixed (the quarter factor constant in A1—correct). B$1 fixes row 1 but leaves column relative, so copying right moves to C$1, D$1, E$1 picking up each region's target—correct. $A3 fixes column A but leaves row relative, so copying down moves to $A4, $A5, $A6 picking up each quarter factor—correct. All three relationships are preserved."
+              },
+              {
+                "choice": "=$A$1*$B$1*A3",
+                "judgment": "refuted",
+                "reason": "$A$1 and $B$1 are both fully fixed, so the regional target never changes when copying right—every column uses B1's value instead of the respective region's target. A3 is fully relative, so copying right would shift the column away from A, referencing B3, C3, etc. instead of staying in column A for quarter factors."
+              }
+            ]
+          },
+          "original_solver_gate_rejection": null
+        }
+      ],
+      "historical_prefix_request_matches": [
+        {
+          "archived_call_index": 0,
+          "request_sha256": "c4c34061949a53421f7708667696a64028158061c3a843873f6885a7371899b2",
+          "exact_request_match": true
+        },
+        {
+          "archived_call_index": 1,
+          "request_sha256": "29ca690f76eb1f968305052f9b227c85144d5bff8744b79d21d22b28dcbaa9fc",
+          "exact_request_match": true
+        },
+        {
+          "archived_call_index": 2,
+          "request_sha256": "6ceec17b0f2bb49b73e6307b782c647d8f2b4e2900c672e3ecf0a3d88573a70e",
+          "exact_request_match": true
+        },
+        {
+          "archived_call_index": 3,
+          "request_sha256": "8c0a1866da88eb5ff137d2ae103f7784d11ca4de75f48bc5c394978797a1af5c",
+          "exact_request_match": true
+        },
+        {
+          "archived_call_index": 4,
+          "request_sha256": "795d91e8848c5342993d806353974e9ddd7f8c203fff8cd92b89d673d1290947",
+          "exact_request_match": true
+        },
+        {
+          "archived_call_index": 5,
+          "request_sha256": "3387595e0efa7f7da4c9af1a4119256a90b8875d71f030140c668dc2b3ee3e0f",
+          "exact_request_match": true
+        }
+      ],
+      "historical_prefix_metrics_before_target_response": {
+        "sanitize": {
+          "accepted": 7
+        },
+        "review": {
+          "solver_zero_supported": 2,
+          "accepted": 3,
+          "solver_multiple_supported": 1
+        }
+      },
+      "original_solver_call_index": 4,
+      "original_reviewer_call_index": 5,
+      "operation_index": 0,
+      "feedback_contract": "reviewer_written"
+    },
+    "28": {
+      "candidates": [
+        {
+          "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+          "expectedAnswer": "160 kJ/m²/year",
+          "choices": [
+            "160 kJ/m²/year",
+            "400 kJ/m²/year",
+            "800 kJ/m²/year",
+            "2,000 kJ/m²/year"
+          ],
+          "explanation": "Zooplankton receive 10,000 × 0.20 = 2,000 kJ/m²/year. Shrimp receive 2,000 kJ/m²/year. Small fish have two prey: zooplankton (2,000 × 0.20 = 400) and shrimp (2,000 × 0.20 = 400), totaling 800 kJ/m²/year. Large fish receive 800 × 0.20 = 160 kJ/m²/year.",
+          "topic": "Combine explicitly described feeding links",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+          "expectedAnswer": "625 kJ/m²/year",
+          "choices": [
+            "625 kJ/m²/year",
+            "1,250 kJ/m²/year",
+            "2,500 kJ/m²/year",
+            "12,500 kJ/m²/year"
+          ],
+          "explanation": "Production, not biomass, determines energy flow. Minnow production = 10,000 × 0.25 = 2,500 kJ/m²/year. Pike production = 2,500 × 0.25 = 625 kJ/m²/year. The biomass pyramid is upright, but this does not affect the calculation; an inverted biomass pyramid would yield the same production-based answer.",
+          "topic": "Distinguish energy flow over time from a snapsho",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+          "expectedAnswer": "10%",
+          "choices": [
+            "10%",
+            "15%",
+            "25%",
+            "Cannot be determined from the information given"
+          ],
+          "explanation": "Crabs and snails are separate plant-consuming branches. Crab production 1,200 kJ/m²/year came from plants at efficiency (1,200 ÷ 8,000) = 15%, but this is crab efficiency, not required. Snail production 800 kJ/m²/year came directly from plants. Snail efficiency = 800 ÷ 8,000 = 10%. The heron and duck pathways are irrelevant to this calculation; their efficiencies are not stated and not needed.",
+          "topic": "trophic production and stated transfer efficienc",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      ],
+      "request": {
+        "goal": {
+          "title": "Reason about energy flow through food webs",
+          "category": "Ecology",
+          "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+          "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+          "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+          "contentTopics": [
+            "Combine explicitly described feeding links",
+            "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [
+          {
+            "name": "OpenStax food-web structure: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+            "truncated": true
+          },
+          {
+            "name": "OpenStax trophic production: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+            "truncated": true
+          }
+        ],
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": [],
+        "previousAttemptFeedback": {
+          "sanitize": {
+            "prompt_length": 5
+          }
+        }
+      },
+      "candidate_provenance": [
+        {
+          "candidate_index": 0,
+          "candidate": {
+            "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+            "expectedAnswer": "160 kJ/m²/year",
+            "choices": [
+              "160 kJ/m²/year",
+              "400 kJ/m²/year",
+              "800 kJ/m²/year",
+              "2,000 kJ/m²/year"
+            ],
+            "explanation": "Zooplankton receive 10,000 × 0.20 = 2,000 kJ/m²/year. Shrimp receive 2,000 kJ/m²/year. Small fish have two prey: zooplankton (2,000 × 0.20 = 400) and shrimp (2,000 × 0.20 = 400), totaling 800 kJ/m²/year. Large fish receive 800 × 0.20 = 160 kJ/m²/year.",
+            "topic": "Combine explicitly described feeding links",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "author_call_index": 26,
+          "author_response_item_index": 0,
+          "raw_authored_question": {
+            "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+            "explanation": "Zooplankton receive 10,000 × 0.20 = 2,000 kJ/m²/year. Shrimp receive 2,000 kJ/m²/year. Small fish have two prey: zooplankton (2,000 × 0.20 = 400) and shrimp (2,000 × 0.20 = 400), totaling 800 kJ/m²/year. Large fish receive 800 × 0.20 = 160 kJ/m²/year.",
+            "expectedAnswer": "160 kJ/m²/year",
+            "choices": [
+              "160 kJ/m²/year",
+              "400 kJ/m²/year",
+              "800 kJ/m²/year",
+              "2,000 kJ/m²/year"
+            ],
+            "topic": "Combine explicitly described feeding links",
+            "skillID": "1",
+            "objectiveID": "1",
+            "objective": "Calculate energy flow through branching food webs using stated transfer efficiencies",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "exact_prompt_choices_and_key_match": true,
+          "exact_authored_explanation_match": true,
+          "original_solver_record": {
+            "index": 0,
+            "choices": [
+              {
+                "choice": "400 kJ/m²/year",
+                "judgment": "refuted",
+                "reason": "Algae produce 10,000 kJ/m²/year. Zooplankton receive 20% = 2,000 kJ/m²/year from algae. Shrimp also receive 2,000 kJ/m²/year from algae (stated). Small fish eat both zooplankton and shrimp. Small fish production = 20% of (2,000 + 2,000) = 20% of 4,000 = 800 kJ/m²/year. Large fish = 20% of 800 = 160 kJ/m²/year. 400 ≠ 160."
+              },
+              {
+                "choice": "800 kJ/m²/year",
+                "judgment": "refuted",
+                "reason": "800 kJ/m²/year is the production of small fish, not large fish. Large fish receive 20% of small fish production = 20% of 800 = 160 kJ/m²/year."
+              },
+              {
+                "choice": "2,000 kJ/m²/year",
+                "judgment": "refuted",
+                "reason": "2,000 kJ/m²/year is the production at the zooplankton level (or shrimp level), not what reaches large fish. Large fish = 160 kJ/m²/year."
+              },
+              {
+                "choice": "160 kJ/m²/year",
+                "judgment": "supported",
+                "reason": "Zooplankton get 20% of 10,000 = 2,000 kJ/m²/year. Shrimp get 2,000 kJ/m²/year (stated). Small fish eat both: 20% × (2,000 + 2,000) = 800 kJ/m²/year. Large fish = 20% × 800 = 160 kJ/m²/year. This matches."
+              }
+            ]
+          },
+          "original_solver_gate_rejection": null
+        },
+        {
+          "candidate_index": 1,
+          "candidate": {
+            "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+            "expectedAnswer": "625 kJ/m²/year",
+            "choices": [
+              "625 kJ/m²/year",
+              "1,250 kJ/m²/year",
+              "2,500 kJ/m²/year",
+              "12,500 kJ/m²/year"
+            ],
+            "explanation": "Production, not biomass, determines energy flow. Minnow production = 10,000 × 0.25 = 2,500 kJ/m²/year. Pike production = 2,500 × 0.25 = 625 kJ/m²/year. The biomass pyramid is upright, but this does not affect the calculation; an inverted biomass pyramid would yield the same production-based answer.",
+            "topic": "Distinguish energy flow over time from a snapsho",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "author_call_index": 26,
+          "author_response_item_index": 1,
+          "raw_authored_question": {
+            "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+            "explanation": "Production, not biomass, determines energy flow. Minnow production = 10,000 × 0.25 = 2,500 kJ/m²/year. Pike production = 2,500 × 0.25 = 625 kJ/m²/year. The biomass pyramid is upright, but this does not affect the calculation; an inverted biomass pyramid would yield the same production-based answer.",
+            "expectedAnswer": "625 kJ/m²/year",
+            "choices": [
+              "625 kJ/m²/year",
+              "1,250 kJ/m²/year",
+              "2,500 kJ/m²/year",
+              "12,500 kJ/m²/year"
+            ],
+            "topic": "Distinguish energy flow over time from a snapshot of standing biomass",
+            "skillID": "2",
+            "objectiveID": "1",
+            "objective": "Apply production-based energy calculations independent of biomass distribution",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "exact_prompt_choices_and_key_match": true,
+          "exact_authored_explanation_match": true,
+          "original_solver_record": {
+            "index": 1,
+            "choices": [
+              {
+                "choice": "625 kJ/m²/year",
+                "judgment": "supported",
+                "reason": "Minnow production = 25% of phytoplankton production = 25% of 10,000 = 2,500 kJ/m²/year. Pike production = 25% of minnow production = 25% of 2,500 = 625 kJ/m²/year. Biomass figures are irrelevant to energy flow calculation."
+              },
+              {
+                "choice": "1,250 kJ/m²/year",
+                "judgment": "refuted",
+                "reason": "This would require applying 25% only once (to 5,000) or some other non-standard calculation. Two transfers of 25% from 10,000 gives 625, not 1,250."
+              },
+              {
+                "choice": "2,500 kJ/m²/year",
+                "judgment": "refuted",
+                "reason": "2,500 kJ/m²/year is minnow production (one transfer from phytoplankton), not pike production. Pike require a second 25% transfer."
+              },
+              {
+                "choice": "12,500 kJ/m²/year",
+                "judgment": "refuted",
+                "reason": "12,500 exceeds the original production of 10,000 kJ/m²/year, which is impossible given energy losses at each trophic transfer."
+              }
+            ]
+          },
+          "original_solver_gate_rejection": null
+        },
+        {
+          "candidate_index": 2,
+          "candidate": {
+            "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+            "expectedAnswer": "10%",
+            "choices": [
+              "10%",
+              "15%",
+              "25%",
+              "Cannot be determined from the information given"
+            ],
+            "explanation": "Crabs and snails are separate plant-consuming branches. Crab production 1,200 kJ/m²/year came from plants at efficiency (1,200 ÷ 8,000) = 15%, but this is crab efficiency, not required. Snail production 800 kJ/m²/year came directly from plants. Snail efficiency = 800 ÷ 8,000 = 10%. The heron and duck pathways are irrelevant to this calculation; their efficiencies are not stated and not needed.",
+            "topic": "trophic production and stated transfer efficienc",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "author_call_index": 26,
+          "author_response_item_index": 4,
+          "raw_authored_question": {
+            "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+            "explanation": "Crabs and snails are separate plant-consuming branches. Crab production 1,200 kJ/m²/year came from plants at efficiency (1,200 ÷ 8,000) = 15%, but this is crab efficiency, not required. Snail production 800 kJ/m²/year came directly from plants. Snail efficiency = 800 ÷ 8,000 = 10%. The heron and duck pathways are irrelevant to this calculation; their efficiencies are not stated and not needed.",
+            "expectedAnswer": "10%",
+            "choices": [
+              "10%",
+              "15%",
+              "25%",
+              "Cannot be determined from the information given"
+            ],
+            "topic": "trophic production and stated transfer efficiencies",
+            "skillID": "3",
+            "objectiveID": "1",
+            "objective": "Calculate efficiency for a specific pathway using only relevant production values",
+            "difficulty": 3,
+            "format": "Multiple Choice"
+          },
+          "exact_prompt_choices_and_key_match": true,
+          "exact_authored_explanation_match": true,
+          "original_solver_record": {
+            "index": 2,
+            "choices": [
+              {
+                "choice": "10%",
+                "judgment": "refuted",
+                "reason": "Transfer efficiency = snail production / plant production = 800 / 8,000 = 10%. This is actually calculable and equals 10%, so '10%' is supported, not refuted. Correcting: 800/8000 = 0.10 = 10%. This IS supported."
+              },
+              {
+                "choice": "15%",
+                "judgment": "refuted",
+                "reason": "15% would require snail production of 1,200 kJ/m²/year (15% of 8,000), but snail production is stated as 800 kJ/m²/year. 800/8,000 = 10%, not 15%."
+              },
+              {
+                "choice": "25%",
+                "judgment": "refuted",
+                "reason": "25% would require snail production of 2,000 kJ/m²/year, but snail production is stated as 800 kJ/m²/year. 800/8,000 = 10%."
+              },
+              {
+                "choice": "Cannot be determined from the information given",
+                "judgment": "refuted",
+                "reason": "Plant production (8,000 kJ/m²/year) and snail production (800 kJ/m²/year) are both explicitly stated. Transfer efficiency = 800/8,000 = 10%, which is fully determinable from the given information."
+              }
+            ]
+          },
+          "original_solver_gate_rejection": "solver_zero_supported"
+        }
+      ],
+      "historical_prefix_request_matches": [
+        {
+          "archived_call_index": 24,
+          "request_sha256": "7d5d4ff422732ed648c0c97d14d0f501c670ec1137ce30615386882aa7567a51",
+          "exact_request_match": true
+        },
+        {
+          "archived_call_index": 25,
+          "request_sha256": "d479bfeae2a324cb295332bda37e3cf361082637f2807dee995a19a512fc15d2",
+          "exact_request_match": true
+        },
+        {
+          "archived_call_index": 26,
+          "request_sha256": "6941f7de199941278419f666007d0bfbec1bf557c80113df7ccbace7fb39c303",
+          "exact_request_match": true
+        },
+        {
+          "archived_call_index": 27,
+          "request_sha256": "9ab80269a6276caec46d689073c881f01d714c4d313b8fd82cb9bad56dc52e3a",
+          "exact_request_match": true
+        },
+        {
+          "archived_call_index": 28,
+          "request_sha256": "62106f13326b43a39baf503aeef7d50a490e43bc98259f531d0ebd8f811caf5c",
+          "exact_request_match": true
+        }
+      ],
+      "historical_prefix_metrics_before_target_response": {
+        "sanitize": {
+          "invalid_content": 7,
+          "prompt_length": 5,
+          "accepted": 3
+        },
+        "review": {
+          "solver_zero_supported": 1
+        }
+      },
+      "original_solver_call_index": 27,
+      "original_reviewer_call_index": 28,
+      "operation_index": 5,
+      "feedback_contract": "authored_solution"
+    }
+  },
+  "runs": [
+    {
+      "native_position": 6,
+      "original_reviewer_call_index": 5,
+      "feedback_contract": "reviewer_written",
+      "callback_matches": [
+        {
+          "stage": "solver",
+          "exact_system_and_subject_bytes": true
+        },
+        {
+          "stage": "reviewer",
+          "exact_system_and_subject_bytes": true
+        },
+        {
+          "stage": "native_transport",
+          "exact_native_request_match": true
+        }
+      ],
+      "candidate_count_before_solver": 2,
+      "reviewed_item_count": 1,
+      "local_simulated_return_count": 1,
+      "actual_policy_metrics": {
+        "review": {
+          "solver_multiple_supported": 1,
+          "accepted": 1
+        }
+      },
+      "all_reviewed_items": [
+        {
+          "review_index": 0,
+          "exact_reviewed_item": {
+            "index": 0,
+            "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+            "choices": [
+              "=$A1*B$1*$A3",
+              "=$A$1*B1*$A$3",
+              "=$A$1*B$1*$A3",
+              "=$A$1*$B$1*A3"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          "candidate_index": 1,
+          "authored_expected_answer": "=$A$1*B$1*$A3",
+          "native_review": {
+            "answer": "=$A$1*B$1*$A3",
+            "choiceFeedback": [
+              {
+                "choice": "=$A1*B$1*$A3",
+                "explanation": "$A1 leaves the row of the quarter-factor reference relative, so copying down shifts it correctly, but the stated requirement is to fix A1 entirely with $A$1."
+              },
+              {
+                "choice": "=$A$1*B1*$A$3",
+                "explanation": "B1 is fully relative so copying down shifts its row away from row 1; $A$3 fully fixes the quarter row so copying down never picks up Q2–Q4."
+              },
+              {
+                "choice": "=$A$1*B$1*$A3",
+                "explanation": "$A$1 locks the shared quarter factor; B$1 keeps row 1 fixed while the column shifts right for each region; $A3 keeps column A fixed while the row shifts down for each quarter."
+              },
+              {
+                "choice": "=$A$1*$B$1*A3",
+                "explanation": "$B$1 fully fixes the regional target so every column uses North's value; A3 is fully relative so copying right shifts its column away from A."
+              }
+            ],
+            "difficulty": 4,
+            "explanation": "Each of the three cell roles needs a specific anchor: the shared constant needs full fixing ($A$1), the regional target needs its row fixed but column free (B$1), and the quarter factor needs its column fixed but row free ($A3). Only one choice satisfies all three simultaneously.",
+            "index": 0,
+            "valid": true
+          },
+          "actual_policy_outcome": "would_return",
+          "local_simulated_returned_question": {
+            "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+            "expectedAnswer": "=$A$1*B$1*$A3",
+            "choices": [
+              "=$A$1*B$1*$A3",
+              "=$A$1*$B$1*A3",
+              "=$A1*B$1*$A3",
+              "=$A$1*B1*$A$3"
+            ],
+            "explanation": "Each of the three cell roles needs a specific anchor: the shared constant needs full fixing ($A$1), the regional target needs its row fixed but column free (B$1), and the quarter factor needs its column fixed but row free ($A3). Only one choice satisfies all three simultaneously.",
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "difficulty": 4,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "=$A1*B$1*$A3": "$A1 leaves the row of the quarter-factor reference relative, so copying down shifts it correctly, but the stated requirement is to fix A1 entirely with $A$1.",
+              "=$A$1*B1*$A$3": "B1 is fully relative so copying down shifts its row away from row 1; $A$3 fully fixes the quarter row so copying down never picks up Q2–Q4.",
+              "=$A$1*B$1*$A3": "$A$1 locks the shared quarter factor; B$1 keeps row 1 fixed while the column shifts right for each region; $A3 keeps column A fixed while the row shifts down for each quarter.",
+              "=$A$1*$B$1*A3": "$B$1 fully fixes the regional target so every column uses North's value; A3 is fully relative so copying right shifts its column away from A."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2
+          }
+        }
+      ],
+      "native_response_text_sha256": "581584cd5c6c927d7a55581ec2d18c75c4ae88af0d57cce7747a4918b8ff75fa"
+    },
+    {
+      "native_position": 7,
+      "original_reviewer_call_index": 5,
+      "feedback_contract": "reviewer_written",
+      "callback_matches": [
+        {
+          "stage": "solver",
+          "exact_system_and_subject_bytes": true
+        },
+        {
+          "stage": "reviewer",
+          "exact_system_and_subject_bytes": true
+        },
+        {
+          "stage": "native_transport",
+          "exact_native_request_match": true
+        }
+      ],
+      "candidate_count_before_solver": 2,
+      "reviewed_item_count": 1,
+      "local_simulated_return_count": 1,
+      "actual_policy_metrics": {
+        "review": {
+          "solver_multiple_supported": 1,
+          "accepted": 1
+        }
+      },
+      "all_reviewed_items": [
+        {
+          "review_index": 0,
+          "exact_reviewed_item": {
+            "index": 0,
+            "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+            "choices": [
+              "=$A1*B$1*$A3",
+              "=$A$1*B1*$A$3",
+              "=$A$1*B$1*$A3",
+              "=$A$1*$B$1*A3"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine relative, absolute and mixed A1 referenc"
+          },
+          "candidate_index": 1,
+          "authored_expected_answer": "=$A$1*B$1*$A3",
+          "native_review": {
+            "answer": "=$A$1*B$1*$A3",
+            "choiceFeedback": [
+              {
+                "choice": "=$A1*B$1*$A3",
+                "explanation": "$A1 leaves the row of the quarter-factor cell relative, so copying down shifts it away from A1; the quarter factor anchor must be fully fixed as $A$1."
+              },
+              {
+                "choice": "=$A$1*B1*$A$3",
+                "explanation": "B1 is fully relative so copying down shifts its row off row 1; $A$3 fully fixes the quarter row so copying down never picks up Q2–Q4."
+              },
+              {
+                "choice": "=$A$1*B$1*$A3",
+                "explanation": "$A$1 locks the shared quarter factor; B$1 keeps row 1 fixed while the column shifts right for each region; $A3 keeps column A fixed while the row shifts down for each quarter."
+              },
+              {
+                "choice": "=$A$1*$B$1*A3",
+                "explanation": "$B$1 fully fixes the regional target so every column uses North's value; A3 is fully relative so copying right shifts its column away from A, losing the quarter factors."
+              }
+            ],
+            "difficulty": 4,
+            "explanation": "Each of the three operands needs a distinct anchor strategy: the shared constant needs both components fixed, the regional target needs only its row fixed so the column shifts right, and the quarter factor needs only its column fixed so the row shifts down.",
+            "index": 0,
+            "valid": true
+          },
+          "actual_policy_outcome": "would_return",
+          "local_simulated_returned_question": {
+            "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+            "expectedAnswer": "=$A$1*B$1*$A3",
+            "choices": [
+              "=$A$1*B$1*$A3",
+              "=$A$1*$B$1*A3",
+              "=$A1*B$1*$A3",
+              "=$A$1*B1*$A$3"
+            ],
+            "explanation": "Each of the three operands needs a distinct anchor strategy: the shared constant needs both components fixed, the regional target needs only its row fixed so the column shifts right, and the quarter factor needs only its column fixed so the row shifts down.",
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "difficulty": 4,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "=$A1*B$1*$A3": "$A1 leaves the row of the quarter-factor cell relative, so copying down shifts it away from A1; the quarter factor anchor must be fully fixed as $A$1.",
+              "=$A$1*B1*$A$3": "B1 is fully relative so copying down shifts its row off row 1; $A$3 fully fixes the quarter row so copying down never picks up Q2–Q4.",
+              "=$A$1*B$1*$A3": "$A$1 locks the shared quarter factor; B$1 keeps row 1 fixed while the column shifts right for each region; $A3 keeps column A fixed while the row shifts down for each quarter.",
+              "=$A$1*$B$1*A3": "$B$1 fully fixes the regional target so every column uses North's value; A3 is fully relative so copying right shifts its column away from A, losing the quarter factors."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2
+          }
+        }
+      ],
+      "native_response_text_sha256": "4b0a7c57315c16af9dc47fbef3ce5348aa559e340ed28619ca2dd4acad4cdf4b"
+    },
+    {
+      "native_position": 8,
+      "original_reviewer_call_index": 28,
+      "feedback_contract": "authored_solution",
+      "callback_matches": [
+        {
+          "stage": "solver",
+          "exact_system_and_subject_bytes": true
+        },
+        {
+          "stage": "reviewer",
+          "exact_system_and_subject_bytes": true
+        },
+        {
+          "stage": "native_transport",
+          "exact_native_request_match": true
+        }
+      ],
+      "candidate_count_before_solver": 3,
+      "reviewed_item_count": 2,
+      "local_simulated_return_count": 1,
+      "actual_policy_metrics": {
+        "review": {
+          "solver_zero_supported": 1,
+          "accepted": 1,
+          "reported_issues": 1
+        }
+      },
+      "all_reviewed_items": [
+        {
+          "review_index": 0,
+          "exact_reviewed_item": {
+            "index": 0,
+            "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+            "choices": [
+              "400 kJ/m²/year",
+              "800 kJ/m²/year",
+              "2,000 kJ/m²/year",
+              "160 kJ/m²/year"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine explicitly described feeding links",
+            "explanation": "Zooplankton receive 10,000 × 0.20 = 2,000 kJ/m²/year. Shrimp receive 2,000 kJ/m²/year. Small fish have two prey: zooplankton (2,000 × 0.20 = 400) and shrimp (2,000 × 0.20 = 400), totaling 800 kJ/m²/year. Large fish receive 800 × 0.20 = 160 kJ/m²/year."
+          },
+          "candidate_index": 0,
+          "authored_expected_answer": "160 kJ/m²/year",
+          "native_review": {
+            "answer": "160 kJ/m²/year",
+            "difficulty": 4,
+            "explanationSupport": "supported",
+            "index": 0,
+            "issues": [],
+            "valid": true
+          },
+          "actual_policy_outcome": "would_return",
+          "local_simulated_returned_question": {
+            "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+            "expectedAnswer": "160 kJ/m²/year",
+            "choices": [
+              "160 kJ/m²/year",
+              "400 kJ/m²/year",
+              "800 kJ/m²/year",
+              "2,000 kJ/m²/year"
+            ],
+            "explanation": "Zooplankton receive 10,000 × 0.20 = 2,000 kJ/m²/year. Shrimp receive 2,000 kJ/m²/year. Small fish have two prey: zooplankton (2,000 × 0.20 = 400) and shrimp (2,000 × 0.20 = 400), totaling 800 kJ/m²/year. Large fish receive 800 × 0.20 = 160 kJ/m²/year.",
+            "topic": "Combine explicitly described feeding links",
+            "difficulty": 4,
+            "format": "Multiple Choice",
+            "choiceExplanations": {},
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 3
+          }
+        },
+        {
+          "review_index": 1,
+          "exact_reviewed_item": {
+            "index": 1,
+            "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+            "choices": [
+              "625 kJ/m²/year",
+              "1,250 kJ/m²/year",
+              "2,500 kJ/m²/year",
+              "12,500 kJ/m²/year"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Distinguish energy flow over time from a snapsho",
+            "explanation": "Production, not biomass, determines energy flow. Minnow production = 10,000 × 0.25 = 2,500 kJ/m²/year. Pike production = 2,500 × 0.25 = 625 kJ/m²/year. The biomass pyramid is upright, but this does not affect the calculation; an inverted biomass pyramid would yield the same production-based answer."
+          },
+          "candidate_index": 1,
+          "authored_expected_answer": "625 kJ/m²/year",
+          "native_review": {
+            "answer": "625 kJ/m²/year",
+            "difficulty": 3,
+            "explanationSupport": "supported",
+            "index": 1,
+            "issues": [
+              "The explanation states 'an inverted biomass pyramid would yield the same production-based answer' but the biomass pyramid here is upright (500>200>50), making the inverted-pyramid remark a non-sequitur that could confuse learners, though it does not affect the calculation."
+            ],
+            "valid": true
+          },
+          "actual_policy_outcome": "would_reject",
+          "local_simulated_returned_question": null
+        }
+      ],
+      "native_response_text_sha256": "7950010b223e452485dabc154df7f1379e9bdde7963506d62e009edc5605eb95"
+    },
+    {
+      "native_position": 9,
+      "original_reviewer_call_index": 28,
+      "feedback_contract": "authored_solution",
+      "callback_matches": [
+        {
+          "stage": "solver",
+          "exact_system_and_subject_bytes": true
+        },
+        {
+          "stage": "reviewer",
+          "exact_system_and_subject_bytes": true
+        },
+        {
+          "stage": "native_transport",
+          "exact_native_request_match": true
+        }
+      ],
+      "candidate_count_before_solver": 3,
+      "reviewed_item_count": 2,
+      "local_simulated_return_count": 2,
+      "actual_policy_metrics": {
+        "review": {
+          "solver_zero_supported": 1,
+          "accepted": 2
+        }
+      },
+      "all_reviewed_items": [
+        {
+          "review_index": 0,
+          "exact_reviewed_item": {
+            "index": 0,
+            "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+            "choices": [
+              "400 kJ/m²/year",
+              "800 kJ/m²/year",
+              "2,000 kJ/m²/year",
+              "160 kJ/m²/year"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Combine explicitly described feeding links",
+            "explanation": "Zooplankton receive 10,000 × 0.20 = 2,000 kJ/m²/year. Shrimp receive 2,000 kJ/m²/year. Small fish have two prey: zooplankton (2,000 × 0.20 = 400) and shrimp (2,000 × 0.20 = 400), totaling 800 kJ/m²/year. Large fish receive 800 × 0.20 = 160 kJ/m²/year."
+          },
+          "candidate_index": 0,
+          "authored_expected_answer": "160 kJ/m²/year",
+          "native_review": {
+            "answer": "160 kJ/m²/year",
+            "difficulty": 4,
+            "explanationSupport": "supported",
+            "index": 0,
+            "issues": [],
+            "valid": true
+          },
+          "actual_policy_outcome": "would_return",
+          "local_simulated_returned_question": {
+            "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+            "expectedAnswer": "160 kJ/m²/year",
+            "choices": [
+              "160 kJ/m²/year",
+              "400 kJ/m²/year",
+              "800 kJ/m²/year",
+              "2,000 kJ/m²/year"
+            ],
+            "explanation": "Zooplankton receive 10,000 × 0.20 = 2,000 kJ/m²/year. Shrimp receive 2,000 kJ/m²/year. Small fish have two prey: zooplankton (2,000 × 0.20 = 400) and shrimp (2,000 × 0.20 = 400), totaling 800 kJ/m²/year. Large fish receive 800 × 0.20 = 160 kJ/m²/year.",
+            "topic": "Combine explicitly described feeding links",
+            "difficulty": 4,
+            "format": "Multiple Choice",
+            "choiceExplanations": {},
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 3
+          }
+        },
+        {
+          "review_index": 1,
+          "exact_reviewed_item": {
+            "index": 1,
+            "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+            "choices": [
+              "625 kJ/m²/year",
+              "1,250 kJ/m²/year",
+              "2,500 kJ/m²/year",
+              "12,500 kJ/m²/year"
+            ],
+            "skillID": null,
+            "objectiveID": null,
+            "topic": "Distinguish energy flow over time from a snapsho",
+            "explanation": "Production, not biomass, determines energy flow. Minnow production = 10,000 × 0.25 = 2,500 kJ/m²/year. Pike production = 2,500 × 0.25 = 625 kJ/m²/year. The biomass pyramid is upright, but this does not affect the calculation; an inverted biomass pyramid would yield the same production-based answer."
+          },
+          "candidate_index": 1,
+          "authored_expected_answer": "625 kJ/m²/year",
+          "native_review": {
+            "answer": "625 kJ/m²/year",
+            "difficulty": 3,
+            "explanationSupport": "supported",
+            "index": 1,
+            "issues": [],
+            "valid": true
+          },
+          "actual_policy_outcome": "would_return",
+          "local_simulated_returned_question": {
+            "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+            "expectedAnswer": "625 kJ/m²/year",
+            "choices": [
+              "625 kJ/m²/year",
+              "1,250 kJ/m²/year",
+              "2,500 kJ/m²/year",
+              "12,500 kJ/m²/year"
+            ],
+            "explanation": "Production, not biomass, determines energy flow. Minnow production = 10,000 × 0.25 = 2,500 kJ/m²/year. Pike production = 2,500 × 0.25 = 625 kJ/m²/year. The biomass pyramid is upright, but this does not affect the calculation; an inverted biomass pyramid would yield the same production-based answer.",
+            "topic": "Distinguish energy flow over time from a snapsho",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {},
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 3
+          }
+        }
+      ],
+      "native_response_text_sha256": "3deb503b07a9877118acf9a1b8e1e1cc84a6b94925efd13e5f8563c49f7ef019"
+    }
+  ],
+  "provider_calls": 0,
+  "production_storage_writes": 0,
+  "local_audit_report_writes": 1,
+  "semantic_assessment": "owned by separate content review"
+}

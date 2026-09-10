@@ -1,0 +1,536 @@
+{
+  "assessments": [
+    {
+      "id": "item-11",
+      "premise_status": "invalid",
+      "premise_reason": "At 1:50,000, 5 cm represents 2.5 km, conflicting with the stated 3 km. The road measurement instead implies 1:60,000. No priority or measurement error is specified.",
+      "choices": [
+        {
+          "choice": "1:40,000",
+          "judgment": "refuted",
+          "reason": "A reduction increases the denominator; neither stated calibration yields 1:40,000."
+        },
+        {
+          "choice": "1:50,000",
+          "judgment": "refuted",
+          "reason": "The representative fraction changes after reducing linear dimensions to 80%."
+        },
+        {
+          "choice": "1:100,000",
+          "judgment": "refuted",
+          "reason": "Dividing either implied denominator, 50,000 or 60,000, by 0.8 does not yield 100,000."
+        },
+        {
+          "choice": "1:62,500",
+          "judgment": "uncertain",
+          "reason": "50,000/0.8 = 62,500 follows only from trusting the printed ratio; the 3 km/5 cm calibration instead yields 1:75,000 after reduction."
+        }
+      ],
+      "difficulty": 3
+    },
+    {
+      "id": "item-04",
+      "premise_status": "supported",
+      "premise_reason": "The percentage must retain column B and follow its row; the sales reference must retain row 1 and follow its column.",
+      "choices": [
+        {
+          "choice": "=$B$2*C1",
+          "judgment": "refuted",
+          "reason": "Fixing B2 prevents the percentage changing down rows, while relative C1 changes the sales row."
+        },
+        {
+          "choice": "=B2*C$1",
+          "judgment": "refuted",
+          "reason": "The unanchored B column shifts across, losing the percentage column."
+        },
+        {
+          "choice": "=$B2*C$1",
+          "judgment": "supported",
+          "reason": "Column B stays fixed with a relative row, and row 1 stays fixed with a relative sales column."
+        },
+        {
+          "choice": "=B$2*$C1",
+          "judgment": "refuted",
+          "reason": "This fixes the percentage row and sales column, the opposite of the required relationships."
+        }
+      ],
+      "difficulty": 3
+    },
+    {
+      "id": "item-02",
+      "premise_status": "supported",
+      "premise_reason": "Rates must follow columns in row 1; quantities must follow rows in column A.",
+      "choices": [
+        {
+          "choice": "=B1*A2",
+          "judgment": "refuted",
+          "reason": "Both references drift in both dimensions, so rate rows and quantity columns change incorrectly."
+        },
+        {
+          "choice": "=$B$1*$A$2",
+          "judgment": "refuted",
+          "reason": "Both inputs stay fixed instead of following the destination column and row."
+        },
+        {
+          "choice": "=B$1*$A2",
+          "judgment": "supported",
+          "reason": "B$1 follows the rate column in fixed row 1, and $A2 follows the quantity row in fixed column A."
+        },
+        {
+          "choice": "=$B1*A$2",
+          "judgment": "refuted",
+          "reason": "It anchors the rate column and quantity row instead of the required rate row and quantity column."
+        }
+      ],
+      "difficulty": 3
+    },
+    {
+      "id": "item-05",
+      "premise_status": "supported",
+      "premise_reason": "The copy displacement is four columns left and two rows down, applied only to unanchored components.",
+      "choices": [
+        {
+          "choice": "=$C7+F$3",
+          "judgment": "refuted",
+          "reason": "The anchored E column must remain E, and the unanchored F column must move to B."
+        },
+        {
+          "choice": "=$E7+B$3",
+          "judgment": "supported",
+          "reason": "The first reference becomes $E7; F$3 moves four columns left to B$3."
+        },
+        {
+          "choice": "=$E7+F$3",
+          "judgment": "refuted",
+          "reason": "F is an unanchored column and must move to B."
+        },
+        {
+          "choice": "=$E5+B$3",
+          "judgment": "refuted",
+          "reason": "The first reference has an unanchored row, which must change from 5 to 7."
+        }
+      ],
+      "difficulty": 2
+    },
+    {
+      "id": "item-06",
+      "premise_status": "supported",
+      "premise_reason": "The question explicitly asks about the original measurement; the later copier setting does not change its represented distance.",
+      "choices": [
+        {
+          "choice": "500 m",
+          "judgment": "supported",
+          "reason": "5 cm times 10,000 = 50,000 cm = 500 m."
+        },
+        {
+          "choice": "400 m",
+          "judgment": "refuted",
+          "reason": "This incorrectly applies a copier factor to the ground distance represented by the original measurement."
+        },
+        {
+          "choice": "625 m",
+          "judgment": "refuted",
+          "reason": "This incorrectly divides the original ground distance by a copier factor."
+        },
+        {
+          "choice": "Cannot be determined from the information given",
+          "judgment": "refuted",
+          "reason": "The original numerical scale and measured length fully determine 500 m."
+        }
+      ],
+      "difficulty": 2
+    },
+    {
+      "id": "item-03",
+      "premise_status": "supported",
+      "premise_reason": "The displacement is two columns right and two rows down; dollar signs fix their following components.",
+      "choices": [
+        {
+          "choice": "=C$3+$B6",
+          "judgment": "refuted",
+          "reason": "The unanchored C column must move to E."
+        },
+        {
+          "choice": "=E$5+$B6",
+          "judgment": "refuted",
+          "reason": "The anchored row $3 must remain 3."
+        },
+        {
+          "choice": "=E$3+$B6",
+          "judgment": "supported",
+          "reason": "C$3 becomes E$3 and $B4 becomes $B6."
+        },
+        {
+          "choice": "=E$3+$B4",
+          "judgment": "refuted",
+          "reason": "The unanchored row 4 in $B4 must move to 6."
+        }
+      ],
+      "difficulty": 2
+    },
+    {
+      "id": "item-18",
+      "premise_status": "ambiguous",
+      "premise_reason": "The shrimp are described as zooplankton-eaters but also as receiving 2,000 from algae, without specifying whether that is direct production, upstream allocation, or indirect transfer. Direct fish feeding and shrimp feeding share zooplankton, with no allocation specified; counting complete pathways independently can double-count energy.",
+      "choices": [
+        {
+          "choice": "400 kJ/m²/year",
+          "judgment": "refuted",
+          "reason": "400 is an intermediate fish-level amount under a simple 20% chain calculation; another 20% transfer is needed to large fish. Even treating the stated shrimp amount as an independent supply does not produce 400."
+        },
+        {
+          "choice": "800 kJ/m²/year",
+          "judgment": "refuted",
+          "reason": "800 results from adding two putative small-fish contributions before applying the final 20% transfer, not large-fish production."
+        },
+        {
+          "choice": "2,000 kJ/m²/year",
+          "judgment": "refuted",
+          "reason": "2,000 is the first-transfer amount from 10,000, not an amount surviving the stated steps to large fish."
+        },
+        {
+          "choice": "160 kJ/m²/year",
+          "judgment": "uncertain",
+          "reason": "80 + 80 = 160 requires treating shrimp as a separate 2,000 production supply and also allocating the full algae production to the direct zooplankton route. Those independence and pathway assumptions are not established."
+        }
+      ],
+      "difficulty": 4
+    },
+    {
+      "id": "item-14",
+      "premise_status": "supported",
+      "premise_reason": "The fish transfer fraction is given, but shrimp production or the algae-to-shrimp efficiency and allocation is missing.",
+      "choices": [
+        {
+          "choice": "1,500 kJ/m²/year",
+          "judgment": "uncertain",
+          "reason": "This multiplies algae production directly by 15%, bypassing the unreported production reaching shrimp; that premise is not supplied."
+        },
+        {
+          "choice": "150 kJ/m²/year",
+          "judgment": "uncertain",
+          "reason": "This would require shrimp production of 1,000, such as an assumed 10% algae-to-shrimp transfer, which is not stated."
+        },
+        {
+          "choice": "Cannot be determined from the information given.",
+          "judgment": "supported",
+          "reason": "Fish production is 0.15 times shrimp production, and shrimp production cannot be obtained from the supplied data."
+        },
+        {
+          "choice": "750 kJ/m²/year",
+          "judgment": "uncertain",
+          "reason": "This would require shrimp production of 5,000; no information establishes that value."
+        }
+      ],
+      "difficulty": 3
+    },
+    {
+      "id": "item-13",
+      "premise_status": "supported",
+      "premise_reason": "The bar and map are uniformly reduced together, so the bar becomes 3 cm while still representing 2 km.",
+      "choices": [
+        {
+          "choice": "4 km",
+          "judgment": "refuted",
+          "reason": "The path matches one reduced bar, not two."
+        },
+        {
+          "choice": "2 km",
+          "judgment": "supported",
+          "reason": "4 cm times 0.75 = 3 cm; the measured path equals the reduced bar and therefore represents 2 km."
+        },
+        {
+          "choice": "1.5 km",
+          "judgment": "refuted",
+          "reason": "Reduction changes the printed bar length, not its represented ground distance."
+        },
+        {
+          "choice": "2.67 km",
+          "judgment": "refuted",
+          "reason": "Dividing the represented 2 km by 0.75 wrongly changes the ground length when only the print size changes."
+        }
+      ],
+      "difficulty": 3
+    },
+    {
+      "id": "item-07",
+      "premise_status": "supported",
+      "premise_reason": "Following curves measures the river route, and a correctly redrawn scale bar is compatible with enlargement. The question asks about the original length.",
+      "choices": [
+        {
+          "choice": "7.5 km",
+          "judgment": "refuted",
+          "reason": "This applies the enlargement factor to the represented ground distance; the original 12 cm corresponds to 6 km."
+        },
+        {
+          "choice": "The stated premises are inconsistent",
+          "judgment": "refuted",
+          "reason": "Nothing is inconsistent: a route can be measured along bends and its map enlarged with an updated bar."
+        },
+        {
+          "choice": "6 km",
+          "judgment": "supported",
+          "reason": "12 cm times 50,000 = 600,000 cm = 6 km."
+        },
+        {
+          "choice": "4.8 km",
+          "judgment": "refuted",
+          "reason": "Dividing by the enlargement factor is unnecessary for an explicitly original map measurement."
+        }
+      ],
+      "difficulty": 2
+    },
+    {
+      "id": "item-19",
+      "premise_status": "supported",
+      "premise_reason": "The chain has two transfers at the stated 25% efficiency. Biomass snapshots do not supply a different production ratio.",
+      "choices": [
+        {
+          "choice": "625 kJ/m²/year",
+          "judgment": "supported",
+          "reason": "10,000 times 0.25 times 0.25 = 625 kJ/m²/year."
+        },
+        {
+          "choice": "1,250 kJ/m²/year",
+          "judgment": "refuted",
+          "reason": "Two 25% transfers retain 6.25%, not 12.5%, of producer production."
+        },
+        {
+          "choice": "2,500 kJ/m²/year",
+          "judgment": "refuted",
+          "reason": "2,500 is production reaching minnows after one transfer, before the minnow-to-pike transfer."
+        },
+        {
+          "choice": "12,500 kJ/m²/year",
+          "judgment": "refuted",
+          "reason": "This exceeds producer production and contradicts the stated transfer losses."
+        }
+      ],
+      "difficulty": 2
+    },
+    {
+      "id": "item-12",
+      "premise_status": "ambiguous",
+      "premise_reason": "The original or enlarged printed length of the 0–1 km bar is never stated, so 9 cm cannot be calibrated to a unique ground distance.",
+      "choices": [
+        {
+          "choice": "7.2 km",
+          "judgment": "uncertain",
+          "reason": "7.2 km would require the original bar to be 1 cm long, an unreported calibration."
+        },
+        {
+          "choice": "3.6 km (assuming original 2 cm bar = 1 km)",
+          "judgment": "uncertain",
+          "reason": "The conditional arithmetic is correct if the original bar was 2 cm: 9/(2 times 1.25) = 3.6. That assumed length is absent from the stem, so this does not establish the actual distance asked for."
+        },
+        {
+          "choice": "4.5 km",
+          "judgment": "uncertain",
+          "reason": "4.5 km would require an enlarged bar of 2 cm, or original bar of 1.6 cm; neither is given."
+        },
+        {
+          "choice": "2.88 km",
+          "judgment": "uncertain",
+          "reason": "2.88 km would require an original bar of 2.5 cm; its length is not given."
+        }
+      ],
+      "difficulty": 3
+    },
+    {
+      "id": "item-09",
+      "premise_status": "supported",
+      "premise_reason": "The 6 cm original route and 4.5 cm reduced route are consistent with a 75% linear copy, and following the curves measures the requested route.",
+      "choices": [
+        {
+          "choice": "1.2 km",
+          "judgment": "supported",
+          "reason": "6 cm times 20,000 = 120,000 cm = 1.2 km; uniformly resizing the route and scale bar preserves that distance."
+        },
+        {
+          "choice": "0.9 km",
+          "judgment": "refuted",
+          "reason": "This uses the reduced 4.5 cm with the unchanged original numerical ratio."
+        },
+        {
+          "choice": "1.6 km",
+          "judgment": "refuted",
+          "reason": "This divides the original represented distance by 0.75, incorrectly changing ground distance during resizing."
+        },
+        {
+          "choice": "No solution exists under the stated conditions",
+          "judgment": "refuted",
+          "reason": "The stated lengths agree with the reduction and yield a consistent 1.2 km solution."
+        }
+      ],
+      "difficulty": 2
+    },
+    {
+      "id": "item-10",
+      "premise_status": "supported",
+      "premise_reason": "The 8 cm original and 12 cm enlarged lengths agree with a 150% linear enlargement.",
+      "choices": [
+        {
+          "choice": "3 km",
+          "judgment": "refuted",
+          "reason": "This incorrectly applies the original 1:25,000 ratio directly to the enlarged 12 cm length."
+        },
+        {
+          "choice": "1.33 km",
+          "judgment": "refuted",
+          "reason": "This divides the already correct original ground length by 1.5 again."
+        },
+        {
+          "choice": "1.8 km",
+          "judgment": "refuted",
+          "reason": "The supplied length and ratio give 2 km, not 1.8 km."
+        },
+        {
+          "choice": "2 km",
+          "judgment": "supported",
+          "reason": "12/1.5 = 8 cm on the original; 8 times 25,000 cm = 2 km."
+        }
+      ],
+      "difficulty": 2
+    },
+    {
+      "id": "item-08",
+      "premise_status": "supported",
+      "premise_reason": "The original numerical scale calibrates the winding measurement, and uniformly copying the bar preserves its ground-distance value.",
+      "choices": [
+        {
+          "choice": "The winding measurement is invalid; only straight-line distance can be converted",
+          "judgment": "refuted",
+          "reason": "Measuring along bends is the correct method for the route length and can be converted with the map scale."
+        },
+        {
+          "choice": "The original 10 cm measurement represents 2.5 km on the ground",
+          "judgment": "supported",
+          "reason": "10 cm times 25,000 = 250,000 cm = 2.5 km."
+        },
+        {
+          "choice": "The reduced scale bar now represents 500 m, so the trail is 5 km",
+          "judgment": "refuted",
+          "reason": "The original 4 cm bar represents 1 km and retains that value when reduced to 2 cm; the route remains 2.5 km."
+        },
+        {
+          "choice": "The scale ratio halves to 1:12,500, making the trail 1.25 km",
+          "judgment": "refuted",
+          "reason": "Halving printed lengths doubles the denominator to 50,000; the ground route remains 2.5 km."
+        }
+      ],
+      "difficulty": 3
+    },
+    {
+      "id": "item-16",
+      "premise_status": "supported",
+      "premise_reason": "Three ordered transfer efficiencies are supplied for a single stated production chain with matching annual area units.",
+      "choices": [
+        {
+          "choice": "400 kJ/m²/year",
+          "judgment": "refuted",
+          "reason": "400 is minnow production; the final 10% transfer to pike remains."
+        },
+        {
+          "choice": "200 kJ/m²/year",
+          "judgment": "refuted",
+          "reason": "Applying all three stated fractions gives 40, not 200."
+        },
+        {
+          "choice": "16 kJ/m²/year",
+          "judgment": "refuted",
+          "reason": "16 does not follow from the specified 25%, 20%, and 10% transfers."
+        },
+        {
+          "choice": "40 kJ/m²/year",
+          "judgment": "supported",
+          "reason": "8,000 times 0.25 times 0.20 times 0.10 = 40 kJ/m²/year."
+        }
+      ],
+      "difficulty": 2
+    },
+    {
+      "id": "item-01",
+      "premise_status": "supported",
+      "premise_reason": "The copy moves two columns right and two rows down, changing only unanchored components.",
+      "choices": [
+        {
+          "choice": "=$A5+F$2",
+          "judgment": "refuted",
+          "reason": "B should move two columns to D, not four columns to F."
+        },
+        {
+          "choice": "=$C5+B$4",
+          "judgment": "refuted",
+          "reason": "The $A column and $2 row are fixed and cannot change to C and 4."
+        },
+        {
+          "choice": "=$A5+D$2",
+          "judgment": "supported",
+          "reason": "$A3 becomes $A5, and B$2 becomes D$2."
+        },
+        {
+          "choice": "=$A3+D$2",
+          "judgment": "refuted",
+          "reason": "The unanchored row 3 in $A3 must move to 5."
+        }
+      ],
+      "difficulty": 2
+    },
+    {
+      "id": "item-17",
+      "premise_status": "supported",
+      "premise_reason": "The literal request is the product of the numeric inputs in fixed A1 and B1. The quarter labels in A3:A6 are not stated to be additional numeric factors. The requested product is well-defined even though none of the choices expresses it.",
+      "choices": [
+        {
+          "choice": "=$A1*B$1*$A3",
+          "judgment": "refuted",
+          "reason": "It introduces the Q1 label in A3 as a third multiplier and lets the A1 row drift down; neither behavior matches the stated product."
+        },
+        {
+          "choice": "=$A$1*B1*$A$3",
+          "judgment": "refuted",
+          "reason": "It multiplies by the Q1 label in A3 and lets B1 drift down, instead of preserving the two specified inputs."
+        },
+        {
+          "choice": "=$A$1*B$1*$A3",
+          "judgment": "refuted",
+          "reason": "It adds the quarter label in A3 as an unstated multiplier; Q1 is text, not the quarter factor explicitly located in A1."
+        },
+        {
+          "choice": "=$A$1*$B$1*A3",
+          "judgment": "refuted",
+          "reason": "Although A1 and B1 are fixed, it introduces an extra multiplier A3 containing Q1 and lets that extra reference drift. The stated product requires only =$A$1*$B$1."
+        }
+      ],
+      "difficulty": 3
+    },
+    {
+      "id": "item-15",
+      "premise_status": "supported",
+      "premise_reason": "Consumers have greater standing biomass than producers, while the stated producer turnover gives annual mass production of 500 g/m²/year; stock and annual production are distinct.",
+      "choices": [
+        {
+          "choice": "Consumer biomass proves the stated turnover rate is impossible.",
+          "judgment": "refuted",
+          "reason": "A consumer biomass snapshot does not disprove rapid producer replacement or the stated turnover rate."
+        },
+        {
+          "choice": "The producer biomass pyramid is inverted, but energy flow to consumers is not constrained by standing biomass alone.",
+          "judgment": "supported",
+          "reason": "200 exceeds 50, giving an inverted standing-biomass comparison, while turnover means standing biomass alone does not determine annual energy available to consumers."
+        },
+        {
+          "choice": "Energy flow violates thermodynamic limits because consumer biomass exceeds producer biomass.",
+          "judgment": "refuted",
+          "reason": "A larger consumer biomass stock does not establish greater energy production or a thermodynamic violation."
+        },
+        {
+          "choice": "Annual production must be less than 50 g/m²/year to match the standing biomass.",
+          "judgment": "refuted",
+          "reason": "The stated turnover gives 50 times 10 = 500 g/m²/year, and annual production need not be below the standing biomass value."
+        }
+      ],
+      "difficulty": 3
+    }
+  ]
+}

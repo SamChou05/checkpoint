@@ -1,0 +1,75 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 3403,
+      "sha256": "e8f4bfc760df55fe124cd224831f8db8ed21924bb4a3bb8951e0af704c48c504"
+    },
+    "analyze-capture.py": {
+      "bytes": 4650,
+      "sha256": "df54944157d5733fce4503d19140e8544f187a931973d555a74a12abb51895c4"
+    },
+    "capture.json": {
+      "bytes": 329092,
+      "sha256": "8b8e0f887021f980ff292b7c69a6b5409ac6088316ecc6bda8f3fbd510b3c913"
+    },
+    "first-pass-freeze.json": {
+      "bytes": 371,
+      "sha256": "b70957ea16e866ec168b6121ff1d0947ba5e8126ab1b942c5e41fef1e06d988b"
+    },
+    "independent-subjects.json": {
+      "bytes": 21362,
+      "sha256": "38f73d44bac4b01187b8009dc859ffa534c2461a19d94eb68db85cb2acc0b869"
+    },
+    "integration-tests.txt": {
+      "bytes": 6717,
+      "sha256": "7f2ff713024bfee724636e90d485e7f1a6692b725b2b6514b3e78273460da2ec"
+    },
+    "operational-audit.json": {
+      "bytes": 22929,
+      "sha256": "ed7e492857cdae5ab8be26130020e71943f8d09a3b9cb0808cf7d94f1a2f6986"
+    },
+    "plan-audit.json": {
+      "bytes": 14262,
+      "sha256": "32623ddf5e598e6804dbcac924272967c660d24be760ccb836e4e346cf55ba33"
+    },
+    "plan.json": {
+      "bytes": 276772,
+      "sha256": "246b7fbb9e1911895fa0e1f2c18f5d50d94b652390048e7d9070c33a25f60ce5"
+    },
+    "policy-replay.json": {
+      "bytes": 67417,
+      "sha256": "543cfd8b8dd2be6df8e1fe295631b09dbe0ebaa67250fc5a2dbef30b7f20cdf7"
+    },
+    "probe-tests.txt": {
+      "bytes": 889,
+      "sha256": "7f51122cd7cc8b86588ed4ab0b841ab3bfa05653aa965d809ba76aafe2a0097c"
+    },
+    "profile-preflight.json": {
+      "bytes": 738,
+      "sha256": "701354c64ab409a0e2d02e165b6745ef28758ed5e941746dbdccd7a63b7e53ee"
+    },
+    "replay-policy.py": {
+      "bytes": 11712,
+      "sha256": "4ebb12b19c293e54d744c133ad217c208b71a72ba6a91a6b62248c4a66c42e16"
+    },
+    "sdk-preflight.json": {
+      "bytes": 335,
+      "sha256": "11d212f63fae9a0f2be50ef7f54fb4db12472218b9c8da22bf6e9647992628f2"
+    },
+    "subject-mapping.json": {
+      "bytes": 1707,
+      "sha256": "a96d63119f5bc4561e7c5281c2c25f6dfbbed464f60f0a752933193c44765647"
+    },
+    "subjects.json": {
+      "bytes": 58104,
+      "sha256": "1c384b08b4de3a58141f441d029ee52b3cef0bb8cec84b5f9e722ea7f79c3c5d"
+    },
+    "summary.json": {
+      "bytes": 44355,
+      "sha256": "cf6ee8d4296ad54d81eb99d0548be5c5b389f5c7cd1827c770e06f4331024620"
+    }
+  },
+  "source_revision": "751bdaa3405d1c358103af51093018364365947e",
+  "live_plan_canonical_sha256": "85e2cb229c091023df78e494f21bd859164de8284ef060905165d03585c783e7",
+  "scope": "Byte bindings for the completed fixed-input diagnostic and independent offline checks. No general correctness or deployment claim."
+}

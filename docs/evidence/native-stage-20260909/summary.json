@@ -1,0 +1,1016 @@
+{
+  "capture_byte_sha256": "8b8e0f887021f980ff292b7c69a6b5409ac6088316ecc6bda8f3fbd510b3c913",
+  "status": "completed",
+  "planned_attempts": 10,
+  "unattempted_slots": 0,
+  "counts": {
+    "attempt_slots_entered": 10,
+    "dispatch_observed": 10,
+    "response_observed": 10,
+    "usage_known": 10,
+    "clean_terminal_completion": 10,
+    "inputTokens": 23161,
+    "outputTokens": 8134,
+    "raw_schema_validation_passed": 10,
+    "adaptation_passed": 10,
+    "stage_validation_passed": 10,
+    "solver_choice_judgments": 84,
+    "solver_choice_judgment_disagreements": 8
+  },
+  "item_occurrences": 27,
+  "observations": [
+    {
+      "position": 0,
+      "original_call_index": 7,
+      "id": "item-01",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "=$A5+D$2"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=$A5+F$2",
+            "judgment": "refuted",
+            "reason": "Copy from C3 to E5: displacement is +2 cols, +2 rows. $A3: col fixed at A, row relative shifts +2 → $A5. B$2: col relative shifts +2 → D, row fixed at 2 → D$2. Result should be =$A5+D$2, not =$A5+F$2."
+          },
+          {
+            "choice": "=$C5+B$4",
+            "judgment": "refuted",
+            "reason": "$A is fixed so col cannot become C. B$2 row is fixed at 2 so cannot become 4. This choice incorrectly adjusts both fixed components."
+          },
+          {
+            "choice": "=$A5+D$2",
+            "judgment": "supported",
+            "reason": "Copy C3→E5 (+2 cols, +2 rows). $A3: col fixed A, row +2 → $A5. B$2: col relative +2 → D, row fixed 2 → D$2. Formula: =$A5+D$2. Correct."
+          },
+          {
+            "choice": "=$A3+D$2",
+            "judgment": "refuted",
+            "reason": "$A3 row is relative and should shift +2 rows to $A5, not stay at $A3. The row component was not adjusted."
+          }
+        ],
+        "index": 0
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=$A5+D$2"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 0,
+      "original_call_index": 7,
+      "id": "item-02",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [
+        "=B$1*$A2"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=B1*A2",
+            "judgment": "refuted",
+            "reason": "Both references are fully relative. Filling across changes B1 to C1, D1 etc. (correct for rates) but also changes A2 to B2, C2 etc. (wrong; quantity column A must stay fixed). Filling down changes B1 row (wrong; rate row 1 must stay fixed)."
+          },
+          {
+            "choice": "=$B$1*$A$2",
+            "judgment": "refuted",
+            "reason": "Both references fully absolute. Filling across or down always uses B1 and A2, so every cell gets the same value instead of the correct rate×quantity for its column and row."
+          },
+          {
+            "choice": "=B$1*$A2",
+            "judgment": "supported",
+            "reason": "B$1: col relative (adjusts across columns to pick correct rate), row fixed at 1 (always row 1). $A2: col fixed at A (always quantity column), row relative (adjusts down rows). Fills correctly across and down."
+          },
+          {
+            "choice": "=$B1*A$2",
+            "judgment": "refuted",
+            "reason": "$B1: col fixed at B (rate always from column B regardless of column), row relative. A$2: col relative, row fixed at 2. Filling across won't pick different rates; filling down won't pick different quantities."
+          }
+        ],
+        "index": 1
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=B$1*$A2"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 0,
+      "original_call_index": 7,
+      "id": "item-03",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "=E$3+$B6"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=C$3+$B6",
+            "judgment": "refuted",
+            "reason": "Copy D4→F6 (+2 cols, +2 rows). C$3: col relative +2→E, row fixed 3→E$3. $B4: col fixed B, row relative +2→6→$B6. Result: =E$3+$B6, not C$3+$B6 (col of first term not adjusted)."
+          },
+          {
+            "choice": "=E$5+$B6",
+            "judgment": "refuted",
+            "reason": "C$3 row is fixed at 3, cannot become 5. This incorrectly adjusts the fixed row component."
+          },
+          {
+            "choice": "=E$3+$B6",
+            "judgment": "supported",
+            "reason": "Copy D4→F6 (+2 cols, +2 rows). C$3: col relative +2→E, row fixed→3: E$3. $B4: col fixed B, row relative +2→6: $B6. Formula =E$3+$B6. Correct."
+          },
+          {
+            "choice": "=E$3+$B4",
+            "judgment": "refuted",
+            "reason": "$B4 row is relative and must shift +2 rows to $B6, not stay at $B4."
+          }
+        ],
+        "index": 2
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=E$3+$B6"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 0,
+      "original_call_index": 7,
+      "id": "item-04",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [
+        "=$B2*C$1"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=$B$2*C1",
+            "judgment": "refuted",
+            "reason": "$B$2 is fully absolute; filling down rows 3-10 always uses B2 percentage instead of the row's own percentage. Also C1 col is relative (ok) but row is relative so filling down moves off row 1."
+          },
+          {
+            "choice": "=B2*C$1",
+            "judgment": "refuted",
+            "reason": "B2 col is relative; filling across changes B to C,D… picking wrong percentage column instead of always column B. Row of B2 is also relative which is needed, but the col must be fixed."
+          },
+          {
+            "choice": "=$B2*C$1",
+            "judgment": "supported",
+            "reason": "$B2: col fixed at B (always percentage column B), row relative (adjusts per row for correct percentage). C$1: col relative (adjusts per column for correct sales figure), row fixed at 1. Fills correctly across and down."
+          },
+          {
+            "choice": "=B$2*$C1",
+            "judgment": "refuted",
+            "reason": "B$2: col relative (wrong, should always be col B), row fixed at 2 (wrong, should vary by row). $C1: col fixed at C (wrong, should vary by column), row relative. Both anchors are on the wrong components."
+          }
+        ],
+        "index": 3
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=$B2*C$1"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 0,
+      "original_call_index": 7,
+      "id": "item-05",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "=$E7+B$3"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=$C7+F$3",
+            "judgment": "refuted",
+            "reason": "Copy G5→C7 (−4 cols, +2 rows). $E5: col fixed E, row relative +2→7: $E7. F$3: col relative −4→B, row fixed 3: B$3. Result =$E7+B$3, not =$C7+F$3."
+          },
+          {
+            "choice": "=$E7+B$3",
+            "judgment": "supported",
+            "reason": "Copy G5→C7 (−4 cols, +2 rows). $E5: col fixed E stays, row relative 5+2=7 → $E7. F$3: col relative F−4=B, row fixed 3 → B$3. Formula =$E7+B$3. Correct."
+          },
+          {
+            "choice": "=$E7+F$3",
+            "judgment": "refuted",
+            "reason": "F$3 col is relative and must shift −4 cols from F to B, not stay at F."
+          },
+          {
+            "choice": "=$E5+B$3",
+            "judgment": "refuted",
+            "reason": "$E5 row is relative and must shift +2 rows from 5 to 7, giving $E7 not $E5."
+          }
+        ],
+        "index": 4
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=$E7+B$3"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 1,
+      "original_call_index": 14,
+      "id": "item-06",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "500 m"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "500 m",
+            "judgment": "supported",
+            "reason": "The original 5 cm measurement was made on the original 1:10,000 map. 5 cm × 10,000 = 50,000 cm = 500 m. The photocopy reduction is irrelevant to what the original measurement represents; the question asks about the original 5 cm measurement, not a new measurement on the copy."
+          },
+          {
+            "choice": "400 m",
+            "judgment": "refuted",
+            "reason": "400 m would result from applying the reduced scale (80% of 1:10,000 = 1:8,000) to 5 cm, or from measuring 4 cm on the original map. Neither matches the stated scenario of the original 5 cm on the original 1:10,000 map."
+          },
+          {
+            "choice": "625 m",
+            "judgment": "refuted",
+            "reason": "625 m would result from dividing 500 m by 0.8, as if the 5 cm were measured on the reduced copy and converted back. But the question asks what the original 5 cm represents, not a measurement on the copy."
+          },
+          {
+            "choice": "Cannot be determined from the information given",
+            "judgment": "refuted",
+            "reason": "All necessary information is provided: original scale 1:10,000 and original measurement 5 cm. The ground distance is unambiguously 500 m. The photocopy does not affect the original measurement's ground representation."
+          }
+        ],
+        "index": 0
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "500 m"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 1,
+      "original_call_index": 14,
+      "id": "item-07",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "6 km"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "7.5 km",
+            "judgment": "refuted",
+            "reason": "7.5 km would come from 12 cm × 62,500 (the new enlarged scale 1:50,000/1.25=1:40,000 is wrong; actually enlarging to 125% means new scale is 1:40,000). 12 cm on original at 1:50,000 = 600,000 cm = 6 km. 7.5 km doesn't correspond to any straightforward calculation."
+          },
+          {
+            "choice": "The stated premises are inconsistent",
+            "judgment": "refuted",
+            "reason": "The premises are consistent: original map at 1:50,000, 12 cm measurement, enlarged to 125%, new scale bar drawn to match. The original 12 cm represents 6 km regardless of the enlargement. No inconsistency exists."
+          },
+          {
+            "choice": "6 km",
+            "judgment": "supported",
+            "reason": "The original 12 cm measurement on the 1:50,000 map represents 12 × 50,000 = 600,000 cm = 6 km. The enlargement and new scale bar are irrelevant to what the original measurement represents. The question asks about the original 12 cm measurement."
+          },
+          {
+            "choice": "4.8 km",
+            "judgment": "refuted",
+            "reason": "4.8 km would result from 12 cm × 40,000 cm = 480,000 cm, which doesn't match any logical interpretation. Or possibly from applying a reduced scale, but no reduction is stated."
+          }
+        ],
+        "index": 1
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "6 km"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 1,
+      "original_call_index": 14,
+      "id": "item-08",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [
+        "The original 10 cm measurement represents 2.5 km on the ground"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "The winding measurement is invalid; only straight-line distance can be converted",
+            "judgment": "refuted",
+            "reason": "Following bends with a string is a valid method for measuring winding routes on a map, as confirmed by standard map-reading guidance. The result can be converted using the scale just like a straight measurement."
+          },
+          {
+            "choice": "The original 10 cm measurement represents 2.5 km on the ground",
+            "judgment": "supported",
+            "reason": "On the original 1:25,000 map, 10 cm × 25,000 = 250,000 cm = 2.5 km. The 50% reduction affects the printed copy but not what the original measurement represents. The question asks about the original 10 cm measurement."
+          },
+          {
+            "choice": "The reduced scale bar now represents 500 m, so the trail is 5 km",
+            "judgment": "refuted",
+            "reason": "The original 4 cm scale bar at 1:25,000 represents 1 km. At 50% reduction, the bar is 2 cm and still represents 1 km (scale bar resizes with map). The trail on the reduced map is 5 cm, and 5 cm / 2 cm × 1 km = 2.5 km, not 5 km. The claim of 500 m for the reduced bar is wrong."
+          },
+          {
+            "choice": "The scale ratio halves to 1:12,500, making the trail 1.25 km",
+            "judgment": "refuted",
+            "reason": "Reducing the printed map to 50% makes the scale smaller (more zoomed out), not larger. The new scale would be 1:50,000 (doubling the ratio denominator), not 1:12,500. And 1.25 km doesn't follow from any correct calculation."
+          }
+        ],
+        "index": 2
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "The original 10 cm measurement represents 2.5 km on the ground"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 1,
+      "original_call_index": 14,
+      "id": "item-09",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "1.2 km"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "1.2 km",
+            "judgment": "supported",
+            "reason": "The original 6 cm measurement on the 1:20,000 map: 6 × 20,000 = 120,000 cm = 1.2 km. Alternatively, the recipient measures 4.5 cm on the 75% reduced map. The reduced scale bar resizes with the map, so it remains valid. At 75% reduction, the effective scale is 1:26,667, but using the reduced scale bar: 4.5 cm on reduced map corresponds to 6 cm on original (4.5/0.75=6), giving 6×20,000=1.2 km. Both methods agree."
+          },
+          {
+            "choice": "0.9 km",
+            "judgment": "refuted",
+            "reason": "0.9 km would result from applying the original 1:20,000 scale to the reduced 4.5 cm measurement: 4.5 × 20,000 = 90,000 cm = 0.9 km. But this incorrectly uses the original numerical scale on the reduced map without accounting for the size change."
+          },
+          {
+            "choice": "1.6 km",
+            "judgment": "refuted",
+            "reason": "1.6 km would result from 4.5 cm × (20,000/0.75)/100 = 4.5 × 26,667 = 120,000 cm... wait that's 1.2 km. Or perhaps 6 cm × 26,667 = 1.6 km if using wrong scale. No standard calculation yields 1.6 km correctly here."
+          },
+          {
+            "choice": "No solution exists under the stated conditions",
+            "judgment": "refuted",
+            "reason": "The conditions are consistent. The reduced scale bar correctly scales with the map, so the recipient can use it to measure the route. Both the original measurement method and the recipient's measurement yield 1.2 km. A solution clearly exists."
+          }
+        ],
+        "index": 3
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "1.2 km"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 2,
+      "original_call_index": 16,
+      "id": "item-10",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "2 km"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "3 km",
+            "judgment": "refuted",
+            "reason": "3 km would require the enlarged map scale to be 1:25,000, ignoring the enlargement. But the map was enlarged 150%, so the new scale is 1:16,667. 12 cm × 16,667 = 200,004 cm ≈ 2 km, not 3 km."
+          },
+          {
+            "choice": "1.33 km",
+            "judgment": "refuted",
+            "reason": "1.33 km ≈ 8 cm × 16,667 cm, which corresponds to using the original 8 cm measurement with the new scale, or some other miscalculation. 12 cm at 1:16,667 = 2 km, not 1.33 km."
+          },
+          {
+            "choice": "1.8 km",
+            "judgment": "refuted",
+            "reason": "1.8 km would come from 12 cm × 15,000 = 180,000 cm = 1.8 km, using an incorrect scale. The correct enlarged scale is 1:16,667, giving 2 km."
+          },
+          {
+            "choice": "2 km",
+            "judgment": "supported",
+            "reason": "Original scale 1:25,000; enlarged 150% means new scale is 1:(25,000/1.5) = 1:16,667. The 12 cm measurement on the enlarged map represents 12 × 16,667 cm = 200,000 cm = 2 km. Alternatively, the ground distance represented is unchanged from the original 8 cm measurement: 8 cm × 25,000 = 200,000 cm = 2 km."
+          }
+        ],
+        "index": 0
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "2 km"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 2,
+      "original_call_index": 16,
+      "id": "item-11",
+      "role": "solver",
+      "independent_premise": "invalid",
+      "independent_difficulty": 3,
+      "independent_supported": [],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "1:40,000",
+            "judgment": "refuted",
+            "reason": "1:40,000 would be a larger scale (more detail), which would result from enlarging, not reducing. Reducing to 80% makes the scale smaller (larger denominator)."
+          },
+          {
+            "choice": "1:50,000",
+            "judgment": "refuted",
+            "reason": "The printed numerical ratio 1:50,000 no longer applies after resizing. The map is reduced to 80%, so printed distances shrink while ground distances stay the same, making the new RF = 1:(50,000/0.8) = 1:62,500."
+          },
+          {
+            "choice": "1:100,000",
+            "judgment": "refuted",
+            "reason": "1:100,000 would result from a 50% reduction, not 80%. At 80% linear reduction, the denominator increases by factor 1/0.8 = 1.25, giving 50,000 × 1.25 = 62,500."
+          },
+          {
+            "choice": "1:62,500",
+            "judgment": "supported",
+            "reason": "Reducing to 80% linear means each map cm now represents 1/0.8 = 1.25 times more ground distance. New RF = 1:(50,000 × 1.25) = 1:62,500. Verification: original road = 5 cm at 1:50,000 = 250,000 cm = 2.5 km, but labeled 3 km — the label is consistent context. The scale change formula gives 1:62,500."
+          }
+        ],
+        "index": 1
+      },
+      "choice_judgment_disagreements": [
+        "1:62,500"
+      ],
+      "model_supported": [
+        "1:62,500"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 2,
+      "original_call_index": 16,
+      "id": "item-12",
+      "role": "solver",
+      "independent_premise": "ambiguous",
+      "independent_difficulty": 3,
+      "independent_supported": [],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "7.2 km",
+            "judgment": "refuted",
+            "reason": "7.2 km would come from using the original (unenlarged) scale bar length. If original bar = 2 cm = 1 km, enlarged bar = 2.5 cm = 1 km. 9 cm ÷ 2.5 cm/km = 3.6 km, not 7.2 km."
+          },
+          {
+            "choice": "3.6 km (assuming original 2 cm bar = 1 km)",
+            "judgment": "supported",
+            "reason": "If original scale bar = 2 cm = 1 km, enlarged 125% it becomes 2.5 cm = 1 km. Using the enlarged bar: 9 cm ÷ 2.5 cm per km = 3.6 km. The scale bar resized with the map remains valid, and this calculation is correct under the stated assumption."
+          },
+          {
+            "choice": "4.5 km",
+            "judgment": "refuted",
+            "reason": "4.5 km = 9 cm ÷ 2 cm/km, which uses the original unenlarged bar length (2 cm = 1 km) without accounting for the 125% enlargement. The bar is also enlarged to 2.5 cm = 1 km, so this is incorrect."
+          },
+          {
+            "choice": "2.88 km",
+            "judgment": "refuted",
+            "reason": "2.88 km doesn't correspond to a straightforward calculation with the given values. It might come from dividing 3.6 by 1.25, which would be double-correcting for the enlargement. No valid derivation supports this answer."
+          }
+        ],
+        "index": 2
+      },
+      "choice_judgment_disagreements": [
+        "7.2 km",
+        "3.6 km (assuming original 2 cm bar = 1 km)",
+        "4.5 km",
+        "2.88 km"
+      ],
+      "model_supported": [
+        "3.6 km (assuming original 2 cm bar = 1 km)"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 3,
+      "original_call_index": 18,
+      "id": "item-13",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [
+        "2 km"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "4 km",
+            "judgment": "refuted",
+            "reason": "4 km would require 3 cm on the reduced map to represent 4 km. The reduced scale bar (also at 75%) still correctly maps its own length to 2 km. 3 cm on the reduced bar is 3/3 = 1 of the bar's unit, but the bar now measures 3 cm (75% of 4 cm) for 2 km. So 3 cm = 2 km, not 4 km."
+          },
+          {
+            "choice": "2 km",
+            "judgment": "supported",
+            "reason": "The original scale bar is 4 cm = 2 km. After 75% reduction, the scale bar becomes 3 cm = 2 km. The cyclist measures exactly 3 cm using this reduced scale bar, which equals exactly one full bar length = 2 km. Since the scale bar was resized with the map, it remains valid, and 3 cm on the reduced map corresponds to 2 km on the ground."
+          },
+          {
+            "choice": "1.5 km",
+            "judgment": "refuted",
+            "reason": "1.5 km would result if one incorrectly applied the original scale (4 cm = 2 km, so 1 cm = 0.5 km, giving 3 cm = 1.5 km) without accounting for the reduction. But the problem states the reduced scale bar is used, which is also reduced to 75%, making it valid for the reduced map. Using the reduced bar correctly gives 2 km, not 1.5 km."
+          },
+          {
+            "choice": "2.67 km",
+            "judgment": "refuted",
+            "reason": "2.67 km ≈ 8/3 km has no basis here. It might arise from dividing 2 km by 0.75, but that would be incorrect reasoning—the scale bar shrinks with the map, so no correction factor is needed. The reduced scale bar directly gives 3 cm = 2 km."
+          }
+        ],
+        "index": 0
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "2 km"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 4,
+      "original_call_index": 20,
+      "id": "item-14",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [
+        "Cannot be determined from the information given."
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "1,500 kJ/m²/year",
+            "judgment": "refuted",
+            "reason": "This would require applying the 15% efficiency to the full 10,000 kJ algae production (10,000×0.15=1,500). But shrimp share algae production with snails; the fraction of algae production going to shrimp is not stated, so we cannot know how much energy shrimp actually assimilate/produce to pass on to fish."
+          },
+          {
+            "choice": "150 kJ/m²/year",
+            "judgment": "refuted",
+            "reason": "This would require a two-step calculation (e.g., 10% to shrimp then 15% to fish = 150), but no shrimp transfer efficiency is stated, and the split of algae production between shrimp and snails is unknown."
+          },
+          {
+            "choice": "Cannot be determined from the information given.",
+            "judgment": "supported",
+            "reason": "The 15% efficiency applies to shrimp production transferred to fish, but shrimp production itself depends on what fraction of algae production goes to shrimp (vs. snails). Since no shrimp transfer efficiency from algae nor the shrimp/snail split is given, the energy reaching fish cannot be calculated."
+          },
+          {
+            "choice": "750 kJ/m²/year",
+            "judgment": "refuted",
+            "reason": "This would imply shrimp receive 5,000 kJ (half of algae production) and 15% reaches fish, but the 50/50 split between shrimp and snails is assumed, not stated. No basis for this specific value exists in the given information."
+          }
+        ],
+        "index": 0
+      },
+      "choice_judgment_disagreements": [
+        "1,500 kJ/m²/year",
+        "150 kJ/m²/year",
+        "750 kJ/m²/year"
+      ],
+      "model_supported": [
+        "Cannot be determined from the information given."
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 4,
+      "original_call_index": 20,
+      "id": "item-15",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [
+        "The producer biomass pyramid is inverted, but energy flow to consumers is not constrained by standing biomass alone."
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "Consumer biomass proves the stated turnover rate is impossible.",
+            "judgment": "refuted",
+            "reason": "Consumer biomass exceeding producer standing biomass does not disprove a high turnover rate. The sources explicitly state that a small producer biomass with rapid turnover can support larger consumer biomass. Consumer standing biomass alone cannot refute the stated production rate."
+          },
+          {
+            "choice": "The producer biomass pyramid is inverted, but energy flow to consumers is not constrained by standing biomass alone.",
+            "judgment": "supported",
+            "reason": "Producer standing biomass (50 g/m²) < consumer standing biomass (200 g/m²), so the biomass pyramid is inverted. However, annual production = 10×50 = 500 g/m²/year, which can support consumers. The sources confirm standing biomass ≠ energy production, so energy flow is not constrained by standing biomass alone."
+          },
+          {
+            "choice": "Energy flow violates thermodynamic limits because consumer biomass exceeds producer biomass.",
+            "judgment": "refuted",
+            "reason": "Thermodynamic limits apply to energy flow (production rates), not standing biomass snapshots. With production of 500 g/m²/year, consumers at 200 g/m² standing biomass is thermodynamically feasible. The sources explicitly address this scenario."
+          },
+          {
+            "choice": "Annual production must be less than 50 g/m²/year to match the standing biomass.",
+            "judgment": "refuted",
+            "reason": "The problem states production equals 10× biomass annually = 500 g/m²/year. Standing biomass and annual production are different quantities; high turnover means production greatly exceeds standing biomass. This choice conflates the two."
+          }
+        ],
+        "index": 1
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "The producer biomass pyramid is inverted, but energy flow to consumers is not constrained by standing biomass alone."
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 4,
+      "original_call_index": 20,
+      "id": "item-16",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "40 kJ/m²/year"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "400 kJ/m²/year",
+            "judgment": "refuted",
+            "reason": "8,000×0.25=2,000 (daphnia); 2,000×0.20=400 (minnows); 400×0.10=40 (pike). 400 is minnow production, not pike production."
+          },
+          {
+            "choice": "200 kJ/m²/year",
+            "judgment": "refuted",
+            "reason": "No calculation path using the stated efficiencies yields 200 kJ for pike. This value does not correspond to any step in the chain."
+          },
+          {
+            "choice": "16 kJ/m²/year",
+            "judgment": "refuted",
+            "reason": "No standard calculation path yields 16. This does not match 8,000×0.25×0.20×0.10=40."
+          },
+          {
+            "choice": "40 kJ/m²/year",
+            "judgment": "supported",
+            "reason": "8,000×0.25=2,000 (daphnia production); 2,000×0.20=400 (minnow production); 400×0.10=40 (pike production). This correctly applies all three stated transfer efficiencies in sequence."
+          }
+        ],
+        "index": 2
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "40 kJ/m²/year"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 5,
+      "original_call_index": 7,
+      "id": "item-01",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "=$A5+D$2"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=$A5+F$2",
+            "judgment": "refuted",
+            "reason": "Copy displacement is +2 columns, +2 rows. $A3: column A fixed stays A, row 3 relative +2 = row 5 → $A5 correct. B$2: column B relative +2 = D, row 2 fixed stays 2 → D$2. So F$2 is wrong (column should be D, not F)."
+          },
+          {
+            "choice": "=$C5+B$4",
+            "judgment": "refuted",
+            "reason": "$A3 has column A fixed, so it cannot become $C5. Also B$2 has row 2 fixed, so it cannot become B$4."
+          },
+          {
+            "choice": "=$A5+D$2",
+            "judgment": "supported",
+            "reason": "Displacement: +2 cols, +2 rows. $A3: A fixed→A, row 3+2=5 → $A5. B$2: B relative+2=D, row 2 fixed→2 → D$2. Result: =$A5+D$2. Correct."
+          },
+          {
+            "choice": "=$A3+D$2",
+            "judgment": "refuted",
+            "reason": "$A3: row 3 is relative and should adjust +2 to row 5, giving $A5, not $A3."
+          }
+        ],
+        "index": 0
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=$A5+D$2"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 5,
+      "original_call_index": 7,
+      "id": "item-02",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [
+        "=B$1*$A2"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=B1*A2",
+            "judgment": "refuted",
+            "reason": "Both references are fully relative. When filled right, B1 shifts to C1, D1, etc. (correct for rates), but A2 also shifts to B2, C2, etc. (wrong; quantity column A must stay fixed). When filled down, A2 shifts correctly but B1 also shifts down (wrong; rate row 1 must stay fixed)."
+          },
+          {
+            "choice": "=$B$1*$A$2",
+            "judgment": "refuted",
+            "reason": "Both references are fully absolute. Filling across or down always uses B1 and A2, so every cell computes the same value instead of using the correct rate and quantity for each position."
+          },
+          {
+            "choice": "=B$1*$A2",
+            "judgment": "supported",
+            "reason": "B$1: column B relative (shifts right when filled across to pick each rate), row 1 fixed (stays in rate row). $A2: column A fixed (always references quantity column A), row 2 relative (shifts down to pick each quantity). Fills correctly across and down."
+          },
+          {
+            "choice": "=$B1*A$2",
+            "judgment": "refuted",
+            "reason": "$B1: column B fixed (always uses column B rate, never shifts right), row 1 relative (shifts down incorrectly). A$2: column A relative (shifts right incorrectly), row 2 fixed. This is the opposite anchoring and produces wrong results when filled."
+          }
+        ],
+        "index": 1
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=B$1*$A2"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 5,
+      "original_call_index": 7,
+      "id": "item-03",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "=E$3+$B6"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=C$3+$B6",
+            "judgment": "refuted",
+            "reason": "Displacement from D4 to F6: +2 cols, +2 rows. C$3: column C relative+2=E, row 3 fixed→3 → E$3. $B4: column B fixed→B, row 4 relative+2=6 → $B6. Result should be =E$3+$B6, not C$3+$B6."
+          },
+          {
+            "choice": "=E$5+$B6",
+            "judgment": "refuted",
+            "reason": "C$3: row 3 is fixed, so it cannot become row 5. Should remain E$3."
+          },
+          {
+            "choice": "=E$3+$B6",
+            "judgment": "supported",
+            "reason": "Displacement: +2 cols, +2 rows. C$3: C+2=E, row 3 fixed→3 → E$3. $B4: B fixed→B, row 4+2=6 → $B6. Result: =E$3+$B6. Correct."
+          },
+          {
+            "choice": "=E$3+$B4",
+            "judgment": "refuted",
+            "reason": "$B4: row 4 is relative and should adjust +2 to row 6, giving $B6, not $B4."
+          }
+        ],
+        "index": 2
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=E$3+$B6"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 5,
+      "original_call_index": 7,
+      "id": "item-04",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [
+        "=$B2*C$1"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=$B$2*C1",
+            "judgment": "refuted",
+            "reason": "$B$2 is fully absolute; when filled down to rows 3–10 it always uses B2 instead of the percentage from each row. Also C1 is fully relative; when filled right it correctly shifts column but when filled down it shifts row (C2, C3…) away from row 1 sales figures."
+          },
+          {
+            "choice": "=B2*C$1",
+            "judgment": "refuted",
+            "reason": "B2 is fully relative; when filled right the column shifts away from column B percentages. C$1 fixes row 1 (correct for sales) but column C shifts right (correct). The percentage reference is wrong."
+          },
+          {
+            "choice": "=$B2*C$1",
+            "judgment": "supported",
+            "reason": "$B2: column B fixed (always uses percentage from column B), row 2 relative (shifts down to each row's percentage). C$1: column C relative (shifts right to each column's sales figure), row 1 fixed (stays in sales row). Fills correctly across and down."
+          },
+          {
+            "choice": "=B$2*$C1",
+            "judgment": "refuted",
+            "reason": "B$2: column B relative (shifts right, wrong for percentages), row 2 fixed (wrong, should shift down). $C1: column C fixed (wrong, should shift right for each sales column), row 1 relative (shifts down, wrong). Opposite anchoring."
+          }
+        ],
+        "index": 3
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=$B2*C$1"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 5,
+      "original_call_index": 7,
+      "id": "item-05",
+      "role": "solver",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "=$E7+B$3"
+      ],
+      "model_record": {
+        "choices": [
+          {
+            "choice": "=$C7+F$3",
+            "judgment": "refuted",
+            "reason": "$E5: column E is fixed, so it cannot become $C7. Should remain $E7."
+          },
+          {
+            "choice": "=$E7+B$3",
+            "judgment": "supported",
+            "reason": "Displacement from G5 to C7: -4 cols, +2 rows. $E5: E fixed→E, row 5+2=7 → $E7. F$3: F-4=B, row 3 fixed→3 → B$3. Result: =$E7+B$3. Correct."
+          },
+          {
+            "choice": "=$E7+F$3",
+            "judgment": "refuted",
+            "reason": "F$3: column F is relative and should adjust -4 columns to B, giving B$3, not F$3."
+          },
+          {
+            "choice": "=$E5+B$3",
+            "judgment": "refuted",
+            "reason": "$E5: row 5 is relative and should adjust +2 to row 7, giving $E7, not $E5."
+          }
+        ],
+        "index": 4
+      },
+      "choice_judgment_disagreements": [],
+      "model_supported": [
+        "=$E7+B$3"
+      ],
+      "declared_unique_with_three_refuted": true
+    },
+    {
+      "position": 6,
+      "original_call_index": 5,
+      "id": "item-17",
+      "role": "reviewer",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [],
+      "model_record": {
+        "answer": "=$A$1*B$1*$A3",
+        "difficulty": 4,
+        "explanation": "Each of the three cell roles needs a specific anchor: the shared constant needs full fixing ($A$1), the regional target needs its row fixed but column free (B$1), and the quarter factor needs its column fixed but row free ($A3). Only one choice satisfies all three simultaneously.",
+        "index": 0,
+        "valid": true,
+        "choiceExplanations": {
+          "=$A1*B$1*$A3": "$A1 leaves the row of the quarter-factor reference relative, so copying down shifts it correctly, but the stated requirement is to fix A1 entirely with $A$1.",
+          "=$A$1*B1*$A$3": "B1 is fully relative so copying down shifts its row away from row 1; $A$3 fully fixes the quarter row so copying down never picks up Q2–Q4.",
+          "=$A$1*B$1*$A3": "$A$1 locks the shared quarter factor; B$1 keeps row 1 fixed while the column shifts right for each region; $A3 keeps column A fixed while the row shifts down for each quarter.",
+          "=$A$1*$B$1*A3": "$B$1 fully fixes the regional target so every column uses North's value; A3 is fully relative so copying right shifts its column away from A."
+        }
+      },
+      "positive_answer_supported_by_independent_assessor": false
+    },
+    {
+      "position": 7,
+      "original_call_index": 5,
+      "id": "item-17",
+      "role": "reviewer",
+      "independent_premise": "supported",
+      "independent_difficulty": 3,
+      "independent_supported": [],
+      "model_record": {
+        "answer": "=$A$1*B$1*$A3",
+        "difficulty": 4,
+        "explanation": "Each of the three operands needs a distinct anchor strategy: the shared constant needs both components fixed, the regional target needs only its row fixed so the column shifts right, and the quarter factor needs only its column fixed so the row shifts down.",
+        "index": 0,
+        "valid": true,
+        "choiceExplanations": {
+          "=$A1*B$1*$A3": "$A1 leaves the row of the quarter-factor cell relative, so copying down shifts it away from A1; the quarter factor anchor must be fully fixed as $A$1.",
+          "=$A$1*B1*$A$3": "B1 is fully relative so copying down shifts its row off row 1; $A$3 fully fixes the quarter row so copying down never picks up Q2–Q4.",
+          "=$A$1*B$1*$A3": "$A$1 locks the shared quarter factor; B$1 keeps row 1 fixed while the column shifts right for each region; $A3 keeps column A fixed while the row shifts down for each quarter.",
+          "=$A$1*$B$1*A3": "$B$1 fully fixes the regional target so every column uses North's value; A3 is fully relative so copying right shifts its column away from A, losing the quarter factors."
+        }
+      },
+      "positive_answer_supported_by_independent_assessor": false
+    },
+    {
+      "position": 8,
+      "original_call_index": 28,
+      "id": "item-18",
+      "role": "teaching_auditor",
+      "independent_premise": "ambiguous",
+      "independent_difficulty": 4,
+      "independent_supported": [],
+      "model_record": {
+        "answer": "160 kJ/m²/year",
+        "difficulty": 4,
+        "explanationSupport": "supported",
+        "index": 0,
+        "issues": [],
+        "valid": true
+      },
+      "positive_answer_supported_by_independent_assessor": false
+    },
+    {
+      "position": 8,
+      "original_call_index": 28,
+      "id": "item-19",
+      "role": "teaching_auditor",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "625 kJ/m²/year"
+      ],
+      "model_record": {
+        "answer": "625 kJ/m²/year",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "index": 1,
+        "issues": [
+          "The explanation states 'an inverted biomass pyramid would yield the same production-based answer' but the biomass pyramid here is upright (500>200>50), making the inverted-pyramid remark a non-sequitur that could confuse learners, though it does not affect the calculation."
+        ],
+        "valid": true
+      },
+      "positive_answer_supported_by_independent_assessor": true
+    },
+    {
+      "position": 9,
+      "original_call_index": 28,
+      "id": "item-18",
+      "role": "teaching_auditor",
+      "independent_premise": "ambiguous",
+      "independent_difficulty": 4,
+      "independent_supported": [],
+      "model_record": {
+        "answer": "160 kJ/m²/year",
+        "difficulty": 4,
+        "explanationSupport": "supported",
+        "index": 0,
+        "issues": [],
+        "valid": true
+      },
+      "positive_answer_supported_by_independent_assessor": false
+    },
+    {
+      "position": 9,
+      "original_call_index": 28,
+      "id": "item-19",
+      "role": "teaching_auditor",
+      "independent_premise": "supported",
+      "independent_difficulty": 2,
+      "independent_supported": [
+        "625 kJ/m²/year"
+      ],
+      "model_record": {
+        "answer": "625 kJ/m²/year",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "index": 1,
+        "issues": [],
+        "valid": true
+      },
+      "positive_answer_supported_by_independent_assessor": true
+    }
+  ],
+  "scope": "Direct fixed downstream records only. No authored-key comparison, fresh generation, full default review policy, inventory admission, or factual correctness certification. Independent disagreements require interpretation; token sums cover known responses only."
+}

@@ -1,0 +1,10 @@
+{
+  "frozen_at_utc": "2026-09-10T05:23:41.922568+00:00",
+  "phase": "independent subjects before live model requests",
+  "subjects": 19,
+  "choice_judgments": 76,
+  "files": {
+    "subjects.json": "1c384b08b4de3a58141f441d029ee52b3cef0bb8cec84b5f9e722ea7f79c3c5d",
+    "independent-subjects.json": "38f73d44bac4b01187b8009dc859ffa534c2461a19d94eb68db85cb2acc0b869"
+  }
+}

@@ -1,0 +1,261 @@
+{
+  "status": "passed",
+  "scope": "Read-only independent frozen-plan audit; no live process or capture inspection, provider calls, or semantic assessment.",
+  "plan": {
+    "path": "/tmp/checkpoint-native-stage-plan-20260909/plan.json",
+    "byte_sha256": "246b7fbb9e1911895fa0e1f2c18f5d50d94b652390048e7d9070c33a25f60ce5",
+    "canonical_sha256": "85e2cb229c091023df78e494f21bd859164de8284ef060905165d03585c783e7"
+  },
+  "source_revision": "751bdaa3405d1c358103af51093018364365947e",
+  "source_hash_count": 66,
+  "source_sha256": {
+    "complete_question_solution.py": "72bb99b3efeab3cbe2d87526009045c205b6ac588d5c749f21937442db12e188",
+    "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "generation_diagnostics.py": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227",
+    "lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "native_output_contracts.py": "d43c0e223be0eb80a1ace46cb3373eff22a967a5970510a4f7b6aa8890802037",
+    "question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "question_generation.py": "b6ba12f9e384027a47513164ae7ddfec0e5eb9442cd41fbfff90608516b3f92f",
+    "question_quality.py": "764497658989ecc9430cc80757cdb5b9b28010a369b38062bbe2672bfc73eab1",
+    "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "question_verification.py": "76956ad8987d39b35738e9ba37d1c89bb72e5d8f06418030138c9dc63a529886",
+    "request_contract.py": "fac35010e0560b9c040b171c9e51257c9ec7196d5092dfa88b6a89699e85ea38",
+    "service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "verification_policy.py": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+    "web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "evals/acquired_source_review.py": "2471382ff68841e6bc76d736d1d9ff65970f218f7916c976a6b73803807b0715",
+    "evals/checkpoint_acquired_source_trial.py": "e7313e7b6a3967d06c2ca7a136282d94506e3335ca94afcd0d4c020aa0dc8905",
+    "evals/checkpoint_artifact_authoring_eval.py": "61e3597238f4ce2578f45ff5da152136135660702a4aafa972242db1526979c5",
+    "evals/checkpoint_artifact_observation_eval.py": "e430245004940e8e9ff80ef6d53f685259a83dfe25f10cc0fc44d68b2420afb0",
+    "evals/checkpoint_author_examples_trial.py": "2577bb09f3e1accc3a9e249a3816679d60a4f8a30a551048d25e7782607b089e",
+    "evals/checkpoint_author_latency_probe.py": "089713524f6236df8c58e3d97c927cb5ef518230bfbc4ef8f27374d87847fe9a",
+    "evals/checkpoint_author_schema_eval.py": "90470057415c4878f662381c7ad98f193148ee2cb86e7f7a183ca48fe003a482",
+    "evals/checkpoint_claim_evidence_trial.py": "b662963170f458783ea52336e4fd69c5490ff6fdb692cf0ab8c12d53db063d74",
+    "evals/checkpoint_complete_authoring_eval.py": "4c52d755193ac54e21213bb78fb9ab9f6ff7a508817e2441536137e90665d33e",
+    "evals/checkpoint_complete_solver_eval.py": "bd9699bd025f9db2fc4ac93c96e63ae1ff3632f7c7f9aa146563a78ef8b91abe",
+    "evals/checkpoint_delivery_check.py": "11037de14ada23f871ee9200f2765242d823ef9797ff2f27b359350866238697",
+    "evals/checkpoint_evidence_choice_audit.py": "c12262542fc556d9add4fb004ae6053bb775d2cc8102bb79a0b373e7ae6995bf",
+    "evals/checkpoint_evidence_eval.py": "e02594f784bf6fa0f0d8d186fd90014fb0db68322478f25b593f5250662fe904",
+    "evals/checkpoint_execution_evidence_eval.py": "55c19ebc0d4d5c338a7361f494d7ad2c66d71846b8a8fa65bb2aa8e5f3805c51",
+    "evals/checkpoint_full_pipeline_smoke.py": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+    "evals/checkpoint_immutable_review_eval.py": "0303e2120097b1b5ecd47bee4da64ee6147532814353cf38e38ec45e695994b9",
+    "evals/checkpoint_isolated_candidate_eval.py": "0ccb1cb0512efdea58846daa08fcce430e9f4a57f414fcb6bd73d807ced86756",
+    "evals/checkpoint_learning_eval.py": "452e9cab86d7f35aa3c3b9d7a60a777d32b64e4b3ff1fc2fc6c70b8a745638df",
+    "evals/checkpoint_main_capacity_trial.py": "ded8bc2c2a00872e5007dc511abd3ff206e339c6f30627c75f6fbbc7d251cd69",
+    "evals/checkpoint_model_comparison.py": "b4fe8ea3f76f64ff6cdec58acab3aaf8d37c0b4a4ea2008e2f26fcdf3413b564",
+    "evals/checkpoint_native_stage_probe.py": "9fcd84511488bb4e97feb801b88144d877e54a80ff84e3b35a0a05c89409cedf",
+    "evals/checkpoint_prompt_ablation.py": "8f252c95f9a6c21ca41128ca2d48d661ab462ee0057bdf7e83a7a3092ce31714",
+    "evals/checkpoint_question_eval.py": "f11311dc65a43a8d96f4b0fa204d73f0bb1e200379fd6db5f599e452a46a88c2",
+    "evals/checkpoint_runtime_qualification.py": "11a31d95f8be7b2b49f25d6b127070ab081a1c827663954fb59a24cd21332554",
+    "evals/checkpoint_solution_compatibility_eval.py": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+    "evals/checkpoint_solution_construction_eval.py": "6609e43ebffede8365b2d008e44daae6eb723ff43ea48e11ee139f0bd3dcf38b",
+    "evals/checkpoint_source_authoring_eval.py": "fd31a7a9862ef86eb35bc75da5f48cf17d934c3e9593694c68367606d95a92c1",
+    "evals/checkpoint_source_capture.py": "cf31bbd234f91b6dc7756ed3bba22dffd2aff018b5fd65bd7d53b81aefdb3f44",
+    "evals/checkpoint_stem_length_eval.py": "fbd81995999347dfad54798c019bec461cb35c2568d69598d4a98c7ade881d22",
+    "evals/claim_evidence_review.py": "86359b73d4f90725b31fdb48b7f1703449854c4af45d1fff9b74de4c4c32725f",
+    "evals/claim_evidence_schema.py": "a226df963b7bc9108188113ec22fda0a1ce9ced76503f5d730a04e73f5211811",
+    "evals/grounding_transport.py": "3d69d039b085cb80251c61e929e624a9969919dff3aaadb754c84325feab6b76",
+    "evals/html_artifact_question.py": "3bd0973a2a6ee6877f8474541c6c5bd2f505b67cee28893f4d4db37206e16e68",
+    "evals/observe_html_artifact.py": "f410ccba2819dcf6fbb18c19268a9371edc7a22ffceb8dc145fb40af80f8a9f2",
+    "evals/python_artifact_question.py": "6edd8ceddfb4188824f5bc9d842c464c7674180271b5c99575deb7155e079988",
+    "evals/question_complete_author.py": "6c8f4fa70e0fceac58ea620c14814702872c8d4c3ac99db57cb1047a4f88ec86",
+    "evals/question_complete_solver.py": "979143ace69739c7cf09e0534029d0ec8272fd826b57abf0829bbf2625c38e1e",
+    "evals/question_eval_scoring.py": "7126aa7a08efac527643a791e4cbd2a6e9806982cdace036645567a6153a6dd1",
+    "evals/question_immutable_review.py": "38b4405673655d624820623e0b6335c3538ae33421b6e3abf954a0b49b5cc91f",
+    "evals/question_solution_construction.py": "31592bd38d744cd096680786787d5aa6e1ac58690023d97827eec8848a4ab771",
+    "evals/split_evidence_review.py": "1106ba6769fbd9d92ff28ba73f951b2f90558c153d53ccec342692b67c4cda58",
+    "evals/task_obstruction_review.py": "24f8497e0960af1e8b749d31dd83a8977ed8a8c5d31eda494a399ff821615cd8",
+    "requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67"
+  },
+  "all_sources_match_frozen_commit_and_current_files": true,
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.91",
+    "botocore": "1.43.91"
+  },
+  "exact_no_client_plan_reconstruction": true,
+  "native_sdk_shape_checks_passed": 10,
+  "origin": {
+    "capture_file_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+    "capture_canonical_sha256": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2",
+    "prior_plan_sha256": "bbebe7e13927aa06bc701bb3745ecc0d5beffea2c75d4b3f07261a9ccf090114"
+  },
+  "jobs": [
+    {
+      "position": 0,
+      "archived_call_index": 7,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_item_count": 5,
+      "request_sha256": "a6a1b251543f34c63504c6e1c07bf6a7ef320aa25808221326c872f811ed6a26",
+      "input_utf8_bytes": 7696,
+      "only_production_native_delta": true
+    },
+    {
+      "position": 1,
+      "archived_call_index": 14,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_item_count": 4,
+      "request_sha256": "02c6227866a96dcf331a2fa7f4ece43dd7d1ca2eb42c4bdc842ac3741d50ee95",
+      "input_utf8_bytes": 9060,
+      "only_production_native_delta": true
+    },
+    {
+      "position": 2,
+      "archived_call_index": 16,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_item_count": 3,
+      "request_sha256": "22d88edcc3f7cb51f02a196787801958b03653e69bc9b7a4d62807a944ef5a60",
+      "input_utf8_bytes": 8377,
+      "only_production_native_delta": true
+    },
+    {
+      "position": 3,
+      "archived_call_index": 18,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_item_count": 1,
+      "request_sha256": "efa5809cd676aa2a37aec3ec45c5dc037b6281a8738a5379f40c528c3d44cbee",
+      "input_utf8_bytes": 7452,
+      "only_production_native_delta": true
+    },
+    {
+      "position": 4,
+      "archived_call_index": 20,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_item_count": 3,
+      "request_sha256": "19a80026b099ef6bba552e740a5fc1ef7881a62233d30aca76413228ae4e4a01",
+      "input_utf8_bytes": 8760,
+      "only_production_native_delta": true
+    },
+    {
+      "position": 5,
+      "archived_call_index": 7,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_item_count": 5,
+      "request_sha256": "a6a1b251543f34c63504c6e1c07bf6a7ef320aa25808221326c872f811ed6a26",
+      "input_utf8_bytes": 7696,
+      "only_production_native_delta": true
+    },
+    {
+      "position": 6,
+      "archived_call_index": 5,
+      "role": "reviewer",
+      "contract": "default_reviewer_v1",
+      "subject_item_count": 1,
+      "request_sha256": "72a65e3054e9e7236c54a8aae9e1c87db6fd11b5fc710ba30753e1bd7488500e",
+      "input_utf8_bytes": 11551,
+      "only_production_native_delta": true
+    },
+    {
+      "position": 7,
+      "archived_call_index": 5,
+      "role": "reviewer",
+      "contract": "default_reviewer_v1",
+      "subject_item_count": 1,
+      "request_sha256": "72a65e3054e9e7236c54a8aae9e1c87db6fd11b5fc710ba30753e1bd7488500e",
+      "input_utf8_bytes": 11551,
+      "only_production_native_delta": true
+    },
+    {
+      "position": 8,
+      "archived_call_index": 28,
+      "role": "teaching_auditor",
+      "contract": "authored_solution_reviewer_v1",
+      "subject_item_count": 2,
+      "request_sha256": "8da1b5f3acb080526a96572d94948c7cf89162a900e52321188696837c025566",
+      "input_utf8_bytes": 9029,
+      "only_production_native_delta": true
+    },
+    {
+      "position": 9,
+      "archived_call_index": 28,
+      "role": "teaching_auditor",
+      "contract": "authored_solution_reviewer_v1",
+      "subject_item_count": 2,
+      "request_sha256": "8da1b5f3acb080526a96572d94948c7cf89162a900e52321188696837c025566",
+      "input_utf8_bytes": 9029,
+      "only_production_native_delta": true
+    }
+  ],
+  "schemas": {
+    "complete_choice_solver_v1": {
+      "name": "complete_choice_solver_v1",
+      "version": "1",
+      "sha256": "bac691665f8f937805ca6fbb3cbd858320ccbc19d582c22b5dffaee1e6d1d446"
+    },
+    "default_reviewer_v1": {
+      "name": "default_reviewer_v1",
+      "version": "1",
+      "sha256": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe"
+    },
+    "authored_solution_reviewer_v1": {
+      "name": "authored_solution_reviewer_v1",
+      "version": "1",
+      "sha256": "d965da2f5a514961f173fcf232368f0b887505774e2982f1ada7ebe565ebc501"
+    }
+  },
+  "maximum_calls": 10,
+  "maximum_input_utf8_bytes_per_call": 32768,
+  "maximum_input_utf8_bytes_total": 327680,
+  "planned_input_utf8_bytes": 90201,
+  "maximum_planned_request_utf8_bytes": 11551,
+  "worker_seconds": 240,
+  "sdk_total_max_attempts": 1,
+  "transport_read_seconds": 75,
+  "transport_connect_seconds": 3,
+  "raw_capture_limit_bytes": 262144,
+  "repeated_request_pairs": [
+    [
+      0,
+      5
+    ],
+    [
+      6,
+      7
+    ],
+    [
+      8,
+      9
+    ]
+  ],
+  "first_pass_freeze": {
+    "path": "/tmp/checkpoint-native-stage-assessment-20260909/first-pass-freeze.json",
+    "byte_sha256": "b70957ea16e866ec168b6121ff1d0947ba5e8126ab1b942c5e41fef1e06d988b",
+    "frozen_at_utc": "2026-09-10T05:23:41.922568+00:00",
+    "files_sha256": {
+      "subjects.json": "1c384b08b4de3a58141f441d029ee52b3cef0bb8cec84b5f9e722ea7f79c3c5d",
+      "independent-subjects.json": "38f73d44bac4b01187b8009dc859ffa534c2461a19d94eb68db85cb2acc0b869"
+    },
+    "all_file_hashes_match": true,
+    "subjects": 19,
+    "choice_judgments": 76,
+    "matches_distinct_historical_input_counts": true,
+    "plan_file_birthtime_utc": "2026-09-10T05:26:41.158309+00:00",
+    "plan_file_mtime_utc": "2026-09-10T05:26:41.160359+00:00",
+    "precedes_plan_creation": true,
+    "order_evidence_scope": "The assessment freeze predates this frozen plan file creation by filesystem metadata. Root reports starting the live invocation only after freezing this plan; this audit did not inspect the running process or independently obtain its invocation timestamp."
+  },
+  "provider_calls_during_audit": 0,
+  "live_process_or_capture_polled": false,
+  "findings": [],
+  "limitations": [
+    "Documented support and SDK request validation do not establish live service/schema acceptance.",
+    "All ten requests are Sonnet downstream stages; Kimi authoring and skill-map schemas remain outside qualification.",
+    "First/repeated requests do not establish grammar cache state.",
+    "Schema or stage validation cannot establish factual correctness, useful teaching, full production acceptance or delivered-question coverage."
+  ]
+}

@@ -1,0 +1,675 @@
+[
+  {
+    "id": "item-11",
+    "goal": {
+      "title": "Interpret map distances and scale after resizing",
+      "category": "Geography",
+      "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+      "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+      "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine map-to-ground unit conversion",
+        "route measurements and uniform changes in printed size. Distinguish a printed nu"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Ordnance Survey map distance: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+        "truncated": true
+      },
+      {
+        "name": "Penn State map reproduction: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A park map shows a straight road labeled 3 km. The printed scale states 1:50,000. A student measures the road as 5 cm, then reduces the map on a copier to 80% of original width and height. What is the correct representative fraction for the reduced map?",
+    "choices": [
+      "1:40,000",
+      "1:50,000",
+      "1:100,000",
+      "1:62,500"
+    ],
+    "topic": "Combine map-to-ground unit conversion"
+  },
+  {
+    "id": "item-04",
+    "goal": {
+      "title": "Build Excel formulas that copy correctly across a worksheet",
+      "category": "Spreadsheets",
+      "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+      "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+      "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine relative",
+        "absolute and mixed A1 references when copying or filling formulas across both ro"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Microsoft Excel reference rules: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A commission sheet has percentages in column B (B2:B10) and sales figures in row 1 (C1:H1). Cell C2 should calculate commission using the percentage from its row and the sales from its column, then fill the entire range. What formula belongs in C2?",
+    "choices": [
+      "=$B$2*C1",
+      "=B2*C$1",
+      "=$B2*C$1",
+      "=B$2*$C1"
+    ],
+    "topic": "Combine relative, absolute and mixed A1 referenc"
+  },
+  {
+    "id": "item-02",
+    "goal": {
+      "title": "Build Excel formulas that copy correctly across a worksheet",
+      "category": "Spreadsheets",
+      "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+      "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+      "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine relative",
+        "absolute and mixed A1 references when copying or filling formulas across both ro"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Microsoft Excel reference rules: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A price table has rates in row 1 (B1:E1) and quantities in column A (A2:A5). Cell B2 should multiply rate B1 by quantity A2, then fill across and down the table. What formula belongs in B2?",
+    "choices": [
+      "=B1*A2",
+      "=$B$1*$A$2",
+      "=B$1*$A2",
+      "=$B1*A$2"
+    ],
+    "topic": "Combine relative, absolute and mixed A1 referenc"
+  },
+  {
+    "id": "item-05",
+    "goal": {
+      "title": "Build Excel formulas that copy correctly across a worksheet",
+      "category": "Spreadsheets",
+      "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+      "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+      "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine relative",
+        "absolute and mixed A1 references when copying or filling formulas across both ro"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Microsoft Excel reference rules: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+        "truncated": true
+      }
+    ],
+    "prompt": "Cell G5 contains =$E5+F$3. It is copied to C7. What formula appears in C7?",
+    "choices": [
+      "=$C7+F$3",
+      "=$E7+B$3",
+      "=$E7+F$3",
+      "=$E5+B$3"
+    ],
+    "topic": "Combine relative, absolute and mixed A1 referenc"
+  },
+  {
+    "id": "item-06",
+    "goal": {
+      "title": "Interpret map distances and scale after resizing",
+      "category": "Geography",
+      "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+      "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+      "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine map-to-ground unit conversion",
+        "route measurements and uniform changes in printed size. Distinguish a printed nu"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Ordnance Survey map distance: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+        "truncated": true
+      },
+      {
+        "name": "Penn State map reproduction: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A park map is printed at 1:10,000 with a 2 cm scale bar. A straight trail measures 5 cm on the map. The map is photocopied at 80% reduction. What ground distance does the original 5 cm measurement represent?",
+    "choices": [
+      "500 m",
+      "400 m",
+      "625 m",
+      "Cannot be determined from the information given"
+    ],
+    "topic": "Combine map-to-ground unit conversion"
+  },
+  {
+    "id": "item-03",
+    "goal": {
+      "title": "Build Excel formulas that copy correctly across a worksheet",
+      "category": "Spreadsheets",
+      "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+      "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+      "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine relative",
+        "absolute and mixed A1 references when copying or filling formulas across both ro"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Microsoft Excel reference rules: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+        "truncated": true
+      }
+    ],
+    "prompt": "Cell D4 contains =C$3+$B4. It is copied to F6. What formula appears in F6?",
+    "choices": [
+      "=C$3+$B6",
+      "=E$5+$B6",
+      "=E$3+$B6",
+      "=E$3+$B4"
+    ],
+    "topic": "Combine relative, absolute and mixed A1 referenc"
+  },
+  {
+    "id": "item-18",
+    "goal": {
+      "title": "Reason about energy flow through food webs",
+      "category": "Ecology",
+      "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+      "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+      "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "contentTopics": [
+        "Combine explicitly described feeding links",
+        "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "OpenStax food-web structure: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+        "truncated": true
+      },
+      {
+        "name": "OpenStax trophic production: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+    "choices": [
+      "400 kJ/m²/year",
+      "800 kJ/m²/year",
+      "2,000 kJ/m²/year",
+      "160 kJ/m²/year"
+    ],
+    "topic": "Combine explicitly described feeding links"
+  },
+  {
+    "id": "item-14",
+    "goal": {
+      "title": "Reason about energy flow through food webs",
+      "category": "Ecology",
+      "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+      "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+      "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine explicitly described feeding links",
+        "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "OpenStax food-web structure: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+        "truncated": true
+      },
+      {
+        "name": "OpenStax trophic production: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A food web lists three feeding links: algae → shrimp, algae → snail, and shrimp → fish. Algae produce 10,000 kJ/m²/year. Shrimp transfer efficiency to fish is 15%. No other diets or efficiencies are stated. What can be concluded about annual energy reaching fish?",
+    "choices": [
+      "1,500 kJ/m²/year",
+      "150 kJ/m²/year",
+      "Cannot be determined from the information given.",
+      "750 kJ/m²/year"
+    ],
+    "topic": "Combine explicitly described feeding links"
+  },
+  {
+    "id": "item-13",
+    "goal": {
+      "title": "Interpret map distances and scale after resizing",
+      "category": "Geography",
+      "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+      "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+      "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine map-to-ground unit conversion",
+        "route measurements and uniform changes in printed size. Distinguish a printed nu"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Ordnance Survey map distance: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+        "truncated": true
+      },
+      {
+        "name": "Penn State map reproduction: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A park map has a scale bar showing 0—2 km that measures 4 cm long on the original print. The entire map is reduced to 75% of original linear dimensions for a pocket guide. A cyclist measures a straight bike path as 3 cm on the reduced map using the reduced scale bar. What is the actual ground length of the path?",
+    "choices": [
+      "4 km",
+      "2 km",
+      "1.5 km",
+      "2.67 km"
+    ],
+    "topic": "route measurements and uniform changes in printe"
+  },
+  {
+    "id": "item-07",
+    "goal": {
+      "title": "Interpret map distances and scale after resizing",
+      "category": "Geography",
+      "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+      "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+      "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine map-to-ground unit conversion",
+        "route measurements and uniform changes in printed size. Distinguish a printed nu"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Ordnance Survey map distance: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+        "truncated": true
+      },
+      {
+        "name": "Penn State map reproduction: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A hiking map at 1:50,000 shows a winding river. A string following the curves measures 12 cm. The map is enlarged to 125% and reprinted. A new scale bar is drawn on the enlarged map matching its new printed size. What ground distance does the original 12 cm river measurement represent?",
+    "choices": [
+      "7.5 km",
+      "The stated premises are inconsistent",
+      "6 km",
+      "4.8 km"
+    ],
+    "topic": "Combine map-to-ground unit conversion"
+  },
+  {
+    "id": "item-19",
+    "goal": {
+      "title": "Reason about energy flow through food webs",
+      "category": "Ecology",
+      "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+      "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+      "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "contentTopics": [
+        "Combine explicitly described feeding links",
+        "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "OpenStax food-web structure: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+        "truncated": true
+      },
+      {
+        "name": "OpenStax trophic production: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+    "choices": [
+      "625 kJ/m²/year",
+      "1,250 kJ/m²/year",
+      "2,500 kJ/m²/year",
+      "12,500 kJ/m²/year"
+    ],
+    "topic": "Distinguish energy flow over time from a snapsho"
+  },
+  {
+    "id": "item-12",
+    "goal": {
+      "title": "Interpret map distances and scale after resizing",
+      "category": "Geography",
+      "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+      "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+      "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine map-to-ground unit conversion",
+        "route measurements and uniform changes in printed size. Distinguish a printed nu"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Ordnance Survey map distance: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+        "truncated": true
+      },
+      {
+        "name": "Penn State map reproduction: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A walking guide uses a map with scale bar showing 0—1 km. The entire map is scanned and printed at 125% size. A walker measures a curved river as 9 cm following its bends using the enlarged print. The original scale bar (now also enlarged) is used for conversion. What distance does this represent?",
+    "choices": [
+      "7.2 km",
+      "3.6 km (assuming original 2 cm bar = 1 km)",
+      "4.5 km",
+      "2.88 km"
+    ],
+    "topic": "Combine map-to-ground unit conversion"
+  },
+  {
+    "id": "item-09",
+    "goal": {
+      "title": "Interpret map distances and scale after resizing",
+      "category": "Geography",
+      "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+      "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+      "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine map-to-ground unit conversion",
+        "route measurements and uniform changes in printed size. Distinguish a printed nu"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Ordnance Survey map distance: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+        "truncated": true
+      },
+      {
+        "name": "Penn State map reproduction: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A city map at 1:20,000 shows a curved bike route. A 6 cm string measurement follows the curves. The map is reduced to 75% and faxed. The recipient measures the same route on the fax as 4.5 cm using the reduced scale bar. What is the actual ground distance of the bike route?",
+    "choices": [
+      "1.2 km",
+      "0.9 km",
+      "1.6 km",
+      "No solution exists under the stated conditions"
+    ],
+    "topic": "Combine map-to-ground unit conversion"
+  },
+  {
+    "id": "item-10",
+    "goal": {
+      "title": "Interpret map distances and scale after resizing",
+      "category": "Geography",
+      "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+      "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+      "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine map-to-ground unit conversion",
+        "route measurements and uniform changes in printed size. Distinguish a printed nu"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Ordnance Survey map distance: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+        "truncated": true
+      },
+      {
+        "name": "Penn State map reproduction: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along its curves. The map is then photocopied at 150% (linear scale). On the enlarged copy, the same path now measures 12 cm. What ground distance does the 12 cm measurement represent?",
+    "choices": [
+      "3 km",
+      "1.33 km",
+      "1.8 km",
+      "2 km"
+    ],
+    "topic": "Combine map-to-ground unit conversion"
+  },
+  {
+    "id": "item-08",
+    "goal": {
+      "title": "Interpret map distances and scale after resizing",
+      "category": "Geography",
+      "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+      "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+      "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine map-to-ground unit conversion",
+        "route measurements and uniform changes in printed size. Distinguish a printed nu"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Ordnance Survey map distance: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+        "truncated": true
+      },
+      {
+        "name": "Penn State map reproduction: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A trail map states 1:25,000 and includes a 4 cm scale bar. A hiker measures a switchback trail as 10 cm with bends followed. The map is scanned and printed at 50% size. Which statement about distance interpretation is correct?",
+    "choices": [
+      "The winding measurement is invalid; only straight-line distance can be converted",
+      "The original 10 cm measurement represents 2.5 km on the ground",
+      "The reduced scale bar now represents 500 m, so the trail is 5 km",
+      "The scale ratio halves to 1:12,500, making the trail 1.25 km"
+    ],
+    "topic": "Distinguish a printed numerical scale from a sca"
+  },
+  {
+    "id": "item-16",
+    "goal": {
+      "title": "Reason about energy flow through food webs",
+      "category": "Ecology",
+      "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+      "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+      "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine explicitly described feeding links",
+        "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "OpenStax food-web structure: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+        "truncated": true
+      },
+      {
+        "name": "OpenStax trophic production: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A lake food web: algae → daphnia → minnows → pike. Algae production is 8,000 kJ/m²/year. Transfer efficiencies are: algae to daphnia 25%, daphnia to minnows 20%, minnows to pike 10%. Which statement about annual pike production is valid?",
+    "choices": [
+      "400 kJ/m²/year",
+      "200 kJ/m²/year",
+      "16 kJ/m²/year",
+      "40 kJ/m²/year"
+    ],
+    "topic": "trophic production and stated transfer efficienc"
+  },
+  {
+    "id": "item-01",
+    "goal": {
+      "title": "Build Excel formulas that copy correctly across a worksheet",
+      "category": "Spreadsheets",
+      "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+      "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+      "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine relative",
+        "absolute and mixed A1 references when copying or filling formulas across both ro"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "Microsoft Excel reference rules: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+        "truncated": true
+      }
+    ],
+    "prompt": "Cell C3 contains =$A3+B$2. It is copied to E5. What formula appears in E5?",
+    "choices": [
+      "=$A5+F$2",
+      "=$C5+B$4",
+      "=$A5+D$2",
+      "=$A3+D$2"
+    ],
+    "topic": "Combine relative, absolute and mixed A1 referenc"
+  },
+  {
+    "id": "item-17",
+    "goal": {
+      "title": "Build Excel formulas that copy correctly across a worksheet",
+      "category": "Spreadsheets",
+      "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+      "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+      "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+      "contentTopics": [
+        "Combine relative",
+        "absolute and mixed A1 references when copying or filling formulas across both ro"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Microsoft Excel reference rules: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+        "truncated": true
+      }
+    ],
+    "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+    "choices": [
+      "=$A1*B$1*$A3",
+      "=$A$1*B1*$A$3",
+      "=$A$1*B$1*$A3",
+      "=$A$1*$B$1*A3"
+    ],
+    "topic": "Combine relative, absolute and mixed A1 referenc"
+  },
+  {
+    "id": "item-15",
+    "goal": {
+      "title": "Reason about energy flow through food webs",
+      "category": "Ecology",
+      "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+      "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+      "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "questionDirective": "",
+      "preferredQuestionStyle": "Multiple Choice",
+      "needsSkillMap": false,
+      "contentTopics": [
+        "Combine explicitly described feeding links",
+        "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+      ]
+    },
+    "sourceDocuments": [
+      {
+        "name": "OpenStax food-web structure: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+        "truncated": true
+      },
+      {
+        "name": "OpenStax trophic production: selective source summary",
+        "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+        "truncated": true
+      }
+    ],
+    "prompt": "An ecosystem has producers with standing biomass of 50 g/m² and rapid turnover (production equals 10× biomass annually). Primary consumers have standing biomass of 200 g/m². Which conclusion follows?",
+    "choices": [
+      "Consumer biomass proves the stated turnover rate is impossible.",
+      "The producer biomass pyramid is inverted, but energy flow to consumers is not constrained by standing biomass alone.",
+      "Energy flow violates thermodynamic limits because consumer biomass exceeds producer biomass.",
+      "Annual production must be less than 50 g/m²/year to match the standing biomass."
+    ],
+    "topic": "Distinguish energy flow over time from a snapsho"
+  }
+]

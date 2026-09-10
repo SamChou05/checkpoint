@@ -1,5 +1,18 @@
 # Pause handoff — September 9, 2026
 
+This pause was superseded by an explicit active-goal continuation. Current
+work is in `/tmp/checkpoint-native-qualification-20260909`, on
+`codex/native-output-qualification`. Read
+`docs/QUESTION_NATIVE_STAGE_PROBE_RESULTS.md` before following the historical
+next steps below. Native integration and the ten-call downstream diagnostic
+are complete, with frozen runtime `751bdaa`. Original run handle 10264 exited
+zero; no restart is needed. Every response passed formatting, but exact local
+policy replay accepted a defective spreadsheet item. Production settings remain
+unchanged. The next correctness work concerns preserving the original facts
+and requested operation during verification, informed by the existing failed
+obstruction and complete-choice experiments. Fresh generation, author/skill-map
+native compatibility and production-wide qualification remain unproven.
+
 The user requested current progress and a suitable pause point. The latest live
 comparison, independent assessments, and local bank/client checks are complete.
 No runtime qualification, native qualification, or simulator test process was

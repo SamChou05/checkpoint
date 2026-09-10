@@ -1,0 +1,75 @@
+..........................................................Asynchronous question-bank worker failed
+Traceback (most recent call last):
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/question_bank.py", line 707, in handle_worker_event
+    _process_job(message, generate_questions, client, queue)
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/question_bank.py", line 940, in _process_job
+    generated = generate_questions(generation_request, reservation)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/tests/test_async_provider_budget.py", line 135, in generate
+    return callback(reservation)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/tests/test_async_provider_budget.py", line 269, in fail
+    raise error
+service_errors.ProviderDeadlineExceededError: deadline
+Asynchronous question-bank worker failed
+Traceback (most recent call last):
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/question_bank.py", line 707, in handle_worker_event
+    _process_job(message, generate_questions, client, queue)
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/question_bank.py", line 940, in _process_job
+    generated = generate_questions(generation_request, reservation)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/tests/test_async_provider_budget.py", line 135, in generate
+    return callback(reservation)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/tests/test_async_provider_budget.py", line 269, in fail
+    raise error
+RuntimeError: transport
+..Asynchronous question-bank worker failed
+Traceback (most recent call last):
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/question_bank.py", line 707, in handle_worker_event
+    _process_job(message, generate_questions, client, queue)
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/question_bank.py", line 945, in _process_job
+    _commit_generated_questions(
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11/Frameworks/Python.framework/Versions/3.12/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11/Frameworks/Python.framework/Versions/3.12/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.11/Frameworks/Python.framework/Versions/3.12/lib/python3.12/unittest/mock.py", line 1204, in _execute_mock_call
+    result = effect(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/checkpoint-native-qualification-20260909/backend/bedrock-question-service/tests/test_async_provider_budget.py", line 301, in committed_but_response_lost
+    raise TimeoutError("Commit response lost after successful transaction")
+TimeoutError: Commit response lost after successful transaction
+..Question-bank job exhausted its provider-attempt allowance
+Question-bank job exhausted its provider-attempt allowance
+Question-bank job exhausted its provider-attempt allowance
+Question-bank job exhausted its provider-attempt allowance
+..Question-bank job exhausted its provider-attempt allowance
+.....{"plan_sha256": "433711ab1a11208a97f775f1d916bface1b4fc2f102ec87bc829645bfc6a05ef", "maximum_calls": 6, "execute": false}
+{"plan_sha256": "1fce027171961d99ead9ba5a150982f013d56a2baae56bbfe6f398d607c5d639", "maximum_calls": 6, "execute": false}
+.usage: python -m unittest [-h] --output OUTPUT [--plan PLAN]
+                          [--plan-sha256 PLAN_SHA256] [--execute]
+                          [--aws-cli-credentials]
+python -m unittest: error: Execution requires the frozen plan and exact canonical hash.
+...{"plan_sha256": "1680de2faaed5e4ac23390cdb24ec51af0da0e4f80c8072d881b29736e40f72e", "maximum_calls": 2, "execute": false}
+......................................................................................................................................................................................................................{"status": "prepared", "sha256": "ce7aaa4a011e3413a85dfc6a97c7746bd4a535e29e21a70cb37043a67e7adf4f"}
+...........................................................................................................................................Backend configuration failed closed
+..........Question provider failed
+.......................................................Question provider returned invalid output
+.................Question provider failed
+...........................................................................................................Provider request deadline exhausted before another call
+...................................................................................Question-bank job exhausted its provider-attempt allowance
+............................................................................................................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 1046 tests in 32.391s
+
+OK
+{"plan_sha256": "620200323b28a6b6e37454e0bf5d3187371878d372939c80e75b04d21d038885", "maximum_calls": 6, "execute": false}
+{"plan_sha256": "7b24ec80194109e16fa9798ef33550733ad43023932235b96a922d0193ec040f", "maximum_calls": 16, "execute": false}
+{"status": "prepared", "sha256": "2c277e478c8e2ab5bdd4944e9299f0df6669d2493abbe4c26512daf21fb1170e"}
+{"status": "prepared", "sha256": "a821475d1bcdc746b7db3801617db77a7aa45dab1a4d1682fa1c1c23e994df6e"}
+{"status": "prepared", "sha256": "4d588306044d651029d28fafbb9601748300cdd6b8200a879c52a5b5b8692042"}
+{"status": "prepared", "sha256": "a4c97427c15e8fe458e1f12a76bd89aca2e7b07264a053fe023d0c6f0c551cba"}
+{"plan": "/var/folders/gc/z2m2_nxj4qlf83r8bq6hz_240000gn/T/tmpg5d3brs_/plan.json", "sha256": "22c0939d1ea35f61a9658d03780dd30d833352e0d78f8b7c9e87303b4fa2ea4c", "maximum_calls": 12}

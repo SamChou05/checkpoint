@@ -1,0 +1,17 @@
+{
+  "runtime_sdk": "1.43.91",
+  "checks": [
+    {
+      "contract": "complete_choice_solver_v1",
+      "sdk_request_shape": "passed"
+    },
+    {
+      "contract": "default_reviewer_v1",
+      "sdk_request_shape": "passed"
+    },
+    {
+      "contract": "authored_solution_reviewer_v1",
+      "sdk_request_shape": "passed"
+    }
+  ]
+}

@@ -1,0 +1,582 @@
+{
+  "status": "passed",
+  "scope": "Independent operational and arithmetic audit. Exact offline content-observation replay, not full pipeline replay or factual adjudication.",
+  "references": {
+    "capture": {
+      "path": "/tmp/checkpoint-native-stage-live-20260909/capture.json",
+      "byte_sha256": "8b8e0f887021f980ff292b7c69a6b5409ac6088316ecc6bda8f3fbd510b3c913",
+      "canonical_sha256": "a3b2d9a013a8ab977dde282d2dd59b3af6f7aa0d4726267fa90c0bc8bf7725c0"
+    },
+    "plan": {
+      "path": "/tmp/checkpoint-native-stage-plan-20260909/plan.json",
+      "byte_sha256": "246b7fbb9e1911895fa0e1f2c18f5d50d94b652390048e7d9070c33a25f60ce5",
+      "canonical_sha256": "85e2cb229c091023df78e494f21bd859164de8284ef060905165d03585c783e7"
+    },
+    "prior_plan_audit": {
+      "path": "/tmp/checkpoint-native-stage-plan-audit-20260909.json",
+      "byte_sha256": "32623ddf5e598e6804dbcac924272967c660d24be760ccb836e4e346cf55ba33"
+    },
+    "root_summary": {
+      "path": "/tmp/checkpoint-native-stage-summary-20260909.json",
+      "byte_sha256": "cf6ee8d4296ad54d81eb99d0548be5c5b389f5c7cd1827c770e06f4331024620"
+    },
+    "root_analysis_script": {
+      "path": "/tmp/checkpoint-analyze-native-stage-20260909.py",
+      "byte_sha256": "df54944157d5733fce4503d19140e8544f187a931973d555a74a12abb51895c4"
+    },
+    "first_pass_freeze": {
+      "path": "/tmp/checkpoint-native-stage-assessment-20260909/first-pass-freeze.json",
+      "byte_sha256": "b70957ea16e866ec168b6121ff1d0947ba5e8126ab1b942c5e41fef1e06d988b"
+    },
+    "independent_assessment": {
+      "path": "/tmp/checkpoint-native-stage-assessment-20260909/independent-subjects.json",
+      "byte_sha256": "38f73d44bac4b01187b8009dc859ffa534c2461a19d94eb68db85cb2acc0b869"
+    },
+    "subject_mapping": {
+      "path": "/tmp/checkpoint-native-stage-assessment-20260909/mapping.json",
+      "byte_sha256": "a96d63119f5bc4561e7c5281c2c25f6dfbbed464f60f0a752933193c44765647"
+    }
+  },
+  "source_revision": "751bdaa3405d1c358103af51093018364365947e",
+  "source_hash_count": 66,
+  "all_frozen_sources_match_commit_and_current_checkout": true,
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.91",
+    "botocore": "1.43.91"
+  },
+  "exact_plan_reconstruction": true,
+  "all_ten_requests_match_historical_inputs_with_only_production_native_deltas": true,
+  "native_sdk_request_shape_checks": 10,
+  "schema_hashes": {
+    "complete_choice_solver_v1": "bac691665f8f937805ca6fbb3cbd858320ccbc19d582c22b5dffaee1e6d1d446",
+    "default_reviewer_v1": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe",
+    "authored_solution_reviewer_v1": "d965da2f5a514961f173fcf232368f0b887505774e2982f1ada7ebe565ebc501"
+  },
+  "limits": {
+    "maximum_calls": 10,
+    "actual_calls": 10,
+    "planned_and_actual_input_utf8_bytes": 90201,
+    "maximum_observed_request_utf8_bytes": 11551,
+    "per_call_input_cap": 32768,
+    "aggregate_input_cap": 327680,
+    "worker_deadline_seconds": 240,
+    "worker_capture_cap_bytes": 262144,
+    "sdk_total_max_attempts": 1,
+    "read_timeout_seconds": 75,
+    "connect_timeout_seconds": 3,
+    "maximum_output_tokens_per_call": 6000,
+    "all_observed_bounds_satisfied": true
+  },
+  "actual_model": "us.anthropic.claude-sonnet-4-6",
+  "actual_region": "us-east-1",
+  "thinking_disabled": true,
+  "temperature": 0.2,
+  "reasoning_blocks_observed": 0,
+  "lifecycle": {
+    "completed": 10,
+    "known_usage": 10,
+    "workers_reaped": 10,
+    "group_cleanup_confirmed": 10,
+    "zero_worker_exit_codes": 10,
+    "termination_attempted": 0,
+    "operational_failures": 0,
+    "unattempted_slots": 0,
+    "all_lifecycle_records_match_ready_dispatch_response_complete": true,
+    "persistence_before_dispatch": "Frozen code durably writes launch intent before observer creation and ready process group before admission. Final capture contains expected lifecycle; no independent filesystem event trace was recorded.",
+    "capture_bounds_scope": "Reconstructed exact four-message worker transcripts satisfy individual and aggregate caps. Original socket bytes are not separately archived."
+  },
+  "known_usage": {
+    "inputTokens": 23161,
+    "outputTokens": 8134,
+    "totalTokens": 31295,
+    "cacheReadInputTokens": 0,
+    "cacheWriteInputTokens": 0,
+    "maximum_outputTokens": 1544
+  },
+  "timing_seconds": {
+    "sdk_sum": 119.0891565431375,
+    "sdk_min": 1.835297875048127,
+    "sdk_max": 20.92630004201783,
+    "worker_sum": 125.16100716707297,
+    "worker_max": 21.651009042048827,
+    "scope": "Observed SDK and local-worker durations only; worker sums exclude parent work between calls and do not establish whole-run elapsed time or grammar cache state."
+  },
+  "per_call": [
+    {
+      "position": 0,
+      "archived_call_index": 7,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_items": 5,
+      "request_sha256": "a6a1b251543f34c63504c6e1c07bf6a7ef320aa25808221326c872f811ed6a26",
+      "input_utf8_bytes": 7696,
+      "sdk_elapsed_seconds": 20.92630004201783,
+      "process_elapsed_seconds": 21.651009042048827,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2054,
+        "outputTokens": 1511,
+        "totalTokens": 3565
+      },
+      "response_text_utf8_bytes": 4408,
+      "response_text_sha256": "4c4de1c085c93978a7e7ba79b9b92084aa71c9e04294cba2a49da3c3aa02aa10",
+      "reconstructed_worker_transcript_bytes": 5366,
+      "maximum_reconstructed_worker_message_bytes": 5032,
+      "clean_completed_worker": true
+    },
+    {
+      "position": 1,
+      "archived_call_index": 14,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_items": 4,
+      "request_sha256": "02c6227866a96dcf331a2fa7f4ece43dd7d1ca2eb42c4bdc842ac3741d50ee95",
+      "input_utf8_bytes": 9060,
+      "sdk_elapsed_seconds": 19.60026633401867,
+      "process_elapsed_seconds": 20.123816667008214,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2260,
+        "outputTokens": 1544,
+        "totalTokens": 3804
+      },
+      "response_text_utf8_bytes": 5176,
+      "response_text_sha256": "085d9eb1eb7e9b5c6e023e8f8abbaeda4b3c2dcac32747036abf0cb79f813de7",
+      "reconstructed_worker_transcript_bytes": 6082,
+      "maximum_reconstructed_worker_message_bytes": 5748,
+      "clean_completed_worker": true
+    },
+    {
+      "position": 2,
+      "archived_call_index": 16,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_items": 3,
+      "request_sha256": "22d88edcc3f7cb51f02a196787801958b03653e69bc9b7a4d62807a944ef5a60",
+      "input_utf8_bytes": 8377,
+      "sdk_elapsed_seconds": 15.872814875037875,
+      "process_elapsed_seconds": 16.852115707995836,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2092,
+        "outputTokens": 1133,
+        "totalTokens": 3225
+      },
+      "response_text_utf8_bytes": 3246,
+      "response_text_sha256": "e6f08d16828693b6510df6c80a24b0cd401eb4f76706227610657e4f4c726ed6",
+      "reconstructed_worker_transcript_bytes": 4101,
+      "maximum_reconstructed_worker_message_bytes": 3767,
+      "clean_completed_worker": true
+    },
+    {
+      "position": 3,
+      "archived_call_index": 18,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_items": 1,
+      "request_sha256": "efa5809cd676aa2a37aec3ec45c5dc037b6281a8738a5379f40c528c3d44cbee",
+      "input_utf8_bytes": 7452,
+      "sdk_elapsed_seconds": 7.838015541958157,
+      "process_elapsed_seconds": 8.385098917002324,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1806,
+        "outputTokens": 463,
+        "totalTokens": 2269
+      },
+      "response_text_utf8_bytes": 1435,
+      "response_text_sha256": "4263c5ebaec6e09a30bd09defafda00b05943e0b6965acd6de3d238f50c2671a",
+      "reconstructed_worker_transcript_bytes": 2184,
+      "maximum_reconstructed_worker_message_bytes": 1850,
+      "clean_completed_worker": true
+    },
+    {
+      "position": 4,
+      "archived_call_index": 20,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_items": 3,
+      "request_sha256": "19a80026b099ef6bba552e740a5fc1ef7881a62233d30aca76413228ae4e4a01",
+      "input_utf8_bytes": 8760,
+      "sdk_elapsed_seconds": 13.070970709028188,
+      "process_elapsed_seconds": 13.608392624999397,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2175,
+        "outputTokens": 1031,
+        "totalTokens": 3206
+      },
+      "response_text_utf8_bytes": 3803,
+      "response_text_sha256": "f5f91dabe95029d422d355e74d09d3d86044ec928fcf7b60a4fc5fa84fe034b5",
+      "reconstructed_worker_transcript_bytes": 4658,
+      "maximum_reconstructed_worker_message_bytes": 4324,
+      "clean_completed_worker": true
+    },
+    {
+      "position": 5,
+      "archived_call_index": 7,
+      "role": "solver",
+      "contract": "complete_choice_solver_v1",
+      "subject_items": 5,
+      "request_sha256": "a6a1b251543f34c63504c6e1c07bf6a7ef320aa25808221326c872f811ed6a26",
+      "input_utf8_bytes": 7696,
+      "sdk_elapsed_seconds": 18.46296858304413,
+      "process_elapsed_seconds": 18.980534875008743,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2054,
+        "outputTokens": 1540,
+        "totalTokens": 3594
+      },
+      "response_text_utf8_bytes": 4508,
+      "response_text_sha256": "ed850dcf1c46ac80e6ab78abc0692b06d11ea41c7b3f6bfa0d5c0550d29422b3",
+      "reconstructed_worker_transcript_bytes": 5466,
+      "maximum_reconstructed_worker_message_bytes": 5132,
+      "clean_completed_worker": true
+    },
+    {
+      "position": 6,
+      "archived_call_index": 5,
+      "role": "reviewer",
+      "contract": "default_reviewer_v1",
+      "subject_items": 1,
+      "request_sha256": "72a65e3054e9e7236c54a8aae9e1c87db6fd11b5fc710ba30753e1bd7488500e",
+      "input_utf8_bytes": 11551,
+      "sdk_elapsed_seconds": 10.584981957974378,
+      "process_elapsed_seconds": 11.147106875025202,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 3013,
+        "outputTokens": 346,
+        "totalTokens": 3359
+      },
+      "response_text_utf8_bytes": 1183,
+      "response_text_sha256": "581584cd5c6c927d7a55581ec2d18c75c4ae88af0d57cce7747a4918b8ff75fa",
+      "reconstructed_worker_transcript_bytes": 1929,
+      "maximum_reconstructed_worker_message_bytes": 1595,
+      "clean_completed_worker": true
+    },
+    {
+      "position": 7,
+      "archived_call_index": 5,
+      "role": "reviewer",
+      "contract": "default_reviewer_v1",
+      "subject_items": 1,
+      "request_sha256": "72a65e3054e9e7236c54a8aae9e1c87db6fd11b5fc710ba30753e1bd7488500e",
+      "input_utf8_bytes": 11551,
+      "sdk_elapsed_seconds": 6.222536207991652,
+      "process_elapsed_seconds": 6.791658749978524,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 3013,
+        "outputTokens": 338,
+        "totalTokens": 3351
+      },
+      "response_text_utf8_bytes": 1175,
+      "response_text_sha256": "4b0a7c57315c16af9dc47fbef3ce5348aa559e340ed28619ca2dd4acad4cdf4b",
+      "reconstructed_worker_transcript_bytes": 1920,
+      "maximum_reconstructed_worker_message_bytes": 1586,
+      "clean_completed_worker": true
+    },
+    {
+      "position": 8,
+      "archived_call_index": 28,
+      "role": "teaching_auditor",
+      "contract": "authored_solution_reviewer_v1",
+      "subject_items": 2,
+      "request_sha256": "8da1b5f3acb080526a96572d94948c7cf89162a900e52321188696837c025566",
+      "input_utf8_bytes": 9029,
+      "sdk_elapsed_seconds": 4.675004417018499,
+      "process_elapsed_seconds": 5.236250083020423,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2347,
+        "outputTokens": 148,
+        "totalTokens": 2495
+      },
+      "response_text_utf8_bytes": 512,
+      "response_text_sha256": "7950010b223e452485dabc154df7f1379e9bdde7963506d62e009edc5605eb95",
+      "reconstructed_worker_transcript_bytes": 1243,
+      "maximum_reconstructed_worker_message_bytes": 909,
+      "clean_completed_worker": true
+    },
+    {
+      "position": 9,
+      "archived_call_index": 28,
+      "role": "teaching_auditor",
+      "contract": "authored_solution_reviewer_v1",
+      "subject_items": 2,
+      "request_sha256": "8da1b5f3acb080526a96572d94948c7cf89162a900e52321188696837c025566",
+      "input_utf8_bytes": 9029,
+      "sdk_elapsed_seconds": 1.835297875048127,
+      "process_elapsed_seconds": 2.385023624985479,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2347,
+        "outputTokens": 80,
+        "totalTokens": 2427
+      },
+      "response_text_utf8_bytes": 237,
+      "response_text_sha256": "3deb503b07a9877118acf9a1b8e1e1cc84a6b94925efd13e5f8563c49f7ef019",
+      "reconstructed_worker_transcript_bytes": 965,
+      "maximum_reconstructed_worker_message_bytes": 631,
+      "clean_completed_worker": true
+    }
+  ],
+  "offline_content_replay": [
+    {
+      "position": 0,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 5,
+      "stage_validation_scope": "production_stage_validator"
+    },
+    {
+      "position": 1,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 4,
+      "stage_validation_scope": "production_stage_validator"
+    },
+    {
+      "position": 2,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 3,
+      "stage_validation_scope": "production_stage_validator"
+    },
+    {
+      "position": 3,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 1,
+      "stage_validation_scope": "production_stage_validator"
+    },
+    {
+      "position": 4,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 3,
+      "stage_validation_scope": "production_stage_validator"
+    },
+    {
+      "position": 5,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 5,
+      "stage_validation_scope": "production_stage_validator"
+    },
+    {
+      "position": 6,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 1,
+      "stage_validation_scope": "default_reviewer_index_and_choice_coverage_only"
+    },
+    {
+      "position": 7,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 1,
+      "stage_validation_scope": "default_reviewer_index_and_choice_coverage_only"
+    },
+    {
+      "position": 8,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 2,
+      "stage_validation_scope": "production_stage_validator"
+    },
+    {
+      "position": 9,
+      "exact_content_observation_match": true,
+      "raw_schema_validation": "passed",
+      "adaptation": "passed",
+      "stage_validation": "passed",
+      "semantic_assessment": "unassessed",
+      "full_production_acceptance": "not_run",
+      "validated_item_count": 2,
+      "stage_validation_scope": "production_stage_validator"
+    }
+  ],
+  "exact_offline_content_replay_matches_all_ten_records": true,
+  "provider_client_and_live_observer_entrypoints_forbidden_during_replay": true,
+  "summary_arithmetic_and_all_27_observations_exactly_match": true,
+  "summary_counts": {
+    "raw_schema_validation_passed": 10,
+    "adaptation_passed": 10,
+    "stage_validation_passed": 10,
+    "attempt_slots_entered": 10,
+    "dispatch_observed": 10,
+    "response_observed": 10,
+    "usage_known": 10,
+    "clean_terminal_completion": 10,
+    "inputTokens": 23161,
+    "outputTokens": 8134,
+    "solver_choice_judgments": 84,
+    "solver_choice_judgment_disagreements": 8
+  },
+  "item_occurrences": 27,
+  "distinct_items": 19,
+  "frozen_assessment_hashes_unchanged": true,
+  "freeze_precedes_plan_file_creation": true,
+  "first_pass_order_scope": "The assessment freeze predates this frozen plan file creation by filesystem metadata. Root reports starting the live invocation only after freezing this plan; this audit did not inspect the running process or independently obtain its invocation timestamp.",
+  "provider_calls_during_audit": 0,
+  "live_process_polled_or_restarted": false,
+  "raw_capture_unchanged": true,
+  "runtime_source_edits": 0,
+  "blocking_operational_findings": [],
+  "interpretation_limits": [
+    "Ten native schema, adapter and role validation passes resolve formatting on these selected historical inputs only; they do not establish final delivered-question correctness or yield.",
+    "Default reviewer validation here covers index and offered-choice correlation only. Solver and authored reviewer stage validators likewise do not certify factual truth or run the full production acceptance policy.",
+    "Eight of 84 solver choice judgments disagree with the frozen independent assessor. This is a reproducible comparison, not a proven error rate; the 84 observations include repeated subjects.",
+    "The summary positive-answer-supported flag compares one model declaration with one assessor. It does not check every full-policy criterion, such as empty issues, teaching quality or authored-key compatibility.",
+    "No new author calls, complete runtime generation, bank or app delivery, Kimi native schema calls, or factual re-adjudication were performed.",
+    "Exact repeated requests do not establish cold versus warm grammar caching. Cache token counters describe token caching, not grammar compilation state.",
+    "Offline replay reconstructs content processing of captured sanitized responses; it does not replay actual provider transport or independently certify past persistence timing."
+  ],
+  "actual_policy_replay_addition": {
+    "status": "passed",
+    "helper": {
+      "path": "/tmp/checkpoint-replay-native-review-20260909.py",
+      "byte_sha256": "4ebb12b19c293e54d744c133ad217c208b71a72ba6a91a6b62248c4a66c42e16"
+    },
+    "report": {
+      "path": "/tmp/checkpoint-native-review-policy-20260909.json",
+      "byte_sha256": "543cfd8b8dd2be6df8e1fe295631b09dbe0ebaa67250fc5a2dbef30b7f20cdf7"
+    },
+    "results_draft": {
+      "path": "/tmp/checkpoint-native-qualification-20260909/docs/QUESTION_NATIVE_STAGE_PROBE_RESULTS.md",
+      "byte_sha256": "37add9d31bee66262ef43d3aae0864337066a62429325e33c21f7d2807e4223d"
+    },
+    "scope": "Offline re-execution of exact historical-prefix reconstruction and actual verify_questions policy using captured native reviewer responses. This is distinct from the stage-only probe and is not fresh end-to-end generation or semantic re-adjudication.",
+    "all_reconstructed_candidates_context_and_provenance_exactly_match_report": true,
+    "all_four_actual_policy_runs_exactly_match_report": true,
+    "matching_prefix_requests_including_target_reviewers": 11,
+    "matching_requests_strictly_before_target_reviewers": 9,
+    "matched_target_reviewer_requests": 2,
+    "prefix_request_indices": {
+      "5": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "28": [
+        24,
+        25,
+        26,
+        27,
+        28
+      ]
+    },
+    "solver_reviewer_and_native_request_callbacks_exact_for_each_run": true,
+    "outcomes": [
+      {
+        "native_position": 6,
+        "outcomes": [
+          {
+            "subject_id": "item-17",
+            "outcome": "would_return",
+            "policy_revision": 2
+          }
+        ]
+      },
+      {
+        "native_position": 7,
+        "outcomes": [
+          {
+            "subject_id": "item-17",
+            "outcome": "would_return",
+            "policy_revision": 2
+          }
+        ]
+      },
+      {
+        "native_position": 8,
+        "outcomes": [
+          {
+            "subject_id": "item-18",
+            "outcome": "would_return",
+            "policy_revision": 3
+          },
+          {
+            "subject_id": "item-19",
+            "outcome": "would_reject",
+            "policy_revision": null
+          }
+        ]
+      },
+      {
+        "native_position": 9,
+        "outcomes": [
+          {
+            "subject_id": "item-18",
+            "outcome": "would_return",
+            "policy_revision": 3
+          },
+          {
+            "subject_id": "item-19",
+            "outcome": "would_return",
+            "policy_revision": 3
+          }
+        ]
+      }
+    ],
+    "provider_or_storage_calls_during_replay": 0,
+    "original_captures_and_policy_report_unchanged": true,
+    "results_prose_operational_counts_and_policy_outcomes_supported": true,
+    "results_local_links_exist": true,
+    "prose_findings": [],
+    "semantic_scope": "No new semantic adjudication performed. The draft treats the food-web premise as ambiguous and eight solver-label disagreements as assessor comparisons, expressly allowing item-14 numeric-possibility versus uniquely-warranted-answer contract distinctions. These are appropriate limits rather than a demonstrated error rate."
+  }
+}

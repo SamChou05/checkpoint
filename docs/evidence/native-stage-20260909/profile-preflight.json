@@ -1,0 +1,29 @@
+{
+  "scope": "Read-only AWS login and exact diagnostic profile preflight; no inference, no deployment.",
+  "login": "valid",
+  "profile": {
+    "requested": "us.anthropic.claude-sonnet-4-6",
+    "id": "us.anthropic.claude-sonnet-4-6",
+    "status": "ACTIVE",
+    "type": "SYSTEM_DEFINED",
+    "destinations": [
+      {
+        "region": "us-east-1",
+        "model": "anthropic.claude-sonnet-4-6"
+      },
+      {
+        "region": "us-east-2",
+        "model": "anthropic.claude-sonnet-4-6"
+      },
+      {
+        "region": "us-west-2",
+        "model": "anthropic.claude-sonnet-4-6"
+      }
+    ]
+  },
+  "observed_at_utc": "2026-09-10T05:17:26.810154+00:00",
+  "runtime_sdk": {
+    "boto3": "1.43.91",
+    "botocore": "1.43.91"
+  }
+}
