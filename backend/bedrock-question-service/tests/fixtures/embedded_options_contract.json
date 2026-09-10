@@ -1,5 +1,5 @@
 {
-  "provenance": "Captured author-schema question, September 6 2026; second and third questions are local whitespace/empty-tuple regressions.",
+  "provenance": "Captured author-schema question, September 6 2026; additional questions cover whitespace, empty tuples, and multiline numbered/labeled stimuli.",
   "valid_questions": [
     {
       "prompt": "Processing 'a  b  c' with value.replace('  ', '|', 1).strip() yields 'a|b  c'. If this result is passed to text.split() with no arguments, what is returned?",
@@ -42,10 +42,30 @@
       "topic": "Python sequences",
       "difficulty": 3,
       "format": "Multiple Choice"
+    },
+    {
+      "prompt": "Start with x = -3. What is printed by these numbered pseudocode steps?\n1) if x < 0:\n    x = -x\n2) print(x)",
+      "expectedAnswer": "3",
+      "choices": ["3", "-3", "0", "6"],
+      "explanation": "The condition is true, so x becomes positive three before printing.",
+      "topic": "Conditionals",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    },
+    {
+      "prompt": "Start with x = -3. What is printed by these labeled pseudocode steps?\nA) if x < 0:\n    x = -x\nB) print(x)",
+      "expectedAnswer": "3",
+      "choices": ["3", "-3", "0", "6"],
+      "explanation": "The condition is true, so x becomes positive three before printing.",
+      "topic": "Conditionals",
+      "difficulty": 3,
+      "format": "Multiple Choice"
     }
   ],
   "embedded_choice_prompts": [
     "Which output is returned? Options: ( ) first ( ) second ( ) third ( ) fourth",
-    "Which output is returned? A. first B. second C. third D. fourth"
+    "Which output is returned? A. first B. second C. third D. fourth",
+    "Which output is returned?\n1) first\n2) second\n3) third\n4) fourth",
+    "Which output is returned?\nA) first\nB) second\nC) third\nD) fourth"
   ]
 }

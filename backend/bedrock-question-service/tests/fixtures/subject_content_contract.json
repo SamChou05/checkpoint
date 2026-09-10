@@ -12,6 +12,14 @@
     "topic": "Python execution",
     "difficulty": 3
   },
+  "codepoint_length_question": {
+    "prompt": "कौन सा सम है?",
+    "choices": ["2", "3", "5", "7"],
+    "expectedAnswer": "2",
+    "explanation": "Two is divisible by two; the other three numbers are odd.",
+    "topic": "Parity",
+    "difficulty": 1
+  },
   "source": "for n in [1, 2]:\n    print(n)\n\nprint(\"a  b\")\n# The final string contains two spaces.",
   "cases": [
     {

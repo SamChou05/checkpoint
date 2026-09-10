@@ -178,8 +178,9 @@ enum QuestionBatchSanitizer {
     }
 
     private static func isUsable(_ question: CheckpointQuestion, for request: QuestionGenerationRequest) -> Bool {
-        // Validate meaningful content without replacing a reviewed stem.
-        QuestionText.subjectContent(question.prompt).count >= 12
+        // Match the backend's Unicode code-point minimum without replacing a
+        // reviewed stem; a grapheme can contain several code points.
+        QuestionText.subjectContent(question.prompt).unicodeScalars.count >= 12
             && !question.expectedAnswer.isEmpty
             && question.format == .multipleChoice
             && question.choices.count == 4
@@ -283,11 +284,13 @@ enum QuestionBatchSanitizer {
             return true
         }
 
+        // Match the backend's line-local option text. Spanning arbitrary lines
+        // would mistake multiline numbered code steps for answer choices.
         return prompt.range(
-            of: #"(?s)(?:^|\s)1[\).]\s+.+\s+2[\).]\s+"#,
+            of: #"(?:^|\s)1[\).]\s+.+\s+2[\).]\s+"#,
             options: .regularExpression
         ) != nil || prompt.range(
-            of: #"(?s)(?:^|\s)A[\).]\s+.+\s+B[\).]\s+"#,
+            of: #"(?:^|\s)A[\).]\s+.+\s+B[\).]\s+"#,
             options: .regularExpression
         ) != nil
     }

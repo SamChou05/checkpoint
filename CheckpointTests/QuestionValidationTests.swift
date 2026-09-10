@@ -1146,6 +1146,7 @@ final class QuestionContentPreservationTests: XCTestCase {
             var difficulty: Int
         }
         var question: Question
+        var codepoint_length_question: Question
         var source: String
         var cases: [Case]
     }
@@ -1163,6 +1164,36 @@ final class QuestionContentPreservationTests: XCTestCase {
             XCTAssertEqual(Data(QuestionText.subjectContent(item.raw).utf8), Data(item.expected.utf8))
             let document = GoalSourceDocument(name: "sample.txt", text: item.raw)
             XCTAssertEqual(Data(document.text.utf8), Data(item.expected.utf8))
+        }
+    }
+
+    func testCodePointLengthPromptSurvivesWireAdmissionAndGrading() throws {
+        let item = try fixtures().codepoint_length_question
+        XCTAssertEqual(item.prompt.unicodeScalars.count, 13)
+        XCTAssertLessThan(item.prompt.count, 12)
+        let goal = makeGoal()
+        for version in [0, 1] {
+            let question = makeQuestion(
+                goal: goal, index: 1, topic: item.topic, prompt: item.prompt,
+                expectedAnswer: item.expectedAnswer, choices: item.choices,
+                explanation: item.explanation, verificationVersion: version,
+                difficulty: item.difficulty
+            )
+            let payload = try QuestionContentJSONDecoder.decode(
+                GeneratedQuestionPayload.self, from: JSONEncoder().encode(question)
+            )
+            let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "shared contract")
+            let accepted = try XCTUnwrap(
+                QuestionBatchSanitizer.sanitize([received], for: makeRequest(goal: goal)).first
+            )
+            let restored = try QuestionContentJSONDecoder.decode(
+                CheckpointQuestion.self, from: JSONEncoder().encode(accepted)
+            )
+            XCTAssertEqual(Data(restored.prompt.utf8), Data(item.prompt.utf8))
+            for choice in restored.choices {
+                XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: restored).result,
+                               choice == item.expectedAnswer ? .correct : .incorrect)
+            }
         }
     }
 
@@ -1617,7 +1648,7 @@ final class EmbeddedOptionsContractTests: XCTestCase {
         return try JSONDecoder().decode(Fixtures.self, from: Data(contentsOf: root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/embedded_options_contract.json")))
     }
 
-    func testCapturedCodeAndEmptyParenthesesSurviveSanitizationAndGrading() throws {
+    func testSharedCodeAndMultilineStimuliSurviveSanitizationAndGrading() throws {
         let goal = makeGoal()
         for item in try fixtures().valid_questions {
             for version in [0, 1] {

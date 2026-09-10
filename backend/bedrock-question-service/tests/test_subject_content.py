@@ -14,6 +14,7 @@ from lambda_test_support import (
 from question_quality import (
     _prompt_without_trailing_choice_echo,
     _question_coverage_payload,
+    _sanitize_questions,
 )
 from question_verification import verify_questions
 from request_contract import _clean_source_text, _clean_subject_text, _normalize_request
@@ -24,6 +25,18 @@ FIXTURES = json.loads(
 
 
 class SubjectContentTests(BackendTestCase):
+    def test_codepoint_length_prompt_survives_admission_unchanged(self):
+        # This natural Hindi stem has 13 code points but only 10 Swift graphemes.
+        question = FIXTURES["codepoint_length_question"]
+        self.assertEqual(len(question["prompt"]), 13)
+        request = _normalize_request(
+            _request_payload(target_count=1, minimum_difficulty=1)
+        )
+        accepted = _sanitize_questions([question], request)
+        self.assertEqual(len(accepted), 1)
+        self.assertEqual(accepted[0]["prompt"], question["prompt"])
+        self.assertEqual(accepted[0]["expectedAnswer"], question["expectedAnswer"])
+
     def test_shared_layout_control_and_unicode_contract(self):
         for case in FIXTURES["cases"]:
             with self.subTest(raw=case["raw"]):
