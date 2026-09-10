@@ -489,7 +489,7 @@ struct HomeActiveBreakCard: View {
                 .frame(width: 46, height: 46)
                 .background(
                     accent(for: presentation.phase),
-                    in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                 )
                 .contentTransition(.symbolEffect(.replace))
                 .symbolEffect(
@@ -504,13 +504,13 @@ struct HomeActiveBreakCard: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("EARNED BREAK")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.9)
                     .foregroundStyle(CheckpointTheme.heroSuccess)
                     .accessibilityHidden(true)
 
                 Text(presentation.title)
-                    .font(.title3.weight(.bold))
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(CheckpointTheme.heroText)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.opacity)
@@ -538,7 +538,7 @@ struct HomeActiveBreakCard: View {
     private func countdownMetric(_ presentation: HomeActiveBreakPresentation) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             Text("TIME REMAINING")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.9)
                 .foregroundStyle(CheckpointTheme.heroMuted)
                 .accessibilityHidden(true)
@@ -547,8 +547,8 @@ struct HomeActiveBreakCard: View {
                 .font(
                     .system(
                         size: min(countdownMetricSize, dynamicTypeSize.isAccessibilitySize ? 76 : 58),
-                        weight: .bold,
-                        design: .rounded
+                        weight: .regular,
+                        design: .serif
                     )
                 )
                 .monospacedDigit()
