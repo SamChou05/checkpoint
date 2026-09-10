@@ -1666,7 +1666,7 @@ struct FirstRunAppSelectionHeader: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: usesMinimalAccessibilityLayout ? 4 : 10) {
             if !usesMinimalAccessibilityLayout {
                 mascotIdentity
                     .animation(

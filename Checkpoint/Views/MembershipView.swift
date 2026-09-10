@@ -860,7 +860,8 @@ struct MembershipView: View {
     private func planSelection(presentation: MembershipPaywallPresentation) -> some View {
         let usesCompactDensity = presentation.contentDensity == .compact
 
-        return VStack(alignment: .leading, spacing: usesCompactDensity ? 7 : 12) {
+        // Keep the full offer above sticky checkout when localized prices wrap.
+        return VStack(alignment: .leading, spacing: usesCompactDensity ? 6 : 12) {
             if presentation.offerIntroduction == .compactWithValueProof {
                 compactOfferIntro
             } else if presentation.offerIntroduction == .expanded {
@@ -988,7 +989,7 @@ struct MembershipView: View {
             glowDiameter: 92,
             glowBlurRadius: 8,
             glowOffset: CGSize(width: 52, height: -48),
-            contentPadding: 9
+            contentPadding: 8
         ) {
             VStack(alignment: .leading, spacing: 7) {
                 Text(context.membershipHeadline)

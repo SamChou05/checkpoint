@@ -368,7 +368,10 @@ struct ProgressMomentumCard: View {
 
     var body: some View {
         Button(action: action) {
-            SectionPanel(contentPadding: 17, style: .editorial) {
+            SectionPanel(
+                contentPadding: dynamicTypeSize <= .large ? 13 : 17,
+                style: .editorial
+            ) {
                 VStack(alignment: .leading, spacing: 10) {
                     header
                     primaryOutcome
