@@ -1,0 +1,665 @@
+{
+  "cases": [
+    {
+      "case_id": "spreadsheet_extra_operand",
+      "request": {
+        "goal": {
+          "title": "Build Excel formulas that copy correctly across a worksheet",
+          "category": "Spreadsheets",
+          "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+          "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+          "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+          "contentTopics": [
+            "Combine relative",
+            "absolute and mixed A1 references when copying or filling formulas across both ro"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [
+          "Cell C3 contains =$B$3+C$2. This is filled right to E3, then that result is filled down to E5. What formula is in E5?",
+          "A price matrix has regions in A2:A6 and products in B1:F1. Cell B2 should calculate price with =B$1*$A2. The user accidentally enters =B1*A2 and fills to F6. Which cells show correct results?",
+          "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+          "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+          "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?"
+        ],
+        "existingQuestionCoverage": [
+          {
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "prompt": "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+            "expectedAnswer": "=$A4*D$1",
+            "choices": [
+              "=$A4*D$1",
+              "=$A2*D$1",
+              "=$A4*B$1",
+              "=A4*D1"
+            ],
+            "difficulty": 3
+          },
+          {
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+            "expectedAnswer": "=$A2*B$1",
+            "choices": [
+              "=$A2*B$1",
+              "=A$2*$B1",
+              "=$A$2*B$1",
+              "=A2*B1"
+            ],
+            "difficulty": 3
+          },
+          {
+            "topic": "Combine relative, absolute and mixed A1 referenc",
+            "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+            "expectedAnswer": "=$N2/12",
+            "choices": [
+              "=$N2/12",
+              "=N$2/12",
+              "=$N$2/12",
+              "=N2/12"
+            ],
+            "difficulty": 3
+          }
+        ],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [
+          {
+            "name": "Microsoft Excel reference rules: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+            "truncated": true
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": [],
+        "previousAttemptFeedback": {
+          "review": {
+            "solver_zero_supported": 2
+          }
+        }
+      },
+      "question": {
+        "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+        "expectedAnswer": "=$A$1*B$1*$A3",
+        "choices": [
+          "=$A$1*B$1*$A3",
+          "=$A$1*$B$1*A3",
+          "=$A1*B$1*$A3",
+          "=$A$1*B1*$A$3"
+        ],
+        "explanation": "$A$1 stays fixed for all cells. B$1 locks the row so it becomes C$1, D$1, E$1 when filled across but stays row 1 when filled down. A3 needs its column locked ($A3) so it stays column A when filled across, but the row stays relative to become A4, A5, A6 when filled down.",
+        "topic": "Combine relative, absolute and mixed A1 referenc",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "supported_choices": [],
+        "key_supported": false,
+        "premise_verdict": "unsupported_extra_operand",
+        "teaching_requirements": [
+          "The unchanged requested calculation has two operands: A1 and the regional target. Every offered formula adds A3 or $A$3, although A3:A6 are quarter labels.",
+          "Reject the extra operand; do not invent a numeric quarter factor or reinterpret the labels to justify the stored key.",
+          "Whether the dollar signs in the stem specify anchors or merely name addresses does not rescue a formula with an unrequested third factor.",
+          "A difficulty-only exclusion or unavailable response is not evidence that this defect was recognized."
+        ],
+        "difficulty_caveat": "The original request floor is 3 and the authored label is retained. The item has no defensible learner difficulty while its calculation is defective."
+      },
+      "provenance": {
+        "source_path": "docs/evidence/delivery-feedback-20260909/capture.json",
+        "source_byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+        "locator": {
+          "kind": "exact_runtime_prefix_reconstruction",
+          "call_index": 5,
+          "call_role": "reviewer",
+          "candidate_index_before_solver_filter": 1,
+          "original_operation_index": 0,
+          "matched_prefix_call_indexes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "request_canonical_sha256": "3f6170685dc5b3cb9e99434ccc97157224473bfbc1f5d3714fa4a934fac331f2",
+        "question_canonical_sha256": "6f700d8f4ad96edc20282e94d07efba9848a53df15d387f26ee777b4f24dae58"
+      }
+    },
+    {
+      "case_id": "grammar_unique_present",
+      "request": {
+        "goal": {
+          "title": "English verb tense",
+          "category": "",
+          "focusAreas": "English verb tense",
+          "currentLevel": "",
+          "learningTarget": "English verb tense",
+          "contentTopics": [
+            "English verb tense"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": true,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "Which sentence is not in the past tense?",
+        "choices": [
+          "She walked to work yesterday.",
+          "He cooked dinner last night.",
+          "She walks to work every day.",
+          "They visited the museum yesterday."
+        ],
+        "expectedAnswer": "She walks to work every day.",
+        "topic": "English verb tense",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Fixed author input for a solver-input comparison; teaching feedback is assessed separately."
+      },
+      "assessment": {
+        "supported_choices": [
+          "She walks to work every day."
+        ],
+        "key_supported": true,
+        "premise_verdict": "supported_choice_dependent_question",
+        "teaching_requirements": [
+          "The complete choices determine the task: walks is present, while walked, cooked and visited are past.",
+          "Retain the unique non-past sentence and explain the actual finite verb form in every choice.",
+          "Do not demand a named sentence in the stem, invent another sentence, or reject because a choice-blind stem cannot be solved."
+        ],
+        "difficulty_caveat": "Keep the original minimumDifficulty 1 and authored difficulty 1; this is a basic valid control, not evidence of advanced learning."
+      },
+      "provenance": {
+        "source_path": "backend/bedrock-question-service/evals/fixtures/question_complete_solver.json",
+        "source_byte_sha256": "bfde7674cc68b5150e20132d8f2a098de60269d61c3bba183f202c5a285d11ac",
+        "locator": {
+          "kind": "fixture_case",
+          "case_id": "grammar_unique_present"
+        },
+        "request_canonical_sha256": "62a058d9f151cfe80390c5aa71031bd6260faf30fd314009abb03e20103b6837",
+        "question_canonical_sha256": "b5fa544f746f5b3dd213787950886bdfa8edfd0e6c8e903bb757ea586cbb96e0"
+      }
+    },
+    {
+      "case_id": "historical_all_pairs_invalid",
+      "request": {
+        "goal": {
+          "title": "Prepare for LeetCode interviews",
+          "category": "Custom",
+          "focusAreas": "hash maps",
+          "currentLevel": "",
+          "learningTarget": "Prepare for LeetCode interviews",
+          "contentTopics": [
+            "hash maps"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "You need to find all pairs in an unsorted array that sum to target k. Which approach gives O(n) time and O(n) space?",
+        "choices": [
+          "Hash map storing complements seen so far",
+          "Sort then two-pointer scan",
+          "Nested loop checking all pairs",
+          "Binary search for each element's complement"
+        ],
+        "expectedAnswer": "Hash map storing complements seen so far",
+        "topic": "hash maps",
+        "difficulty": 1,
+        "format": "Multiple Choice",
+        "explanation": "Frozen author record for a compatibility diagnostic; teaching feedback is assessed separately."
+      },
+      "assessment": {
+        "supported_choices": [],
+        "key_supported": false,
+        "premise_verdict": "ambiguous_pair_enumeration_scope",
+        "teaching_requirements": [
+          "Under the preserved all-matching-index-pairs interpretation, n zero values and target zero require n(n-1)/2 outputs, so no offered method guarantees O(n) total time.",
+          "Do not replace enumeration by finding one match or answering whether a match exists. Total work includes producing the requested results.",
+          "The original wording does not explicitly distinguish index pairs from deduplicated value pairs. Preserve this ambiguity: the quadratic-output argument is conditional on the first interpretation, not proof that every meaning of find all pairs has quadratic output.",
+          "The false key expectation is the prior strict total-time interpretation. Report a deduplicated-value interpretation separately rather than inflating the certainty of this case or changing its stem.",
+          "An unsupported worst-case bound must not be justified solely by expected hash-table lookup time."
+        ],
+        "difficulty_caveat": "Preserve the original minimumDifficulty 1 and authored difficulty 1. A content or interpretation diagnosis is separate from difficulty filtering."
+      },
+      "provenance": {
+        "source_path": "backend/bedrock-question-service/evals/fixtures/question_complete_solver.json",
+        "source_byte_sha256": "bfde7674cc68b5150e20132d8f2a098de60269d61c3bba183f202c5a285d11ac",
+        "locator": {
+          "kind": "fixture_case",
+          "case_id": "historical_all_pairs_invalid"
+        },
+        "request_canonical_sha256": "c3d939f9b47281827c94bf8dbff721a59ba96af58f391dad79a21b0b04fe6835",
+        "question_canonical_sha256": "be8efdc042d30567a3ed2e13a3935eb2d29c4c013ccca25f6e0bbc436cdf2b2f"
+      }
+    },
+    {
+      "case_id": "spreadsheet_mixed_reference_copy",
+      "request": {
+        "goal": {
+          "title": "Build Excel formulas that copy correctly across a worksheet",
+          "category": "Spreadsheets",
+          "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+          "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+          "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+          "contentTopics": [
+            "Combine relative",
+            "absolute and mixed A1 references when copying or filling formulas across both ro"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [
+          {
+            "name": "Microsoft Excel reference rules: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+            "truncated": true
+          }
+        ],
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+        "expectedAnswer": "=$A4*D$1",
+        "choices": [
+          "=$A4*D$1",
+          "=$A2*D$1",
+          "=$A4*B$1",
+          "=A4*D1"
+        ],
+        "explanation": "The original uses $A2 (column fixed, row relative) and B$1 (column relative, row fixed). Filling from B2 to D4 moves +2 columns and +2 rows. $A2 becomes $A4 (column stays A, row becomes 4). B$1 becomes D$1 (column becomes D, row stays 1).",
+        "topic": "Combine relative, absolute and mixed A1 referenc",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "supported_choices": [
+          "=$A4*D$1"
+        ],
+        "key_supported": true,
+        "premise_verdict": "supported_exact_formula_copy",
+        "teaching_requirements": [
+          "B2 to D4 moves two rows and two columns: $A2 becomes $A4, and B$1 becomes D$1, yielding =$A4*D$1.",
+          "Explain each distractor using its actual incorrectly preserved row, column or removed anchor; do not claim anchored components move.",
+          "The question asks for the copied formula text, not an accidental equality of evaluated cell values.",
+          "Correct teaching rated below the historical floor is a legitimate difficulty exclusion, not a factual rejection."
+        ],
+        "difficulty_caveat": "Keep the historical minimumDifficulty 3 and authored difficulty 3. Independent prior assessment treats the two-component copying task as easier (level 2); do not inflate the fresh rating to force retention."
+      },
+      "provenance": {
+        "source_path": "docs/evidence/delivery-feedback-20260909/capture.json",
+        "source_byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+        "locator": {
+          "kind": "exact_runtime_prefix_reconstruction",
+          "call_index": 2,
+          "call_role": "reviewer",
+          "candidate_index_before_solver_filter": 0,
+          "original_operation_index": 0,
+          "matched_prefix_call_indexes": [
+            0,
+            1,
+            2
+          ]
+        },
+        "request_canonical_sha256": "a491720a60873c6b4177a90ad10bdcd66057370721dde179d64b904d27a11b96",
+        "question_canonical_sha256": "4142f49d53ee850a275e2aa93af0c6d5c4fc963473f58a1bf41e5f7fce4823a4"
+      }
+    },
+    {
+      "case_id": "map_contradictory_scale",
+      "request": {
+        "goal": {
+          "title": "Interpret map distances and scale after resizing",
+          "category": "Geography",
+          "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+          "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+          "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+          "contentTopics": [
+            "Combine map-to-ground unit conversion",
+            "route measurements and uniform changes in printed size. Distinguish a printed nu"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [
+          {
+            "name": "Ordnance Survey map distance: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+            "truncated": true
+          },
+          {
+            "name": "Penn State map reproduction: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+            "truncated": true
+          }
+        ],
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A park map shows a straight road labeled 3 km. The printed scale states 1:50,000. A student measures the road as 5 cm, then reduces the map on a copier to 80% of original width and height. What is the correct representative fraction for the reduced map?",
+        "expectedAnswer": "1:62,500",
+        "choices": [
+          "1:62,500",
+          "1:40,000",
+          "1:50,000",
+          "1:100,000"
+        ],
+        "explanation": "The original scale 1:50,000 means 1 cm = 50,000 cm (500 m). A linear reduction to 80% means 1 cm on the reduced map equals 1/0.8 = 1.25 cm on the original, which represented 1.25 × 500 m = 625 m. The new scale is 1:62,500. The measured road length on the reduced map would be 4 cm (5 × 0.8), but the question asks for the scale, not a distance.",
+        "topic": "Combine map-to-ground unit conversion",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "supported_choices": [],
+        "key_supported": false,
+        "premise_verdict": "inconsistent_stated_measurements",
+        "teaching_requirements": [
+          "At 1:50,000, a 5 cm road represents 2.5 km, conflicting with the stated 3 km road label.",
+          "Reducing the printed numerical scale to 80% gives 1:62,500; using the supplied 3 km and 5 cm instead gives original 1:60,000 and reduced 1:75,000.",
+          "Do not silently discard or correct one of these premises to defend 1:62,500. The unchanged prompt supplies no rounding allowance or rule prioritizing one conflicting measurement.",
+          "Record the scope if interpreting the printed scale alone; that does not establish consistency of the full stated question. No offered complete choice identifies the contradiction."
+        ],
+        "difficulty_caveat": "Keep the historical request floor 3 and authored label. A contradiction diagnosis is not a calibration of a valid exercise."
+      },
+      "provenance": {
+        "source_path": "docs/evidence/delivery-feedback-20260909/capture.json",
+        "source_byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+        "locator": {
+          "kind": "exact_runtime_prefix_reconstruction",
+          "call_index": 16,
+          "call_role": "solver",
+          "candidate_index_before_solver_filter": 1,
+          "original_operation_index": 3,
+          "matched_prefix_call_indexes": [
+            15,
+            16
+          ]
+        },
+        "request_canonical_sha256": "401c5bd6660b9a8dc97317b2f482d23056d92f45a883fdea84b924480d5cbb3a",
+        "question_canonical_sha256": "e2d337ca7228be41d214457e5c0b398f74084c09a40293d0575c832215ff40b7"
+      }
+    },
+    {
+      "case_id": "ordinary_cannot_determine",
+      "request": {
+        "goal": {
+          "title": "Relate amount, rate and time",
+          "category": "",
+          "focusAreas": "Relate amount, rate and time",
+          "currentLevel": "",
+          "learningTarget": "Relate amount, rate and time",
+          "contentTopics": [
+            "Relate amount",
+            "rate and time"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 1,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A pump adds 12 litres of water at a constant positive rate. How many minutes does this take?",
+        "choices": [
+          "2 minutes",
+          "The time cannot be calculated without the flow rate.",
+          "3 minutes",
+          "6 minutes"
+        ],
+        "expectedAnswer": "The time cannot be calculated without the flow rate.",
+        "topic": "Relate amount, rate and time",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "explanation": "Fixed author input for a solver-input comparison; teaching feedback is assessed separately."
+      },
+      "assessment": {
+        "supported_choices": [
+          "The time cannot be calculated without the flow rate."
+        ],
+        "key_supported": true,
+        "premise_verdict": "supported_information_limit",
+        "teaching_requirements": [
+          "Time is 12 divided by the unspecified positive constant rate; rates of 6, 4 and 2 litres per minute yield 2, 3 and 6 minutes.",
+          "The natural-language information-limit choice is uniquely warranted. Do not require a special canonical negative-answer phrase.",
+          "The numeric choices are possible under different rates but are not uniquely established. Their feedback must not say those durations are impossible.",
+          "Do not supply a flow rate or confuse an established information limit with the model being uncertain."
+        ],
+        "difficulty_caveat": "Keep the original request minimumDifficulty 1 and authored difficulty 2. This is a basic negative-answer control, not proof of level-3 inventory."
+      },
+      "provenance": {
+        "source_path": "backend/bedrock-question-service/evals/fixtures/question_complete_solver.json",
+        "source_byte_sha256": "bfde7674cc68b5150e20132d8f2a098de60269d61c3bba183f202c5a285d11ac",
+        "locator": {
+          "kind": "fixture_case",
+          "case_id": "ordinary_cannot_determine"
+        },
+        "request_canonical_sha256": "b46ace979da8fc59e4db561771d5490177e51cb2144107010e57ceb181042fd5",
+        "question_canonical_sha256": "c2baab3dc26bd1f959093d703d3137b9403b2c3f473304221791e3c6f2706f7a"
+      }
+    },
+    {
+      "case_id": "spanish_negated_doubt_false_premise",
+      "request": {
+        "goal": {
+          "title": "Improve Spanish grammar and pronouns",
+          "category": "",
+          "focusAreas": "subjunctive and indicative meaning, direct and indirect object pronouns",
+          "currentLevel": "",
+          "learningTarget": "Improve Spanish grammar and pronouns",
+          "contentTopics": [
+            "subjunctive and indicative meaning",
+            "direct and indirect object pronouns"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A student writes: \"No dudo que Juan sepa la respuesta.\" A teacher marks a mood error. Which correction is appropriate and why?",
+        "expectedAnswer": "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative",
+        "choices": [
+          "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative",
+          "Keep \"sepa\"; any form of \"dudar\" always triggers the subjunctive",
+          "Change \"sepa\" to \"sabría\"; negated doubt requires the conditional",
+          "Change \"no dudo\" to \"no duda\"; the error is subject–verb agreement, not mood"
+        ],
+        "explanation": "Negating a verb of doubt ('no dudar que') cancels the uncertainty and expresses affirmation, which in standard grammar triggers the indicative in the subordinate clause.",
+        "topic": "subjunctive and indicative meaning",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Change \"no dudo\" to \"no duda\"; the error is subject–verb agreement, not mood": "'No dudo' correctly agrees with a first-person subject; there is no agreement error here.",
+          "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative": "Correctly applies the rule that negated doubt restores certainty, requiring indicative 'sabe.'",
+          "Keep \"sepa\"; any form of \"dudar\" always triggers the subjunctive": "The claim that 'dudar' always triggers subjunctive is false; negated doubt typically requires indicative.",
+          "Change \"sepa\" to \"sabría\"; negated doubt requires the conditional": "No standard rule converts negated doubt into a conditional requirement; the conditional is unwarranted here."
+        },
+        "verificationVersion": 1
+      },
+      "assessment": {
+        "supported_choices": [],
+        "key_supported": false,
+        "premise_verdict": "unsupported_mandatory_mood_correction",
+        "teaching_requirements": [
+          "The preserved source assessment permits subjunctive as well as indicative after negated doubt; No dudo que Juan sepa is not inherently an obligatory mood error.",
+          "Do not approve the stored choice claiming indicative is required merely because no dudo conveys certainty.",
+          "Keeping sepa can be grammatical, but its offered rationale that every form of dudar always triggers subjunctive is false; assess each complete choice, not only its opening action.",
+          "No change to conditional mood or first-person dudo agreement is established. None of the full offered choice-plus-rationale statements is supported.",
+          "Preserve contextual and pragmatic variation in mood. This expectation rejects a categorical mandatory rule, not the possible grammatical use of indicative."
+        ],
+        "difficulty_caveat": "Preserve the original minimumDifficulty 3 and authored difficulty 3. A grammatical/content rejection is distinct from a difficulty-only exclusion. Prior assessment cites Cervantes; this packet does not add source passages or claim a new independent language adjudication."
+      },
+      "provenance": {
+        "source_path": "backend/bedrock-question-service/evals/fixtures/question_model_comparison.json",
+        "source_byte_sha256": "1f74156e017d0a08bef01709e57ad2349621894e02cb84ed535e23eafb7b5ccf",
+        "locator": {
+          "kind": "fixture_case",
+          "case_id": "spanish_negated_doubt_false_premise",
+          "historical_content_sha256": "9e2995f0f650daddc28917f0cfa7d9a3a3836525c9c7453fda4a11c53188af37",
+          "historical_goal_id": "spanish_grammar_pronouns"
+        },
+        "request_canonical_sha256": "5c681d9521128b13be513e7ce3e81090754851abdf90d52c491dba46a6497ff7",
+        "question_canonical_sha256": "c404d85c1f5f8d746af702ef33ffd78fb3baff63976bae2bc789a833a355e01a"
+      }
+    },
+    {
+      "case_id": "bayes_explicit_rates",
+      "request": {
+        "goal": {
+          "title": "Understand probability and evidence in everyday decisions",
+          "category": "",
+          "focusAreas": "Conditional probability, sampling, causal claims, base rates and distinguishing a possible conclusion from a warranted one.",
+          "currentLevel": "Comfortable with percentages; learning to apply them to unfamiliar scenarios.",
+          "learningTarget": "Understand probability and evidence in everyday decisions",
+          "contentTopics": [
+            "Conditional probability",
+            "sampling",
+            "causal claims",
+            "base rates and distinguishing a possible conclusion from a warranted one."
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Interpret evidence or a representation to distinguish plausible conclusions; scenario details must affect the answer.",
+        "adaptiveSkillPlans": []
+      },
+      "question": {
+        "prompt": "A medical test for a rare disease (1 in 1000 prevalence) is 99% accurate: it correctly identifies 99% of sick people and 99% of healthy people. If you test positive, what is the approximate probability you actually have the disease?",
+        "expectedAnswer": "About 9%",
+        "choices": [
+          "About 9%",
+          "About 99%",
+          "About 50%",
+          "About 1%"
+        ],
+        "explanation": "Out of 1000 people: 1 has disease and likely tests positive; 999 are healthy but ~10 false positives. Of ~11 positive tests, only ~1 is true positive. P(Disease|Positive) ≈ 1/11 ≈ 9%.",
+        "topic": "base rates and distinguishing a possible conclus",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "assessment": {
+        "supported_choices": [
+          "About 9%"
+        ],
+        "key_supported": true,
+        "premise_verdict": "supported_explicit_probability_model",
+        "teaching_requirements": [
+          "Use prevalence 0.001, sensitivity 0.99 and specificity 0.99: P(disease|positive)=0.00099/(0.00099+0.00999)=11/122, approximately 9.016%.",
+          "The stem explicitly defines both conditional test accuracies. Do not treat the 99% headline alone as the posterior.",
+          "For the 50% distractor, equal true and false positives with these accuracies require prevalence 1%, from 0.99p=0.01(1-p), not prevalence 50%.",
+          "The 1% distractor is not the stated 0.1% base rate; do not teach that incorrect identity.",
+          "Generate a supported main and an explanation of each exact choice. A correct selected 9% does not excuse false distractor teaching.",
+          "Keep the given synthetic population/test model; do not turn the exercise into personalized medical advice or add unprovided clinical facts."
+        ],
+        "difficulty_caveat": "Keep the original minimumDifficulty 3 and authored label. The prior independent assessment rated this application 3, without learner calibration or a production difficulty guarantee."
+      },
+      "provenance": {
+        "source_path": "docs/evidence/runtime-qualification-capture-20260908.json",
+        "source_byte_sha256": "6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d",
+        "locator": {
+          "kind": "exact_runtime_prefix_reconstruction",
+          "call_index": 4,
+          "call_role": "reviewer",
+          "candidate_index_before_solver_filter": 1,
+          "original_operation_index": 1,
+          "matched_prefix_call_indexes": [
+            2,
+            3,
+            4
+          ]
+        },
+        "request_canonical_sha256": "5fdb47e37dcfd4cfcfac7c856c0f6a1381ec756bc4e77cafda179de41eb12f70",
+        "question_canonical_sha256": "1f36140d4ee79922078a8feed9365918ebd5ba5f6d0cee21f295c8bd2530cbb5"
+      }
+    }
+  ]
+}

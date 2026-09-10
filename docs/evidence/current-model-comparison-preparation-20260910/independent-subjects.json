@@ -1,0 +1,676 @@
+{
+  "audit_date": "2026-09-10",
+  "assessor": "author_demonstration_review",
+  "fixture_path": "/tmp/checkpoint-current-model-comparison-20260910/backend/bedrock-question-service/evals/fixtures/question_current_model_comparison.json",
+  "fixture_sha256": "5e65752a2ee5b3b642269082cfb693acc75dfc973ae5a569529b72acca6ec314",
+  "status": "complete_before_current_experiment_responses",
+  "independence_limits": [
+    "This is an independent content assessment, not fully context-blinded: prior conversation, historical packet assessments, source gold, and historical outputs were available.",
+    "An initial broad source search exposed historical review/solver snippets; no current-model-comparison response was read or generated.",
+    "Only the audit artifact was written. No repository changes, new model calls, provider calls, or fresh experiments were performed.",
+    "Original source fixtures and selected historical author objects were inspected; no claim is made that all historical runtime replay code was independently re-executed."
+  ],
+  "summary": {
+    "valid": 4,
+    "invalid": 3,
+    "ambiguous": 1,
+    "material_gold_disagreements": [],
+    "necessary_scoring_caveats": [
+      "The all-pairs case is an ambiguity sentinel; its false key flag and empty supported list must never be scored as proof of impossibility across conventional interpretations.",
+      "Map 1:62,500 is valid conditional arithmetic from the printed scale. Its defect is inconsistency with the full supplied measurements.",
+      "Inherited map author main has 344 characters; a length exclusion cannot count as contradiction detection.",
+      "The valid mixed-reference copy item is plausibly difficulty 2 despite historical floor/label 3; difficulty exclusion and factual rejection must remain separate.",
+      "Ordinary negative answer correctness is independent of canonical-wording gates.",
+      "Bare rejection without an informative reason demonstrates rejection behavior, not recognized defect."
+    ]
+  },
+  "source_identity_checks": [
+    {
+      "case_id": "spreadsheet_extra_operand",
+      "source_path": "/tmp/checkpoint-current-model-comparison-20260910/docs/evidence/delivery-feedback-20260909/capture.json",
+      "source_sha256_matches": true,
+      "original_author_call_index": 3,
+      "original_author_question_index": 1,
+      "prompt_key_main_difficulty_format_equal": true,
+      "choice_text_multiset_equal": true,
+      "choice_order_equal": true,
+      "scope": "Independently confirmed historical author semantic fields and choice identities. Current fixture uses runtime candidate order/normalized metadata. Full runtime-prefix request reconstruction was performed by the fixture preparer, not rerun in this content audit."
+    },
+    {
+      "case_id": "grammar_unique_present",
+      "source_path": "/tmp/checkpoint-current-model-comparison-20260910/backend/bedrock-question-service/evals/fixtures/question_complete_solver.json",
+      "source_sha256_matches": true,
+      "request_exact_equal_to_original_fixture": true,
+      "question_exact_equal_to_original_fixture": true
+    },
+    {
+      "case_id": "historical_all_pairs_invalid",
+      "source_path": "/tmp/checkpoint-current-model-comparison-20260910/backend/bedrock-question-service/evals/fixtures/question_complete_solver.json",
+      "source_sha256_matches": true,
+      "request_exact_equal_to_original_fixture": true,
+      "question_exact_equal_to_original_fixture": true
+    },
+    {
+      "case_id": "spreadsheet_mixed_reference_copy",
+      "source_path": "/tmp/checkpoint-current-model-comparison-20260910/docs/evidence/delivery-feedback-20260909/capture.json",
+      "source_sha256_matches": true,
+      "original_author_call_index": 0,
+      "original_author_question_index": 0,
+      "prompt_key_main_difficulty_format_equal": true,
+      "choice_text_multiset_equal": true,
+      "choice_order_equal": true,
+      "scope": "Independently confirmed historical author semantic fields and choice identities. Current fixture uses runtime candidate order/normalized metadata. Full runtime-prefix request reconstruction was performed by the fixture preparer, not rerun in this content audit."
+    },
+    {
+      "case_id": "map_contradictory_scale",
+      "source_path": "/tmp/checkpoint-current-model-comparison-20260910/docs/evidence/delivery-feedback-20260909/capture.json",
+      "source_sha256_matches": true,
+      "original_author_call_index": 15,
+      "original_author_question_index": 1,
+      "prompt_key_main_difficulty_format_equal": true,
+      "choice_text_multiset_equal": true,
+      "choice_order_equal": false,
+      "scope": "Independently confirmed historical author semantic fields and choice identities. Current fixture uses runtime candidate order/normalized metadata. Full runtime-prefix request reconstruction was performed by the fixture preparer, not rerun in this content audit."
+    },
+    {
+      "case_id": "ordinary_cannot_determine",
+      "source_path": "/tmp/checkpoint-current-model-comparison-20260910/backend/bedrock-question-service/evals/fixtures/question_complete_solver.json",
+      "source_sha256_matches": true,
+      "request_exact_equal_to_original_fixture": true,
+      "question_exact_equal_to_original_fixture": true
+    },
+    {
+      "case_id": "spanish_negated_doubt_false_premise",
+      "source_path": "/tmp/checkpoint-current-model-comparison-20260910/backend/bedrock-question-service/evals/fixtures/question_model_comparison.json",
+      "source_sha256_matches": true,
+      "request_exact_equal_to_original_fixture": true,
+      "question_exact_equal_to_original_fixture": true
+    },
+    {
+      "case_id": "bayes_explicit_rates",
+      "source_path": "/tmp/checkpoint-current-model-comparison-20260910/docs/evidence/runtime-qualification-capture-20260908.json",
+      "source_sha256_matches": true,
+      "original_author_call_index": 2,
+      "original_author_question_index": 1,
+      "prompt_key_main_difficulty_format_equal": true,
+      "choice_text_multiset_equal": true,
+      "choice_order_equal": false,
+      "scope": "Independently confirmed historical author semantic fields and choice identities. Current fixture uses runtime candidate order/normalized metadata. Full runtime-prefix request reconstruction was performed by the fixture preparer, not rerun in this content audit."
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "spreadsheet_extra_operand",
+      "item_status": "invalid",
+      "supported_choices_without_added_assumptions": [],
+      "authored_key": "=$A$1*B$1*$A3",
+      "author_key_assessment": "Unsupported: the stored formula adds an unrequested third operand.",
+      "choice_assessments": [
+        {
+          "choice": "=$A$1*B$1*$A3",
+          "status": "unsupported",
+          "reason": "Adds $A3 to the requested A1-times-regional-target calculation. A3 is a quarter label; correct reference mechanics do not supply a missing numeric factor."
+        },
+        {
+          "choice": "=$A$1*$B$1*A3",
+          "status": "unsupported",
+          "reason": "Adds A3 to the requested two-factor product. The extra operand is decisive independently of whether the stem intended B1 to remain fixed or vary by region."
+        },
+        {
+          "choice": "=$A1*B$1*$A3",
+          "status": "unsupported",
+          "reason": "Adds $A3. It also leaves A1 row-relative, but the extra factor alone already prevents it from representing the stated calculation."
+        },
+        {
+          "choice": "=$A$1*B1*$A$3",
+          "status": "unsupported",
+          "reason": "Adds $A$3, a quarter-label cell. The reference placement cannot rescue the unrequested operand."
+        }
+      ],
+      "issues": [
+        "Every choice contains three multiplicative references although the stem describes two operands.",
+        "A3:A6 are identified as quarter labels Q1-Q4; no additional numeric factor or custom number format is supplied.",
+        "The stem names the regional target as $B$1 while also describing filling across regions; anchor intent is secondary ambiguity and must not be the sole defect argument.",
+        "The author explanation describes some reference movements correctly but never justifies multiplying by A3; it silently adopts the defective third factor."
+      ],
+      "conventional_reading_alternatives": [],
+      "independent_difficulty": null,
+      "difficulty_basis": "Current repository rubric: 1 recall; 2 apply a familiar rule directly; 3 interpret evidence or representation; 4 connect steps or interacting constraints; 5 integrate concepts in a novel problem. Qualitative judgment, not learner calibration.",
+      "inherited_constraints": {
+        "request_minimumDifficulty": 3,
+        "authored_difficulty": 3,
+        "prompt_characters": 240,
+        "choice_characters": [
+          13,
+          13,
+          12,
+          13
+        ],
+        "author_main_characters": 270,
+        "within_320_stem_140_each_choice": true
+      },
+      "teaching_criteria": [
+        "Identify the extra A3 operand and distinguish labels from the specified numeric factors.",
+        "Do not invent regional target values, numeric quarter factors, custom formats, or new worksheet facts.",
+        "Do not demand a particular repaired formula before recognizing that none of the four exact choices performs the stated two-factor operation.",
+        "A difficulty exclusion, length exclusion, missing review, or bare rejection without a reason cannot demonstrate detection of this content error."
+      ],
+      "gold_suitability": "Strong prospective invalid-item sentinel. Gold matches the fixture. No offered answer is rescued by the plausible alternative reading of the B1 anchor.",
+      "calculation_evidence": [],
+      "primary_sources": [
+        {
+          "url": "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel",
+          "supports": "A1 reference and multiplication semantics; absolute and mixed reference copying rules."
+        }
+      ]
+    },
+    {
+      "case_id": "grammar_unique_present",
+      "item_status": "valid",
+      "supported_choices_without_added_assumptions": [
+        "She walks to work every day."
+      ],
+      "authored_key": "She walks to work every day.",
+      "author_key_assessment": "Supported and uniquely correct.",
+      "choice_assessments": [
+        {
+          "choice": "She walked to work yesterday.",
+          "status": "unsupported_as_answer",
+          "reason": "Walked is simple past. This is a grammatical sentence, but it does not satisfy the requested non-past property."
+        },
+        {
+          "choice": "He cooked dinner last night.",
+          "status": "unsupported_as_answer",
+          "reason": "Cooked is simple past; last night agrees with that reading. It is not the requested non-past sentence."
+        },
+        {
+          "choice": "She walks to work every day.",
+          "status": "supported",
+          "reason": "Walks is the simple present finite verb; this is the only displayed non-past sentence."
+        },
+        {
+          "choice": "They visited the museum yesterday.",
+          "status": "unsupported_as_answer",
+          "reason": "Visited is simple past; yesterday reinforces past time. It does not answer the negative stem."
+        }
+      ],
+      "issues": [
+        "The author explanation is a diagnostic placeholder, not teaching content; future teaching must be assessed separately."
+      ],
+      "conventional_reading_alternatives": [],
+      "independent_difficulty": 1,
+      "difficulty_basis": "Current repository rubric: 1 recall; 2 apply a familiar rule directly; 3 interpret evidence or representation; 4 connect steps or interacting constraints; 5 integrate concepts in a novel problem. Qualitative judgment, not learner calibration.",
+      "inherited_constraints": {
+        "request_minimumDifficulty": 1,
+        "authored_difficulty": 1,
+        "prompt_characters": 40,
+        "choice_characters": [
+          29,
+          28,
+          28,
+          34
+        ],
+        "author_main_characters": 91,
+        "within_320_stem_140_each_choice": true
+      },
+      "teaching_criteria": [
+        "Select the exact present-tense sentence and explain walks versus the other three past verb forms.",
+        "Assess choices as answers to the negative stem. Do not mislabel the three grammatical past sentences as inherently false or ungrammatical.",
+        "This is intentionally choice-dependent. Do not reject it merely because a choices-hidden solver lacks the listed sentences.",
+        "Feedback must name a sentence or verb, not only a letter or mutable choice position."
+      ],
+      "gold_suitability": "Strong basic valid control; not evidence of level-3 learning or adaptive progression. Gold matches.",
+      "calculation_evidence": [],
+      "primary_sources": []
+    },
+    {
+      "case_id": "historical_all_pairs_invalid",
+      "item_status": "ambiguous",
+      "supported_choices_without_added_assumptions": [],
+      "authored_key": "Hash map storing complements seen so far",
+      "author_key_assessment": "Not warranted unconditionally; conditionally defensible for deduplicated value pairs with expected hashing assumptions.",
+      "choice_assessments": [
+        {
+          "choice": "Hash map storing complements seen so far",
+          "status": "conditionally_supported_only",
+          "reason": "A hash structure can find one match or enumerate distinct value pairs in expected linear processing time under a conventional hashing model. If every matching index pair must be output, total work may be quadratic; the exact stem does not resolve this scope."
+        },
+        {
+          "choice": "Sort then two-pointer scan",
+          "status": "unsupported_as_unconditional_answer",
+          "reason": "The ordinary comparison-sort then scan method is O(n log n) before accounting for output. Listing all matching index pairs can require quadratic output. Do not generalize this to a claim that every conceivable sorting model requires n log n."
+        },
+        {
+          "choice": "Nested loop checking all pairs",
+          "status": "unsupported_as_answer",
+          "reason": "The ordinary nested loop checks n(n-1)/2 unordered index pairs, which is quadratic even when few pairs match."
+        },
+        {
+          "choice": "Binary search for each element's complement",
+          "status": "unsupported_as_unconditional_answer",
+          "reason": "Ordinary binary search needs sorted searchable data, and one logarithmic search per input does not establish O(n) total work. It also cannot avoid an explicit index-pair output lower bound."
+        }
+      ],
+      "issues": [
+        "All pairs does not specify index pairs versus deduplicated value pairs.",
+        "Find may leave explicit enumeration versus a compressed representation unclear.",
+        "The stem states O(n) but does not explicitly say worst-case rather than expected hashing analysis; do not relabel it as an explicit worst-case guarantee.",
+        "Empty supported_choices is valid only as no unconditionally warranted choice under unresolved scope, not proof that every conventional interpretation has no answer.",
+        "The author explanation is a diagnostic placeholder."
+      ],
+      "conventional_reading_alternatives": [
+        "Deduplicated unordered value pairs with expected O(1) hash operations can support the authored algorithm description in expected O(n) time and O(n) auxiliary space.",
+        "Explicit index-pair enumeration needs output-sensitive time, at least proportional to n plus the number of returned pairs."
+      ],
+      "independent_difficulty": null,
+      "difficulty_basis": "Current repository rubric: 1 recall; 2 apply a familiar rule directly; 3 interpret evidence or representation; 4 connect steps or interacting constraints; 5 integrate concepts in a novel problem. Qualitative judgment, not learner calibration.",
+      "inherited_constraints": {
+        "request_minimumDifficulty": 1,
+        "authored_difficulty": 1,
+        "prompt_characters": 116,
+        "choice_characters": [
+          40,
+          26,
+          30,
+          43
+        ],
+        "author_main_characters": 94,
+        "within_320_stem_140_each_choice": true
+      },
+      "teaching_criteria": [
+        "If diagnosing quadratic output, state that the argument concerns enumerating matching index pairs.",
+        "Use a permitted example such as n zeros and target zero, producing n(n-1)/2 distinct index pairs.",
+        "Preserve the distinct-value-pair alternative and expected-hashing qualification instead of declaring all meanings impossible.",
+        "Do not change the task to existence or one matching pair without acknowledging the narrower task.",
+        "Record conditional hash-map approval separately from confident approval without addressing scope."
+      ],
+      "gold_suitability": "Suitable only as an ambiguity/underspecification sentinel. Too weak for an unequivocal impossible/no-answer gold pooled with the three clear defective cases. The fixture prose already preserves this caveat; automated consumers must not discard it and use key_supported:false as unconditional truth.",
+      "calculation_evidence": [
+        {
+          "assumption": "Explicit output of every unordered pair of distinct indices",
+          "example": "n zeros, target 0",
+          "output_count": "n*(n-1)/2",
+          "example_n": 100,
+          "example_outputs": 4950
+        }
+      ],
+      "primary_sources": []
+    },
+    {
+      "case_id": "spreadsheet_mixed_reference_copy",
+      "item_status": "valid",
+      "supported_choices_without_added_assumptions": [
+        "=$A4*D$1"
+      ],
+      "authored_key": "=$A4*D$1",
+      "author_key_assessment": "Supported and uniquely correct as exact copied formula text.",
+      "choice_assessments": [
+        {
+          "choice": "=$A4*D$1",
+          "status": "supported",
+          "reason": "The displacement is +2 columns and +2 rows. $A2 becomes $A4; B$1 becomes D$1. The original dollar signs remain."
+        },
+        {
+          "choice": "=$A2*D$1",
+          "status": "unsupported_as_answer",
+          "reason": "Incorrectly retains row 2 in $A2 even though that row is relative and the destination is two rows lower."
+        },
+        {
+          "choice": "=$A4*B$1",
+          "status": "unsupported_as_answer",
+          "reason": "Incorrectly retains column B in B$1 even though that column is relative and the destination is two columns right."
+        },
+        {
+          "choice": "=A4*D1",
+          "status": "unsupported_as_answer",
+          "reason": "Drops both dollar signs. It refers to the same A4 and D1 cells at that position, but is not the exact formula produced from the anchored original."
+        }
+      ],
+      "issues": [
+        "Months/products may be text rather than numeric operands, but this does not invalidate a question asking for the copied formula text.",
+        "Historical difficulty 3 is preserved, but applying reference rules directly is reasonably level 2 under the actual rubric; do not force level 3 to pass the floor.",
+        "The original main correctly identifies both transformations."
+      ],
+      "conventional_reading_alternatives": [],
+      "independent_difficulty": 2,
+      "difficulty_basis": "Current repository rubric: 1 recall; 2 apply a familiar rule directly; 3 interpret evidence or representation; 4 connect steps or interacting constraints; 5 integrate concepts in a novel problem. Qualitative judgment, not learner calibration.",
+      "inherited_constraints": {
+        "request_minimumDifficulty": 3,
+        "authored_difficulty": 3,
+        "prompt_characters": 166,
+        "choice_characters": [
+          8,
+          8,
+          8,
+          6
+        ],
+        "author_main_characters": 238,
+        "within_320_stem_140_each_choice": true
+      },
+      "teaching_criteria": [
+        "Preserve the two-component displacement and the fixed versus relative components separately.",
+        "Explain the wrong row in choice 2, wrong column in choice 3, and missing anchors in choice 4.",
+        "Do not claim =A4*D1 must currently evaluate differently from =$A4*D$1; the distinction is formula text and future copying.",
+        "Do not reject solely because the referenced cells may contain labels when no numeric result is requested.",
+        "Separate a legitimate difficulty-floor exclusion from factual error."
+      ],
+      "gold_suitability": "Strong valid correctness/teaching control, with explicit difficulty-floor caveat already present in the fixture.",
+      "calculation_evidence": [
+        {
+          "source_cell": "B2",
+          "destination_cell": "D4",
+          "column_delta": 2,
+          "row_delta": 2,
+          "reference_transformations": {
+            "$A2": "$A4",
+            "B$1": "D$1"
+          },
+          "exact_formula": "=$A4*D$1"
+        }
+      ],
+      "primary_sources": [
+        {
+          "url": "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel",
+          "supports": "Mixed references adjust only their relative components during copying/filling; absolute markers persist."
+        }
+      ]
+    },
+    {
+      "case_id": "map_contradictory_scale",
+      "item_status": "invalid",
+      "supported_choices_without_added_assumptions": [],
+      "authored_key": "1:62,500",
+      "author_key_assessment": "1:62,500 follows the printed scale alone, but is not established by all supplied measurements together.",
+      "choice_assessments": [
+        {
+          "choice": "1:62,500",
+          "status": "conditionally_supported_only",
+          "reason": "Reducing a genuine 1:50,000 map to 80% yields 1:62,500. The 3 km label and 5 cm measurement instead imply 1:60,000 before reduction and 1:75,000 afterward; the stem gives no priority rule."
+        },
+        {
+          "choice": "1:40,000",
+          "status": "unsupported_as_answer",
+          "reason": "1:40,000 comes from multiplying 50,000 by 0.8, the wrong direction for a linear reduction. It also does not reconcile the road data."
+        },
+        {
+          "choice": "1:50,000",
+          "status": "unsupported_as_answer",
+          "reason": "Retaining 1:50,000 ignores the specified resizing if the printed ratio was initially correct. It does not follow from the road data either."
+        },
+        {
+          "choice": "1:100,000",
+          "status": "unsupported_as_answer",
+          "reason": "1:100,000 corresponds to halving original lengths from a 1:50,000 basis, not the stated 80% factor. It does not reconcile the measurements."
+        }
+      ],
+      "issues": [
+        "At a uniform 1:50,000 scale, 5 cm represents 2.5 km, conflicting with the 3 km label for the straight road.",
+        "A student measurement or printed label can of course be erroneous in reality, but the task gives no instruction to correct or prioritize one.",
+        "The declared goal assumes stated scale uniform over the measured region; do not introduce projection variation or a different route to rescue the inconsistency.",
+        "The authored main is arithmetically sound conditional on trusting the printed ratio, but omits the contradictory road information.",
+        "Inherited author main is 344 characters, above 320-character author/main guidance. That is distinct from this content defect."
+      ],
+      "conventional_reading_alternatives": [
+        "If explicitly instructed to trust the printed numerical ratio and treat road data as mistaken/irrelevant, 1:62,500 is correct. That priority is absent from the unchanged question.",
+        "If explicitly instructed to trust the 3 km label and exact 5 cm measurement, the reduced ratio is 1:75,000, which is not offered."
+      ],
+      "independent_difficulty": null,
+      "difficulty_basis": "Current repository rubric: 1 recall; 2 apply a familiar rule directly; 3 interpret evidence or representation; 4 connect steps or interacting constraints; 5 integrate concepts in a novel problem. Qualitative judgment, not learner calibration.",
+      "inherited_constraints": {
+        "request_minimumDifficulty": 3,
+        "authored_difficulty": 3,
+        "prompt_characters": 253,
+        "choice_characters": [
+          8,
+          8,
+          8,
+          9
+        ],
+        "author_main_characters": 344,
+        "within_320_stem_140_each_choice": true
+      },
+      "teaching_criteria": [
+        "Identify the 2.5 km versus 3 km conflict and preserve the literal supplied lengths and units.",
+        "If providing conditional results, clearly distinguish 1:62,500 from the printed ratio and 1:75,000 from the road label/measurement.",
+        "Do not round 2.5 km into 3 km without a stated rounding allowance, or assume measurement error that the stem does not establish.",
+        "Do not teach that 50,000/0.8 arithmetic is false; its premises are what conflict with other supplied facts.",
+        "A main-length exclusion or missing response is not detection of the numerical contradiction."
+      ],
+      "gold_suitability": "Strong full-premise consistency sentinel. The authored key is conditionally correct arithmetic; scoring must require detection of the conflict rather than claim the key can never follow any subset of the facts.",
+      "calculation_evidence": [
+        {
+          "printed_scale_implied_ground_km": "5*50000/100000 = 2.5",
+          "label_ground_km": 3,
+          "original_denominator_from_road": "3*100000/5 = 60000",
+          "reduced_denominator_from_printed_scale": "50000/0.8 = 62500",
+          "reduced_denominator_from_road": "60000/0.8 = 75000",
+          "reduced_road_cm": "5*0.8 = 4"
+        }
+      ],
+      "primary_sources": []
+    },
+    {
+      "case_id": "ordinary_cannot_determine",
+      "item_status": "valid",
+      "supported_choices_without_added_assumptions": [
+        "The time cannot be calculated without the flow rate."
+      ],
+      "authored_key": "The time cannot be calculated without the flow rate.",
+      "author_key_assessment": "Supported and uniquely warranted in the supplied information context.",
+      "choice_assessments": [
+        {
+          "choice": "2 minutes",
+          "status": "possible_but_not_warranted",
+          "reason": "Two minutes would result from 6 L/min. That positive constant rate is permitted but is not specified."
+        },
+        {
+          "choice": "The time cannot be calculated without the flow rate.",
+          "status": "supported",
+          "reason": "The amount is known but the positive constant rate is not. Different permissible rates produce different times, so no unique duration can be calculated from the given facts."
+        },
+        {
+          "choice": "3 minutes",
+          "status": "possible_but_not_warranted",
+          "reason": "Three minutes would result from 4 L/min, a possible but unprovided rate."
+        },
+        {
+          "choice": "6 minutes",
+          "status": "possible_but_not_warranted",
+          "reason": "Six minutes would result from 2 L/min, also possible but unprovided."
+        }
+      ],
+      "issues": [
+        "The natural-language negative answer is a sound statement of a known information limit. It is not evidence of solver uncertainty or a malformed premise.",
+        "The author main is a diagnostic placeholder, not teaching content.",
+        "A gate-specific canonical-negative wording requirement must be scored separately from semantic correctness."
+      ],
+      "conventional_reading_alternatives": [],
+      "independent_difficulty": 2,
+      "difficulty_basis": "Current repository rubric: 1 recall; 2 apply a familiar rule directly; 3 interpret evidence or representation; 4 connect steps or interacting constraints; 5 integrate concepts in a novel problem. Qualitative judgment, not learner calibration.",
+      "inherited_constraints": {
+        "request_minimumDifficulty": 1,
+        "authored_difficulty": 2,
+        "prompt_characters": 92,
+        "choice_characters": [
+          9,
+          52,
+          9,
+          9
+        ],
+        "author_main_characters": 91,
+        "within_320_stem_140_each_choice": true
+      },
+      "teaching_criteria": [
+        "Explain t=12/r with compatible units and the missing numeric rate.",
+        "Treat the three numeric times as possible under different rates, not impossible.",
+        "Do not invent a particular rate.",
+        "Do not deny the valid answer because it differs from app-owned canonical wording."
+      ],
+      "gold_suitability": "Strong basic valid negative-answer control; not level-3 learning evidence. Gold matches.",
+      "calculation_evidence": [
+        {
+          "amount_litres": 12,
+          "rate_litres_per_minute": 6,
+          "time_minutes": 2.0
+        },
+        {
+          "amount_litres": 12,
+          "rate_litres_per_minute": 4,
+          "time_minutes": 3.0
+        },
+        {
+          "amount_litres": 12,
+          "rate_litres_per_minute": 2,
+          "time_minutes": 6.0
+        }
+      ],
+      "primary_sources": []
+    },
+    {
+      "case_id": "spanish_negated_doubt_false_premise",
+      "item_status": "invalid",
+      "supported_choices_without_added_assumptions": [],
+      "authored_key": "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative",
+      "author_key_assessment": "Unsupported as a complete action-plus-rationale answer: indicative is possible, but not categorically required.",
+      "choice_assessments": [
+        {
+          "choice": "Change \"sepa\" to \"sabe\"; \"no dudo que\" expresses certainty, requiring indicative",
+          "status": "unsupported_as_complete_answer",
+          "reason": "Sabe can be grammatical, but the rationale requiring indicative after no dudo is categorical and false. The original sepa is not inherently a mood error."
+        },
+        {
+          "choice": "Keep \"sepa\"; any form of \"dudar\" always triggers the subjunctive",
+          "status": "unsupported_as_complete_answer",
+          "reason": "Keeping sepa can be grammatical, but the rationale that any form of dudar always requires subjunctive is false; negated doubt also permits indicative."
+        },
+        {
+          "choice": "Change \"sepa\" to \"sabría\"; negated doubt requires the conditional",
+          "status": "unsupported_as_complete_answer",
+          "reason": "No rule supplied or established here requires conditional sabría after negated doubt."
+        },
+        {
+          "choice": "Change \"no dudo\" to \"no duda\"; the error is subject–verb agreement, not mood",
+          "status": "unsupported_as_complete_answer",
+          "reason": "Dudo is the first-person singular form; Juan is the subject of the subordinate clause. No subject-agreement error requiring third-person duda is established."
+        }
+      ],
+      "issues": [
+        "Both offered mood-rule generalizations are too absolute; preserving sepa does not rescue its false accompanying rationale.",
+        "The teacher marking a mood error is part of the faulty premise, not sufficient authority to make it an actual grammar error.",
+        "The author main and keyed choice feedback teach an obligatory indicative switch. The other feedback saying negated doubt typically requires indicative is also overbroad if interpreted as a mandatory rule."
+      ],
+      "conventional_reading_alternatives": [],
+      "independent_difficulty": null,
+      "difficulty_basis": "Current repository rubric: 1 recall; 2 apply a familiar rule directly; 3 interpret evidence or representation; 4 connect steps or interacting constraints; 5 integrate concepts in a novel problem. Qualitative judgment, not learner calibration.",
+      "inherited_constraints": {
+        "request_minimumDifficulty": 3,
+        "authored_difficulty": 3,
+        "prompt_characters": 126,
+        "choice_characters": [
+          80,
+          64,
+          65,
+          76
+        ],
+        "author_main_characters": 169,
+        "within_320_stem_140_each_choice": true
+      },
+      "teaching_criteria": [
+        "Reject the mandatory correction premise while recognizing grammatical use of both moods in appropriate contexts.",
+        "Assess each full choice plus rationale, not only the instruction to keep or change a verb.",
+        "Do not claim subjunctive always signals factual uncertainty; pragmatic alternatives and discourse context matter.",
+        "Do not substitute a difficulty rejection or provider error for identifying the grammar defect."
+      ],
+      "gold_suitability": "Strong categorical-rule/false-premise sentinel. Primary linguistic analysis independently supports the essential gold; it does not establish that every mood is interchangeable in all contexts.",
+      "calculation_evidence": [],
+      "primary_sources": [
+        {
+          "url": "https://www.scielo.cl/scielo.php?pid=S0718-48832009000100008&script=sci_arttext",
+          "title": "Hans-Jörg Busch (2009), La enseñanza del subjuntivo en EE.UU. El subjuntivo en cláusulas nominales",
+          "section": "6.1.3.1 DUDAR QUE",
+          "supports": "The author explicitly describes both indicative and subjunctive after no dudar que, with a corpus example; the categorical indicative-only rule is not justified.",
+          "limitation": "A linguistic analysis and pedagogical proposal, not learner validation of these quiz items; usage and pragmatic meanings vary."
+        }
+      ]
+    },
+    {
+      "case_id": "bayes_explicit_rates",
+      "item_status": "valid",
+      "supported_choices_without_added_assumptions": [
+        "About 9%"
+      ],
+      "authored_key": "About 9%",
+      "author_key_assessment": "Supported and uniquely correct: 11/122, about 9.0164%.",
+      "choice_assessments": [
+        {
+          "choice": "About 9%",
+          "status": "supported",
+          "reason": "The positive predictive probability is .99*.001 / (.99*.001 + .01*.999), approximately .090164."
+        },
+        {
+          "choice": "About 99%",
+          "status": "unsupported_as_answer",
+          "reason": "99% is sensitivity and specificity here, not the posterior probability of disease after a positive result."
+        },
+        {
+          "choice": "About 50%",
+          "status": "unsupported_as_answer",
+          "reason": "True and false positives are not equally numerous at prevalence 0.1%. With these test rates, a 50% posterior would require prevalence 1%, not 50%."
+        },
+        {
+          "choice": "About 1%",
+          "status": "unsupported_as_answer",
+          "reason": "1% is the false-positive rate for healthy people; the stated prevalence is 0.1% and the requested posterior is about 9%."
+        }
+      ],
+      "issues": [
+        "The headline 99% accurate alone would be underspecified, but the following clause explicitly supplies both sensitivity and specificity.",
+        "This is a hypothetical population/test model, not personalized medical guidance.",
+        "The original main uses explicitly approximate counts near 1 true and 10 false positives per 1000, which is reasonable for an approximate 9% answer; exact expected counts are .99 and 9.99."
+      ],
+      "conventional_reading_alternatives": [],
+      "independent_difficulty": 3,
+      "difficulty_basis": "Current repository rubric: 1 recall; 2 apply a familiar rule directly; 3 interpret evidence or representation; 4 connect steps or interacting constraints; 5 integrate concepts in a novel problem. Qualitative judgment, not learner calibration.",
+      "inherited_constraints": {
+        "request_minimumDifficulty": 3,
+        "authored_difficulty": 3,
+        "prompt_characters": 232,
+        "choice_characters": [
+          8,
+          9,
+          9,
+          8
+        ],
+        "author_main_characters": 183,
+        "within_320_stem_140_each_choice": true
+      },
+      "teaching_criteria": [
+        "Use the correct 0.1% prevalence and distinguish P(positive|disease) from P(disease|positive).",
+        "Compute weighted positive cases and normalize among all positives; distinguish illustrative expected counts from guaranteed observed counts.",
+        "Any natural-frequency example must identify the population size and preserve correct units.",
+        "For 50%, either explain unequal positive counts under this prevalence or correctly derive the 1% prevalence that would make them equal. Do not say 50% prevalence.",
+        "Do not equate the 1% distractor to the raw base rate of 0.1%.",
+        "The whole main and every distractor explanation must be correct; a correct About 9% key is insufficient."
+      ],
+      "gold_suitability": "Strong valid key-plus-teaching control; level 3 is a reasonable qualitative judgment, not an empirical difficulty calibration. Gold matches.",
+      "calculation_evidence": [
+        {
+          "prevalence": "1/1000",
+          "sensitivity": "99/100",
+          "specificity": "99/100",
+          "joint_true_positive": "99/100000",
+          "joint_false_positive": "999/100000",
+          "posterior_exact": "11/122",
+          "posterior_percent": 9.01639344262295,
+          "illustrative_population": 100000,
+          "affected": 100,
+          "healthy": 99900,
+          "expected_true_positives": 99,
+          "expected_false_positives": 999,
+          "prevalence_for_half_posterior": "1/100 from 0.99p=0.01(1-p)"
+        }
+      ],
+      "primary_sources": []
+    }
+  ]
+}

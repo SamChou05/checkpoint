@@ -1,5 +1,40 @@
 # Pause handoff — September 9, 2026
 
+## September 10 preparation and user steering
+
+Current work is in `/tmp/checkpoint-current-model-comparison-20260910`, on
+`codex/current-model-comparison`. The new
+`evals/checkpoint_current_model_comparison.py` prepares eight fixed subjects for
+Sonnet 4.6 and Opus 5 under the current complete-choice/reviewer-written gates,
+with matched legacy JSON transport and adaptive/high thinking. No inference,
+commercial agreement acceptance or production change has occurred. Read
+`QUESTION_CURRENT_MODEL_COMPARISON_PROTOCOL.md` and its case note before use.
+The independent subject audit identifies four valid controls, three defective
+items and one ambiguous all-pairs item; preserve the ambiguity distinction.
+
+The user then asked whether output tokens or a prompt/architecture issue explains
+the failures, and challenged the assumption that newer models are necessary.
+Prior evidence already includes a same-model short-prompt comparison: 24/30
+supported keys for the simple prompt versus 26/30 for the then-current author
+prompt, with no output exhaustion. All six contexts lacked skill maps, adaptive
+plans and question history. This neither exonerates the full architecture nor
+supports repeating a simple-prompt comparison unchanged. Read
+`QUESTION_PROMPT_EXPERIMENT.md`, `QUESTION_COMPLETE_SOLVER_RESULTS.md`, and
+`QUESTION_REVIEWER_INDEPENDENCE_RESULTS.md` before selecting further work.
+Track correctness of the raw authored item, generated final teaching and actual
+returns separately; do not mistake format/difficulty exclusions for factual
+errors or successful catches. The prepared model comparison remains optional;
+no AWS permission question is pending.
+
+The account's Opus 5 commercial agreement was still unavailable in the observed
+read-only check at 2026-09-10 06:50:56 UTC. Recheck before any future authorized
+trial. Its activation requires explicit user authorization, separate from the
+existing authorization for bounded paid experiments. Do not start or repeat a
+paid run merely because this preparation exists. The broader correctness goal
+remains incomplete.
+
+## Previous completed trial
+
 The active goal resumed after the user's latest progress/pause check. Current
 work is in `/tmp/checkpoint-premise-witness-20260909`, on
 `codex/premise-witness`. Read `docs/QUESTION_REVIEWER_INDEPENDENCE_RESULTS.md`
