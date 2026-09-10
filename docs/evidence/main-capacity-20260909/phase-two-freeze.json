@@ -1,0 +1,7 @@
+{
+  "stage": "Both teaching passes frozen before arm and author-key unmasking",
+  "sha256": {
+    "teaching-assessment-a.json": "47f7cd7f4b5d3df4389ebfc8fd387e5904bad01d3b01301d5b3ee280e5cc47a7",
+    "teaching-assessment-b.json": "5faf946075aae0512930a46eb59367442d9de4f2d6ca7b27dceb10e4703ee271"
+  }
+}

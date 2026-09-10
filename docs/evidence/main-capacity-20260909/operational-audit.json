@@ -1,0 +1,60 @@
+{
+  "status": "passed",
+  "experiment": "fresh-author-main-capacity-v1",
+  "source_revision": "f55e5018a5a71db72c8864d9a79a44bd8ae41877",
+  "source_hashes_match_commit_and_worktree": 34,
+  "plan_canonical_sha256": "1932764c04d2846079f72019c1639221c4d62e0bf1acedfefc4dc9c605d83608",
+  "capture_bytes": 230337,
+  "capture_byte_sha256": "744ee9eea9ce8604c1a927fdd9b3cd39d4a8f41cb7215ef70bcd8ee66637258d",
+  "exact_no_client_or_socket_replay": true,
+  "native_converse_request_validation": 6,
+  "request_bindings_and_settings_valid": 6,
+  "completed_end_turn_known_usage_clean_workers": 6,
+  "provider_attempts": 6,
+  "fetches": 0,
+  "request_utf8_bytes": [
+    13270,
+    13270,
+    13451,
+    13451,
+    13503,
+    13503
+  ],
+  "request_utf8_bytes_total": 80448,
+  "known_usage": {
+    "inputTokens": 14898,
+    "outputTokens": 4307,
+    "totalTokens": 19205
+  },
+  "sdk_seconds": [
+    5.535898250003811,
+    25.32567387499148,
+    5.915306500042789,
+    6.694935999985319,
+    4.707067832991015,
+    6.676628666988108
+  ],
+  "sdk_seconds_sum": 54.85551112500252,
+  "sdk_seconds_range": [
+    4.707067832991015,
+    25.32567387499148
+  ],
+  "worker_seconds_sum": 58.92357429099502,
+  "output_tokens_range": [
+    637,
+    794
+  ],
+  "strict_author_envelopes": 6,
+  "raw_question_occurrences": 12,
+  "requested_slots_preserved": 12,
+  "extra_or_missing_slots": 0,
+  "assembly_exact_matching": true,
+  "stems_masking": "Only opaque item/context IDs, raw goals/source summaries, exact stems and choices. No explicit arm, key, difficulty, main or assessor notes. Subject wording may itself convey answer information.",
+  "teaching_masking": "Exactly opaque IDs and unchanged main explanations; no explicit arms or keys. Main text can reveal the intended answer and length may suggest the arm.",
+  "assembly_file_sha256": {
+    "stems.json": "1df64c9d357e326a0520cb144329bcd856600ddaa2d120f268e87a72827fd38e",
+    "teaching.json": "4aed1ce0eda2e6f0d7e3078e04d6116f5e69dacff36e76f9c2d85600dee0b2e6",
+    "private-mapping.json": "6674e2dc402fc7372ee82d92bc4b20665b1f1e598f83fd69eb9efaa994d0a9a1"
+  },
+  "scope": "Operational and masking fidelity only; no semantic assessment or arm/key mapping disclosed. No provider clients/calls or production edits during this audit."
+}

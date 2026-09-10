@@ -1,0 +1,647 @@
+{
+  "experiment": "fresh-author-main-capacity-v1",
+  "capture_byte_sha256": "744ee9eea9ce8604c1a927fdd9b3cd39d4a8f41cb7215ef70bcd8ee66637258d",
+  "plan_sha256": "1932764c04d2846079f72019c1639221c4d62e0bf1acedfefc4dc9c605d83608",
+  "assessor_order": [
+    "a",
+    "b"
+  ],
+  "counts": {
+    "main_320": {
+      "requested_slots": 6,
+      "raw_items": 6,
+      "unique_authored_key_supported_both": 5,
+      "main_fully_supported_both": 3,
+      "three_plausible_distinct_distractors_both": 2,
+      "difficulty_at_least_3_both": 2,
+      "complete_content_both": 1,
+      "complete_with_virtual_limit_420": 0,
+      "complete_with_virtual_limit_900": 0,
+      "main_within_420": 1,
+      "main_within_900": 6,
+      "main_within_author_instruction": 0,
+      "stem_and_choices_within_current_limits": 5
+    },
+    "main_900": {
+      "requested_slots": 6,
+      "raw_items": 6,
+      "unique_authored_key_supported_both": 2,
+      "main_fully_supported_both": 2,
+      "three_plausible_distinct_distractors_both": 1,
+      "difficulty_at_least_3_both": 4,
+      "complete_content_both": 1,
+      "complete_with_virtual_limit_420": 0,
+      "complete_with_virtual_limit_900": 1,
+      "main_within_420": 0,
+      "main_within_900": 6,
+      "main_within_author_instruction": 6,
+      "stem_and_choices_within_current_limits": 4
+    }
+  },
+  "items": [
+    {
+      "id": "q01",
+      "arm": "main_900",
+      "case": "c1",
+      "raw_sha256": "7ff1c9fd383fdc916e264c9fb3ab16ad29d31e7b24480813ddac6d1a5d24ab4d",
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        2,
+        2
+      ],
+      "main_fully_supported": [
+        true,
+        true
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_both": false,
+      "stem_characters": 260,
+      "choice_characters": [
+        80,
+        79,
+        76,
+        81
+      ],
+      "main_characters": 743,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": true,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q02",
+      "arm": "main_320",
+      "case": "c2",
+      "raw_sha256": "e304ef80e9799b9fc5f9ef5d5ab5d3b5b6249c8fc6536a56e66e9c65f69f1560",
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        4,
+        4
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 249,
+      "choice_characters": [
+        43,
+        36,
+        45,
+        47
+      ],
+      "main_characters": 500,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": false,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q03",
+      "arm": "main_320",
+      "case": "c0",
+      "raw_sha256": "0169ac73454c70693cd7ce931b8b27f84ef2b52e395e22fe2c7cc168554c5789",
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        true,
+        true
+      ],
+      "assessed_difficulty": [
+        3,
+        3
+      ],
+      "main_fully_supported": [
+        true,
+        true
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_both": true,
+      "stem_characters": 336,
+      "choice_characters": [
+        57,
+        40,
+        30,
+        23
+      ],
+      "main_characters": 502,
+      "stem_and_choices_within_current_limits": false,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": false,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q04",
+      "arm": "main_900",
+      "case": "c0",
+      "raw_sha256": "66684349b2409f6167b476a4e1734d3886839136567c7f1a3731a51fd403c9cc",
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        true,
+        true
+      ],
+      "assessed_difficulty": [
+        3,
+        3
+      ],
+      "main_fully_supported": [
+        true,
+        true
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_both": true,
+      "stem_characters": 294,
+      "choice_characters": [
+        35,
+        36,
+        35,
+        36
+      ],
+      "main_characters": 529,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": true,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": true
+    },
+    {
+      "id": "q05",
+      "arm": "main_900",
+      "case": "c2",
+      "raw_sha256": "c87af2f8ababbfae238d3618c886844e26874fff56deb33565bad39aaa383c5b",
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        4,
+        4
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 359,
+      "choice_characters": [
+        18,
+        45,
+        44,
+        42
+      ],
+      "main_characters": 538,
+      "stem_and_choices_within_current_limits": false,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": true,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q06",
+      "arm": "main_900",
+      "case": "c2",
+      "raw_sha256": "1c16ee2759882ddd02aac9513bb34360ea4825a73b2163ed0ffab7a3c9046dcd",
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        4,
+        4
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 362,
+      "choice_characters": [
+        35,
+        54,
+        47,
+        46
+      ],
+      "main_characters": 498,
+      "stem_and_choices_within_current_limits": false,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": true,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q07",
+      "arm": "main_320",
+      "case": "c0",
+      "raw_sha256": "328b020f4af27162f346693ccd55c6f3fd97ae53601681d6790e063d98af1227",
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        true,
+        false
+      ],
+      "assessed_difficulty": [
+        2,
+        2
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_both": false,
+      "stem_characters": 235,
+      "choice_characters": [
+        20,
+        16,
+        16,
+        7
+      ],
+      "main_characters": 516,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": false,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q08",
+      "arm": "main_320",
+      "case": "c2",
+      "raw_sha256": "daf64ab721823790ba1a2a9f516b49412b6cbc3dc341f048dafbe7f37ae8e897",
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        2,
+        2
+      ],
+      "main_fully_supported": [
+        true,
+        true
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_both": false,
+      "stem_characters": 260,
+      "choice_characters": [
+        120,
+        84,
+        76,
+        72
+      ],
+      "main_characters": 440,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": false,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q09",
+      "arm": "main_320",
+      "case": "c1",
+      "raw_sha256": "7d62cd8ea7282545ab4d7f6d304eccb45e46d67bb8be3439cccd574b7b26ff4a",
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        true
+      ],
+      "assessed_difficulty": [
+        2,
+        2
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 134,
+      "choice_characters": [
+        51,
+        83,
+        49,
+        50
+      ],
+      "main_characters": 718,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": false,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q10",
+      "arm": "main_900",
+      "case": "c1",
+      "raw_sha256": "df63db17b94e7c37cc8ef3ce536c8366a9698c84ee9d811d0ee09a7c705511ad",
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        false,
+        false
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        2,
+        2
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 260,
+      "choice_characters": [
+        43,
+        43,
+        45,
+        43
+      ],
+      "main_characters": 613,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": true,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q11",
+      "arm": "main_900",
+      "case": "c0",
+      "raw_sha256": "36e5812b160dcda22c76f78788fce67bc36ddae0bd66e54084ff26675462458e",
+      "unique_authored_key_supported": [
+        false,
+        false
+      ],
+      "premises_complete": [
+        false,
+        false
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        false,
+        false
+      ],
+      "assessed_difficulty": [
+        3,
+        3
+      ],
+      "main_fully_supported": [
+        false,
+        false
+      ],
+      "worked_solution_complete": [
+        false,
+        false
+      ],
+      "complete_content_both": false,
+      "stem_characters": 182,
+      "choice_characters": [
+        21,
+        21,
+        21,
+        32
+      ],
+      "main_characters": 573,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": false,
+      "main_within_900": true,
+      "main_within_author_instruction": true,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    },
+    {
+      "id": "q12",
+      "arm": "main_320",
+      "case": "c1",
+      "raw_sha256": "2393271ef9d41755e6bc128af749eebbe64208078812970704ac5e7d5748216b",
+      "unique_authored_key_supported": [
+        true,
+        true
+      ],
+      "premises_complete": [
+        true,
+        true
+      ],
+      "goal_fit": [
+        true,
+        true
+      ],
+      "three_plausible_distinct_distractors": [
+        true,
+        true
+      ],
+      "assessed_difficulty": [
+        2,
+        4
+      ],
+      "main_fully_supported": [
+        true,
+        true
+      ],
+      "worked_solution_complete": [
+        true,
+        true
+      ],
+      "complete_content_both": false,
+      "stem_characters": 203,
+      "choice_characters": [
+        1,
+        2,
+        1,
+        1
+      ],
+      "main_characters": 368,
+      "stem_and_choices_within_current_limits": true,
+      "main_within_420": true,
+      "main_within_900": true,
+      "main_within_author_instruction": false,
+      "complete_with_virtual_limit_420": false,
+      "complete_with_virtual_limit_900": false
+    }
+  ],
+  "artifact_sha256": {
+    "native-checks.json": "b7404e13f2185a869f806e8414c80fa5e43575dd27cfe09074a4bd1af151fe0a",
+    "teaching.json": "4aed1ce0eda2e6f0d7e3078e04d6116f5e69dacff36e76f9c2d85600dee0b2e6",
+    "root-stem-notes.json": "bfbe7ab31076b5f60e6e1dbb3872705b9080599b1c276a3de1e3a6d85835865b",
+    "teaching-assessment-a.json": "47f7cd7f4b5d3df4389ebfc8fd387e5904bad01d3b01301d5b3ee280e5cc47a7",
+    "stem-assessment-a.json": "75e3315720ab31740234da201d296097216bc9b3f44bc5aaa90e115ae33ca2aa",
+    "root-teaching-notes.json": "f1035dc7b0d077cffc63a72367b22bd1c88a90baf98eee210e6285498b77104f",
+    "stem-assessment-b.json": "24d9037c389bf6b2d2eea94b8ae5db0f6016ed109b032dd367ad2c935502874b",
+    "stems.json": "1df64c9d357e326a0520cb144329bcd856600ddaa2d120f268e87a72827fd38e",
+    "private-mapping.json": "6674e2dc402fc7372ee82d92bc4b20665b1f1e598f83fd69eb9efaa994d0a9a1",
+    "teaching-assessment-b.json": "5faf946075aae0512930a46eb59367442d9de4f2d6ca7b27dceb10e4703ee271",
+    "phase-two-freeze.json": "d40c8e7c25e9e4584846da99552b52f2abc8a0003d36be2e8f79612b18a0961f",
+    "operational-audit.json": "050b43ee81ebb9af04aa5dcc271a7f061b77aa2c8db7e23356b1f50947bcaae1",
+    "phase-one-freeze.json": "efebd4dcf8be272da3d45846f8c2d5ff0a32d9a75b1b2fcc0ecc97fb1cd2995e"
+  },
+  "scope": "All12requestedrawslots, two independent assistant assessments; complete-content is separate from virtual length observations. No production verification calls or admission occurred."
+}

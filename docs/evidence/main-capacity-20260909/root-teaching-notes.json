@@ -1,0 +1,19 @@
+{
+  "phase": "Root teaching assessment before arm unmasking",
+  "unsupported_mains": {
+    "q02": "Compensation has wrong direction; higher ISO400 remains available.",
+    "q05": "Compensation has wrong direction; ISO3200 adds3stops while shutter adds3stops, for64x conventional brightness.",
+    "q06": "Invents ISO100 minimum, disregards faster shutter, and miscalculates opening+slowing compensation.",
+    "q07": "Concludes null-safe comparison decisive after correctly saying ordinary equality has same result. Intended row result sound, pedagogical necessity claim misleading.",
+    "q09": "Miscounts pitch distance and written interval, calls F–Bb a tritone/diminished fifth rather than a perfect fourth; correct qualitative error option does not rescue false main.",
+    "q10": "Calls E–Bb a major sixth though it is a diminished fifth/tritone. Actual intervallic inversion E–G would place G below higherE.",
+    "q11": "Literal row reasoning conditional on compatible column types; main silently assumes comparison is legal."
+  },
+  "supported_mains": [
+    "q01",
+    "q03",
+    "q04",
+    "q08"
+  ],
+  "q12": "Main clarifies ordinary intervallic inversion as loweringG#belowE, uppernoteE. This is coherent under that convention; initial stem ambiguity about aroundanchor remains noted."
+}

@@ -1,0 +1,167 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "fully_supported": true,
+      "worked_solution_complete": true,
+      "reason": "Correctly performs the specified octave move, identifies the resulting perfect fourth, and compares seven versus five semitones. It explains the decisive distinction between shared pitch classes and the changed actual interval span; the spelling and non-enharmonic-equivalence claims are correct in this context.",
+      "unsupported_claims": [],
+      "necessary_qualifications": []
+    },
+    {
+      "id": "q02",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The aperture and fixed-shutter reasoning starts correctly but the ISO compensation direction is reversed. Closing f/8 to f/11 at 1/60 s calls for ISO 400, which is permitted by the stated ISO floor. The explanation rationalizes a false no-solution choice and misses the valid alternative absent from the options.",
+      "unsupported_claims": [
+        "Lowering ISO is described as the needed compensation for the light lost by narrowing the aperture; it would instead reduce nominal brightness further.",
+        "The stated minimum ISO of 200 is treated as blocking the required compensation, although ISO must increase and no maximum ISO of 200 is given.",
+        "The conclusion that deeper depth of field with the same 1/60 s motion rendering cannot be achieved under the stated constraints is false."
+      ],
+      "necessary_qualifications": [
+        "Aperture-depth-of-field comparisons assume the other relevant geometry stays fixed, as in the task context.",
+        "An impossibility conclusion would need an additional constraint actually prohibiting the compensating ISO increase. That constraint is absent and must not be assumed.",
+        "Under the stated conventional stop framework, f/11, 1/60 s, ISO 400 is a permitted counterexample, leaving no valid listed option."
+      ]
+    },
+    {
+      "id": "q03",
+      "fully_supported": true,
+      "worked_solution_complete": true,
+      "reason": "The explanation enumerates the correct intermediate joined rows, applies true-only WHERE filtering including the NULL case, and shows why the ON restriction preserves the unmatched id=2 row. Both final results are correct and the decisive ON-versus-WHERE difference is fully explained. After the join is naturally read as logical result semantics here.",
+      "unsupported_claims": [],
+      "necessary_qualifications": []
+    },
+    {
+      "id": "q04",
+      "fully_supported": true,
+      "worked_solution_complete": true,
+      "reason": "The worked rows and counts are correct: WHERE removes both 10 and the NULL-extended row, while the ON condition permits only the value-20 match and the left join preserves id=2. One row per left row is true for this particular Q2 dataset, whose matches were just enumerated; it is not presented as an unrestricted theorem about all left joins. The trace describes logical query semantics.",
+      "unsupported_claims": [],
+      "necessary_qualifications": []
+    },
+    {
+      "id": "q05",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The three-stop shutter increase and the need to keep f/8 are correct. The explanation then compensates in the same direction by increasing ISO, contradicting its opening principle and producing six stops too much nominal brightness. The unchanged question has no supported listed choice.",
+      "unsupported_claims": [
+        "ISO 400 to 800 to 1600 to 3200 is presented as absorbing the three-stop increase in shutter exposure; those steps add another three stops of nominal brightness.",
+        "The asserted correct change to ISO 3200 is incorrect at the requested 1/15 s and f/8."
+      ],
+      "necessary_qualifications": [
+        "Keeping f/8 and using 1/15 s requires reducing ISO by three conventional stops, to ISO 50, if that setting is available.",
+        "The camera minimum ISO is not specified, so physical availability of ISO 50 cannot be asserted. This uncertainty does not make any of the listed changes correct.",
+        "All aperture-changing options fail the stated same-depth-of-field condition under fixed other relevant geometry, as the explanation correctly notes."
+      ]
+    },
+    {
+      "id": "q06",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The explanation invents an ISO minimum, improperly constrains or ignores the allowed faster shutter, miscalculates the ISO needed when opening and slowing together, and concludes impossibility despite a permitted f/1.4, 1/1000 s, ISO 100 solution. It does not solve the unchanged stem.",
+      "unsupported_claims": [
+        "ISO 100 is already the minimum is not stated in the question.",
+        "ISO must drop one stop is not necessary when a faster shutter is allowed; 1/1000 s supplies the compensation at ISO 100.",
+        "The shutter is described as fixed at 1/500 s or faster even though the actual lower-speed bound allows 1/250 s and all faster speeds. In any event, its own or faster language permits the omitted solution.",
+        "Opening to f/1.4 and slowing to 1/250 s would require ISO 50 is an arithmetic error: together the changes add two stops, so conventional compensation from ISO 100 would be ISO 25.",
+        "Claims that the lower ISO is unavailable and that equipment limits block every valid adjustment rely on limits absent from the stem.",
+        "No valid adjustment exists is false under the stated constraints."
+      ],
+      "necessary_qualifications": [
+        "The only stated shutter condition prohibits slower than 1/250 s. It does not prohibit 1/1000 s.",
+        "No minimum ISO or maximum shutter speed may be added to support a no-solution answer.",
+        "The explanation must retain that the valid compensating setting is absent from all four choices; it cannot rescue the negative choice by inventing limits."
+      ]
+    },
+    {
+      "id": "q07",
+      "fully_supported": false,
+      "worked_solution_complete": true,
+      "reason": "The row reasoning and final two selected keys are complete and correct, including the fact that neither equal-key pair matches. However, the final claim that IS NOT DISTINCT FROM is decisive contradicts both the data and the preceding statement that equality gives the same result. A correct worked result does not validate that unsupported side claim.",
+      "unsupported_claims": [
+        "IS NOT DISTINCT FROM is decisive here is false for the requested output. Both compared pairs have exactly one NULL; replacing it with ordinary equality still supplies no true match and leaves the same two preserved R keys."
+      ],
+      "necessary_qualifications": [
+        "Left-row preservation and at most one potential equal-key match per R row determine this projected result. The special NULL-to-NULL matching behavior of IS NOT DISTINCT FROM is not exercised by these values.",
+        "The intermediate pairs such as (1, NULL) are abbreviated conceptual join sketches; the actual SELECT returns only R.k. This abbreviation does not change the correct final answer."
+      ]
+    },
+    {
+      "id": "q08",
+      "fully_supported": true,
+      "worked_solution_complete": true,
+      "reason": "The two-stop shutter loss and two-stop aperture gain correctly balance at the unchanged ISO. The final aperture equals the stated maximum, and the conditional requirement that it be reachable at the current focal length is logically valid. The general observation about some zoom lenses is supported by the supplied source. Calling it a constraint check adds no actual unavailability claim and does not overturn the correct calculation.",
+      "unsupported_claims": [],
+      "necessary_qualifications": [
+        "The zoom-lens point is a general equipment caveat, not evidence that this particular lens is a variable-aperture zoom or that f/2.8 is unavailable. The stem already supplies f/2.8 as its maximum, so this caveat adds no demonstrated obstacle in the stated scenario."
+      ]
+    },
+    {
+      "id": "q09",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The concluding positional-error diagnosis matches the supported choice, but most preceding interval calculations and quality claims are false and internally contradictory. The explanation disputes a correct stem premise, counts pitch names as though they were semitone steps, and misidentifies both the original and proposed intervals. A correct final diagnosis is insufficient.",
+      "unsupported_claims": [
+        "F-B-flat is a diminished fifth or tritone is false: it is a perfect fourth spanning five semitones.",
+        "The claim that the displayed F-to-B-flat sequence contains six semitones confuses six listed pitches with five steps; A-sharp and B-flat are also enharmonic, not an additional semitone apart.",
+        "The stem needs to be accepted despite being wrong is unsupported: its perfect-fourth identification is correct.",
+        "The correct inversion in this example has diminished-to-augmented quality is false: perfect fourth inverts to perfect fifth, B-flat to higher F.",
+        "B-flat-F is an augmented fourth is false; its ordinary ascending simple span is a perfect fifth, seven semitones.",
+        "F-A-sharp is an augmented fourth of six semitones is false; written F-A-sharp is an augmented third of five semitones."
+      ],
+      "necessary_qualifications": [
+        "The supplied operation is interval inversion by exchanging upper/lower positions through an octave move. It yields B-flat-F, not an enharmonic respelling with F retained below.",
+        "The original perfect-fourth premise must remain unchanged; the incorrect tritone analysis cannot be used to justify the otherwise correct chosen error."
+      ]
+    },
+    {
+      "id": "q10",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The transposition to E-G-B and the abstract minor-third to major-sixth inversion rule are correct. The explanation then retains E as the lower note, substitutes a pitch absent from the inversion, miscounts letter positions, and falsely labels E-B-flat a major sixth. It does not address the malformed complete choices or the ambiguous reference to the original lower note.",
+      "unsupported_claims": [
+        "The new upper note after ordinary inversion of E-G is B-flat is false: exchanging the existing notes through an octave makes E the upper note and G the lower note.",
+        "B-flat is a major sixth above E is false. A major sixth constructed above E is C-sharp; E-B-flat is a diminished fifth spanning six semitones.",
+        "Counting E-F-G-A-B-B-flat as six letter positions is invalid because B and B-flat occupy the same letter position.",
+        "The final first interval is E-B-flat, a major sixth is false in both its pitches and its written interval label."
+      ],
+      "necessary_qualifications": [
+        "Ordinary interval inversion of the transposed E-G pair yields G-E, a major sixth above G, not above the original C or the pre-inversion E.",
+        "The phrase around its lower note can instead suggest melodic reflection, a different operation. Reflection about E would produce E to lower C-sharp, not the stated E-B-flat.",
+        "None of the complete listed options describes the ordinary inverted pair with a correct reference note. Selecting the major-sixth phrase by discarding the rest of that option would change the question."
+      ]
+    },
+    {
+      "id": "q11",
+      "fully_supported": false,
+      "worked_solution_complete": false,
+      "reason": "The row-by-row null-safe matching and final first choice are correct only if R.b and S.a have comparison-compatible types. The unchanged PostgreSQL question does not supply that premise and visually suggests text versus numeric columns. The explanation silently treats A versus 10 as a valid false comparison instead of retaining the possibility that operator resolution fails. Its conditional row trace is complete, but its unqualified solution of the stated query is not.",
+      "unsupported_claims": [
+        "Compare A with 10 (different) assumes the missing PostgreSQL comparison-type compatibility; ordinary text and integer columns have no built-in implicit equality comparison for this expression.",
+        "The unconditional assertion that the written query returns the two listed rows is unsupported without the missing schema or an explicit compatible-type assumption."
+      ],
+      "necessary_qualifications": [
+        "If R.b and S.a are compatible text columns, the explained rows (10, C) and (20, NULL) follow. With ordinary inferred text and integer types, the expression fails instead of producing those rows.",
+        "The conditional intended result must not be turned into a definite answer by silently adding casts, changing numeric values into text, or assuming unstated DDL."
+      ]
+    },
+    {
+      "id": "q12",
+      "fully_supported": true,
+      "worked_solution_complete": true,
+      "reason": "Correctly transposes the pattern to E-G-sharp-B, identifies the major third, and explicitly resolves the inversion as moving G-sharp down an octave below E. The resulting ascending spelling G-sharp-E has upper note E. Every concrete pitch claim is correct, and the explanation specifies a legitimate octave move despite the stem’s imprecise around wording.",
+      "unsupported_claims": [],
+      "necessary_qualifications": []
+    }
+  ],
+  "limitations": [
+    "Independent second phase after both first passes were frozen. The only additional local input inspected was teaching.json, alongside stems.json and my own frozen stem-assessment-a.json. No private mapping, raw outputs, arm information or other assessor work was inspected. No provider calls were made.",
+    "The frozen first-pass file was hash-checked and left unchanged. Its SHA-256 remains 75e3315720ab31740234da201d296097216bc9b3f44bc5aaa90e115ae33ca2aa.",
+    "All twelve explanations were assessed in full for factual claims, their use of the exact premises, necessary qualifications and decisive reasoning. Length and generation arm were not assessed. Original explanations and question text were not edited or repaired.",
+    "Primary definitions verified during the first phase and the supplied labeled source summaries were used with direct pitch, stop and row calculations; no additional web browsing or database execution was needed in this phase.",
+    "Fully supported requires that material side claims also be supported; thus q07 has a complete correct worked result but fails full support. Necessary qualifications can record the scope of a true general caveat, as in q08, without treating the caveat as an asserted missing scenario fact.",
+    "SQL before/after wording in q03 and q04 is read as a logical result trace, not an asserted mandatory physical query plan. The one-row-per-left-row sentence in q04 is read in its immediate dataset-specific context, where it is true.",
+    "The schema uncertainty for q11 remains unresolved rather than being converted into a forced key. Photography uses the conventional full-stop framework stated in the learning context and fixed other relevant scene geometry."
+  ]
+}

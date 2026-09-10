@@ -1,0 +1,201 @@
+{
+  "contexts": {
+    "c0": {
+      "goal": {
+        "title": "Reason accurately about SQL outer joins and missing values",
+        "category": "Programming",
+        "currentLevel": "I can write simple SELECT queries and joins in PostgreSQL, but I sometimes misread outer-join results.",
+        "focusAreas": "Combine row matching, repeated matches, NULL comparisons and ON versus WHERE filters to explain results or compare query behavior in PostgreSQL 18.",
+        "learningTarget": "Predict and explain query behavior from compact tables and stated constraints, including cases where an apparently similar rewrite changes the result."
+      },
+      "sources": [
+        {
+          "name": "PostgreSQL 18 table expressions: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.postgresql.org/docs/18/queries-table-expressions.html\n\nA qualified join matches a pair of input rows only when its ON condition is true. An inner join contributes a result for every matching pair, so one left row can appear several times. A LEFT JOIN additionally supplies one row with NULL right-side columns for each left row with no qualifying match. A restriction in ON participates in deciding which pairs match; a restriction in WHERE filters the joined result afterward. WHERE keeps only true conditions and discards false or unknown conditions. Moving a right-side filter between ON and WHERE can therefore change an outer join's result. These rules describe result semantics, not a required physical execution order.",
+          "truncated": true
+        },
+        {
+          "name": "PostgreSQL 18 comparisons: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.postgresql.org/docs/18/functions-comparison.html\n\nWith ordinary scalar comparisons, a NULL operand produces unknown rather than true or false. Comparing a value to NULL using equality does not test for missingness. IS NULL and IS NOT NULL test scalar missingness directly. IS NOT DISTINCT FROM treats two NULLs as matching and one NULL with one non-NULL as different; for two non-NULL values it agrees with equality. This summary concerns scalar columns under standard NULL behavior; row-valued expressions and compatibility settings have additional rules.",
+          "truncated": true
+        }
+      ]
+    },
+    "c1": {
+      "goal": {
+        "title": "Understand musical intervals through transposition and inversion",
+        "category": "Music",
+        "currentLevel": "I can read letter names, sharps, flats and simple intervals in Western notation, but transformations still confuse me.",
+        "focusAreas": "Combine interval number, quality, spelling and direction when transposing short note patterns or inverting simple intervals in twelve-tone equal temperament.",
+        "learningTarget": "Explain why a proposed musical transformation preserves or changes the stated interval relationships using both written note names and pitch distances."
+      },
+      "sources": [
+        {
+          "name": "Open Music Theory intervals: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://pressbooks.nebraska.edu/openmusictheory/chapter/intervals/\n\nA written interval has both a number and a quality. Count letter positions inclusively for the number; accidentals affect quality without changing those letters. Relative to the same numbered interval, major is one semitone wider than minor; augmented is one semitone wider than major or perfect, and diminished is one semitone narrower than minor or perfect. Spelling matters: equally wide sounding intervals can have different written names. Inverting a simple interval by exchanging the notes' upper/lower positions through an octave move makes their numbers sum to nine. Perfect remains perfect, major and minor exchange, and augmented and diminished exchange. These are interval inversions, not chord inversions or melodic reflection around an axis.",
+          "truncated": true
+        },
+        {
+          "name": "LBCC transposition: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://lbcc.pressbooks.pub/intromtcls/chapter/chapter-8-melodic-analysis/\n\nTo transpose a passage by a specified directed interval, move every note by that interval and adjust its spelling and accidentals consistently with the new key. Notes altered from the original key must retain the corresponding alteration after the move; changing letter positions alone is insufficient. The key moves by the same interval. Ordinary transposition preserves major or minor mode; changing mode is a different operation. A downward and an upward move may lead to the same pitch class in different octaves, so the requested direction matters.",
+          "truncated": true
+        }
+      ]
+    },
+    "c2": {
+      "goal": {
+        "title": "Balance photographic exposure with motion and depth of field",
+        "category": "Photography",
+        "currentLevel": "I know what shutter speed, aperture and ISO control, and want to make better manual exposure decisions.",
+        "focusAreas": "Combine stop changes with motion-blur, depth-of-field and available-setting constraints under steady lighting, using conventional full-stop exposure calculations.",
+        "learningTarget": "Explain which manual setting changes preserve the intended image brightness while meeting the stated creative and equipment constraints."
+      },
+      "sources": [
+        {
+          "name": "Nikon exposure basics: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/a-basic-look-at-the-basics-of-exposure\n\nAperture controls the lens opening, while shutter time controls how long light reaches the sensor. A full stop doubles or halves the admitted light. Shorter shutter times reduce motion blur but admit less light if other conditions stay fixed. Doubling ISO permits half as much light for comparable image brightness; aperture, shutter time and ISO can therefore compensate for one another. The same nominal brightness need not produce the same picture: shutter time affects motion depiction, and higher ISO often carries an image-noise tradeoff. This is conventional exposure guidance, not a guarantee that one shutter setting freezes every subject or that different cameras have identical noise.",
+          "truncated": true
+        },
+        {
+          "name": "Nikon aperture guidance: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/understanding-maximum-aperture\n\nLower f-numbers mean wider openings and more admitted light. The conventional full-stop sequence includes f/2, f/2.8, f/4, f/5.6, f/8, f/11 and f/16. Wider apertures reduce depth of field; narrower apertures increase it when the other relevant conditions are held fixed. Opening the aperture can permit a shorter shutter time at the same brightness and ISO, but changes depth of field. A lens's maximum aperture limits how far it can open, and some zoom lenses have different maximum apertures at different focal lengths. Nominal stop labels are rounded values.",
+          "truncated": true
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "q01",
+      "context_id": "c1",
+      "prompt": "A perfect fifth written as D–A is inverted by moving the D up an octave. A different student claims this produces a perfect fourth A–D that sounds exactly the same as the original. What is the actual relationship between the written intervals and their sounds?",
+      "choices": [
+        "The inverted interval is a perfect fourth that sounds narrower than the original",
+        "The inverted interval is a perfect fourth that sounds identical to the original",
+        "The inverted interval is a perfect fifth that sounds wider than the original",
+        "The inverted interval is a diminished fifth that sounds identical to the original"
+      ]
+    },
+    {
+      "id": "q02",
+      "context_id": "c2",
+      "prompt": "A scene meters correctly at f/8, 1/60 s, ISO 200. The photographer wants both deeper depth of field and to keep motion blur identical to 1/60 s, but the camera's minimum ISO is 200 and maximum shutter is 1/4000 s. Which setting change achieves this?",
+      "choices": [
+        "Change to f/11 and 1/30 s, keeping ISO 200.",
+        "Change to f/11, 1/60 s, and ISO 100.",
+        "Change to f/5.6 and 1/125 s, keeping ISO 200.",
+        "No solution exists under the stated conditions."
+      ]
+    },
+    {
+      "id": "q03",
+      "context_id": "c0",
+      "prompt": "Table A has rows (id=1, val='x'), (id=2, val='y'). Table B has rows (aid=1, flag='p'), (aid=1, flag='q'), (aid=3, flag='r'). Consider: Q1: SELECT A.id, B.flag FROM A LEFT JOIN B ON A.id = B.aid WHERE B.flag = 'p'; Q2: SELECT A.id, B.flag FROM A LEFT JOIN B ON A.id = B.aid AND B.flag = 'p'. Which pair correctly describes their results?",
+      "choices": [
+        "Q1 returns one row; Q2 returns two rows including a NULL.",
+        "Q1 returns two rows; Q2 returns one row.",
+        "Both return the same two rows.",
+        "Both return three rows."
+      ]
+    },
+    {
+      "id": "q04",
+      "context_id": "c0",
+      "prompt": "Table A has rows (1, 'X'), (2, 'Y'). Table B has rows (1, 10), (1, 20), (3, 30). Consider two queries:\n\nQ1: SELECT A.id, B.val FROM A LEFT JOIN B ON A.id = B.id WHERE B.val > 15\nQ2: SELECT A.id, B.val FROM A LEFT JOIN B ON A.id = B.id AND B.val > 15\n\nWhich pair of result row counts is correct?",
+      "choices": [
+        "Q1 returns 1 row; Q2 returns 2 rows",
+        "Q1 returns 2 rows; Q2 returns 2 rows",
+        "Q1 returns 2 rows; Q2 returns 1 row",
+        "Q1 returns 3 rows; Q2 returns 3 rows"
+      ]
+    },
+    {
+      "id": "q05",
+      "context_id": "c2",
+      "prompt": "A photographer is shooting a waterfall in steady daylight. The current settings are f/8, 1/125 s, ISO 400, producing correct exposure. The goal is to blur the water into a silky effect, which requires 1/15 s, while keeping the same image brightness and the same depth of field. The camera offers full-stop adjustments only. Which setting change achieves this?",
+      "choices": [
+        "Change ISO to 3200",
+        "Open aperture to f/5.6 and change ISO to 1600",
+        "Close aperture to f/11 and change ISO to 800",
+        "Open aperture to f/4 and change ISO to 800"
+      ]
+    },
+    {
+      "id": "q06",
+      "context_id": "c2",
+      "prompt": "A portrait photographer uses a 50mm lens at f/2, 1/500 s, ISO 100 in steady window light for correct exposure. The subject's slight movement appears frozen, but the photographer wants shallower depth of field while keeping brightness constant and cannot slow below 1/250 s due to remaining subject motion. The lens maximum is f/1.4. What valid adjustment exists?",
+      "choices": [
+        "Open to f/1.4 and change ISO to 200",
+        "Open to f/1.4 and slow shutter to 1/250 s with ISO 100",
+        "No solution exists under the stated conditions.",
+        "Open to f/1.4 with ISO 100 and shutter 1/500 s"
+      ]
+    },
+    {
+      "id": "q07",
+      "context_id": "c0",
+      "prompt": "Table R has rows (k=1, v=NULL), (k=2, v='a'). Table S has rows (k=1, w='m'), (k=2, w=NULL). Query: SELECT R.k FROM R LEFT JOIN S ON R.k = S.k AND R.v IS NOT DISTINCT FROM S.w. How many rows does this return, and what R.k values appear?",
+      "choices": [
+        "2 rows: k=1 and k=2.",
+        "1 row: only k=2.",
+        "1 row: only k=1.",
+        "0 rows."
+      ]
+    },
+    {
+      "id": "q08",
+      "context_id": "c2",
+      "prompt": "A photographer meters a scene at f/5.6, 1/125 s, ISO 400 for correct exposure. She wants to freeze faster motion and decides 1/500 s is needed, but her lens only opens to f/2.8 maximum. She will keep ISO at 400. Which statement correctly describes the outcome?",
+      "choices": [
+        "The exposure stays correct if the lens can open to f/2.8 at this focal length; otherwise the image will be underexposed.",
+        "The image will be overexposed by two stops because faster shutter admits more light.",
+        "She must raise ISO to 800 to maintain correct exposure at 1/500 s and f/2.8.",
+        "The depth of field will increase, helping keep the moving subject sharp."
+      ]
+    },
+    {
+      "id": "q09",
+      "context_id": "c1",
+      "prompt": "The interval F–B♭ is written as a perfect fourth. A student claims this becomes F–A♯ when inverted. What error makes this claim wrong?",
+      "choices": [
+        "The quality should become diminished, not augmented",
+        "The lower note was not exchanged; inversion requires swapping the notes' positions.",
+        "The interval number should sum to eight, not nine",
+        "The accidentals should be removed before inverting"
+      ]
+    },
+    {
+      "id": "q10",
+      "context_id": "c1",
+      "prompt": "A melody begins with the notes C–E♭–G. A student proposes two transformations: first transpose the entire pattern up by a major third, then invert the resulting first interval around its new lower note. Which description of the final first interval is correct?",
+      "choices": [
+        "A major sixth above the original lower note",
+        "A minor sixth above the original lower note",
+        "A perfect fifth above the original lower note",
+        "A major third below the original lower note"
+      ]
+    },
+    {
+      "id": "q11",
+      "context_id": "c0",
+      "prompt": "Table R has rows (10, NULL), (20, 'A'). Table S has rows (10, 'B'), (NULL, 'C'). Consider:\n\nSELECT R.a, S.b FROM R LEFT JOIN S ON R.b IS NOT DISTINCT FROM S.a\n\nWhat does this return?",
+      "choices": [
+        "(10, 'C'), (20, NULL)",
+        "(10, 'B'), (20, NULL)",
+        "(10, NULL), (20, 'C')",
+        "(10, 'B'), (10, 'C'), (20, NULL)"
+      ]
+    },
+    {
+      "id": "q12",
+      "context_id": "c1",
+      "prompt": "A melody begins with the notes C–E–G. If you transpose it upward by a major third and then invert the resulting first interval around its new lower note, what is the written name of the final upper note?",
+      "choices": [
+        "E",
+        "G♯",
+        "B",
+        "C"
+      ]
+    }
+  ]
+}

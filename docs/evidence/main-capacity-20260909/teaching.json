@@ -1,0 +1,52 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "explanation": "Inverting D–A by moving D up an octave produces A–(higher)D, which is a perfect fourth (number: 9−5=4; perfect remains perfect). This is correct spelling.\n\nHowever, the claim about sounding \"exactly the same\" is wrong. The original D–A spans 7 semitones; the inverted A–D spans 5 semitones. They differ by 2 semitones in pitch distance. The source confirms that inversion changes the number and exchanges qualities (where applicable), but perfect intervals remain perfect—yet the size changes: perfect fifth (7 semitones) becomes perfect fourth (5 semitones).\n\nThe student's error conflates pitch-class equivalence with actual pitch distance. The intervals are not enharmonic equivalents; they are different sizes with different written names."
+    },
+    {
+      "id": "q02",
+      "explanation": "Deeper depth of field requires a narrower aperture (higher f-number). From f/8, one stop narrower is f/11, which halves the light. To keep motion blur identical, shutter time must stay at 1/60 s. With ISO already at minimum 200, ISO cannot be lowered to compensate. The photographer cannot achieve deeper depth of field while keeping 1/60 s motion blur under these constraints. The scenario requires checking multiple interacting limits: aperture stop change, fixed shutter for motion, and ISO floor."
+    },
+    {
+      "id": "q03",
+      "explanation": "Q1 applies the WHERE filter after the join. The LEFT JOIN produces (1,'p'), (1,'q'), (2,NULL), then WHERE keeps only rows where B.flag='p' (true), discarding unknown from NULL. Result: just (1,'p'). Q2 moves the condition to ON, so only pairs with flag='p' match; row 1 still gets (1,'p'), but row 2 has no match and produces (2,NULL), and the second B row for aid=1 is excluded by the ON condition. Result: (1,'p'), (2,NULL). The difference is Q2 preserves the unmatched left row while Q1 discards it."
+    },
+    {
+      "id": "q04",
+      "explanation": "Q1 applies the filter in WHERE, which runs after the join. The LEFT JOIN produces (1,10), (1,20), (2,NULL). WHERE B.val > 15 keeps only rows where that condition is true; NULL > 15 is unknown (discarded), and 10 > 15 is false. Only (1,20) remains: 1 row.\n\nQ2 applies the filter in ON, which determines matching pairs. For A.id=1, B rows with id=1 are tested: (1,10) fails 10>15, (1,20) passes. For A.id=2, no B rows match. The LEFT JOIN produces one row per left row: (1,20) and (2,NULL): 2 rows.\n\nThe correct counts are 1 and 2."
+    },
+    {
+      "id": "q05",
+      "explanation": "To maintain brightness, any stop change must be compensated by an equal opposite change elsewhere. Slowing from 1/125 s to 1/15 s admits 3 stops more light (1/125 → 1/60 → 1/30 → 1/15). To preserve depth of field, aperture must stay at f/8. Therefore ISO must absorb all 3 stops: ISO 400 → 800 → 1600 → 3200. The correct change is ISO 400 to 3200. Opening to f/5.6 would admit 1 more stop and change depth of field. Closing to f/11 would lose 1 stop and change depth of field. Opening to f/4 would admit 2 stops and change depth of field."
+    },
+    {
+      "id": "q06",
+      "explanation": "Opening from f/2 to f/1.4 admits 1 stop more light. To maintain brightness with shutter fixed at 1/500 s or faster (minimum 1/250 s), ISO must drop 1 stop. However, ISO 100 is already the minimum; it cannot drop. Slowing to 1/250 s admits 1 more stop, which combined with f/1.4 would require ISO 50—unavailable. Therefore no valid adjustment exists within the constraints. The scenario tests recognizing when equipment limits block a desired outcome despite mathematically valid stop relationships."
+    },
+    {
+      "id": "q07",
+      "explanation": "IS NOT DISTINCT FROM treats two NULLs as equal and NULL vs non-NULL as different. For R.k=1: R.v is NULL, S.w is 'm' — different, so no match; LEFT JOIN produces (1, NULL). For R.k=2: R.v='a', S.w=NULL — different, so no match; LEFT JOIN produces (2, NULL). The join condition fails for both pairs, but LEFT JOIN preserves both left rows. Result: two rows with k=1 and k=2. Using equality (=) instead would yield unknown for both comparisons and the same outer join result, but IS NOT DISTINCT FROM is decisive here."
+    },
+    {
+      "id": "q08",
+      "explanation": "From 1/125 s to 1/500 s is two stops less light (halved twice). Opening from f/5.6 to f/2.8 is two stops more light (f/5.6 → f/4 → f/2.8). The exposure changes cancel, preserving brightness. However, f/2.8 is her lens maximum, so this is only possible if her lens can reach f/2.8 at her current focal length. The source notes some zoom lenses have different maximum apertures at different focal lengths, making this a real constraint check."
+    },
+    {
+      "id": "q09",
+      "explanation": "F–B♭ spans 4 letter positions (F-G-A-B) with 5 semitones, making it a diminished fifth, not perfect fourth—perfect fourth would be 5 semitones (F–B♭ is actually 6 semitones: F-F♯-G-G♯-A-A♯-B♭, wait recheck: F to B♭ is F-G♭-G-A♭-A-B♭ = 6 semitones, diminished fifth. Actually F–B♭ is tritone/dim5. But accepting stem: inverting makes numbers sum to 9, so 5+4=9. Quality exchanges: diminished becomes augmented. The correct inversion of diminished fifth is augmented fourth (B♭–F or F–B♭ inverted). The student's F–A♯ is an augmented fourth (6 semitones), correct quality but wrong spelling: inverted lower note should be B♭, not F kept as lower. The error is keeping the same lower note instead of exchanging positions."
+    },
+    {
+      "id": "q10",
+      "explanation": "Step 1: Transpose C–E♭–G up by a major third. A major third above C is E, above E♭ is G, and above G is B. The transposed pattern is E–G–B.\n\nStep 2: Invert the first interval of this new pattern (E–G) around its lower note E. Inversion exchanges the upper and lower notes through an octave move. The interval E–G is a minor third (3 semitones). Inverting a minor third: the number becomes 9−3=6, and major/minor exchange, so it becomes a major sixth. The new upper note is B♭ (a major sixth above E: E–F–G–A–B–B♭ counting inclusively gives 6, with quality major).\n\nThe final first interval is E–B♭, a major sixth."
+    },
+    {
+      "id": "q11",
+      "explanation": "IS NOT DISTINCT FROM treats two NULLs as equal and a NULL with a non-NULL as different. For R row (10, NULL): compare R.b=NULL with each S.a. S row (10,'B'): NULL vs 10 → different. S row (NULL,'C'): NULL vs NULL → equal, so this pair matches. For R row (20,'A'): compare 'A' with 10 (different) and with NULL (different). No match.\n\nLEFT JOIN produces: one row for the match (10, 'C'), and one NULL-padded row for (20,'A') with no match: (20, NULL). The result is (10, 'C'), (20, NULL).\n\nNote: R.a=10 pairs with S.b='C', not 'B', because only the NULL=NULL match succeeds."
+    },
+    {
+      "id": "q12",
+      "explanation": "Upward major third from C is E (C→D→E, major quality = 4 semitones). The transposed pattern is E–G♯–B. The first interval E–G♯ is a major third. Inverting around the lower note E: exchange upper/lower positions through an octave move, so G♯ drops an octave below E. The inverted interval is E down to G♯ an octave below, written as G♯–E ascending. The upper note is E."
+    }
+  ]
+}

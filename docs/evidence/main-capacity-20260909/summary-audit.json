@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "summary_byte_sha256": "2e28f3eba712529878f7d761540b24e2c9507ddcc346add29c8577fdcf11b3ac",
+  "artifact_hashes_verified": 13,
+  "phase_one_hashes_unchanged": true,
+  "phase_two_hashes_unchanged": true,
+  "item_joins_and_lengths_verified": 12,
+  "assessment_files_verified": 4,
+  "counts": {
+    "main_320": {
+      "requested_slots": 6,
+      "raw_items": 6,
+      "unique_authored_key_supported_both": 5,
+      "main_fully_supported_both": 3,
+      "three_plausible_distinct_distractors_both": 2,
+      "difficulty_at_least_3_both": 2,
+      "complete_content_both": 1,
+      "complete_with_virtual_limit_420": 0,
+      "complete_with_virtual_limit_900": 0,
+      "main_within_420": 1,
+      "main_within_900": 6,
+      "main_within_author_instruction": 0,
+      "stem_and_choices_within_current_limits": 5
+    },
+    "main_900": {
+      "requested_slots": 6,
+      "raw_items": 6,
+      "unique_authored_key_supported_both": 2,
+      "main_fully_supported_both": 2,
+      "three_plausible_distinct_distractors_both": 1,
+      "difficulty_at_least_3_both": 4,
+      "complete_content_both": 1,
+      "complete_with_virtual_limit_420": 0,
+      "complete_with_virtual_limit_900": 1,
+      "main_within_420": 0,
+      "main_within_900": 6,
+      "main_within_author_instruction": 6,
+      "stem_and_choices_within_current_limits": 4
+    }
+  },
+  "native_checks": {
+    "portable_sqlite_q03": true,
+    "photography_conventional_stop_arithmetic": true,
+    "music_literal_interval_arithmetic": true,
+    "q06_false_ISO_floor_and_two_stop_compensation": true
+  },
+  "scope": "Audit independently recomputes counts and joins from the frozen assistant assessments; it does not convert their judgments into human expert calibration. Matching phase hashes confirm file content is unchanged, not chronology in isolation. SQL execution verifies only displayed portable semantics in SQLite, not PostgreSQL runtime behavior. Photography uses conventional rounded full-stop labels.",
+  "interpretation": "Both arms yield one complete-content item before length limits. The expanded q04 fits virtual900 and fails420; current q03 exceeds both its main limit420 and current stem320, so widening only the main limit cannot retain it. This is a narrow hypothetical retention benefit, not an increase in complete author-content count or evidence that expanded guidance causally harms accuracy."
+}

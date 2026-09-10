@@ -1,0 +1,22 @@
+{
+  "phase": "Root independent stem inspection before teaching or arm mapping",
+  "items": {
+    "q01": "Unique perfect-fourth narrower answer; direct known inversion rule, likely level2 and weak remaining alternatives.",
+    "q02": "None of the choices is warranted: f/11,1/60,ISO400 is allowed, so minimum ISO200 does not establish no solution.",
+    "q03": "First choice confirmed by executed portable SQL; suitable result-comparison task.",
+    "q04": "First choice under conventional positional column interpretation; otherwise table schema is implicit.",
+    "q05": "No offered choice preserves brightness and depth of field. Three-stop longer shutter needs ISO50 at f/8, not ISO3200.",
+    "q06": "No offered choice is valid; unlisted f/1.4,1/1000,ISO100 satisfies all stated constraints.",
+    "q07": "Two rows with k1 andk2; no join matches. Result does not depend on detailed null comparisons because left preservation and available multiplicity already suffice.",
+    "q08": "First choice supported under conventional exposure calculations; other options have simple wrong signs or contradictory ISO requirement.",
+    "q09": "Second choice identifies failure to exchange upper/lower positions for intervallic inversion; direct application and weak alternatives.",
+    "q10": "Around its new lower note conflates intervallic inversion with axial melodic reflection. Original lower note also ambiguous. No unqualified unique choice.",
+    "q11": "Intended first choice requires comparable types. Natural integer S.a versus text R.b representation would not provide an ordinary PostgreSQL equality operator; missing types make full support unproven. No local PostgreSQL runtime available.",
+    "q12": "Around its new lower note suggests reflection; ordinary intervallic inversion E–G#→G#–E has upper E, whereas reflection aboutE gives C belowE. Stem does not clearly fix this operation."
+  },
+  "sources_for_type_caveat": [
+    "https://www.postgresql.org/docs/18/typeconv-oper.html",
+    "https://www.postgresql.org/docs/18/functions-comparison.html"
+  ],
+  "limitations": "Assistant assessment, not expert or learner calibration; no PostgreSQL execution. SQLq03 checked inSQLite only."
+}

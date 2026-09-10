@@ -1,0 +1,7 @@
+{
+  "stage": "Both stem passes frozen before either assessor is given teaching",
+  "sha256": {
+    "stem-assessment-a.json": "75e3315720ab31740234da201d296097216bc9b3f44bc5aaa90e115ae33ca2aa",
+    "stem-assessment-b.json": "24d9037c389bf6b2d2eea94b8ae5db0f6016ed109b032dd367ad2c935502874b"
+  }
+}

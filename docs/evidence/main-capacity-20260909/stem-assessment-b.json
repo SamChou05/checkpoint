@@ -1,0 +1,422 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "supported_choices": [
+        "The inverted interval is a perfect fourth that sounds narrower than the original"
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "The inverted interval is a perfect fourth that sounds narrower than the original",
+          "correct": true,
+          "reason": "D below A spans seven semitones. Moving D above A makes A-D span five semitones: a perfect fourth, narrower by two semitones."
+        },
+        {
+          "choice": "The inverted interval is a perfect fourth that sounds identical to the original",
+          "correct": false,
+          "reason": "The pitch classes are retained, but their separation changes from seven to five semitones; the resulting interval does not sound identical."
+        },
+        {
+          "choice": "The inverted interval is a perfect fifth that sounds wider than the original",
+          "correct": false,
+          "reason": "The exchanged lower and upper positions give a fourth, not a fifth; the separation decreases."
+        },
+        {
+          "choice": "The inverted interval is a diminished fifth that sounds identical to the original",
+          "correct": false,
+          "reason": "A-D has neither the spelling nor the six-semitone width of a diminished fifth."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "The identical-sound answer addresses a credible confusion about preserved pitch classes. Keeping the fifth name while raising a note is another conceivable novice error. A diminished fifth with identical sound has no convincing route from the stated operation and is a weak third distractor for someone who already reads simple intervals.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "Apply the familiar simple-interval inversion rule and its immediate width implication. The student-claim framing adds no substantial evidence interpretation.",
+      "notes": "The starting perfect-fifth designation supplies the register relationship. Exact octave numbers are unnecessary. Own pitch-distance calculation: 7 semitones becomes 12-7=5."
+    },
+    {
+      "id": "q02",
+      "supported_choices": [],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "Change to f/11 and 1/30 s, keeping ISO 200.",
+          "correct": false,
+          "reason": "Closing one stop and doubling shutter duration preserves brightness and deepens depth of field, but 1/30 s does not retain the motion depiction of 1/60 s."
+        },
+        {
+          "choice": "Change to f/11, 1/60 s, and ISO 100.",
+          "correct": false,
+          "reason": "ISO 100 violates the explicit minimum. It also reduces brightness by another stop rather than compensating for f/11."
+        },
+        {
+          "choice": "Change to f/5.6 and 1/125 s, keeping ISO 200.",
+          "correct": false,
+          "reason": "This nominal reciprocal shutter/aperture change preserves brightness, but f/5.6 reduces depth of field and 1/125 s changes motion blur."
+        },
+        {
+          "choice": "No solution exists under the stated conditions.",
+          "correct": false,
+          "reason": "A permitted counterexample is f/11, 1/60 s, ISO 400. Closing one stop and increasing ISO one stop preserves brightness, with the same shutter time and deeper depth of field. No stated upper ISO limit rules this out."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "There is no supported key among the four choices. The first and third choices each sacrifice a stated creative constraint; the second violates an explicit equipment limit and reverses compensation. A no-solution answer is not defensible merely because the valid setting is omitted.",
+      "goal_fit": true,
+      "difficulty": 4,
+      "difficulty_reason": "The underlying demand connects the depth-of-field change, fixed motion-blur/shutter requirement, exposure compensation, and the direction of the ISO bound. That resolves interacting constraints. The missing answer is an item defect rather than additional cognitive difficulty.",
+      "notes": "Brightness preservation is implicit in the correctly metered setup and exposure goal. Even if brightness were not required, f/11 with the original shutter deepens depth of field without changing blur, so no-solution is still unsupported. Do not invent a maximum ISO of 200 or a prohibition on increasing ISO."
+    },
+    {
+      "id": "q03",
+      "supported_choices": [
+        "Q1 returns one row; Q2 returns two rows including a NULL."
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "Q1 returns one row; Q2 returns two rows including a NULL.",
+          "correct": true,
+          "reason": "Q1 has only (1,'p'): the q match fails WHERE, and the unmatched A.id=2 row has unknown WHERE. Q2 has (1,'p') and (2,NULL)."
+        },
+        {
+          "choice": "Q1 returns two rows; Q2 returns one row.",
+          "correct": false,
+          "reason": "This reverses the effect of applying the right-side restriction after versus within the outer join."
+        },
+        {
+          "choice": "Both return the same two rows.",
+          "correct": false,
+          "reason": "Q1 filters away the NULL-extended row for A.id=2, so the two queries do not both return two rows."
+        },
+        {
+          "choice": "Both return three rows.",
+          "correct": false,
+          "reason": "Three rows describes the equality-only left-join intermediate result before its p restriction, not either final query."
+        }
+      ],
+      "three_plausible_distinct_distractors": true,
+      "distractor_reason": "The three alternatives represent reversing ON/WHERE effects, treating the outer join as preserving unmatched rows through WHERE, and ignoring the flag restriction. Those are distinct plausible outer-join errors for this learner.",
+      "goal_fit": true,
+      "difficulty": 3,
+      "difficulty_reason": "Interpret the compact row representation to distinguish query outcomes. Actual match values, an unmatched left row, and post-join filtering affect the answer; this is more than recalling that LEFT JOIN preserves rows.",
+      "notes": "The B.aid=3 row is not preserved by this LEFT JOIN. Result ordering is neither requested nor assumed."
+    },
+    {
+      "id": "q04",
+      "supported_choices": [
+        "Q1 returns 1 row; Q2 returns 2 rows"
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "Q1 returns 1 row; Q2 returns 2 rows",
+          "correct": true,
+          "reason": "Q1 retains only (1,20). Q2 retains (1,20) and the NULL-extended row for A.id=2."
+        },
+        {
+          "choice": "Q1 returns 2 rows; Q2 returns 2 rows",
+          "correct": false,
+          "reason": "Q1 does not retain the unmatched A.id=2 row: NULL > 15 is unknown and WHERE discards it."
+        },
+        {
+          "choice": "Q1 returns 2 rows; Q2 returns 1 row",
+          "correct": false,
+          "reason": "This reverses the ON-versus-WHERE preservation effects."
+        },
+        {
+          "choice": "Q1 returns 3 rows; Q2 returns 3 rows",
+          "correct": false,
+          "reason": "Both restrictions exclude the value 10 as a qualifying final match. Neither final query has all three rows of the unfiltered equality left join."
+        }
+      ],
+      "three_plausible_distinct_distractors": true,
+      "distractor_reason": "The alternatives plausibly diagnose retaining a NULL-extended row through WHERE, reversing the two filter placements, and counting the unrestricted join rows. They are distinct.",
+      "goal_fit": true,
+      "difficulty": 3,
+      "difficulty_reason": "The learner must interpret table rows and the locations of restrictions to distinguish plausible counts. The particular data affects each count.",
+      "notes": "The queries imply id and val as the two column names. There is no meaningful output-order issue because only counts are requested."
+    },
+    {
+      "id": "q05",
+      "supported_choices": [],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "Change ISO to 3200",
+          "correct": false,
+          "reason": "The required shutter change adds three nominal stops. ISO 400 to 3200 adds another three; brightness rises by six stops."
+        },
+        {
+          "choice": "Open aperture to f/5.6 and change ISO to 1600",
+          "correct": false,
+          "reason": "Opening to f/5.6 adds one stop and ISO 1600 adds two. Along with the shutter change, brightness rises by six stops, and depth of field becomes shallower."
+        },
+        {
+          "choice": "Close aperture to f/11 and change ISO to 800",
+          "correct": false,
+          "reason": "Closing to f/11 subtracts one stop and ISO 800 adds one, cancelling each other. The longer shutter still adds three stops; depth of field also changes."
+        },
+        {
+          "choice": "Open aperture to f/4 and change ISO to 800",
+          "correct": false,
+          "reason": "Opening to f/4 adds two stops and ISO 800 adds one. Together with the shutter change, brightness rises by six stops, and depth of field becomes shallower."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "Every listed adjustment is wrong. Three alternatives change aperture despite the same-depth-of-field requirement, and all four increase ISO when the longer shutter requires less sensitivity. This is not a valid key plus three distractors.",
+      "goal_fit": true,
+      "difficulty": 4,
+      "difficulty_reason": "The underlying demand connects the motion-imposed shutter duration, the fixed aperture required for unchanged depth of field, and three-stop ISO compensation. These are interacting constraints, though familiar arithmetic. Answer-set failure should not increase this estimate.",
+      "notes": "Using the explicitly requested conventional full-stop calculation, 1/125 -> 1/60 -> 1/30 -> 1/15 is three stops, so the mathematical solution is f/8, 1/15 s, ISO 50. Actual availability of ISO 50 is unstated; it is not an offered choice either way. Premises suffice to reject all four settings. The slight numerical differences between rounded shutter labels are not a defect here."
+    },
+    {
+      "id": "q06",
+      "supported_choices": [],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "Open to f/1.4 and change ISO to 200",
+          "correct": false,
+          "reason": "Opening f/2 to f/1.4 adds one stop and ISO 100 to 200 adds another. With the original shutter retained, this is two stops brighter."
+        },
+        {
+          "choice": "Open to f/1.4 and slow shutter to 1/250 s with ISO 100",
+          "correct": false,
+          "reason": "Opening the aperture adds one stop and slowing 1/500 to 1/250 adds another. The result is two stops brighter."
+        },
+        {
+          "choice": "No solution exists under the stated conditions.",
+          "correct": false,
+          "reason": "The stated conditions permit f/1.4, 1/1000 s, ISO 100: one stop gained in aperture is balanced by one stop lost in shutter time, and 1/1000 is faster than the minimum motion requirement."
+        },
+        {
+          "choice": "Open to f/1.4 with ISO 100 and shutter 1/500 s",
+          "correct": false,
+          "reason": "Opening one stop while retaining shutter and ISO makes the image one stop brighter."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "No listed setting preserves brightness. The first two choices both add two stops using a wrong-direction compensation, the last adds one, and the negative answer incorrectly rules out faster shutter compensation.",
+      "goal_fit": true,
+      "difficulty": 4,
+      "difficulty_reason": "The underlying task connects the desired depth-of-field change, the aperture limit, exposure balance, and the one-sided shutter constraint. Those constraints must be interpreted together. The missing correct option is not itself a source of difficulty.",
+      "notes": "An unchanged setting is understood for variables not mentioned in an option. The prompt forbids slowing below 1/250; it does not forbid speeding to 1/1000. No maximum shutter speed or ISO floor is supplied that could establish impossibility. ISO 50 at 1/500 would be another mathematical compensation if available, but the faster-shutter counterexample already suffices."
+    },
+    {
+      "id": "q07",
+      "supported_choices": [
+        "2 rows: k=1 and k=2."
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "2 rows: k=1 and k=2.",
+          "correct": true,
+          "reason": "Each left k has at most one same-k candidate, and neither candidate passes the NULL-safe value comparison. LEFT JOIN emits one NULL-extended row per R row, so projected k values are 1 and 2."
+        },
+        {
+          "choice": "1 row: only k=2.",
+          "correct": false,
+          "reason": "The k=2 candidate compares 'a' with NULL and fails, but both unmatched R rows are preserved, not only k=2."
+        },
+        {
+          "choice": "1 row: only k=1.",
+          "correct": false,
+          "reason": "The k=1 candidate compares NULL with 'm' and fails, but both unmatched R rows are preserved, not only k=1."
+        },
+        {
+          "choice": "0 rows.",
+          "correct": false,
+          "reason": "Zero qualifying matches gives zero rows for an INNER JOIN, but this is a LEFT JOIN and has two left rows."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "The zero-row option plausibly substitutes INNER JOIN semantics. The two one-row alternatives mostly vary which arbitrary NULL-bearing row is dropped; neither follows the actual comparison, and they do not establish two additional convincing distinct misconceptions for this learner.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "Apply the LEFT JOIN preservation rule directly. Because there is at most one same-k candidate and only R.k is projected, both k values appear once regardless of whether either value comparison succeeds. The elaborate NULL predicate does not add answer-relevant cognitive demand.",
+      "notes": "The values of v and w affect whether right columns are matched or NULL-extended, but those columns are not selected. A learner can answer correctly without understanding IS NOT DISTINCT FROM; that limits coverage of the combined goal."
+    },
+    {
+      "id": "q08",
+      "supported_choices": [
+        "The exposure stays correct if the lens can open to f/2.8 at this focal length; otherwise the image will be underexposed."
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "The exposure stays correct if the lens can open to f/2.8 at this focal length; otherwise the image will be underexposed.",
+          "correct": true,
+          "reason": "1/125 to 1/500 loses two stops; f/5.6 to f/2.8 gains two. ISO remains 400, so nominal brightness is retained when f/2.8 is available."
+        },
+        {
+          "choice": "The image will be overexposed by two stops because faster shutter admits more light.",
+          "correct": false,
+          "reason": "A faster shutter admits less light, not more. Without compensation, this shutter change would lose two stops."
+        },
+        {
+          "choice": "She must raise ISO to 800 to maintain correct exposure at 1/500 s and f/2.8.",
+          "correct": false,
+          "reason": "At f/2.8 the aperture already compensates for the two-stop shutter change. ISO 800 would add one stop too much."
+        },
+        {
+          "choice": "The depth of field will increase, helping keep the moving subject sharp.",
+          "correct": false,
+          "reason": "Opening from f/5.6 to f/2.8 decreases depth of field when other relevant conditions are held fixed."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "The ISO 800 answer is a plausible stop-counting error. The other two reverse basic shutter or aperture effects that the learner says they already understand, so the set does not convincingly supply three plausible distractors at that level.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "Apply the familiar reciprocal exposure-stop rule directly: two stops faster and two stops wider. The maximum aperture is exactly the needed endpoint, so it introduces no further competing constraint to resolve.",
+      "notes": "The conditional clause about focal length is redundant if the stated f/2.8 maximum already applies at this focal length, but is logically consistent. A wider aperture may affect focus tolerance; it does not undermine the stipulated shutter needed to freeze the motion."
+    },
+    {
+      "id": "q09",
+      "supported_choices": [
+        "The lower note was not exchanged; inversion requires swapping the notes' positions."
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "The quality should become diminished, not augmented",
+          "correct": false,
+          "reason": "A perfect fourth inverts to a perfect fifth. Diminished is not the required quality; F-A-sharp is an enharmonic respelling of the original sounding span, not the stated inversion."
+        },
+        {
+          "choice": "The lower note was not exchanged; inversion requires swapping the notes' positions.",
+          "correct": true,
+          "reason": "F remains the lower note in the proposed F-A-sharp pair. Interval inversion exchanges upper and lower positions, yielding B-flat-F for the original perfect fourth."
+        },
+        {
+          "choice": "The interval number should sum to eight, not nine",
+          "correct": false,
+          "reason": "Simple interval numbers sum to nine under inversion, so fourth plus fifth equals nine, not eight."
+        },
+        {
+          "choice": "The accidentals should be removed before inverting",
+          "correct": false,
+          "reason": "The B-flat spelling is retained as that note changes position. Removing accidentals is not an inversion step."
+        }
+      ],
+      "three_plausible_distinct_distractors": true,
+      "distractor_reason": "The wrong explanations correspond to misapplying the augmented/diminished quality exchange to the respelled interval, an off-by-one size rule, and discarding accidentals during transformation. These are distinct novice transformation errors, though the last is relatively weak.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "Apply the defining position-exchange rule to a proposed example. The stem already supplies the original interval name; no transposition or multi-constraint analysis is needed.",
+      "notes": "The correct option identifies the decisive error, although the proposal also changes the written interval number by respelling B-flat as A-sharp. The starting perfect-fourth designation establishes the intended ascending register."
+    },
+    {
+      "id": "q10",
+      "supported_choices": [],
+      "premises_complete": false,
+      "choice_assessments": [
+        {
+          "choice": "A major sixth above the original lower note",
+          "correct": null,
+          "reason": "A major sixth is the conventional inverse QUALITY AND NUMBER of the minor third E-G. But the actual inverted pair is G-E, whose lower note is G, not either original C or transposed E. The anchoring phrase prevents this whole choice from being unconditionally correct."
+        },
+        {
+          "choice": "A minor sixth above the original lower note",
+          "correct": false,
+          "reason": "The first interval C-E-flat is a minor third, preserved as E-G by transposition. Its octave-complement inversion is major, not minor, sixth."
+        },
+        {
+          "choice": "A perfect fifth above the original lower note",
+          "correct": false,
+          "reason": "A perfect fifth is neither the inverted first interval nor the reflected first interval under the conventional meanings of inversion."
+        },
+        {
+          "choice": "A major third below the original lower note",
+          "correct": false,
+          "reason": "Literal reflection about the transposed lower E sends G down to C-sharp, a descending minor third from E, not a major third. Standard interval inversion instead gives an ascending major sixth G-E."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "There is no unambiguously correct full choice. The two sixth qualities can diagnose a quality-swap error, but the anchor/direction wording makes the other alternatives comparisons of different operations rather than three reliably wrong alternatives to one supported answer.",
+      "goal_fit": true,
+      "difficulty": 2,
+      "difficulty_reason": "The intended quality/number question reduces to minor third -> major sixth; transposition preserves the first interval and need not be performed to find that inverse name. Merely naming two operations does not elevate the core demand. Resolving malformed anchor language is not valid cognitive challenge.",
+      "notes": "Transposition by an ascending major third gives E-G-B. The supplied source context explicitly defines interval inversion through octave exchange, not reflection around an axis. The stem nevertheless says around its new lower note and the options say original lower note without a clear referent. A standard inverted interval is G-E (major sixth above G). An inverse interval newly constructed above E would instead be E-C-sharp; that is an additional anchoring/transposition convention which is not stated. Material ambiguity is retained rather than silently dropping the anchoring phrase."
+    },
+    {
+      "id": "q11",
+      "supported_choices": [],
+      "premises_complete": false,
+      "choice_assessments": [
+        {
+          "choice": "(10, 'C'), (20, NULL)",
+          "correct": null,
+          "reason": "If the compared columns have a compatible comparison type, NULL in R.b matches NULL in S.a, giving (10,'C'), and 'A' matches nothing, giving (20,NULL). But the stem omits the column types and depicts R.b as text while S.a has a bare numeric value. With ordinary text and integer columns, PostgreSQL cannot resolve this comparison."
+        },
+        {
+          "choice": "(10, 'B'), (20, NULL)",
+          "correct": false,
+          "reason": "This joins R.a to S.a instead of using the written R.b-to-S.a condition. Under compatible types, NULL versus 10 does not match."
+        },
+        {
+          "choice": "(10, NULL), (20, 'C')",
+          "correct": false,
+          "reason": "Under the intended comparable-type reading, the NULL R.b belongs to R.a=10, so that row receives 'C'; the row with R.a=20 does not match NULL."
+        },
+        {
+          "choice": "(10, 'B'), (10, 'C'), (20, NULL)",
+          "correct": false,
+          "reason": "NULL-safe equality does not make NULL a wildcard for all values. The NULL in R.b cannot match both the 10 and the NULL in S.a."
+        }
+      ],
+      "three_plausible_distinct_distractors": false,
+      "distractor_reason": "The first result is a reasonable conditional key, and the remaining choices plausibly diagnose joining the wrong columns, reversing which row carries NULL, and treating NULL as a wildcard. But the actual PostgreSQL query lacks the comparison-type premise needed to establish a supported key, so the strict complete-item requirement is not met.",
+      "goal_fit": true,
+      "difficulty": 3,
+      "difficulty_reason": "The intended demand interprets a compact table, a cross-column NULL-safe match, and the selected output columns. The omitted-type defect is outside that intended cognitive demand and should not inflate the score.",
+      "notes": "This is a material type-compatibility uncertainty, not a claim that every compact SQL table needs exhaustive DDL. The contrasted columns here visibly suggest unlike types. If both comparison columns were explicitly text with S.a value written as a text numeral, the first option would be supported and the other three would form a plausible distinct set. PostgreSQL resolves operators by available argument signatures and implicit conversions; NULL-safe equality still requires comparable operand types. [PostgreSQL comparison predicates](https://www.postgresql.org/docs/18/functions-comparison.html) and [operator type resolution](https://www.postgresql.org/docs/18/typeconv-oper.html)."
+    },
+    {
+      "id": "q12",
+      "supported_choices": [
+        "E"
+      ],
+      "premises_complete": true,
+      "choice_assessments": [
+        {
+          "choice": "E",
+          "correct": true,
+          "reason": "Transposing C-E-G up a major third gives E-G-sharp-B. Exchanging the first interval's upper/lower positions through an octave move gives G-sharp-E; its final upper note is E."
+        },
+        {
+          "choice": "G♯",
+          "correct": false,
+          "reason": "G-sharp is the upper note immediately after transposition, before the requested exchange of interval positions."
+        },
+        {
+          "choice": "B",
+          "correct": false,
+          "reason": "B is the transposed third melody note. The requested first interval uses only E and G-sharp, so B is not its final upper note."
+        },
+        {
+          "choice": "C",
+          "correct": false,
+          "reason": "C would be the upper note of a newly constructed minor sixth ABOVE E. That preserves E as a lower anchor instead of inverting the actual two pitches E and G-sharp through an octave exchange."
+        }
+      ],
+      "three_plausible_distinct_distractors": true,
+      "distractor_reason": "The wrong choices plausibly represent stopping after transposition, using the third melody note or confusing interval and chord operations, and constructing the complementary interval above an unchanged root instead of exchanging the notes. They are distinct transformation mistakes.",
+      "goal_fit": true,
+      "difficulty": 4,
+      "difficulty_reason": "The requested note identity actually depends on two connected steps: transpose the lower note C to E, then recognize that this pitch class becomes the upper member after interval inversion. Unlike a question asking only for interval quality, transposition is answer-relevant here.",
+      "notes": "The phrase around its new lower note is imprecise for interval inversion. Under the supplied source definition, however, both standard octave-exchange directions produce E as the upper note; even a literal reflection of G-sharp downward about E leaves E upper. C requires the additional, unstated operation of re-anchoring the complementary interval above E. Consequently I do not treat C as a second supported answer. [Open Music Theory: Intervallic inversion](https://pressbooks.nebraska.edu/openmusictheory/chapter/intervals/#:~:text=Intervallic%20Inversion) explains the octave-exchange definition."
+    }
+  ],
+  "limitations": [
+    "Independent masked first pass. Local reads were restricted to the supplied stems.json and question_difficulty.py rubric; no teaching, model keys, private mapping, prior trial results, other assessor output, or provider-generation calls were inspected.",
+    "Primary web references were consulted only to check interval-inversion terminology and PostgreSQL comparison/operator rules. Exposure and pitch-distance conclusions are concrete calculations under the supplied conventional assumptions; no PostgreSQL execution was performed.",
+    "Assessment uses the exact four supplied choices. supported_choices contains only unconditional answers supported by the unchanged item plus supplied context. null in a choice assessment marks a material conditional/ambiguous candidate, not a forced key.",
+    "premises_complete asks whether the supplied setup suffices to adjudicate its claims under the conventional domain assumptions; an omitted correct answer can therefore coexist with complete premises. goal_fit records whether the subject and intended skill serve the learner goal, independently of answer-set validity or challenge adequacy.",
+    "Difficulty ratings apply the actual 1-5 rubric to the defensible underlying cognitive demand, not to time wasted repairing an item. Ratings for malformed items are provisional descriptions of that demand, not endorsements of usability. Distractor plausibility is a qualitative judgment for the stated learner level, not an empirical student-response estimate.",
+    "The q11 type omission prevents an unconditional PostgreSQL answer even though its intended row-semantics result is clear under an added compatible-type premise. For q10 the anchoring ambiguity changes the truth of the putative major-sixth answer. q12 has imprecise wording, but E remains the upper note under the source-defined octave-exchange interpretation and literal reflection; constructing C above E is a different unstated operation."
+  ]
+}

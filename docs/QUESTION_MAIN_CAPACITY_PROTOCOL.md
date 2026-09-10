@@ -1,5 +1,8 @@
 # Does explanation capacity improve complete fresh questions?
 
+Completed September 9: [results and retained evidence](QUESTION_MAIN_CAPACITY_RESULTS.md).
+The pre-dispatch design below is preserved.
+
 The [author-model comparison](QUESTION_AUTHOR_MODEL_COMPARISON_RESULTS.md) lost
 six of twelve candidates to oversized mains, including some supported but basic
 teaching. The [fresh authored-solution run](QUESTION_AUTHORED_SOLUTION_FRESH_RESULTS.md)

@@ -1,0 +1,92 @@
+{
+  "scope": "Independent execution of portable join/filter semantics in SQLite, not PostgreSQL qualification. No generated code was executed.",
+  "q03": {
+    "Q1": [
+      [
+        1,
+        "p"
+      ]
+    ],
+    "Q2": [
+      [
+        1,
+        "p"
+      ],
+      [
+        2,
+        null
+      ]
+    ]
+  },
+  "photography_counterexamples": {
+    "q02": {
+      "baseline": [
+        8,
+        "1/60",
+        200
+      ],
+      "possible_unlisted": [
+        11,
+        "1/60",
+        400
+      ],
+      "conventional_brightness_ratio": 1.0
+    },
+    "q05": {
+      "baseline": [
+        8,
+        "1/125",
+        400
+      ],
+      "needed_unlisted": [
+        8,
+        "1/15",
+        50
+      ],
+      "conventional_brightness_ratio": 1.0,
+      "offered_iso_3200_ratio": 64.0
+    },
+    "q06": {
+      "baseline": [
+        2,
+        "1/500",
+        100
+      ],
+      "possible_unlisted": [
+        1.4,
+        "1/1000",
+        100
+      ],
+      "conventional_brightness_ratio": 1.0
+    }
+  },
+  "music_checks": {
+    "scope": "Computed inclusive letter distance and twelve-tone pitch distance for literal named notes, not a resolution of ambiguous inversion wording.",
+    "q09_F_to_Bflat": {
+      "written_interval_number": 4,
+      "ascending_semitones": 5
+    },
+    "q09_F_to_Asharp": {
+      "written_interval_number": 3,
+      "ascending_semitones": 5
+    },
+    "q10_E_to_Bflat": {
+      "written_interval_number": 5,
+      "ascending_semitones": 6
+    },
+    "q10_E_to_Csharp": {
+      "written_interval_number": 6,
+      "ascending_semitones": 9
+    },
+    "q12_Gsharp_to_E": {
+      "written_interval_number": 6,
+      "ascending_semitones": 8
+    }
+  },
+  "q06_additional_teaching_check": {
+    "opening_one_stop_and_slowing_one_stop_light_factor": 4,
+    "ISO_needed_from_100_for_this_two_stop_increase": 25.0,
+    "text_claims_50": true,
+    "stem_specifies_ISO100_as_minimum": false
+  }
+}

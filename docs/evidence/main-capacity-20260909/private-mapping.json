@@ -1,0 +1,393 @@
+{
+  "capture_byte_sha256": "744ee9eea9ce8604c1a927fdd9b3cd39d4a8f41cb7215ef70bcd8ee66637258d",
+  "capture_bytes": 230337,
+  "plan_sha256": "1932764c04d2846079f72019c1639221c4d62e0bf1acedfefc4dc9c605d83608",
+  "formats": [
+    {
+      "job_index": 0,
+      "text_sha256": "240697d53e1b0a0ab29ed7cbafd73b777cae21c9f21beeb146d6369c1bb8664e",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 1,
+      "text_sha256": "063d7a94aac3348ff6a5b58375d620f61c33d6812724e7bee0c2a0598aaabaa4",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 2,
+      "text_sha256": "0c878070c5776339fad03c3f1001580ec0c7a8ee0b84f97ad4ef43b132e00875",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 3,
+      "text_sha256": "0c4799d2964041d10ff5ae08dea1c3cf7f55060ad189239a49f56da96d0ba544",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 4,
+      "text_sha256": "302acb3b1e540774ad3d14d3065cdf57922d81d67bf3bb0938cd6848564d0f1c",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    },
+    {
+      "job_index": 5,
+      "text_sha256": "16c7392b892831407487f81ed76caf607ccec3869a2544003bbd7ec3a5a883fc",
+      "strict_json_object": true,
+      "questions_array": true,
+      "top_level_fields": [
+        "questions"
+      ],
+      "raw_count": 2
+    }
+  ],
+  "records": [
+    {
+      "job_index": 2,
+      "raw_index": 1,
+      "arm": "main_900",
+      "context_id": "c1",
+      "raw_question": {
+        "prompt": "A perfect fifth written as D–A is inverted by moving the D up an octave. A different student claims this produces a perfect fourth A–D that sounds exactly the same as the original. What is the actual relationship between the written intervals and their sounds?",
+        "explanation": "Inverting D–A by moving D up an octave produces A–(higher)D, which is a perfect fourth (number: 9−5=4; perfect remains perfect). This is correct spelling.\n\nHowever, the claim about sounding \"exactly the same\" is wrong. The original D–A spans 7 semitones; the inverted A–D spans 5 semitones. They differ by 2 semitones in pitch distance. The source confirms that inversion changes the number and exchanges qualities (where applicable), but perfect intervals remain perfect—yet the size changes: perfect fifth (7 semitones) becomes perfect fourth (5 semitones).\n\nThe student's error conflates pitch-class equivalence with actual pitch distance. The intervals are not enharmonic equivalents; they are different sizes with different written names.",
+        "expectedAnswer": "The inverted interval is a perfect fourth that sounds narrower than the original",
+        "choices": [
+          "The inverted interval is a perfect fourth that sounds narrower than the original",
+          "The inverted interval is a perfect fourth that sounds identical to the original",
+          "The inverted interval is a perfect fifth that sounds wider than the original",
+          "The inverted interval is a diminished fifth that sounds identical to the original"
+        ],
+        "topic": "Combine interval number, quality, spelling and direction when transposing short note patterns or inverting simple",
+        "skillID": "transposition_inversion",
+        "objectiveID": "interval_inversion_properties",
+        "objective": "Evaluate how inversion affects interval size and written quality",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "7ff1c9fd383fdc916e264c9fb3ab16ad29d31e7b24480813ddac6d1a5d24ab4d",
+      "requested_slot": true,
+      "id": "q01",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 4,
+      "raw_index": 1,
+      "arm": "main_320",
+      "context_id": "c2",
+      "raw_question": {
+        "prompt": "A scene meters correctly at f/8, 1/60 s, ISO 200. The photographer wants both deeper depth of field and to keep motion blur identical to 1/60 s, but the camera's minimum ISO is 200 and maximum shutter is 1/4000 s. Which setting change achieves this?",
+        "explanation": "Deeper depth of field requires a narrower aperture (higher f-number). From f/8, one stop narrower is f/11, which halves the light. To keep motion blur identical, shutter time must stay at 1/60 s. With ISO already at minimum 200, ISO cannot be lowered to compensate. The photographer cannot achieve deeper depth of field while keeping 1/60 s motion blur under these constraints. The scenario requires checking multiple interacting limits: aperture stop change, fixed shutter for motion, and ISO floor.",
+        "expectedAnswer": "No solution exists under the stated conditions.",
+        "choices": [
+          "Change to f/11 and 1/30 s, keeping ISO 200.",
+          "Change to f/11, 1/60 s, and ISO 100.",
+          "Change to f/5.6 and 1/125 s, keeping ISO 200.",
+          "No solution exists under the stated conditions."
+        ],
+        "topic": "depth-of-field and available-setting constraints under steady lighting",
+        "skillID": "2",
+        "objectiveID": "2",
+        "objective": "depth-of-field and available-setting constraints under steady lighting",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "e304ef80e9799b9fc5f9ef5d5ab5d3b5b6249c8fc6536a56e66e9c65f69f1560",
+      "requested_slot": true,
+      "id": "q02",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 0,
+      "raw_index": 0,
+      "arm": "main_320",
+      "context_id": "c0",
+      "raw_question": {
+        "prompt": "Table A has rows (id=1, val='x'), (id=2, val='y'). Table B has rows (aid=1, flag='p'), (aid=1, flag='q'), (aid=3, flag='r'). Consider: Q1: SELECT A.id, B.flag FROM A LEFT JOIN B ON A.id = B.aid WHERE B.flag = 'p'; Q2: SELECT A.id, B.flag FROM A LEFT JOIN B ON A.id = B.aid AND B.flag = 'p'. Which pair correctly describes their results?",
+        "explanation": "Q1 applies the WHERE filter after the join. The LEFT JOIN produces (1,'p'), (1,'q'), (2,NULL), then WHERE keeps only rows where B.flag='p' (true), discarding unknown from NULL. Result: just (1,'p'). Q2 moves the condition to ON, so only pairs with flag='p' match; row 1 still gets (1,'p'), but row 2 has no match and produces (2,NULL), and the second B row for aid=1 is excluded by the ON condition. Result: (1,'p'), (2,NULL). The difference is Q2 preserves the unmatched left row while Q1 discards it.",
+        "expectedAnswer": "Q1 returns one row; Q2 returns two rows including a NULL.",
+        "choices": [
+          "Q1 returns one row; Q2 returns two rows including a NULL.",
+          "Q1 returns two rows; Q2 returns one row.",
+          "Both return the same two rows.",
+          "Both return three rows."
+        ],
+        "topic": "ON versus WHERE filters in outer joins",
+        "skillID": "ON versus WHERE filters to explain results or compare query",
+        "objectiveID": "ON versus WHERE filters to explain results or compare query",
+        "objective": "Predict how moving a right-side filter between ON and WHERE changes LEFT JOIN results",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "0169ac73454c70693cd7ce931b8b27f84ef2b52e395e22fe2c7cc168554c5789",
+      "requested_slot": true,
+      "id": "q03",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 1,
+      "raw_index": 0,
+      "arm": "main_900",
+      "context_id": "c0",
+      "raw_question": {
+        "prompt": "Table A has rows (1, 'X'), (2, 'Y'). Table B has rows (1, 10), (1, 20), (3, 30). Consider two queries:\n\nQ1: SELECT A.id, B.val FROM A LEFT JOIN B ON A.id = B.id WHERE B.val > 15\nQ2: SELECT A.id, B.val FROM A LEFT JOIN B ON A.id = B.id AND B.val > 15\n\nWhich pair of result row counts is correct?",
+        "explanation": "Q1 applies the filter in WHERE, which runs after the join. The LEFT JOIN produces (1,10), (1,20), (2,NULL). WHERE B.val > 15 keeps only rows where that condition is true; NULL > 15 is unknown (discarded), and 10 > 15 is false. Only (1,20) remains: 1 row.\n\nQ2 applies the filter in ON, which determines matching pairs. For A.id=1, B rows with id=1 are tested: (1,10) fails 10>15, (1,20) passes. For A.id=2, no B rows match. The LEFT JOIN produces one row per left row: (1,20) and (2,NULL): 2 rows.\n\nThe correct counts are 1 and 2.",
+        "expectedAnswer": "Q1 returns 1 row; Q2 returns 2 rows",
+        "choices": [
+          "Q1 returns 1 row; Q2 returns 2 rows",
+          "Q1 returns 2 rows; Q2 returns 2 rows",
+          "Q1 returns 2 rows; Q2 returns 1 row",
+          "Q1 returns 3 rows; Q2 returns 3 rows"
+        ],
+        "topic": "ON versus WHERE filters",
+        "skillID": "NULL comparisons and ON versus WHERE filters to explain results or compare query",
+        "objectiveID": "ON versus WHERE filters",
+        "objective": "Predict how placement of right-side filters changes outer join results",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "66684349b2409f6167b476a4e1734d3886839136567c7f1a3731a51fd403c9cc",
+      "requested_slot": true,
+      "id": "q04",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 5,
+      "raw_index": 0,
+      "arm": "main_900",
+      "context_id": "c2",
+      "raw_question": {
+        "prompt": "A photographer is shooting a waterfall in steady daylight. The current settings are f/8, 1/125 s, ISO 400, producing correct exposure. The goal is to blur the water into a silky effect, which requires 1/15 s, while keeping the same image brightness and the same depth of field. The camera offers full-stop adjustments only. Which setting change achieves this?",
+        "explanation": "To maintain brightness, any stop change must be compensated by an equal opposite change elsewhere. Slowing from 1/125 s to 1/15 s admits 3 stops more light (1/125 → 1/60 → 1/30 → 1/15). To preserve depth of field, aperture must stay at f/8. Therefore ISO must absorb all 3 stops: ISO 400 → 800 → 1600 → 3200. The correct change is ISO 400 to 3200. Opening to f/5.6 would admit 1 more stop and change depth of field. Closing to f/11 would lose 1 stop and change depth of field. Opening to f/4 would admit 2 stops and change depth of field.",
+        "expectedAnswer": "Change ISO to 3200",
+        "choices": [
+          "Change ISO to 3200",
+          "Open aperture to f/5.6 and change ISO to 1600",
+          "Close aperture to f/11 and change ISO to 800",
+          "Open aperture to f/4 and change ISO to 800"
+        ],
+        "topic": "Combine stop changes with motion-blur",
+        "skillID": "motion-blur-stops",
+        "objectiveID": "preserve-brightness-dof",
+        "objective": "Preserve image brightness while changing shutter speed for motion effect and maintaining depth of field",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "c87af2f8ababbfae238d3618c886844e26874fff56deb33565bad39aaa383c5b",
+      "requested_slot": true,
+      "id": "q05",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 5,
+      "raw_index": 1,
+      "arm": "main_900",
+      "context_id": "c2",
+      "raw_question": {
+        "prompt": "A portrait photographer uses a 50mm lens at f/2, 1/500 s, ISO 100 in steady window light for correct exposure. The subject's slight movement appears frozen, but the photographer wants shallower depth of field while keeping brightness constant and cannot slow below 1/250 s due to remaining subject motion. The lens maximum is f/1.4. What valid adjustment exists?",
+        "explanation": "Opening from f/2 to f/1.4 admits 1 stop more light. To maintain brightness with shutter fixed at 1/500 s or faster (minimum 1/250 s), ISO must drop 1 stop. However, ISO 100 is already the minimum; it cannot drop. Slowing to 1/250 s admits 1 more stop, which combined with f/1.4 would require ISO 50—unavailable. Therefore no valid adjustment exists within the constraints. The scenario tests recognizing when equipment limits block a desired outcome despite mathematically valid stop relationships.",
+        "expectedAnswer": "No solution exists under the stated conditions.",
+        "choices": [
+          "Open to f/1.4 and change ISO to 200",
+          "Open to f/1.4 and slow shutter to 1/250 s with ISO 100",
+          "No solution exists under the stated conditions.",
+          "Open to f/1.4 with ISO 100 and shutter 1/500 s"
+        ],
+        "topic": "depth-of-field and available-setting constraints under steady lighting",
+        "skillID": "dof-equipment-constraints",
+        "objectiveID": "recognize-infeasible-adjustments",
+        "objective": "Identify when creative goals conflict with equipment limits despite valid stop arithmetic",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "1c16ee2759882ddd02aac9513bb34360ea4825a73b2163ed0ffab7a3c9046dcd",
+      "requested_slot": true,
+      "id": "q06",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 0,
+      "raw_index": 1,
+      "arm": "main_320",
+      "context_id": "c0",
+      "raw_question": {
+        "prompt": "Table R has rows (k=1, v=NULL), (k=2, v='a'). Table S has rows (k=1, w='m'), (k=2, w=NULL). Query: SELECT R.k FROM R LEFT JOIN S ON R.k = S.k AND R.v IS NOT DISTINCT FROM S.w. How many rows does this return, and what R.k values appear?",
+        "explanation": "IS NOT DISTINCT FROM treats two NULLs as equal and NULL vs non-NULL as different. For R.k=1: R.v is NULL, S.w is 'm' — different, so no match; LEFT JOIN produces (1, NULL). For R.k=2: R.v='a', S.w=NULL — different, so no match; LEFT JOIN produces (2, NULL). The join condition fails for both pairs, but LEFT JOIN preserves both left rows. Result: two rows with k=1 and k=2. Using equality (=) instead would yield unknown for both comparisons and the same outer join result, but IS NOT DISTINCT FROM is decisive here.",
+        "expectedAnswer": "2 rows: k=1 and k=2.",
+        "choices": [
+          "2 rows: k=1 and k=2.",
+          "1 row: only k=2.",
+          "1 row: only k=1.",
+          "0 rows."
+        ],
+        "topic": "NULL comparisons in join conditions",
+        "skillID": "NULL comparisons and ON versus WHERE filters to explain results or compare query",
+        "objectiveID": "NULL comparisons and ON versus WHERE filters to explain results or compare query",
+        "objective": "Apply IS NOT DISTINCT FROM and NULL behavior to predict outer join matching",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "328b020f4af27162f346693ccd55c6f3fd97ae53601681d6790e063d98af1227",
+      "requested_slot": true,
+      "id": "q07",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 4,
+      "raw_index": 0,
+      "arm": "main_320",
+      "context_id": "c2",
+      "raw_question": {
+        "prompt": "A photographer meters a scene at f/5.6, 1/125 s, ISO 400 for correct exposure. She wants to freeze faster motion and decides 1/500 s is needed, but her lens only opens to f/2.8 maximum. She will keep ISO at 400. Which statement correctly describes the outcome?",
+        "explanation": "From 1/125 s to 1/500 s is two stops less light (halved twice). Opening from f/5.6 to f/2.8 is two stops more light (f/5.6 → f/4 → f/2.8). The exposure changes cancel, preserving brightness. However, f/2.8 is her lens maximum, so this is only possible if her lens can reach f/2.8 at her current focal length. The source notes some zoom lenses have different maximum apertures at different focal lengths, making this a real constraint check.",
+        "expectedAnswer": "The exposure stays correct if the lens can open to f/2.8 at this focal length; otherwise the image will be underexposed.",
+        "choices": [
+          "The exposure stays correct if the lens can open to f/2.8 at this focal length; otherwise the image will be underexposed.",
+          "The image will be overexposed by two stops because faster shutter admits more light.",
+          "She must raise ISO to 800 to maintain correct exposure at 1/500 s and f/2.8.",
+          "The depth of field will increase, helping keep the moving subject sharp."
+        ],
+        "topic": "Combine stop changes with motion-blur",
+        "skillID": "1",
+        "objectiveID": "1",
+        "objective": "Combine stop changes with motion-blur",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "daf64ab721823790ba1a2a9f516b49412b6cbc3dc341f048dafbe7f37ae8e897",
+      "requested_slot": true,
+      "id": "q08",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 3,
+      "raw_index": 1,
+      "arm": "main_320",
+      "context_id": "c1",
+      "raw_question": {
+        "prompt": "The interval F–B♭ is written as a perfect fourth. A student claims this becomes F–A♯ when inverted. What error makes this claim wrong?",
+        "explanation": "F–B♭ spans 4 letter positions (F-G-A-B) with 5 semitones, making it a diminished fifth, not perfect fourth—perfect fourth would be 5 semitones (F–B♭ is actually 6 semitones: F-F♯-G-G♯-A-A♯-B♭, wait recheck: F to B♭ is F-G♭-G-A♭-A-B♭ = 6 semitones, diminished fifth. Actually F–B♭ is tritone/dim5. But accepting stem: inverting makes numbers sum to 9, so 5+4=9. Quality exchanges: diminished becomes augmented. The correct inversion of diminished fifth is augmented fourth (B♭–F or F–B♭ inverted). The student's F–A♯ is an augmented fourth (6 semitones), correct quality but wrong spelling: inverted lower note should be B♭, not F kept as lower. The error is keeping the same lower note instead of exchanging positions.",
+        "expectedAnswer": "The lower note was not exchanged; inversion requires swapping the notes' positions.",
+        "choices": [
+          "The quality should become diminished, not augmented",
+          "The lower note was not exchanged; inversion requires swapping the notes' positions.",
+          "The interval number should sum to eight, not nine",
+          "The accidentals should be removed before inverting"
+        ],
+        "topic": "Combine interval number",
+        "skillID": "Combine interval number",
+        "objectiveID": "quality, spelling and direction when transposing short note patterns or inverting simple",
+        "objective": "quality, spelling and direction when transposing short note patterns or inverting simple",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "7d62cd8ea7282545ab4d7f6d304eccb45e46d67bb8be3439cccd574b7b26ff4a",
+      "requested_slot": true,
+      "id": "q09",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 2,
+      "raw_index": 0,
+      "arm": "main_900",
+      "context_id": "c1",
+      "raw_question": {
+        "prompt": "A melody begins with the notes C–E♭–G. A student proposes two transformations: first transpose the entire pattern up by a major third, then invert the resulting first interval around its new lower note. Which description of the final first interval is correct?",
+        "explanation": "Step 1: Transpose C–E♭–G up by a major third. A major third above C is E, above E♭ is G, and above G is B. The transposed pattern is E–G–B.\n\nStep 2: Invert the first interval of this new pattern (E–G) around its lower note E. Inversion exchanges the upper and lower notes through an octave move. The interval E–G is a minor third (3 semitones). Inverting a minor third: the number becomes 9−3=6, and major/minor exchange, so it becomes a major sixth. The new upper note is B♭ (a major sixth above E: E–F–G–A–B–B♭ counting inclusively gives 6, with quality major).\n\nThe final first interval is E–B♭, a major sixth.",
+        "expectedAnswer": "A major sixth above the original lower note",
+        "choices": [
+          "A major sixth above the original lower note",
+          "A minor sixth above the original lower note",
+          "A perfect fifth above the original lower note",
+          "A major third below the original lower note"
+        ],
+        "topic": "Combine interval number, quality, spelling and direction when transposing short note patterns or inverting simple",
+        "skillID": "transposition_inversion",
+        "objectiveID": "interval_transformation",
+        "objective": "Apply transposition and inversion to preserve or change interval relationships",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "df63db17b94e7c37cc8ef3ce536c8366a9698c84ee9d811d0ee09a7c705511ad",
+      "requested_slot": true,
+      "id": "q10",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 1,
+      "raw_index": 1,
+      "arm": "main_900",
+      "context_id": "c0",
+      "raw_question": {
+        "prompt": "Table R has rows (10, NULL), (20, 'A'). Table S has rows (10, 'B'), (NULL, 'C'). Consider:\n\nSELECT R.a, S.b FROM R LEFT JOIN S ON R.b IS NOT DISTINCT FROM S.a\n\nWhat does this return?",
+        "explanation": "IS NOT DISTINCT FROM treats two NULLs as equal and a NULL with a non-NULL as different. For R row (10, NULL): compare R.b=NULL with each S.a. S row (10,'B'): NULL vs 10 → different. S row (NULL,'C'): NULL vs NULL → equal, so this pair matches. For R row (20,'A'): compare 'A' with 10 (different) and with NULL (different). No match.\n\nLEFT JOIN produces: one row for the match (10, 'C'), and one NULL-padded row for (20,'A') with no match: (20, NULL). The result is (10, 'C'), (20, NULL).\n\nNote: R.a=10 pairs with S.b='C', not 'B', because only the NULL=NULL match succeeds.",
+        "expectedAnswer": "(10, 'C'), (20, NULL)",
+        "choices": [
+          "(10, 'C'), (20, NULL)",
+          "(10, 'B'), (20, NULL)",
+          "(10, NULL), (20, 'C')",
+          "(10, 'B'), (10, 'C'), (20, NULL)"
+        ],
+        "topic": "NULL comparisons",
+        "skillID": "NULL comparisons and ON versus WHERE filters to explain results or compare query",
+        "objectiveID": "NULL comparisons",
+        "objective": "Apply IS NOT DISTINCT FROM to match NULL values in join conditions",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "36e5812b160dcda22c76f78788fce67bc36ddae0bd66e54084ff26675462458e",
+      "requested_slot": true,
+      "id": "q11",
+      "assessable_stem_choices": true
+    },
+    {
+      "job_index": 3,
+      "raw_index": 0,
+      "arm": "main_320",
+      "context_id": "c1",
+      "raw_question": {
+        "prompt": "A melody begins with the notes C–E–G. If you transpose it upward by a major third and then invert the resulting first interval around its new lower note, what is the written name of the final upper note?",
+        "explanation": "Upward major third from C is E (C→D→E, major quality = 4 semitones). The transposed pattern is E–G♯–B. The first interval E–G♯ is a major third. Inverting around the lower note E: exchange upper/lower positions through an octave move, so G♯ drops an octave below E. The inverted interval is E down to G♯ an octave below, written as G♯–E ascending. The upper note is E.",
+        "expectedAnswer": "E",
+        "choices": [
+          "E",
+          "G♯",
+          "B",
+          "C"
+        ],
+        "topic": "Combine interval number",
+        "skillID": "Combine interval number",
+        "objectiveID": "quality, spelling and direction when transposing short note patterns or inverting simple",
+        "objective": "quality, spelling and direction when transposing short note patterns or inverting simple",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "raw_sha256": "2393271ef9d41755e6bc128af749eebbe64208078812970704ac5e7d5748216b",
+      "requested_slot": true,
+      "id": "q12",
+      "assessable_stem_choices": true
+    }
+  ]
+}
