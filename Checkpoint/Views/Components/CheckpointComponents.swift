@@ -645,6 +645,7 @@ struct PrimaryActionButton: View {
     var title: String
     var systemImage: String
     var isLoading: Bool
+    var compact: Bool
     var action: () -> Void
 
     @Environment(\.isEnabled) private var isEnabled
@@ -655,11 +656,13 @@ struct PrimaryActionButton: View {
         title: String,
         systemImage: String,
         isLoading: Bool = false,
+        compact: Bool = false,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.systemImage = systemImage
         self.isLoading = isLoading
+        self.compact = compact
         self.action = action
     }
 
@@ -682,7 +685,8 @@ struct PrimaryActionButton: View {
                 .foregroundStyle(CheckpointTheme.actionText)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 18)
-                .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 18 : 15)
+                .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 18 : (compact ? 10 : 15))
+                .frame(minHeight: compact ? 50 : 44)
                 .background(
                     CheckpointTheme.actionFill,
                     in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
@@ -1063,7 +1067,7 @@ struct StatusBadge: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(
-                tint.opacity(0.14),
+                tint.opacity(0.07),
                 in: RoundedRectangle(
                     cornerRadius: CheckpointTheme.compactCornerRadius,
                     style: .continuous

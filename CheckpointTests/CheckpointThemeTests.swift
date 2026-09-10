@@ -261,6 +261,20 @@ final class CheckpointThemeTests: XCTestCase {
         }
     }
 
+    func testBrandBadgesRemainReadableAcrossWarmSurfaces() {
+        for (appearance, foreground, surfaces) in [
+            ("light", CheckpointPalette.accent.light,
+             [CheckpointPalette.backgroundBase.light, CheckpointPalette.panel.light, CheckpointPalette.panelRaised.light]),
+            ("dark", CheckpointPalette.accent.dark,
+             [CheckpointPalette.backgroundBase.dark, CheckpointPalette.panel.dark, CheckpointPalette.panelRaised.dark])
+        ] {
+            for surface in surfaces {
+                assertContrast(foreground, composite(foreground, over: surface, opacity: 0.07),
+                               minimum: 4.5, context: "\(appearance) brand badge")
+            }
+        }
+    }
+
     func testPrimaryAndDestructiveActionsKeepReadableLabels() {
         for (appearance, fill, label, destructive, surface) in [
             ("light", CheckpointPalette.actionFill.light, CheckpointPalette.actionText.light,
