@@ -76,7 +76,7 @@ struct SettingsPracticeStandardCard<Controls: View>: View {
     }
 
     var body: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             VStack(alignment: .leading, spacing: 16) {
                 summaryHeader
 
@@ -129,12 +129,12 @@ struct SettingsPracticeStandardCard<Controls: View>: View {
     private var summaryCopy: some View {
         VStack(alignment: .leading, spacing: 5) {
             Label("CHECKPOINT STANDARD", systemImage: "checkmark.seal.fill")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.8)
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
 
             Text(presentation.headline)
-                .font(.title3.weight(.bold))
+                .font(CheckpointTypography.sectionTitle)
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .contentTransition(.numericText())
@@ -147,7 +147,7 @@ struct SettingsPracticeStandardCard<Controls: View>: View {
 
             Text("Applies to every goal")
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -155,13 +155,13 @@ struct SettingsPracticeStandardCard<Controls: View>: View {
     private var passGauge: some View {
         ZStack {
             Circle()
-                .stroke(CheckpointTheme.teal.opacity(0.13), lineWidth: 7)
+                .stroke(CheckpointTheme.accent.opacity(0.13), lineWidth: 3)
 
             Circle()
                 .trim(from: 0, to: presentation.passRate)
                 .stroke(
-                    CheckpointTheme.teal,
-                    style: StrokeStyle(lineWidth: 7, lineCap: .round)
+                    CheckpointTheme.accent,
+                    style: StrokeStyle(lineWidth: 3, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
 
@@ -261,12 +261,8 @@ struct SettingsPracticeStandardCard<Controls: View>: View {
     private var editStandardIcon: some View {
         Image(systemName: "slider.horizontal.3")
             .font(.system(size: 14, weight: .bold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .frame(width: 34, height: 34)
-            .background(
-                CheckpointTheme.teal.opacity(0.11),
-                in: RoundedRectangle(cornerRadius: 9, style: .continuous)
-            )
             .accessibilityHidden(true)
     }
 
@@ -280,7 +276,7 @@ struct SettingsPracticeStandardCard<Controls: View>: View {
     private var editStandardChevron: some View {
         Image(systemName: "chevron.down")
             .font(.caption.weight(.bold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .rotationEffect(.degrees(isExpanded ? 180 : 0))
             .accessibilityHidden(true)
     }
@@ -304,7 +300,7 @@ private struct SettingsPracticeStandardMetric: View {
             HStack(spacing: 6) {
                 Image(systemName: systemImage)
                     .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
 
                 Text(label.uppercased())
                     .font(.system(size: 9, weight: .bold))
@@ -315,23 +311,16 @@ private struct SettingsPracticeStandardMetric: View {
             }
 
             Text(value)
-                .font(.title3.weight(.bold))
+                .font(CheckpointTypography.sectionTitle)
                 .monospacedDigit()
                 .foregroundStyle(CheckpointTheme.text)
                 .lineLimit(1)
                 .minimumScaleFactor(0.78)
                 .contentTransition(.numericText())
         }
-        .padding(11)
-        .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
-        .background(
-            CheckpointTheme.panelRaised.opacity(0.68),
-            in: RoundedRectangle(cornerRadius: 11, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 11, style: .continuous)
-                .stroke(CheckpointTheme.controlStroke.opacity(0.72), lineWidth: 1)
-        }
+        .padding(.vertical, 8)
+        .padding(.trailing, 8)
+        .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
     }
 }
 
@@ -411,7 +400,7 @@ struct PracticeStandardStepperRow: View {
             onDecrement: decrementDisabled ? nil : decrementAction,
             label: label
         )
-        .tint(CheckpointTheme.teal)
+        .tint(CheckpointTheme.accent)
         .accessibilityLabel(title)
         .accessibilityValue("\(value)")
         .accessibilityHint("Swipe up or down to adjust.")
@@ -426,7 +415,7 @@ struct PracticeStandardStepperRow: View {
 
     private var valueLabel: some View {
         Text("\(value)")
-            .font(.title3.weight(.bold))
+            .font(CheckpointTypography.sectionTitle)
             .foregroundStyle(CheckpointTheme.text)
             .monospacedDigit()
             .contentTransition(.numericText())
@@ -495,9 +484,9 @@ struct BreakDurationMenu: View {
     private var menuIcon: some View {
         Image(systemName: "timer")
             .font(.system(size: 16, weight: .semibold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .frame(width: 30, height: 30)
-            .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .background(CheckpointTheme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             .accessibilityHidden(true)
     }
 

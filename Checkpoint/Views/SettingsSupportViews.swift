@@ -1034,7 +1034,7 @@ struct AdvancedConfirmationView: View {
 
                 VStack(alignment: .leading, spacing: 7) {
                     Text(action.title)
-                        .font(.system(.title, design: .rounded, weight: .bold))
+                        .font(CheckpointTypography.goalTitle)
                         .foregroundStyle(CheckpointTheme.heroText)
                         .fixedSize(horizontal: false, vertical: true)
 
@@ -1125,7 +1125,7 @@ struct AdvancedConfirmationView: View {
 
                 VStack(alignment: .leading, spacing: 7) {
                     Text("Ready for a fresh start")
-                        .font(.system(.title, design: .rounded, weight: .bold))
+                        .font(CheckpointTypography.goalTitle)
                         .foregroundStyle(CheckpointTheme.heroText)
                         .fixedSize(horizontal: false, vertical: true)
 
@@ -1315,7 +1315,7 @@ struct AdvancedConfirmationView: View {
             } label: {
                 actionLabel
                 .font(.headline)
-                .foregroundStyle(CheckpointTheme.paper)
+                .foregroundStyle(didEraseSuccessfully ? CheckpointTheme.actionText : CheckpointTheme.paper)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, minHeight: 52)
                 .padding(.horizontal, 12)
@@ -1342,7 +1342,7 @@ struct AdvancedConfirmationView: View {
     }
 
     private var actionFill: Color {
-        didEraseSuccessfully ? CheckpointTheme.teal : CheckpointTheme.destructiveFill
+        didEraseSuccessfully ? CheckpointTheme.actionFill : CheckpointTheme.destructiveFill
     }
 
     private var actionAccessibilityHint: String {
@@ -2045,14 +2045,7 @@ struct SettingsPlanCard: View {
 
     var body: some View {
         Button(action: action) {
-            CheckpointHeroSurface(
-                glowColor: accentTint,
-                glowOpacity: 0.11,
-                glowDiameter: 132,
-                glowBlurRadius: 12,
-                glowOffset: CGSize(width: 58, height: -72),
-                contentPadding: 17
-            ) {
+            SectionPanel(style: .editorial) {
                 VStack(alignment: .leading, spacing: 16) {
                     planHeader
 
@@ -2064,7 +2057,7 @@ struct SettingsPlanCard: View {
                     planSummary
 
                     Divider()
-                        .overlay(CheckpointTheme.heroBorder)
+                        .overlay(CheckpointTheme.hairline)
                         .accessibilityHidden(true)
 
                     planAction
@@ -2110,13 +2103,13 @@ struct SettingsPlanCard: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(activePlan.statusText)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.heroText)
+                    .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.interpolate)
 
                 Text(activePlan.supportText)
                     .font(.caption.weight(.medium))
-                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.interpolate)
             }
@@ -2124,7 +2117,7 @@ struct SettingsPlanCard: View {
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            CheckpointTheme.heroSubtleFill,
+            CheckpointTheme.panelRaised,
             in: RoundedRectangle(cornerRadius: 15, style: .continuous)
         )
         .overlay {
@@ -2139,8 +2132,8 @@ struct SettingsPlanCard: View {
     private var planSummary: some View {
         VStack(alignment: .leading, spacing: presentation.proActivity == nil ? 7 : 13) {
             Text(presentation.headline)
-                .font(.title3.weight(.bold))
-                .foregroundStyle(CheckpointTheme.heroText)
+                .font(CheckpointTypography.sectionTitle)
+                .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .contentTransition(.interpolate)
 
@@ -2150,7 +2143,7 @@ struct SettingsPlanCard: View {
             } else {
                 Text(presentation.detail)
                     .font(.subheadline.weight(.medium))
-                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.interpolate)
 
@@ -2181,25 +2174,25 @@ struct SettingsPlanCard: View {
 
             Text(option.detail)
                 .font(.caption.weight(.medium))
-                .foregroundStyle(CheckpointTheme.heroMuted)
+                .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
 
             if let valueBadge = option.valueBadge {
                 Text(valueBadge)
-                    .font(.caption2.weight(.bold))
-                    .foregroundStyle(CheckpointTheme.mint)
+                    .font(CheckpointTypography.eyebrow)
+                    .foregroundStyle(CheckpointTheme.success)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(13)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            CheckpointTheme.heroSubtleFill,
+            CheckpointTheme.panelRaised,
             in: RoundedRectangle(cornerRadius: 15, style: .continuous)
         )
         .overlay {
             RoundedRectangle(cornerRadius: 15, style: .continuous)
-                .stroke(CheckpointTheme.heroDivider, lineWidth: 1)
+                .stroke(CheckpointTheme.hairline, lineWidth: 1)
         }
         .reportSettingsPlanLayoutFrame(.upgradeOffer, using: layoutReporter)
         .accessibilityHidden(true)
@@ -2213,29 +2206,29 @@ struct SettingsPlanCard: View {
                     .font(.subheadline.weight(.semibold))
 
                 Text(option.displayPrice)
-                    .font(.title3.weight(.bold))
+                    .font(CheckpointTypography.sectionTitle)
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                     .allowsTightening(true)
 
                 Text(option.cadence)
                     .font(.caption.weight(.medium))
-                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .foregroundStyle(CheckpointTheme.muted)
             }
-            .foregroundStyle(CheckpointTheme.heroText)
+            .foregroundStyle(CheckpointTheme.text)
         } else {
             Text(option.chargeSummary)
                 .font(.subheadline.weight(.bold))
-                .foregroundStyle(CheckpointTheme.heroText)
+                .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
 
     private var upgradeOfferLabel: some View {
         Text("APP STORE PRICE")
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.7)
-            .foregroundStyle(CheckpointTheme.heroMuted)
+            .foregroundStyle(CheckpointTheme.muted)
             .fixedSize(horizontal: false, vertical: true)
     }
 
@@ -2243,13 +2236,13 @@ struct SettingsPlanCard: View {
     private func recommendedOfferBadge(_ option: MembershipPlanOption) -> some View {
         if option.isRecommended {
             Text("BEST VALUE")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.3)
-                .foregroundStyle(CheckpointTheme.mint)
+                .foregroundStyle(CheckpointTheme.success)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 5)
-                .background(CheckpointTheme.mint.opacity(0.12), in: Capsule())
+                .background(CheckpointTheme.success.opacity(0.12), in: Capsule())
         }
     }
 
@@ -2262,7 +2255,7 @@ struct SettingsPlanCard: View {
 
                 if item.id != .goalLanes {
                     Divider()
-                        .overlay(CheckpointTheme.heroDivider)
+                        .overlay(CheckpointTheme.hairline)
                         .padding(.leading, dynamicTypeSize.isAccessibilitySize ? 0 : 41)
                         .accessibilityHidden(true)
                 }
@@ -2271,12 +2264,12 @@ struct SettingsPlanCard: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 3)
         .background(
-            CheckpointTheme.heroSubtleFill,
+            CheckpointTheme.panelRaised,
             in: RoundedRectangle(cornerRadius: 16, style: .continuous)
         )
         .overlay {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(CheckpointTheme.heroDivider, lineWidth: 1)
+                .stroke(CheckpointTheme.hairline, lineWidth: 1)
         }
         .reportSettingsPlanLayoutFrame(.proActivity, using: layoutReporter)
     }
@@ -2304,7 +2297,7 @@ struct SettingsPlanCard: View {
 
     private func proActivityIdentity(_ item: SettingsProActivityItem) -> some View {
         Text(item.label)
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.7)
             .foregroundStyle(proActivityTint(item.tone))
             .fixedSize(horizontal: false, vertical: true)
@@ -2330,14 +2323,14 @@ struct SettingsPlanCard: View {
         VStack(alignment: .leading, spacing: 2) {
             if !dynamicTypeSize.isAccessibilitySize {
                 Text(item.label)
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.7)
-                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .foregroundStyle(CheckpointTheme.muted)
             }
 
             Text(item.value)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.heroText)
+                .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .contentTransition(
                     item.id == .goalLanes ? .numericText() : .interpolate
@@ -2345,7 +2338,7 @@ struct SettingsPlanCard: View {
 
             Text(item.detail)
                 .font(.caption.weight(.medium))
-                .foregroundStyle(CheckpointTheme.heroMuted)
+                .foregroundStyle(CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
                 .contentTransition(.interpolate)
         }
@@ -2354,13 +2347,13 @@ struct SettingsPlanCard: View {
     private func proActivityTint(_ tone: SettingsProActivityTone) -> Color {
         switch tone {
         case .positive:
-            CheckpointTheme.heroSuccess
+            CheckpointTheme.success
         case .informative:
-            CheckpointTheme.heroInfo
+            CheckpointTheme.accent
         case .attention:
-            CheckpointTheme.heroWarning
+            CheckpointTheme.amber
         case .neutral:
-            CheckpointTheme.heroMuted
+            CheckpointTheme.muted
         }
     }
 
@@ -2395,7 +2388,7 @@ struct SettingsPlanCard: View {
                 .foregroundStyle(accentTint)
                 .frame(width: 40, height: 40)
                 .background(
-                    CheckpointTheme.heroSubtleFill,
+                    CheckpointTheme.panelRaised,
                     in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                 )
                 .contentTransition(.symbolEffect(.replace))
@@ -2405,13 +2398,13 @@ struct SettingsPlanCard: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("YOUR PLAN")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.9)
-                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .foregroundStyle(CheckpointTheme.muted)
 
                 Text(presentation.planName)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.heroText)
+                    .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.interpolate)
             }
@@ -2420,7 +2413,7 @@ struct SettingsPlanCard: View {
 
     private var planBadge: some View {
         Text(presentation.badgeText)
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.4)
             .foregroundStyle(accentTint)
             .fixedSize(horizontal: false, vertical: true)
@@ -2461,15 +2454,15 @@ struct SettingsPlanCard: View {
     private var planActionTitle: some View {
         Text(presentation.actionTitle)
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.mint)
+            .foregroundStyle(CheckpointTheme.accent)
             .fixedSize(horizontal: false, vertical: true)
             .contentTransition(.interpolate)
     }
 
     private var planActionIcon: some View {
         Image(systemName: presentation.actionSystemImage)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.mint)
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(CheckpointTheme.accent)
             .contentTransition(.symbolEffect(.replace))
             .accessibilityHidden(true)
     }
@@ -2477,19 +2470,19 @@ struct SettingsPlanCard: View {
     private var accentTint: Color {
         switch presentation.state {
         case .free:
-            CheckpointTheme.heroInfo
+            CheckpointTheme.accent
         case .pendingPurchase:
             CheckpointTheme.amber
         case .unconfirmedPurchase:
-            CheckpointTheme.heroInfo
+            CheckpointTheme.accent
         case .pro:
             switch presentation.activePlanPresentation?.tone {
             case .scheduled:
-                CheckpointTheme.heroInfo
+                CheckpointTheme.accent
             case .attention:
-                CheckpointTheme.heroWarning
+                CheckpointTheme.amber
             case .active, nil:
-                CheckpointTheme.mint
+                CheckpointTheme.success
             }
         }
     }
@@ -2681,10 +2674,9 @@ private struct SettingsRowIcon: View {
 
     var body: some View {
         Image(systemName: systemImage)
-            .font(.system(size: 17, weight: .semibold))
-            .foregroundStyle(CheckpointTheme.teal)
-            .frame(width: 34, height: 34)
-            .background(CheckpointTheme.teal.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+            .font(.system(size: 17, weight: .regular))
+            .foregroundStyle(CheckpointTheme.accent)
+            .frame(width: 28, height: 34)
             .accessibilityHidden(true)
     }
 }
