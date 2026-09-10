@@ -190,13 +190,17 @@ class NativePipelineTests(unittest.TestCase):
         self.assertNotIn(self.question["expectedAnswer"], json.dumps(metrics))
 
     def test_configured_transient_fallback_retains_author_constraints(self):
+        secret = "private-learner-secret-in-transient-error"
         client = ScriptedNativeClient(
-            (AUTHOR, RuntimeError("synthetic transient transport failure")),
+            (AUTHOR, RuntimeError(secret)),
             (AUTHOR, {"questions": [self.question]}),
         )
         budget = generation.ProviderCallBudget(2)
+        metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
         with patch.dict(os.environ, {"BEDROCK_FALLBACK_MODEL_ID": FALLBACK}):
-            result = generation._generate_provider_payload(self.request, client, budget)
+            result = generation._generate_provider_payload(self.request, client, budget, metrics)
+        self.assertEqual(metrics["ProviderCalls"], 2)
+        self.assert_failed_observation(metrics, "request_failed", secret, index=0)
         self.assertEqual(result, {"questions": [self.question]})
         self.assertEqual([call["modelId"] for call in client.calls], [MODEL, FALLBACK])
         self.assertEqual(client.calls[0]["outputConfig"], client.calls[1]["outputConfig"])
@@ -218,6 +222,68 @@ class NativePipelineTests(unittest.TestCase):
         self.assertEqual(budget.calls, 1)
         self.assertEqual(reserve.call_count, 1)
         self.assertEqual(metrics["ProviderCalls"], 1)
+
+    def test_native_schema_error_preserves_verified_top_up_work_without_fallback(self):
+        from botocore.exceptions import ClientError
+
+        secret = "private-learner-secret-from-provider-error"
+        error = ClientError({"Error": {"Code": "ValidationException", "Message": secret}}, "Converse")
+        client = self.pipeline()
+        client.steps.extend([(AUTHOR, error), (AUTHOR, {"questions": []})])
+        request = _normalize_request(_request_payload(target_count=2))
+        reserve = Mock()
+        budget = generation.ProviderCallBudget(6, reserve_call=reserve)
+        metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
+        with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "2", "BEDROCK_FALLBACK_MODEL_ID": FALLBACK}):
+            result = generation._generate_sanitized_questions(request, client, budget, metrics)
+        self.assertEqual([question["prompt"] for question in result], [self.question["prompt"]])
+        self.assertEqual(result[0]["verificationPolicyRevision"], 2)
+        self.assertEqual([call["modelId"] for call in client.calls], [MODEL] * 4)
+        self.assertEqual(len(client.steps), 1)
+        self.assertEqual(budget.calls, 4)
+        self.assertEqual(reserve.call_count, 4)
+        self.assertEqual(metrics["ProviderCalls"], 4)
+        self.assertEqual(metrics["BedrockInputTokens"], 33)
+        self.assertEqual(metrics["BedrockOutputTokens"], 21)
+        self.assertEqual(len(metrics["ProviderObservations"]), 4)
+        self.assert_failed_observation(metrics, "request_invalid", secret)
+
+    def test_initial_native_schema_error_remains_an_accounted_failure(self):
+        from botocore.exceptions import ClientError
+
+        secret = "private-schema-error-before-any-accepted-item"
+        error = ClientError({"Error": {"Code": "ValidationException", "Message": secret}}, "Converse")
+        client = ScriptedNativeClient((AUTHOR, error), (AUTHOR, {"questions": []}))
+        reserve = Mock()
+        budget = generation.ProviderCallBudget(6, reserve_call=reserve)
+        metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
+        with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "2", "BEDROCK_FALLBACK_MODEL_ID": FALLBACK}):
+            with self.assertRaises(ServiceConfigurationError):
+                generation._generate_sanitized_questions(self.request, client, budget, metrics)
+        self.assertEqual([call["modelId"] for call in client.calls], [MODEL])
+        self.assertEqual(len(client.steps), 1)
+        self.assertEqual(budget.calls, 1)
+        self.assertEqual(reserve.call_count, 1)
+        self.assertEqual(metrics["ProviderCalls"], 1)
+        self.assertEqual(metrics["BedrockInputTokens"], 0)
+        self.assertEqual(metrics["BedrockOutputTokens"], 0)
+        self.assertEqual(len(metrics["ProviderObservations"]), 1)
+        self.assert_failed_observation(metrics, "request_invalid", secret)
+
+    def assert_failed_observation(self, metrics, outcome, secret, index=-1):
+        observation = metrics["ProviderObservations"][index]
+        self.assertEqual(set(observation), {"model", "elapsedSeconds", "outcome", "structuredOutput"})
+        self.assertEqual(observation["outcome"], outcome)
+        self.assertEqual(observation["model"], MODEL)
+        self.assertGreaterEqual(observation["elapsedSeconds"], 0)
+        structure = observation["structuredOutput"]
+        self.assertEqual(set(structure), {"mode", "name", "version", "sha256"})
+        self.assertEqual(structure["mode"], "native")
+        self.assertEqual(structure["name"], AUTHOR)
+        self.assertEqual(structure["version"], "1")
+        self.assertRegex(structure["sha256"], r"^[0-9a-f]{64}$")
+        self.assertNotIn(secret, json.dumps(metrics))
+        self.assertNotIn(self.question["expectedAnswer"], json.dumps(metrics))
 
     def test_malformed_native_author_fails_once_without_lenient_json_repair(self):
         for raw in ('{"questions":', '{"questions":[],"questions":[]}',

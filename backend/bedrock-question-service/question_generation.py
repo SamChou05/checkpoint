@@ -288,7 +288,7 @@ def _generate_sanitized_questions(
             if questions:
                 break
             raise
-        except ProviderError:
+        except (ProviderError, ServiceConfigurationError):
             # A failed top-up must not discard an already verified batch.
             # Durable quota failures above still propagate to terminal handling.
             if questions:
@@ -461,10 +461,18 @@ def _generate_with_bedrock(
         if mode == "native":
             from botocore.exceptions import ClientError, ParamValidationError
 
-            if isinstance(error, ParamValidationError) or (
+            incompatible_request = isinstance(error, ParamValidationError) or (
                 isinstance(error, ClientError)
                 and error.response.get("Error", {}).get("Code") == "ValidationException"
-            ):
+            )
+            if request_metrics is not None:
+                request_metrics.setdefault("ProviderObservations", []).append({
+                    "model": model_id,
+                    "elapsedSeconds": round(time.monotonic() - call_started, 3),
+                    "outcome": "request_invalid" if incompatible_request else "request_failed",
+                    "structuredOutput": {"mode": mode, **contract_metadata(contract)},
+                })
+            if incompatible_request:
                 record_quality(request_metrics, "provider", "native_request_invalid")
                 raise ServiceConfigurationError(
                     "Bedrock rejected the native request; qualify the configured model, "
