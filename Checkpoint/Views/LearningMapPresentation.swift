@@ -95,7 +95,7 @@ struct LearningMapEntryCard: View {
                     connectedMapEmblem
                     VStack(alignment: .leading, spacing: 5) {
                         Text("Learning map")
-                            .font(.headline)
+                            .font(CheckpointTypography.sectionTitle)
                             .foregroundStyle(LearningMapPalette.text.color)
                         Text(summary.summary)
                             .font(.footnote)
@@ -117,31 +117,17 @@ struct LearningMapEntryCard: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(LearningMapPalette.accent.color)
                         .fixedSize(horizontal: !dynamicTypeSize.isAccessibilitySize, vertical: true)
-                        .padding(.horizontal, 10)
                         .padding(.vertical, 7)
-                        .background(LearningMapPalette.accent.color.opacity(0.08), in: Capsule())
                 }
             }
             .padding(18)
             .background {
                 RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
                     .fill(LearningMapPalette.panel.color)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
-                            .fill(LinearGradient(
-                                colors: [LearningMapPalette.accent.color.opacity(0.045), .clear, .clear],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
-                    }
             }
             .overlay {
                 RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
-                    .strokeBorder(LinearGradient(
-                        colors: [LearningMapPalette.accent.color.opacity(0.22), LearningMapPalette.border.color],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ), lineWidth: 1)
+                    .strokeBorder(LearningMapPalette.border.color, lineWidth: 1)
             }
             .contentShape(RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius))
         }
@@ -212,12 +198,8 @@ struct LearningMapEntryCard: View {
         }
         .frame(width: 50, height: 50)
         .background {
-            RoundedRectangle(cornerRadius: 15)
-                .fill(LinearGradient(
-                    colors: [LearningMapPalette.accent.color.opacity(0.1), LearningMapPalette.information.color.opacity(0.035)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ))
+            RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
+                .fill(LearningMapPalette.raised.color)
         }
         .accessibilityHidden(true)
     }

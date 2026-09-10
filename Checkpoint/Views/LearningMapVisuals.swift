@@ -28,19 +28,14 @@ struct LivingMapBackdrop: View {
                 let bounds = Path(CGRect(origin: .zero, size: size))
                 let phase = animationsEnabled && !isInteracting
                     ? LivingMapDrawing.phase(at: renderingDate ?? timeline.date, period: 34) : 0
-                let reach = max(size.width, size.height)
-                let center = CGPoint(x: size.width * (0.46 + 0.035 * cos(phase)),
-                                     y: size.height * (0.43 + 0.025 * sin(phase)))
+                let breath = (sin(phase) + 1) / 2
+                let ambientOpacity = colorScheme == .dark
+                    ? 0.02 + breath * 0.025
+                    : 0.014 + breath * 0.03
                 context.fill(bounds, with: .color(LearningMapPalette.background.color))
-                context.fill(bounds, with: .radialGradient(
-                    Gradient(colors: [LearningMapPalette.accent.color.opacity(colorScheme == .dark ? 0.12 : 0.075), .clear]),
-                    center: center, startRadius: 0, endRadius: reach * 0.68
-                ))
-                context.fill(bounds, with: .radialGradient(
-                    Gradient(colors: [LearningMapPalette.building.color.opacity(colorScheme == .dark ? 0.045 : 0.035), .clear]),
-                    center: CGPoint(x: size.width * 0.88, y: size.height * 0.85),
-                    startRadius: 0, endRadius: reach * 0.62
-                ))
+                // A uniform, quiet tone retains ambient motion without shifting
+                // the map's paper surface or its fixed coordinate dots.
+                context.fill(bounds, with: .color(LearningMapPalette.accent.color.opacity(ambientOpacity)))
 
                 var dots = Path()
                 for x in stride(from: CGFloat(14), to: size.width, by: 28) {
@@ -122,7 +117,6 @@ struct LivingMapNodeFace: View {
     let evidenceAvailable: Bool
     let animationsEnabled: Bool
 
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.livingMapRenderingDate) private var renderingDate
     @State private var ringTransition: LivingMapProgressTransition?
 
@@ -181,14 +175,6 @@ struct LivingMapNodeFace: View {
         let circle = LivingMapDrawing.circle(center: center, radius: radius)
         let top = CGPoint(x: center.x - radius * 0.5, y: center.y - radius)
         let bottom = CGPoint(x: center.x + radius * 0.5, y: center.y + radius)
-        let dark = colorScheme == .dark
-
-        let shadowCenter = CGPoint(x: center.x, y: center.y + 4)
-        context.fill(LivingMapDrawing.circle(center: shadowCenter, radius: radius + 12), with: .radialGradient(
-            Gradient(stops: [.init(color: CheckpointPalette.shadowElevated.color, location: 0.46),
-                             .init(color: .clear, location: 1)]),
-            center: shadowCenter, startRadius: 0, endRadius: radius + 12
-        ))
         if isSelected {
             context.fill(LivingMapDrawing.circle(center: center, radius: radius + 17), with: .radialGradient(
                 Gradient(stops: [.init(color: tint.opacity(0.015), location: 0.45),
@@ -200,23 +186,10 @@ struct LivingMapNodeFace: View {
                            with: .color(tint.opacity(0.25 + breath * 0.09)), lineWidth: 1)
         }
 
-        context.fill(circle, with: .linearGradient(
-            Gradient(colors: [LearningMapPalette.panel.color, LearningMapPalette.raised.color]),
-            startPoint: top, endPoint: bottom
+        context.fill(circle, with: .color(
+            isSelected ? LearningMapPalette.raised.color : LearningMapPalette.panel.color
         ))
-        context.fill(circle, with: .radialGradient(
-            Gradient(colors: [tint.opacity(isGoal ? 0.15 : isSelected ? 0.1 : 0.045), .clear]),
-            center: CGPoint(x: center.x - radius * 0.3, y: center.y - radius * 0.5),
-            startRadius: 0, endRadius: radius * 1.5
-        ))
-        context.stroke(circle, with: .linearGradient(
-            Gradient(colors: [.white.opacity(dark ? 0.31 : 0.95), tint.opacity(0.2),
-                              LearningMapPalette.text.color.opacity(dark ? 0.55 : 0.17)]),
-            startPoint: top, endPoint: bottom
-        ), lineWidth: 1)
-        context.stroke(LivingMapDrawing.circle(center: center, radius: max(1, radius - 2)), with: .linearGradient(
-            Gradient(colors: [.white.opacity(dark ? 0.07 : 0.55), .clear]), startPoint: top, endPoint: bottom
-        ), lineWidth: 0.75)
+        context.stroke(circle, with: .color(CheckpointTheme.controlStroke), lineWidth: 1)
 
         if symbol == nil {
             let dotRadius = max(2, radius * 0.4)

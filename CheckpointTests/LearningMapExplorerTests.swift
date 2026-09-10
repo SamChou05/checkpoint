@@ -227,6 +227,61 @@ final class LearningMapExplorerTests: XCTestCase {
         }
     }
 
+    func testCompactFocusedBranchKeepsEveryLabelAndTargetSeparateAtActualCanvasHeight() throws {
+        let names = [
+            "Source credibility", "Relevant evidence", "Cause versus correlation",
+            "Recognize unsupported conclusions", "Check explanations against new information"
+        ]
+        // The SE's 320×568 screen leaves about 261pt after its compact header,
+        // controls and selected preview. Keep a point of margin below that size.
+        let viewport = CGSize(width: 320, height: 260)
+        for count in 1...names.count {
+            let skill = SkillMapTopic(name: "Evaluating evidence", objectives:
+                names.prefix(count).map { SkillMapObjective(name: $0) })
+            let map = GoalSkillMap(topics: [skill])
+            let selections: [LearningMapNodeID] = [.skill(skill.id)] + skill.objectives.map {
+                .objective(skillID: skill.id, objectiveID: $0.id)
+            }
+            for selection in selections {
+                let graph = LearningMapGraphLayout(map: map, selected: selection, compact: true)
+                let geometries = Dictionary(uniqueKeysWithValues: graph.nodes.map { node in
+                    (node.id, LearningMapNodeGeometry(
+                        id: node.id, compact: true, focused: true, isSelected: node.id == selection
+                    ))
+                })
+                let frames = geometries.mapValues(\.hitBounds)
+                let camera = LearningMapCamera.fitted(nodes: graph.nodes, frames: frames, viewport: viewport)
+                let projected = try graph.nodes.map { node in
+                    let point = camera.project(node.position, viewport: viewport)
+                    return try XCTUnwrap(frames[node.id]).offsetBy(dx: point.x, dy: point.y)
+                }
+                let projectedRegions = try graph.nodes.map { node in
+                    let geometry = try XCTUnwrap(geometries[node.id])
+                    let nodeTarget = try XCTUnwrap(geometry.hitRegions.first)
+                    XCTAssertGreaterThanOrEqual(nodeTarget.width, 44)
+                    XCTAssertGreaterThanOrEqual(nodeTarget.height, 44)
+                    let point = camera.project(node.position, viewport: viewport)
+                    return geometry.hitRegions.map { $0.offsetBy(dx: point.x, dy: point.y) }
+                }
+                for (index, frame) in projected.enumerated() {
+                    XCTAssertTrue(CGRect(origin: .zero, size: viewport).contains(frame),
+                                  "Clipped node with \(count) focus points: \(graph.nodes[index].id)")
+                    XCTAssertGreaterThanOrEqual(frame.width, 44)
+                    XCTAssertGreaterThanOrEqual(frame.height, 44)
+                    for other in projected.indices where other > index {
+                        for firstRegion in projectedRegions[index] {
+                            for otherRegion in projectedRegions[other] {
+                                XCTAssertFalse(firstRegion.intersects(otherRegion),
+                                               "Overlapping readable labels/targets with \(count) focus points: "
+                                                + "\(graph.nodes[index].id) and \(graph.nodes[other].id)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     func testObjectiveEvidenceRequiresGoalSkillAndObjectiveIdentityAndExcludesReportedQuestions() {
         let goalID = UUID(), skillID = UUID(), objectiveID = UUID()
         func attempt(goal: UUID = goalID, skill: UUID = skillID, objective: UUID? = objectiveID, result: AnswerResult = .correct) -> CheckpointAttempt {
@@ -279,6 +334,8 @@ final class LearningMapExplorerTests: XCTestCase {
             ("learning-map-overview-compact-light", 320, 640, .light, .large, nil),
             ("learning-map-overview-dark", 393, 852, .dark, .large, nil),
             ("learning-map-focus-compact-light", 320, 640, .light, .large, skills[0].id),
+            ("learning-map-focus-se-light", 320, 568, .light, .large, skills[0].id),
+            ("learning-map-focus-se-dark", 320, 568, .dark, .large, skills[0].id),
             ("learning-map-focus-five-light", 393, 852, .light, .large, skills[0].id),
             ("learning-map-accessible-list", 320, 852, .dark, .accessibility2, nil)
         ]

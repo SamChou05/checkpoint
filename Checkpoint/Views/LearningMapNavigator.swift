@@ -42,10 +42,9 @@ struct LearningMapNavigator: View {
             }
         }
         .frame(width: size.width, height: size.height)
-        .background(LearningMapPalette.panel.color.opacity(0.95))
+        .background(LearningMapPalette.panel.color)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(LearningMapPalette.border.color.opacity(0.7), lineWidth: 1))
-        .shadow(color: CheckpointTheme.shadowElevated, radius: 8, y: 3)
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(LearningMapPalette.border.color, lineWidth: 1))
         .contentShape(RoundedRectangle(cornerRadius: 12))
         .onTapGesture { point in onRecenter(overview.unproject(point, viewport: size)) }
         .accessibilityElement()

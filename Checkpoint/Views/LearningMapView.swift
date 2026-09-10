@@ -89,6 +89,10 @@ struct LearningMapView: View {
         (availableHeight > 0 && availableHeight < 620) || (viewport.width > 0 && viewport.width < 350)
     }
     private var compactNodes: Bool { compactWindow || viewport.height < (selected == .goal ? 420 : 480) }
+    private var usesCompactBranchHeader: Bool {
+        compactWindow && selected != .goal && effectiveMode == .map
+            && !dynamicTypeSize.isAccessibilitySize
+    }
     private var graph: LearningMapGraphLayout? {
         map.map { LearningMapGraphLayout(map: $0, selected: selected, showsHistory: showsHistory, compact: compactNodes) }
     }
@@ -211,7 +215,13 @@ struct LearningMapView: View {
 
     private func header(goal: Goal, map: GoalSkillMap) -> some View {
         VStack(alignment: .leading, spacing: 9) {
-            if dynamicTypeSize.isAccessibilitySize {
+            if usesCompactBranchHeader {
+                HStack(alignment: .center, spacing: 8) {
+                    compactBranchNavigation(goal: goal)
+                    Spacer(minLength: 0)
+                    modePicker.frame(width: 132)
+                }
+            } else if dynamicTypeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 8) {
                     goalButton(goal)
                     modePicker
@@ -223,7 +233,7 @@ struct LearningMapView: View {
                     modePicker.frame(width: 132)
                 }
             }
-            if selected != .goal, effectiveMode == .map { mapBreadcrumbs }
+            if selected != .goal, effectiveMode == .map, !usesCompactBranchHeader { mapBreadcrumbs }
             if let suggestion = map.pendingEvolutionSuggestion {
                 Button {
                     suggestionError = nil
@@ -240,7 +250,7 @@ struct LearningMapView: View {
                     .foregroundStyle(LearningMapPalette.accent.color)
                     .padding(12)
                     .frame(minHeight: 44)
-                    .background(LearningMapPalette.accent.color.opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
+                    .background(LearningMapPalette.accent.color.opacity(0.08), in: RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius))
                 }
                 .buttonStyle(.plain)
             } else if map.status == .suggested {
@@ -255,11 +265,42 @@ struct LearningMapView: View {
         .background(LearningMapPalette.background.color)
     }
 
+    // Keep both hierarchy actions in the same row as Map/List on short phones.
+    // The selected skill/focus name remains in the canvas and preview below.
+    private func compactBranchNavigation(goal: Goal) -> some View {
+        HStack(spacing: 4) {
+            Button { select(.goal) } label: {
+                Label("All skills", systemImage: "square.grid.2x2")
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Return to goal: " + goal.title)
+            .accessibilityIdentifier("learning-map-overview")
+            if selectedIsObjective, let topic = selectedTopic {
+                Button {
+                    select(selectedIsArchived ? .history(topic.id) : .skill(topic.id))
+                } label: {
+                    Image(systemName: "arrow.turn.up.left")
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .accessibilityLabel("Fit branch: " + topic.name)
+                .accessibilityIdentifier("learning-map-branch")
+            }
+        }
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(LearningMapPalette.accent.color)
+        .buttonStyle(CheckpointPressButtonStyle())
+    }
+
     private func goalButton(_ goal: Goal) -> some View {
         Button { select(.goal) } label: {
             HStack(alignment: .top, spacing: 7) {
                 Image(systemName: "scope").padding(.top, 2)
                 Text(goal.title)
+                    .font(.system(.subheadline, design: .serif))
+                    .foregroundStyle(LearningMapPalette.text.color)
                     .multilineTextAlignment(.leading)
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -416,7 +457,7 @@ struct LearningMapView: View {
                             Text("\(topic.objectives.count)")
                             Image(systemName: "chevron.down").font(.system(size: 6, weight: .heavy))
                         }
-                        .font(.system(size: 8, weight: .bold, design: .rounded))
+                        .font(.system(size: 8, weight: .bold))
                         .foregroundStyle(visual.tint)
                         .padding(.horizontal, 4).padding(.vertical, 3)
                         .background(LearningMapPalette.panel.color, in: Capsule())
@@ -427,7 +468,7 @@ struct LearningMapView: View {
                 }
                 if visual.showsTitle {
                 Text(id == .goal ? "Your goal" : visual.title)
-                    .font(id == .goal ? .subheadline.weight(.semibold) : .caption.weight(.semibold))
+                    .font(id == .goal ? .system(.subheadline, design: .serif) : .caption.weight(.semibold))
                     .foregroundStyle(LearningMapPalette.text.color)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
@@ -510,7 +551,7 @@ struct LearningMapView: View {
                     .accessibilityLabel("Zoom out")
                 Button { withAnimation(motion) { fitMap() } } label: {
                     VStack(spacing: 1) {
-                        Text("\(zoomPercent)%").font(.system(size: 11, weight: .semibold, design: .rounded)).monospacedDigit()
+                        Text("\(zoomPercent)%").font(.system(size: 11, weight: .semibold)).monospacedDigit()
                         Text("Fit map").font(.system(size: 8, weight: .medium))
                     }
                     .frame(width: 56, height: 44)
@@ -521,9 +562,9 @@ struct LearningMapView: View {
                 Button { zoom(by: 1.25) } label: { Image(systemName: "plus").frame(width: 44, height: 44) }
                     .accessibilityLabel("Zoom in")
             }
-            .background(LearningMapPalette.panel.color, in: Capsule())
-            .overlay(Capsule().stroke(LearningMapPalette.border.color.opacity(0.7), lineWidth: 1))
-            .shadow(color: CheckpointTheme.shadowElevated, radius: 10, y: 3)
+            .background(LearningMapPalette.panel.color, in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius))
+            .overlay(RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
+                .stroke(LearningMapPalette.border.color, lineWidth: 1))
         }
         .font(.subheadline.weight(.medium))
         .foregroundStyle(LearningMapPalette.accent.color)
@@ -536,7 +577,7 @@ struct LearningMapView: View {
             Button { modal = .details } label: {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(selected == .goal ? "\(map.topics.count) skills, connected" : visual.title)
-                        .font(.subheadline.weight(.semibold)).lineLimit(1).foregroundStyle(LearningMapPalette.text.color)
+                        .font(.system(.subheadline, design: .serif)).lineLimit(1).foregroundStyle(LearningMapPalette.text.color)
                     Text(selected == .goal ? "Tap a skill. See what unfolds." : selectionContext(for: selected, map: map))
                         .font(.caption).lineLimit(1).foregroundStyle(LearningMapPalette.secondary.color)
                 }
@@ -551,7 +592,8 @@ struct LearningMapView: View {
                         Text(skill.isPaused ? "Paused" : "Practice").font(.system(size: 9, weight: .semibold))
                     }
                     .frame(width: 58, height: 48)
-                    .background(LearningMapPalette.accent.color.opacity(0.09), in: RoundedRectangle(cornerRadius: 14))
+                    .foregroundStyle(LearningMapPalette.actionText.color)
+                    .background(LearningMapPalette.actionFill.color, in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius))
                 }
                 .disabled(skill.isPaused || onPractice == nil)
                 .accessibilityLabel(skill.isPaused ? "Practice paused for \(skill.name)" : "Practice \(skill.name)")
@@ -562,7 +604,7 @@ struct LearningMapView: View {
         .foregroundStyle(LearningMapPalette.accent.color)
         .padding(12)
         .background(previewSurface)
-        .padding(.horizontal, 12).padding(.bottom, 10).padding(.top, 4)
+        .padding(.horizontal, 12).padding(.bottom, 6).padding(.top, 4)
     }
 
     private func selectionPreview(map: GoalSkillMap) -> some View {
@@ -571,10 +613,10 @@ struct LearningMapView: View {
             HStack(alignment: .top, spacing: 10) {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(selected == .goal ? "YOUR LEARNING JOURNEY" : selectedIsObjective ? "FOCUS POINT" : selectedIsArchived ? "EARLIER BRANCH" : "SELECTED SKILL")
-                        .font(.system(size: 9, weight: .bold, design: .rounded)).tracking(1.5)
+                        .font(.system(size: 10, weight: .medium)).tracking(1)
                         .foregroundStyle(LearningMapPalette.accent.color)
                     Text(selected == .goal ? (showsHistory ? "Your progress stays with you" : "\(map.topics.count) skills, connected") : visual.title)
-                        .font(.headline).foregroundStyle(LearningMapPalette.text.color)
+                        .font(CheckpointTypography.sectionTitle).foregroundStyle(LearningMapPalette.text.color)
                         .lineLimit(2).fixedSize(horizontal: false, vertical: true)
                     Text(selected == .goal ? (showsHistory ? "Explore the branches that brought you here." : "Tap a skill to unfold its focus points. Make this map your own.") : selectionContext(for: selected, map: map))
                         .font(.caption).foregroundStyle(LearningMapPalette.secondary.color)
@@ -584,7 +626,6 @@ struct LearningMapView: View {
                 Image(systemName: selected == .goal ? "point.3.connected.trianglepath.dotted" : visual.symbol ?? "viewfinder")
                     .font(.system(size: 20, weight: .medium)).foregroundStyle(visual.tint)
                     .frame(width: 42, height: 42)
-                    .background(visual.tint.opacity(0.08), in: RoundedRectangle(cornerRadius: 13))
                     .accessibilityHidden(true)
             }
             HStack(spacing: 9) {
@@ -612,13 +653,12 @@ struct LearningMapView: View {
     }
 
     private var previewSurface: some View {
-        RoundedRectangle(cornerRadius: 24)
+        RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
             .fill(LearningMapPalette.panel.color)
             .overlay {
-                RoundedRectangle(cornerRadius: 24)
-                    .strokeBorder(LinearGradient(colors: [LearningMapPalette.accent.color.opacity(0.23), LearningMapPalette.border.color.opacity(0.65)], startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1)
+                RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
+                    .strokeBorder(LearningMapPalette.border.color, lineWidth: 1)
             }
-            .shadow(color: CheckpointTheme.shadowElevated.opacity(0.6), radius: 18, y: 5)
     }
 
     private func previewAction(_ title: String, symbol: String, prominent: Bool, action: @escaping () -> Void) -> some View {
@@ -656,7 +696,7 @@ struct LearningMapView: View {
                         }
                     }
                     .padding(15)
-                    .background(LearningMapPalette.panel.color, in: RoundedRectangle(cornerRadius: 20))
+                    .background(LearningMapPalette.panel.color, in: RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius))
                 }
                 if !map.archivedTopics.isEmpty {
                     Text("Your earlier branches").font(.headline).foregroundStyle(LearningMapPalette.text.color)
@@ -666,7 +706,7 @@ struct LearningMapView: View {
                     ForEach(map.archivedTopics) { archived in
                         listNode(.history(archived.id), map: map)
                             .padding(15)
-                            .background(LearningMapPalette.panel.color, in: RoundedRectangle(cornerRadius: 18))
+                            .background(LearningMapPalette.panel.color, in: RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius))
                     }
                 }
             }
@@ -717,7 +757,7 @@ struct LearningMapView: View {
     private var inspector: some View {
         if let map {
             let visual = nodeVisual(selected, map: map)
-            Text(visual.title).font(.title2.bold()).foregroundStyle(LearningMapPalette.text.color).fixedSize(horizontal: false, vertical: true)
+            Text(visual.title).font(CheckpointTypography.sectionTitle).foregroundStyle(LearningMapPalette.text.color).fixedSize(horizontal: false, vertical: true)
             if selected == .goal {
                 let practiced = activeCompetencies.filter { $0.attempts > 0 }.count
                 Text("\(practiced) of \(map.topics.count) skills practiced · \(map.archivedTopics.filter { $0.reason == .mastered }.count) earned milestones")
@@ -830,7 +870,7 @@ struct LearningMapView: View {
 
     private var legend: some View {
         VStack(alignment: .leading, spacing: 22) {
-            Text("A map of what you're becoming").font(.title2.bold()).foregroundStyle(LearningMapPalette.text.color)
+            Text("A map of what you're becoming").font(CheckpointTypography.sectionTitle).foregroundStyle(LearningMapPalette.text.color)
             legendRow("scope", "Goal → skills → focus points", "Solid lines show what belongs to your goal and each skill. Tap a skill to unfold its focus points.", LearningMapPalette.accent.color)
             legendRow("arrow.triangle.branch", "Earlier → later branches", "Dashed amber lines show advancement or a replacement you chose. Historical details explain which happened.", LearningMapPalette.building.color)
             ForEach([CompetencyProgressBand.notStarted, .calibrating, .needsPractice, .building, .strong], id: \.label) { band in
@@ -854,7 +894,7 @@ struct LearningMapView: View {
     @ViewBuilder
     private var suggestionReview: some View {
         if let map = suggestionMap, let suggestion = map.pendingEvolutionSuggestion {
-            Text("Ready for a new branch?").font(.title2.bold()).foregroundStyle(LearningMapPalette.text.color)
+            Text("Ready for a new branch?").font(CheckpointTypography.sectionTitle).foregroundStyle(LearningMapPalette.text.color)
             Text("Review these next steps. Accepting keeps the earlier skills as earned milestones and begins progress on the new branches.")
                 .foregroundStyle(LearningMapPalette.secondary.color)
             ForEach(suggestion.replacements, id: \.predecessorSkillID) { replacement in
@@ -869,7 +909,7 @@ struct LearningMapView: View {
                     .foregroundStyle(LearningMapPalette.accent.color)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
-                    .background(LearningMapPalette.panel.color, in: RoundedRectangle(cornerRadius: 16))
+                    .background(LearningMapPalette.panel.color, in: RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius))
                 }
             }
             if let suggestionError { Text(suggestionError).font(.footnote).foregroundStyle(CheckpointTheme.coral) }

@@ -114,7 +114,8 @@ struct LearningMapGraphLayout {
             let isArchived = !map.topics.contains { $0.id == skillID }
             let skillNode: LearningMapNodeID = isArchived ? .history(skillID) : .skill(skillID)
             var nodes = [
-                LearningMapGraphNode(id: .goal, position: CGPoint(x: 0, y: compact ? -180 : -250)),
+                LearningMapGraphNode(id: .goal, position: compact
+                    ? CGPoint(x: -120, y: 0) : CGPoint(x: 0, y: -250)),
                 LearningMapGraphNode(id: skillNode, position: .zero)
             ]
             var edges = [LearningMapGraphEdge(from: .goal, to: skillNode, relationship: .membership)]
@@ -122,8 +123,21 @@ struct LearningMapGraphLayout {
                 let x: CGFloat
                 let point: CGPoint
                 if compact {
-                    x = skill.objectives.count == 1 ? 0 : CGFloat(index % 3 - 1) * 270
-                    point = CGPoint(x: x, y: 280 + CGFloat(index / 3) * 230)
+                    // Labels keep their screen size when fitted. Flank the skill's
+                    // title/status before using a lower row, so a short canvas does
+                    // not compress three columns into that text or into each other.
+                    if skill.objectives.count == 1 {
+                        point = CGPoint(x: 0, y: 140)
+                    } else if index < 2 {
+                        point = CGPoint(x: index == 0 ? -110 : 110, y: 76)
+                    } else {
+                        let rowIndex = index - 2
+                        let rowCount = min(3, skill.objectives.count - 2 - (rowIndex / 3) * 3)
+                        x = rowCount == 1 ? 0 : rowCount == 2
+                            ? (rowIndex.isMultiple(of: 3) ? -110 : 110)
+                            : CGFloat(rowIndex % 3 - 1) * 110
+                        point = CGPoint(x: x, y: 170 + CGFloat(rowIndex / 3) * 90)
+                    }
                 } else {
                     x = skill.objectives.count == 1 ? 0 : (index.isMultiple(of: 2) ? -145 : 145)
                     point = CGPoint(x: x, y: 290 + CGFloat(index / 2) * 200)
