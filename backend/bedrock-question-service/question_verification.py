@@ -202,6 +202,7 @@ def verify_questions(
     solve: Callable[[str, str], str] | None = None,
     solver_contract: Literal["stem_only", "complete_choices"] = "stem_only",
     feedback_contract: Literal["reviewer_written", "authored_solution"] = "reviewer_written",
+    preserve_reviewed_text: bool = False,
 ) -> list[dict[str, Any]]:
     """Review with an explicit solver contract; legacy remains the eval default.
 
@@ -429,6 +430,12 @@ def verify_questions(
             ):
                 record_quality(request_metrics, "review", "invalid_feedback")
                 continue
+            if preserve_reviewed_text and (
+                len(explanation) > 420 or any(len(value) > 280 for value in choices.values())
+            ):
+                # Native feedback is admitted as written, never shortened to fit.
+                record_quality(request_metrics, "review", "invalid_feedback")
+                continue
             if any(
                 re.search(r"\b(?:choice|option|answer)\s+[A-D]\b", text, re.I)
                 for text in [explanation, *choices.values()]
@@ -444,9 +451,10 @@ def verify_questions(
                 if key != "verificationPolicyRevision"
             },
             "difficulty": difficulty,
-            "explanation": explanation if authored_solution else explanation.strip(),
+            "explanation": explanation if authored_solution or preserve_reviewed_text else explanation.strip(),
             "choiceExplanations": {
-                key: value.strip() for key, value in choices.items()
+                key: value if preserve_reviewed_text else value.strip()
+                for key, value in choices.items()
             },
             "verificationVersion": VERIFICATION_VERSION,
         }

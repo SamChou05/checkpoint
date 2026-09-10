@@ -29,7 +29,7 @@ from evals.checkpoint_prompt_ablation import use_aws_cli_credentials  # noqa: E4
 from question_generation import (  # noqa: E402
     ProviderCallBudget,
     _bedrock_client,
-    _generate_with_bedrock,
+    _generate_legacy_with_bedrock as _generate_with_bedrock,
 )
 from question_quality import _extract_json_object  # noqa: E402
 from request_contract import _normalize_request  # noqa: E402

@@ -327,9 +327,25 @@ class SourceAcquisitionTests(unittest.TestCase):
         self.assertEqual(result["failure_reason"], "no_extracted_text")
         result, _, _, _, _ = self.fetch([reply(b"<meta http-equiv><p>ordinary text</p>", mime="text/html")])
         self.assertEqual(result["source_text"], "ordinary text\n")
-        result, _, _, _, _ = self.fetch([reply(b"<![not-valid]><p>text</p>", mime="text/html")])
+
+    def test_html_parser_failure_does_not_return_partial_extracted_text(self):
+        # HTMLParser's malformed-declaration tolerance varies by Python patch
+        # version. Exercise our failure contract without requiring a stdlib bug.
+        original_feed = source._HTMLText.feed
+        partial_extractions = []
+
+        def fail_after_partial_extraction(parser, data):
+            original_feed(parser, data)
+            partial_extractions.append("".join(parser.parts))
+            raise AssertionError("Synthetic parser failure after extracting text")
+
+        body = b"<p>partial text</p>"
+        with patch.object(source._HTMLText, "feed", fail_after_partial_extraction):
+            result, _, _, _, _ = self.fetch([reply(body, mime="text/html")])
+        self.assertEqual(partial_extractions, ["partial text\n"])
         self.assert_failed_without_text(result)
         self.assertEqual(result["failure_reason"], "html_parse_failed")
+        self.assertEqual(result["raw_content_sha256"], hashlib.sha256(body).hexdigest())
 
 
 if __name__ == "__main__":

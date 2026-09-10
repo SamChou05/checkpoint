@@ -51,10 +51,15 @@ Map-aware requests may also include a versioned `skillMap` and a `desiredSkillAl
 
 ## Response
 
-The model is instructed to return JSON. The current Converse request does not
-send a native JSON Schema output constraint (`outputConfig.textFormat`) or a
-strict tool definition. The backend parses and validates the response before
-exposing it to the app. See [the output-contract audit](QUESTION_OUTPUT_CONTRACT_AUDIT.md)
+The default `BEDROCK_STRUCTURED_OUTPUT_MODE=legacy` instructs the model to return
+JSON. The opt-in `native` mode also sends a separate versioned JSON Schema through
+Converse `outputConfig.textFormat` for each author, skill-map, solver, and reviewer
+stage. Both modes retain application validation and independent answer checks.
+The native reviewer's provider-only `choiceFeedback` rows are strictly validated
+and adapted to the existing `choiceExplanations` dictionary before admission;
+the response below and the iOS contract are unchanged. See the
+[deployment qualification and rollback guide](../backend/bedrock-question-service/docs/DEPLOYMENT.md)
+before enabling native mode and the [output-contract audit](QUESTION_OUTPUT_CONTRACT_AUDIT.md)
 for the distinctions between author output, reviewed output, and app decoding.
 
 ```json

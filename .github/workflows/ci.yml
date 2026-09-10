@@ -32,20 +32,30 @@ jobs:
       - name: Set up AWS SAM CLI
         uses: aws-actions/setup-sam@f84ec7d548307efafe33230528756de3c5841a17 # v2
 
-      - name: Install Ruff
-        run: python -m pip install ruff==0.12.2
+      - name: Install runtime and test dependencies
+        run: python -m pip install -r requirements.txt ruff==0.12.2 jsonschema==4.25.1
 
       - name: Lint backend Python
-        run: ruff check ./*.py tests evals
+        run: ruff check ./*.py tests evals scripts/validate-native-sdk.py
 
       - name: Run backend unit tests
         run: python -m unittest discover -s tests -v
+
+      - name: Test deployment scripts
+        run: scripts/test-deployment-scripts.sh
 
       - name: Compile backend Python modules
         run: python -m compileall -q ./*.py tests evals
 
       - name: Validate SAM template
         run: sam validate --lint --template-file template.yaml
+
+      - name: Build and verify packaged native SDK
+        run: |
+          sam build --template-file template.yaml
+          for function in CheckpointQuestionFunction QuestionBankWorkerFunction QuestionBankOutboxFunction; do
+            python -I -S scripts/validate-native-sdk.py ".aws-sam/build/$function"
+          done
 
   secret-scan:
     name: Secret scan
