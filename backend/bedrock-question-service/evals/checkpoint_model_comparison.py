@@ -118,6 +118,7 @@ def make_plan(packet):
         "request_contract.py",
         "question_difficulty.py",
         "generation_diagnostics.py",
+        "native_output_contracts.py",
         "service_errors.py",
         "evals/checkpoint_model_comparison.py",
         "evals/checkpoint_prompt_ablation.py",
