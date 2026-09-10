@@ -39,6 +39,22 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             self.assertIn(f"{env}: ${{{{ vars.{env}", self.deploy_workflow)
             self.assertIn(f'"{parameter}=${{{env}:-', self.deploy_script)
 
+    def test_native_output_mode_is_explicit_legacy_default_on_both_functions(self):
+        parameter = _indented_block(self.template, "BedrockStructuredOutputMode")
+        self.assertIn("Default: legacy", parameter)
+        self.assertIn("AllowedValues: [legacy, native]", parameter)
+        self.assertEqual(
+            self.template.count(
+                "BEDROCK_STRUCTURED_OUTPUT_MODE: !Ref BedrockStructuredOutputMode"
+            ),
+            2,
+        )
+        self.assertIn("BEDROCK_STRUCTURED_OUTPUT_MODE || 'legacy'", self.deploy_workflow)
+        self.assertIn(
+            '"BedrockStructuredOutputMode=${BEDROCK_STRUCTURED_OUTPUT_MODE:-legacy}"',
+            self.deploy_script,
+        )
+
     @classmethod
     def setUpClass(cls):
         cls.template = TEMPLATE.read_text(encoding="utf-8")

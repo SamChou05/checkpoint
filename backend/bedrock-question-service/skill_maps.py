@@ -62,6 +62,7 @@ def _infer_skill_map(
                 system_prompt=_skill_map_system_prompt(),
                 call_budget=call_budget,
                 request_metrics=request_metrics,
+                contract="skill_map_inference_v1",
             )
         except (
             SafetyInterventionError,
@@ -91,6 +92,7 @@ def _infer_skill_map(
                 system_prompt=_skill_map_system_prompt(),
                 call_budget=call_budget,
                 request_metrics=request_metrics,
+                contract="skill_map_inference_v1",
             )
         except (
             SafetyInterventionError,
@@ -134,6 +136,7 @@ def _evolve_skill_map(
                 system_prompt=_skill_map_evolution_system_prompt(),
                 call_budget=call_budget,
                 request_metrics=request_metrics,
+                contract="skill_map_evolution_v1",
             )
         except (
             SafetyInterventionError,
@@ -167,6 +170,7 @@ def _evolve_skill_map(
                 system_prompt=_skill_map_evolution_system_prompt(),
                 call_budget=call_budget,
                 request_metrics=request_metrics,
+                contract="skill_map_evolution_v1",
             )
         except (
             SafetyInterventionError,

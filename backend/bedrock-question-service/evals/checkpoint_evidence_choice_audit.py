@@ -24,7 +24,10 @@ SERVICE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SERVICE_DIR))
 
 from evals.checkpoint_prompt_ablation import use_aws_cli_credentials  # noqa: E402
-from question_generation import ProviderCallBudget, _generate_with_bedrock  # noqa: E402
+from question_generation import (  # noqa: E402
+    ProviderCallBudget,
+    _generate_legacy_with_bedrock as _generate_with_bedrock,
+)
 from request_contract import _normalize_request  # noqa: E402
 
 AUDIT_SYSTEM_PROMPT = """
