@@ -13,8 +13,16 @@ archived in `docs/evidence/solver-order-preparation-20260910/`.
 
 No inference or deployment has occurred. The read-only AWS identity check
 reported an expired session, and an asynchronous request to renew `aws login`
-is pending. Finish the source/plan freeze and observe renewed access before any
-execution; never repeat a frozen plan with an existing execution claim. A
+is pending. The final backend suite passed 1,132 tests. Source
+`41970660b089b1864f75ab6b62b3f17ce1567b05` is committed and pushed; the plan binds
+70 source files and 32 exact requests (218,876 total input UTF-8 bytes).
+Use the original execution plan
+`/tmp/checkpoint-solver-order-plan-20260910/plan.json`, canonical SHA
+`d2293b2ec2d290d3af72f6aa2459cd0cc866d8e35f5af816fbcd3a34add396e7`.
+The archive and manifest are in the preparation evidence directory. Both plan
+copies validate against frozen source; the original execution claim is absent.
+Observe renewed access before execution; never repeat a frozen plan with an
+existing execution claim or use the archive to bypass a prior claim. A
 successful ordering diagnostic would still need fresh full-workflow validation
 and would not itself complete the broader correctness goal.
 

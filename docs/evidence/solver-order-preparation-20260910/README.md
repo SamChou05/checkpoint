@@ -27,3 +27,16 @@ frozen-plan tampering, duplicate execution, unknown usage, and failures before
 or after provider completion. Ruff and diff checks pass. Separate code review
 found no remaining blocker. These checks establish experiment integrity, not
 whether explanation-first output improves live question correctness.
+
+The [prepared plan](prepared-plan.json) and [manifest](manifest.json) freeze
+source `41970660b089b1864f75ab6b62b3f17ce1567b05`, 70 source files and 32 exact
+requests. Planned total input is 218,876 UTF-8 bytes; the canonical plan hash is
+`d2293b2ec2d290d3af72f6aa2459cd0cc866d8e35f5af816fbcd3a34add396e7`.
+Both the original and archived plans passed `load_frozen_plan` validation.
+
+Execution uses the original
+`/tmp/checkpoint-solver-order-plan-20260910/plan.json`. Its execution claim was
+absent at preparation completion. The archive is evidence, not a new execution
+identity to bypass an existing claim. A second read-only access check still
+reported an expired AWS session. Renew access before one bounded live trial;
+do not infer that a model experiment ran from a prepared plan or passing tests.

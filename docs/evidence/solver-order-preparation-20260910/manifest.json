@@ -1,0 +1,25 @@
+{
+  "status": "prepared_not_executed",
+  "experiment": "solver-judgment-reason-order-v1",
+  "source_revision": "41970660b089b1864f75ab6b62b3f17ce1567b05",
+  "source_file_count": 70,
+  "plan_canonical_sha256": "d2293b2ec2d290d3af72f6aa2459cd0cc866d8e35f5af816fbcd3a34add396e7",
+  "plan_file_sha256": "3b31d7009563183b6cc8c071465028dcf1ad48b13e2cd0d7d9ab47c3431d7c97",
+  "execution_plan_path": "/tmp/checkpoint-solver-order-plan-20260910/plan.json",
+  "archive_plan_path": "docs/evidence/solver-order-preparation-20260910/prepared-plan.json",
+  "execution_claim_observed": "absent",
+  "maximum_calls": 32,
+  "planned_input_utf8_bytes": 218876,
+  "last_access_check": "aws sts get-caller-identity exited255 with expired session; no provider inference dispatched",
+  "validation": {
+    "backend_tests_passed": 1132,
+    "focused_tests_passed": 11,
+    "ruff": "passed",
+    "independent_code_review": "no_blocker",
+    "independent_control_review": "20 scored subjects agree;2 ambiguous remain unscored"
+  },
+  "evidence_sha256": {
+    "control-packet.json": "fc457d6c8e3d72b40e25505427ab9c583c9348cb455de06f76f3da3b9158e6f6",
+    "control-review.json": "802158440c1e289f1dfb6f6b15a3e36b90f5accb3ac75c731df53e683478d3f3"
+  }
+}
