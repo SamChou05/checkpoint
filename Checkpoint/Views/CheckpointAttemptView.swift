@@ -536,7 +536,9 @@ struct CheckpointChoiceLayoutPolicy: Equatable {
     }
 
     var answerGroupHorizontalExpansion: CGFloat {
-        usesAccessibilityTextSize ? 12 : 0
+        // The editorial question panel already spans the screen's reading column.
+        // Keep every answer inside that column at accessibility sizes too.
+        0
     }
 
     var titleFont: Font {
@@ -947,7 +949,7 @@ struct CheckpointClearanceRunway: View {
     @ViewBuilder
     private func currentMarker(for node: CheckpointRunwayNodePresentation) -> some View {
         let marker = Circle()
-            .stroke(CheckpointTheme.teal.opacity(0.48), lineWidth: 2)
+            .stroke(CheckpointTheme.accent.opacity(0.48), lineWidth: 2)
             .frame(
                 width: layoutMetrics.nodeDiameter + 7,
                 height: layoutMetrics.nodeDiameter + 7
@@ -1065,7 +1067,7 @@ struct CheckpointTerminalAnswerReviewCard: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("LAST ANSWER")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.8)
                     .foregroundStyle(CheckpointTheme.muted)
 
@@ -1086,7 +1088,7 @@ struct CheckpointTerminalAnswerReviewCard: View {
                 .font(.caption.weight(.bold))
                 .rotationEffect(isExpanded ? .degrees(180) : .zero)
         }
-        .foregroundStyle(CheckpointTheme.teal)
+        .foregroundStyle(CheckpointTheme.accent)
         .frame(minHeight: 44)
     }
 
@@ -1113,7 +1115,7 @@ struct CheckpointTerminalAnswerReviewCard: View {
         .padding(answerComparisonPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            CheckpointTheme.panelRaised.opacity(0.68),
+            CheckpointTheme.panelRaised,
             in: RoundedRectangle(
                 cornerRadius: CheckpointTheme.compactCornerRadius,
                 style: .continuous
@@ -1125,7 +1127,7 @@ struct CheckpointTerminalAnswerReviewCard: View {
     private func answerRow(label: String, text: String, tint: Color) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(label.uppercased())
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.55)
                 .foregroundStyle(tint)
 
@@ -1143,10 +1145,13 @@ struct CheckpointTerminalAnswerReviewCard: View {
                 .overlay(CheckpointTheme.hairline)
 
             VStack(alignment: .leading, spacing: 10) {
-                StatusBadge(text: presentation.topic, tint: CheckpointTheme.teal)
+                Text(presentation.topic)
+                    .font(CheckpointTypography.sectionTitle)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 Text("QUESTION")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.7)
                     .foregroundStyle(CheckpointTheme.muted)
                     .accessibilityHidden(true)
@@ -1170,7 +1175,7 @@ struct CheckpointTerminalAnswerReviewCard: View {
             .padding(13)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                CheckpointTheme.panelRaised.opacity(0.68),
+                CheckpointTheme.panelRaised,
                 in: RoundedRectangle(
                     cornerRadius: CheckpointTheme.compactCornerRadius,
                     style: .continuous
@@ -1248,12 +1253,7 @@ private struct CheckpointResolutionCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        CheckpointHeroSurface(
-            glowColor: accent,
-            glowOpacity: 0.11,
-            glowOffset: CGSize(width: 62, height: -78),
-            contentPadding: isCompact ? 13 : 18
-        ) {
+        CheckpointHeroSurface(contentPadding: isCompact ? 13 : 18) {
             VStack(alignment: .leading, spacing: isCompact ? 11 : 16) {
                 resolutionIdentity
 
@@ -1315,9 +1315,7 @@ private struct CheckpointResolutionCard: View {
             .background(
                 CheckpointTheme.heroSubtleFill,
                 in: RoundedRectangle(
-                    cornerRadius: dynamicTypeSize.isAccessibilitySize
-                        ? CheckpointTheme.compactCornerRadius
-                        : 100,
+                    cornerRadius: CheckpointTheme.compactCornerRadius,
                     style: .continuous
                 )
             )
@@ -1359,7 +1357,7 @@ private struct CheckpointResolutionCard: View {
             .background(
                 accent,
                 in: RoundedRectangle(
-                    cornerRadius: isCompact ? 13 : 15,
+                    cornerRadius: isCompact ? 8 : 10,
                     style: .continuous
                 )
             )
@@ -1372,12 +1370,12 @@ private struct CheckpointResolutionCard: View {
     private var identityCopy: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(usesCompactResultCopy ? "RESULT" : presentation.eyebrow)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.85)
                 .foregroundStyle(accent)
 
             Text(usesCompactResultCopy ? presentation.compactTitle : presentation.title)
-                .font(isCompact ? .headline.weight(.bold) : .title2.weight(.bold))
+                .font(isCompact ? .system(.headline, design: .serif) : CheckpointTypography.goalTitle)
                 .foregroundStyle(CheckpointTheme.heroText)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -1795,9 +1793,12 @@ struct CheckpointAttemptView: View {
     }
 
     private var questionPanel: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             VStack(alignment: .leading, spacing: 16) {
-                StatusBadge(text: question.topic, tint: CheckpointTheme.teal)
+                Text(question.topic)
+                    .font(CheckpointTypography.goalTitle)
+                    .foregroundStyle(CheckpointTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 Text(question.prompt)
                     .font(.title3.weight(.semibold))
@@ -1840,7 +1841,7 @@ struct CheckpointAttemptView: View {
                 .foregroundStyle(CheckpointTheme.text)
                 .padding(14)
                 .background(
-                    CheckpointTheme.panelRaised.opacity(0.78),
+                    CheckpointTheme.panelRaised,
                     in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
                 )
                 .overlay {
@@ -1865,7 +1866,7 @@ struct CheckpointAttemptView: View {
                 .padding(.top, 12)
                 .padding(.bottom, 10)
         }
-        .background(.ultraThinMaterial)
+        .background(CheckpointTheme.panel)
         .checkpointChoiceLayoutAnchor(.primaryActionBar)
     }
 
@@ -2269,7 +2270,7 @@ struct CheckpointAttemptView: View {
             VStack(alignment: .leading, spacing: 12) {
                 if checkedAnswer.shouldFinish {
                     Text("LAST ANSWER")
-                        .font(.caption2.weight(.bold))
+                        .font(CheckpointTypography.eyebrow)
                         .tracking(0.8)
                         .foregroundStyle(CheckpointTheme.muted)
                         .accessibilityHidden(true)
@@ -2324,7 +2325,7 @@ struct CheckpointAttemptView: View {
                 }
                 .padding(13)
                 .background(
-                    CheckpointTheme.panelRaised.opacity(0.68),
+                    CheckpointTheme.panelRaised,
                     in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
                 )
 
@@ -2548,7 +2549,7 @@ private struct ChoiceButton: View {
     private var choiceTitle: some View {
         Text(title)
             .font(layoutPolicy.titleFont)
-            .foregroundStyle(CheckpointTheme.text)
+            .foregroundStyle(state == .selected ? CheckpointTheme.selectionText : CheckpointTheme.text)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -2568,14 +2569,14 @@ private struct ChoiceButton: View {
             if state == .selected {
                 if selectionPolicy.usesLinkedSelectionPlate {
                     shape
-                        .fill(CheckpointTheme.teal.opacity(0.12))
+                        .fill(CheckpointTheme.selectionFill)
                         .matchedGeometryEffect(
                             id: selectionID,
                             in: selectionNamespace
                         )
                         .transition(.opacity)
                 } else {
-                    shape.fill(CheckpointTheme.teal.opacity(0.12))
+                    shape.fill(CheckpointTheme.selectionFill)
                 }
             }
         }
@@ -2594,7 +2595,9 @@ private struct ChoiceButton: View {
 
     private var iconTint: Color {
         switch state {
-        case .selected, .correct:
+        case .selected:
+            return CheckpointTheme.selectionText
+        case .correct:
             return CheckpointTheme.teal
         case .incorrect:
             return CheckpointTheme.coral
@@ -2610,13 +2613,15 @@ private struct ChoiceButton: View {
         case .incorrect:
             return CheckpointTheme.coral.opacity(0.12)
         case .idle, .selected, .locked:
-            return CheckpointTheme.panelRaised.opacity(0.72)
+            return CheckpointTheme.panelRaised
         }
     }
 
     private var borderColor: Color {
         switch state {
-        case .selected, .correct:
+        case .selected:
+            return CheckpointTheme.selectionBorder
+        case .correct:
             return CheckpointTheme.teal.opacity(0.72)
         case .incorrect:
             return CheckpointTheme.coral.opacity(0.72)
