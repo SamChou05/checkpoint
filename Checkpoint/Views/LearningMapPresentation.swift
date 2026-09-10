@@ -1,5 +1,21 @@
 import SwiftUI
 
+/// The map's approved graphite-and-soft-iris palette is intentionally local so the
+/// rest of Checkpoint keeps its established visual language.
+enum LearningMapPalette {
+    static let background = CheckpointAdaptiveColor(light: .init(hex: 0xF7F7FA), dark: .init(hex: 0x111319))
+    static let panel = CheckpointAdaptiveColor(light: .init(hex: 0xFFFFFF), dark: .init(hex: 0x1C2029))
+    static let raised = CheckpointAdaptiveColor(light: .init(hex: 0xECEAF6), dark: .init(hex: 0x292D3A))
+    static let text = CheckpointAdaptiveColor(light: .init(hex: 0x242534), dark: .init(hex: 0xF2F1F8))
+    static let secondary = CheckpointAdaptiveColor(light: .init(hex: 0x696878), dark: .init(hex: 0xB9B9CA))
+    static let iris = CheckpointAdaptiveColor(light: .init(hex: 0x6255B2), dark: .init(hex: 0xB1A0FF))
+    static let strong = CheckpointAdaptiveColor(light: .init(hex: 0x2A755E), dark: .init(hex: 0x80D5B4))
+    static let information = CheckpointAdaptiveColor(light: .init(hex: 0x596D8C), dark: .init(hex: 0xB2BED2))
+    static let building = CheckpointAdaptiveColor(light: .init(hex: 0x826020), dark: .init(hex: 0xEBCB88))
+    static let border = CheckpointAdaptiveColor(light: .init(hex: 0xD3D1E0), dark: .init(hex: 0x3D4052))
+    static let actionText = CheckpointAdaptiveColor(light: .init(hex: 0xFFFFFF), dark: .init(hex: 0x201A37))
+}
+
 struct LearningMapDestination: Identifiable, Equatable {
     let id: UUID
     let goalID: Goal.ID
@@ -80,10 +96,10 @@ struct LearningMapEntryCard: View {
                     VStack(alignment: .leading, spacing: 5) {
                         Text("Learning map")
                             .font(.headline)
-                            .foregroundStyle(CheckpointTheme.text)
+                            .foregroundStyle(LearningMapPalette.text.color)
                         Text(summary.summary)
                             .font(.footnote)
-                            .foregroundStyle(CheckpointTheme.muted)
+                            .foregroundStyle(LearningMapPalette.secondary.color)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,26 +110,26 @@ struct LearningMapEntryCard: View {
                 footerLayout {
                     Text(entryDetail)
                         .font(.caption)
-                        .foregroundStyle(CheckpointTheme.muted)
+                        .foregroundStyle(LearningMapPalette.secondary.color)
                         .fixedSize(horizontal: false, vertical: true)
                     if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
                     Label("Explore map", systemImage: "arrow.right")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.teal)
+                        .foregroundStyle(LearningMapPalette.iris.color)
                         .fixedSize(horizontal: !dynamicTypeSize.isAccessibilitySize, vertical: true)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 7)
-                        .background(CheckpointTheme.teal.opacity(0.08), in: Capsule())
+                        .background(LearningMapPalette.iris.color.opacity(0.08), in: Capsule())
                 }
             }
             .padding(18)
             .background {
                 RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
-                    .fill(CheckpointTheme.panel)
+                    .fill(LearningMapPalette.panel.color)
                     .overlay {
                         RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
                             .fill(LinearGradient(
-                                colors: [CheckpointTheme.teal.opacity(0.045), .clear, .clear],
+                                colors: [LearningMapPalette.iris.color.opacity(0.045), .clear, .clear],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ))
@@ -122,7 +138,7 @@ struct LearningMapEntryCard: View {
             .overlay {
                 RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
                     .strokeBorder(LinearGradient(
-                        colors: [CheckpointTheme.teal.opacity(0.22), CheckpointTheme.hairline],
+                        colors: [LearningMapPalette.iris.color.opacity(0.22), LearningMapPalette.border.color],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ), lineWidth: 1)
@@ -166,7 +182,7 @@ struct LearningMapEntryCard: View {
                 )
                 context.stroke(
                     path,
-                    with: .color(CheckpointTheme.teal.opacity(primary ? 0.6 : 0.35)),
+                    with: .color(LearningMapPalette.iris.color.opacity(primary ? 0.6 : 0.35)),
                     style: StrokeStyle(lineWidth: primary ? 1.6 : 1.1, lineCap: .round)
                 )
             }
@@ -178,27 +194,27 @@ struct LearningMapEntryCard: View {
 
             func node(_ center: CGPoint, radius: CGFloat, color: Color, filled: Bool) {
                 let bounds = CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2)
-                context.fill(Path(ellipseIn: bounds), with: .color(filled ? color : CheckpointTheme.panel))
+                context.fill(Path(ellipseIn: bounds), with: .color(filled ? color : LearningMapPalette.panel.color))
                 context.stroke(Path(ellipseIn: bounds), with: .color(color), lineWidth: 1.2)
             }
             let halo = CGRect(x: goal.x - 11, y: goal.y - 11, width: 22, height: 22)
-            context.fill(Path(ellipseIn: halo), with: .color(CheckpointTheme.teal.opacity(0.08)))
-            node(goal, radius: 6.2, color: CheckpointTheme.teal, filled: true)
-            node(upperSkill, radius: 4.6, color: CheckpointTheme.teal, filled: false)
-            node(lowerSkill, radius: 4.6, color: CheckpointTheme.blue, filled: false)
-            node(upperFocus, radius: 2.3, color: CheckpointTheme.teal.opacity(0.75), filled: true)
-            node(middleFocus, radius: 2.3, color: CheckpointTheme.teal.opacity(0.75), filled: true)
-            node(lowerFocus, radius: 2.3, color: CheckpointTheme.blue.opacity(0.75), filled: true)
+            context.fill(Path(ellipseIn: halo), with: .color(LearningMapPalette.iris.color.opacity(0.08)))
+            node(goal, radius: 6.2, color: LearningMapPalette.iris.color, filled: true)
+            node(upperSkill, radius: 4.6, color: LearningMapPalette.iris.color, filled: false)
+            node(lowerSkill, radius: 4.6, color: LearningMapPalette.information.color, filled: false)
+            node(upperFocus, radius: 2.3, color: LearningMapPalette.iris.color.opacity(0.75), filled: true)
+            node(middleFocus, radius: 2.3, color: LearningMapPalette.iris.color.opacity(0.75), filled: true)
+            node(lowerFocus, radius: 2.3, color: LearningMapPalette.information.color.opacity(0.75), filled: true)
             context.fill(
                 Path(ellipseIn: CGRect(x: goal.x - 1.5, y: goal.y - 1.5, width: 3, height: 3)),
-                with: .color(CheckpointTheme.panel)
+                with: .color(LearningMapPalette.panel.color)
             )
         }
         .frame(width: 50, height: 50)
         .background {
             RoundedRectangle(cornerRadius: 15)
                 .fill(LinearGradient(
-                    colors: [CheckpointTheme.teal.opacity(0.1), CheckpointTheme.blue.opacity(0.035)],
+                    colors: [LearningMapPalette.iris.color.opacity(0.1), LearningMapPalette.information.color.opacity(0.035)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 ))
@@ -210,6 +226,7 @@ struct LearningMapEntryCard: View {
 struct LearningMapContainerView: View {
     let store: CheckpointStore
     let destination: LearningMapDestination
+    let onPracticePrepared: (CheckpointSession) -> Void
 
     private struct EditorDestination: Identifiable {
         let id = UUID()
@@ -219,6 +236,18 @@ struct LearningMapContainerView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var editorDestination: EditorDestination?
+    @State private var practiceError: String?
+    @State private var isPreparingPractice = false
+
+    init(
+        store: CheckpointStore,
+        destination: LearningMapDestination,
+        onPracticePrepared: @escaping (CheckpointSession) -> Void = { _ in }
+    ) {
+        self.store = store
+        self.destination = destination
+        self.onPracticePrepared = onPracticePrepared
+    }
 
     var body: some View {
         NavigationStack {
@@ -226,6 +255,7 @@ struct LearningMapContainerView: View {
                 store: store,
                 goalID: destination.goalID,
                 initialSkillID: destination.initialSkillID,
+                onPractice: preparePractice,
                 onEdit: { skillID in
                     guard store.goal?.id == destination.goalID,
                           let context = SkillMapReviewContext(goal: store.goal) else { return }
@@ -240,12 +270,35 @@ struct LearningMapContainerView: View {
                 }
             }
         }
-        .tint(CheckpointTheme.teal)
+        .tint(LearningMapPalette.iris.color)
         .sheet(item: $editorDestination) { editor in
             LearningMapEditorView(store: store, context: editor.context, initialSkillID: editor.initialSkillID)
         }
         .onChange(of: store.goal?.id) { _, id in
             if id != destination.goalID { dismiss() }
+        }
+        .alert("Practice unavailable", isPresented: Binding(
+            get: { practiceError != nil },
+            set: { if !$0 { practiceError = nil } }
+        )) {
+            Button("OK", role: .cancel) { practiceError = nil }
+        } message: {
+            Text(practiceError ?? "Practice is not ready yet.")
+        }
+    }
+
+    private func preparePractice(_ skillID: SkillMapTopic.ID) {
+        guard !isPreparingPractice else { return }
+        isPreparingPractice = true
+        Task { @MainActor in
+            defer { isPreparingPractice = false }
+            guard let session = await store.prepareManualCheckpointSession(for: skillID) else {
+                practiceError = store.checkpointNotice ?? "Practice for this skill is not ready yet."
+                return
+            }
+            dismiss()
+            try? await Task.sleep(for: .milliseconds(350))
+            onPracticePrepared(session)
         }
     }
 }

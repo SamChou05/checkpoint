@@ -120,6 +120,37 @@ final class LearningMapConfigurationTests: CheckpointWorkflowTestCase {
         XCTAssertFalse(selector.nextQuestions(limit: 3).contains { $0.skillID == topics[0].id })
     }
 
+    @MainActor
+    func testTargetedPracticeNeverSubstitutesAnotherSkill() {
+        let topics = makeTopics()
+        var goal = makeGoal()
+        goal.derivedSkillMap = GoalSkillMap(topics: topics)
+        let questions = topics.enumerated().flatMap { index, topic in
+            (0..<3).map { offset in
+                makeQuestion(
+                    goal: goal,
+                    index: index * 10 + offset,
+                    topic: topic.name,
+                    skillID: topic.id,
+                    objectiveID: topic.objectives[0].id
+                )
+            }
+        }
+        let selector = CheckpointQuestionSelector(
+            questions: questions,
+            goalProfiles: [goal],
+            currentGoal: goal,
+            competencies: [],
+            activeQuestionDifficulty: 1,
+            maximumExactQuestionAskCount: 5
+        )
+
+        let selected = selector.nextQuestions(limit: 3, restrictedToSkillID: topics[1].id)
+        XCTAssertEqual(selected.count, 3)
+        XCTAssertTrue(selected.allSatisfy { $0.skillID == topics[1].id })
+        XCTAssertTrue(selector.nextQuestions(limit: 3, restrictedToSkillID: UUID()).isEmpty)
+    }
+
     func testChallengeProducesRealDifficultyTargetsAndExcludesPausedSkills() {
         var topics = makeTopics()
         topics[0].challenge = .foundations

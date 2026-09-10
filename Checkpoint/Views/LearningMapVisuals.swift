@@ -31,13 +31,13 @@ struct LivingMapBackdrop: View {
                 let reach = max(size.width, size.height)
                 let center = CGPoint(x: size.width * (0.46 + 0.035 * cos(phase)),
                                      y: size.height * (0.43 + 0.025 * sin(phase)))
-                context.fill(bounds, with: .color(CheckpointPalette.backgroundBase.color))
+                context.fill(bounds, with: .color(LearningMapPalette.background.color))
                 context.fill(bounds, with: .radialGradient(
-                    Gradient(colors: [CheckpointPalette.teal.color.opacity(colorScheme == .dark ? 0.12 : 0.075), .clear]),
+                    Gradient(colors: [LearningMapPalette.iris.color.opacity(colorScheme == .dark ? 0.12 : 0.075), .clear]),
                     center: center, startRadius: 0, endRadius: reach * 0.68
                 ))
                 context.fill(bounds, with: .radialGradient(
-                    Gradient(colors: [CheckpointPalette.amber.color.opacity(colorScheme == .dark ? 0.045 : 0.035), .clear]),
+                    Gradient(colors: [LearningMapPalette.building.color.opacity(colorScheme == .dark ? 0.045 : 0.035), .clear]),
                     center: CGPoint(x: size.width * 0.88, y: size.height * 0.85),
                     startRadius: 0, endRadius: reach * 0.62
                 ))
@@ -48,7 +48,7 @@ struct LivingMapBackdrop: View {
                         dots.addEllipse(in: CGRect(x: x, y: y, width: 1.25, height: 1.25))
                     }
                 }
-                context.fill(dots, with: .color(CheckpointPalette.muted.color.opacity(colorScheme == .dark ? 0.15 : 0.11)))
+                context.fill(dots, with: .color(LearningMapPalette.secondary.color.opacity(colorScheme == .dark ? 0.15 : 0.11)))
             }
         }
         .accessibilityHidden(true)
@@ -201,7 +201,7 @@ struct LivingMapNodeFace: View {
         }
 
         context.fill(circle, with: .linearGradient(
-            Gradient(colors: [CheckpointPalette.panel.color, CheckpointPalette.panelRaised.color]),
+            Gradient(colors: [LearningMapPalette.panel.color, LearningMapPalette.raised.color]),
             startPoint: top, endPoint: bottom
         ))
         context.fill(circle, with: .radialGradient(
@@ -211,7 +211,7 @@ struct LivingMapNodeFace: View {
         ))
         context.stroke(circle, with: .linearGradient(
             Gradient(colors: [.white.opacity(dark ? 0.31 : 0.95), tint.opacity(0.2),
-                              CheckpointPalette.ink.color.opacity(dark ? 0.55 : 0.17)]),
+                              LearningMapPalette.text.color.opacity(dark ? 0.55 : 0.17)]),
             startPoint: top, endPoint: bottom
         ), lineWidth: 1)
         context.stroke(LivingMapDrawing.circle(center: center, radius: max(1, radius - 2)), with: .linearGradient(

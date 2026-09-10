@@ -536,7 +536,8 @@ struct RootView: View {
                 protectionErrorMessage: screenTime.userFacingErrorMessage,
                 parentModalOwnsProtectionErrors: parentPresentationOwnsProtectionErrors,
                 skillEvidenceRequest: $progressSkillEvidenceRequest,
-                skillEvidenceResolution: handleProgressSkillEvidenceResolution
+                skillEvidenceResolution: handleProgressSkillEvidenceResolution,
+                presentSkillPractice: presentPreparedSkillPractice
             )
                 .tabItem {
                     Label("Progress", systemImage: "chart.line.uptrend.xyaxis")
@@ -1444,6 +1445,10 @@ struct RootView: View {
             pendingShieldRetryTask = nil
             handlePendingShieldActivation()
         }
+    }
+
+    private func presentPreparedSkillPractice(_ session: CheckpointSession) {
+        _ = presentCheckpoint(session)
     }
 
     @discardableResult

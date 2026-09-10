@@ -558,6 +558,7 @@ struct CompetencyView: View {
         ProgressSkillEvidenceResolution
     ) -> Void
     private let layoutReporter: (@MainActor (ProgressLayoutElement, CGRect) -> Void)?
+    private let presentSkillPractice: @MainActor (CheckpointSession) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
@@ -605,7 +606,8 @@ struct CompetencyView: View {
             ProgressSkillEvidenceRequest,
             ProgressSkillEvidenceResolution
         ) -> Void = { _, _ in },
-        layoutReporter: (@MainActor (ProgressLayoutElement, CGRect) -> Void)? = nil
+        layoutReporter: (@MainActor (ProgressLayoutElement, CGRect) -> Void)? = nil,
+        presentSkillPractice: @escaping @MainActor (CheckpointSession) -> Void = { _ in }
     ) {
         self.store = store
         self.reduceMotionOverride = reduceMotionOverride
@@ -620,6 +622,7 @@ struct CompetencyView: View {
         skillEvidenceRequestBinding = skillEvidenceRequest
         self.skillEvidenceResolution = skillEvidenceResolution
         self.layoutReporter = layoutReporter
+        self.presentSkillPractice = presentSkillPractice
     }
 
     private var reduceMotion: Bool {
@@ -854,7 +857,13 @@ struct CompetencyView: View {
             item: $learningMapDestination,
             onDismiss: finishLearningMapPresentation
         ) { destination in
-            LearningMapContainerView(store: store, destination: destination)
+            LearningMapContainerView(store: store, destination: destination) { session in
+                guard store.goal?.id == destination.goalID else {
+                    store.discardCheckpointRunBeforePresentation(sessionID: session.id)
+                    return
+                }
+                presentSkillPractice(session)
+            }
                 .onAppear {
                     isLearningMapPresented = true
                     if let request = pendingMapEvidenceRequest,
