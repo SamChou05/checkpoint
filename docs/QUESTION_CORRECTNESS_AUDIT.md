@@ -2,6 +2,12 @@
 
 ## Release status
 
+The subsequent [objective-context correction](QUESTION_REVIEW_OBJECTIVE_CONTEXT.md)
+keeps a candidate's existing learning-objective label in checking inputs. An
+inferred objective ID alone could not recover that label from the skill map.
+This restores context for objective-fit review; it is not a new factual-accuracy
+measurement and changes no model, admission rule or deployment.
+
 September 10 context correction: [goal subject preservation](QUESTION_GOAL_CONTEXT_PRESERVATION.md)
 fixes transformations before model inference, including collapsed quoted spacing
 and indentation, and app target extraction that changed `A minor` to `minor` or

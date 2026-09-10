@@ -1,5 +1,21 @@
 # Pause handoff — September 9, 2026
 
+## September 10 objective context and exact replay
+
+The current `codex/goal-context-preservation` branch also retains each candidate's
+optional objective label in the solver/reviewer payloads; read
+`QUESTION_REVIEW_OBJECTIVE_CONTEXT.md`. This fixes the opaque inferred-ID case,
+without changing key admission or establishing model accuracy.
+
+Root reproduced the completed delivery capture exactly with network and SDK
+client creation forbidden. Frozen source:
+`/tmp/checkpoint-stage-replay-source-20260910` at
+`6768a5a78bf3dfa4a322ce32760491d38ea08141`; Python environment:
+`/tmp/checkpoint-stage-replay-venv-20260910` (Python 3.12.11,
+boto3/botocore 1.43.89). All 29 calls and seven returns matched. This was an
+offline replay, not fresh inference or a replay with current changed source.
+The next attribution step is a passive observer around that existing replay.
+
 ## September 10 goal-context correction
 
 Current work is `/tmp/checkpoint-goal-context-preservation-20260910`, branch
