@@ -2,6 +2,15 @@
 
 ## Release status
 
+Latest September 10 [exact stage attribution](QUESTION_STAGE_ATTRIBUTION_RESULTS.md)
+replays all 62 raw occurrences from the completed delivery comparison without new
+model calls. It separates draft defects from sanitizer exclusions, solver vetoes
+and format losses. Four supported questions were rejected because solver labels
+contradicted their own reasons; reason-before-judgment output ordering is a new
+focused hypothesis, not a demonstrated fix. The new observer passed ten tests
+and the full 1,121-test backend suite. Production prompts and deployment are
+unchanged by this diagnostic milestone.
+
 The subsequent [objective-context correction](QUESTION_REVIEW_OBJECTIVE_CONTEXT.md)
 keeps a candidate's existing learning-objective label in checking inputs. An
 inferred objective ID alone could not recover that label from the skill map.

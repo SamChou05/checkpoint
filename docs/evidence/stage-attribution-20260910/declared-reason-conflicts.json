@@ -1,0 +1,155 @@
+{
+  "scope": "Four manually identified label/reason contradictions associated with rejection of independently supported keys in an exact historical replay. Not an automatic semantic classifier or proof of output-order causation. No label is repaired or gate bypassed.",
+  "source_capture_byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+  "examples": [
+    {
+      "id": "s362d86f45071",
+      "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:0:0:2",
+      "solver_call": 1,
+      "prompt": "Cell C3 contains =$B$3+C$2. This is filled right to E3, then that result is filled down to E5. What formula is in E5?",
+      "assessment": {
+        "assessor": "b",
+        "id": "s362d86f45071",
+        "status": "unique",
+        "supported_choices": [
+          "=$B$3+E$2"
+        ],
+        "reason": "The absolute B3 reference remains fixed. The relative column of C$2 advances to E on the rightward fill, and its fixed row remains 2 on the downward fill.",
+        "sources": [
+          "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+        ],
+        "premise_issues": [],
+        "calculations": [
+          "C3 → E3 → E5: $B$3 remains $B$3; C$2 → E$2 → E$2."
+        ]
+      },
+      "emitted_property_order": [
+        "choice",
+        "judgment",
+        "reason"
+      ],
+      "raw_choice_judgment": {
+        "choice": "=$B$3+E$2",
+        "judgment": "refuted",
+        "reason": "Filling right from C3 to E3: $B$3 stays, C$2 becomes E$2 → E3 has =$B$3+E$2. Then filling E3 down to E5 (offset +2 rows): $B$3 stays absolute, E$2 has row fixed at 2 so stays E$2. Result in E5 is =$B$3+E$2. This IS correct — supported."
+      },
+      "application_rejection": "solver_zero_supported",
+      "output_tokens": 1345,
+      "stop_reason": "end_turn"
+    },
+    {
+      "id": "s3ecfab632241",
+      "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:2:11:0",
+      "solver_call": 12,
+      "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along the curves. The map is then photocopied at 150% enlargement. What ground distance does the original 8 cm measurement represent?",
+      "assessment": {
+        "assessor": "a",
+        "id": "s3ecfab632241",
+        "status": "unique",
+        "reason": "The question asks about the original measurement, so the later enlargement does not change its represented ground distance.",
+        "sources": [],
+        "premise_issues": [],
+        "calculations": [
+          "8 × 25000 cm = 200000 cm = 2 km."
+        ],
+        "supported_choices": [
+          "2 km"
+        ]
+      },
+      "emitted_property_order": [
+        "choice",
+        "judgment",
+        "reason"
+      ],
+      "raw_choice_judgment": {
+        "choice": "5 km",
+        "judgment": "supported",
+        "reason": "8 cm × 25,000 = 200,000 cm = 2,000 m = 2 km. Wait—8 × 25,000 = 200,000 cm = 2,000 m = 2 km, not 5 km. 5 km would require 20 cm at 1:25,000. Refuted by arithmetic."
+      },
+      "application_rejection": "solver_multiple_supported",
+      "output_tokens": 378,
+      "stop_reason": "end_turn"
+    },
+    {
+      "id": "sce8a5eb2dcdd",
+      "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:5:26:4",
+      "solver_call": 27,
+      "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+      "assessment": {
+        "assessor": "b",
+        "id": "sce8a5eb2dcdd",
+        "status": "unique",
+        "supported_choices": [
+          "10%"
+        ],
+        "reason": "Within the explicitly listed food web, the plant-to-snail production ratio is 800/8,000. Crab and snail production are separate receiving branches; adding crab production would calculate a different combined ratio. No unreported snail food source is assumed.",
+        "sources": [
+          "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+        ],
+        "premise_issues": [],
+        "calculations": [
+          "800 / 8,000 × 100% = 10%."
+        ]
+      },
+      "emitted_property_order": [
+        "choice",
+        "judgment",
+        "reason"
+      ],
+      "raw_choice_judgment": {
+        "choice": "10%",
+        "judgment": "refuted",
+        "reason": "Transfer efficiency = snail production / plant production = 800 / 8,000 = 10%. This is actually calculable and equals 10%, so '10%' is supported, not refuted. Correcting: 800/8000 = 0.10 = 10%. This IS supported."
+      },
+      "application_rejection": "solver_zero_supported",
+      "output_tokens": 1076,
+      "stop_reason": "end_turn"
+    },
+    {
+      "id": "sea341b3380b3",
+      "occurrence": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2:1:8:2",
+      "solver_call": 9,
+      "prompt": "A sales report has regional targets in column C (C2:C6) and monthly actuals in row 2 (D2:G2). Cell D3 should calculate variance from target using the region's target and the month's actual, then fill across months and down regions. Which formula belongs in D3?",
+      "assessment": {
+        "assessor": "b",
+        "id": "sea341b3380b3",
+        "status": "unique",
+        "supported_choices": [
+          "=D$2-$C3"
+        ],
+        "reason": "The monthly actual reference must move across columns but stay on row 2; the regional target must stay in column C but move down rows. D$2 and $C3 provide those anchors. The listed formulas all use actual minus target, so no competing sign convention creates an additional listed answer.",
+        "sources": [
+          "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+        ],
+        "premise_issues": [],
+        "calculations": [
+          "D3 → G6: =D$2-$C3 becomes =G$2-$C6."
+        ]
+      },
+      "emitted_property_order": [
+        "choice",
+        "judgment",
+        "reason"
+      ],
+      "raw_choice_judgment": {
+        "choice": "=D2-C3",
+        "judgment": "supported",
+        "reason": "Filling across (D→E→F→G): D2 shifts to E2,F2,G2 (monthly actuals row 2 ✓); C3 shifts to D3,E3,F3—wrong, targets must stay in col C. Actually C3 column shifts when filling across, so this fails for cross-fill. Refuted."
+      },
+      "application_rejection": "solver_multiple_supported",
+      "output_tokens": 1589,
+      "stop_reason": "end_turn"
+    }
+  ],
+  "current_native_schema_observation": {
+    "source_revision": "cf29ad9",
+    "schema_sha256": "bac691665f8f937805ca6fbb3cbd858320ccbc19d582c22b5dffaee1e6d1d446",
+    "choice_row_property_order": [
+      "choice",
+      "judgment",
+      "reason"
+    ],
+    "serialization": "native_output_config uses json.dumps(sort_keys=True); changing dictionary insertion order alone cannot change this schema order."
+  },
+  "candidate_hypothesis": "Compare concise reason before final judgment against the current order, with otherwise identical complete-choice prompts, model, settings, choices and code gates. Actual emitted order and label/reason consistency must be measured; higher semantic accuracy is unproven."
+}

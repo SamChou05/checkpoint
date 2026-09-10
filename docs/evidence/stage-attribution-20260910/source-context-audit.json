@@ -1,0 +1,111 @@
+{
+  "scope": "Offline source input audit, not a model error-rate experiment. The demonstrated automatic backend truncation did not occur on the short manually selected source summaries used in the historical delivery capture; those summaries were already flagged truncated, and their completeness is not established.",
+  "source_revision": "cf29ad9",
+  "request_contract_sha256": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+  "construction": {
+    "filler": "x",
+    "input_characters": 30000,
+    "insertions": [
+      {
+        "offset": 0,
+        "text": "Every striped tile is worth 3 points."
+      },
+      {
+        "offset": 9000,
+        "text": "Exception: striped blue tiles are worth 0 points."
+      }
+    ]
+  },
+  "observation": {
+    "input_sha256": "c62c2eca9ee1ecd0062d17af2e82dd80457e6a645d5d3ac9f1ebbf65b947a875",
+    "normalized_sha256": "8c56048929a1ab75b1a77a3e61df1bc47b7e1ae97e02f153ac6539556d379f75",
+    "characters": 24000,
+    "general_rule_retained": true,
+    "exception_retained": false,
+    "truncated": true,
+    "markers": 2,
+    "renormalization_identical": true
+  },
+  "recorded_delivery_source_lengths": [
+    {
+      "operation": 0,
+      "sources": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "characters": 800,
+          "truncated": true
+        }
+      ]
+    },
+    {
+      "operation": 1,
+      "sources": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "characters": 800,
+          "truncated": true
+        }
+      ]
+    },
+    {
+      "operation": 2,
+      "sources": [
+        {
+          "name": "Ordnance Survey map distance: selective source summary",
+          "characters": 815,
+          "truncated": true
+        },
+        {
+          "name": "Penn State map reproduction: selective source summary",
+          "characters": 810,
+          "truncated": true
+        }
+      ]
+    },
+    {
+      "operation": 3,
+      "sources": [
+        {
+          "name": "Ordnance Survey map distance: selective source summary",
+          "characters": 815,
+          "truncated": true
+        },
+        {
+          "name": "Penn State map reproduction: selective source summary",
+          "characters": 810,
+          "truncated": true
+        }
+      ]
+    },
+    {
+      "operation": 4,
+      "sources": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "characters": 832,
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "characters": 857,
+          "truncated": true
+        }
+      ]
+    },
+    {
+      "operation": 5,
+      "sources": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "characters": 832,
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "characters": 857,
+          "truncated": true
+        }
+      ]
+    }
+  ]
+}

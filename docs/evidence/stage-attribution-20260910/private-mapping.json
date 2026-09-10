@@ -1,0 +1,1366 @@
+{
+  "sbe5c66ef7323": {
+    "operation_index": 0,
+    "call_index": 0,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+      "explanation": "The original uses $A2 (column fixed, row relative) and B$1 (column relative, row fixed). Filling from B2 to D4 moves +2 columns and +2 rows. $A2 becomes $A4 (column stays A, row becomes 4). B$1 becomes D$1 (column becomes D, row stays 1).",
+      "expectedAnswer": "=$A4*D$1",
+      "choices": [
+        "=$A4*D$1",
+        "=$A2*D$1",
+        "=$A4*B$1",
+        "=A4*D1"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Predict copied formula results with mixed references",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sf6d459fb7686": {
+    "operation_index": 0,
+    "call_index": 0,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+      "explanation": "Filling across needs column A fixed (rates stay in column A). Filling down needs row 1 fixed (amounts stay in row 1). So A2 needs $A2 and B1 needs B$1, giving =$A2*B$1.",
+      "expectedAnswer": "=$A2*B$1",
+      "choices": [
+        "=$A2*B$1",
+        "=A$2*$B1",
+        "=$A$2*B$1",
+        "=A2*B1"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "2",
+      "objective": "Choose reference anchors for two-dimensional filling",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s362d86f45071": {
+    "operation_index": 0,
+    "call_index": 0,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "Cell C3 contains =$B$3+C$2. This is filled right to E3, then that result is filled down to E5. What formula is in E5?",
+      "explanation": "First fill right from C3 to E3 (+2 columns): $B$3 stays fixed, C$2 becomes E$2. Then fill down from E3 to E5 (+2 rows): $B$3 stays fixed, E$2 stays fixed (row is absolute). Result is =$B$3+E$2.",
+      "expectedAnswer": "=$B$3+E$2",
+      "choices": [
+        "=$B$3+E$2",
+        "=$B$5+E$4",
+        "=$B$3+E$4",
+        "=$D$3+E$2"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "3",
+      "objective": "Track references through sequential fills in two directions",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s14c814a70cce": {
+    "operation_index": 0,
+    "call_index": 0,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A price matrix has regions in A2:A6 and products in B1:F1. Cell B2 should calculate price with =B$1*$A2. The user accidentally enters =B1*A2 and fills to F6. Which cells show correct results?",
+      "explanation": "With =B1*A2, both references are fully relative. Filling right shifts both columns; filling down shifts both rows. Only B2 (no fill applied) has correct references. All filled cells have wrong references for this pattern.",
+      "expectedAnswer": "Only B2",
+      "choices": [
+        "Only B2",
+        "The entire range B2:F6",
+        "Only column B",
+        "Only row 2"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "4",
+      "objective": "Diagnose errors from missing anchors in two-dimensional fills",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sd4db3f0c55b6": {
+    "operation_index": 0,
+    "call_index": 0,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+      "explanation": "Filling across: month columns must shift (B to M), so B$1 needs no column anchor. Category target in column N must stay in column N for all fills, so $N2. Row must stay relative within each category, so $N2 not $N$2. Result: =$N2/12 or =$N2*B$1/12 if using month multiplier; simplest is =$N2/12.",
+      "expectedAnswer": "=$N2/12",
+      "choices": [
+        "=$N2/12",
+        "=N$2/12",
+        "=$N$2/12",
+        "=N2/12"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "5",
+      "objective": "Design anchors for fixed column with relative row across two-dimensional range",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s7f28b6c7b8aa": {
+    "operation_index": 0,
+    "call_index": 3,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A gradebook has student names in A2:A20 and assignment scores in B2:F20. Cell G2 calculates the average of B2:F2. The formula must fill down to G20. Which formula in G2 works correctly?",
+      "explanation": "The range B2:F2 uses relative references so it shifts to B3:F3, B4:F4, etc. when filled down. Absolute references ($B$2:$F$2) would keep the same range for every student, and mixed references would cause errors.",
+      "expectedAnswer": "=AVERAGE(B2:F2)",
+      "choices": [
+        "=AVERAGE(B2:F2)",
+        "=AVERAGE($B$2:$F$2)",
+        "=AVERAGE(B$2:F$2)",
+        "=AVERAGE($B2:$F2)"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "Combine relative",
+      "objectiveID": "absolute and mixed A1 references when copying or filling formulas across both ro",
+      "objective": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sb5f0a4d23ad4": {
+    "operation_index": 0,
+    "call_index": 3,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+      "explanation": "$A$1 stays fixed for all cells. B$1 locks the row so it becomes C$1, D$1, E$1 when filled across but stays row 1 when filled down. A3 needs its column locked ($A3) so it stays column A when filled across, but the row stays relative to become A4, A5, A6 when filled down.",
+      "expectedAnswer": "=$A$1*B$1*$A3",
+      "choices": [
+        "=$A$1*B$1*$A3",
+        "=$A$1*$B$1*A3",
+        "=$A1*B$1*$A3",
+        "=$A$1*B1*$A$3"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "Combine relative",
+      "objectiveID": "absolute and mixed A1 references when copying or filling formulas across both ro",
+      "objective": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sec46e82d1dde": {
+    "operation_index": 1,
+    "call_index": 6,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "Cell C3 contains =$A3+B$2. It is copied to E5. What formula appears in E5?",
+      "explanation": "Copying from C3 to E5 moves 2 columns right (C→E) and 2 rows down (3→5). $A3 has column fixed: $A stays $A; row is relative, so 3 becomes 5, giving $A5. B$2 has row fixed: $2 stays $2; column is relative, so B becomes D, giving D$2. Result: =$A5+D$2.",
+      "expectedAnswer": "=$A5+D$2",
+      "choices": [
+        "=$A5+D$2",
+        "=$A3+D$2",
+        "=$A5+F$2",
+        "=$C5+B$4"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Predict copied formula result with mixed references",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sbca61d280052": {
+    "operation_index": 1,
+    "call_index": 6,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A price table has rates in row 1 (B1:E1) and quantities in column A (A2:A5). Cell B2 should multiply rate B1 by quantity A2, then fill across and down the table. What formula belongs in B2?",
+      "explanation": "Rate row 1 must stay fixed when filling down, so row needs $: B$1. Quantity column A must stay fixed when filling right, so column needs $: $A2. The working formula is =B$1*$A2, preserving each relationship throughout the table.",
+      "expectedAnswer": "=B$1*$A2",
+      "choices": [
+        "=B$1*$A2",
+        "=$B1*A$2",
+        "=B1*A2",
+        "=$B$1*$A$2"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "2",
+      "objective": "Choose reference anchors for a two-dimensional lookup table",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sc59ffcc761bc": {
+    "operation_index": 1,
+    "call_index": 6,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "Cell D4 contains =C$3+$B4. It is copied to F6. What formula appears in F6?",
+      "explanation": "Moving from D4 to F6: +2 columns, +2 rows. C$3: column C→E (relative), row $3 fixed, giving E$3. $B4: column $B fixed, row 4→6 (relative), giving $B6. Combined: =E$3+$B6.",
+      "expectedAnswer": "=E$3+$B6",
+      "choices": [
+        "=E$3+$B6",
+        "=E$3+$B4",
+        "=C$3+$B6",
+        "=E$5+$B6"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Predict copied formula result with mixed references",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "se7533cda5c8b": {
+    "operation_index": 1,
+    "call_index": 6,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A commission sheet has percentages in column B (B2:B10) and sales figures in row 1 (C1:H1). Cell C2 should calculate commission using the percentage from its row and the sales from its column, then fill the entire range. What formula belongs in C2?",
+      "explanation": "Percentage from column B must stay fixed when filling right: $B2. Sales from row 1 must stay fixed when filling down: C$1. The formula =$B2*C$1 preserves both relationships across the entire range.",
+      "expectedAnswer": "=$B2*C$1",
+      "choices": [
+        "=$B2*C$1",
+        "=B$2*$C1",
+        "=$B$2*C1",
+        "=B2*C$1"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "2",
+      "objective": "Choose reference anchors for a two-dimensional lookup table",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s25291afbae51": {
+    "operation_index": 1,
+    "call_index": 6,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "Cell G5 contains =$E5+F$3. It is copied to C7. What formula appears in C7?",
+      "explanation": "Moving from G5 to C7: -4 columns (G→C), +2 rows (5→7). $E5: column $E fixed, row 5→7 relative, giving $E7. F$3: column F→B (relative, 6 letters back), row $3 fixed, giving B$3. Result: =$E7+B$3.",
+      "expectedAnswer": "=$E7+B$3",
+      "choices": [
+        "=$E7+B$3",
+        "=$E7+F$3",
+        "=$E5+B$3",
+        "=$C7+F$3"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both ro",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Predict copied formula result with mixed references",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sd3ec4b37c9a6": {
+    "operation_index": 1,
+    "call_index": 8,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A budget sheet tracks monthly expenses. Row 1 contains category names (B1:E1). Column A lists months (A2:A13). Cell B2 should calculate January's Food budget using a rate from F1 and a multiplier from G2, then fill across all categories and down all months. Which formula belongs in B2?",
+      "explanation": "The formula must keep F1 fixed for all cells (absolute: $F$1), keep G2's column fixed but allow row to change for each month (mixed: $G2), and adjust both row and column for the category/month intersection (relative: B2). Thus =B2*$G2*$F$1 preserves: rate always from F1, multiplier always from column G matching the row, and the specific month/category from the relative position.",
+      "expectedAnswer": "=B2*$G2*$F$1",
+      "choices": [
+        "=B2*G2*F1",
+        "=B2*$G2*$F$1",
+        "=B2*G$2*$F$1",
+        "=$B$2*$G$2*F1"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s963259e3ab1b": {
+    "operation_index": 1,
+    "call_index": 8,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+      "explanation": "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2.",
+      "expectedAnswer": "=$F8+C$2",
+      "choices": [
+        "=$F8+C$2",
+        "=$F4+G$2",
+        "=B8+G$2",
+        "=$F8+G$6"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sea341b3380b3": {
+    "operation_index": 1,
+    "call_index": 8,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "A sales report has regional targets in column C (C2:C6) and monthly actuals in row 2 (D2:G2). Cell D3 should calculate variance from target using the region's target and the month's actual, then fill across months and down regions. Which formula belongs in D3?",
+      "explanation": "The target must stay in column C for each region (mixed: $C3, row changes per region). The actual must stay in row 2 for each month (mixed: D$2, column changes per month). The formula =D$2-$C3 preserves: actual always from row 2 matching the column, target always from column C matching the row.",
+      "expectedAnswer": "=D$2-$C3",
+      "choices": [
+        "=D2-C3",
+        "=$D$2-$C$3",
+        "=D$2-$C3",
+        "=$D2-C$3"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s24ae8c02f9b3": {
+    "operation_index": 1,
+    "call_index": 8,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+      "explanation": "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9.",
+      "expectedAnswer": "=N$5+$L9",
+      "choices": [
+        "=N$5+$L9",
+        "=K$9+$O5",
+        "=K$5+$L9",
+        "=N$9+$L5"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sec3d670be44d": {
+    "operation_index": 1,
+    "call_index": 8,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A gradebook has assignment weights in row 3 (B3:E3) and student scores in column A (A4:A8). Cell B4 should calculate weighted score using the student's score and the assignment's weight, then fill across assignments and down students. Which formula belongs in B4?",
+      "explanation": "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column.",
+      "expectedAnswer": "=$A4*B$3",
+      "choices": [
+        "=A4*B3",
+        "=$A$4*$B$3",
+        "=$A4*B$3",
+        "=A$4*$B3"
+      ],
+      "topic": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s3ecfab632241": {
+    "operation_index": 2,
+    "call_index": 11,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along the curves. The map is then photocopied at 150% enlargement. What ground distance does the original 8 cm measurement represent?",
+      "explanation": "The scale 1:25,000 means 1 cm on the original map equals 25,000 cm (250 m) on the ground. The 8 cm path measurement was made on the original map before enlargement. Resizing the copy changes the scale of the reproduction but does not retroactively change what the original measurement represented. The ground distance is 8 × 25,000 cm = 200,000 cm = 2,000 m = 2 km.",
+      "expectedAnswer": "2 km",
+      "choices": [
+        "2 km",
+        "3 km",
+        "1.33 km",
+        "5 km"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s8920ffcd7395": {
+    "operation_index": 2,
+    "call_index": 11,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A park map with a printed scale of 1:10,000 is scanned and printed at 80% of its original linear dimensions. A user measures a straight line between two gates on the reduced copy as 5 cm. Approximately what is the actual ground distance between those gates?",
+      "explanation": "The scale bar and map features shrink together, so the original scale ratio no longer applies to the reduced copy. However, the ground distance represented is unchanged. On the original map, 5 cm ÷ 0.80 = 6.25 cm would have measured the same line. Using the original scale: 6.25 cm × 10,000 = 62,500 cm = 625 m. Alternatively: the reduced map's scale becomes 1:(10,000/0.80) = 1:12,500, and 5 cm × 12,500 = 62,500 cm = 625 m.",
+      "expectedAnswer": "625 m",
+      "choices": [
+        "625 m",
+        "500 m",
+        "400 m",
+        "781 m"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sad752e872013": {
+    "operation_index": 2,
+    "call_index": 11,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "A river guidebook contains a map with a graphic scale bar showing 0—2 km. The entire map is reproduced in a smaller edition at 60% linear reduction. A paddler measures a river bend on the reduced map using a string, then compares it to the scale bar printed alongside it. What does this comparison yield?",
+      "explanation": "The scale bar was copied with the map and reduced by the same 60% factor. A 2 km ground distance now appears as 60% of the original bar length. Measuring against this shrunken bar automatically accounts for the reduction—the bar and map features scale together. The comparison yields the correct ground distance because the scale bar remains valid when resized with the map, unlike a printed numerical ratio which would not automatically adjust.",
+      "expectedAnswer": "The correct ground distance, because the scale bar shrank with the map",
+      "choices": [
+        "The correct ground distance, because the scale bar shrank with the map",
+        "A distance 60% too large, because the bar represents less ground",
+        "A distance 40% too small, because reduction compresses measurements",
+        "Cannot be determined without knowing the original bar length"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sf9765e26078b": {
+    "operation_index": 2,
+    "call_index": 11,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A town plan states \"Scale 1:5,000\" in the corner. The plan is enlarged by photocopier to 200% and distributed. A resident measures a straight street as 12 cm on the enlarged copy and calculates 12 × 5,000 = 60,000 cm = 600 m. A second resident measures the same original plan before enlargement, finding 6 cm, and calculates 6 × 5,000 = 300 m. Which statement is correct?",
+      "explanation": "The printed ratio 1:5,000 applied to the original map. Enlargement changes the representative fraction because printed lengths increase while ground distances stay fixed. The first resident incorrectly applied the original ratio to the enlarged map; the actual scale of the enlargement is 1:2,500, making their 12 cm measurement represent 300 m, not 600 m. The second resident's calculation is correct. The error is applying an unchanged numerical ratio to a resized map.",
+      "expectedAnswer": "The second resident is correct; the first applied the original ratio to an enlarged map",
+      "choices": [
+        "The second resident is correct; the first applied the original ratio to an enlarged map",
+        "Both are correct because enlargement preserves distance proportions",
+        "The first is correct because larger maps show more detail per centimeter",
+        "Neither can be determined without a scale bar on the enlarged copy"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s4f1a7ccc0ee3": {
+    "operation_index": 2,
+    "call_index": 11,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A hiking map at 1:50,000 shows a straight trail segment. A walker measures 3 cm with a ruler. The map is then reduced to 75% for a pocket edition. Another walker traces the winding actual trail with string on the reduced map, following all bends, and measures 4 cm against the reduced scale bar. Which walker estimated a longer ground distance?",
+      "explanation": "First walker: 3 cm × 50,000 = 150,000 cm = 1.5 km (straight line on original). Second walker: the scale bar was reduced with the map, so it remains valid. The 4 cm measured against the reduced bar represents the same ground distance as 4 cm × (50,000/0.75) = 4 × 66,667 ≈ 266,668 cm ≈ 2.67 km, or simply: the reduced scale is 1:66,667, giving 4 × 66,667 ≈ 266,668 cm ≈ 2.67 km. However, the winding path measurement captures actual trail length versus straight-line distance. The second walker's 2.67 km exceeds 1.5 km.",
+      "expectedAnswer": "The second walker, because winding measurement plus scale bar validity gives approximately 2.7 km versus 1.5 km",
+      "choices": [
+        "The second walker, because winding measurement plus scale bar validity gives approximately 2.7 km versus 1.5 km",
+        "The first walker, because the original larger map has a more accurate scale",
+        "They are equal because both maps represent the same territory",
+        "Cannot be determined because the scale bar may not apply to reduced maps"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sefdbfb734e19": {
+    "operation_index": 2,
+    "call_index": 13,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A park map is printed at 1:10,000 with a 2 cm scale bar. A straight trail measures 5 cm on the map. The map is photocopied at 80% reduction. What ground distance does the original 5 cm measurement represent?",
+      "explanation": "The numerical scale 1:10,000 means 1 cm on the map equals 10,000 cm (100 m) on the ground. The original 5 cm measurement represents 5 × 100 m = 500 m. Resizing the photocopy changes the printed scale bar and makes the numerical ratio invalid for the copy, but does not change what the original measurement represented on the ground.",
+      "expectedAnswer": "500 m",
+      "choices": [
+        "400 m",
+        "500 m",
+        "625 m",
+        "Cannot be determined from the information given"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "Combine map-to-ground unit conversion",
+      "objectiveID": "",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sa38f86ae525e": {
+    "operation_index": 2,
+    "call_index": 13,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A hiking map at 1:50,000 shows a winding river. A string following the curves measures 12 cm. The map is enlarged to 125% and reprinted. A new scale bar is drawn on the enlarged map matching its new printed size. What ground distance does the original 12 cm river measurement represent?",
+      "explanation": "The original scale 1:50,000 means 1 cm = 50,000 cm = 0.5 km. The original 12 cm measurement represents 12 × 0.5 km = 6 km. Enlargement changes the representative fraction and requires a new scale bar, but the original measurement was made at the original scale. The ground distance represented by that original measurement remains unchanged.",
+      "expectedAnswer": "6 km",
+      "choices": [
+        "4.8 km",
+        "6 km",
+        "7.5 km",
+        "The stated premises are inconsistent"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "Combine map-to-ground unit conversion",
+      "objectiveID": "",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s42d907c20dfe": {
+    "operation_index": 2,
+    "call_index": 13,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "A trail map states 1:25,000 and includes a 4 cm scale bar. A hiker measures a switchback trail as 10 cm with bends followed. The map is scanned and printed at 50% size. Which statement about distance interpretation is correct?",
+      "explanation": "The numerical scale 1:25,000 means 1 cm = 250 m, so 10 cm = 2,500 m. The scale bar, when reduced to 2 cm, still functions correctly for the reduced map because it was resized with the map. However, the original 10 cm measurement was made on the full-size map at 1:25,000. The question asks about that original measurement's ground distance, which is fixed at 2,500 m regardless of subsequent resizing.",
+      "expectedAnswer": "The original 10 cm measurement represents 2.5 km on the ground",
+      "choices": [
+        "The reduced scale bar now represents 500 m, so the trail is 5 km",
+        "The original 10 cm measurement represents 2.5 km on the ground",
+        "The scale ratio halves to 1:12,500, making the trail 1.25 km",
+        "The winding measurement is invalid; only straight-line distance can be converted"
+      ],
+      "topic": "Distinguish a printed numerical scale from a scale bar copied with the map",
+      "skillID": "Distinguish a printed numerical scale from a scale bar copied with the map",
+      "objectiveID": "",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s8c6d929b55ce": {
+    "operation_index": 2,
+    "call_index": 13,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A city map at 1:20,000 shows a curved bike route. A 6 cm string measurement follows the curves. The map is reduced to 75% and faxed. The recipient measures the same route on the fax as 4.5 cm using the reduced scale bar. What is the actual ground distance of the bike route?",
+      "explanation": "The original scale 1:20,000 means 1 cm = 200 m. The original 6 cm measurement represents 6 × 200 m = 1,200 m. The reduced map's scale bar is valid for the reduced map (4.5 cm × 200 m/cm = 900 m would be wrong because the scale bar was reduced too). However, the actual ground distance hasn't changed. The original measurement at the original scale gives the correct ground distance: 1.2 km.",
+      "expectedAnswer": "1.2 km",
+      "choices": [
+        "0.9 km",
+        "1.2 km",
+        "1.6 km",
+        "No solution exists under the stated conditions"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "Combine map-to-ground unit conversion",
+      "objectiveID": "",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s5fed28e10e7b": {
+    "operation_index": 2,
+    "call_index": 13,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A topographic map at 1:100,000 has a 1 cm = 1 km scale bar. A straight road measures 8 cm. The map is enlarged 200% for a presentation. A student claims the road now represents 16 km because the map is twice as big. What is the error in this reasoning?",
+      "explanation": "The original scale 1:100,000 means 1 cm = 1 km, so 8 cm = 8 km. Enlarging the map makes the representative fraction invalid—the new scale is 1:50,000 if recalculated. However, the original 8 cm measurement was made at the original scale. The student's error is confusing the enlarged printed size with increased ground distance. The original measurement still represents 8 km; the enlargement simply makes the same information larger, not more extensive.",
+      "expectedAnswer": "The original 8 cm measurement still represents 8 km; enlargement changes print size, not ground distance represented",
+      "choices": [
+        "The scale bar becomes invalid and no distance can be determined",
+        "The original 8 cm measurement still represents 8 km; enlargement changes print size, not ground distance represented",
+        "The road now represents 16 km because the scale doubles to 1:50,000",
+        "The measurement must be remade on the enlarged map using the original scale ratio"
+      ],
+      "topic": "Distinguish a printed numerical scale from a scale bar copied with the map",
+      "skillID": "Distinguish a printed numerical scale from a scale bar copied with the map",
+      "objectiveID": "",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s14018fbe992d": {
+    "operation_index": 3,
+    "call_index": 15,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along its curves. The map is then photocopied at 150% (linear scale). On the enlarged copy, the same path now measures 12 cm. What ground distance does the 12 cm measurement represent?",
+      "explanation": "Resizing changes the printed length but not the ground distance represented. The original 8 cm at 1:25,000 represents 8 × 25,000 = 200,000 cm = 2 km. The photocopy enlargement makes the path print longer (12 cm), but the geographic information is unchanged. The scale bar on the enlarged copy would also enlarge, remaining usable, but the printed \"1:25,000\" ratio is no longer valid for the enlarged image.",
+      "expectedAnswer": "2 km",
+      "choices": [
+        "2 km",
+        "3 km",
+        "1.33 km",
+        "1.8 km"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s40fd9a75e320": {
+    "operation_index": 3,
+    "call_index": 15,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A park map shows a straight road labeled 3 km. The printed scale states 1:50,000. A student measures the road as 5 cm, then reduces the map on a copier to 80% of original width and height. What is the correct representative fraction for the reduced map?",
+      "explanation": "The original scale 1:50,000 means 1 cm = 50,000 cm (500 m). A linear reduction to 80% means 1 cm on the reduced map equals 1/0.8 = 1.25 cm on the original, which represented 1.25 × 500 m = 625 m. The new scale is 1:62,500. The measured road length on the reduced map would be 4 cm (5 × 0.8), but the question asks for the scale, not a distance.",
+      "expectedAnswer": "1:62,500",
+      "choices": [
+        "1:40,000",
+        "1:62,500",
+        "1:50,000",
+        "1:100,000"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s5545b83d9d59": {
+    "operation_index": 3,
+    "call_index": 15,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "A walking guide uses a map with scale bar showing 0—1 km. The entire map is scanned and printed at 125% size. A walker measures a curved river as 9 cm following its bends using the enlarged print. The original scale bar (now also enlarged) is used for conversion. What distance does this represent?",
+      "explanation": "The scale bar resizes with the map, so it remains valid. If the original 1 km scale bar measured 2 cm, it now measures 2.5 cm but still represents 1 km. The 9 cm measurement against this enlarged bar gives 9 ÷ 2.5 = 3.6 km. Alternatively: the enlacement factor cancels out—measuring on the enlarged map with the enlarged bar yields the same ground distance as measuring on the original with the original bar.",
+      "expectedAnswer": "3.6 km (assuming original 2 cm bar = 1 km)",
+      "choices": [
+        "3.6 km (assuming original 2 cm bar = 1 km)",
+        "4.5 km",
+        "2.88 km",
+        "7.2 km"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s09216c40b197": {
+    "operation_index": 3,
+    "call_index": 15,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A rescue team has two copies of the same topographic map: original at 1:25,000, and a reduced version at 70% linear scale. On the original, a straight-line distance between peaks is 8 cm. On the reduced copy, a winding trail between the same peaks measures 10 cm following its curves. Which statement correctly compares the ground distances?",
+      "explanation": "The straight-line 8 cm on original 1:25,000 represents 2 km. The winding trail on the reduced copy: first, the reduced map's scale is 1:(25,000/0.7) ≈ 1:35,714, so 1 cm represents ~357 m. However, the 10 cm was measured on the reduced map, so ground distance is 10 × (25,000/0.7) cm ≈ 3.57 km. But more directly: the winding path is longer than straight-line distance, so it must exceed 2 km. The straight-line vs. winding comparison matters more than exact calculation.",
+      "expectedAnswer": "The winding trail represents a greater ground distance than the 2 km straight-line distance",
+      "choices": [
+        "The winding trail represents 2 km, same as the straight line",
+        "The winding trail represents a greater ground distance than the 2 km straight-line distance",
+        "The winding trail represents 1.4 km, less than the straight-line distance",
+        "Both represent 2 km because the scale change compensates for the measurement difference"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s13ae6231e397": {
+    "operation_index": 3,
+    "call_index": 15,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A map printed at 1:10,000 is enlarged to 200% and distributed. Users notice the printed scale still reads \"1:10,000\". A cyclist measures a straight route as 6 cm on the enlarged map and calculates 600 m. A pedestrian follows a curved path on the same route, measuring 9 cm along the curves on the enlarged map. What is the actual ground distance for the pedestrian's path?",
+      "explanation": "The printed \"1:10,000\" is invalid after enlargement. At 200% linear scale, the new representative fraction is 1:5,000 (ground distances halved relative to map distances). The 9 cm measurement on enlarged map represents 9 × 5,000 cm = 45,000 cm = 450 m. Alternatively: the original map would have shown this path as 4.5 cm (9 ÷ 2), which at 1:10,000 is 450 m. The cyclist's 6 cm = 300 m on enlarged map, or would be 3 cm = 300 m on original—both wrong due to using invalid stated scale.",
+      "expectedAnswer": "450 m",
+      "choices": [
+        "450 m",
+        "900 m",
+        "600 m",
+        "300 m"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s8c361fdc9cc4": {
+    "operation_index": 3,
+    "call_index": 17,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A local trail map printed at 1:40,000 shows a winding stream. A walker traces the stream with a string, finding 15 cm along its curves. The map is then photocopied at 120% linear enlargement. On the enlarged copy, the walker measures the same stream as 18 cm with a ruler following its bends. The enlarged copy still shows the original printed scale \"1:40,000.\" What ground distance does the stream actually represent?",
+      "explanation": "The original scale 1:40,000 means 1 cm on the original map represents 40,000 cm (0.4 km) on the ground. The original 15 cm measurement represents 15 × 0.4 km = 6 km. Resizing the map changes the printed lengths but not the ground distances represented. The enlarged printed scale \"1:40,000\" is now invalid because the map has been enlarged. The walker must use the original scale with the original measurement, or equivalently recognize that the ground distance hasn't changed. The 18 cm measurement on the enlarged copy with the invalid printed scale would incorrectly suggest 7.2 km.",
+      "expectedAnswer": "6 km",
+      "choices": [
+        "4.8 km",
+        "6 km",
+        "7.2 km",
+        "8 km"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Distinguish valid from invalid scale applications after resizing",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s49ea0e7af277": {
+    "operation_index": 3,
+    "call_index": 17,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A park map has a scale bar showing 0—2 km that measures 4 cm long on the original print. The entire map is reduced to 75% of original linear dimensions for a pocket guide. A cyclist measures a straight bike path as 3 cm on the reduced map using the reduced scale bar. What is the actual ground length of the path?",
+      "explanation": "The original scale bar (4 cm = 2 km) gives a scale of 1:50,000. When uniformly reduced to 75%, the scale bar becomes 3 cm long but still represents 2 km on the ground because it was resized with the map. The reduced scale bar remains valid: 3 cm on reduced map = 2 km ground. Therefore the measured 3 cm path represents 2 km. Alternatively, using the original scale: 3 cm on reduced map equals 3 ÷ 0.75 = 4 cm on original map, which at 1:50,000 represents 2 km.",
+      "expectedAnswer": "2 km",
+      "choices": [
+        "1.5 km",
+        "2 km",
+        "2.67 km",
+        "4 km"
+      ],
+      "topic": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "skillID": "2",
+      "objectiveID": "2",
+      "objective": "Apply resized scale bar to ground distance conversion",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s99aca72d9b9a": {
+    "operation_index": 3,
+    "call_index": 17,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "A hiking map states scale 1:25,000 and includes a graphical scale bar. The map is scanned and printed at 150% enlargement. A ranger measures a winding ridge trail as 10 cm following its curves on the enlarged print, then uses the enlarged scale bar (which now spans 7.5 cm for its original 5 cm ground representation) to convert to ground distance. A second ranger uses the original printed ratio 1:25,000 with the 10 cm measurement. What is the discrepancy between their ground distance estimates?",
+      "explanation": "The first ranger correctly uses the enlarged scale bar: if the original 5 cm bar represented 1.25 km (at 1:25,000), the enlarged 7.5 cm bar still represents 1.25 km. The scale bar remains valid. The 10 cm measurement converts proportionally: 10 cm × (1.25 km / 7.5 cm) = 1.67 km. The second ranger incorrectly applies 1:25,000 to the enlarged print: 10 cm × 0.25 km/cm = 2.5 km. The discrepancy is 2.5 km − 1.67 km = 0.83 km, or 5/6 km ≈ 0.83 km.",
+      "expectedAnswer": "0.83 km (or 5/6 km)",
+      "choices": [
+        "0 km",
+        "0.42 km",
+        "0.83 km (or 5/6 km)",
+        "1.25 km"
+      ],
+      "topic": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "skillID": "2",
+      "objectiveID": "3",
+      "objective": "Compare scale bar versus numerical scale after resizing",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s2534b4d49fc1": {
+    "operation_index": 3,
+    "call_index": 17,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A river guide map at 1:50,000 shows a meandering water route. A guide measures 12 cm along the river's curves. The map is photocopied at 80% reduction. On the reduced copy, the same river measures 9.6 cm. The guide needs to inform paddlers of the approximate paddling distance. Which statement correctly describes how to obtain this distance?",
+      "explanation": "The ground distance represented by the geographic feature does not change when the map is resized. The original measurement of 12 cm at 1:50,000 gives 12 × 0.5 km = 6 km. The reduced measurement of 9.6 cm with the now-invalid printed scale of 1:50,000 would give 4.8 km, which is wrong. The correct approach uses the original scale with either the original measurement, or equivalently adjusts the reduced measurement back to original size (9.6 ÷ 0.8 = 12 cm) before applying the original scale. The scale bar, if resized with the map, would also give 6 km.",
+      "expectedAnswer": "Use the original 1:50,000 scale with the original 12 cm measurement, or adjust the reduced measurement by dividing by 0.8 before applying the scale",
+      "choices": [
+        "Use the printed 1:50,000 scale directly with the reduced 9.6 cm measurement",
+        "Use the original 1:50,000 scale with the original 12 cm measurement, or adjust the reduced measurement by dividing by 0.8 before applying the scale",
+        "Multiply 9.6 cm by 0.8 and apply the original scale",
+        "The scale bar on the reduced map is invalid and cannot be used"
+      ],
+      "topic": "Combine map-to-ground unit conversion",
+      "skillID": "1",
+      "objectiveID": "4",
+      "objective": "Select correct procedure for resized map with bending route",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s44107b404cdf": {
+    "operation_index": 3,
+    "call_index": 17,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A town plan shows a straight 4 km road. On the original print, this road measures 8 cm. The plan is enlarged to 125% and reprinted. A resident measures the road as 10 cm on the enlarged plan and notices the printed scale now reads \"1:40,000.\" Another resident argues the scale should be recalculated. What is the correct representative fraction for the enlarged plan?",
+      "explanation": "Original scale: 8 cm represents 4 km (400,000 cm), so original RF is 1:50,000. Linear enlargement to 125% means 10 cm on enlarged plan represents the same 4 km ground distance. New RF = 10:400,000 = 1:40,000. The printed scale is coincidentally correct in this case. However, the reasoning matters: the RF changes because printed length increased while ground distance stayed fixed. The new RF is 1:40,000, which can also be found by dividing original denominator by 1.25 (50,000 ÷ 1.25 = 40,000).",
+      "expectedAnswer": "1:40,000",
+      "choices": [
+        "1:50,000",
+        "1:40,000",
+        "1:62,500",
+        "1:32,000"
+      ],
+      "topic": "route measurements and uniform changes in printed size. Distinguish a printed nu",
+      "skillID": "2",
+      "objectiveID": "5",
+      "objective": "Calculate new representative fraction after uniform resizing",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s7bb170035f2b": {
+    "operation_index": 4,
+    "call_index": 19,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A food web lists three feeding links: algae → shrimp, algae → snail, and shrimp → fish. Algae produce 10,000 kJ/m²/year. Shrimp transfer efficiency to fish is 15%. No other diets or efficiencies are stated. What can be concluded about annual energy reaching fish?",
+      "explanation": "Only shrimp → fish is stated as a feeding link, so fish energy depends entirely on shrimp production. Shrimp production is not given—only algae production is. Without knowing shrimp production or shrimp's transfer efficiency from algae, fish energy cannot be determined from the information provided.",
+      "expectedAnswer": "Cannot be determined from the information given.",
+      "choices": [
+        "750 kJ/m²/year",
+        "1,500 kJ/m²/year",
+        "150 kJ/m²/year",
+        "Cannot be determined from the information given."
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sa08a0a5a59b9": {
+    "operation_index": 4,
+    "call_index": 19,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A marine food web shows: phytoplankton → zooplankton → small fish → large fish. Phytoplankton production is 20,000 kJ/m²/year. Transfer efficiency is 20% from phytoplankton to zooplankton and 25% from zooplankton to small fish. Small fish to large fish efficiency is unstated. What is the maximum possible annual energy production of small fish?",
+      "explanation": "Maximum small fish production occurs when zooplankton production is fully determined by the stated 20% efficiency: 20,000 × 0.20 = 4,000 kJ/m²/year. Then small fish production is 4,000 × 0.25 = 1,000 kJ/m²/year. The unstated efficiency to large fish does not affect this calculation.",
+      "expectedAnswer": "1,000 kJ/m²/year",
+      "choices": [
+        "1,000 kJ/m²/year",
+        "4,000 kJ/m²/year",
+        "5,000 kJ/m²/year",
+        "100 kJ/m²/year"
+      ],
+      "topic": "trophic production and stated transfer efficiencies",
+      "skillID": "2",
+      "objectiveID": "2",
+      "objective": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sfc58bbdc366b": {
+    "operation_index": 4,
+    "call_index": 19,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "An ecosystem has producers with standing biomass of 50 g/m² and rapid turnover (production equals 10× biomass annually). Primary consumers have standing biomass of 200 g/m². Which conclusion follows?",
+      "explanation": "Standing biomass alone does not indicate energy flow. With rapid producer turnover, annual production is 500 g/m²/year—potentially supporting the larger consumer biomass. The inverted biomass pyramid does not imply impossible energy flow; production, not standing biomass, determines supportable consumer biomass.",
+      "expectedAnswer": "The producer biomass pyramid is inverted, but energy flow to consumers is not constrained by standing biomass alone.",
+      "choices": [
+        "Energy flow violates thermodynamic limits because consumer biomass exceeds producer biomass.",
+        "The producer biomass pyramid is inverted, but energy flow to consumers is not constrained by standing biomass alone.",
+        "Annual production must be less than 50 g/m²/year to match the standing biomass.",
+        "Consumer biomass proves the stated turnover rate is impossible."
+      ],
+      "topic": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "skillID": "3",
+      "objectiveID": "3",
+      "objective": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s6338c0d57b80": {
+    "operation_index": 4,
+    "call_index": 19,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A food web states: grasshoppers eat grass; spiders eat grasshoppers; birds eat both grasshoppers and spiders. Grass production is 5,000 kJ/m²/year. Grass to grasshopper efficiency is 10%. No other efficiencies are stated. What can be determined about bird energy acquisition?",
+      "explanation": "Birds have two stated food sources, but only grasshopper production can be calculated (5,000 × 0.10 = 500 kJ/m²/year). Spider production and bird transfer efficiencies from either prey are unstated. Without knowing what fraction of bird diet comes from each source and at what efficiencies, bird energy cannot be determined.",
+      "expectedAnswer": "Cannot be determined from the information given.",
+      "choices": [
+        "500 kJ/m²/year maximum if birds ate only grasshoppers",
+        "250 kJ/m²/year assuming equal diet split",
+        "50 kJ/m²/year using 10% efficiency on spider biomass",
+        "Cannot be determined from the information given."
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sb6820afd5122": {
+    "operation_index": 4,
+    "call_index": 19,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A lake food web: algae → daphnia → minnows → pike. Algae production is 8,000 kJ/m²/year. Transfer efficiencies are: algae to daphnia 25%, daphnia to minnows 20%, minnows to pike 10%. Which statement about annual pike production is valid?",
+      "explanation": "Calculate stepwise: daphnia production = 8,000 × 0.25 = 2,000; minnow production = 2,000 × 0.20 = 400; pike production = 400 × 0.10 = 40 kJ/m²/year. Each step uses only stated efficiencies; no assumptions about unreported diets or responses are needed.",
+      "expectedAnswer": "40 kJ/m²/year",
+      "choices": [
+        "40 kJ/m²/year",
+        "400 kJ/m²/year",
+        "200 kJ/m²/year",
+        "16 kJ/m²/year"
+      ],
+      "topic": "trophic production and stated transfer efficiencies",
+      "skillID": "2",
+      "objectiveID": "2",
+      "objective": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s8c74fb39a549": {
+    "operation_index": 4,
+    "call_index": 21,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A food web lists these feeding links: kelp → sea urchin, kelp → abalone, and sea urchin → sea otter. Kelp production is 20,000 kJ/m²/year. Sea urchins consume only kelp. Transfer efficiency from sea urchins to sea otters is 12%. No other diets or efficiencies are stated. What can be concluded about annual energy reaching sea otters?",
+      "explanation": "Energy reaching sea otters depends on sea urchin production, which depends on kelp consumed by sea urchins. However, the kelp consumed by sea urchins is unstated because abalone also eat kelp. Without knowing what fraction of kelp production sea urchins consume, sea urchin production cannot be determined, so sea otter energy cannot be calculated.",
+      "expectedAnswer": "Cannot be determined from the information given.",
+      "choices": [
+        "2,400 kJ/m²/year",
+        "1,200 kJ/m²/year",
+        "240 kJ/m²/year",
+        "Cannot be determined from the information given."
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Combine explicitly described feeding links",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sbea2b8a3a348": {
+    "operation_index": 4,
+    "call_index": 21,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A food web shows: grasses → grasshoppers → frogs → snakes, and grasses → rabbits → snakes. Grass production is 50,000 kJ/m²/year. Transfer efficiencies are: grasses to grasshoppers 20%, grasshoppers to frogs 15%, frogs to snakes 10%, grasses to rabbits 25%, rabbits to snakes 8%. Snakes eat both frogs and rabbits, but the proportion of each in their diet is not stated. What follows about annual energy reaching snakes?",
+      "explanation": "Snake energy depends on energy from frogs and rabbits combined. Frog energy depends on grasshoppers (50,000 × 0.20 × 0.15 = 1,500 kJ/m²/year), so snakes get at most 1,500 × 0.10 = 150 kJ/m²/year from frogs. Rabbit energy is 50,000 × 0.25 = 12,500 kJ/m²/year, so snakes get at most 12,500 × 0.08 = 1,000 kJ/m²/year from rabbits. Since snakes eat both but proportions are unknown, total snake energy could range between these extremes depending on diet mix.",
+      "expectedAnswer": "Snake annual production is between 150 and 1,150 kJ/m²/year, depending on diet proportions.",
+      "choices": [
+        "Snake annual production is exactly 1,150 kJ/m²/year.",
+        "Snake annual production is between 150 and 1,150 kJ/m²/year, depending on diet proportions.",
+        "Snake annual production is exactly 150 kJ/m²/year.",
+        "Snake annual production exceeds 1,150 kJ/m²/year because snakes are secondary and tertiary consumers."
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Combine explicitly described feeding links",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s64a8788b11e6": {
+    "operation_index": 4,
+    "call_index": 21,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "A pond ecosystem has phytoplankton with standing biomass 30 g/m² and annual production of 300 g/m²/year. Zooplankton have standing biomass 150 g/m². Transfer efficiency from phytoplankton to zooplankton is 25%. Which conclusion about zooplankton annual production is valid?",
+      "explanation": "Standing biomass and production are different quantities. Zooplankton annual production equals phytoplankton production × transfer efficiency = 300 × 0.25 = 75 g/m²/year. The high standing biomass of zooplankton (150 g/m²) compared to their production indicates slow turnover, not high production.",
+      "expectedAnswer": "Zooplankton annual production is 75 g/m²/year.",
+      "choices": [
+        "Zooplankton annual production is 75 g/m²/year.",
+        "Zooplankton annual production is 150 g/m²/year.",
+        "Zooplankton annual production is 37.5 g/m²/year.",
+        "Zooplankton annual production is 7.5 g/m²/year."
+      ],
+      "topic": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "skillID": "2",
+      "objectiveID": "2",
+      "objective": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s0ad704a0f3f1": {
+    "operation_index": 4,
+    "call_index": 21,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A food web lists: diatoms → copepods → herring, and diatoms → krill → herring. Diatom production is 10,000 kJ/m²/year. Transfer efficiencies are: diatoms to copepods 30%, copepods to herring 20%, diatoms to krill 25%, krill to herring 15%. Herring obtain 60% of their energy from copepods and 40% from krill. What is herring annual production?",
+      "explanation": "First calculate energy at each prey: copepod production = 10,000 × 0.30 = 3,000 kJ/m²/year; krill production = 10,000 × 0.25 = 2,500 kJ/m²/year. Energy herring obtains from copepods = 3,000 × 0.20 = 600 kJ/m²/year; from krill = 2,500 × 0.15 = 375 kJ/m²/year. Weighted by diet: (600 × 0.60) + (375 × 0.40) = 360 + 150 = 510 kJ/m²/year.",
+      "expectedAnswer": "510 kJ/m²/year",
+      "choices": [
+        "510 kJ/m²/year",
+        "750 kJ/m²/year",
+        "975 kJ/m²/year",
+        "1,200 kJ/m²/year"
+      ],
+      "topic": "trophic production and stated transfer efficiencies",
+      "skillID": "3",
+      "objectiveID": "3",
+      "objective": "trophic production and stated transfer efficiencies",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s425f3fb4f684": {
+    "operation_index": 4,
+    "call_index": 21,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A forest food web shows: trees → caterpillars → warblers → hawks, and trees → deer. Tree production is 100,000 kJ/m²/year. Transfer efficiencies are: trees to caterpillars 10%, caterpillars to warblers 25%, warblers to hawks 20%. Deer consume 30% of tree production. Hawks eat only warblers. What can be concluded about annual hawk production?",
+      "explanation": "Caterpillar production depends on tree production consumed by caterpillars. Since deer consume 30% of tree production, caterpillars consume at most 70% (70,000 kJ/m²/year), but could consume less if other herbivores exist. Caterpillar production = at most 70,000 × 0.10 = 7,000 kJ/m²/year. Warbler production = at most 7,000 × 0.25 = 1,750 kJ/m²/year. Hawk production = at most 1,750 × 0.20 = 350 kJ/m²/year. Since caterpillar consumption could be less than 70%, hawk production cannot be determined precisely.",
+      "expectedAnswer": "Hawk annual production is at most 350 kJ/m²/year; the exact value cannot be determined.",
+      "choices": [
+        "Hawk annual production is exactly 350 kJ/m²/year.",
+        "Hawk annual production is 500 kJ/m²/year.",
+        "Hawk annual production is at most 350 kJ/m²/year; the exact value cannot be determined.",
+        "Hawk annual production is 50 kJ/m²/year."
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Combine explicitly described feeding links",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s2bc092afee57": {
+    "operation_index": 5,
+    "call_index": 24,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A lake food web includes: algae (producers) → zooplankton → small fish → large fish. Annual net production is 10,000 kJ/m² for algae, 800 kJ/m² for zooplankton, and 120 kJ/m² for small fish. Standing biomass is 50 g/m² for algae, 10 g/m² for zooplankton, and 8 g/m² for small fish. Which conclusion is best supported?",
+      "explanation": "Trophic transfer efficiency compares production levels: zooplankton/algae = 800/10,000 = 8%, and small fish/zooplankton = 120/800 = 15%. These differ from 10% and from each other, so efficiency varies. Standing biomass ratios (algae:zooplankton = 5:1, zooplankton:small fish = 1.25:1) do not match production ratios, confirming biomass and energy flow are distinct. Only the conclusion that efficiency varies and is not fixed at 10% follows directly.",
+      "expectedAnswer": "Transfer efficiency varies between links and is not fixed at 10%.",
+      "choices": [
+        "The biomass pyramid is inverted, so energy flow must also be inverted.",
+        "Transfer efficiency is exactly 10% at each trophic level.",
+        "The small fish trophic level has higher production efficiency than zooplankton.",
+        "Transfer efficiency varies between links and is not fixed at 10%."
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "trophic production and stated transfer efficiencies",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s05f00a4f5d56": {
+    "operation_index": 5,
+    "call_index": 24,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "In a grassland ecosystem, grasshoppers eat grasses, and spiders eat grasshoppers. Mice eat both grasses and grasshoppers. Which statement about energy flow is valid based only on these feeding links?",
+      "explanation": "The food web shows mice have two energy sources (grasses and grasshoppers), so they feed at multiple trophic levels—primary when eating grasses, secondary when eating grasshoppers. Spiders have only one prey (grasshoppers), so they are strictly secondary consumers. Energy to spiders must pass through grasshoppers, but the web does not specify efficiency values or population responses. Only the conclusion about mice occupying multiple trophic levels is directly supported by the described links alone.",
+      "expectedAnswer": "Mice feed at more than one trophic level, while spiders feed at exactly one.",
+      "choices": [
+        "Spiders receive more energy than mice because they are higher-level predators.",
+        "Mice feed at more than one trophic level, while spiders feed at exactly one.",
+        "Energy transfer efficiency from grasshoppers to spiders is 10%.",
+        "Grasshoppers must have larger standing biomass than grasses to support the web."
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "trophic production and stated transfer efficiencies",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s012e8749ded9": {
+    "operation_index": 5,
+    "call_index": 24,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "A marine food web: phytoplankton → copepods → herring → seals. Annual production is 5,000 kJ/m² for phytoplankton, 400 kJ/m² for copepods, 60 kJ/m² for herring. Standing biomass is 20 g/m² phytoplankton, 15 g/m² copepods, 12 g/m² herring, 5 g/m² seals. What does this evidence indicate?",
+      "explanation": "Production efficiency: copepods/phytoplankton = 400/5,000 = 8%; herring/copepods = 60/400 = 15%. Biomass ratios differ: copepods have 75% of phytoplankton biomass but only 8% of production; herring have 80% of copepod biomass but 15% of production. The biomass pyramid is nearly upright (producer biomass < consumer biomass at some levels), yet energy flow still decreases (5,000 → 400 → 60). This shows standing biomass and energy production are separate measures—rapid turnover allows small producer biomass to support larger consumer biomass without inverting energy flow.",
+      "expectedAnswer": "Standing biomass and annual production are different quantities that need not show the same pattern.",
+      "choices": [
+        "The biomass pyramid is inverted, proving energy flow is also inverted.",
+        "Standing biomass and annual production are different quantities that need not show the same pattern.",
+        "Energy transfer efficiency is constant at approximately 10% between levels.",
+        "Seals must have higher standing biomass than herring to receive sufficient energy."
+      ],
+      "topic": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "skillID": "2",
+      "objectiveID": "2",
+      "objective": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sf8c14e7739f8": {
+    "operation_index": 5,
+    "call_index": 24,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "An arctic food web: Arctic plants (production 2,000 kJ/m²/year) are eaten by lemmings and geese. Lemmings (production 200 kJ/m²/year) are eaten by foxes. Geese (production 300 kJ/m²/year) are eaten by foxes. Fox production is 35 kJ/m²/year. Which inference is justified?",
+      "explanation": "Foxes receive energy from two prey: lemmings (200 kJ/m²/year) and geese (300 kJ/m²/year), totaling 500 kJ/m²/year available. Fox production is 35 kJ/m²/year, so fox efficiency from combined prey is 35/500 = 7%. This is not 10%, and efficiency from each prey separately cannot be determined without knowing the diet proportion. The web shows foxes feed at the same trophic level via different paths, not multiple levels. Only the conclusion that fox efficiency from total available prey is approximately 7% follows from the stated values.",
+      "expectedAnswer": "Fox trophic transfer efficiency from all prey combined is approximately 7%.",
+      "choices": [
+        "Foxes feed at three different trophic levels in this web.",
+        "Energy transfer from plants to lemmings is more efficient than from plants to geese.",
+        "Fox trophic transfer efficiency from all prey combined is approximately 7%.",
+        "Fox standing biomass must be less than lemming standing biomass."
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "trophic production and stated transfer efficiencies",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s9ec19302e8ed": {
+    "operation_index": 5,
+    "call_index": 24,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A forest food web: trees (production 8,000 kJ/m²/year) → caterpillars → warblers → hawks. Caterpillar production is 1,200 kJ/m²/year. Warbler production is 180 kJ/m²/year. Caterpillar standing biomass averages 40 g/m²; tree leaf standing biomass averages 200 g/m². Which conclusion follows?",
+      "explanation": "Transfer efficiencies: caterpillars/trees = 1,200/8,000 = 15%; warblers/caterpillars = 180/1,200 = 15%. Standing biomass ratio: trees/caterpillars = 200/40 = 5:1 (upright). However, caterpillar biomass turns over rapidly—annual production (1,200 kJ) is 30× standing biomass (in energy terms), while tree leaf production is only ~40× standing biomass, showing different turnover rates. The 15% efficiency differs from 10%, and the upright biomass pyramid coexists with rapid producer turnover. Only the conclusion that efficiency is 15% and not fixed at 10% is directly established.",
+      "expectedAnswer": "Trophic transfer efficiency is 15% at each link, not 10%.",
+      "choices": [
+        "The upright biomass pyramid proves energy transfer efficiency exceeds 50%.",
+        "Trophic transfer efficiency is 15% at each link, not 10%.",
+        "Caterpillars are more efficient energy producers than trees.",
+        "Warblers must have lower standing biomass than caterpillars."
+      ],
+      "topic": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "skillID": "2",
+      "objectiveID": "2",
+      "objective": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sf037e900388b": {
+    "operation_index": 5,
+    "call_index": 25,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A lake food web includes: algae → zooplankton → small fish → large fish. Annual net primary production is 10,000 kJ/m². Zooplankton consume only algae, small fish consume only zooplankton, and large fish consume only small fish. Transfer efficiency from algae to zooplankton is 20%, but from zooplankton to small fish is only 5%, and from small fish to large fish is 15%. How much energy reaches large fish annually?",
+      "explanation": "Calculate stepwise using only the stated efficiencies. Algae to zooplankton: 10,000 × 0.20 = 2,000 kJ/m². Zooplankton to small fish: 2,000 × 0.05 = 100 kJ/m². Small fish to large fish: 100 × 0.15 = 15 kJ/m². Each step uses the explicitly given efficiency for that link; no assumption of 10% is applied.",
+      "expectedAnswer": "15 kJ/m²",
+      "choices": [
+        "15 kJ/m²",
+        "30 kJ/m²",
+        "150 kJ/m²",
+        "300 kJ/m²"
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Calculate energy flow through a linear food chain using stated transfer efficiencies",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s83aea9f74f87": {
+    "operation_index": 5,
+    "call_index": 25,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A grassland ecosystem has these feeding links: grass is eaten by grasshoppers and mice; grasshoppers are eaten by spiders and birds; mice are eaten by snakes and foxes; spiders are eaten by birds; snakes are eaten by hawks. No other feeding occurs. Which consumer receives energy that originated from grass via exactly two trophic transfers?",
+      "explanation": "Trace paths from grass (producer = trophic level 1). One transfer: grass → grasshopper or grass → mouse (primary consumers, level 2). Two transfers: grass → grasshopper → spider, grass → grasshopper → bird, or grass → mouse → snake, grass → mouse → fox (secondary consumers, level 3). Birds appear via both one-transfer (grass → mouse → bird is not stated; check: birds eat grasshoppers and spiders—so grass → grasshopper → bird is two transfers). Spiders eat grasshoppers (one transfer from grass). Foxes eat mice (one transfer). Hawks eat snakes (three transfers: grass → mouse → snake → hawk). Only birds receive energy via exactly two transfers in this web.",
+      "expectedAnswer": "Birds",
+      "choices": [
+        "Spiders",
+        "Foxes",
+        "Birds",
+        "Hawks"
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "2",
+      "objective": "Trace specific trophic pathways using only stated feeding relationships",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sc78a371ae1d7": {
+    "operation_index": 5,
+    "call_index": 25,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "In a marine ecosystem, phytoplankton have a standing biomass of 50 g/m² but complete their life cycle rapidly, turning over 8 times per year. Zooplankton have a standing biomass of 200 g/m² and turn over once per year. Annual energy production by phytoplankton is 4,000 kJ/m². Which conclusion follows about the energy pyramid?",
+      "explanation": "Standing biomass (snapshot amount) differs from production (energy flow over time). Phytoplankton production is 4,000 kJ/m²/year. Zooplankton production depends on what they consume and transfer efficiency, but their larger standing biomass does not mean greater energy production. The inverted biomass pyramid (200 g/m² consumers vs. 50 g/m² producers) does not indicate inverted energy flow because producers replenish rapidly. Energy pyramids are never inverted because energy decreases at each transfer.",
+      "expectedAnswer": "The biomass pyramid is inverted but the energy pyramid is not",
+      "choices": [
+        "Both pyramids are inverted",
+        "The biomass pyramid is inverted but the energy pyramid is not",
+        "Neither pyramid is inverted",
+        "The energy pyramid is inverted but the biomass pyramid is not"
+      ],
+      "topic": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "skillID": "2",
+      "objectiveID": "1",
+      "objective": "Distinguish standing biomass from energy production in pyramid interpretation",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s8f185e6e52e3": {
+    "operation_index": 5,
+    "call_index": 25,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A forest food web has these links: oak leaves → caterpillars → warblers → hawks; oak leaves → deer; acorns → mice → foxes; acorns → deer. Annual oak leaf production is 5,000 kJ/ha, acorn production is 2,000 kJ/ha. Caterpillars use only oak leaves; mice use only acorns. Transfer efficiency is 10% for all herbivore-to-carnivore links, but herbivore assimilation efficiency is 50% (half of consumed energy is assimilated, half egested). How much energy do warblers receive annually from this web?",
+      "explanation": "Warblers eat caterpillars. Caterpillars consume oak leaves: 5,000 kJ/ha available. Caterpillars assimilate 50%: 2,500 kJ/ha becomes caterpillar production (the rest is egested, not transferred). Warblers receive 10% of caterpillar production: 2,500 × 0.10 = 250 kJ/ha. Acorn, mouse, deer, and fox pathways do not affect warbler energy. The assimilation efficiency applies before the trophic transfer efficiency.",
+      "expectedAnswer": "250 kJ/ha",
+      "choices": [
+        "250 kJ/ha",
+        "500 kJ/ha",
+        "1,000 kJ/ha",
+        "2,500 kJ/ha"
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "3",
+      "objective": "Apply sequential efficiency steps (assimilation then transfer) to calculate consumer energy",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sc8d97a8b2a3e": {
+    "operation_index": 5,
+    "call_index": 25,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "An arctic food web: diatoms → krill → fish → seals → polar bears. Annual diatom production is 20,000 kJ/m². Krill also eat 5,000 kJ/m² of other phytoplankton not listed. Fish production is measured at 180 kJ/m². Seals eat only fish. Polar bear production is 2 kJ/m². Which inference is valid about energy transfer to polar bears?",
+      "explanation": "Calculate available energy stepwise using only stated links. Krill receive 20,000 + 5,000 = 25,000 kJ/m² from all sources. Fish production is given as 180 kJ/m² (actual realized, not calculated). Seals eat only fish, so seals receive 180 kJ/m² input. Polar bear production is 2 kJ/m². The seal-to-polar-bear efficiency is 2/180 ≈ 1.1%, which is validly calculated from stated values. The fish-to-seal efficiency cannot be determined because seal production is not stated. The krill-to-fish efficiency using only diatoms (20,000) would be 180/20,000 = 0.9%, but krill have other food sources, so this calculation is unsupported.",
+      "expectedAnswer": "The seal-to-polar-bear transfer efficiency is approximately 1%",
+      "choices": [
+        "The krill-to-fish transfer efficiency is approximately 1%",
+        "The seal-to-polar-bear transfer efficiency is approximately 1%",
+        "The fish-to-seal transfer efficiency is approximately 10%",
+        "The diatom-to-krill transfer efficiency is approximately 10%"
+      ],
+      "topic": "trophic production and stated transfer efficiencies",
+      "skillID": "3",
+      "objectiveID": "1",
+      "objective": "Identify which efficiency calculations are supported by explicitly stated production values",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sc2b9a6dd9575": {
+    "operation_index": 5,
+    "call_index": 26,
+    "raw_index": 0,
+    "raw": {
+      "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+      "explanation": "Zooplankton receive 10,000 × 0.20 = 2,000 kJ/m²/year. Shrimp receive 2,000 kJ/m²/year. Small fish have two prey: zooplankton (2,000 × 0.20 = 400) and shrimp (2,000 × 0.20 = 400), totaling 800 kJ/m²/year. Large fish receive 800 × 0.20 = 160 kJ/m²/year.",
+      "expectedAnswer": "160 kJ/m²/year",
+      "choices": [
+        "160 kJ/m²/year",
+        "400 kJ/m²/year",
+        "800 kJ/m²/year",
+        "2,000 kJ/m²/year"
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "1",
+      "objective": "Calculate energy flow through branching food webs using stated transfer efficiencies",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s58b32355408e": {
+    "operation_index": 5,
+    "call_index": 26,
+    "raw_index": 1,
+    "raw": {
+      "prompt": "A pond ecosystem shows: phytoplankton (500 g/m² biomass, 10,000 kJ/m²/year production) → minnows (200 g/m² biomass) → pike (50 g/m² biomass). Transfer efficiency is 25%. What production reaches pike?",
+      "explanation": "Production, not biomass, determines energy flow. Minnow production = 10,000 × 0.25 = 2,500 kJ/m²/year. Pike production = 2,500 × 0.25 = 625 kJ/m²/year. The biomass pyramid is upright, but this does not affect the calculation; an inverted biomass pyramid would yield the same production-based answer.",
+      "expectedAnswer": "625 kJ/m²/year",
+      "choices": [
+        "625 kJ/m²/year",
+        "1,250 kJ/m²/year",
+        "2,500 kJ/m²/year",
+        "12,500 kJ/m²/year"
+      ],
+      "topic": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "skillID": "2",
+      "objectiveID": "1",
+      "objective": "Apply production-based energy calculations independent of biomass distribution",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sb1ed32e5569d": {
+    "operation_index": 5,
+    "call_index": 26,
+    "raw_index": 2,
+    "raw": {
+      "prompt": "In a grassland: grass → grasshoppers → shrews → hawks. Grass produces 5,000 kJ/m²/year. Grasshoppers are also eaten by mice, which are eaten by both hawks and snakes. Hawks receive 40 kJ/m²/year from mice. Snake production is 100 kJ/m²/year with 20% efficiency. What energy do hawks receive from shrews?",
+      "explanation": "Snake production of 100 kJ/m²/year requires mouse production of 100 ÷ 0.20 = 500 kJ/m²/year. Hawks receive 40 from mice, so total mouse production is 500 + 40 = 540 kJ/m²/year. Grasshopper production = 540 ÷ 0.20 = 2,700 kJ/m²/year. Shrew production = (5,000 × 0.20) − 2,700 = 1,000 − 2,700 = −1,700, which is impossible. Re-reading: grasshoppers feed both shrews and mice. Grasshopper production = 5,000 × 0.20 = 1,000. This supports mouse production 540 and shrew production 1,000 − 540 = 460. Hawk production from shrews = 460 × 0.20 = 92 kJ/m²/year.",
+      "expectedAnswer": "92 kJ/m²/year",
+      "choices": [
+        "92 kJ/m²/year",
+        "100 kJ/m²/year",
+        "200 kJ/m²/year",
+        "460 kJ/m²/year"
+      ],
+      "topic": "Combine explicitly described feeding links",
+      "skillID": "1",
+      "objectiveID": "2",
+      "objective": "Resolve energy allocation when multiple consumers share a prey source",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "s858fb2f8e9a3": {
+    "operation_index": 5,
+    "call_index": 26,
+    "raw_index": 3,
+    "raw": {
+      "prompt": "A marine system shows: kelp (800 g/m², 4,000 kJ/m²/year) → urchins → sea otters. Urchin biomass is 2,000 g/m² and otter biomass is 100 g/m². Transfer efficiency is 15%. A researcher claims this inverted pyramid proves more energy flows to otters than kelp produces. What is correct?",
+      "explanation": "Standing biomass (2,000 g/m² urchins > 800 g/m² kelp) forms an inverted pyramid, but energy flow depends on production rates, not biomass. Kelp production is 4,000 kJ/m²/year. Urchin production = 4,000 × 0.15 = 600 kJ/m²/year. Otter production = 600 × 0.15 = 90 kJ/m²/year. The energy pyramid is upright (4,000 > 600 > 90), consistent with thermodynamic constraints. The researcher's claim confuses biomass with energy flow.",
+      "expectedAnswer": "The biomass pyramid is inverted but energy flow to otters is less than kelp production",
+      "choices": [
+        "The biomass pyramid is inverted but energy flow to otters is less than kelp production",
+        "The inverted pyramid proves energy creation at higher trophic levels",
+        "Urchin respiration losses make otter energy exceed kelp production",
+        "Biomass and energy pyramids must always have the same shape"
+      ],
+      "topic": "Distinguish energy flow over time from a snapshot of standing biomass",
+      "skillID": "2",
+      "objectiveID": "2",
+      "objective": "Evaluate claims about inverted pyramids using production-based reasoning",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  "sce8a5eb2dcdd": {
+    "operation_index": 5,
+    "call_index": 26,
+    "raw_index": 4,
+    "raw": {
+      "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+      "explanation": "Crabs and snails are separate plant-consuming branches. Crab production 1,200 kJ/m²/year came from plants at efficiency (1,200 ÷ 8,000) = 15%, but this is crab efficiency, not required. Snail production 800 kJ/m²/year came directly from plants. Snail efficiency = 800 ÷ 8,000 = 10%. The heron and duck pathways are irrelevant to this calculation; their efficiencies are not stated and not needed.",
+      "expectedAnswer": "10%",
+      "choices": [
+        "10%",
+        "15%",
+        "25%",
+        "Cannot be determined from the information given"
+      ],
+      "topic": "trophic production and stated transfer efficiencies",
+      "skillID": "3",
+      "objectiveID": "1",
+      "objective": "Calculate efficiency for a specific pathway using only relevant production values",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "scope": "Synthetic retrospective evidence; byte hashes exclude this manifest itself. Historical trace and current source-context probe have different explicit source bindings.",
+  "files": {
+    "README.md": {
+      "sha256": "2986b36e7e0b77cd29231f909fe3659ac68568eb4581bfec6fcc7c8dbe3778c3",
+      "bytes": 1957
+    },
+    "assessment-a.json": {
+      "sha256": "1f488070ef58a31cc8ebf1ed3bc1c6ef8e4039436b24b1223d22c647d3a885f1",
+      "bytes": 24140
+    },
+    "assessment-b.json": {
+      "sha256": "9dd4bb4ce14f94c3e28be08ee3d58fa7d0b06575a31534bf8b1b72330b5cccfe",
+      "bytes": 26634
+    },
+    "attribution.json": {
+      "sha256": "abeb5d87fbe3631ae532e6cbf960045980e7315fea7f67f5d4d32727f816e512",
+      "bytes": 287219
+    },
+    "build-attribution.py": {
+      "sha256": "b79b8a7783a56c0622858f9f0aa68f19fe5e271ac15fc148b56caa72526af362",
+      "bytes": 7524
+    },
+    "declared-reason-conflicts.json": {
+      "sha256": "fe4daa6dac70283fd3b716814c1e692c56fd4f3d3b3971c43bd455e4f36a124c",
+      "bytes": 7416
+    },
+    "freeze-a.json": {
+      "sha256": "1b1570e3f201b376cf1abfe6376dfa1b67d93fe301058827f389b47cfa8e645d",
+      "bytes": 406
+    },
+    "freeze-b.json": {
+      "sha256": "fd1c73783e00ad3375764b32752cb82ecc1ab353ee4a1761265e5f573b0ac51f",
+      "bytes": 406
+    },
+    "private-mapping.json": {
+      "sha256": "4a4ff716346f070e3004f4f6ac25ebc82a577dbaf8ed332fa871b246511cd00f",
+      "bytes": 85071
+    },
+    "source-context-audit.json": {
+      "sha256": "1d8485d0d5c0044c9a3c55c0bed715108ed41d17e1ea3400da37e760af772356",
+      "bytes": 3079
+    },
+    "stems-a.json": {
+      "sha256": "ed09826d2de5d3fdd518547848ce6dd1458fc08ddd7acdbe0189c728f31b6f63",
+      "bytes": 99969
+    },
+    "stems-b.json": {
+      "sha256": "c3188b8eafb98893996a90e7ff7c4864cc1724c14fad6eeca057d4804b908066",
+      "bytes": 100179
+    },
+    "trace.json": {
+      "sha256": "7995727d3a09230fd662300f601aae466265278a8710c08f103a9582fd675e06",
+      "bytes": 669020
+    }
+  }
+}

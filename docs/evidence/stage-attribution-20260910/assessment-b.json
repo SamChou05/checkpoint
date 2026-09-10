@@ -1,0 +1,506 @@
+{
+  "scope": "Independent retrospective assistant content judgments for the 31 raw author occurrences in stems-b.json, with authored keys, feedback, arm, downstream results, original capture, and sibling assessments withheld. These are not human-expert ground truth and do not establish general production accuracy. Ordinary curriculum conventions and the supplied goal/source context are accepted; arbitrary unstated case facts are not supplied. unique means one warranted listed answer; multiple_supported means multiple warranted listed answers; zero_supported means no listed answer follows; ambiguous identifies a material interpretation or conflicting-premise problem. For ambiguous items, any supported_choices entry is defensible only under the interpretation or explicit answer qualification described in reason, and is not a claim of an unconditionally unique answer. Calculations under conflicting or additional premises are explicitly labeled rather than silently adopted.",
+  "items": [
+    {
+      "id": "s05f00a4f5d56",
+      "status": "unique",
+      "supported_choices": [
+        "Mice feed at more than one trophic level, while spiders feed at exactly one."
+      ],
+      "reason": "In the explicitly described web, mice consume producers and primary consumers, whereas the only described spider prey is a primary consumer. Thus mice occupy two consumer roles and spiders one. Neither numerical energy quantities, a fixed 10% efficiency, nor biomass ordering follows. The answer is interpreted within the described web, not as a claim about every real spider diet.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems"
+      ],
+      "premise_issues": []
+    },
+    {
+      "id": "s0ad704a0f3f1",
+      "status": "ambiguous",
+      "supported_choices": [
+        "975 kJ/m²/year"
+      ],
+      "reason": "With production-based link efficiencies, the two herring-production contributions are 600 and 375, totaling 975. This choice is defensible if the 60%/40% statement describes ingested food energy, which need not have the same shares as resulting production. If those percentages instead describe the herring production contributed by the two routes, the givens conflict: the computed shares are approximately 61.54% and 38.46%, and the exact shares imply two different totals. The stem does not distinguish these meanings. The 510 choice weights the entire diatom production by downstream diet fractions, an allocation the stem never states.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [
+        "The denominator and biological stage of “obtain 60% of their energy” are unspecified (ingestion versus contribution to production).",
+        "Under the production-share reading, the stated exact diet shares conflict with the link-efficiency calculations."
+      ],
+      "calculations": [
+        "Copepods: 10,000 × 0.30 = 3,000; krill: 10,000 × 0.25 = 2,500 kJ/m²/year.",
+        "Herring branch contributions: 3,000 × 0.20 = 600; 2,500 × 0.15 = 375; sum = 975 kJ/m²/year.",
+        "Production-share reading: 0.60H = 600 gives H = 1,000; 0.40H = 375 gives H = 937.5, an inconsistency.",
+        "The calculation 0.60 × 600 + 0.40 × 375 = 510 changes the percentages into upstream allocation weights; it does not satisfy the stated downstream 60%/40% production split."
+      ]
+    },
+    {
+      "id": "s14018fbe992d",
+      "status": "unique",
+      "supported_choices": [
+        "2 km"
+      ],
+      "reason": "The same traced route represents the same ground distance after uniform enlargement. Convert its original length or divide the enlarged measurement by 1.5.",
+      "sources": [
+        "https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "12 cm / 1.5 = 8 cm; 8 × 25,000 = 200,000 cm = 2 km."
+      ]
+    },
+    {
+      "id": "s24ae8c02f9b3",
+      "status": "unique",
+      "supported_choices": [
+        "=N$5+$L9"
+      ],
+      "reason": "Copy displacement is three columns right and four rows down. K has a relative column and fixed row; L has a fixed column and relative row.",
+      "sources": [
+        "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "M5 → P9: Δcolumn = +3, Δrow = +4; K$5 → N$5; $L5 → $L9."
+      ]
+    },
+    {
+      "id": "s2534b4d49fc1",
+      "status": "unique",
+      "supported_choices": [
+        "Use the original 1:50,000 scale with the original 12 cm measurement, or adjust the reduced measurement by dividing by 0.8 before applying the scale"
+      ],
+      "reason": "The explicitly stated lengths establish a linear factor of 0.8. Restore the original map length before applying its scale, or use the correspondingly reduced scale bar.",
+      "sources": [
+        "https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf"
+      ],
+      "premise_issues": [
+        "“80% reduction” could mean reduction by 80% in isolation, but the explicit 12 cm → 9.6 cm measurements resolve the operative factor as 0.8."
+      ],
+      "calculations": [
+        "9.6 / 0.8 = 12 cm; 12 × 50,000 = 600,000 cm = 6 km."
+      ]
+    },
+    {
+      "id": "s362d86f45071",
+      "status": "unique",
+      "supported_choices": [
+        "=$B$3+E$2"
+      ],
+      "reason": "The absolute B3 reference remains fixed. The relative column of C$2 advances to E on the rightward fill, and its fixed row remains 2 on the downward fill.",
+      "sources": [
+        "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "C3 → E3 → E5: $B$3 remains $B$3; C$2 → E$2 → E$2."
+      ]
+    },
+    {
+      "id": "s40fd9a75e320",
+      "status": "ambiguous",
+      "supported_choices": [],
+      "reason": "The original numerical scale and measured road length imply 2.5 km, contradicting its stated 3 km label under the uniform local-scale conditions. If the numerical scale is treated as authoritative, reduction gives the listed 1:62,500. If the measured 5 cm road and 3 km label are authoritative, the original scale is 1:60,000 and the reduced scale is 1:75,000, which is absent. No listed representative fraction satisfies all stated measurements; choosing 1:62,500 requires explicitly setting aside the contradictory road information.",
+      "sources": [
+        "https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf"
+      ],
+      "premise_issues": [
+        "Contradictory given values: 3 km road, 5 cm map measurement, and 1:50,000 uniform scale cannot all be exact.",
+        "No rounding or measurement-error tolerance is stated that resolves the 20% discrepancy."
+      ],
+      "calculations": [
+        "5 cm × 50,000 = 250,000 cm = 2.5 km, not 3 km.",
+        "Numerical-scale reading: 50,000 / 0.8 = 62,500.",
+        "Road-distance reading: 300,000 cm / 5 cm = 60,000; 60,000 / 0.8 = 75,000."
+      ]
+    },
+    {
+      "id": "s42d907c20dfe",
+      "status": "unique",
+      "supported_choices": [
+        "The original 10 cm measurement represents 2.5 km on the ground"
+      ],
+      "reason": "The question offers the original measurement conversion, which is fixed independently of the later reduction. A scale bar reduced with the map continues to denote its original ground distance.",
+      "sources": [
+        "https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "10 × 25,000 = 250,000 cm = 2.5 km.",
+        "Original 4 cm bar represents 1 km; after linear 50% reduction it measures 2 cm and still represents 1 km."
+      ]
+    },
+    {
+      "id": "s49ea0e7af277",
+      "status": "unique",
+      "supported_choices": [
+        "2 km"
+      ],
+      "reason": "The copied scale bar is 3 cm long and still denotes 2 km. The path on that same copy has exactly the bar length.",
+      "sources": [
+        "https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "4 cm × 0.75 = 3 cm; (3 cm / 3 cm) × 2 km = 2 km."
+      ]
+    },
+    {
+      "id": "s5545b83d9d59",
+      "status": "ambiguous",
+      "supported_choices": [
+        "3.6 km (assuming original 2 cm bar = 1 km)"
+      ],
+      "reason": "No physical length of the original or enlarged 1 km scale bar is supplied, so the measured river has no determinate numerical ground length. The first option is mathematically correct as an expressly conditional statement: its own “assuming original 2 cm bar” qualification gives 3.6 km. That assumption is not a stated case fact, so the option does not establish the actual distance asked for. The remaining bare values also could occur with other unreported bar lengths, but none is warranted by the givens.",
+      "sources": [
+        "https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf"
+      ],
+      "premise_issues": [
+        "Missing necessary case measurement: physical length of the scale bar.",
+        "The first answer supplies an additional explicit assumption absent from the stem; its conditional truth is distinct from determining the actual distance."
+      ],
+      "calculations": [
+        "Let L be the original bar length in cm. Enlarged bar length = 1.25L; distance = 9/(1.25L) km = 7.2/L km.",
+        "If L = 2 cm, distance = 3.6 km, as conditionally stated by option 1.",
+        "L = 1.6, 2.5, or 1 cm would instead yield the other listed values 4.5, 2.88, or 7.2 km."
+      ]
+    },
+    {
+      "id": "s5fed28e10e7b",
+      "status": "unique",
+      "supported_choices": [
+        "The original 8 cm measurement still represents 8 km; enlargement changes print size, not ground distance represented"
+      ],
+      "reason": "Enlargement changes map lengths and the effective representative fraction while the represented road remains the same.",
+      "sources": [
+        "https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "Original road: 8 × 100,000 = 800,000 cm = 8 km.",
+        "For a 2× enlargement, road length = 16 cm and new scale = 1:50,000; 16 × 50,000 = 800,000 cm = 8 km."
+      ]
+    },
+    {
+      "id": "s64a8788b11e6",
+      "status": "unique",
+      "supported_choices": [
+        "Zooplankton annual production is 75 g/m²/year."
+      ],
+      "reason": "Apply the stated transfer efficiency to annual production, not to either standing-biomass measurement. Production ratios may legitimately be expressed on a biomass basis; the use of g/m²/year does not by itself invalidate this calculation. Here the given 25% is understood on the same production basis as the question.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems",
+        "https://doi.org/10.1038/s41598-019-53592-6"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "300 g/m²/year × 0.25 = 75 g/m²/year."
+      ]
+    },
+    {
+      "id": "s7f28b6c7b8aa",
+      "status": "multiple_supported",
+      "supported_choices": [
+        "=AVERAGE(B2:F2)",
+        "=AVERAGE($B2:$F2)"
+      ],
+      "reason": "Both options keep the row relative. Because filling is exclusively downward, the column letters remain B and F whether they are relative or absolute. The other two choices incorrectly keep row 2 fixed.",
+      "sources": [
+        "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+      ],
+      "premise_issues": [
+        "Two distinct listed formulas satisfy the complete stated fill requirement."
+      ],
+      "calculations": [
+        "At G20, both =AVERAGE(B2:F2) and =AVERAGE($B2:$F2) copied from G2 refer to B20:F20."
+      ]
+    },
+    {
+      "id": "s858fb2f8e9a3",
+      "status": "unique",
+      "supported_choices": [
+        "The biomass pyramid is inverted but energy flow to otters is less than kelp production"
+      ],
+      "reason": "Urchin standing biomass exceeds kelp standing biomass, but this does not reverse production-energy flow along the chain. The loss implied by the stated transfer efficiency supports the first claim. Exact interpretation of whether 15% applies to each link is unnecessary for the qualitative comparison.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "If the stated 15% applies at both links, otter production = 4,000 × 0.15 × 0.15 = 90 kJ/m²/year, below kelp production."
+      ]
+    },
+    {
+      "id": "s8c361fdc9cc4",
+      "status": "unique",
+      "supported_choices": [
+        "6 km"
+      ],
+      "reason": "Use the original traced length with the original scale or undo the enlargement. The copied numerical label has not been adjusted to the new printed size.",
+      "sources": [
+        "https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "18 / 1.2 = 15 cm; 15 × 40,000 = 600,000 cm = 6 km."
+      ]
+    },
+    {
+      "id": "s8c74fb39a549",
+      "status": "unique",
+      "supported_choices": [
+        "Cannot be determined from the information given."
+      ],
+      "reason": "Neither sea-urchin production nor the kelp-to-urchin transfer efficiency is given. Multiplying kelp production directly by the urchin-to-otter efficiency would omit a transfer. The stated feeding links do not supply the missing rate.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [
+        "Missing quantitative premise is intentional and correctly represented by the “Cannot be determined” option."
+      ],
+      "calculations": [
+        "For energy reaching otters through the stated link: P_otter_from_urchins = 0.12 × P_urchins; P_urchins is unknown."
+      ]
+    },
+    {
+      "id": "s963259e3ab1b",
+      "status": "unique",
+      "supported_choices": [
+        "=$F8+C$2"
+      ],
+      "reason": "Copy displacement is four columns left and four rows down. The fixed F column stays F, its row becomes 8, and the relative G column becomes C while its row stays 2.",
+      "sources": [
+        "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "H4 → D8: Δcolumn = −4, Δrow = +4; $F4 → $F8; G$2 → C$2."
+      ]
+    },
+    {
+      "id": "s9ec19302e8ed",
+      "status": "zero_supported",
+      "supported_choices": [],
+      "reason": "The two links with measured production have 15% efficiency. However, “at each link” includes warblers to hawks, for which no hawk production or efficiency is supplied. Thus option 2 overstates what follows as written. Biomass ordering neither proves a production efficiency above 50% nor determines warbler biomass, and the stated quantities do not establish that caterpillars are more efficient producers than trees. Restricting option 2 to “each measured link” would make it correct, but that restriction is absent.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [
+        "Missing hawk production or last-link efficiency.",
+        "Option 2 quantifies over all three stated links, beyond the two calculable links."
+      ],
+      "calculations": [
+        "Trees → caterpillars: 1,200 / 8,000 × 100% = 15%.",
+        "Caterpillars → warblers: 180 / 1,200 × 100% = 15%.",
+        "Warblers → hawks: P_hawks / 180 × 100%; P_hawks is unknown."
+      ]
+    },
+    {
+      "id": "sa38f86ae525e",
+      "status": "unique",
+      "supported_choices": [
+        "6 km"
+      ],
+      "reason": "The question explicitly asks about the original measurement. Later enlargement and an appropriately redrawn scale bar do not change its ground-distance conversion.",
+      "sources": [
+        "https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "12 × 50,000 = 600,000 cm = 6 km."
+      ]
+    },
+    {
+      "id": "sb1ed32e5569d",
+      "status": "zero_supported",
+      "supported_choices": [],
+      "reason": "The stated mouse-to-hawk contribution gives no hawk total from which to subtract it. Even if the snake efficiency is interpreted as mouse-to-snake transfer efficiency and used to infer mouse production, no stated production or efficiency connects that result to the separate shrew-to-hawk contribution. No numerical option follows.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [
+        "Missing shrew production and shrew-to-hawk efficiency, or an equivalent total hawk-production constraint.",
+        "The food-web links and 40 kJ/m²/year mouse contribution do not determine energy on the shrew branch."
+      ],
+      "calculations": [
+        "Under the natural snake-efficiency interpretation: mouse production = 100 / 0.20 = 500 kJ/m²/year.",
+        "Requested contribution = P_shrews × efficiency(shrews → hawks); both factors are unreported.",
+        "Equivalently, requested contribution = total hawk production − 40; total hawk production is unreported."
+      ]
+    },
+    {
+      "id": "sb6820afd5122",
+      "status": "unique",
+      "supported_choices": [
+        "40 kJ/m²/year"
+      ],
+      "reason": "Apply the three stated successive transfer efficiencies along the given chain.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "8,000 × 0.25 × 0.20 × 0.10 = 40 kJ/m²/year."
+      ]
+    },
+    {
+      "id": "sbe5c66ef7323",
+      "status": "unique",
+      "supported_choices": [
+        "=$A4*D$1"
+      ],
+      "reason": "The fill moves two columns right and two rows down. A is fixed while its row changes to 4; the row-1 reference keeps row 1 and advances from B to D.",
+      "sources": [
+        "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "B2 → D4: Δcolumn = +2, Δrow = +2; $A2 → $A4; B$1 → D$1."
+      ]
+    },
+    {
+      "id": "sc2b9a6dd9575",
+      "status": "ambiguous",
+      "supported_choices": [],
+      "reason": "The shrimp description fails to specify a coherent quantitative pathway. “Zooplankton-eating shrimp” places a zooplankton-to-shrimp transfer before small fish, while “receive 2,000 ... from algae” can describe an indirect basal origin, a direct feeding link, or received food energy rather than shrimp production. Under the stated zooplankton-feeding pathway with 20% at every production transfer, shrimp production would be 400, not 2,000, and the two fish routes yield 96, which is absent. The listed 160 results only if 2,000 is treated as shrimp production already available to small fish and the extra zooplankton transfer is bypassed. Treating shrimp as also feeding directly on algae introduces an additional stated-by-interpretation route whose contribution through their zooplankton diet still needs accounting. No listed answer is warranted across these meanings without repairing the pathway or the meaning of “receive”.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems",
+        "https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems"
+      ],
+      "premise_issues": [
+        "Ambiguous shrimp feeding pathway: direct versus indirect energy from algae.",
+        "Ambiguous energy quantity: shrimp intake versus production.",
+        "The stated 2,000 value conflicts with a 20%-per-step production calculation along the described algae → zooplankton → shrimp pathway."
+      ],
+      "calculations": [
+        "Basic chain: 10,000 × 0.20 × 0.20 × 0.20 = 80 kJ/m²/year to large fish.",
+        "Zooplankton-feeding shrimp route: 10,000 × 0.20 × 0.20 × 0.20 × 0.20 = 16; combined total = 96 kJ/m²/year.",
+        "If, instead, 2,000 is accepted as complete shrimp production, its contribution is 2,000 × 0.20 × 0.20 = 80; adding the basic chain gives the listed 160, but this changes the treatment of the zooplankton-to-shrimp transfer.",
+        "If direct algae-to-shrimp and zooplankton-to-shrimp transfers both apply at 20% of their source production, shrimp contributions are 2,000 + 400, and large-fish total is 80 + (2,400 × 0.20 × 0.20) = 176, also absent."
+      ]
+    },
+    {
+      "id": "sc78a371ae1d7",
+      "status": "unique",
+      "supported_choices": [
+        "The biomass pyramid is inverted but the energy pyramid is not"
+      ],
+      "reason": "Producer standing biomass is smaller than consumer standing biomass, so the biomass pyramid is inverted. The standard energy-pyramid result remains upright: standing stocks do not equate to energy transferred over a year. A numerical zooplankton energy-production value is unnecessary for the qualitative conclusion.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "Standing biomass: phytoplankton 50 < zooplankton 200 g/m².",
+        "Biomass-production illustration from stated turnover: phytoplankton 50 × 8 = 400 versus zooplankton 200 × 1 = 200 g/m²/year; these masses alone should not be used to invent an exact zooplankton kJ value."
+      ]
+    },
+    {
+      "id": "sce8a5eb2dcdd",
+      "status": "unique",
+      "supported_choices": [
+        "10%"
+      ],
+      "reason": "Within the explicitly listed food web, the plant-to-snail production ratio is 800/8,000. Crab and snail production are separate receiving branches; adding crab production would calculate a different combined ratio. No unreported snail food source is assumed.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "800 / 8,000 × 100% = 10%."
+      ]
+    },
+    {
+      "id": "sd4db3f0c55b6",
+      "status": "unique",
+      "supported_choices": [
+        "=$N2/12"
+      ],
+      "reason": "Column N must stay fixed across months, while the row must follow the category on downward fill. Only $N2 has both required properties.",
+      "sources": [
+        "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "From B2 to M10, =$N2/12 becomes =$N10/12."
+      ]
+    },
+    {
+      "id": "sea341b3380b3",
+      "status": "unique",
+      "supported_choices": [
+        "=D$2-$C3"
+      ],
+      "reason": "The monthly actual reference must move across columns but stay on row 2; the regional target must stay in column C but move down rows. D$2 and $C3 provide those anchors. The listed formulas all use actual minus target, so no competing sign convention creates an additional listed answer.",
+      "sources": [
+        "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "D3 → G6: =D$2-$C3 becomes =G$2-$C6."
+      ]
+    },
+    {
+      "id": "sec46e82d1dde",
+      "status": "unique",
+      "supported_choices": [
+        "=$A5+D$2"
+      ],
+      "reason": "Copy displacement is two columns right and two rows down. The fixed A column remains A and its row becomes 5; relative B advances to D while its fixed row stays 2.",
+      "sources": [
+        "https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "C3 → E5: $A3 → $A5; B$2 → D$2."
+      ]
+    },
+    {
+      "id": "sf037e900388b",
+      "status": "unique",
+      "supported_choices": [
+        "15 kJ/m²"
+      ],
+      "reason": "All successive transfer efficiencies and exclusive diets needed for the stated chain are supplied. Multiply through the three transfers.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "10,000 × 0.20 × 0.05 × 0.15 = 15 kJ/m² annually."
+      ]
+    },
+    {
+      "id": "sf8c14e7739f8",
+      "status": "unique",
+      "supported_choices": [
+        "Fox trophic transfer efficiency from all prey combined is approximately 7%."
+      ],
+      "reason": "The two described fox prey belong to the same primary-consumer level, so add their production before computing the overall fox transfer ratio. Lemming production is 10% of plant production and goose production 15%, and standing-biomass ordering is not supplied.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems",
+        "https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "Total prey production = 200 + 300 = 500 kJ/m²/year.",
+        "Fox transfer efficiency = 35 / 500 × 100% = 7%."
+      ]
+    },
+    {
+      "id": "sfc58bbdc366b",
+      "status": "unique",
+      "supported_choices": [
+        "The producer biomass pyramid is inverted, but energy flow to consumers is not constrained by standing biomass alone."
+      ],
+      "reason": "Consumers have greater standing biomass than producers, but the given rapid producer turnover distinguishes annual production from that stock. No energy-law violation follows from the stock comparison.",
+      "sources": [
+        "https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems"
+      ],
+      "premise_issues": [],
+      "calculations": [
+        "Producer annual biomass production = 50 × 10 = 500 g/m²/year; producer standing biomass is 50 g/m², below consumer standing biomass of 200 g/m²."
+      ]
+    }
+  ]
+}

@@ -1,5 +1,30 @@
 # Pause handoff — September 9, 2026
 
+## September 10 completed stage attribution
+
+Read `QUESTION_STAGE_ATTRIBUTION_RESULTS.md` and the committed
+`docs/evidence/stage-attribution-20260910/` evidence before further work. The
+passive observer now exactly replays the completed delivery run: 62 raw
+occurrences, 33 admissions, 29 calls and seven returns. Two independent
+key-blind assessment packets (31 occurrences each, one assessor per occurrence)
+are frozen and joined by observed call/index lineage. The full backend suite
+passed 1,121 tests. No fresh provider calls or prompt changes occurred.
+
+The next focused hypothesis is output ordering: four valid questions have
+solver reasons that explicitly correct the judgment emitted earlier in the same
+row. Current prompt examples and native schema both put judgment before reason;
+the native serializer also sorts keys. Test reason before final judgment with
+otherwise identical current contracts, exact choices and fixed controls. Do not
+rewrite labels from free prose, weaken vetoes, or claim causation from this replay.
+The earlier split-evidence prototype's reason-first status was a different task
+and still made semantic errors. The proposed current-solver comparison has not
+been prepared or run. The optional stronger-model plan remains unexecuted.
+
+Preserve assessment scope: the new single-assessor pass supports seven returned
+keys, while the original paired assessment conservatively supported six and
+retained an ecology interpretation ambiguity. Neither establishes complete
+teaching quality or learning gains. The broader goal remains active/incomplete.
+
 ## September 10 objective context and exact replay
 
 The current `codex/goal-context-preservation` branch also retains each candidate's
