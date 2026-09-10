@@ -484,7 +484,7 @@ struct FocusWinsView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Close", action: requestClose)
-                        .foregroundStyle(CheckpointTheme.teal)
+                        .foregroundStyle(CheckpointTheme.accent)
                 }
 
                 ToolbarItemGroup(placement: .keyboard) {
@@ -517,19 +517,19 @@ struct FocusWinsView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 7) {
                 Image(systemName: "lock.fill")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .accessibilityHidden(true)
 
                 Text("PRIVATE NOTES")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(1)
             }
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Private notes")
 
             Text(goalTitle)
-                .font(.title2.weight(.bold))
+                .font(CheckpointTypography.goalTitle)
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
@@ -554,9 +554,9 @@ struct FocusWinsView: View {
                 HStack(alignment: .center, spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("LOG A FOCUS WIN")
-                            .font(.caption2.weight(.bold))
+                            .font(CheckpointTypography.eyebrow)
                             .tracking(0.9)
-                            .foregroundStyle(CheckpointTheme.teal)
+                            .foregroundStyle(CheckpointTheme.accent)
 
                         Text("What moved forward?")
                             .font(.headline)
@@ -659,7 +659,7 @@ struct FocusWinsView: View {
                         Spacer(minLength: 4)
                         Image(systemName: "chevron.right")
                             .font(.caption.weight(.bold))
-                            .foregroundStyle(CheckpointTheme.teal)
+                            .foregroundStyle(CheckpointTheme.accent)
                             .accessibilityHidden(true)
                     }
                 }
@@ -678,15 +678,11 @@ struct FocusWinsView: View {
     private var composerLauncherIcon: some View {
         Image(systemName: "plus")
             .font(.system(size: 17, weight: .bold))
-            .foregroundStyle(CheckpointTheme.heroText)
+            .foregroundStyle(CheckpointTheme.actionText)
             .frame(width: 44, height: 44)
             .background(
-                LinearGradient(
-                    colors: [CheckpointTheme.actionTeal, CheckpointTheme.actionDeep],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+                CheckpointTheme.actionFill,
+                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
             )
             .accessibilityHidden(true)
     }
@@ -726,7 +722,7 @@ struct FocusWinsView: View {
                 .font(.system(size: 9, weight: .bold))
         }
         .font(.caption.weight(.semibold))
-        .foregroundStyle(CheckpointTheme.teal)
+        .foregroundStyle(CheckpointTheme.accent)
         .accessibilityHidden(true)
     }
 
@@ -853,7 +849,7 @@ struct FocusWinsView: View {
 
     private var ledgerTitle: some View {
         Text("Your ledger")
-            .font(.title3.weight(.bold))
+            .font(CheckpointTypography.sectionTitle)
             .foregroundStyle(CheckpointTheme.text)
             .accessibilityAddTraits(.isHeader)
             .accessibilityFocused(
@@ -863,7 +859,7 @@ struct FocusWinsView: View {
     }
 
     private var ledgerCount: some View {
-        StatusBadge(text: ledgerCountText, tint: CheckpointTheme.teal)
+        StatusBadge(text: ledgerCountText, tint: CheckpointTheme.accent)
     }
 
     private var ledgerCountText: String {
@@ -1202,19 +1198,10 @@ private struct FocusWinsWeeklySnapshotCard: View {
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(CheckpointTheme.ink)
                 .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-                .overlay(alignment: .topTrailing) {
-                    Circle()
-                        .fill(CheckpointTheme.heroSuccess.opacity(0.09))
-                        .frame(width: 160, height: 160)
-                        .blur(radius: 12)
-                        .offset(x: 72, y: -92)
-                        .allowsHitTesting(false)
-                }
         )
-        .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 9)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Your Focus Wins this week")
         .accessibilityValue(presentation.accessibilityValue)
@@ -1263,7 +1250,7 @@ private struct FocusWinsWeeklySnapshotCard: View {
             .font(.system(size: 21, weight: .bold))
             .foregroundStyle(CheckpointTheme.heroSuccess)
             .frame(width: 44, height: 44)
-            .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 13))
+            .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 10))
             .contentTransition(.symbolEffect(.replace))
             .symbolEffectsRemoved(!motionPolicy.animatesSymbolEffects)
             .accessibilityHidden(true)
@@ -1272,13 +1259,12 @@ private struct FocusWinsWeeklySnapshotCard: View {
     private var snapshotCopy: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("YOUR WEEK")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(1)
                 .foregroundStyle(CheckpointTheme.heroMuted)
 
             Text(presentation.headline)
-                .font(.title2.weight(.bold))
-                .fontDesign(.rounded)
+                .font(CheckpointTypography.sectionTitle)
                 .foregroundStyle(CheckpointTheme.heroText)
                 .fixedSize(horizontal: false, vertical: true)
                 .contentTransition(.numericText())
@@ -1292,7 +1278,7 @@ private struct FocusWinsWeeklySnapshotCard: View {
 
     private var snapshotBadge: some View {
         Text(presentation.badgeText)
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.6)
             .foregroundStyle(CheckpointTheme.heroSuccess)
             .padding(.horizontal, 10)
@@ -1517,13 +1503,6 @@ struct FocusWinRow: View {
                     lineWidth: isCelebrated ? 1.5 : 1
                 )
         }
-        .shadow(
-            color: isCelebrated
-                ? CheckpointTheme.teal.opacity(motionPolicy.celebrationShadowOpacity)
-                : .clear,
-            radius: 10,
-            y: 4
-        )
         .task(id: accessibilityFocusRequestID) {
             guard let requestID = accessibilityFocusRequestID else { return }
             await Task.yield()
@@ -1568,7 +1547,7 @@ struct FocusWinRow: View {
     private var rowBackground: Color {
         isCelebrated
             ? CheckpointTheme.teal.opacity(motionPolicy.celebrationBackgroundOpacity)
-            : CheckpointTheme.panel.opacity(0.94)
+            : CheckpointTheme.panel
     }
 
     private var actionsMenu: some View {
