@@ -1,0 +1,14 @@
+{
+  "capture_byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+  "plan_sha256": "bbebe7e13927aa06bc701bb3745ecc0d5beffea2c75d4b3f07261a9ccf090114",
+  "returned_item_count": 7,
+  "requested_slots": 30,
+  "selection": "Every captured operation question, including any partial result from an operational failure; no rejected raw draft substituted.",
+  "shuffle": "SystemRandom once, opaque IDs retained across both assessment phases.",
+  "feedback_scope": "Compositions use exact returned choice keys and text; separately checked against actual Swift feedback selection after app admission.",
+  "files": {
+    "stems-and-choices.json": "b2a824284f93f9859a631e568f55b9eb4c68652927be1c639d6a12a8a70cd75d",
+    "teaching.json": "432dab9feb3b9e4a219e4fa1916d83b58243ba51cd43177ac32f0cb59a34277c",
+    "private-mapping.json": "bfe62ea79858ea874f2384d2386cc57e30d884d22985c9f0598609bf3c2c887d"
+  }
+}

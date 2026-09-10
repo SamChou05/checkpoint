@@ -1,0 +1,86 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly derives $A4 from the fixed score column and variable student row, and B$3 from the fixed weight row and variable assignment column, then combines them as =$A4*B$3. This provides a useful complete reference-selection solution; for example its stated rules imply =$A8*E$3 at E8.",
+        "There are no individual choice explanations. All four composed feedback strings reproduce the supported main explanation and do not assert a nonexistent selected-choice-specific error. The absence of individualized distractor feedback limits specificity but does not make the worked solution incomplete.",
+        "Every reference to a row or column concerns the worksheet, not the displayed answer position; all feedback survives answer shuffling."
+      ]
+    },
+    {
+      "id": "q02",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly identifies fixed rate column A, variable rate row, fixed amount row 1, and variable amount column. Among the offered choices, =$A2*B$1 alone preserves these relationships in both directions.",
+        "The explanation for =$A2*B$1 correctly describes both mixed anchors. The explanation for =A2*B1 correctly identifies rate-column drift when filling right and amount-row drift when filling down.",
+        "The explanation for =A$2*$B1 correctly identifies the inappropriate fixed rate row and amount column. The explanation for =$A$2*B$1 correctly states that downward filling continues reading A2 rather than A3, A4, or A5; this is a wrong input relationship regardless of any coincidental equal numerical rates.",
+        "Each of the four composed feedback strings joins its supported choice explanation to the supported main explanation. The resulting feedback supplies the reference-selection reasoning needed for the problem, with no positional answer labels or unstated worksheet changes."
+      ]
+    },
+    {
+      "id": "q03",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly derives the mixed reference $N2: N stays fixed across months and the row follows the category. Combined with the division by 12 supplied identically in every choice, this is a useful complete solution to the reference-selection task; M10 would contain =$N10/12.",
+        "The explanation for =$N2/12 correctly describes its column lock and variable row. The explanation for =N2/12 correctly predicts N to O to P as the formula is filled right.",
+        "The explanation for =N$2/12 correctly identifies both the relative column and the fixed row; its statement about reading the first category's target applies to filling down from B2, while horizontal filling also causes the explicitly identified column drift. The explanation for =$N$2/12 correctly identifies repeated use of row 2 instead of each destination category row.",
+        "All four composed feedback strings provide the corresponding supported anchor diagnosis plus the main reasoning. No teaching text depends on a choice's displayed order."
+      ]
+    },
+    {
+      "id": "q04",
+      "all_displayed_feedback_supported": false,
+      "worked_solution_complete": false,
+      "shuffle_safe": true,
+      "findings": [
+        "The main arithmetic 0.25 \u00d7 300 = 75 is correct, but the main explanation and the 75-choice explanation assert a mass-production result without establishing that the stated efficiency is a biomass-production ratio. With energy-production efficiency, zooplankton biomass production is 75(e_p/e_z) g/m\u00b2/year, where e_p and e_z are the respective energy contents per gram. Neither those values nor the alternative biomass-efficiency convention is supplied. This preserves the first-pass uncertainty rather than repairing it using the intended answer.",
+        "The explanation for the 150 choice correctly recognizes the numerical zooplankton standing-biomass figure, but calls the requested quantity annual energy production even though the offered units are grams per area per year. A biomass stock and an annual biomass-production rate differ, and an energy-production rate is another quantity requiring a conversion.",
+        "The explanations for 37.5 and 7.5 correctly identify the numerical operations 0.25 \u00d7 150 and 0.25 \u00d7 30. Those operations use standing stocks and by themselves yield g/m\u00b2, not annual production rates. They plausibly identify the intended stock/flow mistakes, but do not resolve the missing energy-to-mass convention that prevents unconditional rejection of all other production values.",
+        "Every composed feedback string repeats the unsupported unconditional 75 g/m\u00b2/year result from the main explanation. Consequently none supplies a complete solution to the item as stated without an unstated convention. The sentence about what the distractors test also describes an intended diagnostic purpose rather than evidence of a learner's reasoning.",
+        "The feedback uses quantities and choice contents, not ordinal or letter positions; shuffling does not create an additional defect."
+      ]
+    },
+    {
+      "id": "q05",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly computes the displacement: 9 \u2212 5 = 4 rows down and 16 \u2212 13 = 3 columns right, with P = 16 and M = 13.",
+        "It correctly transforms K$5 to N$5 by changing only the column, and $L5 to $L9 by changing only the row, then explicitly assembles =N$5+$L9. Both reference transformations and the final formula are supported and form a complete worked solution.",
+        "There are no individual choice explanations. Each of the four composed feedback strings is the same supported, complete main solution. None contains answer-position references, so all are shuffle-safe."
+      ]
+    },
+    {
+      "id": "q06",
+      "all_displayed_feedback_supported": false,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly states the +2-column, +2-row displacement and correctly changes $A2 to $A4 and B$1 to D$1. It contains enough explicit steps to assemble =$A4*D$1 and gives a useful complete worked solution.",
+        "The choice explanations for =$A4*D$1, =$A2*D$1, and =$A4*B$1 correctly describe the anchors and the relative row or column that must change. Their three composed feedback strings remain supported when joined to the main explanation.",
+        "The explanation for =A4*D1 correctly notices the missing dollar signs, but its claim that the column would shift away from A and the row away from 1 does not explain the displayed candidate at D4 as written. That candidate already refers to A4 and D1, the same input cells as =$A4*D$1. The actual reason it cannot be the copied formula is that copying preserves the dollar signs in the source. To make the stated drift claim precise requires an unstated counterfactual of deleting anchors before the original copy, or a subsequent copy; neither is the given task. Without anchors in the original B2 formula, the specified displacement would produce =C4*D3, not =A4*D1.",
+        "The composed feedback for =A4*D1 repeats this imprecise rationale, so not every displayed claim is warranted as written even though the appended main solution is correct. The defect is about when anchors are absent, not the answer's order. All feedback is position-independent and shuffle-safe."
+      ]
+    },
+    {
+      "id": "q07",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly computes 8 \u2212 4 = 4 rows down and 4 \u2212 8 = \u22124 columns, or four columns left, with D = 4 and H = 8.",
+        "It correctly keeps the F column fixed while changing row 4 to 8, giving $F8, and keeps row 2 fixed while changing G to C, giving C$2. The assembled result =$F8+C$2 is correct and the full transformation is a complete worked solution.",
+        "There are no individual choice explanations. All four composed feedback strings reproduce this supported main solution. Worksheet column letters are not answer labels, and no feedback depends on displayed choice position."
+      ]
+    }
+  ]
+}

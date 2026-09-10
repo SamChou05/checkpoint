@@ -1,0 +1,93 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "premise_status": "valid",
+      "supported_choices": [
+        "=$A4*B$3"
+      ],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 3,
+      "shuffle_safe": true,
+      "reasoning": "The student input must keep column A while its row follows the destination, giving $A4; the assignment weight must keep row 3 while its column follows the destination, giving B$3. At E8 this becomes =$A8*E$3. The other choices respectively move both input coordinates, freeze both inputs, or fix the opposite components. The layout supplies two distinct relationships that must be interpreted and preserved. No option refers to its displayed position."
+    },
+    {
+      "id": "q02",
+      "premise_status": "valid",
+      "supported_choices": [
+        "=$A2*B$1"
+      ],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 3,
+      "shuffle_safe": true,
+      "reasoning": "Across columns, the rate must remain in A and the amount column must change; down rows, the rate row must change and the amount must remain in row 1. Thus $A2 and B$1 are required; F5 would contain =$A5*F$1. The inclusion of the unused rate in A1 is unnecessary but does not obstruct the stated B2:F5 computation. Distractors capture reversed anchors, freezing the rate row, and omitting anchors."
+    },
+    {
+      "id": "q03",
+      "premise_status": "valid",
+      "supported_choices": [
+        "=$N2/12"
+      ],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 2,
+      "shuffle_safe": true,
+      "reasoning": "The target is always in column N and always in the destination's row. Fix N and allow the row to vary: =$N2/12 becomes =$N10/12 at M10. Every other option either moves N across the sheet or prevents the row from changing. This directly applies one mixed-reference rule to one input; the month and category labels do not add interacting reasoning steps. It fits the reference-copying goal, though it samples fewer relationships than the full learning target."
+    },
+    {
+      "id": "q04",
+      "premise_status": "uncertain",
+      "supported_choices": [],
+      "uniquely_answerable": false,
+      "goal_fit": true,
+      "distractors_adequate": false,
+      "assessed_difficulty": 3,
+      "shuffle_safe": true,
+      "reasoning": "The intended production-ratio calculation is 300 times 0.25 = 75 g/m\u00b2/year, and neither standing-biomass figure should be substituted for annual production. However, the goal is energy flow and trophic transfer efficiency ordinarily relates energy production, while the offered production rates are masses. If phytoplankton and zooplankton contain e_p and e_z energy per gram, the resulting mass production is 75(e_p/e_z) g/m\u00b2/year; those energy densities, or an explicit statement that the 25% is a biomass-production ratio, are absent. The supplied selective summary calls efficiency a production ratio without resolving this dimensional convention. Therefore 75 is supported only by that unstated interpretation, not unconditionally; no offered option acknowledges the missing convention. The ecological standing-biomass values themselves are possible and are not a contradiction. If biomass-production efficiency were explicitly stipulated, 75 would be uniquely correct and the three other numbers would diagnose stock/flow confusion. The recognizable intended task distinguishes annual production from standing biomass, which is level 3, rather than a novel multiconcept tradeoff."
+    },
+    {
+      "id": "q05",
+      "premise_status": "valid",
+      "supported_choices": [
+        "=N$5+$L9"
+      ],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 2,
+      "shuffle_safe": true,
+      "reasoning": "M5 to P9 is three columns right and four rows down. K$5 therefore becomes N$5, and $L5 becomes $L9. The two terms are transformed independently using the familiar dollar-sign rule. Distractors change fixed components or incorrectly freeze a relative column. This is direct rule application despite containing two references; no additional scenario evidence must be interpreted."
+    },
+    {
+      "id": "q06",
+      "premise_status": "valid",
+      "supported_choices": [
+        "=$A4*D$1"
+      ],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 2,
+      "shuffle_safe": true,
+      "reasoning": "B2 to D4 is two columns right and two rows down. The fixed A column stays A while row 2 becomes 4, and the relative B column becomes D while fixed row 1 stays 1. The exact copied formula is =$A4*D$1. =A4*D1 may reference the same cells at D4, but copying does not remove the original anchors, so it is not a second correct answer. Product and month headings might be text, but the question concerns formula text rather than its evaluated numerical result. Distractors capture failure to move each relative component or loss of anchors."
+    },
+    {
+      "id": "q07",
+      "premise_status": "valid",
+      "supported_choices": [
+        "=$F8+C$2"
+      ],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 2,
+      "shuffle_safe": true,
+      "reasoning": "H4 to D8 is four columns left and four rows down. $F4 becomes $F8 because its column is fixed; G$2 becomes C$2 because its row is fixed. The other options freeze both original references, shift a fixed F column, or incorrectly change the fixed row 2. A leftward displacement changes the arithmetic direction but remains a direct application of the copying rule. All answer texts remain meaningful in any order."
+    }
+  ]
+}

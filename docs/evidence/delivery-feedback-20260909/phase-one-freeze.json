@@ -1,0 +1,9 @@
+{
+  "frozen_at_utc": "2026-09-10T04:51:25.822949+00:00",
+  "phase": "Both first passes finalized before teaching was supplied to either assessor.",
+  "files": {
+    "stems-and-choices.json": "b2a824284f93f9859a631e568f55b9eb4c68652927be1c639d6a12a8a70cd75d",
+    "first-assessment-a.json": "e6038e4b056b1a141449e3a290660fd7626ccd25ce713982568ae7c6de0d9f12",
+    "first-assessment-b.json": "338059df96e4b7f1b205eb1e94f43ae6d40290ae53c0116469c63431a1ee3c37"
+  }
+}

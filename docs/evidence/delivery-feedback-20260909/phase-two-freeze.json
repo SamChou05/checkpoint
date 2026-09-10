@@ -1,0 +1,10 @@
+{
+  "frozen_at_utc": "2026-09-10T04:54:25.377250+00:00",
+  "phase": "Both teaching passes finalized; first passes unchanged; arm/key unmasking follows.",
+  "files": {
+    "teaching.json": "432dab9feb3b9e4a219e4fa1916d83b58243ba51cd43177ac32f0cb59a34277c",
+    "teaching-assessment-a.json": "8c1a9cab1dd19d11a3f4b875b6407daf7f726009b09af5d0ed0f5240b35c4277",
+    "teaching-assessment-b.json": "d92b6f03310f59ab81836f3879838c88596e663fe3c507e72a04a38d297d3e43",
+    "phase-one-freeze.json": "fec329ff7515e686469824c2ec5ae1d0e592a46385c67dfa168d084b194875eb"
+  }
+}

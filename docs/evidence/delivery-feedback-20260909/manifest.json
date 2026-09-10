@@ -1,0 +1,98 @@
+{
+  "README.md": {
+    "sha256": "f29df8639217789821963c4f3cfc92330314a82f0fcf3674343b12222c116a56",
+    "bytes": 3143
+  },
+  "bank-delivery.json": {
+    "sha256": "3f5b8e802d5fb4c367b52b56d279f82b712bdfa0703ad073865f1081e3a5ba4a",
+    "bytes": 74495
+  },
+  "build-assessment.py": {
+    "sha256": "f59be8e1fa05de86620ca2f1861e340844273835a2665db4b0801447ff06bbb1",
+    "bytes": 3225
+  },
+  "capture.json": {
+    "sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+    "bytes": 633226
+  },
+  "client-attachment-manifest.json": {
+    "sha256": "600d472ccb257abc09c092f75608eef77f56eff1006de063befa3c265cf71a05",
+    "bytes": 776
+  },
+  "client-delivery.json": {
+    "sha256": "37bb4b69114d6da508c0c83e3475341b25cc299dde995067c40275c4b815b940",
+    "bytes": 32994
+  },
+  "client-test-summary.json": {
+    "sha256": "c05dd002d5c471b01371ee96136cf65fb13cb1ec8be9cec8780d49d927991493",
+    "bytes": 994
+  },
+  "first-assessment-a.json": {
+    "sha256": "e6038e4b056b1a141449e3a290660fd7626ccd25ce713982568ae7c6de0d9f12",
+    "bytes": 6808
+  },
+  "first-assessment-b.json": {
+    "sha256": "338059df96e4b7f1b205eb1e94f43ae6d40290ae53c0116469c63431a1ee3c37",
+    "bytes": 5913
+  },
+  "operational-audit.json": {
+    "sha256": "81233db488fe96eb8fd559bf4c31da0cc01302f3a2e356a5bb4bbc6ed0538337",
+    "bytes": 50054
+  },
+  "operational-audit.md": {
+    "sha256": "31e9ae27a9a542f138d928a181ec55e67349d3273d33908887f77df4b559cb1d",
+    "bytes": 1737
+  },
+  "packet-manifest.json": {
+    "sha256": "eb8b547c06106cbfff7e399cdf45a886e8d0b4710434888ab5b11c5ee24093fe",
+    "bytes": 923
+  },
+  "phase-one-freeze.json": {
+    "sha256": "fec329ff7515e686469824c2ec5ae1d0e592a46385c67dfa168d084b194875eb",
+    "bytes": 462
+  },
+  "phase-two-freeze.json": {
+    "sha256": "121c99d3d94acff5275ae5646b73f80b57dcc3c5046ed1a42e183e3fbf600b73",
+    "bytes": 562
+  },
+  "plan.json": {
+    "sha256": "6c91c0498c6ea93fa79028b9cee86018ea8176b72f3b205c356496964a50e38c",
+    "bytes": 120523
+  },
+  "private-mapping.json": {
+    "sha256": "bfe62ea79858ea874f2384d2386cc57e30d884d22985c9f0598609bf3c2c887d",
+    "bytes": 10089
+  },
+  "results-audit.json": {
+    "sha256": "1877e0168dc7dcefda54a981660a09663d7de2d0b53fd854cfc31d214d57af22",
+    "bytes": 6419
+  },
+  "root-calculations.json": {
+    "sha256": "474c6b12107c14819e34b477f20898a77eae27e595cf2217db41f5cc3a6cf71c",
+    "bytes": 1967
+  },
+  "stems-and-choices.json": {
+    "sha256": "b2a824284f93f9859a631e568f55b9eb4c68652927be1c639d6a12a8a70cd75d",
+    "bytes": 15208
+  },
+  "summarize-assessment.py": {
+    "sha256": "181f773abd0ceaa223abf244462294983a3c167f4c150f6324d04d4d20060fc3",
+    "bytes": 5271
+  },
+  "summary.json": {
+    "sha256": "794b25375f41778497627535f2157a70d2a7f6871a1e73462c41d84bdc36f887",
+    "bytes": 32900
+  },
+  "teaching-assessment-a.json": {
+    "sha256": "8c1a9cab1dd19d11a3f4b875b6407daf7f726009b09af5d0ed0f5240b35c4277",
+    "bytes": 9107
+  },
+  "teaching-assessment-b.json": {
+    "sha256": "d92b6f03310f59ab81836f3879838c88596e663fe3c507e72a04a38d297d3e43",
+    "bytes": 8698
+  },
+  "teaching.json": {
+    "sha256": "432dab9feb3b9e4a219e4fa1916d83b58243ba51cd43177ac32f0cb59a34277c",
+    "bytes": 16132
+  }
+}

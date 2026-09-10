@@ -1,0 +1,1306 @@
+{
+  "audit_kind": "independent_operational_audit",
+  "status": "passed",
+  "semantic_assessment_performed": false,
+  "capture": {
+    "path": "/tmp/checkpoint-delivery-live-20260909/capture.json",
+    "byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+    "canonical_sha256": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2"
+  },
+  "plan": {
+    "path": "/tmp/checkpoint-delivery-plan-20260909/plan.json",
+    "byte_sha256": "6c91c0498c6ea93fa79028b9cee86018ea8176b72f3b205c356496964a50e38c",
+    "canonical_sha256": "bbebe7e13927aa06bc701bb3745ecc0d5beffea2c75d4b3f07261a9ccf090114"
+  },
+  "frozen_source_revision": "6768a5a78bf3dfa4a322ce32760491d38ea08141",
+  "audited_checkout_head": "1fd45a473194c0f6e9267446f29cab803327c40a",
+  "source_hash_count": 33,
+  "source_sha256": {
+    "complete_question_solution.py": "72bb99b3efeab3cbe2d87526009045c205b6ac588d5c749f21937442db12e188",
+    "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "generation_diagnostics.py": "2e4353c07b5452acc538de56d643ff3a3f391c6aaa0005a48962955267da041a",
+    "lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "question_generation.py": "aa64b8b36ce3533a426790bd7d12610fd7d97dda895aed71771dbe7c15650cc6",
+    "question_quality.py": "764497658989ecc9430cc80757cdb5b9b28010a369b38062bbe2672bfc73eab1",
+    "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "question_verification.py": "7c1cd59ef7b1e77e612bef4288992d9f023b16d6def088b00749bbcf7e92eb6a",
+    "request_contract.py": "fac35010e0560b9c040b171c9e51257c9ec7196d5092dfa88b6a89699e85ea38",
+    "service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "skill_maps.py": "dea47900f703ed4a91440fe1ef4b7bbcbbe3609ca64abac115bb25427f27358b",
+    "smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "verification_policy.py": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+    "web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "evals/checkpoint_source_authoring_eval.py": "4652325286df72f4803def84794f9ae7a74a62f3e17a0c4228a9aadc06aff545",
+    "evals/checkpoint_model_comparison.py": "04caeda857a7ddd942779a278acd309d8e690a5640e8db6856c516fee6984a01",
+    "evals/checkpoint_full_pipeline_smoke.py": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+    "evals/checkpoint_learning_eval.py": "0b1e7c7821166cfe464ae8942635380a7ac4a2083cac4ba4c74ff67d707eb67c",
+    "evals/checkpoint_prompt_ablation.py": "6492e674b3edc65d1fdaffe059e6c5f1b7a140d73fb82d2892b4c0924694be79",
+    "evals/checkpoint_solution_compatibility_eval.py": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+    "evals/checkpoint_runtime_qualification.py": "e4bdad971b009914f4e926fe5c8f7ac7ac09d2b5743699b8ec34c6e2a4dd4fe5",
+    "evals/checkpoint_author_latency_probe.py": "089713524f6236df8c58e3d97c927cb5ef518230bfbc4ef8f27374d87847fe9a",
+    "evals/checkpoint_immutable_review_eval.py": "0303e2120097b1b5ecd47bee4da64ee6147532814353cf38e38ec45e695994b9",
+    "evals/question_immutable_review.py": "38b4405673655d624820623e0b6335c3538ae33421b6e3abf954a0b49b5cc91f",
+    "evals/question_complete_author.py": "6c8f4fa70e0fceac58ea620c14814702872c8d4c3ac99db57cb1047a4f88ec86"
+  },
+  "all_source_hashes_match_frozen_commit_and_current_files": true,
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.89",
+    "botocore": "1.43.89"
+  },
+  "exact_no_client_plan_reconstruction": true,
+  "exact_no_client_replay": true,
+  "replay_canonical_sha256": "0809bf2fe0e6b2e071845e487e008c6af2eb119d32311237bca3d58e746536e2",
+  "provider_or_observer_calls_during_audit": 0,
+  "raw_capture_preserved": true,
+  "all_requests_match_role_model_settings_and_actual_runtime_replay": true,
+  "all_requests_preserve_goal_source_pairing_without_demonstration_or_assessment_leak": true,
+  "all_observers_completed_with_reaped_workers_confirmed_cleanup_exit0_and_no_termination": true,
+  "all_raw_response_text_in_original_capture": true,
+  "all_worker_transcript_bounds_verified_by_reconstructing_four_fixed_messages": true,
+  "limits": {
+    "maximum_calls": 36,
+    "maximum_calls_per_operation": 6,
+    "operation_seconds": 240,
+    "maximum_input_utf8_bytes_per_call": 32768,
+    "maximum_input_utf8_bytes_total": 1179648,
+    "maximum_worker_capture_bytes": 262144
+  },
+  "accounting": {
+    "prepared_calls": 29,
+    "observed_dispatch_attempts": 29,
+    "known_not_dispatched_calls": 0,
+    "unknown_dispatch_calls": 0,
+    "known_usage_subtotal": {
+      "inputTokens": 60976,
+      "outputTokens": 33507
+    },
+    "unknown_usage_calls": 0,
+    "input_utf8_bytes": 296063
+  },
+  "role_counts": {
+    "author": 13,
+    "solver": 11,
+    "reviewer": 3,
+    "teaching_auditor": 2
+  },
+  "requested_count": 30,
+  "returned_count": 7,
+  "raw_parse_counts_by_role": {
+    "author": {
+      "runtime_json_parseable_calls": 13,
+      "raw_array_items": 62
+    },
+    "solver": {
+      "runtime_json_parseable_calls": 6,
+      "raw_array_items": 17,
+      "runtime_json_unparseable_calls": 5
+    },
+    "reviewer": {
+      "runtime_json_parseable_calls": 2,
+      "raw_array_items": 4,
+      "runtime_json_unparseable_calls": 1
+    },
+    "teaching_auditor": {
+      "runtime_json_parseable_calls": 1,
+      "raw_array_items": 3,
+      "runtime_json_unparseable_calls": 1
+    }
+  },
+  "raw_expected_array_counts": {
+    "questions": 62,
+    "solutions": 17,
+    "reviews": 7
+  },
+  "maximum_observed_input_utf8_bytes": 14161,
+  "maximum_observed_output_tokens": 2201,
+  "maximum_reconstructed_worker_transcript_utf8_bytes": 8177,
+  "timing": {
+    "sdk_elapsed_seconds_sum": 473.9454719569185,
+    "process_elapsed_seconds_sum": 491.2335979579948,
+    "sdk_elapsed_seconds_max": 42.99650829198072,
+    "process_elapsed_seconds_max": 43.58437887497712,
+    "operation_elapsed_through_last_observer_seconds_approx_sum": 491.5931547920201
+  },
+  "arms": {
+    "reviewer_written": {
+      "requested_count": 15,
+      "returned_count": 4,
+      "provider_calls": 15,
+      "raw_author_array_items": 27,
+      "full_returned_batches": 0,
+      "coverage_failure_operations": 1,
+      "known_usage": {
+        "inputTokens": 31363,
+        "outputTokens": 15652,
+        "totalTokens": 47015
+      }
+    },
+    "authored_solution": {
+      "requested_count": 15,
+      "returned_count": 3,
+      "provider_calls": 14,
+      "raw_author_array_items": 35,
+      "full_returned_batches": 0,
+      "coverage_failure_operations": 2,
+      "known_usage": {
+        "inputTokens": 29613,
+        "outputTokens": 17855,
+        "totalTokens": 47468
+      }
+    }
+  },
+  "operations": [
+    {
+      "operation_index": 0,
+      "case_id": "excel_reference_copy_constraints",
+      "arm": "reviewer_written",
+      "status": "completed",
+      "result_category": "partial_delivery",
+      "runtime_error_type": null,
+      "requested_count": 5,
+      "returned_count": 3,
+      "provider_calls": 6,
+      "budget_reservations": 6,
+      "role_sequence": [
+        "author",
+        "solver",
+        "reviewer",
+        "author",
+        "solver",
+        "reviewer"
+      ],
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 3,
+        "shortfall_count": 2,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      },
+      "question_quality": {
+        "sanitize": {
+          "accepted": 7
+        },
+        "review": {
+          "solver_zero_supported": 2,
+          "accepted": 3,
+          "solver_multiple_supported": 1,
+          "invalid_json": 1
+        }
+      },
+      "raw_author_array_items": 7,
+      "runtime_json_unparseable_call_indexes": [
+        5
+      ],
+      "known_usage": {
+        "inputTokens": 13172,
+        "outputTokens": 5362,
+        "totalTokens": 18534,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "sdk_elapsed_seconds_sum": 79.12307891697856,
+      "process_elapsed_seconds_sum": 82.30774262495106,
+      "operation_elapsed_through_last_observer_seconds_approx": 82.35072054199549,
+      "remaining_milliseconds_last_sample": 171464
+    },
+    {
+      "operation_index": 1,
+      "case_id": "excel_reference_copy_constraints",
+      "arm": "authored_solution",
+      "status": "completed",
+      "result_category": "partial_delivery",
+      "runtime_error_type": null,
+      "requested_count": 5,
+      "returned_count": 3,
+      "provider_calls": 5,
+      "budget_reservations": 5,
+      "role_sequence": [
+        "author",
+        "solver",
+        "author",
+        "solver",
+        "teaching_auditor"
+      ],
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 3,
+        "shortfall_count": 2,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      },
+      "question_quality": {
+        "sanitize": {
+          "accepted": 10
+        },
+        "review": {
+          "invalid_solution": 5,
+          "solver_zero_supported": 1,
+          "solver_multiple_supported": 1,
+          "accepted": 3
+        }
+      },
+      "raw_author_array_items": 10,
+      "runtime_json_unparseable_call_indexes": [
+        7
+      ],
+      "known_usage": {
+        "inputTokens": 9987,
+        "outputTokens": 5807,
+        "totalTokens": 15794,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "sdk_elapsed_seconds_sum": 75.62329366704216,
+      "process_elapsed_seconds_sum": 78.83286170911742,
+      "operation_elapsed_through_last_observer_seconds_approx": 78.8940262500276,
+      "remaining_milliseconds_last_sample": 163671
+    },
+    {
+      "operation_index": 2,
+      "case_id": "map_scale_distance_resizing",
+      "arm": "authored_solution",
+      "status": "coverage_failure",
+      "result_category": "call_budget_exhausted",
+      "runtime_error_type": "ProviderCallBudgetExceededError",
+      "requested_count": 5,
+      "returned_count": 0,
+      "provider_calls": 4,
+      "budget_reservations": 4,
+      "role_sequence": [
+        "author",
+        "solver",
+        "author",
+        "solver"
+      ],
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 0,
+        "shortfall_count": 5,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      },
+      "question_quality": {
+        "sanitize": {
+          "accepted": 5,
+          "invalid_content": 3,
+          "prompt_length": 2
+        },
+        "review": {
+          "solver_multiple_supported": 1,
+          "invalid_solution": 4
+        }
+      },
+      "raw_author_array_items": 10,
+      "runtime_json_unparseable_call_indexes": [
+        14
+      ],
+      "known_usage": {
+        "inputTokens": 8355,
+        "outputTokens": 5489,
+        "totalTokens": 13844,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "sdk_elapsed_seconds_sum": 99.21199487400008,
+      "process_elapsed_seconds_sum": 101.50666562491097,
+      "operation_elapsed_through_last_observer_seconds_approx": 101.5535554169854,
+      "remaining_milliseconds_last_sample": 166169
+    },
+    {
+      "operation_index": 3,
+      "case_id": "map_scale_distance_resizing",
+      "arm": "reviewer_written",
+      "status": "coverage_failure",
+      "result_category": "call_budget_exhausted",
+      "runtime_error_type": "ProviderCallBudgetExceededError",
+      "requested_count": 5,
+      "returned_count": 0,
+      "provider_calls": 4,
+      "budget_reservations": 4,
+      "role_sequence": [
+        "author",
+        "solver",
+        "author",
+        "solver"
+      ],
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 0,
+        "shortfall_count": 5,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      },
+      "question_quality": {
+        "sanitize": {
+          "accepted": 4,
+          "prompt_length": 6
+        },
+        "review": {
+          "invalid_solution": 4
+        }
+      },
+      "raw_author_array_items": 10,
+      "runtime_json_unparseable_call_indexes": [
+        16,
+        18
+      ],
+      "known_usage": {
+        "inputTokens": 7952,
+        "outputTokens": 5344,
+        "totalTokens": 13296,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "sdk_elapsed_seconds_sum": 64.66505733301165,
+      "process_elapsed_seconds_sum": 67.29753508308204,
+      "operation_elapsed_through_last_observer_seconds_approx": 67.35679587504407,
+      "remaining_milliseconds_last_sample": 184578
+    },
+    {
+      "operation_index": 4,
+      "case_id": "food_web_energy_constraints",
+      "arm": "reviewer_written",
+      "status": "completed",
+      "result_category": "partial_delivery",
+      "runtime_error_type": null,
+      "requested_count": 5,
+      "returned_count": 1,
+      "provider_calls": 5,
+      "budget_reservations": 5,
+      "role_sequence": [
+        "author",
+        "solver",
+        "author",
+        "solver",
+        "reviewer"
+      ],
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 1,
+        "shortfall_count": 4,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      },
+      "question_quality": {
+        "sanitize": {
+          "accepted": 4,
+          "prompt_length": 5,
+          "duplicate_answer": 1
+        },
+        "review": {
+          "invalid_solution": 3,
+          "accepted": 1
+        }
+      },
+      "raw_author_array_items": 10,
+      "runtime_json_unparseable_call_indexes": [
+        20
+      ],
+      "known_usage": {
+        "inputTokens": 10239,
+        "outputTokens": 4946,
+        "totalTokens": 15185,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "sdk_elapsed_seconds_sum": 61.51405045797583,
+      "process_elapsed_seconds_sum": 64.3473280830076,
+      "operation_elapsed_through_last_observer_seconds_approx": 64.41554558299435,
+      "remaining_milliseconds_last_sample": 180577
+    },
+    {
+      "operation_index": 5,
+      "case_id": "food_web_energy_constraints",
+      "arm": "authored_solution",
+      "status": "coverage_failure",
+      "result_category": "no_returned_questions",
+      "runtime_error_type": null,
+      "requested_count": 5,
+      "returned_count": 0,
+      "provider_calls": 5,
+      "budget_reservations": 5,
+      "role_sequence": [
+        "author",
+        "author",
+        "author",
+        "solver",
+        "teaching_auditor"
+      ],
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 0,
+        "shortfall_count": 5,
+        "author_calls": 3,
+        "topoff_author_calls": 2,
+        "author_json_repair_calls": 0
+      },
+      "question_quality": {
+        "sanitize": {
+          "invalid_content": 7,
+          "prompt_length": 5,
+          "accepted": 3
+        },
+        "review": {
+          "solver_zero_supported": 1,
+          "invalid_authored_review": 2
+        }
+      },
+      "raw_author_array_items": 15,
+      "runtime_json_unparseable_call_indexes": [
+        28
+      ],
+      "known_usage": {
+        "inputTokens": 11271,
+        "outputTokens": 6559,
+        "totalTokens": 17830,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "sdk_elapsed_seconds_sum": 93.8079967079102,
+      "process_elapsed_seconds_sum": 96.9414648329257,
+      "operation_elapsed_through_last_observer_seconds_approx": 97.02251112497319,
+      "remaining_milliseconds_last_sample": 151439
+    }
+  ],
+  "calls": [
+    {
+      "call_index": 0,
+      "operation_index": 0,
+      "operation_call_index": 0,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "c4c34061949a53421f7708667696a64028158061c3a843873f6885a7371899b2",
+      "input_utf8_bytes": 11464,
+      "raw_response_text_sha256": "c97148c411c8d616d14e3a295f5ae906387d6ff48b21089fd58f3c1efa3b6eeb",
+      "raw_response_utf8_bytes": 3900,
+      "reconstructed_worker_transcript_utf8_bytes": 4768,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2096,
+        "outputTokens": 1109,
+        "totalTokens": 3205
+      },
+      "prepared_remaining_milliseconds": 239998,
+      "observer_timeout_seconds": 239.996,
+      "sdk_elapsed_seconds": 15.825207250018138,
+      "process_elapsed_seconds": 16.38903208298143,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 1,
+      "operation_index": 0,
+      "operation_call_index": 1,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "29ca690f76eb1f968305052f9b227c85144d5bff8744b79d21d22b28dcbaa9fc",
+      "input_utf8_bytes": 7124,
+      "raw_response_text_sha256": "da06e5164b554a95ca8071e80bcb66c30e1eca9289f36015061b9a4bae4393ac",
+      "raw_response_utf8_bytes": 4275,
+      "reconstructed_worker_transcript_utf8_bytes": 5234,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1724,
+        "outputTokens": 1345,
+        "totalTokens": 3069
+      },
+      "prepared_remaining_milliseconds": 223599,
+      "observer_timeout_seconds": 223.596,
+      "sdk_elapsed_seconds": 20.373119291034527,
+      "process_elapsed_seconds": 20.91059474996291,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 2,
+      "operation_index": 0,
+      "operation_call_index": 2,
+      "role": "reviewer",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "6ceec17b0f2bb49b73e6307b782c647d8f2b4e2900c672e3ecf0a3d88573a70e",
+      "input_utf8_bytes": 10694,
+      "raw_response_text_sha256": "9241454bbf1f07d8b7cc82daa524e4589370e97f9ec7283eab72f52ff119a3e2",
+      "raw_response_utf8_bytes": 2507,
+      "reconstructed_worker_transcript_utf8_bytes": 3301,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 3,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2607,
+        "outputTokens": 766,
+        "totalTokens": 3373
+      },
+      "prepared_remaining_milliseconds": 202683,
+      "observer_timeout_seconds": 202.679,
+      "sdk_elapsed_seconds": 10.240741833986249,
+      "process_elapsed_seconds": 10.768066750024445,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 3
+    },
+    {
+      "call_index": 3,
+      "operation_index": 0,
+      "operation_call_index": 3,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "8c0a1866da88eb5ff137d2ae103f7784d11ca4de75f48bc5c394978797a1af5c",
+      "input_utf8_bytes": 14161,
+      "raw_response_text_sha256": "21282c859cd30b6e8e50ef49b85d5f9f8b47731d4b959dc23224bdc042541ebc",
+      "raw_response_utf8_bytes": 2081,
+      "reconstructed_worker_transcript_utf8_bytes": 2815,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 2,
+      "usage": {
+        "inputTokens": 2903,
+        "outputTokens": 568,
+        "totalTokens": 3471
+      },
+      "prepared_remaining_milliseconds": 191908,
+      "observer_timeout_seconds": 191.904,
+      "sdk_elapsed_seconds": 5.629819582973141,
+      "process_elapsed_seconds": 6.159836207982153,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 2
+    },
+    {
+      "call_index": 4,
+      "operation_index": 0,
+      "operation_call_index": 4,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "795d91e8848c5342993d806353974e9ddd7f8c203fff8cd92b89d673d1290947",
+      "input_utf8_bytes": 6065,
+      "raw_response_text_sha256": "ac6b32cd2f4c914b3bea876d56c32a19ea2555c9deb061d3f7b689763de8ebea",
+      "raw_response_utf8_bytes": 2801,
+      "reconstructed_worker_transcript_utf8_bytes": 3603,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 2,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1373,
+        "outputTokens": 811,
+        "totalTokens": 2184
+      },
+      "prepared_remaining_milliseconds": 185740,
+      "observer_timeout_seconds": 185.736,
+      "sdk_elapsed_seconds": 13.728100124979392,
+      "process_elapsed_seconds": 14.265492292004637,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 2
+    },
+    {
+      "call_index": 5,
+      "operation_index": 0,
+      "operation_call_index": 5,
+      "role": "reviewer",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "3387595e0efa7f7da4c9af1a4119256a90b8875d71f030140c668dc2b3ee3e0f",
+      "input_utf8_bytes": 10150,
+      "raw_response_text_sha256": "f406bad24fe9d8b9c2c148f9082c5f0474a939f87921cc402fe93fc8aa1a5198",
+      "raw_response_utf8_bytes": 2896,
+      "reconstructed_worker_transcript_utf8_bytes": 3656,
+      "runtime_json_parseable": false,
+      "runtime_json_parse_error_type": "ProviderError",
+      "raw_expected_array_count": null,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2469,
+        "outputTokens": 763,
+        "totalTokens": 3232
+      },
+      "prepared_remaining_milliseconds": 171468,
+      "observer_timeout_seconds": 171.464,
+      "sdk_elapsed_seconds": 13.32609083398711,
+      "process_elapsed_seconds": 13.814720541995484,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 1
+    },
+    {
+      "call_index": 6,
+      "operation_index": 1,
+      "operation_call_index": 0,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "43c28044393014be97fb45504ca6993053c006a0dce37798912ff732dcc3d4c3",
+      "input_utf8_bytes": 12503,
+      "raw_response_text_sha256": "8f0ef4313a4047d0c6edcbb35c6afd005003c33abf45cb3b0c227180d5efe2f0",
+      "raw_response_utf8_bytes": 3565,
+      "reconstructed_worker_transcript_utf8_bytes": 4431,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2292,
+        "outputTokens": 1063,
+        "totalTokens": 3355
+      },
+      "prepared_remaining_milliseconds": 239998,
+      "observer_timeout_seconds": 239.994,
+      "sdk_elapsed_seconds": 7.38349775003735,
+      "process_elapsed_seconds": 7.908880875038449,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 7,
+      "operation_index": 1,
+      "operation_call_index": 1,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "49c1e0f07568a6785aac4c7e576d0fabf9eea01826d150b005a8c168c65dbe62",
+      "input_utf8_bytes": 6879,
+      "raw_response_text_sha256": "f8b39bcaced99d7882923b2b5a791dac4c04dc8970fe0fb56b973efff8004983",
+      "raw_response_utf8_bytes": 4910,
+      "reconstructed_worker_transcript_utf8_bytes": 5900,
+      "runtime_json_parseable": false,
+      "runtime_json_parse_error_type": "ProviderError",
+      "raw_expected_array_count": null,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1658,
+        "outputTokens": 1735,
+        "totalTokens": 3393
+      },
+      "prepared_remaining_milliseconds": 232079,
+      "observer_timeout_seconds": 232.075,
+      "sdk_elapsed_seconds": 21.10501712502446,
+      "process_elapsed_seconds": 21.633710624999367,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 8,
+      "operation_index": 1,
+      "operation_call_index": 2,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "acf974dd6a8bc8135a45bb4da7bbba66a05825f48873fe6d9c3cffcfec9f62b9",
+      "input_utf8_bytes": 13252,
+      "raw_response_text_sha256": "525267cfa1a5a08332475e223a8d1bab8ce23f8444ee8a9bf2fb8ea826f4e4a3",
+      "raw_response_utf8_bytes": 4867,
+      "reconstructed_worker_transcript_utf8_bytes": 5735,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2499,
+        "outputTokens": 1304,
+        "totalTokens": 3803
+      },
+      "prepared_remaining_milliseconds": 210438,
+      "observer_timeout_seconds": 210.434,
+      "sdk_elapsed_seconds": 22.820018500031438,
+      "process_elapsed_seconds": 23.366523792035878,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 9,
+      "operation_index": 1,
+      "operation_call_index": 3,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "190bcd45298cf7687a72f65fd3b17bd6bbc117ec6e3a54cb96de4bd4411db5c8",
+      "input_utf8_bytes": 7191,
+      "raw_response_text_sha256": "660ee3ac9f9d328cb62c83e1700689b75a46008b8c0897e1947d07ea305a4a62",
+      "raw_response_utf8_bytes": 4857,
+      "reconstructed_worker_transcript_utf8_bytes": 5816,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1731,
+        "outputTokens": 1589,
+        "totalTokens": 3320
+      },
+      "prepared_remaining_milliseconds": 187049,
+      "observer_timeout_seconds": 187.04,
+      "sdk_elapsed_seconds": 22.561852624989115,
+      "process_elapsed_seconds": 23.358720167016145,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 10,
+      "operation_index": 1,
+      "operation_call_index": 4,
+      "role": "teaching_auditor",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "0c5ac49a6e7bb566e9ad87d7b21ee8d631475b3548e1d7960f048277f19b8657",
+      "input_utf8_bytes": 7484,
+      "raw_response_text_sha256": "57b5aba2c4e3e6af4877cd00864f0aa7eef391eecb03efa2a2151f06c517418e",
+      "raw_response_utf8_bytes": 340,
+      "reconstructed_worker_transcript_utf8_bytes": 1088,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 3,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1807,
+        "outputTokens": 116,
+        "totalTokens": 1923
+      },
+      "prepared_remaining_milliseconds": 163677,
+      "observer_timeout_seconds": 163.671,
+      "sdk_elapsed_seconds": 1.7529076669597998,
+      "process_elapsed_seconds": 2.5650262500275858,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 3
+    },
+    {
+      "call_index": 11,
+      "operation_index": 2,
+      "operation_call_index": 0,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "71b8f68cb32319ccd7ca771980a73c94119aaeb9f46905d2f808d1207c26cb34",
+      "input_utf8_bytes": 13482,
+      "raw_response_text_sha256": "9bb23d61662b0b8209cd53812bf9a607d3bb7b56c17dcb82ad63f8b42bff2d40",
+      "raw_response_utf8_bytes": 6404,
+      "reconstructed_worker_transcript_utf8_bytes": 7275,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2511,
+        "outputTokens": 1511,
+        "totalTokens": 4022
+      },
+      "prepared_remaining_milliseconds": 239996,
+      "observer_timeout_seconds": 239.99,
+      "sdk_elapsed_seconds": 42.99650829198072,
+      "process_elapsed_seconds": 43.58437887497712,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 12,
+      "operation_index": 2,
+      "operation_call_index": 1,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "0689ff6521bef41d88c980a398ec5e5dc9f0e6e3a3495c2f5c508b5be4cf3b83",
+      "input_utf8_bytes": 6522,
+      "raw_response_text_sha256": "e1e4345c57ca7b2b8bf3c842d108da8a7dca145dbdf9a80ce12d0d581639b022",
+      "raw_response_utf8_bytes": 1012,
+      "reconstructed_worker_transcript_utf8_bytes": 1761,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 1,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1391,
+        "outputTokens": 378,
+        "totalTokens": 1769
+      },
+      "prepared_remaining_milliseconds": 196400,
+      "observer_timeout_seconds": 196.393,
+      "sdk_elapsed_seconds": 7.027128916000947,
+      "process_elapsed_seconds": 7.657429707993288,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 1
+    },
+    {
+      "call_index": 13,
+      "operation_index": 2,
+      "operation_call_index": 2,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "e02e80c1844b0e9901efa8b2e9aacb6a3c5c7657864fe45fce8434b6fded1cd2",
+      "input_utf8_bytes": 13833,
+      "raw_response_text_sha256": "ab32ef457fb8fd1213dae9fb1f3287cc2a338b879b797ab206c64a4547472ce4",
+      "raw_response_utf8_bytes": 5932,
+      "reconstructed_worker_transcript_utf8_bytes": 6800,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2589,
+        "outputTokens": 1399,
+        "totalTokens": 3988
+      },
+      "prepared_remaining_milliseconds": 188732,
+      "observer_timeout_seconds": 188.727,
+      "sdk_elapsed_seconds": 22.000149958010297,
+      "process_elapsed_seconds": 22.542301624955144,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 14,
+      "operation_index": 2,
+      "operation_call_index": 3,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "f1d8662e50e479ab60c61007539e0442fbbacd29b7481eca711462811364862c",
+      "input_utf8_bytes": 8243,
+      "raw_response_text_sha256": "e0e6c503d720fd07e3cc274148f909e12a2e4a1454d999c12509e11ca38064a8",
+      "raw_response_utf8_bytes": 6794,
+      "reconstructed_worker_transcript_utf8_bytes": 7742,
+      "runtime_json_parseable": false,
+      "runtime_json_parse_error_type": "ProviderError",
+      "raw_expected_array_count": null,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1864,
+        "outputTokens": 2201,
+        "totalTokens": 4065
+      },
+      "prepared_remaining_milliseconds": 166176,
+      "observer_timeout_seconds": 166.169,
+      "sdk_elapsed_seconds": 27.18820770800812,
+      "process_elapsed_seconds": 27.722555416985415,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 4
+    },
+    {
+      "call_index": 15,
+      "operation_index": 3,
+      "operation_call_index": 0,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "25e7bf6a181368fb0b17557684d92695b6172007d8d246ce9f018c54d15bfc90",
+      "input_utf8_bytes": 12443,
+      "raw_response_text_sha256": "7d725ace76f20cbde4df78bd8a7bcbf178bba9c890f90c03a47e1a6dabdf6588",
+      "raw_response_utf8_bytes": 5738,
+      "reconstructed_worker_transcript_utf8_bytes": 6618,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2315,
+        "outputTokens": 1460,
+        "totalTokens": 3775
+      },
+      "prepared_remaining_milliseconds": 239996,
+      "observer_timeout_seconds": 239.989,
+      "sdk_elapsed_seconds": 15.867320874996949,
+      "process_elapsed_seconds": 16.48215670802165,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 16,
+      "operation_index": 3,
+      "operation_call_index": 1,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "26b02ef4ada78ef227828e3fea3e8a082f273d9c74458fabf202b9a7269f90c5",
+      "input_utf8_bytes": 7560,
+      "raw_response_text_sha256": "ed3d8011f4946b036b3475f7144a9ec0cf17a1ab653b54f2510d33e604d3ee87",
+      "raw_response_utf8_bytes": 3915,
+      "reconstructed_worker_transcript_utf8_bytes": 4782,
+      "runtime_json_parseable": false,
+      "runtime_json_parse_error_type": "ProviderError",
+      "raw_expected_array_count": null,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1696,
+        "outputTokens": 1329,
+        "totalTokens": 3025
+      },
+      "prepared_remaining_milliseconds": 223494,
+      "observer_timeout_seconds": 223.484,
+      "sdk_elapsed_seconds": 16.6212567500188,
+      "process_elapsed_seconds": 17.34854366700165,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 3
+    },
+    {
+      "call_index": 17,
+      "operation_index": 3,
+      "operation_call_index": 2,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "7b25ec69af610716487167f836c4630959e7e29aa055448ab7434fe411995b9d",
+      "input_utf8_bytes": 13377,
+      "raw_response_text_sha256": "3a7276f31742325f28b49c702f1e7f5a8a2d31ea296c5fa7c704039ec421a0b8",
+      "raw_response_utf8_bytes": 6626,
+      "reconstructed_worker_transcript_utf8_bytes": 7505,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2531,
+        "outputTokens": 1675,
+        "totalTokens": 4206
+      },
+      "prepared_remaining_milliseconds": 206130,
+      "observer_timeout_seconds": 206.122,
+      "sdk_elapsed_seconds": 20.78768966702046,
+      "process_elapsed_seconds": 21.532038833014667,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 18,
+      "operation_index": 3,
+      "operation_call_index": 3,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "4e929c23f92b922f297f6024d97741154ff350632b78556acb4d7829551a4a05",
+      "input_utf8_bytes": 6635,
+      "raw_response_text_sha256": "8ee42bc8716ee9d3b25ebafd3e90d455f3b501599339859c2929fc863b74e00b",
+      "raw_response_utf8_bytes": 2784,
+      "reconstructed_worker_transcript_utf8_bytes": 3574,
+      "runtime_json_parseable": false,
+      "runtime_json_parse_error_type": "ProviderError",
+      "raw_expected_array_count": null,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1410,
+        "outputTokens": 880,
+        "totalTokens": 2290
+      },
+      "prepared_remaining_milliseconds": 184585,
+      "observer_timeout_seconds": 184.578,
+      "sdk_elapsed_seconds": 11.388790040975437,
+      "process_elapsed_seconds": 11.934795875044074,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 1
+    },
+    {
+      "call_index": 19,
+      "operation_index": 4,
+      "operation_call_index": 0,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "7389f5a48da00d03f442e15c51ac4155135e247702cbde33285ad0fcd09a55f1",
+      "input_utf8_bytes": 12522,
+      "raw_response_text_sha256": "3ef86a0c1be486b7d7d92bc248883ccbde94f82256d9e6aa6994047eef337783",
+      "raw_response_utf8_bytes": 5868,
+      "reconstructed_worker_transcript_utf8_bytes": 6735,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2308,
+        "outputTokens": 1308,
+        "totalTokens": 3616
+      },
+      "prepared_remaining_milliseconds": 239996,
+      "observer_timeout_seconds": 239.99,
+      "sdk_elapsed_seconds": 9.130826374981552,
+      "process_elapsed_seconds": 9.708439167006873,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 20,
+      "operation_index": 4,
+      "operation_call_index": 1,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "8a2970a63f564dceb6845ad7db834a65836c18f4ddb45ad4b84a2dc0b9a1181d",
+      "input_utf8_bytes": 7943,
+      "raw_response_text_sha256": "4b5c60979284b088205deab0e092ac57d68cb3415dbd18603853acede97c3e62",
+      "raw_response_utf8_bytes": 4615,
+      "reconstructed_worker_transcript_utf8_bytes": 5480,
+      "runtime_json_parseable": false,
+      "runtime_json_parse_error_type": "ProviderError",
+      "raw_expected_array_count": null,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1779,
+        "outputTokens": 1305,
+        "totalTokens": 3084
+      },
+      "prepared_remaining_milliseconds": 230273,
+      "observer_timeout_seconds": 230.265,
+      "sdk_elapsed_seconds": 16.875604874978308,
+      "process_elapsed_seconds": 17.43263062502956,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 3
+    },
+    {
+      "call_index": 21,
+      "operation_index": 4,
+      "operation_call_index": 2,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "d5ae748b07bb8002ed4c15c41b601bec514aa3d78cb2c227366a820ef0d4bc2a",
+      "input_utf8_bytes": 13376,
+      "raw_response_text_sha256": "ae710edc2f0e0d7cff0b67990a6a59e611bb44c32cdb90f9b77156a01f9d9006",
+      "raw_response_utf8_bytes": 6270,
+      "reconstructed_worker_transcript_utf8_bytes": 7138,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2508,
+        "outputTokens": 1660,
+        "totalTokens": 4168
+      },
+      "prepared_remaining_milliseconds": 212827,
+      "observer_timeout_seconds": 212.819,
+      "sdk_elapsed_seconds": 26.778653667017352,
+      "process_elapsed_seconds": 27.335868583002593,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 22,
+      "operation_index": 4,
+      "operation_call_index": 3,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "3383a1e68f9bfbd606242b8d70a93b67c84d5f98e582ff1121f79c2b5267a8f3",
+      "input_utf8_bytes": 6837,
+      "raw_response_text_sha256": "39aa91548335362811addf9c10f0877cba3eb921267b19abb0a4889e4de04574",
+      "raw_response_utf8_bytes": 1132,
+      "reconstructed_worker_transcript_utf8_bytes": 1881,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 1,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1484,
+        "outputTokens": 345,
+        "totalTokens": 1829
+      },
+      "prepared_remaining_milliseconds": 185477,
+      "observer_timeout_seconds": 185.47,
+      "sdk_elapsed_seconds": 4.284130541025661,
+      "process_elapsed_seconds": 4.877844124974217,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 1
+    },
+    {
+      "call_index": 23,
+      "operation_index": 4,
+      "operation_call_index": 4,
+      "role": "reviewer",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "6b8a1a3fef5ba1065d5832a2d1a4bf40ae9cbec5a30e34ef079fb7b9e58ec995",
+      "input_utf8_bytes": 9598,
+      "raw_response_text_sha256": "d5f55e1cc519cbb560bb246b9b0d50bfb79d783876b094ab50e38b10d8ccbfd9",
+      "raw_response_utf8_bytes": 1051,
+      "reconstructed_worker_transcript_utf8_bytes": 1780,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 1,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 2160,
+        "outputTokens": 328,
+        "totalTokens": 2488
+      },
+      "prepared_remaining_milliseconds": 180586,
+      "observer_timeout_seconds": 180.577,
+      "sdk_elapsed_seconds": 4.444834999972954,
+      "process_elapsed_seconds": 4.992545582994353,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 1
+    },
+    {
+      "call_index": 24,
+      "operation_index": 5,
+      "operation_call_index": 0,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "7d5d4ff422732ed648c0c97d14d0f501c670ec1137ce30615386882aa7567a51",
+      "input_utf8_bytes": 13561,
+      "raw_response_text_sha256": "c0470bc67bed1316f5a6eb192f2c2c223b758096f030de31674072130ff380f0",
+      "raw_response_utf8_bytes": 7309,
+      "reconstructed_worker_transcript_utf8_bytes": 8177,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2504,
+        "outputTokens": 1719,
+        "totalTokens": 4223
+      },
+      "prepared_remaining_milliseconds": 239995,
+      "observer_timeout_seconds": 239.986,
+      "sdk_elapsed_seconds": 25.505590124987066,
+      "process_elapsed_seconds": 26.054064458003268,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 25,
+      "operation_index": 5,
+      "operation_call_index": 1,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "d479bfeae2a324cb295332bda37e3cf361082637f2807dee995a19a512fc15d2",
+      "input_utf8_bytes": 13628,
+      "raw_response_text_sha256": "950852fe9fc540ddc27fcc5415c699fbbd4f2af55c22767b64d03dc0ea3cea71",
+      "raw_response_utf8_bytes": 6712,
+      "reconstructed_worker_transcript_utf8_bytes": 7580,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2513,
+        "outputTokens": 1632,
+        "totalTokens": 4145
+      },
+      "prepared_remaining_milliseconds": 213926,
+      "observer_timeout_seconds": 213.917,
+      "sdk_elapsed_seconds": 31.183954457985237,
+      "process_elapsed_seconds": 31.724610499979462,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 26,
+      "operation_index": 5,
+      "operation_call_index": 2,
+      "role": "author",
+      "model_id": "moonshotai.kimi-k2.5",
+      "request_sha256": "6941f7de199941278419f666007d0bfbec1bf557c80113df7ccbace7fb39c303",
+      "input_utf8_bytes": 13626,
+      "raw_response_text_sha256": "2618db3deaaf59b55cb143716cce5e1ed9eabc3181b008ba4fd576ce03fa99d1",
+      "raw_response_utf8_bytes": 5575,
+      "reconstructed_worker_transcript_utf8_bytes": 6443,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 5,
+      "usage": {
+        "inputTokens": 2513,
+        "outputTokens": 1517,
+        "totalTokens": 4030
+      },
+      "prepared_remaining_milliseconds": 182186,
+      "observer_timeout_seconds": 182.176,
+      "sdk_elapsed_seconds": 17.790175416972488,
+      "process_elapsed_seconds": 18.74152379197767,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 5
+    },
+    {
+      "call_index": 27,
+      "operation_index": 5,
+      "operation_call_index": 3,
+      "role": "solver",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "9ab80269a6276caec46d689073c881f01d714c4d313b8fd82cb9bad56dc52e3a",
+      "input_utf8_bytes": 7713,
+      "raw_response_text_sha256": "d62b64575812bea2842d047c2e9edb71301148eb4fc912ff302f1c0c37e5d389",
+      "raw_response_utf8_bytes": 2970,
+      "reconstructed_worker_transcript_utf8_bytes": 3825,
+      "runtime_json_parseable": true,
+      "runtime_json_parse_error_type": null,
+      "raw_expected_array_count": 3,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1784,
+        "outputTokens": 1076,
+        "totalTokens": 2860
+      },
+      "prepared_remaining_milliseconds": 163426,
+      "observer_timeout_seconds": 163.416,
+      "sdk_elapsed_seconds": 11.409941166988574,
+      "process_elapsed_seconds": 11.959754957992118,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 3
+    },
+    {
+      "call_index": 28,
+      "operation_index": 5,
+      "operation_call_index": 4,
+      "role": "teaching_auditor",
+      "model_id": "us.anthropic.claude-sonnet-4-6",
+      "request_sha256": "62106f13326b43a39baf503aeef7d50a490e43bc98259f531d0ebd8f811caf5c",
+      "input_utf8_bytes": 8197,
+      "raw_response_text_sha256": "70197d6dc3bba2ef0db307a8f43bd604a9c9fe6edbdea0f1ecd86b82f67e2762",
+      "raw_response_utf8_bytes": 1733,
+      "reconstructed_worker_transcript_utf8_bytes": 2491,
+      "runtime_json_parseable": false,
+      "runtime_json_parse_error_type": "ProviderError",
+      "raw_expected_array_count": null,
+      "usage": {
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "inputTokens": 1957,
+        "outputTokens": 615,
+        "totalTokens": 2572
+      },
+      "prepared_remaining_milliseconds": 151449,
+      "observer_timeout_seconds": 151.439,
+      "sdk_elapsed_seconds": 7.918335540976841,
+      "process_elapsed_seconds": 8.461511124973185,
+      "complete_observer_and_cleanup": true,
+      "author_parser_extractable": true,
+      "diagnostic_author_parser_array_count": 2
+    }
+  ],
+  "caveats": [
+    "Operational completion and returned counts do not certify factual correctness, useful teaching, difficulty or learning.",
+    "Role-specific runtime JSON parseability is a format observation; parseable responses can still violate solver or review schema. The more permissive author parser can extract arrays from some strict-role-invalid responses; those diagnostic extractions are not valid solver/reviewer records.",
+    "Raw author array counts are occurrences across normal attempts, not deduplicated questions or validated candidates.",
+    "Call-budget exhaustion at four calls means fewer than the three slots needed to admit another fully verified pass; it does not imply all six slots were spent.",
+    "Per-operation elapsed time through the last observer is reconstructed from millisecond admission samples and observed process intervals; it excludes final persistence and is not exact total trial wall time.",
+    "The capture retains raw final text and sanitized usage/lifecycle metadata; reasoning bodies, headers, and complete provider wire responses are intentionally not retained.",
+    "Worker transcript byte counts are reconstructed from the four frozen message schemas and final recorded values; original socket bytes are not separately archived."
+  ],
+  "raw_parse_method": "Author roles use frozen question_quality._extract_json_object; solver/reviewer/teaching-auditor roles use their actual frozen _strict_json_object front end. These counts do not assert later role-schema validity. Diagnostic author-parser extraction is recorded separately and never substitutes for strict role parsing."
+}

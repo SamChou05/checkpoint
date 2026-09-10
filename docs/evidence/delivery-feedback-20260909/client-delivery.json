@@ -1,0 +1,408 @@
+{
+  "bank_claimable_count" : 7,
+  "client_retained_count" : 7,
+  "delivery_fixture_sha256" : "3f5b8e802d5fb4c367b52b56d279f82b712bdfa0703ad073865f1081e3a5ba4a",
+  "operations" : [
+    {
+      "bank_claimable_count" : 3,
+      "client_dropped_remote_ids" : [
+
+      ],
+      "client_retained_count" : 3,
+      "operation_index" : 0,
+      "retained_questions" : [
+        {
+          "displayed_choices" : [
+            "=$A2*D$1",
+            "=A4*D1",
+            "=$A4*D$1",
+            "=$A4*B$1"
+          ],
+          "expectedAnswer" : "=$A4*D$1",
+          "feedback_displays" : [
+            {
+              "choice" : "=$A2*D$1",
+              "choice_feedback" : "The row in $A2 is relative and must shift +2 rows when filled down to row 4, so $A2 becomes $A4, not $A2.",
+              "display" : "The row in $A2 is relative and must shift +2 rows when filled down to row 4, so $A2 becomes $A4, not $A2.\n\nWhen filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D."
+            },
+            {
+              "choice" : "=A4*D1",
+              "choice_feedback" : "Both dollar signs are dropped; without $A the column would shift away from A, and without $1 the row would shift away from 1.",
+              "display" : "Both dollar signs are dropped; without $A the column would shift away from A, and without $1 the row would shift away from 1.\n\nWhen filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D."
+            },
+            {
+              "choice" : "=$A4*D$1",
+              "choice_feedback" : "$A holds column A, relative row 2 shifts +2 to 4; relative column B shifts +2 to D, $1 holds row 1—all anchors applied correctly.",
+              "display" : "$A holds column A, relative row 2 shifts +2 to 4; relative column B shifts +2 to D, $1 holds row 1—all anchors applied correctly.\n\nWhen filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D."
+            },
+            {
+              "choice" : "=$A4*B$1",
+              "choice_feedback" : "The column in B$1 is relative and must shift +2 columns when filled right to column D, so B$1 becomes D$1, not B$1.",
+              "display" : "The column in B$1 is relative and must shift +2 columns when filled right to column D, so B$1 becomes D$1, not B$1.\n\nWhen filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D."
+            }
+          ],
+          "main" : "When filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D.",
+          "prompt" : "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+          "remoteID" : "aa12e707-3730-5102-9e84-7ca0151de2d9"
+        },
+        {
+          "displayed_choices" : [
+            "=A2*B1",
+            "=$A2*B$1",
+            "=$A$2*B$1",
+            "=A$2*$B1"
+          ],
+          "expectedAnswer" : "=$A2*B$1",
+          "feedback_displays" : [
+            {
+              "choice" : "=A2*B1",
+              "choice_feedback" : "Fully relative; filling right moves the rate column away from A, and filling down moves the amount row away from row 1.",
+              "display" : "Fully relative; filling right moves the rate column away from A, and filling down moves the amount row away from row 1.\n\nRates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions."
+            },
+            {
+              "choice" : "=$A2*B$1",
+              "choice_feedback" : "$A locks column A for rates across all rows; $1 locks row 1 for amounts across all columns; relative parts adjust correctly in each fill direction.",
+              "display" : "$A locks column A for rates across all rows; $1 locks row 1 for amounts across all columns; relative parts adjust correctly in each fill direction.\n\nRates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions."
+            },
+            {
+              "choice" : "=$A$2*B$1",
+              "choice_feedback" : "$A$2 is fully absolute, so filling down to rows 3–5 always reads A2 instead of A3, A4, A5, giving the wrong rate.",
+              "display" : "$A$2 is fully absolute, so filling down to rows 3–5 always reads A2 instead of A3, A4, A5, giving the wrong rate.\n\nRates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions."
+            },
+            {
+              "choice" : "=A$2*$B1",
+              "choice_feedback" : "$2 locks the rate to row 2 (wrong when filling down) and $B locks the amount to column B (wrong when filling right).",
+              "display" : "$2 locks the rate to row 2 (wrong when filling down) and $B locks the amount to column B (wrong when filling right).\n\nRates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions."
+            }
+          ],
+          "main" : "Rates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions.",
+          "prompt" : "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+          "remoteID" : "fbc18f7e-e5e5-53ba-ad7b-e0cc49941ad7"
+        },
+        {
+          "displayed_choices" : [
+            "=$N2\/12",
+            "=$N$2\/12",
+            "=N2\/12",
+            "=N$2\/12"
+          ],
+          "expectedAnswer" : "=$N2\/12",
+          "feedback_displays" : [
+            {
+              "choice" : "=$N2\/12",
+              "choice_feedback" : "$N locks column N so filling right always reads the target column; the relative row adjusts down for each category row.",
+              "display" : "$N locks column N so filling right always reads the target column; the relative row adjusts down for each category row.\n\nThe target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down."
+            },
+            {
+              "choice" : "=$N$2\/12",
+              "choice_feedback" : "Fully absolute; filling down always references row 2's target instead of each category's own row.",
+              "display" : "Fully absolute; filling down always references row 2's target instead of each category's own row.\n\nThe target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down."
+            },
+            {
+              "choice" : "=N2\/12",
+              "choice_feedback" : "N is relative; filling right shifts the column away from N to O, P, etc., losing the target column.",
+              "display" : "N is relative; filling right shifts the column away from N to O, P, etc., losing the target column.\n\nThe target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down."
+            },
+            {
+              "choice" : "=N$2\/12",
+              "choice_feedback" : "N is still relative (shifts away from N when filled right) and $2 locks row 2 so filling down always reads the first category's target.",
+              "display" : "N is still relative (shifts away from N when filled right) and $2 locks row 2 so filling down always reads the first category's target.\n\nThe target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down."
+            }
+          ],
+          "main" : "The target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down.",
+          "prompt" : "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+          "remoteID" : "25c540f7-0305-5bb3-a6d6-887d1274f382"
+        }
+      ],
+      "runtime_returned_count" : 3
+    },
+    {
+      "bank_claimable_count" : 3,
+      "client_dropped_remote_ids" : [
+
+      ],
+      "client_retained_count" : 3,
+      "operation_index" : 1,
+      "retained_questions" : [
+        {
+          "displayed_choices" : [
+            "=$F8+G$6",
+            "=B8+G$2",
+            "=$F8+C$2",
+            "=$F4+G$2"
+          ],
+          "expectedAnswer" : "=$F8+C$2",
+          "feedback_displays" : [
+            {
+              "choice" : "=$F8+G$6",
+              "choice_feedback" : null,
+              "display" : "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2."
+            },
+            {
+              "choice" : "=B8+G$2",
+              "choice_feedback" : null,
+              "display" : "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2."
+            },
+            {
+              "choice" : "=$F8+C$2",
+              "choice_feedback" : null,
+              "display" : "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2."
+            },
+            {
+              "choice" : "=$F4+G$2",
+              "choice_feedback" : null,
+              "display" : "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2."
+            }
+          ],
+          "main" : "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2.",
+          "prompt" : "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+          "remoteID" : "a03bcd22-4d36-529e-b179-9ad6c4b3a341"
+        },
+        {
+          "displayed_choices" : [
+            "=K$9+$O5",
+            "=N$9+$L5",
+            "=N$5+$L9",
+            "=K$5+$L9"
+          ],
+          "expectedAnswer" : "=N$5+$L9",
+          "feedback_displays" : [
+            {
+              "choice" : "=K$9+$O5",
+              "choice_feedback" : null,
+              "display" : "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9."
+            },
+            {
+              "choice" : "=N$9+$L5",
+              "choice_feedback" : null,
+              "display" : "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9."
+            },
+            {
+              "choice" : "=N$5+$L9",
+              "choice_feedback" : null,
+              "display" : "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9."
+            },
+            {
+              "choice" : "=K$5+$L9",
+              "choice_feedback" : null,
+              "display" : "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9."
+            }
+          ],
+          "main" : "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9.",
+          "prompt" : "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+          "remoteID" : "7134bbe3-31d5-5904-bab4-b40721ee8122"
+        },
+        {
+          "displayed_choices" : [
+            "=A$4*$B3",
+            "=$A$4*$B$3",
+            "=$A4*B$3",
+            "=A4*B3"
+          ],
+          "expectedAnswer" : "=$A4*B$3",
+          "feedback_displays" : [
+            {
+              "choice" : "=A$4*$B3",
+              "choice_feedback" : null,
+              "display" : "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column."
+            },
+            {
+              "choice" : "=$A$4*$B$3",
+              "choice_feedback" : null,
+              "display" : "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column."
+            },
+            {
+              "choice" : "=$A4*B$3",
+              "choice_feedback" : null,
+              "display" : "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column."
+            },
+            {
+              "choice" : "=A4*B3",
+              "choice_feedback" : null,
+              "display" : "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column."
+            }
+          ],
+          "main" : "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column.",
+          "prompt" : "A gradebook has assignment weights in row 3 (B3:E3) and student scores in column A (A4:A8). Cell B4 should calculate weighted score using the student's score and the assignment's weight, then fill across assignments and down students. Which formula belongs in B4?",
+          "remoteID" : "1af2781f-fcf6-5851-85c4-479a02dce48b"
+        }
+      ],
+      "runtime_returned_count" : 3
+    },
+    {
+      "bank_claimable_count" : 0,
+      "client_dropped_remote_ids" : [
+
+      ],
+      "client_retained_count" : 0,
+      "operation_index" : 2,
+      "retained_questions" : [
+
+      ],
+      "runtime_returned_count" : 0
+    },
+    {
+      "bank_claimable_count" : 0,
+      "client_dropped_remote_ids" : [
+
+      ],
+      "client_retained_count" : 0,
+      "operation_index" : 3,
+      "retained_questions" : [
+
+      ],
+      "runtime_returned_count" : 0
+    },
+    {
+      "bank_claimable_count" : 1,
+      "client_dropped_remote_ids" : [
+
+      ],
+      "client_retained_count" : 1,
+      "operation_index" : 4,
+      "retained_questions" : [
+        {
+          "displayed_choices" : [
+            "Zooplankton annual production is 37.5 g\/m²\/year.",
+            "Zooplankton annual production is 75 g\/m²\/year.",
+            "Zooplankton annual production is 150 g\/m²\/year.",
+            "Zooplankton annual production is 7.5 g\/m²\/year."
+          ],
+          "expectedAnswer" : "Zooplankton annual production is 75 g\/m²\/year.",
+          "feedback_displays" : [
+            {
+              "choice" : "Zooplankton annual production is 37.5 g\/m²\/year.",
+              "choice_feedback" : "Applies the 25% efficiency to zooplankton standing biomass (150 g\/m²) rather than to phytoplankton annual production.",
+              "display" : "Applies the 25% efficiency to zooplankton standing biomass (150 g\/m²) rather than to phytoplankton annual production.\n\nTransfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g\/m²\/year = 75 g\/m²\/year. The distractors test whether learners confuse standing biomass with annual production."
+            },
+            {
+              "choice" : "Zooplankton annual production is 75 g\/m²\/year.",
+              "choice_feedback" : "Correctly applies the 25% transfer efficiency to phytoplankton annual production (300 g\/m²\/year), giving 75 g\/m²\/year.",
+              "display" : "Correctly applies the 25% transfer efficiency to phytoplankton annual production (300 g\/m²\/year), giving 75 g\/m²\/year.\n\nTransfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g\/m²\/year = 75 g\/m²\/year. The distractors test whether learners confuse standing biomass with annual production."
+            },
+            {
+              "choice" : "Zooplankton annual production is 150 g\/m²\/year.",
+              "choice_feedback" : "Equals the zooplankton standing biomass figure, confusing a biomass snapshot with annual energy production.",
+              "display" : "Equals the zooplankton standing biomass figure, confusing a biomass snapshot with annual energy production.\n\nTransfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g\/m²\/year = 75 g\/m²\/year. The distractors test whether learners confuse standing biomass with annual production."
+            },
+            {
+              "choice" : "Zooplankton annual production is 7.5 g\/m²\/year.",
+              "choice_feedback" : "Applies the 25% efficiency to phytoplankton standing biomass (30 g\/m²) instead of annual production (300 g\/m²\/year).",
+              "display" : "Applies the 25% efficiency to phytoplankton standing biomass (30 g\/m²) instead of annual production (300 g\/m²\/year).\n\nTransfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g\/m²\/year = 75 g\/m²\/year. The distractors test whether learners confuse standing biomass with annual production."
+            }
+          ],
+          "main" : "Transfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g\/m²\/year = 75 g\/m²\/year. The distractors test whether learners confuse standing biomass with annual production.",
+          "prompt" : "A pond ecosystem has phytoplankton with standing biomass 30 g\/m² and annual production of 300 g\/m²\/year. Zooplankton have standing biomass 150 g\/m². Transfer efficiency from phytoplankton to zooplankton is 25%. Which conclusion about zooplankton annual production is valid?",
+          "remoteID" : "d9d4e04e-7872-59f0-be60-02f1c616baf0"
+        }
+      ],
+      "runtime_returned_count" : 1
+    },
+    {
+      "bank_claimable_count" : 0,
+      "client_dropped_remote_ids" : [
+
+      ],
+      "client_retained_count" : 0,
+      "operation_index" : 5,
+      "retained_questions" : [
+
+      ],
+      "runtime_returned_count" : 0
+    }
+  ],
+  "runtime_returned_count" : 7,
+  "scope" : "Whole original-operation batches; exact original goal\/source context; fresh empty local history; real decode, sanitizer, Codable and feedbackExplanation. No UI layout or semantic approval.",
+  "source_sha256" : {
+    "backend\/bedrock-question-service\/complete_question_solution.py" : "72bb99b3efeab3cbe2d87526009045c205b6ac588d5c749f21937442db12e188",
+    "backend\/bedrock-question-service\/evals\/checkpoint_delivery_check.py" : "11037de14ada23f871ee9200f2765242d823ef9797ff2f27b359350866238697",
+    "backend\/bedrock-question-service\/execution_evidence.py" : "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "backend\/bedrock-question-service\/generation_diagnostics.py" : "2e4353c07b5452acc538de56d643ff3a3f391c6aaa0005a48962955267da041a",
+    "backend\/bedrock-question-service\/lambda_function.py" : "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "backend\/bedrock-question-service\/question_bank_common.py" : "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "backend\/bedrock-question-service\/question_bank_inventory.py" : "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "backend\/bedrock-question-service\/question_bank_store.py" : "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "backend\/bedrock-question-service\/question_bank_worker.py" : "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "backend\/bedrock-question-service\/question_bank.py" : "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "backend\/bedrock-question-service\/question_difficulty.py" : "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "backend\/bedrock-question-service\/question_generation.py" : "aa64b8b36ce3533a426790bd7d12610fd7d97dda895aed71771dbe7c15650cc6",
+    "backend\/bedrock-question-service\/question_quality.py" : "764497658989ecc9430cc80757cdb5b9b28010a369b38062bbe2672bfc73eab1",
+    "backend\/bedrock-question-service\/question_rule_construction.py" : "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "backend\/bedrock-question-service\/question_teaching.py" : "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "backend\/bedrock-question-service\/question_verification.py" : "7c1cd59ef7b1e77e612bef4288992d9f023b16d6def088b00749bbcf7e92eb6a",
+    "backend\/bedrock-question-service\/request_contract.py" : "fac35010e0560b9c040b171c9e51257c9ec7196d5092dfa88b6a89699e85ea38",
+    "backend\/bedrock-question-service\/service_errors.py" : "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "backend\/bedrock-question-service\/skill_maps.py" : "dea47900f703ed4a91440fe1ef4b7bbcbbe3609ca64abac115bb25427f27358b",
+    "backend\/bedrock-question-service\/smoke_test_backend.py" : "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "backend\/bedrock-question-service\/source_acquisition.py" : "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "backend\/bedrock-question-service\/tests\/question_bank_test_support.py" : "649872e776fa58c1c98235f65e8cd43a1bd909cc7b218c1a686e118d77006562",
+    "backend\/bedrock-question-service\/verification_policy.py" : "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+    "backend\/bedrock-question-service\/web_source_search.py" : "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "Checkpoint\/App\/AdaptiveLearningPolicy.swift" : "54413b997c7472777cb7ecf0435586b49c0037e69b3b4c434d6f5d2edc94db4d",
+    "Checkpoint\/App\/AppSnapshotPersistence.swift" : "b3e012607d7601cb533ba0450149f0efedbb518e8c8532b871a3aafc9341fd2b",
+    "Checkpoint\/App\/CheckpointQuestionSelector.swift" : "35f2e9e70ce153b7a791d3165ba2c1eb98f3294ff6d1b21e43f7a557322faf28",
+    "Checkpoint\/App\/CheckpointStore.swift" : "01071f97d37a299495fed228211432160768b8071970de0cec985c5c00c76cff",
+    "Checkpoint\/App\/CheckpointWorkflowCoordinator.swift" : "2ad5ae486cab40476b0dc265071fbc5b90484e14616a0855f7ae30e8c60a2f71",
+    "Checkpoint\/App\/FirstRunSetupCoordinator.swift" : "2a35d4dfec95ea279277d11a4dd050e909adb52d25a6721f975f4e0b780399a7",
+    "Checkpoint\/App\/SkillMapReconciler.swift" : "6ee54121788bafcca63edf16af6de957cd3ac142824bde5fe030cef7ec82565c",
+    "Checkpoint\/App\/WeeklyMetricsCalculator.swift" : "a2fd18ea67057fbf4e1fb9ad8775ab79e26641b26443311953d0c91653283411",
+    "Checkpoint\/CheckpointApp.swift" : "33c73573d9a4c478fcd3736bc4dc09941f9a31a549481f87e629639161ecf621",
+    "Checkpoint\/Models\/AnswerGrader.swift" : "0491c13827340b775bf506c391e021c36828db67f6baf0661c4c7c6077e727cf",
+    "Checkpoint\/Models\/AppSnapshot.swift" : "9a6fe2b111486838f8db5cb5c9625efc3bb2b890f3c46f7d618dba50dafa2272",
+    "Checkpoint\/Models\/CheckpointSessionModels.swift" : "d029e836a65708db610f9208d0ae2b6e812ccbf5611a2c397231c0dfdbc09d38",
+    "Checkpoint\/Models\/GoalModels.swift" : "34c4a84da6ae405d611eaf0c1292b5c16884fac492b83a0c6852680f4eaac866",
+    "Checkpoint\/Models\/MembershipPlanPresentation.swift" : "c7acfe68a8d98b74e259228250b84de5fe9ff94e4f282a0cb3a6e4ed1fcf1cad",
+    "Checkpoint\/Models\/ProductAccessModels.swift" : "4736f01128df224f0e340ebe097c1a6a1ee0546327bf459573162007add670a6",
+    "Checkpoint\/Models\/QuestionModels.swift" : "3d8bc257f442dd768da0b1dcc7faaff7ab64e3b98a9004ad6d89b97016f5c006",
+    "Checkpoint\/Services\/AppleFoundationQuestionEngine.swift" : "b3bb23fa82ba1f8c5de8e7893dbbb5d4ad572e6dd3f55e59de69b3f9d27ef21c",
+    "Checkpoint\/Services\/BackendClientSupport.swift" : "f00d772f224d7648cd909aceeb86b630a98427a07571f37d909d38efab59bb87",
+    "Checkpoint\/Services\/BackendPayloads.swift" : "8d016cc7e1f7aff989ff93ec50ccf04ac1137f43d1c97282362d32f20054c35c",
+    "Checkpoint\/Services\/BackendQuestionBankClient.swift" : "ac53e871663149bbb2861232c380ae3d4c213d0796ee9deb77e614e97e768e77",
+    "Checkpoint\/Services\/BackendQuestionEngine.swift" : "154bf3211cf7d0c3f1f37d1d66c65cab3ddbad1e4064512769f0ec2c206c9424",
+    "Checkpoint\/Services\/GoalSourceDocumentImporter.swift" : "34c5a01af4d015cdc4757792c307956da75d650ec7ebad887d079f6a29ca6fdd",
+    "Checkpoint\/Services\/LegalLinks.swift" : "9e9158d5629710ea1a4dfc004d9e83bad9cb14da76625d6427782f4992246c25",
+    "Checkpoint\/Services\/PurchaseController.swift" : "fb1d48ab94bf70d59938b8cdaea2ca511c1742c7d5bdeb0114a36690fff75ead",
+    "Checkpoint\/Services\/QuestionBatchSanitizer.swift" : "9e7e5aba5bbf92a57b05fb2934584005b7bcf7658d1ca6f0cb97d2d0f1d25b54",
+    "Checkpoint\/Services\/QuestionContext.swift" : "28f1874cce8b79bf66abe15c6a982f80ec1479d9f0409b097b932bb7f8d8a191",
+    "Checkpoint\/Services\/QuestionEngine.swift" : "4a997d06ccf427970348261d50fcbefd23a1aebceec1075e3fb8897d0c5900c5",
+    "Checkpoint\/Services\/ScreenTimeController.swift" : "8fcfb1740236e4c0115a9dc0742d67fc39c4006af2a76c40ad40e0d55e9f25f5",
+    "Checkpoint\/Shared\/SharedAppGroup.swift" : "03046277dc45e3bac34f9e3d7e7c350ef95d9e4197fda61aae38eda398412110",
+    "Checkpoint\/Views\/CheckpointAttemptView.swift" : "8c7adcc48b80f092a2de3829fb8cf5a35e56c225d1ecb2b3f07805eefa69bdce",
+    "Checkpoint\/Views\/CompetencyRow.swift" : "b97c28319f00b69ef5bba4a58a809973657251f6821b060958a29f158499de21",
+    "Checkpoint\/Views\/CompetencyView.swift" : "3411ec416a2cf075ef32c4c168ad6848597f5b6c246fa6ee110fbdcc56464966",
+    "Checkpoint\/Views\/Components\/CheckpointComponents.swift" : "d2d6fcc6c9e4e722b8fc6b905b706318ac69549beef88adc1dda5f15148c941b",
+    "Checkpoint\/Views\/Components\/CheckpointSetupGuide.swift" : "d11d9f16a972ac5a1ec682515700f99f02f94da6ae66ae20da68ce3b02e35108",
+    "Checkpoint\/Views\/FirstRunSkillMapView.swift" : "7333442108f1234eb2ea4307c2630015f3233f9a1b03175c35309fd3df502d72",
+    "Checkpoint\/Views\/FocusWinsView.swift" : "c477ee1eac511ffc7960524cadecb4d41012c888e51085e1a9a1036afc72a330",
+    "Checkpoint\/Views\/HistoryView.swift" : "94538706b2e4393430f8e421d26d96c3d99b35c6921da2f15058806d8e39cb44",
+    "Checkpoint\/Views\/HomeProtectionControls.swift" : "029e458ce527a006aa83520c30d1133ea3be9546b5618931173200f60680ddec",
+    "Checkpoint\/Views\/HomeStudyBeaconViews.swift" : "d770e1aa0571de15f32a8ad96ccee3cbe624ca2fa49281e4de66071bc21c0557",
+    "Checkpoint\/Views\/HomeView.swift" : "1c21770586190545ea6b3cee9826990e1b3b4a1d187f852648c8ade33a35f104",
+    "Checkpoint\/Views\/LearningMapEditorView.swift" : "f875e56eb6b2f01f7a0b5d0abcd387f28e193cab21afe6e2f3978202398c16a1",
+    "Checkpoint\/Views\/LearningMapGraph.swift" : "72dbbde7764bb25ae76e1bb68826c36c0e7c7af5bc3bff172cab2c2c0368bc97",
+    "Checkpoint\/Views\/LearningMapNavigator.swift" : "516938f3fa26a693d06a4aeabcba75d8b851bf9f77fa29d103b0a84708fdb04c",
+    "Checkpoint\/Views\/LearningMapPresentation.swift" : "0b5e8c078603b7fd41ff6c8a589b74d6f2308ca28bbd98e28d76e776729d7733",
+    "Checkpoint\/Views\/LearningMapView.swift" : "bcb06a0a9c4028790b5cd34b64e10ee5f7a368345c47451062938376fe4a4cea",
+    "Checkpoint\/Views\/LearningMapVisuals.swift" : "e64250856246b49f06dc8a8b16b4bd9f089a37027b3743de6de02bc2c3f675c2",
+    "Checkpoint\/Views\/MembershipView.swift" : "ae88e316194752b684b34ee51b004d0c641c11bc7b951c522525628f901dd2dc",
+    "Checkpoint\/Views\/OnboardingView.swift" : "59cf751a5586a02db2c10f1fb5ec10c8f4c27f3d02c439e67f0943240fe1833d",
+    "Checkpoint\/Views\/PracticeSettingsControls.swift" : "ceb39b4099a47ff572a88fcc9de2561d205841f62c9a799361858f68f451d652",
+    "Checkpoint\/Views\/ProgressWeeklyImpactCard.swift" : "a83d063368a3c393b90fff4a7d3340b256ec2411d9cff34a8754eed65c1fb3de",
+    "Checkpoint\/Views\/QuestionGenerationDiagnosticsView.swift" : "13eb674c6763004d3d2cb09d658b653d044a532c381b60574109940ce51fc6c9",
+    "Checkpoint\/Views\/QuestionQualityFeedbackView.swift" : "b71fad13556a8444b5b095bb263f0d9264b8ebbb4fa4198776ef99de97ecd5b4",
+    "Checkpoint\/Views\/QuestionReportsView.swift" : "61a5d7e9582e627de863b80c099b47cea88d26e0ded801eec735ccf56f40d657",
+    "Checkpoint\/Views\/RequiredScreenTimeAccessView.swift" : "06d57de95310ceaa9035c3ca508b7583f664566dc572eda83c0f4a6effcb23c9",
+    "Checkpoint\/Views\/RestrictedAppsView.swift" : "cd0b1ff324c21513cef6084e517c8836a37c2b93e3924314e466125a104be74f",
+    "Checkpoint\/Views\/RootView.swift" : "12475572fdf7da2d154da64758ca2ef9437498b5e75e1476e2d55937d473a86c",
+    "Checkpoint\/Views\/SettingsSupportViews.swift" : "2e925f09609b625624e9edfeb52654cdecdbc6da11fa6f0124c220e7365c0755",
+    "Checkpoint\/Views\/SettingsView.swift" : "492c0a16b58308bcb10799418a6eb830ccb57c4a08fe5ab847c337d457a259bb",
+    "Checkpoint\/Views\/SkillMapEditorViews.swift" : "6e0e993091fe697134cc452e55498a945989e140fe7528e4ad1374b06f0b1a96",
+    "Checkpoint\/Views\/WeeklyReviewView.swift" : "445ed95b5e7fde8e2ffed65876441cfddb4ac82e5388580417c72d06d0d8e771",
+    "CheckpointTests\/QuestionDeliveryCaptureTests.swift" : "190f8eaa130a5fbb2a2300fe20032dc79cf79944542c375387bcca1b390f656b",
+    "CheckpointTests\/TestSupport\/CheckpointTestFixtures.swift" : "cafb739bb61d199cf8f6d8fe90ce30c4c7cd9538b7277dae8da4b1f665b1d4e0",
+    "CheckpointTests\/TestSupport\/CheckpointWorkflowTestCase.swift" : "d5abf7d30afc04aa5f282f2f9519839b69fdf079534ebf373faa3ec1e278f672",
+    "CheckpointTests\/TestSupport\/HostedViewRenderer.swift" : "2291d1134f3148fe9ceb5e4c29df30259307baea138c89334d1d698eccce01a8",
+    "CheckpointTests\/TestSupport\/QuestionBankTestDoubles.swift" : "c5ceb6c04694edf912ebd0a8bd81bc9f1afc3350f02c6dc45b435083e181427e",
+    "CheckpointTests\/TestSupport\/QuestionEngineTestDoubles.swift" : "3c3c86ec33fcf51a98d0da3612d024beeffcf2409a3e4309c8349cb011e6aaab"
+  }
+}

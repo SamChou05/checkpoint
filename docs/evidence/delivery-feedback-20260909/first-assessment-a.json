@@ -1,0 +1,81 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "premise_status": "valid",
+      "supported_choices": ["=$A4*B$3"],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 3,
+      "shuffle_safe": true,
+      "reasoning": "The student's score must remain in column A while its row changes with the student, giving $A4. The assignment weight must remain in row 3 while its column changes with the assignment, giving B$3. For example, filling to E8 produces =$A8*E$3. The other choices respectively allow both inputs to drift, freeze both inputs, or fix the wrong components. This interprets two input relationships in a table and directly fits the copying goal. The gradebook is unusual in using one student score for all assignment weights, but that relationship is explicitly stated and is not impossible. No choice depends on its position."
+    },
+    {
+      "id": "q02",
+      "premise_status": "valid",
+      "supported_choices": ["=$A2*B$1"],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 3,
+      "shuffle_safe": true,
+      "reasoning": "Each destination row needs its rate in column A, and each destination column needs its amount in row 1. Thus $A2 fixes the rate column and B$1 fixes the amount row. Copying across to F2 gives =$A2*F$1; copying down to B5 gives =$A5*B$1. Fixing row 2 prevents the correct downward change; leaving both references relative makes the headers drift; the remaining option fixes the wrong axes. A1 being listed among the rates but unused by this output range does not contradict the requested formula. The table relationships affect the answer, and the options remain meaningful in any order."
+    },
+    {
+      "id": "q03",
+      "premise_status": "valid",
+      "supported_choices": ["=$N2/12"],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 2,
+      "shuffle_safe": true,
+      "reasoning": "The target must always be taken from column N in the destination's row. $N2 fixes exactly the column, so filling to M10 gives =$N10/12. N$2 fixes the wrong component, $N$2 also freezes the category row, and N2 moves away from column N during horizontal filling. This is a direct application of the mixed-reference rule to one input. It is relevant practice for the goal, although it covers fewer simultaneous input relationships than the full learning target. Nothing refers to option ordering."
+    },
+    {
+      "id": "q04",
+      "premise_status": "uncertain",
+      "supported_choices": [],
+      "uniquely_answerable": false,
+      "goal_fit": true,
+      "distractors_adequate": false,
+      "assessed_difficulty": 3,
+      "shuffle_safe": true,
+      "reasoning": "The evident calculation is 300 x 0.25 = 75, using annual production rather than either standing biomass; 150 x 0.25 = 37.5 and 30 x 0.25 = 7.5 expose stock-versus-flow confusions. However, as written, the ecological transfer efficiency is not explicitly a ratio of the two mass-production quantities. An energy-transfer efficiency gives zooplankton mass production of 0.25 x 300 x (phytoplankton energy per gram)/(zooplankton energy per gram), so 75 g/m2/year requires an unstated equality or an explicit mass-based definition. Also, a transfer from phytoplankton to zooplankton need not describe all zooplankton production if other feeding contributions exist; exclusivity is not stated. The selective source's generic production-ratio language makes the 75 interpretation plausible, but does not remove these ambiguities for a goal specifically about energy and avoiding unreported diets. None of the exact total-production claims follows unconditionally. The numerical alternatives are recognizable stock-based errors under the intended interpretation, but the set lacks a defensible unqualified answer. Assessing relevant flow versus stock is difficulty 3; missing assumptions do not make a higher-quality difficult item. Option reordering creates no additional problem."
+    },
+    {
+      "id": "q05",
+      "premise_status": "valid",
+      "supported_choices": ["=N$5+$L9"],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 2,
+      "shuffle_safe": true,
+      "reasoning": "M5 to P9 is a displacement of three columns right and four rows down. In K$5 the relative column K moves to N while row 5 stays fixed. In $L5 column L stays fixed while the relative row becomes 9. The resulting formula is =N$5+$L9. The alternatives represent holding a relative component fixed or changing anchored components. This is direct execution of the familiar copy rule independently on two references, with no additional interpretation or interacting constraints. It fits predicting copied formulas, and all options stand alone under shuffling."
+    },
+    {
+      "id": "q06",
+      "premise_status": "valid",
+      "supported_choices": ["=$A4*D$1"],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 2,
+      "shuffle_safe": true,
+      "reasoning": "B2 to D4 moves two columns right and two rows down. $A2 becomes $A4, and B$1 becomes D$1, giving =$A4*D$1. Two distractors fail to update one relative component, while =A4*D1 incorrectly removes anchors; it is not the formula produced by filling even if a current numeric result could coincide. Months and product names might be text and make multiplication unsuitable for useful calculated values, but the question asks only which formula appears, whose copied syntax is fully determined regardless of values. The story adds no necessary reasoning beyond applying the copy rule, so difficulty 2 is appropriate. The item addresses the copying goal and is independent of answer order."
+    },
+    {
+      "id": "q07",
+      "premise_status": "valid",
+      "supported_choices": ["=$F8+C$2"],
+      "uniquely_answerable": true,
+      "goal_fit": true,
+      "distractors_adequate": true,
+      "assessed_difficulty": 2,
+      "shuffle_safe": true,
+      "reasoning": "H4 to D8 moves four columns left and four rows down. The absolute column in $F4 remains F and its relative row becomes 8. The relative column in G$2 moves four columns left to C while row 2 remains fixed. Thus =$F8+C$2 is uniquely produced. The distractors respectively leave the formula unchanged, mishandle the anchored F column and relative G column, or fail to shift G while moving its fixed row. This is direct application of the same copy-displacement rule to two mixed references; moving left does not require a new reasoning concept. It fits the stated goal and remains valid in any option order."
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "scope": "Post-unmask independent coordinate arithmetic for these simple A1 formulas, not execution in Excel or a general formula parser. No changes to frozen joint credits.",
+  "checks": [
+    {
+      "id": "q01",
+      "formula": "=$A4*B$3",
+      "column_displacement": 3,
+      "row_displacement": 4,
+      "result": "=$A8*E$3"
+    },
+    {
+      "id": "q02",
+      "formula": "=$A2*B$1",
+      "column_displacement": 4,
+      "row_displacement": 3,
+      "result": "=$A5*F$1"
+    },
+    {
+      "id": "q03",
+      "formula": "=$N2/12",
+      "column_displacement": 11,
+      "row_displacement": 8,
+      "result": "=$N10/12"
+    },
+    {
+      "id": "q05",
+      "formula": "=K$5+$L5",
+      "column_displacement": 3,
+      "row_displacement": 4,
+      "result": "=N$5+$L9"
+    },
+    {
+      "id": "q06",
+      "formula": "=$A2*B$1",
+      "column_displacement": 2,
+      "row_displacement": 2,
+      "result": "=$A4*D$1"
+    },
+    {
+      "id": "q07",
+      "formula": "=$F4+G$2",
+      "column_displacement": -4,
+      "row_displacement": 4,
+      "result": "=$F8+C$2"
+    },
+    {
+      "id": "q06_counterfactual",
+      "formula": "=A2*B1",
+      "column_displacement": 2,
+      "row_displacement": 2,
+      "result": "=C4*D3"
+    },
+    {
+      "id": "q04",
+      "biomass_production_ratio_interpretation": {
+        "producer_g_m2_year": 300,
+        "ratio": 0.25,
+        "consumer_g_m2_year": 75
+      },
+      "energy_efficiency_interpretation_examples": [
+        {
+          "producer_energy_per_g": 10,
+          "consumer_energy_per_g": 10,
+          "consumer_g_m2_year": 75
+        },
+        {
+          "producer_energy_per_g": 10,
+          "consumer_energy_per_g": 20,
+          "consumer_g_m2_year": 37.5
+        }
+      ],
+      "scope": "Illustrative unit conversion, not empirical energy-density estimates. Biomass-based transfer efficiency is a legitimate convention; ambiguity is not a demonstrated arithmetic error."
+    }
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A gradebook has assignment weights in row 3 (B3:E3) and student scores in column A (A4:A8). Cell B4 should calculate weighted score using the student's score and the assignment's weight, then fill across assignments and down students. Which formula belongs in B4?",
+      "choices": [
+        "=$A4*B$3",
+        "=A4*B3",
+        "=$A$4*$B$3",
+        "=A$4*$B3"
+      ]
+    },
+    {
+      "id": "q02",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+      "choices": [
+        "=$A2*B$1",
+        "=A$2*$B1",
+        "=$A$2*B$1",
+        "=A2*B1"
+      ]
+    },
+    {
+      "id": "q03",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+      "choices": [
+        "=$N2/12",
+        "=N$2/12",
+        "=$N$2/12",
+        "=N2/12"
+      ]
+    },
+    {
+      "id": "q04",
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses."
+      },
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A pond ecosystem has phytoplankton with standing biomass 30 g/m² and annual production of 300 g/m²/year. Zooplankton have standing biomass 150 g/m². Transfer efficiency from phytoplankton to zooplankton is 25%. Which conclusion about zooplankton annual production is valid?",
+      "choices": [
+        "Zooplankton annual production is 75 g/m²/year.",
+        "Zooplankton annual production is 150 g/m²/year.",
+        "Zooplankton annual production is 37.5 g/m²/year.",
+        "Zooplankton annual production is 7.5 g/m²/year."
+      ]
+    },
+    {
+      "id": "q05",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "prompt": "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+      "choices": [
+        "=N$5+$L9",
+        "=K$9+$O5",
+        "=K$5+$L9",
+        "=N$9+$L5"
+      ]
+    },
+    {
+      "id": "q06",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+      "choices": [
+        "=$A4*D$1",
+        "=$A2*D$1",
+        "=$A4*B$1",
+        "=A4*D1"
+      ]
+    },
+    {
+      "id": "q07",
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "prompt": "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+      "choices": [
+        "=$F8+C$2",
+        "=$F4+G$2",
+        "=B8+G$2",
+        "=$F8+G$6"
+      ]
+    }
+  ]
+}

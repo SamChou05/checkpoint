@@ -1,0 +1,185 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "explanation": "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column.",
+      "choiceExplanations": {},
+      "composedFeedback": [
+        {
+          "selectedChoice": "=$A4*B$3",
+          "displayedFeedback": "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column."
+        },
+        {
+          "selectedChoice": "=A4*B3",
+          "displayedFeedback": "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column."
+        },
+        {
+          "selectedChoice": "=$A$4*$B$3",
+          "displayedFeedback": "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column."
+        },
+        {
+          "selectedChoice": "=A$4*$B3",
+          "displayedFeedback": "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column."
+        }
+      ]
+    },
+    {
+      "id": "q02",
+      "explanation": "Rates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions.",
+      "choiceExplanations": {
+        "=A2*B1": "Fully relative; filling right moves the rate column away from A, and filling down moves the amount row away from row 1.",
+        "=$A2*B$1": "$A locks column A for rates across all rows; $1 locks row 1 for amounts across all columns; relative parts adjust correctly in each fill direction.",
+        "=A$2*$B1": "$2 locks the rate to row 2 (wrong when filling down) and $B locks the amount to column B (wrong when filling right).",
+        "=$A$2*B$1": "$A$2 is fully absolute, so filling down to rows 3–5 always reads A2 instead of A3, A4, A5, giving the wrong rate."
+      },
+      "composedFeedback": [
+        {
+          "selectedChoice": "=$A2*B$1",
+          "displayedFeedback": "$A locks column A for rates across all rows; $1 locks row 1 for amounts across all columns; relative parts adjust correctly in each fill direction.\n\nRates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions."
+        },
+        {
+          "selectedChoice": "=A$2*$B1",
+          "displayedFeedback": "$2 locks the rate to row 2 (wrong when filling down) and $B locks the amount to column B (wrong when filling right).\n\nRates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions."
+        },
+        {
+          "selectedChoice": "=$A$2*B$1",
+          "displayedFeedback": "$A$2 is fully absolute, so filling down to rows 3–5 always reads A2 instead of A3, A4, A5, giving the wrong rate.\n\nRates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions."
+        },
+        {
+          "selectedChoice": "=A2*B1",
+          "displayedFeedback": "Fully relative; filling right moves the rate column away from A, and filling down moves the amount row away from row 1.\n\nRates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions."
+        }
+      ]
+    },
+    {
+      "id": "q03",
+      "explanation": "The target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down.",
+      "choiceExplanations": {
+        "=N2/12": "N is relative; filling right shifts the column away from N to O, P, etc., losing the target column.",
+        "=$N2/12": "$N locks column N so filling right always reads the target column; the relative row adjusts down for each category row.",
+        "=N$2/12": "N is still relative (shifts away from N when filled right) and $2 locks row 2 so filling down always reads the first category's target.",
+        "=$N$2/12": "Fully absolute; filling down always references row 2's target instead of each category's own row."
+      },
+      "composedFeedback": [
+        {
+          "selectedChoice": "=$N2/12",
+          "displayedFeedback": "$N locks column N so filling right always reads the target column; the relative row adjusts down for each category row.\n\nThe target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down."
+        },
+        {
+          "selectedChoice": "=N$2/12",
+          "displayedFeedback": "N is still relative (shifts away from N when filled right) and $2 locks row 2 so filling down always reads the first category's target.\n\nThe target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down."
+        },
+        {
+          "selectedChoice": "=$N$2/12",
+          "displayedFeedback": "Fully absolute; filling down always references row 2's target instead of each category's own row.\n\nThe target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down."
+        },
+        {
+          "selectedChoice": "=N2/12",
+          "displayedFeedback": "N is relative; filling right shifts the column away from N to O, P, etc., losing the target column.\n\nThe target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down."
+        }
+      ]
+    },
+    {
+      "id": "q04",
+      "explanation": "Transfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g/m²/year = 75 g/m²/year. The distractors test whether learners confuse standing biomass with annual production.",
+      "choiceExplanations": {
+        "Zooplankton annual production is 75 g/m²/year.": "Correctly applies the 25% transfer efficiency to phytoplankton annual production (300 g/m²/year), giving 75 g/m²/year.",
+        "Zooplankton annual production is 150 g/m²/year.": "Equals the zooplankton standing biomass figure, confusing a biomass snapshot with annual energy production.",
+        "Zooplankton annual production is 37.5 g/m²/year.": "Applies the 25% efficiency to zooplankton standing biomass (150 g/m²) rather than to phytoplankton annual production.",
+        "Zooplankton annual production is 7.5 g/m²/year.": "Applies the 25% efficiency to phytoplankton standing biomass (30 g/m²) instead of annual production (300 g/m²/year)."
+      },
+      "composedFeedback": [
+        {
+          "selectedChoice": "Zooplankton annual production is 75 g/m²/year.",
+          "displayedFeedback": "Correctly applies the 25% transfer efficiency to phytoplankton annual production (300 g/m²/year), giving 75 g/m²/year.\n\nTransfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g/m²/year = 75 g/m²/year. The distractors test whether learners confuse standing biomass with annual production."
+        },
+        {
+          "selectedChoice": "Zooplankton annual production is 150 g/m²/year.",
+          "displayedFeedback": "Equals the zooplankton standing biomass figure, confusing a biomass snapshot with annual energy production.\n\nTransfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g/m²/year = 75 g/m²/year. The distractors test whether learners confuse standing biomass with annual production."
+        },
+        {
+          "selectedChoice": "Zooplankton annual production is 37.5 g/m²/year.",
+          "displayedFeedback": "Applies the 25% efficiency to zooplankton standing biomass (150 g/m²) rather than to phytoplankton annual production.\n\nTransfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g/m²/year = 75 g/m²/year. The distractors test whether learners confuse standing biomass with annual production."
+        },
+        {
+          "selectedChoice": "Zooplankton annual production is 7.5 g/m²/year.",
+          "displayedFeedback": "Applies the 25% efficiency to phytoplankton standing biomass (30 g/m²) instead of annual production (300 g/m²/year).\n\nTransfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g/m²/year = 75 g/m²/year. The distractors test whether learners confuse standing biomass with annual production."
+        }
+      ]
+    },
+    {
+      "id": "q05",
+      "explanation": "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9.",
+      "choiceExplanations": {},
+      "composedFeedback": [
+        {
+          "selectedChoice": "=N$5+$L9",
+          "displayedFeedback": "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9."
+        },
+        {
+          "selectedChoice": "=K$9+$O5",
+          "displayedFeedback": "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9."
+        },
+        {
+          "selectedChoice": "=K$5+$L9",
+          "displayedFeedback": "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9."
+        },
+        {
+          "selectedChoice": "=N$9+$L5",
+          "displayedFeedback": "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9."
+        }
+      ]
+    },
+    {
+      "id": "q06",
+      "explanation": "When filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D.",
+      "choiceExplanations": {
+        "=$A4*D$1": "$A holds column A, relative row 2 shifts +2 to 4; relative column B shifts +2 to D, $1 holds row 1—all anchors applied correctly.",
+        "=$A2*D$1": "The row in $A2 is relative and must shift +2 rows when filled down to row 4, so $A2 becomes $A4, not $A2.",
+        "=$A4*B$1": "The column in B$1 is relative and must shift +2 columns when filled right to column D, so B$1 becomes D$1, not B$1.",
+        "=A4*D1": "Both dollar signs are dropped; without $A the column would shift away from A, and without $1 the row would shift away from 1."
+      },
+      "composedFeedback": [
+        {
+          "selectedChoice": "=$A4*D$1",
+          "displayedFeedback": "$A holds column A, relative row 2 shifts +2 to 4; relative column B shifts +2 to D, $1 holds row 1—all anchors applied correctly.\n\nWhen filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D."
+        },
+        {
+          "selectedChoice": "=$A2*D$1",
+          "displayedFeedback": "The row in $A2 is relative and must shift +2 rows when filled down to row 4, so $A2 becomes $A4, not $A2.\n\nWhen filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D."
+        },
+        {
+          "selectedChoice": "=$A4*B$1",
+          "displayedFeedback": "The column in B$1 is relative and must shift +2 columns when filled right to column D, so B$1 becomes D$1, not B$1.\n\nWhen filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D."
+        },
+        {
+          "selectedChoice": "=A4*D1",
+          "displayedFeedback": "Both dollar signs are dropped; without $A the column would shift away from A, and without $1 the row would shift away from 1.\n\nWhen filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D."
+        }
+      ]
+    },
+    {
+      "id": "q07",
+      "explanation": "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2.",
+      "choiceExplanations": {},
+      "composedFeedback": [
+        {
+          "selectedChoice": "=$F8+C$2",
+          "displayedFeedback": "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2."
+        },
+        {
+          "selectedChoice": "=$F4+G$2",
+          "displayedFeedback": "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2."
+        },
+        {
+          "selectedChoice": "=B8+G$2",
+          "displayedFeedback": "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2."
+        },
+        {
+          "selectedChoice": "=$F8+G$6",
+          "displayedFeedback": "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2."
+        }
+      ]
+    }
+  ]
+}

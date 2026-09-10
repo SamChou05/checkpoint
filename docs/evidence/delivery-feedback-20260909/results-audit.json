@@ -1,0 +1,112 @@
+{
+  "status": "passed",
+  "scope": "Independent final results/evidence audit; no provider calls, semantic reassessment, external research expansion, runtime edits, or assessment changes.",
+  "results_document": {
+    "path": "/tmp/checkpoint-delivery-feedback-20260909/docs/QUESTION_DELIVERED_QUALITY_RESULTS.md",
+    "byte_sha256": "e5a657d863d93842aadf4d8f01abe3488be8a1aff7d9f3a19c27e78f660cc3ec"
+  },
+  "evidence_directory": "/tmp/checkpoint-delivery-feedback-20260909/docs/evidence/delivery-feedback-20260909",
+  "evidence_byte_sha256": {
+    "summary.json": "794b25375f41778497627535f2157a70d2a7f6871a1e73462c41d84bdc36f887",
+    "capture.json": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+    "plan.json": "6c91c0498c6ea93fa79028b9cee86018ea8176b72f3b205c356496964a50e38c",
+    "first-assessment-a.json": "e6038e4b056b1a141449e3a290660fd7626ccd25ce713982568ae7c6de0d9f12",
+    "first-assessment-b.json": "338059df96e4b7f1b205eb1e94f43ae6d40290ae53c0116469c63431a1ee3c37",
+    "teaching-assessment-a.json": "8c1a9cab1dd19d11a3f4b875b6407daf7f726009b09af5d0ed0f5240b35c4277",
+    "teaching-assessment-b.json": "d92b6f03310f59ab81836f3879838c88596e663fe3c507e72a04a38d297d3e43",
+    "phase-one-freeze.json": "fec329ff7515e686469824c2ec5ae1d0e592a46385c67dfa168d084b194875eb",
+    "phase-two-freeze.json": "121c99d3d94acff5275ae5646b73f80b57dcc3c5046ed1a42e183e3fbf600b73",
+    "packet-manifest.json": "eb8b547c06106cbfff7e399cdf45a886e8d0b4710434888ab5b11c5ee24093fe",
+    "private-mapping.json": "bfe62ea79858ea874f2384d2386cc57e30d884d22985c9f0598609bf3c2c887d",
+    "stems-and-choices.json": "b2a824284f93f9859a631e568f55b9eb4c68652927be1c639d6a12a8a70cd75d",
+    "teaching.json": "432dab9feb3b9e4a219e4fa1916d83b58243ba51cd43177ac32f0cb59a34277c",
+    "bank-delivery.json": "3f5b8e802d5fb4c367b52b56d279f82b712bdfa0703ad073865f1081e3a5ba4a",
+    "client-delivery.json": "37bb4b69114d6da508c0c83e3475341b25cc299dde995067c40275c4b815b940",
+    "client-attachment-manifest.json": "600d472ccb257abc09c092f75608eef77f56eff1006de063befa3c265cf71a05",
+    "operational-audit.json": "81233db488fe96eb8fd559bf4c31da0cc01302f3a2e356a5bb4bbc6ed0538337",
+    "root-calculations.json": "474c6b12107c14819e34b477f20898a77eae27e595cf2217db41f5cc3a6cf71c",
+    "README.md": "235973ada7ba2d5ea784f0f37f81d8c9adb7673941784945e4a22d7517230e8e"
+  },
+  "checked_scopes": [
+    "Exact terminal plan/capture copies and canonical hash bindings.",
+    "All seven original runtime returns, operation/index mapping, original goal/source masking and unchanged stems/choices/teaching.",
+    "Both first and both teaching assessment hashes, packet hashes, freeze-chain hashes and declared phase timestamps.",
+    "Independent recomputation of individual and joint key, teaching and useful credits with no root upgrades; operation/goal/arm coverage and costs.",
+    "Difficulty-two assessments for q03/q05/q06/q07 versus returned difficulty three; q04 premise uncertainty and q06 feedback disagreement remain explicit.",
+    "62 raw author occurrences, 33 sanitizer admissions, 18 prompt-length/10 invalid-content/1 duplicate-answer rejects, and seven strict downstream JSON failures; all seven have prose followed by fenced JSON.",
+    "Call/usage/output-token maximum and recorded SDK/worker interval sums agree with the terminal capture and operational audit.",
+    "Seven exact bank returns and claims/replays, seven client-retained returns, and all 28 composed selected-choice feedback displays agree with the frozen teaching packet despite reordering.",
+    "All 90 bank/client source hashes agree and match bound commit1fd45a4; client report binds the bank fixture hash.",
+    "Local results and evidence README links resolve; substantive evidence manifest entries remain valid."
+  ],
+  "verified_headlines": {
+    "requested_slots": 30,
+    "returned_count": 7,
+    "reviewer_written": {
+      "requested_slots": 15,
+      "returned": 4,
+      "joint_supported_key": 3,
+      "joint_complete_teaching": 2,
+      "joint_useful_at_difficulty_at_least_three": 1,
+      "provider_calls": 15,
+      "input_tokens": 31363,
+      "output_tokens": 15652,
+      "raw_author_occurrences": 27
+    },
+    "authored_solution": {
+      "requested_slots": 15,
+      "returned": 3,
+      "joint_supported_key": 3,
+      "joint_complete_teaching": 3,
+      "joint_useful_at_difficulty_at_least_three": 1,
+      "provider_calls": 14,
+      "input_tokens": 29613,
+      "output_tokens": 17855,
+      "raw_author_occurrences": 35
+    },
+    "operation_returns": [
+      3,
+      3,
+      0,
+      0,
+      1,
+      0
+    ],
+    "assessed_difficulty_two_ids": [
+      "q03",
+      "q05",
+      "q06",
+      "q07"
+    ],
+    "strict_json_failure_call_indexes_zero_based": [
+      5,
+      7,
+      14,
+      16,
+      18,
+      20,
+      28
+    ],
+    "bound_delivery_source_files": 90,
+    "bank_claimed": 7,
+    "client_retained": 7,
+    "exact_composed_feedback_displays": 28
+  },
+  "resolved_findings": [
+    "Opening removed the unsupported claim that all four easier items are useful; q06 lacks joint complete-feedback support.",
+    "Results and evidence README explicitly qualify app-supported fields, custom category fallback and app-derived learning target. The raw backend learningTarget is not separately assignable; no complete backend/client request-context equivalence is claimed."
+  ],
+  "preserved_qualifications": [
+    "q04 is a convention/premise ambiguity under conservative frozen assessments, not a demonstrated numerical error; the legitimate biomass-ratio interpretation giving75 remains explicit.",
+    "q06 remains a feedback judgment disagreement concerning an unstated counterfactual, with a jointly supported key.",
+    "Local content delivery is observed; general correctness, deployed behavior, expert calibration, learning gains and complete backend/client context equivalence are not established.",
+    "Freeze artifacts validate archived bindings/order declarations; historical delivery of agent messages was not independently replayed."
+  ],
+  "manifest_packaging": {
+    "entries_at_audit": 23,
+    "currently_stale_entries": [],
+    "required_final_action": "Regenerate the evidence manifest after archiving this audit and the final README; manifest self-binding is intentionally excluded from this audit."
+  },
+  "outstanding_substantive_corrections": [],
+  "provider_calls_during_audit": 0
+}

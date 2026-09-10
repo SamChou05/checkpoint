@@ -1,0 +1,1123 @@
+{
+  "capture_byte_sha256": "b2b4d385fcde8143d8d43ea34cb17d6e4963fb816793cb5feed9a776c02b3049",
+  "items": [
+    {
+      "id": "q01",
+      "operation_index": 1,
+      "arm": "authored_solution",
+      "case_id": "excel_reference_copy_constraints",
+      "assessors": {
+        "a": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": true
+        },
+        "b": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": true
+        }
+      },
+      "joint": {
+        "supported_key": true,
+        "complete_teaching": true,
+        "useful": true
+      }
+    },
+    {
+      "id": "q02",
+      "operation_index": 0,
+      "arm": "reviewer_written",
+      "case_id": "excel_reference_copy_constraints",
+      "assessors": {
+        "a": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": true
+        },
+        "b": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": true
+        }
+      },
+      "joint": {
+        "supported_key": true,
+        "complete_teaching": true,
+        "useful": true
+      }
+    },
+    {
+      "id": "q03",
+      "operation_index": 0,
+      "arm": "reviewer_written",
+      "case_id": "excel_reference_copy_constraints",
+      "assessors": {
+        "a": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": false
+        },
+        "b": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": false
+        }
+      },
+      "joint": {
+        "supported_key": true,
+        "complete_teaching": true,
+        "useful": false
+      }
+    },
+    {
+      "id": "q04",
+      "operation_index": 4,
+      "arm": "reviewer_written",
+      "case_id": "food_web_energy_constraints",
+      "assessors": {
+        "a": {
+          "supported_key": false,
+          "complete_teaching": false,
+          "useful": false
+        },
+        "b": {
+          "supported_key": false,
+          "complete_teaching": false,
+          "useful": false
+        }
+      },
+      "joint": {
+        "supported_key": false,
+        "complete_teaching": false,
+        "useful": false
+      }
+    },
+    {
+      "id": "q05",
+      "operation_index": 1,
+      "arm": "authored_solution",
+      "case_id": "excel_reference_copy_constraints",
+      "assessors": {
+        "a": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": false
+        },
+        "b": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": false
+        }
+      },
+      "joint": {
+        "supported_key": true,
+        "complete_teaching": true,
+        "useful": false
+      }
+    },
+    {
+      "id": "q06",
+      "operation_index": 0,
+      "arm": "reviewer_written",
+      "case_id": "excel_reference_copy_constraints",
+      "assessors": {
+        "a": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": false
+        },
+        "b": {
+          "supported_key": true,
+          "complete_teaching": false,
+          "useful": false
+        }
+      },
+      "joint": {
+        "supported_key": true,
+        "complete_teaching": false,
+        "useful": false
+      }
+    },
+    {
+      "id": "q07",
+      "operation_index": 1,
+      "arm": "authored_solution",
+      "case_id": "excel_reference_copy_constraints",
+      "assessors": {
+        "a": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": false
+        },
+        "b": {
+          "supported_key": true,
+          "complete_teaching": true,
+          "useful": false
+        }
+      },
+      "joint": {
+        "supported_key": true,
+        "complete_teaching": true,
+        "useful": false
+      }
+    }
+  ],
+  "operations": [
+    {
+      "operation_index": 0,
+      "arm": "reviewer_written",
+      "case_id": "excel_reference_copy_constraints",
+      "status": "completed",
+      "result_category": "partial_delivery",
+      "requested_count": 5,
+      "returned_count": 3,
+      "joint": {
+        "supported_key": 3,
+        "complete_teaching": 2,
+        "useful": 1
+      },
+      "prepared_calls": 6,
+      "known_tokens": {
+        "inputTokens": 13172,
+        "outputTokens": 5362
+      },
+      "runtime_metrics": {
+        "ProviderCalls": 6,
+        "BedrockInputTokens": 13172,
+        "BedrockOutputTokens": 5362,
+        "ProviderObservations": [
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "f297fdb4b7a92214ca8f254441ddd3d815188c240517ba4d09832aa90218edc9",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2096,
+              "outputTokens": 1109,
+              "totalTokens": 3205
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1724,
+              "outputTokens": 1345,
+              "totalTokens": 3069
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "567387e8ceb6866af1db1689d20b3468882f5e20d0b0294a9610a868626940eb",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 2607,
+              "outputTokens": 766,
+              "totalTokens": 3373
+            }
+          },
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "f297fdb4b7a92214ca8f254441ddd3d815188c240517ba4d09832aa90218edc9",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2903,
+              "outputTokens": 568,
+              "totalTokens": 3471
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1373,
+              "outputTokens": 811,
+              "totalTokens": 2184
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "567387e8ceb6866af1db1689d20b3468882f5e20d0b0294a9610a868626940eb",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 2469,
+              "outputTokens": 763,
+              "totalTokens": 3232
+            }
+          }
+        ],
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 7
+          },
+          "review": {
+            "solver_zero_supported": 2,
+            "accepted": 3,
+            "solver_multiple_supported": 1,
+            "invalid_json": 1
+          }
+        }
+      },
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 3,
+        "shortfall_count": 2,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      }
+    },
+    {
+      "operation_index": 1,
+      "arm": "authored_solution",
+      "case_id": "excel_reference_copy_constraints",
+      "status": "completed",
+      "result_category": "partial_delivery",
+      "requested_count": 5,
+      "returned_count": 3,
+      "joint": {
+        "supported_key": 3,
+        "complete_teaching": 3,
+        "useful": 1
+      },
+      "prepared_calls": 5,
+      "known_tokens": {
+        "inputTokens": 9987,
+        "outputTokens": 5807
+      },
+      "runtime_metrics": {
+        "ProviderCalls": 5,
+        "BedrockInputTokens": 9987,
+        "BedrockOutputTokens": 5807,
+        "ProviderObservations": [
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2292,
+              "outputTokens": 1063,
+              "totalTokens": 3355
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1658,
+              "outputTokens": 1735,
+              "totalTokens": 3393
+            }
+          },
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2499,
+              "outputTokens": 1304,
+              "totalTokens": 3803
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1731,
+              "outputTokens": 1589,
+              "totalTokens": 3320
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "7f9cb8b65fcc52e684625e7f33139d7dfd15e254ff3937c48906f0e490f6fe3e",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1807,
+              "outputTokens": 116,
+              "totalTokens": 1923
+            }
+          }
+        ],
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 10
+          },
+          "review": {
+            "invalid_solution": 5,
+            "solver_zero_supported": 1,
+            "solver_multiple_supported": 1,
+            "accepted": 3
+          }
+        }
+      },
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 3,
+        "shortfall_count": 2,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      }
+    },
+    {
+      "operation_index": 2,
+      "arm": "authored_solution",
+      "case_id": "map_scale_distance_resizing",
+      "status": "coverage_failure",
+      "result_category": "call_budget_exhausted",
+      "requested_count": 5,
+      "returned_count": 0,
+      "joint": {
+        "supported_key": 0,
+        "complete_teaching": 0,
+        "useful": 0
+      },
+      "prepared_calls": 4,
+      "known_tokens": {
+        "inputTokens": 8355,
+        "outputTokens": 5489
+      },
+      "runtime_metrics": {
+        "ProviderCalls": 4,
+        "BedrockInputTokens": 8355,
+        "BedrockOutputTokens": 5489,
+        "ProviderObservations": [
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2511,
+              "outputTokens": 1511,
+              "totalTokens": 4022
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1391,
+              "outputTokens": 378,
+              "totalTokens": 1769
+            }
+          },
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2589,
+              "outputTokens": 1399,
+              "totalTokens": 3988
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1864,
+              "outputTokens": 2201,
+              "totalTokens": 4065
+            }
+          }
+        ],
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 5,
+            "invalid_content": 3,
+            "prompt_length": 2
+          },
+          "review": {
+            "solver_multiple_supported": 1,
+            "invalid_solution": 4
+          }
+        }
+      },
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 0,
+        "shortfall_count": 5,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      }
+    },
+    {
+      "operation_index": 3,
+      "arm": "reviewer_written",
+      "case_id": "map_scale_distance_resizing",
+      "status": "coverage_failure",
+      "result_category": "call_budget_exhausted",
+      "requested_count": 5,
+      "returned_count": 0,
+      "joint": {
+        "supported_key": 0,
+        "complete_teaching": 0,
+        "useful": 0
+      },
+      "prepared_calls": 4,
+      "known_tokens": {
+        "inputTokens": 7952,
+        "outputTokens": 5344
+      },
+      "runtime_metrics": {
+        "ProviderCalls": 4,
+        "BedrockInputTokens": 7952,
+        "BedrockOutputTokens": 5344,
+        "ProviderObservations": [
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "f297fdb4b7a92214ca8f254441ddd3d815188c240517ba4d09832aa90218edc9",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2315,
+              "outputTokens": 1460,
+              "totalTokens": 3775
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1696,
+              "outputTokens": 1329,
+              "totalTokens": 3025
+            }
+          },
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "f297fdb4b7a92214ca8f254441ddd3d815188c240517ba4d09832aa90218edc9",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2531,
+              "outputTokens": 1675,
+              "totalTokens": 4206
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1410,
+              "outputTokens": 880,
+              "totalTokens": 2290
+            }
+          }
+        ],
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 4,
+            "prompt_length": 6
+          },
+          "review": {
+            "invalid_solution": 4
+          }
+        }
+      },
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 0,
+        "shortfall_count": 5,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      }
+    },
+    {
+      "operation_index": 4,
+      "arm": "reviewer_written",
+      "case_id": "food_web_energy_constraints",
+      "status": "completed",
+      "result_category": "partial_delivery",
+      "requested_count": 5,
+      "returned_count": 1,
+      "joint": {
+        "supported_key": 0,
+        "complete_teaching": 0,
+        "useful": 0
+      },
+      "prepared_calls": 5,
+      "known_tokens": {
+        "inputTokens": 10239,
+        "outputTokens": 4946
+      },
+      "runtime_metrics": {
+        "ProviderCalls": 5,
+        "BedrockInputTokens": 10239,
+        "BedrockOutputTokens": 4946,
+        "ProviderObservations": [
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "f297fdb4b7a92214ca8f254441ddd3d815188c240517ba4d09832aa90218edc9",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2308,
+              "outputTokens": 1308,
+              "totalTokens": 3616
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1779,
+              "outputTokens": 1305,
+              "totalTokens": 3084
+            }
+          },
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "f297fdb4b7a92214ca8f254441ddd3d815188c240517ba4d09832aa90218edc9",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2508,
+              "outputTokens": 1660,
+              "totalTokens": 4168
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1484,
+              "outputTokens": 345,
+              "totalTokens": 1829
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "567387e8ceb6866af1db1689d20b3468882f5e20d0b0294a9610a868626940eb",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 2160,
+              "outputTokens": 328,
+              "totalTokens": 2488
+            }
+          }
+        ],
+        "QuestionQuality": {
+          "sanitize": {
+            "accepted": 4,
+            "prompt_length": 5,
+            "duplicate_answer": 1
+          },
+          "review": {
+            "invalid_solution": 3,
+            "accepted": 1
+          }
+        }
+      },
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 1,
+        "shortfall_count": 4,
+        "author_calls": 2,
+        "topoff_author_calls": 1,
+        "author_json_repair_calls": 0
+      }
+    },
+    {
+      "operation_index": 5,
+      "arm": "authored_solution",
+      "case_id": "food_web_energy_constraints",
+      "status": "coverage_failure",
+      "result_category": "no_returned_questions",
+      "requested_count": 5,
+      "returned_count": 0,
+      "joint": {
+        "supported_key": 0,
+        "complete_teaching": 0,
+        "useful": 0
+      },
+      "prepared_calls": 5,
+      "known_tokens": {
+        "inputTokens": 11271,
+        "outputTokens": 6559
+      },
+      "runtime_metrics": {
+        "ProviderCalls": 5,
+        "BedrockInputTokens": 11271,
+        "BedrockOutputTokens": 6559,
+        "ProviderObservations": [
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2504,
+              "outputTokens": 1719,
+              "totalTokens": 4223
+            }
+          },
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2513,
+              "outputTokens": 1632,
+              "totalTokens": 4145
+            }
+          },
+          {
+            "model": "moonshotai.kimi-k2.5",
+            "systemPromptSHA256": "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "inputTokens": 2513,
+              "outputTokens": 1517,
+              "totalTokens": 4030
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1784,
+              "outputTokens": 1076,
+              "totalTokens": 2860
+            }
+          },
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "7f9cb8b65fcc52e684625e7f33139d7dfd15e254ff3937c48906f0e490f6fe3e",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "usage": {
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0,
+              "inputTokens": 1957,
+              "outputTokens": 615,
+              "totalTokens": 2572
+            }
+          }
+        ],
+        "QuestionQuality": {
+          "sanitize": {
+            "invalid_content": 7,
+            "prompt_length": 5,
+            "accepted": 3
+          },
+          "review": {
+            "solver_zero_supported": 1,
+            "invalid_authored_review": 2
+          }
+        }
+      },
+      "delivery_observation": {
+        "requested_count": 5,
+        "returned_count": 0,
+        "shortfall_count": 5,
+        "author_calls": 3,
+        "topoff_author_calls": 2,
+        "author_json_repair_calls": 0
+      }
+    }
+  ],
+  "arms": {
+    "reviewer_written": {
+      "planned_requests": 3,
+      "requested_slots": 15,
+      "attempted_requests": 3,
+      "runtime_returned": 4,
+      "joint": {
+        "supported_key": 3,
+        "complete_teaching": 2,
+        "useful": 1
+      },
+      "individual": {
+        "a": {
+          "supported_key": 3,
+          "complete_teaching": 3,
+          "useful": 1
+        },
+        "b": {
+          "supported_key": 3,
+          "complete_teaching": 2,
+          "useful": 1
+        }
+      },
+      "precision_denominator": 4,
+      "requests_with_five_returned": 0,
+      "requests_with_five_joint_useful": 0,
+      "prepared_calls": 15,
+      "known_tokens": {
+        "inputTokens": 31363,
+        "outputTokens": 15652
+      },
+      "prepared_calls_per_joint_useful": 15.0,
+      "known_tokens_per_joint_useful": {
+        "inputTokens": 31363.0,
+        "outputTokens": 15652.0
+      }
+    },
+    "authored_solution": {
+      "planned_requests": 3,
+      "requested_slots": 15,
+      "attempted_requests": 3,
+      "runtime_returned": 3,
+      "joint": {
+        "supported_key": 3,
+        "complete_teaching": 3,
+        "useful": 1
+      },
+      "individual": {
+        "a": {
+          "supported_key": 3,
+          "complete_teaching": 3,
+          "useful": 1
+        },
+        "b": {
+          "supported_key": 3,
+          "complete_teaching": 3,
+          "useful": 1
+        }
+      },
+      "precision_denominator": 3,
+      "requests_with_five_returned": 0,
+      "requests_with_five_joint_useful": 0,
+      "prepared_calls": 14,
+      "known_tokens": {
+        "inputTokens": 29613,
+        "outputTokens": 17855
+      },
+      "prepared_calls_per_joint_useful": 14.0,
+      "known_tokens_per_joint_useful": {
+        "inputTokens": 29613.0,
+        "outputTokens": 17855.0
+      }
+    }
+  },
+  "scope": "Small selected comparison; all captured runtime returns retained. Unattempted requests remain explicit. Joint credits require both independent assessments; no root upgrades. Known token subtotals are not total usage when any call has unknown usage."
+}

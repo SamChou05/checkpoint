@@ -1,0 +1,192 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "operation_index": 1,
+      "question_index": 2,
+      "arm": "authored_solution",
+      "case_id": "excel_reference_copy_constraints",
+      "question": {
+        "prompt": "A gradebook has assignment weights in row 3 (B3:E3) and student scores in column A (A4:A8). Cell B4 should calculate weighted score using the student's score and the assignment's weight, then fill across assignments and down students. Which formula belongs in B4?",
+        "expectedAnswer": "=$A4*B$3",
+        "choices": [
+          "=$A4*B$3",
+          "=A4*B3",
+          "=$A$4*$B$3",
+          "=A$4*$B3"
+        ],
+        "explanation": "The score must stay in column A for each student (mixed: $A4, row changes per student). The weight must stay in row 3 for each assignment (mixed: B$3, column changes per assignment). The formula =$A4*B$3 preserves: score always from column A matching the row, weight always from row 3 matching the column.",
+        "topic": "Combine relative, absolute and mixed A1 referenc",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {},
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 3
+      }
+    },
+    {
+      "id": "q02",
+      "operation_index": 0,
+      "question_index": 1,
+      "arm": "reviewer_written",
+      "case_id": "excel_reference_copy_constraints",
+      "question": {
+        "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+        "expectedAnswer": "=$A2*B$1",
+        "choices": [
+          "=$A2*B$1",
+          "=A$2*$B1",
+          "=$A$2*B$1",
+          "=A2*B1"
+        ],
+        "explanation": "Rates are always in column A (fix column with $A, let row adjust down) and amounts are always in row 1 (fix row with $1, let column adjust right), making $A2*B$1 the only reference that works for both fill directions.",
+        "topic": "Combine relative, absolute and mixed A1 referenc",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "=A2*B1": "Fully relative; filling right moves the rate column away from A, and filling down moves the amount row away from row 1.",
+          "=$A2*B$1": "$A locks column A for rates across all rows; $1 locks row 1 for amounts across all columns; relative parts adjust correctly in each fill direction.",
+          "=A$2*$B1": "$2 locks the rate to row 2 (wrong when filling down) and $B locks the amount to column B (wrong when filling right).",
+          "=$A$2*B$1": "$A$2 is fully absolute, so filling down to rows 3–5 always reads A2 instead of A3, A4, A5, giving the wrong rate."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2
+      }
+    },
+    {
+      "id": "q03",
+      "operation_index": 0,
+      "question_index": 2,
+      "arm": "reviewer_written",
+      "case_id": "excel_reference_copy_constraints",
+      "question": {
+        "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+        "expectedAnswer": "=$N2/12",
+        "choices": [
+          "=$N2/12",
+          "=N$2/12",
+          "=$N$2/12",
+          "=N2/12"
+        ],
+        "explanation": "The target value is always in column N (fix with $N) but each category occupies its own row (leave row relative), so $N2 correctly tracks each category when filled both right and down.",
+        "topic": "Combine relative, absolute and mixed A1 referenc",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "=N2/12": "N is relative; filling right shifts the column away from N to O, P, etc., losing the target column.",
+          "=$N2/12": "$N locks column N so filling right always reads the target column; the relative row adjusts down for each category row.",
+          "=N$2/12": "N is still relative (shifts away from N when filled right) and $2 locks row 2 so filling down always reads the first category's target.",
+          "=$N$2/12": "Fully absolute; filling down always references row 2's target instead of each category's own row."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2
+      }
+    },
+    {
+      "id": "q04",
+      "operation_index": 4,
+      "question_index": 0,
+      "arm": "reviewer_written",
+      "case_id": "food_web_energy_constraints",
+      "question": {
+        "prompt": "A pond ecosystem has phytoplankton with standing biomass 30 g/m² and annual production of 300 g/m²/year. Zooplankton have standing biomass 150 g/m². Transfer efficiency from phytoplankton to zooplankton is 25%. Which conclusion about zooplankton annual production is valid?",
+        "expectedAnswer": "Zooplankton annual production is 75 g/m²/year.",
+        "choices": [
+          "Zooplankton annual production is 75 g/m²/year.",
+          "Zooplankton annual production is 150 g/m²/year.",
+          "Zooplankton annual production is 37.5 g/m²/year.",
+          "Zooplankton annual production is 7.5 g/m²/year."
+        ],
+        "explanation": "Transfer efficiency relates production at consecutive trophic levels: zooplankton production = 25% × 300 g/m²/year = 75 g/m²/year. The distractors test whether learners confuse standing biomass with annual production.",
+        "topic": "Distinguish energy flow over time from a snapsho",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Zooplankton annual production is 75 g/m²/year.": "Correctly applies the 25% transfer efficiency to phytoplankton annual production (300 g/m²/year), giving 75 g/m²/year.",
+          "Zooplankton annual production is 150 g/m²/year.": "Equals the zooplankton standing biomass figure, confusing a biomass snapshot with annual energy production.",
+          "Zooplankton annual production is 37.5 g/m²/year.": "Applies the 25% efficiency to zooplankton standing biomass (150 g/m²) rather than to phytoplankton annual production.",
+          "Zooplankton annual production is 7.5 g/m²/year.": "Applies the 25% efficiency to phytoplankton standing biomass (30 g/m²) instead of annual production (300 g/m²/year)."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2
+      }
+    },
+    {
+      "id": "q05",
+      "operation_index": 1,
+      "question_index": 1,
+      "arm": "authored_solution",
+      "case_id": "excel_reference_copy_constraints",
+      "question": {
+        "prompt": "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+        "expectedAnswer": "=N$5+$L9",
+        "choices": [
+          "=N$5+$L9",
+          "=K$9+$O5",
+          "=K$5+$L9",
+          "=N$9+$L5"
+        ],
+        "explanation": "Copy displacement is 4 rows down (9-5) and 3 columns right (16-13, P is 16, M is 13). K$5: column K becomes K+3=N, row 5 fixed, giving N$5. $L5: column L fixed, row 5 becomes 5+4=9, giving $L9. Result: =N$5+$L9.",
+        "topic": "Combine relative, absolute and mixed A1 referenc",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {},
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 3
+      }
+    },
+    {
+      "id": "q06",
+      "operation_index": 0,
+      "question_index": 0,
+      "arm": "reviewer_written",
+      "case_id": "excel_reference_copy_constraints",
+      "question": {
+        "prompt": "A table has months across row 1 (B1:M1) and products down column A (A2:A10). Cell B2 contains =$A2*B$1. When this formula is filled to D4, what formula appears in D4?",
+        "expectedAnswer": "=$A4*D$1",
+        "choices": [
+          "=$A4*D$1",
+          "=$A2*D$1",
+          "=$A4*B$1",
+          "=A4*D1"
+        ],
+        "explanation": "When filling from B2 to D4 (offset +2 columns, +2 rows), the dollar sign fixes the component it precedes: $A stays column A, $1 stays row 1, while the unfixed row 2 shifts to 4 and unfixed column B shifts to D.",
+        "topic": "Combine relative, absolute and mixed A1 referenc",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "=$A4*D$1": "$A holds column A, relative row 2 shifts +2 to 4; relative column B shifts +2 to D, $1 holds row 1—all anchors applied correctly.",
+          "=$A2*D$1": "The row in $A2 is relative and must shift +2 rows when filled down to row 4, so $A2 becomes $A4, not $A2.",
+          "=$A4*B$1": "The column in B$1 is relative and must shift +2 columns when filled right to column D, so B$1 becomes D$1, not B$1.",
+          "=A4*D1": "Both dollar signs are dropped; without $A the column would shift away from A, and without $1 the row would shift away from 1."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2
+      }
+    },
+    {
+      "id": "q07",
+      "operation_index": 1,
+      "question_index": 0,
+      "arm": "authored_solution",
+      "case_id": "excel_reference_copy_constraints",
+      "question": {
+        "prompt": "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+        "expectedAnswer": "=$F8+C$2",
+        "choices": [
+          "=$F8+C$2",
+          "=$F4+G$2",
+          "=B8+G$2",
+          "=$F8+G$6"
+        ],
+        "explanation": "Copy displacement is 4 rows down (8-4) and 4 columns left (4-8, D is 4, H is 8). $F4: column F fixed, row 4 becomes 4+4=8, giving $F8. G$2: column G becomes G-4=C, row 2 fixed, giving C$2. The relative parts adjust; anchored parts stay fixed. Result: =$F8+C$2.",
+        "topic": "Combine relative, absolute and mixed A1 referenc",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {},
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 3
+      }
+    }
+  ]
+}

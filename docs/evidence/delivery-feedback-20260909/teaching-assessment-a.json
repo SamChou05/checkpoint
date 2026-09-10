@@ -1,0 +1,90 @@
+{
+  "items": [
+    {
+      "id": "q01",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly derives both mixed references from the stated input relationships: the score needs fixed column A and a changing student row, while the weight needs fixed row 3 and a changing assignment column. Its final =$A4*B$3 is supported; for example, filling to E8 would yield =$A8*E$3.",
+        "There are no choice-specific explanations. Each of the four composed displays repeats the same supported main explanation, including for the three incorrect selections. Although it does not diagnose each distractor separately, it supplies a complete derivation of the required formula.",
+        "All references identify cells or formulas, not option positions, so shuffling does not alter the teaching's meaning."
+      ]
+    },
+    {
+      "id": "q02",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly fixes the rate column and amount row while leaving their other components relative. Its exclusivity claim is supported among the offered choices: =$A2*B$1 becomes =$A2*F$1 across to F2 and =$A5*B$1 down to B5.",
+        "The =A2*B1 explanation correctly identifies rate-column drift when filling right and amount-row drift when filling down. The =$A2*B$1 explanation correctly describes both anchors and both relative components.",
+        "The =A$2*$B1 explanation correctly diagnoses fixed rate row 2 and fixed amount column B as failures in the respective fill directions. The =$A$2*B$1 explanation correctly states that downward copies continue referencing A2 instead of A3 through A5. These are wrong input relationships regardless of whether particular numerical rate values happen to match.",
+        "Each of the four composed displays combines its matching, supported choice explanation with the supported main explanation. Together they provide a useful complete solution and relevant error diagnosis.",
+        "No explanation relies on letters or numbers assigned to options, so all displayed feedback is safe under shuffling."
+      ]
+    },
+    {
+      "id": "q03",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly derives $N2 from a fixed target column and a category row that must change. Keeping the stem's division by 12 gives =$N2/12, and filling to M10 gives =$N10/12. The fixed divisor needs no additional anchoring.",
+        "The =N2/12 explanation correctly predicts horizontal changes from N to O, P, and later columns. The =$N2/12 explanation correctly describes fixed column N and a changing row.",
+        "The =N$2/12 explanation correctly identifies both the horizontal column drift and, when filling down from B2, the fixed first-category row. The =$N$2/12 explanation correctly identifies that absolute N2 cannot follow category rows downward.",
+        "All four composed displays use the correct matching choice explanation plus the supported main explanation. The reference derivation is complete for this question even though the main prose does not rewrite the entire formula with /12.",
+        "Cell coordinates and formula strings carry the meaning; there are no positional option references to invalidate on shuffling."
+      ]
+    },
+    {
+      "id": "q04",
+      "all_displayed_feedback_supported": false,
+      "worked_solution_complete": false,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation and the 75 g/m2/year choice explanation both assert the unconditional equation zooplankton mass production = 0.25 x phytoplankton mass production. The multiplication 0.25 x 300 = 75 is correct, but the stem does not explicitly define transfer efficiency as this mass-production ratio. For energy-based efficiency, the mass result additionally depends on the ratio of energy per gram at the two levels: 75 x producer energy per gram / consumer energy per gram. The explanation silently treats that ratio as one.",
+        "Neither the main explanation nor any choice explanation establishes that the specified phytoplankton transfer accounts for all zooplankton production. Additional feeding contributions are not excluded in the stem. The feedback therefore does not resolve the first-pass uncertainty about a total annual-production claim without adding unstated conditions.",
+        "The 150 explanation correctly notices that 150 is the zooplankton standing-biomass number and that a stock is different from an annual production flow. However, its wording calls the quantity annual energy production while the offered unit is grams per area per year, a mass-production unit rather than an energy unit.",
+        "The 37.5 explanation correctly identifies the numerical operation 0.25 x 150 = 37.5, and the 7.5 explanation correctly identifies 0.25 x 30 = 7.5. Both operations use standing biomass, so neither supplies an annual production rate. These useful stock-versus-flow diagnoses do not justify the main explanation's unqualified 75 result.",
+        "Every one of the four composed displays includes the same unsupported unconditional main conclusion; the display for 75 also explicitly labels that conclusion correct. Consequently not all displayed feedback is supported, and the worked solution is incomplete under the stated context. The sentence about what distractors test is item-writing commentary rather than an additional ecological explanation.",
+        "All feedback refers to quantities or concepts rather than answer positions, so shuffling introduces no separate defect."
+      ]
+    },
+    {
+      "id": "q05",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly computes M5 to P9 as +3 columns and +4 rows: P is column 16, M is 13, and 9 - 5 = 4. It then correctly transforms K$5 to N$5 and $L5 to $L9, preserving the anchors and producing =N$5+$L9.",
+        "There are no choice-specific explanations. All four composed displays repeat this fully worked calculation unchanged. It remains correct and sufficient for each selected option, although it does not separately name each distractor's error.",
+        "The column-number calculations describe worksheet coordinates, not option numbering, so every display remains valid after choices are reordered."
+      ]
+    },
+    {
+      "id": "q06",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly states the +2-column, +2-row displacement from B2 to D4 and applies it only to the unanchored components. This yields $A4 and D$1, hence =$A4*D$1. No assumptions about whether the month and product cells contain numeric values are needed to predict the formula text.",
+        "The =$A4*D$1 choice explanation correctly describes all four component behaviors. The =$A2*D$1 explanation correctly identifies the omitted relative-row change, and the =$A4*B$1 explanation correctly identifies the omitted relative-column change.",
+        "For =A4*D1, the explanation accurately observes that the offered formula omits both dollar signs. Its statement about what would shift without the anchors is a valid counterfactual under the given copy displacement: an unanchored source =A2*B1 would become =C4*D3. The feedback could make the simpler governing point more explicit, that copying preserves existing dollar signs, but its displayed claims are supported and it does not assert that =A4*D1 is the actual unanchored copy result.",
+        "Each of the four composed displays correctly pairs its choice explanation with the main explanation. The combined feedback provides the displacement and each reference transformation, constituting a useful worked solution without needing a repair.",
+        "No option-position references appear; the formula-based feedback is safe under shuffling."
+      ]
+    },
+    {
+      "id": "q07",
+      "all_displayed_feedback_supported": true,
+      "worked_solution_complete": true,
+      "shuffle_safe": true,
+      "findings": [
+        "The main explanation correctly computes H4 to D8 as -4 columns and +4 rows: D is column 4, H is 8, and 8 - 4 = 4 rows. $F4 becomes $F8 with column F anchored; G$2 becomes C$2 with row 2 anchored. The final =$F8+C$2 follows directly.",
+        "There are no choice-specific explanations. Each of the four composed displays repeats the supported main explanation. The explicit displacement, component transformations, and final formula form a complete worked solution, although no separate diagnosis is attached to each wrong choice.",
+        "All positions in the explanation are worksheet coordinates. Nothing depends on the ordering of the four choices."
+      ]
+    }
+  ]
+}
