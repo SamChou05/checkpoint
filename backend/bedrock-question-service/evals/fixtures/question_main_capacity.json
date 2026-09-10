@@ -1,0 +1,89 @@
+{
+  "experiment": "fresh-author-main-capacity-v1",
+  "prepared_date": "2026-09-09",
+  "input_contract": "Use only each case.payload as generation input, identically in both arms. No questions, choices, keys, arm limits or assessment findings are supplied. Source documents are selective assistant-written summaries, not acquired page records.",
+  "cases": [
+    {
+      "case_id": "sql_outer_join_null_reasoning",
+      "payload": {
+        "goal": {
+          "title": "Reason accurately about SQL outer joins and missing values",
+          "category": "Programming",
+          "currentLevel": "I can write simple SELECT queries and joins in PostgreSQL, but I sometimes misread outer-join results.",
+          "focusAreas": "Combine row matching, repeated matches, NULL comparisons and ON versus WHERE filters to explain results or compare query behavior in PostgreSQL 18.",
+          "learningTarget": "Predict and explain query behavior from compact tables and stated constraints, including cases where an apparently similar rewrite changes the result."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "PostgreSQL 18 table expressions: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.postgresql.org/docs/18/queries-table-expressions.html\n\nA qualified join matches a pair of input rows only when its ON condition is true. An inner join contributes a result for every matching pair, so one left row can appear several times. A LEFT JOIN additionally supplies one row with NULL right-side columns for each left row with no qualifying match. A restriction in ON participates in deciding which pairs match; a restriction in WHERE filters the joined result afterward. WHERE keeps only true conditions and discards false or unknown conditions. Moving a right-side filter between ON and WHERE can therefore change an outer join's result. These rules describe result semantics, not a required physical execution order.",
+            "truncated": true
+          },
+          {
+            "name": "PostgreSQL 18 comparisons: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.postgresql.org/docs/18/functions-comparison.html\n\nWith ordinary scalar comparisons, a NULL operand produces unknown rather than true or false. Comparing a value to NULL using equality does not test for missingness. IS NULL and IS NOT NULL test scalar missingness directly. IS NOT DISTINCT FROM treats two NULLs as matching and one NULL with one non-NULL as different; for two non-NULL values it agrees with equality. This summary concerns scalar columns under standard NULL behavior; row-valued expressions and compatibility settings have additional rules.",
+            "truncated": true
+          }
+        ]
+      },
+      "assessment_scope": "Level 3 requires combining matching/filter behavior with the displayed data or constraints, rather than recalling the definition of LEFT JOIN or NULL. Inspect every matching pair and unmatched row. Preserve multiplicity unless DISTINCT is stated; do not assume key uniqueness, ordering or NOT NULL constraints. General equivalence claims need all stated admissible data, not just one convenient example."
+    },
+    {
+      "case_id": "music_interval_transformations",
+      "payload": {
+        "goal": {
+          "title": "Understand musical intervals through transposition and inversion",
+          "category": "Music",
+          "currentLevel": "I can read letter names, sharps, flats and simple intervals in Western notation, but transformations still confuse me.",
+          "focusAreas": "Combine interval number, quality, spelling and direction when transposing short note patterns or inverting simple intervals in twelve-tone equal temperament.",
+          "learningTarget": "Explain why a proposed musical transformation preserves or changes the stated interval relationships using both written note names and pitch distances."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Open Music Theory intervals: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://pressbooks.nebraska.edu/openmusictheory/chapter/intervals/\n\nA written interval has both a number and a quality. Count letter positions inclusively for the number; accidentals affect quality without changing those letters. Relative to the same numbered interval, major is one semitone wider than minor; augmented is one semitone wider than major or perfect, and diminished is one semitone narrower than minor or perfect. Spelling matters: equally wide sounding intervals can have different written names. Inverting a simple interval by exchanging the notes' upper/lower positions through an octave move makes their numbers sum to nine. Perfect remains perfect, major and minor exchange, and augmented and diminished exchange. These are interval inversions, not chord inversions or melodic reflection around an axis.",
+            "truncated": true
+          },
+          {
+            "name": "LBCC transposition: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://lbcc.pressbooks.pub/intromtcls/chapter/chapter-8-melodic-analysis/\n\nTo transpose a passage by a specified directed interval, move every note by that interval and adjust its spelling and accidentals consistently with the new key. Notes altered from the original key must retain the corresponding alteration after the move; changing letter positions alone is insufficient. The key moves by the same interval. Ordinary transposition preserves major or minor mode; changing mode is a different operation. A downward and an upward move may lead to the same pitch class in different octaves, so the requested direction matters.",
+            "truncated": true
+          }
+        ]
+      },
+      "assessment_scope": "Level 3 requires integrating spelling, interval structure and a transformation or diagnosing a proposal using those constraints. A single familiar interval lookup or inversion-rule recall is insufficient. Check inclusive letter distance and semitone distance separately; never substitute an enharmonic spelling when written identity matters. Require explicit register/direction whenever the result depends on it. All decisive notation must be visible in text."
+    },
+    {
+      "case_id": "photography_exposure_tradeoffs",
+      "payload": {
+        "goal": {
+          "title": "Balance photographic exposure with motion and depth of field",
+          "category": "Photography",
+          "currentLevel": "I know what shutter speed, aperture and ISO control, and want to make better manual exposure decisions.",
+          "focusAreas": "Combine stop changes with motion-blur, depth-of-field and available-setting constraints under steady lighting, using conventional full-stop exposure calculations.",
+          "learningTarget": "Explain which manual setting changes preserve the intended image brightness while meeting the stated creative and equipment constraints."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Nikon exposure basics: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/a-basic-look-at-the-basics-of-exposure\n\nAperture controls the lens opening, while shutter time controls how long light reaches the sensor. A full stop doubles or halves the admitted light. Shorter shutter times reduce motion blur but admit less light if other conditions stay fixed. Doubling ISO permits half as much light for comparable image brightness; aperture, shutter time and ISO can therefore compensate for one another. The same nominal brightness need not produce the same picture: shutter time affects motion depiction, and higher ISO often carries an image-noise tradeoff. This is conventional exposure guidance, not a guarantee that one shutter setting freezes every subject or that different cameras have identical noise.",
+            "truncated": true
+          },
+          {
+            "name": "Nikon aperture guidance: selective source summary",
+            "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/understanding-maximum-aperture\n\nLower f-numbers mean wider openings and more admitted light. The conventional full-stop sequence includes f/2, f/2.8, f/4, f/5.6, f/8, f/11 and f/16. Wider apertures reduce depth of field; narrower apertures increase it when the other relevant conditions are held fixed. Opening the aperture can permit a shorter shutter time at the same brightness and ISO, but changes depth of field. A lens's maximum aperture limits how far it can open, and some zoom lenses have different maximum apertures at different focal lengths. Nominal stop labels are rounded values.",
+            "truncated": true
+          }
+        ]
+      },
+      "assessment_scope": "Level 3 requires balancing at least two interacting exposure/creative constraints, not just recalling a control or doubling one setting. Recompute each alternative's stop balance and check equipment limits. Hold lighting and unspecified geometry fixed only where the stem establishes the comparison. Do not equate brightness compensation through ISO with more light reaching the sensor or claim guaranteed sharpness/noise from a setting alone."
+    }
+  ],
+  "assessment_contract": "Assess every returned item for an answer warranted by complete displayed premises, exactly one correct choice, three distinct plausible distractors, a wholly correct worked main explanation, goal fit and actual difficulty of at least 3. Preserve missing, malformed, duplicate, too-easy and incorrect candidates in the denominator. These selected goals do not establish arbitrary-subject accuracy or learning gains. Assessment notes and source provenance outside payload are not model inputs."
+}
