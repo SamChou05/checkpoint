@@ -6,6 +6,7 @@ Frozen-recheck mode: the same archived five candidates in two two-call arms.
 Authored-solution mode: three fresh two-item goals, at most three calls each.
 Author comparison: repeat those inputs with two author models, eighteen calls.
 Focused application: compare two Kimi author prompts under the same limits.
+Delivery comparison: six normal five-item operations, two feedback contracts.
 The unchanged runtime owns parsing, filtering, top-offs and JSON repair. The
 existing isolated caller owns transport/deadlines; this file adds no supervisor.
 Operational completion and policy stamps are not factual correctness scores.
@@ -38,7 +39,9 @@ from complete_question_solution import COMPLETE_SOLUTION_SYSTEM_PROMPT  # noqa: 
 from request_contract import _normalize_request  # noqa: E402
 from question_quality import _extract_json_object, _sanitize_questions  # noqa: E402
 from question_teaching import AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT  # noqa: E402
-from service_errors import ProviderError  # noqa: E402
+from service_errors import (  # noqa: E402
+    InvalidProviderResponseError, ProviderCallBudgetExceededError, ProviderError,
+)
 
 shared, recorded = caller.shared, caller.recorded
 _hash, _same = recorded._hash, recorded._same
@@ -47,6 +50,9 @@ RECHECK_EXPERIMENT = "policy-two-frozen-recheck-v1"
 AUTHORED_EXPERIMENT = "authored-solution-fresh-v1"
 AUTHOR_COMPARISON_EXPERIMENT = "authored-solution-author-comparison-v1"
 FOCUSED_APPLICATION_EXPERIMENT = "authored-solution-focused-application-v1"
+DELIVERY_COMPARISON_EXPERIMENT = "worker-delivery-feedback-comparison-v1"
+DELIVERY_COMPARISON_ORIGIN = SERVICE_DIR / "evals/fixtures/question_author_examples.json"
+DELIVERY_COMPARISON_ORIGIN_SHA256 = "82fb6ca25666ab4d00c0780cae9f1d41e0ff9fecd33555e99b0d50e57f393bc8"
 AUTHOR_COMPARISON_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/authored-solution-fresh-fixture-20260908.json"
 AUTHOR_COMPARISON_ORIGIN_SHA256 = "6fe797f70ab10c8d6418743c213337b406d15448f75ffb4bebe0abdb2fb2693d"
 RECHECK_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/runtime-qualification-capture-20260908.json"
@@ -143,6 +149,8 @@ def _guard_request(request, settings=None):
 
 
 def make_plan(packet, *, source_revision=None):
+    if type(packet) is dict and packet.get("experiment") == DELIVERY_COMPARISON_EXPERIMENT:
+        return _make_delivery_comparison_plan(packet, source_revision=source_revision)
     if type(packet) is dict and packet.get("experiment") in {
         AUTHOR_COMPARISON_EXPERIMENT, FOCUSED_APPLICATION_EXPERIMENT,
     }:
@@ -309,6 +317,63 @@ def _make_author_comparison_plan(packet, *, source_revision):
     if focused:
         plan["scope"] = "New paired Kimi author prompt comparison on three selected original goal/source payloads: balanced then focused_application, reversed on the middle goal. Only the author system prompt differs in paired initial requests; model, user content, output contract and inference settings stay fixed. Both use Sonnet complete-choice solving and immutable main-teaching audit, disabled thinking, 6000 tokens and temperature 0.2. Downstream inputs depend on each arm's new candidates and survivors. No previous generated content, keys, error notes or external assessment enters provider inputs. This is not a randomized general accuracy estimate, a comparison of identical generated candidates, deployment or default promotion. Author main guidance remains 320 characters and runtime admission 420, without clipping."
     return plan
+
+
+def _make_delivery_comparison_plan(packet, *, source_revision):
+    if packet != {"experiment": DELIVERY_COMPARISON_EXPERIMENT}:
+        raise ValueError("The delivery comparison has no configurable inputs or profiles.")
+    raw = DELIVERY_COMPARISON_ORIGIN.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != DELIVERY_COMPARISON_ORIGIN_SHA256:
+        raise ValueError("The exact original three-goal source fixture is required.")
+    origin = json.loads(raw)
+    base_settings = {**SETTINGS, "MAX_QUESTIONS_PER_BATCH": "5"}
+    cases, operations = [], []
+    for index, case in enumerate(origin["cases"]):
+        original = copy.deepcopy(case["payload"])
+        if original["targetCount"] != 2 or original["minimumDifficulty"] != 3:
+            raise ValueError("The original two-item, difficulty-three payload is required.")
+        payload = {**original, "targetCount": 5}
+        with patch.dict(os.environ, base_settings):
+            request = _normalize_request(copy.deepcopy(payload))
+        if (request["targetCount"] != 5 or request["minimumDifficulty"] != 3
+                or not _same(request["sourceDocuments"], original["sourceDocuments"])):
+            raise ValueError("Normalization must preserve five items, difficulty three and exact sources.")
+        cases.append({"case_id": case["case_id"], "payload": original,
+                      "payload_sha256": _hash(original),
+                      "delivery_payload_sha256": _hash(payload),
+                      "normalized_request_sha256": _hash(request)})
+        arms = ["reviewer_written", "authored_solution"]
+        if index == 1:
+            arms.reverse()
+        for arm in arms:
+            settings = {**base_settings, "QUESTION_FEEDBACK_CONTRACT": arm}
+            with patch.dict(os.environ, settings):
+                first = _first_request(request, settings=settings)
+            operations.append({"kind": "fresh", "case_id": case["case_id"], "arm": arm,
+                               "settings": settings, "request": copy.deepcopy(request),
+                               "maximum_calls": 6, "first_request": first})
+    if len(cases) != 3 or len({c["case_id"] for c in cases}) != 3:
+        raise ValueError("Exactly three distinct original goals are required.")
+    return {
+        "experiment": DELIVERY_COMPARISON_EXPERIMENT,
+        "fixture": copy.deepcopy(packet), "fixture_sha256": _hash(packet),
+        **_source_snapshot(source_revision), "settings": base_settings,
+        "origin": {"path": str(DELIVERY_COMPARISON_ORIGIN.relative_to(SERVICE_DIR.parents[1])),
+                   "fixture_byte_sha256": DELIVERY_COMPARISON_ORIGIN_SHA256,
+                   "fixture_canonical_sha256": _hash(origin), "cases": cases},
+        "operations": operations, "maximum_calls": 36,
+        "maximum_input_utf8_bytes_per_call": MAX_INPUT_BYTES,
+        "maximum_input_utf8_bytes_total": 36 * MAX_INPUT_BYTES,
+        "operation_seconds": OPERATION_SECONDS, "sdk_total_max_attempts": 1,
+        "runtime_deadline_constants": {
+            "client_setup_milliseconds": generation.DEFAULT_PROVIDER_CLIENT_SETUP_MILLISECONDS,
+            "safety_milliseconds": generation.DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS,
+        },
+        "maximum_worker_capture_bytes": caller.MAX_CAPTURE_BYTES,
+        "failure_policy": "Six calls and three normal generation attempts per operation; thirty-six calls total. Normal content top-offs and bounded author JSON repair consume that allowance. An empty result, recognized completed-content failure, or ordinary request call-budget exhaustion is a coverage failure and allows the next independent operation. A latched provider, observer, unfinished-response, cleanup or persistence failure stops globally even if the runtime returns prior questions. Propagated deadline, durable-budget and unknown exceptions also stop. The unchanged runtime may instead retain an accepted partial batch when later admission runs out of time or call budget before observer dispatch. No added provider retry, fallback, resumption or replacement operation.",
+        "scope": "Six local normal-runtime operations request five questions each on three previously tested goal/source payloads, changing only targetCount from two to five. Paired settings differ only in QUESTION_FEEDBACK_CONTRACT: reviewer_written then authored_solution, reversed for the middle goal. Actual runtime author contracts and downstream inputs may consequently differ. Kimi authors and Sonnet verifies with disabled thinking, 6000 tokens and temperature 0.2. No demonstrations, assessment notes or earlier generated outputs enter provider inputs. New generated content is not an unseen-domain test. Returned counts, policy stamps and operational completion do not establish factual precision, useful teaching, difficulty or learning. No deployment, bank write or default promotion.",
+        "timing_scope": "Six independent 240-second operation clocks; existing observers use read75/connect3/SDK1 and at most32KiB per serialized request. Local cleanup can extend a wait slightly; parent persistence is not hard real-time. Fixed75 transport admission is conservative versus deployed late-operation read shortening. Missing responses leave usage and remote completion unknown.",
+    }
 
 
 def _make_recheck_plan(packet, *, source_revision):
@@ -569,6 +634,25 @@ class _RuntimeClient:
             raise
 
 
+def _delivery_content_failure(error, calls):
+    # Exact types exclude deadline/durable subclasses and unrelated ProviderErrors.
+    if type(error) is ProviderCallBudgetExceededError:
+        return "call_budget_exhausted"
+    if type(error) is InvalidProviderResponseError:
+        return "invalid_provider_content"
+    traceback = error.__traceback__
+    while traceback is not None and traceback.tb_next is not None:
+        traceback = traceback.tb_next
+    if (type(error) is ProviderError and traceback is not None
+            and traceback.tb_frame.f_code is _extract_json_object.__code__
+            and [c["role"] for c in calls[-2:]] == ["author", "author_json_repair"]
+            and all(c["lifecycle"] == "completed" and _usable_observation(c["observation"])
+                    for c in calls[-2:])):
+        # This runtime's bounded author parser still raises plain ProviderError.
+        return "malformed_author_json"
+    return None
+
+
 def _execute(plan, report, persist, observer=None, *, cli_credentials=False, replay=None):
     client = _RuntimeClient(report, persist, observer, cli_credentials, replay and replay["calls"])
     for index, job in enumerate(plan["operations"]):
@@ -581,9 +665,12 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
             client.settings = settings
             budget = generation.ProviderCallBudget(job["maximum_calls"], context=context)
             metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
-            error_type, questions = None, []
+            delivery = plan["experiment"] == DELIVERY_COMPARISON_EXPERIMENT
+            error_type, content_failure, questions = None, None, []
+            runtime_started = False
             try:
                 persist()
+                runtime_started = True
                 request = copy.deepcopy(job["request"])
                 if job["kind"] == "fixed":
                     def invoke(system, user):
@@ -597,13 +684,35 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
                     questions = generation._generate_sanitized_questions(request, client, budget, metrics)
             except Exception as error:
                 error_type = type(error).__name__
-                client.failed = True
+                if delivery and runtime_started and not client.failed:
+                    content_failure = _delivery_content_failure(
+                        error, [c for c in report["calls"] if c["operation_index"] == index],
+                    )
+                if content_failure is None:
+                    client.failed = True
             if replay is not None and context.cursor != len(context.frozen):
                 raise ValueError("Unused operation-clock observations.")
             result.update(status="operational_failure" if client.failed else "completed",
                           questions=questions, runtime_error_type=error_type,
                           budget_reservations=budget.calls,
                           metrics=_metrics_without_runtime_intervals(metrics))
+            if delivery:
+                roles = [c["role"] for c in report["calls"] if c["operation_index"] == index]
+                target = job["request"]["targetCount"]
+                if not client.failed and not questions:
+                    result["status"] = "coverage_failure"
+                result["result_category"] = (
+                    "operational_failure" if client.failed else content_failure
+                    or ("no_returned_questions" if not questions else
+                        "full_delivery" if len(questions) == target else "partial_delivery")
+                )
+                result["delivery_observation"] = {
+                    "requested_count": target, "returned_count": len(questions),
+                    "shortfall_count": target - len(questions),
+                    "author_calls": roles.count("author"),
+                    "topoff_author_calls": max(0, roles.count("author") - 1),
+                    "author_json_repair_calls": roles.count("author_json_repair"),
+                }
             if plan["experiment"] in {AUTHORED_EXPERIMENT, AUTHOR_COMPARISON_EXPERIMENT,
                                       FOCUSED_APPLICATION_EXPERIMENT}:
                 repairs = sum(c["operation_index"] == index and c["role"] == "author_json_repair"
@@ -648,7 +757,8 @@ def _empty_report(plan):
             "operations": [{"kind": j["kind"], "maximum_calls": j["maximum_calls"],
                             **({key: copy.deepcopy(j[key]) for key in ("arm", "case_id", "settings")}
                                if plan["experiment"] in {AUTHOR_COMPARISON_EXPERIMENT,
-                                                         FOCUSED_APPLICATION_EXPERIMENT} else {}),
+                                                         FOCUSED_APPLICATION_EXPERIMENT,
+                                                         DELIVERY_COMPARISON_EXPERIMENT} else {}),
                             "status": "unattempted", "remaining_milliseconds": [], "questions": []}
                            for j in plan["operations"]]}
 
