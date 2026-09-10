@@ -1,19 +1,83 @@
 """Native diagnostic admission and content accounting; no provider calls."""
 import copy
+from contextlib import contextmanager, ExitStack
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
+import complete_question_solution
+import question_teaching
+import question_verification
 from evals import checkpoint_native_stage_probe as probe
 from test_runtime_qualification import completed
 
 
+@contextmanager
+def historical_prompt_contract():
+    """Exercise the frozen diagnostic with its exact archived prompt contract.
+
+    This test-only fixture does not migrate evidence to current production
+    prompts. Production admission still checks source bytes and prompt identity.
+    """
+    raw = probe.ORIGIN.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != probe.ORIGIN_SHA256:
+        raise AssertionError("Historical prompt fixture capture changed.")
+    capture = json.loads(raw)
+    identities = {
+        "author_reviewer_written": (0, "f297fdb4b7a92214ca8f254441ddd3d815188c240517ba4d09832aa90218edc9"),
+        "author_authored_solution": (6, "0e0541f681b48045413f1a43d9274b2f1f2f2a81a1a460b886a4554a9a48e04c"),
+        "solver": (1, "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba"),
+        "reviewer": (2, "567387e8ceb6866af1db1689d20b3468882f5e20d0b0294a9610a868626940eb"),
+        "teaching_auditor": (10, "7f9cb8b65fcc52e684625e7f33139d7dfd15e254ff3937c48906f0e490f6fe3e"),
+    }
+    prompts = {}
+    for name, (index, digest) in identities.items():
+        prompt = capture["calls"][index]["request"]["system"][0]["text"]
+        if hashlib.sha256(prompt.encode()).hexdigest() != digest:
+            raise AssertionError(f"Historical {name} prompt changed.")
+        prompts[name] = prompt
+
+    def author_prompt():
+        if os.getenv("CHECKPOINT_PROMPT_VARIANT", "balanced").strip().lower() != "balanced":
+            raise AssertionError("Historical fixture requires the balanced author variant.")
+        return prompts["author_" + probe.generation._feedback_contract()]
+
+    grounding = {0: "No source documents supplied; use reliable subject knowledge within the goal."}
+    for index in (0, 11):
+        call = capture["calls"][index]
+        request = capture["plan"]["operations"][call["operation_index"]]["request"]
+        user = call["request"]["messages"][0]["content"][0]["text"]
+        grounding[len(request["sourceDocuments"])] = user.split(
+            "\nSource grounding mode: ", 1,
+        )[1].split("\n", 1)[0]
+
+    with ExitStack() as patches:
+        patches.enter_context(patch.object(probe.generation, "_system_prompt", side_effect=author_prompt))
+        patches.enter_context(patch.object(
+            probe.generation, "_source_grounding_text",
+            side_effect=lambda request: grounding[len(request.get("sourceDocuments", []))],
+        ))
+        for module, name, role in (
+            (complete_question_solution, "COMPLETE_SOLUTION_SYSTEM_PROMPT", "solver"),
+            (question_verification, "COMPLETE_REVIEW_SYSTEM_PROMPT", "reviewer"),
+            (question_verification, "AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT", "teaching_auditor"),
+            (question_teaching, "AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT", "teaching_auditor"),
+            (probe.runtime, "COMPLETE_SOLUTION_SYSTEM_PROMPT", "solver"),
+            (probe.runtime, "COMPLETE_REVIEW_SYSTEM_PROMPT", "reviewer"),
+            (probe.runtime, "AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT", "teaching_auditor"),
+        ):
+            patches.enter_context(patch.object(module, name, prompts[role]))
+        yield prompts
+
+
 class NativeStageProbeTests(unittest.TestCase):
     def setUp(self):
+        self.enterContext(historical_prompt_contract())
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.directory = Path(temporary.name)
@@ -257,6 +321,22 @@ class NativeStageProbeTests(unittest.TestCase):
 
 
 class SourceBindingTests(unittest.TestCase):
+    def test_current_source_guidance_cannot_reuse_historical_plan(self):
+        with tempfile.TemporaryDirectory() as temporary, patch.object(
+            probe, "_source_snapshot", return_value={"source_revision": "a" * 40},
+        ):
+            directory = Path(temporary)
+            plan_path = directory / "plan.json"
+            output = directory / "capture"
+            with historical_prompt_contract():
+                plan = probe.make_plan()
+            probe.shared.write_json(plan_path, plan)
+            observer = Mock(side_effect=AssertionError("No provider"))
+            with self.assertRaisesRegex(ValueError, "Unexpected runtime role"):
+                probe.run_probe(plan_path, probe._hash(plan), output, observer=observer)
+            observer.assert_not_called()
+            self.assertFalse(output.exists())
+
     def test_sdk_must_match_qualified_packaged_versions(self):
         for versions in ({"boto3": "1.43.89", "botocore": "1.43.91"},
                          {"boto3": "1.43.91", "botocore": None}):

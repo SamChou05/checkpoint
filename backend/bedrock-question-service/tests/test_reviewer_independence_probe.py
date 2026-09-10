@@ -8,11 +8,14 @@ import unittest
 from unittest.mock import Mock, patch
 
 from evals import checkpoint_reviewer_independence_probe as probe
+from test_native_stage_probe import historical_prompt_contract
 from test_runtime_qualification import completed
 
 
 class ReviewerIndependenceProbeTests(unittest.TestCase):
     def setUp(self):
+        prompts = self.enterContext(historical_prompt_contract())
+        self.enterContext(patch.object(probe, "COMPLETE_REVIEW_SYSTEM_PROMPT", prompts["reviewer"]))
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.directory = Path(temporary.name)
@@ -501,6 +504,24 @@ class ReviewerIndependenceProbeTests(unittest.TestCase):
 
 
 class ReviewerIndependenceSourceTests(unittest.TestCase):
+    def test_current_source_guidance_cannot_reuse_historical_plan(self):
+        with tempfile.TemporaryDirectory() as temporary, patch.object(
+            probe.native_probe, "_source_snapshot", return_value={"source_revision": "a" * 40},
+        ):
+            directory = Path(temporary)
+            plan_path = directory / "plan.json"
+            output = directory / "capture"
+            with historical_prompt_contract() as prompts, patch.object(
+                probe, "COMPLETE_REVIEW_SYSTEM_PROMPT", prompts["reviewer"],
+            ):
+                plan = probe.make_plan()
+            probe.shared.write_json(plan_path, plan)
+            observer = Mock(side_effect=AssertionError("No provider"))
+            with self.assertRaisesRegex(ValueError, "Exact current reviewer context"):
+                probe.run_probe(plan_path, probe._hash(plan), output, observer=observer)
+            observer.assert_not_called()
+            self.assertFalse(output.exists())
+
     def test_incompatible_sdk_is_rejected_before_any_client_or_worker(self):
         for versions in ({"boto3": "1.43.89", "botocore": "1.43.91"},
                          {"boto3": "1.43.91", "botocore": None}):

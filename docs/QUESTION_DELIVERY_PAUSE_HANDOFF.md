@@ -1,5 +1,21 @@
 # Pause handoff — September 9, 2026
 
+## September 10 separate source-instruction correction
+
+Read `QUESTION_SOURCE_EVIDENCE_CONTRACT.md`. While AWS renewal is pending, a
+separate checkout `/tmp/checkpoint-source-evidence-contract-20260910` on
+`codex/source-evidence-contract` aligns backend source/knowledge instructions.
+It permits learned facts/rules without restating answers, while requiring visible
+case-specific stimuli and preserving source qualifications and existing gates.
+The old default reviewer’s scope-only/definitions-only restriction is removed.
+The original ordering checkout is preserved; its frozen comparison must run
+there, not against these changed prompts. No new paid experiment or deployment
+occurred. Local iOS prompt parity and live correctness gains remain unverified.
+All 1,134 backend tests, Ruff and diff checks pass. Legacy revision-one prompts
+remain byte-stable; historical diagnostic tests use explicit frozen prompt
+fixtures and continue rejecting new prompt identities for old plans. The original
+ordering plan was revalidated in its clean checkout and remains unexecuted.
+
 ## September 10 solver-order preparation
 
 The next experiment is now implemented in `evals/checkpoint_solver_order.py`;
