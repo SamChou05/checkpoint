@@ -96,12 +96,15 @@ def _normalize_skill_map_inference_request(payload: dict[str, Any]) -> dict[str,
     if not isinstance(goal, dict):
         raise BadRequestError("Missing goal object.")
 
-    title = _validated_text(goal.get("title"), "goal.title", 200)
+    title = _validated_text(
+        goal.get("title"), "goal.title", 200, preserve_subject_content=True,
+    )
     learning_target = (
         _validated_text(
             goal.get("learningTarget"),
             "goal.learningTarget",
             240,
+            preserve_subject_content=True,
         )
         or title
     )
@@ -116,6 +119,7 @@ def _normalize_skill_map_inference_request(payload: dict[str, Any]) -> dict[str,
         "goal.contentTopics",
         maximum_items=8,
         maximum_characters=80,
+        preserve_subject_content=True,
     )
 
     suggested_value = payload.get("suggestedSkills")
@@ -157,11 +161,13 @@ def _normalize_skill_map_inference_request(payload: dict[str, Any]) -> dict[str,
                 goal.get("focusAreas"),
                 "goal.focusAreas",
                 1_000,
+                preserve_subject_content=True,
             ),
             "currentLevel": _validated_text(
                 goal.get("currentLevel"),
                 "goal.currentLevel",
                 200,
+                preserve_subject_content=True,
             ),
             "learningTarget": learning_target,
             "contentTopics": normalized_topics,
@@ -169,6 +175,7 @@ def _normalize_skill_map_inference_request(payload: dict[str, Any]) -> dict[str,
                 goal.get("questionDirective"),
                 "goal.questionDirective",
                 1_000,
+                preserve_subject_content=True,
             ),
         },
         "suggestedSkills": suggested_skills,
@@ -391,19 +398,25 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
         payload.get("minimumDifficulty"), minimum=1, maximum=5
     )
 
-    title = _validated_text(goal.get("title"), "goal.title", 200)
+    title = _validated_text(
+        goal.get("title"), "goal.title", 200, preserve_subject_content=True,
+    )
     learning_target = (
         _validated_text(
             goal.get("learningTarget"),
             "goal.learningTarget",
             240,
+            preserve_subject_content=True,
         )
         or title
     )
     if not learning_target:
         raise BadRequestError("Missing goal learningTarget.")
 
-    focus_areas = _validated_text(goal.get("focusAreas"), "goal.focusAreas", 1_000)
+    focus_areas = _validated_text(
+        goal.get("focusAreas"), "goal.focusAreas", 1_000,
+        preserve_subject_content=True,
+    )
     skill_map = _normalized_supplied_skill_map(payload.get("skillMap"))
     desired_skill_allocation = _normalized_desired_skill_allocation(
         payload.get("desiredSkillAllocation"),
@@ -448,6 +461,7 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
         "goal.contentTopics",
         maximum_items=8,
         maximum_characters=80,
+        preserve_subject_content=True,
     )
     if skill_map:
         normalized_topics = [skill["name"] for skill in skill_map["skills"]]
@@ -490,6 +504,7 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
                 goal.get("currentLevel"),
                 "goal.currentLevel",
                 200,
+                preserve_subject_content=True,
             ),
             "learningTarget": learning_target,
             "contentTopics": normalized_topics or [learning_target],
@@ -497,6 +512,7 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
                 goal.get("questionDirective"),
                 "goal.questionDirective",
                 1_000,
+                preserve_subject_content=True,
             ),
             "needsSkillMap": needs_skill_map,
             "preferredQuestionStyle": "Multiple Choice",
@@ -1272,10 +1288,11 @@ def _topics_from_focus(value: Any) -> list[str]:
     topics = []
     seen = set()
     for part in re.split(r"[,;\n]+", value):
-        topic = _clip(_clean_text(part), 80)
-        key = _canonical(topic)
-        if key and key not in seen:
-            seen.add(key)
+        topic = _clip(_clean_subject_text(part).strip(), 80)
+        # Topic examples may differ only in literal spacing, case or syntax.
+        # Canonical matching here would discard distinct subject content.
+        if topic and topic not in seen:
+            seen.add(topic)
             topics.append(topic)
         if len(topics) >= 8:
             break

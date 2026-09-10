@@ -2,6 +2,15 @@
 
 ## Release status
 
+September 10 context correction: [goal subject preservation](QUESTION_GOAL_CONTEXT_PRESERVATION.md)
+fixes transformations before model inference, including collapsed quoted spacing
+and indentation, and app target extraction that changed `A minor` to `minor` or
+removed a leading sign/decimal. Actual app payload and backend provider-boundary
+regressions cover the change. This is a general input-preservation fix, not a new
+model-accuracy result. No provider experiment, model upgrade or deployment was
+performed. The prepared stronger-model comparison remains unexecuted while
+prompt and architectural causes are investigated.
+
 The repository has stronger validation and better diagnostics, but the correctness issue is **not fully resolved**. No backend deployment or production model promotion was performed during this audit. Model agreement remains insufficient evidence of correctness. Existing app-blocking and break rules were not changed.
 
 Latest reviewer-context evidence: the [ten-call paired comparison](QUESTION_REVIEWER_INDEPENDENCE_RESULTS.md) withheld only the earlier solver records under shared current native reviewer instructions. Both arms still approved and would return the same defective spreadsheet item. Seven paired correlated subjects received identical answers. The withheld arm also produced incorrect ecology teaching and a final response with duplicate indexes and invalid rejection feedback, losing five planned slots to the existing admission checks. Those losses are not factual catches. Clear Bayes and survey teaching errors remained in the supplied-context arm; the corresponding withheld records were unavailable. All calls ended normally, with a maximum of 1,368 of 6,000 output tokens. The source milestone passed 82 targeted tests; exact source/policy/export audits and masked feedback assessment are preserved. This does not qualify context removal or any production change. Test stronger model capability under current contracts before adding another equivalent critic.

@@ -1,0 +1,113 @@
+{
+  "before": {
+    "input": {
+      "goal": {
+        "title": "Learn \"a  b\" versus \"a b\"",
+        "learningTarget": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+        "focusAreas": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+        "currentLevel": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+        "questionDirective": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+        "contentTopics": [
+          "\"a  b\"",
+          "\"a b\""
+        ]
+      },
+      "targetCount": 1,
+      "minimumDifficulty": 3
+    },
+    "normalizers": {
+      "_normalize_request": {
+        "goal": {
+          "title": "Learn \"a b\" versus \"a b\"",
+          "category": "",
+          "focusAreas": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")",
+          "currentLevel": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")",
+          "learningTarget": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")",
+          "contentTopics": [
+            "\"a b\"",
+            "\"a b\""
+          ],
+          "questionDirective": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "learner_level_prose": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")"
+      },
+      "_normalize_skill_map_inference_request": {
+        "goal": {
+          "title": "Learn \"a b\" versus \"a b\"",
+          "category": "",
+          "focusAreas": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")",
+          "currentLevel": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")",
+          "learningTarget": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")",
+          "contentTopics": [
+            "\"a b\"",
+            "\"a b\""
+          ],
+          "questionDirective": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")"
+        },
+        "learner_level_prose": "Compare \"a b\" with \"a b\". if ready: print(\"a b\")"
+      }
+    },
+    "source_sha256": {
+      "request_contract.py": "fac35010e0560b9c040b171c9e51257c9ec7196d5092dfa88b6a89699e85ea38",
+      "question_generation.py": "b6ba12f9e384027a47513164ae7ddfec0e5eb9442cd41fbfff90608516b3f92f"
+    }
+  },
+  "after": {
+    "input": {
+      "goal": {
+        "title": "Learn \"a  b\" versus \"a b\"",
+        "learningTarget": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+        "focusAreas": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+        "currentLevel": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+        "questionDirective": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+        "contentTopics": [
+          "\"a  b\"",
+          "\"a b\""
+        ]
+      },
+      "targetCount": 1,
+      "minimumDifficulty": 3
+    },
+    "normalizers": {
+      "_normalize_request": {
+        "goal": {
+          "title": "Learn \"a  b\" versus \"a b\"",
+          "category": "",
+          "focusAreas": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+          "currentLevel": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+          "learningTarget": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+          "contentTopics": [
+            "\"a  b\"",
+            "\"a b\""
+          ],
+          "questionDirective": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "learner_level_prose": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")"
+      },
+      "_normalize_skill_map_inference_request": {
+        "goal": {
+          "title": "Learn \"a  b\" versus \"a b\"",
+          "category": "",
+          "focusAreas": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+          "currentLevel": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+          "learningTarget": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")",
+          "contentTopics": [
+            "\"a  b\"",
+            "\"a b\""
+          ],
+          "questionDirective": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")"
+        },
+        "learner_level_prose": "Compare \"a  b\" with \"a b\".\nif ready:\n    print(\"a  b\")"
+      }
+    },
+    "source_sha256": {
+      "request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+      "question_generation.py": "d8394f1958057248cd878e5db5768021da6fa26b9554be6d23e64fdc780ce0a6"
+    }
+  },
+  "scope": "Two actual backend entrypoints on identical synthetic data, no provider calls. Before is source c4f115bf7cc35f8e22129936cf02de92f3d2b9d8; after is bound by file hashes. This proves text preservation, not model accuracy."
+}

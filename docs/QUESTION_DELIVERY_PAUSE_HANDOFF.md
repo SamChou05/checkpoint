@@ -1,5 +1,30 @@
 # Pause handoff — September 9, 2026
 
+## September 10 goal-context correction
+
+Current work is `/tmp/checkpoint-goal-context-preservation-20260910`, branch
+`codex/goal-context-preservation`, based on the committed comparison preparation
+`c4f115b`. Read `QUESTION_GOAL_CONTEXT_PRESERVATION.md`. The stage-attribution
+review found a concrete pre-model input bug, so this slice fixes subject text
+normalization and app target extraction before adding another experiment.
+No stage-trace exporter or fresh provider experiment has been started. No AWS
+agreement was accepted and no production settings or deployment changed.
+
+The earlier prepared model plan remains in
+`/tmp/checkpoint-current-model-comparison-plan-20260910/plan.json`, with canonical
+hash `db53d14a6f94b2d6351bda49bd2cc53ff12e7163b3527d8b8c4887c2d4dc8f6e`.
+It binds its own `c4f115b` source checkout and must not be run from this modified
+source. Its execution claim was absent at the preparation check. It remains an
+optional diagnostic, not the next automatically authorized agreement action.
+
+Next, verify the concrete checking-context omissions identified in the new
+document, or finish stage attribution using the existing frozen-runtime replay
+with passive boundary capture. Preserve exact source, occurrence identities,
+choice order, batch sanitizer state and dense reviewer index mapping. Do not
+relabel historical captures as current-source evidence or assign aggregate
+rejection counters to individual questions without actual boundary evidence.
+The broader correctness objective remains active and incomplete.
+
 ## September 10 preparation and user steering
 
 Current work is in `/tmp/checkpoint-current-model-comparison-20260910`, on
