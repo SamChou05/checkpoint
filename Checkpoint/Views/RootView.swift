@@ -560,7 +560,7 @@ struct RootView: View {
                 }
                 .tag(AppTab.settings)
         }
-        .tint(CheckpointTheme.teal)
+        .tint(CheckpointTheme.accent)
         .environment(
             \.checkpointGoalSelection,
             GoalSelectionAction { requestGoalSwitch(to: $0) }

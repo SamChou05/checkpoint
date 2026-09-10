@@ -33,7 +33,7 @@ struct LivingMapBackdrop: View {
                                      y: size.height * (0.43 + 0.025 * sin(phase)))
                 context.fill(bounds, with: .color(LearningMapPalette.background.color))
                 context.fill(bounds, with: .radialGradient(
-                    Gradient(colors: [LearningMapPalette.iris.color.opacity(colorScheme == .dark ? 0.12 : 0.075), .clear]),
+                    Gradient(colors: [LearningMapPalette.accent.color.opacity(colorScheme == .dark ? 0.12 : 0.075), .clear]),
                     center: center, startRadius: 0, endRadius: reach * 0.68
                 ))
                 context.fill(bounds, with: .radialGradient(

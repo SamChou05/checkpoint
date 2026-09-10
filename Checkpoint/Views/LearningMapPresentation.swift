@@ -1,19 +1,19 @@
 import SwiftUI
 
-/// The map's approved graphite-and-soft-iris palette is intentionally local so the
-/// rest of Checkpoint keeps its established visual language.
+/// Map presentation shares the app's warm surfaces and independent evidence colors.
 enum LearningMapPalette {
-    static let background = CheckpointAdaptiveColor(light: .init(hex: 0xF7F7FA), dark: .init(hex: 0x111319))
-    static let panel = CheckpointAdaptiveColor(light: .init(hex: 0xFFFFFF), dark: .init(hex: 0x1C2029))
-    static let raised = CheckpointAdaptiveColor(light: .init(hex: 0xECEAF6), dark: .init(hex: 0x292D3A))
-    static let text = CheckpointAdaptiveColor(light: .init(hex: 0x242534), dark: .init(hex: 0xF2F1F8))
-    static let secondary = CheckpointAdaptiveColor(light: .init(hex: 0x696878), dark: .init(hex: 0xB9B9CA))
-    static let iris = CheckpointAdaptiveColor(light: .init(hex: 0x6255B2), dark: .init(hex: 0xB1A0FF))
-    static let strong = CheckpointAdaptiveColor(light: .init(hex: 0x2A755E), dark: .init(hex: 0x80D5B4))
-    static let information = CheckpointAdaptiveColor(light: .init(hex: 0x596D8C), dark: .init(hex: 0xB2BED2))
-    static let building = CheckpointAdaptiveColor(light: .init(hex: 0x826020), dark: .init(hex: 0xEBCB88))
-    static let border = CheckpointAdaptiveColor(light: .init(hex: 0xD3D1E0), dark: .init(hex: 0x3D4052))
-    static let actionText = CheckpointAdaptiveColor(light: .init(hex: 0xFFFFFF), dark: .init(hex: 0x201A37))
+    static let background = CheckpointPalette.backgroundBase
+    static let panel = CheckpointPalette.panel
+    static let raised = CheckpointPalette.panelRaised
+    static let text = CheckpointPalette.text
+    static let secondary = CheckpointPalette.muted
+    static let accent = CheckpointPalette.accent
+    static let strong = CheckpointPalette.success
+    static let information = CheckpointPalette.blue
+    static let building = CheckpointPalette.amber
+    static let border = CheckpointPalette.hairline
+    static let actionFill = CheckpointPalette.actionFill
+    static let actionText = CheckpointPalette.actionText
 }
 
 struct LearningMapDestination: Identifiable, Equatable {
@@ -115,11 +115,11 @@ struct LearningMapEntryCard: View {
                     if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
                     Label("Explore map", systemImage: "arrow.right")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(LearningMapPalette.iris.color)
+                        .foregroundStyle(LearningMapPalette.accent.color)
                         .fixedSize(horizontal: !dynamicTypeSize.isAccessibilitySize, vertical: true)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 7)
-                        .background(LearningMapPalette.iris.color.opacity(0.08), in: Capsule())
+                        .background(LearningMapPalette.accent.color.opacity(0.08), in: Capsule())
                 }
             }
             .padding(18)
@@ -129,7 +129,7 @@ struct LearningMapEntryCard: View {
                     .overlay {
                         RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
                             .fill(LinearGradient(
-                                colors: [LearningMapPalette.iris.color.opacity(0.045), .clear, .clear],
+                                colors: [LearningMapPalette.accent.color.opacity(0.045), .clear, .clear],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ))
@@ -138,7 +138,7 @@ struct LearningMapEntryCard: View {
             .overlay {
                 RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
                     .strokeBorder(LinearGradient(
-                        colors: [LearningMapPalette.iris.color.opacity(0.22), LearningMapPalette.border.color],
+                        colors: [LearningMapPalette.accent.color.opacity(0.22), LearningMapPalette.border.color],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ), lineWidth: 1)
@@ -182,7 +182,7 @@ struct LearningMapEntryCard: View {
                 )
                 context.stroke(
                     path,
-                    with: .color(LearningMapPalette.iris.color.opacity(primary ? 0.6 : 0.35)),
+                    with: .color(LearningMapPalette.accent.color.opacity(primary ? 0.6 : 0.35)),
                     style: StrokeStyle(lineWidth: primary ? 1.6 : 1.1, lineCap: .round)
                 )
             }
@@ -198,12 +198,12 @@ struct LearningMapEntryCard: View {
                 context.stroke(Path(ellipseIn: bounds), with: .color(color), lineWidth: 1.2)
             }
             let halo = CGRect(x: goal.x - 11, y: goal.y - 11, width: 22, height: 22)
-            context.fill(Path(ellipseIn: halo), with: .color(LearningMapPalette.iris.color.opacity(0.08)))
-            node(goal, radius: 6.2, color: LearningMapPalette.iris.color, filled: true)
-            node(upperSkill, radius: 4.6, color: LearningMapPalette.iris.color, filled: false)
+            context.fill(Path(ellipseIn: halo), with: .color(LearningMapPalette.accent.color.opacity(0.08)))
+            node(goal, radius: 6.2, color: LearningMapPalette.accent.color, filled: true)
+            node(upperSkill, radius: 4.6, color: LearningMapPalette.accent.color, filled: false)
             node(lowerSkill, radius: 4.6, color: LearningMapPalette.information.color, filled: false)
-            node(upperFocus, radius: 2.3, color: LearningMapPalette.iris.color.opacity(0.75), filled: true)
-            node(middleFocus, radius: 2.3, color: LearningMapPalette.iris.color.opacity(0.75), filled: true)
+            node(upperFocus, radius: 2.3, color: LearningMapPalette.accent.color.opacity(0.75), filled: true)
+            node(middleFocus, radius: 2.3, color: LearningMapPalette.accent.color.opacity(0.75), filled: true)
             node(lowerFocus, radius: 2.3, color: LearningMapPalette.information.color.opacity(0.75), filled: true)
             context.fill(
                 Path(ellipseIn: CGRect(x: goal.x - 1.5, y: goal.y - 1.5, width: 3, height: 3)),
@@ -214,7 +214,7 @@ struct LearningMapEntryCard: View {
         .background {
             RoundedRectangle(cornerRadius: 15)
                 .fill(LinearGradient(
-                    colors: [LearningMapPalette.iris.color.opacity(0.1), LearningMapPalette.information.color.opacity(0.035)],
+                    colors: [LearningMapPalette.accent.color.opacity(0.1), LearningMapPalette.information.color.opacity(0.035)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 ))
@@ -270,7 +270,7 @@ struct LearningMapContainerView: View {
                 }
             }
         }
-        .tint(LearningMapPalette.iris.color)
+        .tint(LearningMapPalette.accent.color)
         .sheet(item: $editorDestination) { editor in
             LearningMapEditorView(store: store, context: editor.context, initialSkillID: editor.initialSkillID)
         }

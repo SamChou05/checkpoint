@@ -216,6 +216,7 @@ final class CheckpointThemeTests: XCTestCase {
         let roles: [(String, CheckpointAdaptiveColor)] = [
             ("text", CheckpointPalette.text),
             ("muted", CheckpointPalette.muted),
+            ("brand accent", CheckpointPalette.accent),
             ("teal", CheckpointPalette.teal),
             ("blue", CheckpointPalette.blue),
             ("amber", CheckpointPalette.amber),
@@ -261,40 +262,15 @@ final class CheckpointThemeTests: XCTestCase {
     }
 
     func testPrimaryAndDestructiveActionsKeepReadableLabels() {
-        for (appearance, leading, trailing, destructive) in [
-            (
-                "light",
-                CheckpointPalette.actionTeal.light,
-                CheckpointPalette.actionDeep.light,
-                CheckpointPalette.destructiveFill.light
-            ),
-            (
-                "dark",
-                CheckpointPalette.actionTeal.dark,
-                CheckpointPalette.actionDeep.dark,
-                CheckpointPalette.destructiveFill.dark
-            )
+        for (appearance, fill, label, destructive, surface) in [
+            ("light", CheckpointPalette.actionFill.light, CheckpointPalette.actionText.light,
+             CheckpointPalette.destructiveFill.light, CheckpointPalette.panel.light),
+            ("dark", CheckpointPalette.actionFill.dark, CheckpointPalette.actionText.dark,
+             CheckpointPalette.destructiveFill.dark, CheckpointPalette.panel.dark)
         ] {
-            assertContrast(CheckpointPalette.paper, leading, minimum: 4.5, context: "\(appearance) action leading")
-            assertContrast(CheckpointPalette.paper, trailing, minimum: 4.5, context: "\(appearance) action trailing")
+            assertContrast(label, fill, minimum: 4.5, context: "\(appearance) primary action label")
+            assertContrast(fill, surface, minimum: 3, context: "\(appearance) primary action boundary")
             assertContrast(CheckpointPalette.paper, destructive, minimum: 4.5, context: "\(appearance) destructive")
-        }
-
-        for (endpointName, endpoint) in [
-            ("leading", CheckpointPalette.actionTeal.dark),
-            ("trailing", CheckpointPalette.actionDeep.dark)
-        ] {
-            let renderedBorder = composite(
-                CheckpointPalette.actionBorder.dark,
-                over: endpoint,
-                opacity: CheckpointPalette.actionBorder.dark.alpha
-            )
-            assertContrast(
-                renderedBorder,
-                CheckpointPalette.panel.dark,
-                minimum: 3,
-                context: "dark action \(endpointName) outline"
-            )
         }
     }
 
@@ -325,17 +301,17 @@ final class CheckpointThemeTests: XCTestCase {
     }
 
     func testSelectedControlStateRemainsDistinctAndReadable() {
-        for (appearance, fill, surface) in [
-            ("light", CheckpointPalette.selectionFill.light, CheckpointPalette.panelRaised.light),
-            ("dark", CheckpointPalette.selectionFill.dark, CheckpointPalette.panelRaised.dark)
+        // The warm selection wash is supported by an explicit outline and selected symbol.
+        // Verify the meaningful boundary and actual adaptive label, not decorative fill contrast.
+        for (appearance, fill, label, border, surface) in [
+            ("light", CheckpointPalette.selectionFill.light, CheckpointPalette.selectionText.light,
+             CheckpointPalette.selectionBorder.light, CheckpointPalette.panelRaised.light),
+            ("dark", CheckpointPalette.selectionFill.dark, CheckpointPalette.selectionText.dark,
+             CheckpointPalette.selectionBorder.dark, CheckpointPalette.panelRaised.dark)
         ] {
-            assertContrast(fill, surface, minimum: 3, context: "\(appearance) selected control state")
-            assertContrast(
-                CheckpointPalette.selectionText,
-                fill,
-                minimum: 4.5,
-                context: "\(appearance) selected control label"
-            )
+            assertContrast(border, surface, minimum: 3, context: "\(appearance) selected control boundary")
+            assertContrast(border, fill, minimum: 3, context: "\(appearance) selected outline against fill")
+            assertContrast(label, fill, minimum: 4.5, context: "\(appearance) selected control label")
         }
     }
 
