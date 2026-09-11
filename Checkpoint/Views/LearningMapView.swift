@@ -874,7 +874,7 @@ struct LearningMapView: View {
             legendRow("scope", "Goal → skills → focus points", "Solid lines show what belongs to your goal and each skill. Tap a skill to unfold its focus points.", LearningMapPalette.accent.color)
             legendRow("arrow.triangle.branch", "Earlier → later branches", "Dashed amber lines show advancement or a replacement you chose. Historical details explain which happened.", LearningMapPalette.building.color)
             ForEach([CompetencyProgressBand.notStarted, .calibrating, .needsPractice, .building, .strong], id: \.label) { band in
-                legendRow(band.systemImage, band.label, bandDescription(band), band.tint)
+                legendRow(band.systemImage, band.label, bandDescription(band), progressTint(for: band))
             }
             Text("Drag to move around. Pinch or use + and − to zoom. Fit map brings the current branch back into view. The goal title returns to all skills. List offers the same details in reading order.")
                 .font(.subheadline).foregroundStyle(LearningMapPalette.secondary.color)
