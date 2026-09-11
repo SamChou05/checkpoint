@@ -1,17 +1,51 @@
 """Exercise actual ordering interventions and unchanged gates without inference."""
 import copy
+from contextlib import contextmanager
+import hashlib
 import json
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
+import complete_question_solution
 from evals import checkpoint_solver_order as trial
 from test_runtime_qualification import completed
 
 
+@contextmanager
+def historical_order_contract():
+    """Exercise the archived trial's prompt/schema, not the new production order.
+
+    Production trial code and its source/prompt admission guards stay unchanged.
+    """
+    path = trial.ROOT / "docs/evidence/solver-order-preparation-20260910/prepared-plan.json"
+    archived_bytes = path.read_bytes()
+    if hashlib.sha256(archived_bytes).hexdigest() != "3b31d7009563183b6cc8c071465028dcf1ad48b13e2cd0d7d9ab47c3431d7c97":
+        raise AssertionError("Historical ordering plan fixture changed.")
+    job = json.loads(archived_bytes)["jobs"][0]
+    if job["arm"] != "judgment_first":
+        raise AssertionError("Historical ordering control changed.")
+    native_system = job["request"]["system"][0]["text"]
+    native_suffix = trial.native.native_prompt("", trial.CONTRACT)
+    if not native_system.endswith(native_suffix):
+        raise AssertionError("Historical native prompt suffix changed.")
+    system = native_system[:-len(native_suffix)]
+    config = job["request"]["outputConfig"]
+    current_config = trial.native.native_output_config
+
+    def archived_config(contract):
+        return copy.deepcopy(config) if contract == trial.CONTRACT else current_config(contract)
+
+    with patch.object(complete_question_solution, "COMPLETE_SOLUTION_SYSTEM_PROMPT", system), patch.object(
+        trial.native, "native_output_config", side_effect=archived_config,
+    ):
+        yield
+
+
 class SolverOrderTests(unittest.TestCase):
     def setUp(self):
+        self.enterContext(historical_order_contract())
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.directory = Path(temporary.name)
@@ -160,6 +194,17 @@ class SolverOrderTests(unittest.TestCase):
         self.assertTrue(report["calls"][0]["usage_known"])
         self.assertEqual(report["results"][0]["status"], "operational_failure")
         self.assertTrue(all(r["status"] == "unattempted" for r in report["results"][1:]))
+
+
+class CurrentSolverOrderingAdmissionTests(unittest.TestCase):
+    def test_historical_trial_rejects_current_prompt_before_provider_dispatch(self):
+        batch = json.loads(trial.FIXTURE.read_text())["batches"][0]
+        for arm in trial.ARMS:
+            with self.subTest(arm=arm):
+                client = Mock()
+                with self.assertRaisesRegex(ValueError, "Current solver example changed"):
+                    trial._invoke(batch, arm, client)
+                client.converse.assert_not_called()
 
 
 if __name__ == "__main__":

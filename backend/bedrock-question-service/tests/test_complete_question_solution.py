@@ -60,6 +60,28 @@ def payload(prompt):
 
 
 class CompleteQuestionSolutionTests(unittest.TestCase):
+    def test_choice_field_order_does_not_repair_judgments_or_change_gates(self):
+        item = question()
+        for judgments, expected in (
+            (["supported", "refuted", "refuted", "refuted"], None),
+            (["refuted"] * 4, "solver_zero_supported"),
+            (["supported"] * 4, "solver_multiple_supported"),
+            (["supported", "uncertain", "refuted", "refuted"], "solver_uncertain"),
+            (["refuted", "supported", "refuted", "refuted"], "answer_disagreement"),
+        ):
+            original = record(item, judgments)
+            # Contradictory prose must not silently override a declared verdict.
+            for row in original["choices"]:
+                row["reason"] = "This choice is supported." if row["judgment"] != "supported" else "This choice is refuted."
+            for order in (("choice", "judgment", "reason"), ("choice", "reason", "judgment")):
+                with self.subTest(judgments=judgments, order=order):
+                    ordered = {"index": 0, "choices": [
+                        {field: row[field] for field in order} for row in original["choices"]
+                    ]}
+                    validated = validate_batch(raw(ordered), [item])[0]
+                    self.assertEqual(validated, original)
+                    self.assertEqual(rejection_reason(validated, item), expected)
+
     def test_prompt_whitelists_metadata_and_preserves_subject_content(self):
         item = question()
         item["prompt"] = '    s = "e\u0301  x"\r\nWhich exact value is stored?\t '

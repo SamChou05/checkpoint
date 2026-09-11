@@ -1,5 +1,33 @@
 # Pause handoff — September 9, 2026
 
+## September 10 implemented author and solver output order
+
+Current candidate: `/tmp/checkpoint-solver-reason-first-20260910`, branch
+`codex/solver-reason-first`, based on the source-guidance fix `8d35e4c`.
+Read `QUESTION_OUTPUT_ORDER_CONTRACT.md`. Solver examples/native properties now
+put reasons before verdicts. Native author properties preserve the existing
+explanation-before-answer sequence, correcting an alphabetic serialization
+mismatch. All original schema fields/types/required arrays, gates, model settings
+and other contract bytes remain unchanged. All 1,138 backend tests, 85 focused
+tests, Ruff and diff checks pass. No production deployment has occurred.
+
+The prior goal turn made progress: it completed and independently assessed the
+single frozen ordering trial, then committed/pushed evidence as `b87086f` on
+`codex/goal-context-preservation`. The trial is terminal: 27 completed calls, one
+dispatched read timeout with unknown remote completion/usage, four unattempted.
+All local workers were reaped. Do not restart its plan or fill the missing slots.
+Among 30 available scored pairs, six improve only with reason-first, 22 match
+correctly in both and two fail in both. Both arms still approve the extra-operand
+defect. Independent rationale review and missing denominators remain explicit.
+Its complete report is `QUESTION_SOLVER_ORDER_RESULTS.md` in that frozen checkout.
+
+AWS renewal succeeded before that run; older pending-login and unexecuted-trial
+notes below are historical. No provider process remains live. This combined
+source-instruction/output-order candidate still needs fresh full-workflow
+qualification, including every learner-facing teaching field. Do not infer that
+quality from scripted tests, fixed solver cases or the separate author-order
+compatibility correction. The general correctness objective remains open.
+
 ## September 10 separate source-instruction correction
 
 Read `QUESTION_SOURCE_EVIDENCE_CONTRACT.md`. While AWS renewal is pending, a

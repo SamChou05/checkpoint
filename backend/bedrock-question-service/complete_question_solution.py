@@ -55,7 +55,7 @@ or competing choices look worse. Do not repair the question or write teaching
 feedback. These are fallible solution judgments, not a certificate of truth.
 
 Return only {"solutions":[{"index":0,"choices":[{"choice":"exact offered text",
-"judgment":"supported|refuted|uncertain","reason":"concise decisive reason"}]}]}.
+"reason":"concise decisive reason","judgment":"supported|refuted|uncertain"}]}]}.
 Return exactly one item for every supplied question index, exactly one row for
 each offered choice, and no other fields. Preserve each supplied index and exact
 choice text. Each reason must be nonempty and at most 600 characters. The
