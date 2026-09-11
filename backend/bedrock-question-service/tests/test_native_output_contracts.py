@@ -5,6 +5,7 @@ import os
 import unittest
 from unittest.mock import patch
 
+from complete_question_solution import build_solver_prompt, rejection_reason, validate_batch
 from native_output_contracts import (
     adapt_native_response,
     contract_metadata,
@@ -28,6 +29,66 @@ class Client:
 
 
 class NativeOutputContractTests(unittest.TestCase):
+    def test_solver_request_emits_reason_before_judgment_in_both_transports(self):
+        item = {
+            "index": 0, "prompt": "Which sentence is in the past tense?",
+            "choices": ["She walked.", "She walks.", "She will walk.", "She is walking."],
+            "expectedAnswer": "She walked.",
+        }
+        system, user = build_solver_prompt([item], {})
+        payload = {"solutions": [{"index": 0, "choices": [
+            {"choice": choice, "reason": "A scripted decisive reason.",
+             "judgment": "supported" if choice == item["expectedAnswer"] else "refuted"}
+            for choice in item["choices"]
+        ]}]}
+        requests = {}
+        for mode in ("legacy", "native"):
+            with self.subTest(mode=mode):
+                client = Client(payload)
+                with patch.dict(os.environ, {"BEDROCK_STRUCTURED_OUTPUT_MODE": mode}):
+                    raw = _generate_with_bedrock(
+                        {}, client, "us.anthropic.claude-sonnet-4-6",
+                        system_prompt=system, user_prompt=user,
+                        contract="complete_choice_solver_v1", call_budget=ProviderCallBudget(1),
+                    )
+                self.assertEqual(len(client.calls), 1)
+                request = requests[mode] = client.calls[0]
+                example = json.loads(request["system"][0]["text"].split(
+                    "Return only ", 1,
+                )[1].split(".\nReturn exactly", 1)[0])
+                self.assertEqual(list(example["solutions"][0]["choices"][0]),
+                                 ["choice", "reason", "judgment"])
+                self.assertEqual(json.loads(raw), payload)
+                self.assertIsNone(rejection_reason(validate_batch(raw, [item])[0], item))
+        self.assertNotIn("outputConfig", requests["legacy"])
+        self.assertEqual(requests["legacy"]["messages"], requests["native"]["messages"])
+        declaration = requests["native"]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]
+        schema = json.loads(declaration["schema"])
+        row = schema["properties"]["solutions"]["items"]["properties"]["choices"]["items"]
+        self.assertEqual(list(row["properties"]), ["choice", "reason", "judgment"])
+        self.assertEqual(row["required"], ["choice", "judgment", "reason"])
+        # Canonical equality proves this changed only property order, including
+        # retention of every original required array, type, enum and constraint.
+        prior_schema_sha256 = "bac691665f8f937805ca6fbb3cbd858320ccbc19d582c22b5dffaee1e6d1d446"
+        canonical = json.dumps(schema, sort_keys=True, separators=(",", ":"))
+        self.assertEqual(hashlib.sha256(canonical.encode()).hexdigest(), prior_schema_sha256)
+        wire_sha256 = hashlib.sha256(declaration["schema"].encode()).hexdigest()
+        self.assertNotEqual(wire_sha256, prior_schema_sha256)
+        self.assertEqual(contract_metadata("complete_choice_solver_v1")["sha256"], wire_sha256)
+
+    def test_author_and_solver_order_changes_leave_other_schema_bytes_unchanged(self):
+        # Existing transport contracts must not be reordered as a side effect.
+        expected = {
+            "skill_map_inference_v1": "593bb052a930a26472f02be9459740da03d7cd4f015fd17284afa797f5eac82a",
+            "skill_map_evolution_v1": "4929d715823f9b87f0a9add73851cad47a5ef36cc5da03d45aa9834aeabd4ad1",
+            "default_reviewer_v1": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe",
+            "authored_solution_reviewer_v1": "d965da2f5a514961f173fcf232368f0b887505774e2982f1ada7ebe565ebc501",
+        }
+        for contract, digest in expected.items():
+            with self.subTest(contract=contract):
+                schema = native_output_config(contract)["textFormat"]["structure"]["jsonSchema"]["schema"]
+                self.assertEqual(hashlib.sha256(schema.encode()).hexdigest(), digest)
+
     def test_every_contract_has_stable_independent_closed_schema(self):
         names = [
             "question_author_v1", "skill_map_inference_v1", "skill_map_evolution_v1",
@@ -44,21 +105,50 @@ class NativeOutputContractTests(unittest.TestCase):
             first["textFormat"]["structure"]["jsonSchema"]["name"] = "mutated"
             self.assertEqual(second["textFormat"]["structure"]["jsonSchema"]["name"], name)
 
-    def test_native_author_request_sends_named_schema_and_matching_prompt(self):
-        client = Client({"questions": []})
-        with patch.dict(os.environ, {"BEDROCK_STRUCTURED_OUTPUT_MODE": "native"}, clear=False):
-            raw = _generate_with_bedrock(
-                {}, client, "us.anthropic.claude-sonnet-4-6-v1:0",
-                system_prompt="author rules", user_prompt="task",
-                contract="question_author_v1", call_budget=ProviderCallBudget(1),
-            )
-        self.assertEqual(json.loads(raw), {"questions": []})
-        request = client.calls[0]
-        self.assertEqual(
-            request["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"],
-            "question_author_v1",
-        )
-        self.assertIn("question_author_v1", request["system"][0]["text"])
+    def test_native_author_request_preserves_real_prompt_explanation_first_order(self):
+        for variant in ("balanced", "focused_application"):
+            for feedback in ("reviewer_written", "authored_solution"):
+                with self.subTest(variant=variant, feedback=feedback):
+                    client = Client({"questions": []})
+                    with patch.dict(os.environ, {
+                        "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+                        "CHECKPOINT_PROMPT_VARIANT": variant,
+                        "QUESTION_FEEDBACK_CONTRACT": feedback,
+                    }):
+                        # Omit system_prompt so the actual production author
+                        # prompt, not a literal test substitute, crosses the API.
+                        raw = _generate_with_bedrock(
+                            {}, client, "us.anthropic.claude-sonnet-4-6",
+                            user_prompt="task", contract="question_author_v1",
+                            call_budget=ProviderCallBudget(1),
+                        )
+                    self.assertEqual(json.loads(raw), {"questions": []})
+                    self.assertEqual(len(client.calls), 1)
+                    request = client.calls[0]
+                    system = request["system"][0]["text"]
+                    example = json.loads(system.split("Return only one JSON object:\n", 1)[1].split("\n", 1)[0])
+                    declaration = request["outputConfig"]["textFormat"]["structure"]["jsonSchema"]
+                    self.assertEqual(declaration["name"], "question_author_v1")
+                    self.assertIn("question_author_v1", system)
+                    schema = json.loads(declaration["schema"])
+                    row = schema["properties"]["questions"]["items"]
+                    required = row["required"]
+                    self.assertEqual(required, ["prompt", "choices", "expectedAnswer", "explanation",
+                                                "topic", "difficulty", "format"])
+                    example_fields = list(example["questions"][0])
+                    required_order = [field for field in example_fields if field in required]
+                    optional_order = [field for field in example_fields if field not in required]
+                    self.assertEqual(required_order, ["prompt", "explanation", "expectedAnswer", "choices",
+                                                       "topic", "difficulty", "format"])
+                    self.assertEqual(list(row["properties"]), required_order + optional_order)
+                    # Original canonical schema identity keeps optionality and
+                    # every other shape constraint independent of field order.
+                    prior_sha256 = "25c2c85d94ae1543ef4a46a3f97e845c37739cec5b77aacbf219d935a13df1a9"
+                    canonical = json.dumps(schema, sort_keys=True, separators=(",", ":"))
+                    self.assertEqual(hashlib.sha256(canonical.encode()).hexdigest(), prior_sha256)
+                    wire_sha256 = hashlib.sha256(declaration["schema"].encode()).hexdigest()
+                    self.assertNotEqual(wire_sha256, prior_sha256)
+                    self.assertEqual(contract_metadata("question_author_v1")["sha256"], wire_sha256)
 
     def test_packaged_botocore_service_model_accepts_exact_native_request(self):
         from botocore.session import get_session

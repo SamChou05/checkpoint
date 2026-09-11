@@ -106,6 +106,22 @@ def output_mode() -> str:
 def native_output_config(contract: Contract) -> dict[str, Any]:
     """Return an independent wrapper with stable schema serialization."""
     schema = json.dumps(_SCHEMAS[contract], sort_keys=True, separators=(",", ":"))
+    if contract in {"question_author_v1", "complete_choice_solver_v1"}:
+        ordered = json.loads(schema)
+        if contract == "complete_choice_solver_v1":
+            row = ordered["properties"]["solutions"]["items"]["properties"]["choices"]["items"]
+            fields = ("choice", "reason", "judgment")
+        else:
+            row = ordered["properties"]["questions"]["items"]
+            # Native output places required properties before optional ones.
+            # Within each group, match the author prompt's finished-item example.
+            fields = ("prompt", "explanation", "expectedAnswer", "choices", "topic",
+                      "difficulty", "format", "skillID", "objectiveID", "objective")
+        # Match the prompts' explanation-before-answer examples at the provider
+        # boundary. Preserve every other serialized key order and required list;
+        # sorting again would erase this intervention without changing validity.
+        row["properties"] = {key: row["properties"][key] for key in fields}
+        schema = json.dumps(ordered, separators=(",", ":"))
     return {"textFormat": {"type": "json_schema", "structure": {"jsonSchema": {
         "name": contract, "schema": schema,
     }}}}
