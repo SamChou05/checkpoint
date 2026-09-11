@@ -1,0 +1,189 @@
+{
+  "experiment": "native-fresh-workflow-v1",
+  "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+  "runtime_parent_revision": "2aa085a6116b6c0fb65ec33ba54f96ccc99981ce",
+  "plan_canonical_sha256": "3cd55295f466fff4bbb62ed1f860696f441c6d4d421f30e1553935e2d2a5a02c",
+  "capture_canonical_sha256": "6f04bdd6c02d7d65fda962e587d5f8b518f2ee244b67f3a01ae4e578e093a591",
+  "status": "completed; content and challenge qualification failed",
+  "archive_scope": "Exact original plan, execution claim, capture, bank/client observations, masked packets and assessment bytes; separately derived lineage, arithmetic, consensus join and reconciliation. No provider calls after terminal capture.",
+  "execution_policy": "The original trial is terminal. Do not execute the archived plan. Its existing execution claim is archived alongside it; do not remove or bypass it.",
+  "original_paths": {
+    "plan": "/tmp/checkpoint-native-workflow-plan-20260910/plan.json",
+    "capture": "/tmp/checkpoint-native-workflow-live-20260910/capture.json",
+    "bank_delivery": "/tmp/checkpoint-native-workflow-bank-delivery-20260910.json",
+    "client_delivery": "/tmp/checkpoint-native-workflow-client-delivery-20260910.json"
+  },
+  "verification": {
+    "backend_preparation_tests_passed": 1069,
+    "actual_swift_capture_tests_passed": 1,
+    "actual_swift_capture_tests_skipped": 0,
+    "baseline_and_instrumented_replay_exact": true,
+    "runtime_source_hashes_unchanged": 35,
+    "delivery_source_hashes_unchanged": 93,
+    "independent_assessment_join_reproduction": "assessment-join-validation.json",
+    "source_and_artifact_lint_and_syntax": "passed",
+    "secret_pattern_scan": "passed",
+    "no_runtime_changes_in_evidence_milestone": true
+  },
+  "limitations": "Independent agent judgments and selected goals do not establish a population accuracy rate, adaptive progression, deployed behavior or guaranteed correctness. Raw/client IDs are separate; joins are explicit. Manifest hashes bind bytes, not truth.",
+  "documentation_sha256": {
+    "docs/QUESTION_NATIVE_WORKFLOW_RESULTS.md": "c8d994c86a10ba95fb4de5eba6fc7cf9583df4971e14aee4cffe99e4ace10743",
+    "docs/QUESTION_NATIVE_WORKFLOW_QUALIFICATION.md": "85d27ae026263ba4ec45c13b1bf24a2947e510b174fcd1760aa26ee1f6b62a35",
+    "docs/QUESTION_CORRECTNESS_AUDIT.md": "55535e0753c99eb84c5269ce5f5e571c2d005f52a618795f94c810d3af54a82f"
+  },
+  "files": {
+    "__pycache__/build-assessment.cpython-312.pyc": {
+      "sha256": "3a0b5b450a837099d4370bd8d6f76b8a031f80f7589492fa8c0f669a5a5bc00b",
+      "bytes": 27108
+    },
+    "assessment-builder-selfcheck.json": {
+      "sha256": "0ea1c5075213aeb6bd5c7d61b047d0887911be6041c4e40e30c260fd0daa8dcc",
+      "bytes": 840
+    },
+    "assessment-join-validation.json": {
+      "sha256": "093b00330a298648958c4962e62b03aed1d8a5fe39d87249b8294b96bcd944e3",
+      "bytes": 1209
+    },
+    "assessment-join.json": {
+      "sha256": "9d300c28e5bc598ad0156ba54cb8ba9913a3bd621805404579414eef6f61fbff",
+      "bytes": 126868
+    },
+    "bank-delivery.json": {
+      "sha256": "0274b4ff0f5ed9d5d94f60be482bb5bbb79749507db02e1a741523c9e48ab081",
+      "bytes": 138951
+    },
+    "build-assessment.py": {
+      "sha256": "ad6db06a25e9d5b3d9fbc836b046cceba82bd95c06a81ec6076b37f3433ef25f",
+      "bytes": 19237
+    },
+    "build-stage-lineage.py": {
+      "sha256": "a86dcfcfc8826400a20235a15656551d825bbef81e86fb374ec48cd2de89d53a",
+      "bytes": 26059
+    },
+    "capture.json": {
+      "sha256": "fed7a2261f2baf58bddbc3c6749fef409fd41d7dcf70b91bc27da0047c6848df",
+      "bytes": 503944
+    },
+    "client-assessment/assessment-a-phase1.json": {
+      "sha256": "f09081c33ac438c19db5e385b5668519a838cc0c6f5aa223ecebefd0ed7cac50",
+      "bytes": 19034
+    },
+    "client-assessment/assessment-b-phase1.json": {
+      "sha256": "e9969b3de5edd84ecfc316a3c7f7ebec5bf216180015f29dfb468993eb89eb44",
+      "bytes": 19328
+    },
+    "client-assessment/client-keys.json": {
+      "sha256": "64308355aa862a1ae6fe5c6a29d6027bdb40743362581dde2fe52e65c349483e",
+      "bytes": 1963
+    },
+    "client-assessment/client-stems-and-choices.json": {
+      "sha256": "a6a0481cfb3d7fdd9bff81b4b1dee929892157720f65bcd4b09e44a8b4ece664",
+      "bytes": 25436
+    },
+    "client-assessment/client-teaching.json": {
+      "sha256": "1d8267c1ad318aa17461b003355a350777657fd06b50e67eafb07d6fac507a35",
+      "bytes": 35468
+    },
+    "client-assessment/packet-manifest.json": {
+      "sha256": "b87809285cb18d950d189b2fd63241543ce45ae25674e14de5290387ed276404",
+      "bytes": 3167
+    },
+    "client-assessment/private-mapping.json": {
+      "sha256": "0f68d5c0287d3365a63fb7cb19dce84579c1613c8585c13050588da5feb219dc",
+      "bytes": 73544
+    },
+    "client-attachment-manifest.json": {
+      "sha256": "d89ac2cdeb2b00eda111d74e70382dd4aef9b6d48bf2316df0844a181334c83e",
+      "bytes": 775
+    },
+    "client-delivery.json": {
+      "sha256": "134c5ca8f191cb6339909aba5bc295907abf3717d699e4dd1f9d0203c620d675",
+      "bytes": 57924
+    },
+    "client-phase-one-freeze.json": {
+      "sha256": "015d12945f683ad56ee76948e5e6b535db88a93f41b51df52592a6288cf2ba0e",
+      "bytes": 489
+    },
+    "client-test-summary.json": {
+      "sha256": "83e8e60eab57dcce5170f3832bde395768a452d4cbf473fa50de791120c15aed",
+      "bytes": 732
+    },
+    "feedback-error-trace.md": {
+      "sha256": "10dc4e0e51e7103128ea43d941635dd07a6520510a05a3894d8538419469749d",
+      "bytes": 7907
+    },
+    "join-assessments.py": {
+      "sha256": "ece61574a5d54ca5893b61ce80880c13fef0d13d71b2e867520849d01e74e714",
+      "bytes": 12872
+    },
+    "operational-audit.json": {
+      "sha256": "ee680dfaf6ab219d45e6a3eea121b560893e5d3ac53b64b87b4600f10586278a",
+      "bytes": 15898
+    },
+    "plan.json": {
+      "sha256": "479b9ed1d5b5956446991dfdf5e18d5b587eb9b8522aa9d182da6942ec99326f",
+      "bytes": 94861
+    },
+    "plan.json.execution-claim.json": {
+      "sha256": "7d53d1a74721f383dba686928a6efec21653d5ccf6b4c5c33e1a24ec3463365f",
+      "bytes": 150
+    },
+    "raw-assessment/assessment-a-phase1.json": {
+      "sha256": "0cdb026768965bd26a673db2c802dfe3c1398956d57817cf86c5514d0e0235fb",
+      "bytes": 31660
+    },
+    "raw-assessment/assessment-a-phase2.json": {
+      "sha256": "2a20226097c66eeaf158a8669dc991d18a5ca5a53bf3a57e99b201d3336a94cc",
+      "bytes": 37325
+    },
+    "raw-assessment/assessment-b-phase1.json": {
+      "sha256": "6cd35e4c45a059a3680d674e3e0cb2573261c28461c2f8d03484f9fa30764f70",
+      "bytes": 31809
+    },
+    "raw-assessment/assessment-b-phase2.json": {
+      "sha256": "9c706fde3c8960628bfb0a0ab071d38ee42036720468419bbcced0fe70e16603",
+      "bytes": 31744
+    },
+    "raw-assessment/authored-key-main.json": {
+      "sha256": "1a1261840f6abe69c848f8de96131aecc0b3c98a02ece3d1159c933b3d235963",
+      "bytes": 10271
+    },
+    "raw-assessment/packet-manifest.json": {
+      "sha256": "1c5b9fea72ebd334d731e3fb7db581ba6f9ac44b9be0ce79238908fc34655dd6",
+      "bytes": 2927
+    },
+    "raw-assessment/private-malformed-occurrences.json": {
+      "sha256": "98d77e82376c7c2d4c7f293ac93758542c558fd54d5a878597d6998337f96ad6",
+      "bytes": 365
+    },
+    "raw-assessment/private-mapping.json": {
+      "sha256": "03c7207eb2070e8a9594b581f33b437c23a1d38ab12aacbb3d2a7f1e44a72837",
+      "bytes": 38394
+    },
+    "raw-assessment/raw-stems-and-choices.json": {
+      "sha256": "45b40eec6cea9de6c51530a4a042c21bf8867851709a502f4afa0078e9184b5c",
+      "bytes": 55565
+    },
+    "raw-phase-one-freeze.json": {
+      "sha256": "58b63e7bcae31b34fbe2882c2ac9a43fd9ef567cc03f97562e26d3d84b6b780f",
+      "bytes": 746
+    },
+    "reconciliation.md": {
+      "sha256": "b728442774b2ee87ca8619c1d6bd3aef883a350a1a6347121480a0d3153cd28d",
+      "bytes": 6580
+    },
+    "root-calculations.json": {
+      "sha256": "99985ac829ea1f587e46ddb6d734466f2ae0c85d1937eee7f1c91b6aff785a0a",
+      "bytes": 5058
+    },
+    "stage-lineage.json": {
+      "sha256": "f00d9c5a15ae88ff8a9e6ce9745e78a1cf1e627a6ff4cc970dc674b33b57096d",
+      "bytes": 388200
+    },
+    "wrong-key-gate-audit.md": {
+      "sha256": "c207d128a43facea9ecc8d12b3822190b3b49b181959b62563cb83f0a016701b",
+      "bytes": 4610
+    }
+  },
+  "self_excluded": true
+}

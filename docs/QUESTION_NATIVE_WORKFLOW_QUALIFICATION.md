@@ -1,5 +1,9 @@
 # Fresh native workflow qualification
 
+Status: the bounded September 10 trial is complete. The [separate results](QUESTION_NATIVE_WORKFLOW_RESULTS.md)
+record successful transport/delivery but unresolved content and challenge
+failures. The prospective requirements and preparation record below are retained.
+
 This prospective evaluation checks the combined context, source-guidance and
 output-order corrections from candidate `2aa085a`. It extends the existing runtime
 qualification runner. No model result has informed these fresh inputs. The

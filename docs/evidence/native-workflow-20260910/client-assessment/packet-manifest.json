@@ -1,0 +1,71 @@
+{
+  "capture_byte_sha256": "fed7a2261f2baf58bddbc3c6749fef409fd41d7dcf70b91bc27da0047c6848df",
+  "capture_canonical_sha256": "6f04bdd6c02d7d65fda962e587d5f8b518f2ee244b67f3a01ae4e578e093a591",
+  "plan_sha256": "3cd55295f466fff4bbb62ed1f860696f441c6d4d421f30e1553935e2d2a5a02c",
+  "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+  "bank_delivery_byte_sha256": "0274b4ff0f5ed9d5d94f60be482bb5bbb79749507db02e1a741523c9e48ab081",
+  "swift_attachment_byte_sha256": "134c5ca8f191cb6339909aba5bc295907abf3717d699e4dd1f9d0203c620d675",
+  "phase": "actual_swift_client",
+  "operations": [
+    {
+      "operation_index": 0,
+      "case_id": "sound_intensity_and_decibels",
+      "requested_slots": 5,
+      "runtime_status": "completed",
+      "runtime_returned_count": 4,
+      "generation_shortfall": 1,
+      "prepared_count": 4,
+      "bank_claimable_count": 4,
+      "bank_shortfall": 0,
+      "client_retained_count": 4,
+      "client_shortfall": 0,
+      "client_dropped_remote_ids": [],
+      "client_error": null
+    },
+    {
+      "operation_index": 1,
+      "case_id": "english_conditions_and_scope",
+      "requested_slots": 5,
+      "runtime_status": "completed",
+      "runtime_returned_count": 3,
+      "generation_shortfall": 2,
+      "prepared_count": 3,
+      "bank_claimable_count": 3,
+      "bank_shortfall": 0,
+      "client_retained_count": 3,
+      "client_shortfall": 0,
+      "client_dropped_remote_ids": [],
+      "client_error": null
+    },
+    {
+      "operation_index": 2,
+      "case_id": "plant_water_transport",
+      "requested_slots": 5,
+      "runtime_status": "completed",
+      "runtime_returned_count": 5,
+      "generation_shortfall": 0,
+      "prepared_count": 5,
+      "bank_claimable_count": 5,
+      "bank_shortfall": 0,
+      "client_retained_count": 5,
+      "client_shortfall": 0,
+      "client_dropped_remote_ids": [],
+      "client_error": null
+    }
+  ],
+  "masked_subject_count": 12,
+  "client_retained_count": 12,
+  "bank_claimable_count": 12,
+  "runtime_returned_count": 12,
+  "requested_slots": 15,
+  "selection": "Every actual Swift-retained occurrence, in its actual displayed choice order, with all observed feedback displays separately concealed. No factual or presentation-quality filter. All three operations,15 requested slots, runtime shortfalls, bank losses, client drops and operation errors remain in denominators. Content differences are recorded privately rather than replaced by Python reconstructions.",
+  "shuffle": "SystemRandom once; opaque occurrence IDs are shared only across this packet set.",
+  "builder_byte_sha256": "ad6db06a25e9d5b3d9fbc836b046cceba82bd95c06a81ec6076b37f3433ef25f",
+  "parser_byte_sha256": "764497658989ecc9430cc80757cdb5b9b28010a369b38062bbe2672bfc73eab1",
+  "files": {
+    "client-stems-and-choices.json": "a6a0481cfb3d7fdd9bff81b4b1dee929892157720f65bcd4b09e44a8b4ece664",
+    "client-keys.json": "64308355aa862a1ae6fe5c6a29d6027bdb40743362581dde2fe52e65c349483e",
+    "client-teaching.json": "1d8267c1ad318aa17461b003355a350777657fd06b50e67eafb07d6fac507a35",
+    "private-mapping.json": "0f68d5c0287d3365a63fb7cb19dce84579c1613c8585c13050588da5feb219dc"
+  }
+}

@@ -1,0 +1,1550 @@
+{
+  "schema_version": 1,
+  "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+  "scope": "Offline preparation and atomic claim/replay of each complete returned batch. Each operation has its own empty-history, completed finite bank with only its prepared questions; bank target equals that inventory (one for empty inventory). No refill, provider, cloud, UI rendering, or semantic quality claim. XCTest uses the original case goal/sources, requested target/difficulty, and fresh local history. Native source/plan/request replay precedes delivery. Original raw goal/source context is retained for all three initial-practice operations, including unattempted slots. No supplied skill map, adaptive history or explicit derived-context override is supported. Client retention and composed feedback remain pending the separate Swift capture test.",
+  "source_sha256": {
+    "Checkpoint/App/AdaptiveLearningPolicy.swift": "54413b997c7472777cb7ecf0435586b49c0037e69b3b4c434d6f5d2edc94db4d",
+    "Checkpoint/App/AppSnapshotPersistence.swift": "b3e012607d7601cb533ba0450149f0efedbb518e8c8532b871a3aafc9341fd2b",
+    "Checkpoint/App/CheckpointQuestionSelector.swift": "35f2e9e70ce153b7a791d3165ba2c1eb98f3294ff6d1b21e43f7a557322faf28",
+    "Checkpoint/App/CheckpointStore.swift": "01071f97d37a299495fed228211432160768b8071970de0cec985c5c00c76cff",
+    "Checkpoint/App/CheckpointWorkflowCoordinator.swift": "2ad5ae486cab40476b0dc265071fbc5b90484e14616a0855f7ae30e8c60a2f71",
+    "Checkpoint/App/FirstRunSetupCoordinator.swift": "2a35d4dfec95ea279277d11a4dd050e909adb52d25a6721f975f4e0b780399a7",
+    "Checkpoint/App/SkillMapReconciler.swift": "6ee54121788bafcca63edf16af6de957cd3ac142824bde5fe030cef7ec82565c",
+    "Checkpoint/App/WeeklyMetricsCalculator.swift": "a2fd18ea67057fbf4e1fb9ad8775ab79e26641b26443311953d0c91653283411",
+    "Checkpoint/CheckpointApp.swift": "33c73573d9a4c478fcd3736bc4dc09941f9a31a549481f87e629639161ecf621",
+    "Checkpoint/Models/AnswerGrader.swift": "0491c13827340b775bf506c391e021c36828db67f6baf0661c4c7c6077e727cf",
+    "Checkpoint/Models/AppSnapshot.swift": "9a6fe2b111486838f8db5cb5c9625efc3bb2b890f3c46f7d618dba50dafa2272",
+    "Checkpoint/Models/CheckpointSessionModels.swift": "d029e836a65708db610f9208d0ae2b6e812ccbf5611a2c397231c0dfdbc09d38",
+    "Checkpoint/Models/GoalModels.swift": "34c4a84da6ae405d611eaf0c1292b5c16884fac492b83a0c6852680f4eaac866",
+    "Checkpoint/Models/MembershipPlanPresentation.swift": "c7acfe68a8d98b74e259228250b84de5fe9ff94e4f282a0cb3a6e4ed1fcf1cad",
+    "Checkpoint/Models/ProductAccessModels.swift": "4736f01128df224f0e340ebe097c1a6a1ee0546327bf459573162007add670a6",
+    "Checkpoint/Models/QuestionModels.swift": "3d8bc257f442dd768da0b1dcc7faaff7ab64e3b98a9004ad6d89b97016f5c006",
+    "Checkpoint/Services/AppleFoundationQuestionEngine.swift": "b3bb23fa82ba1f8c5de8e7893dbbb5d4ad572e6dd3f55e59de69b3f9d27ef21c",
+    "Checkpoint/Services/BackendClientSupport.swift": "f00d772f224d7648cd909aceeb86b630a98427a07571f37d909d38efab59bb87",
+    "Checkpoint/Services/BackendPayloads.swift": "3b48e873cae9bcd87c44d0eb02b87c8229a3827a12a4ef38c34275874bffb133",
+    "Checkpoint/Services/BackendQuestionBankClient.swift": "ac53e871663149bbb2861232c380ae3d4c213d0796ee9deb77e614e97e768e77",
+    "Checkpoint/Services/BackendQuestionEngine.swift": "154bf3211cf7d0c3f1f37d1d66c65cab3ddbad1e4064512769f0ec2c206c9424",
+    "Checkpoint/Services/GoalSourceDocumentImporter.swift": "34c5a01af4d015cdc4757792c307956da75d650ec7ebad887d079f6a29ca6fdd",
+    "Checkpoint/Services/LegalLinks.swift": "9e9158d5629710ea1a4dfc004d9e83bad9cb14da76625d6427782f4992246c25",
+    "Checkpoint/Services/PurchaseController.swift": "fb1d48ab94bf70d59938b8cdaea2ca511c1742c7d5bdeb0114a36690fff75ead",
+    "Checkpoint/Services/QuestionBatchSanitizer.swift": "9e7e5aba5bbf92a57b05fb2934584005b7bcf7658d1ca6f0cb97d2d0f1d25b54",
+    "Checkpoint/Services/QuestionContext.swift": "cbe2558582e843b62a464ca63e796336fae177782add58c40daee85ef2e1d6cc",
+    "Checkpoint/Services/QuestionEngine.swift": "4a997d06ccf427970348261d50fcbefd23a1aebceec1075e3fb8897d0c5900c5",
+    "Checkpoint/Services/ScreenTimeController.swift": "8fcfb1740236e4c0115a9dc0742d67fc39c4006af2a76c40ad40e0d55e9f25f5",
+    "Checkpoint/Shared/SharedAppGroup.swift": "03046277dc45e3bac34f9e3d7e7c350ef95d9e4197fda61aae38eda398412110",
+    "Checkpoint/Views/CheckpointAttemptView.swift": "8c7adcc48b80f092a2de3829fb8cf5a35e56c225d1ecb2b3f07805eefa69bdce",
+    "Checkpoint/Views/CompetencyRow.swift": "b97c28319f00b69ef5bba4a58a809973657251f6821b060958a29f158499de21",
+    "Checkpoint/Views/CompetencyView.swift": "3411ec416a2cf075ef32c4c168ad6848597f5b6c246fa6ee110fbdcc56464966",
+    "Checkpoint/Views/Components/CheckpointComponents.swift": "d2d6fcc6c9e4e722b8fc6b905b706318ac69549beef88adc1dda5f15148c941b",
+    "Checkpoint/Views/Components/CheckpointSetupGuide.swift": "d11d9f16a972ac5a1ec682515700f99f02f94da6ae66ae20da68ce3b02e35108",
+    "Checkpoint/Views/FirstRunSkillMapView.swift": "7333442108f1234eb2ea4307c2630015f3233f9a1b03175c35309fd3df502d72",
+    "Checkpoint/Views/FocusWinsView.swift": "c477ee1eac511ffc7960524cadecb4d41012c888e51085e1a9a1036afc72a330",
+    "Checkpoint/Views/HistoryView.swift": "94538706b2e4393430f8e421d26d96c3d99b35c6921da2f15058806d8e39cb44",
+    "Checkpoint/Views/HomeProtectionControls.swift": "029e458ce527a006aa83520c30d1133ea3be9546b5618931173200f60680ddec",
+    "Checkpoint/Views/HomeStudyBeaconViews.swift": "d770e1aa0571de15f32a8ad96ccee3cbe624ca2fa49281e4de66071bc21c0557",
+    "Checkpoint/Views/HomeView.swift": "1c21770586190545ea6b3cee9826990e1b3b4a1d187f852648c8ade33a35f104",
+    "Checkpoint/Views/LearningMapEditorView.swift": "f875e56eb6b2f01f7a0b5d0abcd387f28e193cab21afe6e2f3978202398c16a1",
+    "Checkpoint/Views/LearningMapGraph.swift": "72dbbde7764bb25ae76e1bb68826c36c0e7c7af5bc3bff172cab2c2c0368bc97",
+    "Checkpoint/Views/LearningMapNavigator.swift": "516938f3fa26a693d06a4aeabcba75d8b851bf9f77fa29d103b0a84708fdb04c",
+    "Checkpoint/Views/LearningMapPresentation.swift": "0b5e8c078603b7fd41ff6c8a589b74d6f2308ca28bbd98e28d76e776729d7733",
+    "Checkpoint/Views/LearningMapView.swift": "bcb06a0a9c4028790b5cd34b64e10ee5f7a368345c47451062938376fe4a4cea",
+    "Checkpoint/Views/LearningMapVisuals.swift": "e64250856246b49f06dc8a8b16b4bd9f089a37027b3743de6de02bc2c3f675c2",
+    "Checkpoint/Views/MembershipView.swift": "ae88e316194752b684b34ee51b004d0c641c11bc7b951c522525628f901dd2dc",
+    "Checkpoint/Views/OnboardingView.swift": "59cf751a5586a02db2c10f1fb5ec10c8f4c27f3d02c439e67f0943240fe1833d",
+    "Checkpoint/Views/PracticeSettingsControls.swift": "ceb39b4099a47ff572a88fcc9de2561d205841f62c9a799361858f68f451d652",
+    "Checkpoint/Views/ProgressWeeklyImpactCard.swift": "a83d063368a3c393b90fff4a7d3340b256ec2411d9cff34a8754eed65c1fb3de",
+    "Checkpoint/Views/QuestionGenerationDiagnosticsView.swift": "13eb674c6763004d3d2cb09d658b653d044a532c381b60574109940ce51fc6c9",
+    "Checkpoint/Views/QuestionQualityFeedbackView.swift": "b71fad13556a8444b5b095bb263f0d9264b8ebbb4fa4198776ef99de97ecd5b4",
+    "Checkpoint/Views/QuestionReportsView.swift": "61a5d7e9582e627de863b80c099b47cea88d26e0ded801eec735ccf56f40d657",
+    "Checkpoint/Views/RequiredScreenTimeAccessView.swift": "06d57de95310ceaa9035c3ca508b7583f664566dc572eda83c0f4a6effcb23c9",
+    "Checkpoint/Views/RestrictedAppsView.swift": "cd0b1ff324c21513cef6084e517c8836a37c2b93e3924314e466125a104be74f",
+    "Checkpoint/Views/RootView.swift": "12475572fdf7da2d154da64758ca2ef9437498b5e75e1476e2d55937d473a86c",
+    "Checkpoint/Views/SettingsSupportViews.swift": "2e925f09609b625624e9edfeb52654cdecdbc6da11fa6f0124c220e7365c0755",
+    "Checkpoint/Views/SettingsView.swift": "492c0a16b58308bcb10799418a6eb830ccb57c4a08fe5ab847c337d457a259bb",
+    "Checkpoint/Views/SkillMapEditorViews.swift": "6e0e993091fe697134cc452e55498a945989e140fe7528e4ad1374b06f0b1a96",
+    "Checkpoint/Views/WeeklyReviewView.swift": "445ed95b5e7fde8e2ffed65876441cfddb4ac82e5388580417c72d06d0d8e771",
+    "CheckpointTests/QuestionDeliveryCaptureTests.swift": "190f8eaa130a5fbb2a2300fe20032dc79cf79944542c375387bcca1b390f656b",
+    "CheckpointTests/TestSupport/CheckpointTestFixtures.swift": "cafb739bb61d199cf8f6d8fe90ce30c4c7cd9538b7277dae8da4b1f665b1d4e0",
+    "CheckpointTests/TestSupport/CheckpointWorkflowTestCase.swift": "d5abf7d30afc04aa5f282f2f9519839b69fdf079534ebf373faa3ec1e278f672",
+    "CheckpointTests/TestSupport/HostedViewRenderer.swift": "2291d1134f3148fe9ceb5e4c29df30259307baea138c89334d1d698eccce01a8",
+    "CheckpointTests/TestSupport/QuestionBankTestDoubles.swift": "c5ceb6c04694edf912ebd0a8bd81bc9f1afc3350f02c6dc45b435083e181427e",
+    "CheckpointTests/TestSupport/QuestionEngineTestDoubles.swift": "3c3c86ec33fcf51a98d0da3612d024beeffcf2409a3e4309c8349cb011e6aaab",
+    "backend/bedrock-question-service/complete_question_solution.py": "2c45b726a73349c37af9d9b0a79f997a3dbd19dab6271dd294275e961436a3f8",
+    "backend/bedrock-question-service/evals/checkpoint_delivery_check.py": "11037de14ada23f871ee9200f2765242d823ef9797ff2f27b359350866238697",
+    "backend/bedrock-question-service/execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "backend/bedrock-question-service/generation_diagnostics.py": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227",
+    "backend/bedrock-question-service/lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "backend/bedrock-question-service/native_output_contracts.py": "e392852db55e6430c7f25f1edb33cddb2faea6354e7a28f3aa305d0ec0a48bef",
+    "backend/bedrock-question-service/question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "backend/bedrock-question-service/question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "backend/bedrock-question-service/question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "backend/bedrock-question-service/question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "backend/bedrock-question-service/question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "backend/bedrock-question-service/question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "backend/bedrock-question-service/question_generation.py": "75c3052162938f84d05ec889bfbddef0aaeddc424a950230c0dbe5780f7690dd",
+    "backend/bedrock-question-service/question_quality.py": "764497658989ecc9430cc80757cdb5b9b28010a369b38062bbe2672bfc73eab1",
+    "backend/bedrock-question-service/question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "backend/bedrock-question-service/question_source_guidance.py": "15118351a77988b5d7aec6250b9b5d7cf47ba6b41085f4f8bc9e9bbc4a85aa50",
+    "backend/bedrock-question-service/question_teaching.py": "b29d6ebf63d42cbba1eccdd69f9b0225bfcb33c3c695ebf956f962d72655603c",
+    "backend/bedrock-question-service/question_verification.py": "7f151f3db5a6fcf2a7d7a79d9ce2fb4073fea7e968ff1ec7ebcfad7b1726e981",
+    "backend/bedrock-question-service/request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "backend/bedrock-question-service/skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "backend/bedrock-question-service/smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "backend/bedrock-question-service/source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "backend/bedrock-question-service/tests/question_bank_test_support.py": "649872e776fa58c1c98235f65e8cd43a1bd909cc7b218c1a686e118d77006562",
+    "backend/bedrock-question-service/verification_policy.py": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+    "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "backend/bedrock-question-service/evals/checkpoint_native_delivery.py": "4a29912e1395dd152403311d5db3b39f815f2dd377350e95149ea7325a89af46"
+  },
+  "operations": [
+    {
+      "operation_index": 0,
+      "case_id": "sound_intensity_and_decibels",
+      "request": {
+        "goal": {
+          "title": "Understand sound intensity and decibels for audio work",
+          "category": "Custom",
+          "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+          "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Sound intensity and level: selective study notes",
+            "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+            "truncated": true
+          }
+        ]
+      },
+      "runtime_questions": [
+        {
+          "prompt": "A mixing engineer compares two sine-wave tones in air at 20 °C. Tone A has pressure amplitude 2.0 Pa; tone B has amplitude 4.0 Pa. The engineer calculates that B is 6 dB louder than A. A colleague claims this comparison is invalid because the calculation ignores air density and sound speed. Is the colleague correct?",
+          "expectedAnswer": "No; the comparison is valid because the medium is identical for both tones.",
+          "choices": [
+            "No; the comparison is valid because the medium is identical for both tones.",
+            "Yes; the absolute intensity values require knowing ρ and v to compute.",
+            "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+            "No; but only because the ratio happens to be a perfect square."
+          ],
+          "explanation": "Because I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid.",
+          "topic": "Sound intensity and decibels for audio work",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "No; the comparison is valid because the medium is identical for both tones.": "When the medium is the same, ρ and v appear in both intensities and cancel in the ratio, so the 6 dB difference follows directly from the 2:1 pressure amplitude ratio.",
+            "Yes; the absolute intensity values require knowing ρ and v to compute.": "Absolute intensities do require ρ and v, but the question concerns the dB difference, which depends only on the intensity ratio where those terms cancel.",
+            "Yes; the decibel difference depends on frequency, not just pressure amplitude.": "In the sinusoidal model I=(Δp)²/(2ρv), frequency does not appear, so the dB difference from a pressure ratio is frequency-independent.",
+            "No; but only because the ratio happens to be a perfect square.": "The cancellation of ρ and v in the intensity ratio holds for any pressure amplitude ratio, not only perfect squares; the qualifier introduces a false restriction."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "prompt": "A microphone datasheet states sensitivity: –40 dBV/Pa at 1 kHz. An engineer measures 0.1 V output from this mic in a different sound field. What additional information is needed to find the sound pressure level in dB SPL?",
+          "expectedAnswer": "The frequency of the measured sound to verify sensitivity applies.",
+          "choices": [
+            "The frequency of the measured sound to verify sensitivity applies.",
+            "The microphone's self-noise floor in dB SPL.",
+            "The atmospheric temperature during measurement.",
+            "The impedance of the recording interface."
+          ],
+          "explanation": "Sensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable.",
+          "topic": "Sound intensity and decibels for audio work",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "The frequency of the measured sound to verify sensitivity applies.": "The datasheet sensitivity is rated at 1 kHz; at other frequencies the sensitivity may differ, so the frequency must be known to confirm the −40 dBV/Pa figure is applicable.",
+            "The microphone's self-noise floor in dB SPL.": "Self-noise determines the minimum detectable signal but is not required to convert a known output voltage to SPL using a known sensitivity.",
+            "The atmospheric temperature during measurement.": "Microphone sensitivity is expressed as voltage per pascal; converting output voltage to SPL does not require knowing temperature.",
+            "The impedance of the recording interface.": "Interface impedance could affect loading, but the problem states the output voltage has already been measured, so impedance is not additionally needed."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "prompt": "A sound engineer measures 94 dB SPL at 1 m from a small loudspeaker in an anechoic chamber. The speaker is moved to 4 m distance with no other changes. What SPL is expected, assuming spherical spreading?",
+          "expectedAnswer": "82 dB",
+          "choices": [
+            "82 dB",
+            "88 dB",
+            "76 dB",
+            "70 dB"
+          ],
+          "explanation": "Spherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB.",
+          "topic": "Sound intensity and decibels for audio work",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "88 dB": "This corresponds to a 6 dB drop, which matches only a 2× distance increase, not the 4× stated.",
+            "76 dB": "An 18 dB drop would require an intensity ratio of about 63×, not the 16× from the inverse-square law at 4× distance.",
+            "70 dB": "A 24 dB drop implies an intensity ratio of ~251×, far exceeding the inverse-square factor of 16 for a 4× distance increase.",
+            "82 dB": "Inverse-square law gives a 16× intensity drop over 4× distance; 10 log10(16) ≈ 12 dB, so 94 − 12 = 82 dB."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "prompt": "A tone has pressure amplitude 1.0 Pa in air at 20 °C. In water at the same temperature, a tone with identical pressure amplitude is produced. How does the sound intensity level in water compare to that in air?",
+          "expectedAnswer": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+          "choices": [
+            "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+            "Higher, because water transmits sound more efficiently.",
+            "Equal, because pressure amplitude determines level directly.",
+            "Higher, because water's incompressibility increases pressure effects."
+          ],
+          "explanation": "Intensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level.",
+          "topic": "Sound intensity and decibels for audio work",
+          "difficulty": 4,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.": "I = (Δp)²/(2ρv); water's ρv ≈ 1.5×10⁶ vs. air's ≈ 415 Pa·s/m, so the same Δp yields far lower intensity and thus lower dB SPL.",
+            "Higher, because water transmits sound more efficiently.": "Lower absorption over distance does not apply here; for identical Δp the formula gives lower intensity in water due to its much higher ρv.",
+            "Equal, because pressure amplitude determines level directly.": "Pressure amplitude alone does not fix intensity; the medium's ρv also appears in I = (Δp)²/(2ρv), so equal Δp gives different intensities in different media.",
+            "Higher, because water's incompressibility increases pressure effects.": "The formula I = (Δp)²/(2ρv) shows intensity is inversely proportional to ρv; water's high ρv means lower intensity for the same pressure amplitude, not higher."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "runtime_returned_count": 4,
+      "content_observation": "returned_questions",
+      "client_retained_count": null,
+      "client_check": "pending XCTest; backend delivery is not client admission",
+      "prepared_questions": [
+        {
+          "prompt": "A mixing engineer compares two sine-wave tones in air at 20 °C. Tone A has pressure amplitude 2.0 Pa; tone B has amplitude 4.0 Pa. The engineer calculates that B is 6 dB louder than A. A colleague claims this comparison is invalid because the calculation ignores air density and sound speed. Is the colleague correct?",
+          "expectedAnswer": "No; the comparison is valid because the medium is identical for both tones.",
+          "choices": [
+            "No; the comparison is valid because the medium is identical for both tones.",
+            "Yes; the absolute intensity values require knowing ρ and v to compute.",
+            "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+            "No; but only because the ratio happens to be a perfect square."
+          ],
+          "explanation": "Because I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid.",
+          "topic": "Sound intensity and decibels for audio work",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "No; the comparison is valid because the medium is identical for both tones.": "When the medium is the same, ρ and v appear in both intensities and cancel in the ratio, so the 6 dB difference follows directly from the 2:1 pressure amplitude ratio.",
+            "Yes; the absolute intensity values require knowing ρ and v to compute.": "Absolute intensities do require ρ and v, but the question concerns the dB difference, which depends only on the intensity ratio where those terms cancel.",
+            "Yes; the decibel difference depends on frequency, not just pressure amplitude.": "In the sinusoidal model I=(Δp)²/(2ρv), frequency does not appear, so the dB difference from a pressure ratio is frequency-independent.",
+            "No; but only because the ratio happens to be a perfect square.": "The cancellation of ρ and v in the intensity ratio holds for any pressure amplitude ratio, not only perfect squares; the qualifier introduces a false restriction."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "cb019f97-f328-5794-bd76-5072bde365d8"
+        },
+        {
+          "prompt": "A microphone datasheet states sensitivity: –40 dBV/Pa at 1 kHz. An engineer measures 0.1 V output from this mic in a different sound field. What additional information is needed to find the sound pressure level in dB SPL?",
+          "expectedAnswer": "The frequency of the measured sound to verify sensitivity applies.",
+          "choices": [
+            "The frequency of the measured sound to verify sensitivity applies.",
+            "The microphone's self-noise floor in dB SPL.",
+            "The atmospheric temperature during measurement.",
+            "The impedance of the recording interface."
+          ],
+          "explanation": "Sensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable.",
+          "topic": "Sound intensity and decibels for audio work",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "The frequency of the measured sound to verify sensitivity applies.": "The datasheet sensitivity is rated at 1 kHz; at other frequencies the sensitivity may differ, so the frequency must be known to confirm the −40 dBV/Pa figure is applicable.",
+            "The microphone's self-noise floor in dB SPL.": "Self-noise determines the minimum detectable signal but is not required to convert a known output voltage to SPL using a known sensitivity.",
+            "The atmospheric temperature during measurement.": "Microphone sensitivity is expressed as voltage per pascal; converting output voltage to SPL does not require knowing temperature.",
+            "The impedance of the recording interface.": "Interface impedance could affect loading, but the problem states the output voltage has already been measured, so impedance is not additionally needed."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "b46114e0-dc28-51f2-b206-446595bee7ed"
+        },
+        {
+          "prompt": "A sound engineer measures 94 dB SPL at 1 m from a small loudspeaker in an anechoic chamber. The speaker is moved to 4 m distance with no other changes. What SPL is expected, assuming spherical spreading?",
+          "expectedAnswer": "82 dB",
+          "choices": [
+            "82 dB",
+            "88 dB",
+            "76 dB",
+            "70 dB"
+          ],
+          "explanation": "Spherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB.",
+          "topic": "Sound intensity and decibels for audio work",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "88 dB": "This corresponds to a 6 dB drop, which matches only a 2× distance increase, not the 4× stated.",
+            "76 dB": "An 18 dB drop would require an intensity ratio of about 63×, not the 16× from the inverse-square law at 4× distance.",
+            "70 dB": "A 24 dB drop implies an intensity ratio of ~251×, far exceeding the inverse-square factor of 16 for a 4× distance increase.",
+            "82 dB": "Inverse-square law gives a 16× intensity drop over 4× distance; 10 log10(16) ≈ 12 dB, so 94 − 12 = 82 dB."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "4f5ca08d-3d48-5ae3-9cb2-e874806e7885"
+        },
+        {
+          "prompt": "A tone has pressure amplitude 1.0 Pa in air at 20 °C. In water at the same temperature, a tone with identical pressure amplitude is produced. How does the sound intensity level in water compare to that in air?",
+          "expectedAnswer": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+          "choices": [
+            "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+            "Higher, because water transmits sound more efficiently.",
+            "Equal, because pressure amplitude determines level directly.",
+            "Higher, because water's incompressibility increases pressure effects."
+          ],
+          "explanation": "Intensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level.",
+          "topic": "Sound intensity and decibels for audio work",
+          "difficulty": 4,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.": "I = (Δp)²/(2ρv); water's ρv ≈ 1.5×10⁶ vs. air's ≈ 415 Pa·s/m, so the same Δp yields far lower intensity and thus lower dB SPL.",
+            "Higher, because water transmits sound more efficiently.": "Lower absorption over distance does not apply here; for identical Δp the formula gives lower intensity in water due to its much higher ρv.",
+            "Equal, because pressure amplitude determines level directly.": "Pressure amplitude alone does not fix intensity; the medium's ρv also appears in I = (Δp)²/(2ρv), so equal Δp gives different intensities in different media.",
+            "Higher, because water's incompressibility increases pressure effects.": "The formula I = (Δp)²/(2ρv) shows intensity is inversely proportional to ρv; water's high ρv means lower intensity for the same pressure amplitude, not higher."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "c71ae349-b4c5-5e85-879b-a861f3d0f6c6"
+        }
+      ],
+      "prepared_count": 4,
+      "claim_request": {
+        "bankID": "700db33b407d8c2ace1878b978023352ce73d7c11b1fe241107009716f867fe2",
+        "claimID": "delivery-operation-0",
+        "limit": 4,
+        "minimumVerificationVersion": 1,
+        "minimumVerificationPolicyRevision": 2
+      },
+      "claim_response": {
+        "bankID": "700db33b407d8c2ace1878b978023352ce73d7c11b1fe241107009716f867fe2",
+        "status": "empty",
+        "readyCount": 0,
+        "targetCount": 4,
+        "questions": [
+          {
+            "prompt": "A mixing engineer compares two sine-wave tones in air at 20 °C. Tone A has pressure amplitude 2.0 Pa; tone B has amplitude 4.0 Pa. The engineer calculates that B is 6 dB louder than A. A colleague claims this comparison is invalid because the calculation ignores air density and sound speed. Is the colleague correct?",
+            "expectedAnswer": "No; the comparison is valid because the medium is identical for both tones.",
+            "choices": [
+              "No; the comparison is valid because the medium is identical for both tones.",
+              "Yes; the absolute intensity values require knowing ρ and v to compute.",
+              "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+              "No; but only because the ratio happens to be a perfect square."
+            ],
+            "explanation": "Because I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid.",
+            "topic": "Sound intensity and decibels for audio work",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "No; the comparison is valid because the medium is identical for both tones.": "When the medium is the same, ρ and v appear in both intensities and cancel in the ratio, so the 6 dB difference follows directly from the 2:1 pressure amplitude ratio.",
+              "Yes; the absolute intensity values require knowing ρ and v to compute.": "Absolute intensities do require ρ and v, but the question concerns the dB difference, which depends only on the intensity ratio where those terms cancel.",
+              "Yes; the decibel difference depends on frequency, not just pressure amplitude.": "In the sinusoidal model I=(Δp)²/(2ρv), frequency does not appear, so the dB difference from a pressure ratio is frequency-independent.",
+              "No; but only because the ratio happens to be a perfect square.": "The cancellation of ρ and v in the intensity ratio holds for any pressure amplitude ratio, not only perfect squares; the qualifier introduces a false restriction."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "cb019f97-f328-5794-bd76-5072bde365d8"
+          },
+          {
+            "prompt": "A microphone datasheet states sensitivity: –40 dBV/Pa at 1 kHz. An engineer measures 0.1 V output from this mic in a different sound field. What additional information is needed to find the sound pressure level in dB SPL?",
+            "expectedAnswer": "The frequency of the measured sound to verify sensitivity applies.",
+            "choices": [
+              "The frequency of the measured sound to verify sensitivity applies.",
+              "The microphone's self-noise floor in dB SPL.",
+              "The atmospheric temperature during measurement.",
+              "The impedance of the recording interface."
+            ],
+            "explanation": "Sensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable.",
+            "topic": "Sound intensity and decibels for audio work",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "The frequency of the measured sound to verify sensitivity applies.": "The datasheet sensitivity is rated at 1 kHz; at other frequencies the sensitivity may differ, so the frequency must be known to confirm the −40 dBV/Pa figure is applicable.",
+              "The microphone's self-noise floor in dB SPL.": "Self-noise determines the minimum detectable signal but is not required to convert a known output voltage to SPL using a known sensitivity.",
+              "The atmospheric temperature during measurement.": "Microphone sensitivity is expressed as voltage per pascal; converting output voltage to SPL does not require knowing temperature.",
+              "The impedance of the recording interface.": "Interface impedance could affect loading, but the problem states the output voltage has already been measured, so impedance is not additionally needed."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "b46114e0-dc28-51f2-b206-446595bee7ed"
+          },
+          {
+            "prompt": "A sound engineer measures 94 dB SPL at 1 m from a small loudspeaker in an anechoic chamber. The speaker is moved to 4 m distance with no other changes. What SPL is expected, assuming spherical spreading?",
+            "expectedAnswer": "82 dB",
+            "choices": [
+              "82 dB",
+              "88 dB",
+              "76 dB",
+              "70 dB"
+            ],
+            "explanation": "Spherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB.",
+            "topic": "Sound intensity and decibels for audio work",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "88 dB": "This corresponds to a 6 dB drop, which matches only a 2× distance increase, not the 4× stated.",
+              "76 dB": "An 18 dB drop would require an intensity ratio of about 63×, not the 16× from the inverse-square law at 4× distance.",
+              "70 dB": "A 24 dB drop implies an intensity ratio of ~251×, far exceeding the inverse-square factor of 16 for a 4× distance increase.",
+              "82 dB": "Inverse-square law gives a 16× intensity drop over 4× distance; 10 log10(16) ≈ 12 dB, so 94 − 12 = 82 dB."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "4f5ca08d-3d48-5ae3-9cb2-e874806e7885"
+          },
+          {
+            "prompt": "A tone has pressure amplitude 1.0 Pa in air at 20 °C. In water at the same temperature, a tone with identical pressure amplitude is produced. How does the sound intensity level in water compare to that in air?",
+            "expectedAnswer": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+            "choices": [
+              "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+              "Higher, because water transmits sound more efficiently.",
+              "Equal, because pressure amplitude determines level directly.",
+              "Higher, because water's incompressibility increases pressure effects."
+            ],
+            "explanation": "Intensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level.",
+            "topic": "Sound intensity and decibels for audio work",
+            "difficulty": 4,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.": "I = (Δp)²/(2ρv); water's ρv ≈ 1.5×10⁶ vs. air's ≈ 415 Pa·s/m, so the same Δp yields far lower intensity and thus lower dB SPL.",
+              "Higher, because water transmits sound more efficiently.": "Lower absorption over distance does not apply here; for identical Δp the formula gives lower intensity in water due to its much higher ρv.",
+              "Equal, because pressure amplitude determines level directly.": "Pressure amplitude alone does not fix intensity; the medium's ρv also appears in I = (Δp)²/(2ρv), so equal Δp gives different intensities in different media.",
+              "Higher, because water's incompressibility increases pressure effects.": "The formula I = (Δp)²/(2ρv) shows intensity is inversely proportional to ρv; water's high ρv means lower intensity for the same pressure amplitude, not higher."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "c71ae349-b4c5-5e85-879b-a861f3d0f6c6"
+          }
+        ]
+      },
+      "repeat_claim_response": {
+        "bankID": "700db33b407d8c2ace1878b978023352ce73d7c11b1fe241107009716f867fe2",
+        "questions": [
+          {
+            "choiceExplanations": {
+              "No; but only because the ratio happens to be a perfect square.": "The cancellation of ρ and v in the intensity ratio holds for any pressure amplitude ratio, not only perfect squares; the qualifier introduces a false restriction.",
+              "No; the comparison is valid because the medium is identical for both tones.": "When the medium is the same, ρ and v appear in both intensities and cancel in the ratio, so the 6 dB difference follows directly from the 2:1 pressure amplitude ratio.",
+              "Yes; the absolute intensity values require knowing ρ and v to compute.": "Absolute intensities do require ρ and v, but the question concerns the dB difference, which depends only on the intensity ratio where those terms cancel.",
+              "Yes; the decibel difference depends on frequency, not just pressure amplitude.": "In the sinusoidal model I=(Δp)²/(2ρv), frequency does not appear, so the dB difference from a pressure ratio is frequency-independent."
+            },
+            "choices": [
+              "No; the comparison is valid because the medium is identical for both tones.",
+              "Yes; the absolute intensity values require knowing ρ and v to compute.",
+              "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+              "No; but only because the ratio happens to be a perfect square."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "No; the comparison is valid because the medium is identical for both tones.",
+            "explanation": "Because I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid.",
+            "format": "Multiple Choice",
+            "prompt": "A mixing engineer compares two sine-wave tones in air at 20 °C. Tone A has pressure amplitude 2.0 Pa; tone B has amplitude 4.0 Pa. The engineer calculates that B is 6 dB louder than A. A colleague claims this comparison is invalid because the calculation ignores air density and sound speed. Is the colleague correct?",
+            "remoteID": "cb019f97-f328-5794-bd76-5072bde365d8",
+            "topic": "Sound intensity and decibels for audio work",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          },
+          {
+            "choiceExplanations": {
+              "The atmospheric temperature during measurement.": "Microphone sensitivity is expressed as voltage per pascal; converting output voltage to SPL does not require knowing temperature.",
+              "The frequency of the measured sound to verify sensitivity applies.": "The datasheet sensitivity is rated at 1 kHz; at other frequencies the sensitivity may differ, so the frequency must be known to confirm the −40 dBV/Pa figure is applicable.",
+              "The impedance of the recording interface.": "Interface impedance could affect loading, but the problem states the output voltage has already been measured, so impedance is not additionally needed.",
+              "The microphone's self-noise floor in dB SPL.": "Self-noise determines the minimum detectable signal but is not required to convert a known output voltage to SPL using a known sensitivity."
+            },
+            "choices": [
+              "The frequency of the measured sound to verify sensitivity applies.",
+              "The microphone's self-noise floor in dB SPL.",
+              "The atmospheric temperature during measurement.",
+              "The impedance of the recording interface."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "The frequency of the measured sound to verify sensitivity applies.",
+            "explanation": "Sensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable.",
+            "format": "Multiple Choice",
+            "prompt": "A microphone datasheet states sensitivity: –40 dBV/Pa at 1 kHz. An engineer measures 0.1 V output from this mic in a different sound field. What additional information is needed to find the sound pressure level in dB SPL?",
+            "remoteID": "b46114e0-dc28-51f2-b206-446595bee7ed",
+            "topic": "Sound intensity and decibels for audio work",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          },
+          {
+            "choiceExplanations": {
+              "70 dB": "A 24 dB drop implies an intensity ratio of ~251×, far exceeding the inverse-square factor of 16 for a 4× distance increase.",
+              "76 dB": "An 18 dB drop would require an intensity ratio of about 63×, not the 16× from the inverse-square law at 4× distance.",
+              "82 dB": "Inverse-square law gives a 16× intensity drop over 4× distance; 10 log10(16) ≈ 12 dB, so 94 − 12 = 82 dB.",
+              "88 dB": "This corresponds to a 6 dB drop, which matches only a 2× distance increase, not the 4× stated."
+            },
+            "choices": [
+              "82 dB",
+              "88 dB",
+              "76 dB",
+              "70 dB"
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "82 dB",
+            "explanation": "Spherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB.",
+            "format": "Multiple Choice",
+            "prompt": "A sound engineer measures 94 dB SPL at 1 m from a small loudspeaker in an anechoic chamber. The speaker is moved to 4 m distance with no other changes. What SPL is expected, assuming spherical spreading?",
+            "remoteID": "4f5ca08d-3d48-5ae3-9cb2-e874806e7885",
+            "topic": "Sound intensity and decibels for audio work",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          },
+          {
+            "choiceExplanations": {
+              "Equal, because pressure amplitude determines level directly.": "Pressure amplitude alone does not fix intensity; the medium's ρv also appears in I = (Δp)²/(2ρv), so equal Δp gives different intensities in different media.",
+              "Higher, because water transmits sound more efficiently.": "Lower absorption over distance does not apply here; for identical Δp the formula gives lower intensity in water due to its much higher ρv.",
+              "Higher, because water's incompressibility increases pressure effects.": "The formula I = (Δp)²/(2ρv) shows intensity is inversely proportional to ρv; water's high ρv means lower intensity for the same pressure amplitude, not higher.",
+              "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.": "I = (Δp)²/(2ρv); water's ρv ≈ 1.5×10⁶ vs. air's ≈ 415 Pa·s/m, so the same Δp yields far lower intensity and thus lower dB SPL."
+            },
+            "choices": [
+              "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+              "Higher, because water transmits sound more efficiently.",
+              "Equal, because pressure amplitude determines level directly.",
+              "Higher, because water's incompressibility increases pressure effects."
+            ],
+            "difficulty": 4,
+            "expectedAnswer": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+            "explanation": "Intensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level.",
+            "format": "Multiple Choice",
+            "prompt": "A tone has pressure amplitude 1.0 Pa in air at 20 °C. In water at the same temperature, a tone with identical pressure amplitude is produced. How does the sound intensity level in water compare to that in air?",
+            "remoteID": "c71ae349-b4c5-5e85-879b-a861f3d0f6c6",
+            "topic": "Sound intensity and decibels for audio work",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          }
+        ],
+        "readyCount": 0,
+        "status": "empty",
+        "targetCount": 4
+      },
+      "bank_claimable_count": 4,
+      "transaction_count": 1,
+      "queued_message_count": 0,
+      "checks": {
+        "prepare_preserves_all_returned_items": true,
+        "prepared_content_exact_except_assigned_remote_id": true,
+        "claim_content_exact": true,
+        "repeat_claim_exact": true,
+        "repeat_claim_adds_no_transaction": true,
+        "single_atomic_claim_transaction": true,
+        "no_queue_messages": true,
+        "input_unchanged": true
+      },
+      "passed": true,
+      "runtime_status": "completed",
+      "requested_count": 5,
+      "result_category": "partial_delivery"
+    },
+    {
+      "operation_index": 1,
+      "case_id": "english_conditions_and_scope",
+      "request": {
+        "goal": {
+          "title": "Read conditions and exceptions accurately in English",
+          "category": "Language Learning",
+          "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+          "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "sourceDocuments": []
+      },
+      "runtime_questions": [
+        {
+          "prompt": "Email: \"We can reschedule your appointment if you notify us at least 48 hours in advance and no staff shortages exist; otherwise, rescheduling is not guaranteed.\" The recipient notifies 72 hours in advance during a staff shortage. What does the email commit to?",
+          "expectedAnswer": "Rescheduling is not guaranteed.",
+          "choices": [
+            "Rescheduling is not guaranteed.",
+            "Rescheduling is guaranteed.",
+            "The email commits to nothing specific.",
+            "Rescheduling is permitted but requires manager approval."
+          ],
+          "explanation": "The guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed.",
+          "topic": "Interpret conditions",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Rescheduling is not guaranteed.": "Both conditions (48+ hours notice AND no staff shortage) must be met; the shortage means the 'otherwise' clause applies, so the email explicitly commits to rescheduling not being guaranteed.",
+            "Rescheduling is guaranteed.": "The guarantee requires both conditions satisfied; the staff shortage means condition two fails, so the guarantee does not apply.",
+            "The email commits to nothing specific.": "The 'otherwise' clause is itself a specific commitment covering exactly this scenario, so the email is not silent.",
+            "Rescheduling is permitted but requires manager approval.": "Manager approval appears nowhere in the email; this choice adds an unstated condition."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "prompt": "Notice: \"Access will be revoked if either (a) credentials are shared, or (b) login attempts from unrecognized locations exceed three, unless the user has pre-registered those locations.\" User Z shared credentials and had four unrecognized logins without pre-registration. What does the notice commit to?",
+          "expectedAnswer": "Access will be revoked.",
+          "choices": [
+            "Access will be revoked.",
+            "Access will not be revoked due to the location exception.",
+            "Access may be revoked pending review.",
+            "The notice is silent on this combination of facts."
+          ],
+          "explanation": "An 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue.",
+          "topic": "exceptions",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Access will not be revoked due to the location exception.": "The location exception applies only to condition (b); condition (a)—sharing credentials—carries no exception and independently triggers revocation.",
+            "Access may be revoked pending review.": "The notice uses 'will be revoked,' not 'may be'; introducing uncertainty misrepresents the stated commitment.",
+            "The notice is silent on this combination of facts.": "Condition (a) is explicitly addressed with no exception, so the notice directly covers this situation.",
+            "Access will be revoked.": "Condition (a) is fully met and has no exception; 'either' means one condition alone is sufficient, so revocation is committed to."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "prompt": "Instructions: \"Do not proceed unless both sensors indicate normal status and the manual override is disengaged; if the override is engaged, you may proceed regardless of sensor status.\" Sensor A shows normal, Sensor B shows alert, and the override is disengaged. What do the instructions permit?",
+          "expectedAnswer": "Proceeding is not permitted.",
+          "choices": [
+            "Proceeding is not permitted.",
+            "Proceeding is permitted.",
+            "Proceeding is permitted with caution.",
+            "The instructions are contradictory."
+          ],
+          "explanation": "Rule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding.",
+          "topic": "negation",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Proceeding is not permitted.": "Rule 1 requires both sensors normal; Sensor B shows alert, so rule 1 bars proceeding. Rule 2 requires the override to be engaged, which it is not, so rule 2 does not apply. No rule permits proceeding.",
+            "Proceeding is permitted.": "Rule 1 fails because Sensor B is not normal; rule 2 fails because the override is disengaged. Neither rule authorizes proceeding.",
+            "Proceeding is permitted with caution.": "The instructions offer no 'with caution' option; this adds a condition not present in the text.",
+            "The instructions are contradictory.": "The two rules address mutually exclusive override states and do not conflict; there is no contradiction."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "runtime_returned_count": 3,
+      "content_observation": "returned_questions",
+      "client_retained_count": null,
+      "client_check": "pending XCTest; backend delivery is not client admission",
+      "prepared_questions": [
+        {
+          "prompt": "Email: \"We can reschedule your appointment if you notify us at least 48 hours in advance and no staff shortages exist; otherwise, rescheduling is not guaranteed.\" The recipient notifies 72 hours in advance during a staff shortage. What does the email commit to?",
+          "expectedAnswer": "Rescheduling is not guaranteed.",
+          "choices": [
+            "Rescheduling is not guaranteed.",
+            "Rescheduling is guaranteed.",
+            "The email commits to nothing specific.",
+            "Rescheduling is permitted but requires manager approval."
+          ],
+          "explanation": "The guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed.",
+          "topic": "Interpret conditions",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Rescheduling is not guaranteed.": "Both conditions (48+ hours notice AND no staff shortage) must be met; the shortage means the 'otherwise' clause applies, so the email explicitly commits to rescheduling not being guaranteed.",
+            "Rescheduling is guaranteed.": "The guarantee requires both conditions satisfied; the staff shortage means condition two fails, so the guarantee does not apply.",
+            "The email commits to nothing specific.": "The 'otherwise' clause is itself a specific commitment covering exactly this scenario, so the email is not silent.",
+            "Rescheduling is permitted but requires manager approval.": "Manager approval appears nowhere in the email; this choice adds an unstated condition."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "525ee24d-ff9d-5cb7-8d36-56f51c5adc11"
+        },
+        {
+          "prompt": "Notice: \"Access will be revoked if either (a) credentials are shared, or (b) login attempts from unrecognized locations exceed three, unless the user has pre-registered those locations.\" User Z shared credentials and had four unrecognized logins without pre-registration. What does the notice commit to?",
+          "expectedAnswer": "Access will be revoked.",
+          "choices": [
+            "Access will be revoked.",
+            "Access will not be revoked due to the location exception.",
+            "Access may be revoked pending review.",
+            "The notice is silent on this combination of facts."
+          ],
+          "explanation": "An 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue.",
+          "topic": "exceptions",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Access will not be revoked due to the location exception.": "The location exception applies only to condition (b); condition (a)—sharing credentials—carries no exception and independently triggers revocation.",
+            "Access may be revoked pending review.": "The notice uses 'will be revoked,' not 'may be'; introducing uncertainty misrepresents the stated commitment.",
+            "The notice is silent on this combination of facts.": "Condition (a) is explicitly addressed with no exception, so the notice directly covers this situation.",
+            "Access will be revoked.": "Condition (a) is fully met and has no exception; 'either' means one condition alone is sufficient, so revocation is committed to."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "30adeeef-3e48-55a6-85b1-09903a33b5b8"
+        },
+        {
+          "prompt": "Instructions: \"Do not proceed unless both sensors indicate normal status and the manual override is disengaged; if the override is engaged, you may proceed regardless of sensor status.\" Sensor A shows normal, Sensor B shows alert, and the override is disengaged. What do the instructions permit?",
+          "expectedAnswer": "Proceeding is not permitted.",
+          "choices": [
+            "Proceeding is not permitted.",
+            "Proceeding is permitted.",
+            "Proceeding is permitted with caution.",
+            "The instructions are contradictory."
+          ],
+          "explanation": "Rule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding.",
+          "topic": "negation",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Proceeding is not permitted.": "Rule 1 requires both sensors normal; Sensor B shows alert, so rule 1 bars proceeding. Rule 2 requires the override to be engaged, which it is not, so rule 2 does not apply. No rule permits proceeding.",
+            "Proceeding is permitted.": "Rule 1 fails because Sensor B is not normal; rule 2 fails because the override is disengaged. Neither rule authorizes proceeding.",
+            "Proceeding is permitted with caution.": "The instructions offer no 'with caution' option; this adds a condition not present in the text.",
+            "The instructions are contradictory.": "The two rules address mutually exclusive override states and do not conflict; there is no contradiction."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "f77d6e93-696c-5ede-b72d-f45ae4be2ecd"
+        }
+      ],
+      "prepared_count": 3,
+      "claim_request": {
+        "bankID": "700db33b407d8c2ace1878b978023352ce73d7c11b1fe241107009716f867fe2",
+        "claimID": "delivery-operation-1",
+        "limit": 3,
+        "minimumVerificationVersion": 1,
+        "minimumVerificationPolicyRevision": 2
+      },
+      "claim_response": {
+        "bankID": "700db33b407d8c2ace1878b978023352ce73d7c11b1fe241107009716f867fe2",
+        "status": "empty",
+        "readyCount": 0,
+        "targetCount": 3,
+        "questions": [
+          {
+            "prompt": "Email: \"We can reschedule your appointment if you notify us at least 48 hours in advance and no staff shortages exist; otherwise, rescheduling is not guaranteed.\" The recipient notifies 72 hours in advance during a staff shortage. What does the email commit to?",
+            "expectedAnswer": "Rescheduling is not guaranteed.",
+            "choices": [
+              "Rescheduling is not guaranteed.",
+              "Rescheduling is guaranteed.",
+              "The email commits to nothing specific.",
+              "Rescheduling is permitted but requires manager approval."
+            ],
+            "explanation": "The guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed.",
+            "topic": "Interpret conditions",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "Rescheduling is not guaranteed.": "Both conditions (48+ hours notice AND no staff shortage) must be met; the shortage means the 'otherwise' clause applies, so the email explicitly commits to rescheduling not being guaranteed.",
+              "Rescheduling is guaranteed.": "The guarantee requires both conditions satisfied; the staff shortage means condition two fails, so the guarantee does not apply.",
+              "The email commits to nothing specific.": "The 'otherwise' clause is itself a specific commitment covering exactly this scenario, so the email is not silent.",
+              "Rescheduling is permitted but requires manager approval.": "Manager approval appears nowhere in the email; this choice adds an unstated condition."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "525ee24d-ff9d-5cb7-8d36-56f51c5adc11"
+          },
+          {
+            "prompt": "Notice: \"Access will be revoked if either (a) credentials are shared, or (b) login attempts from unrecognized locations exceed three, unless the user has pre-registered those locations.\" User Z shared credentials and had four unrecognized logins without pre-registration. What does the notice commit to?",
+            "expectedAnswer": "Access will be revoked.",
+            "choices": [
+              "Access will be revoked.",
+              "Access will not be revoked due to the location exception.",
+              "Access may be revoked pending review.",
+              "The notice is silent on this combination of facts."
+            ],
+            "explanation": "An 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue.",
+            "topic": "exceptions",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "Access will not be revoked due to the location exception.": "The location exception applies only to condition (b); condition (a)—sharing credentials—carries no exception and independently triggers revocation.",
+              "Access may be revoked pending review.": "The notice uses 'will be revoked,' not 'may be'; introducing uncertainty misrepresents the stated commitment.",
+              "The notice is silent on this combination of facts.": "Condition (a) is explicitly addressed with no exception, so the notice directly covers this situation.",
+              "Access will be revoked.": "Condition (a) is fully met and has no exception; 'either' means one condition alone is sufficient, so revocation is committed to."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "30adeeef-3e48-55a6-85b1-09903a33b5b8"
+          },
+          {
+            "prompt": "Instructions: \"Do not proceed unless both sensors indicate normal status and the manual override is disengaged; if the override is engaged, you may proceed regardless of sensor status.\" Sensor A shows normal, Sensor B shows alert, and the override is disengaged. What do the instructions permit?",
+            "expectedAnswer": "Proceeding is not permitted.",
+            "choices": [
+              "Proceeding is not permitted.",
+              "Proceeding is permitted.",
+              "Proceeding is permitted with caution.",
+              "The instructions are contradictory."
+            ],
+            "explanation": "Rule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding.",
+            "topic": "negation",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "Proceeding is not permitted.": "Rule 1 requires both sensors normal; Sensor B shows alert, so rule 1 bars proceeding. Rule 2 requires the override to be engaged, which it is not, so rule 2 does not apply. No rule permits proceeding.",
+              "Proceeding is permitted.": "Rule 1 fails because Sensor B is not normal; rule 2 fails because the override is disengaged. Neither rule authorizes proceeding.",
+              "Proceeding is permitted with caution.": "The instructions offer no 'with caution' option; this adds a condition not present in the text.",
+              "The instructions are contradictory.": "The two rules address mutually exclusive override states and do not conflict; there is no contradiction."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "f77d6e93-696c-5ede-b72d-f45ae4be2ecd"
+          }
+        ]
+      },
+      "repeat_claim_response": {
+        "bankID": "700db33b407d8c2ace1878b978023352ce73d7c11b1fe241107009716f867fe2",
+        "questions": [
+          {
+            "choiceExplanations": {
+              "Rescheduling is guaranteed.": "The guarantee requires both conditions satisfied; the staff shortage means condition two fails, so the guarantee does not apply.",
+              "Rescheduling is not guaranteed.": "Both conditions (48+ hours notice AND no staff shortage) must be met; the shortage means the 'otherwise' clause applies, so the email explicitly commits to rescheduling not being guaranteed.",
+              "Rescheduling is permitted but requires manager approval.": "Manager approval appears nowhere in the email; this choice adds an unstated condition.",
+              "The email commits to nothing specific.": "The 'otherwise' clause is itself a specific commitment covering exactly this scenario, so the email is not silent."
+            },
+            "choices": [
+              "Rescheduling is not guaranteed.",
+              "Rescheduling is guaranteed.",
+              "The email commits to nothing specific.",
+              "Rescheduling is permitted but requires manager approval."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "Rescheduling is not guaranteed.",
+            "explanation": "The guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed.",
+            "format": "Multiple Choice",
+            "prompt": "Email: \"We can reschedule your appointment if you notify us at least 48 hours in advance and no staff shortages exist; otherwise, rescheduling is not guaranteed.\" The recipient notifies 72 hours in advance during a staff shortage. What does the email commit to?",
+            "remoteID": "525ee24d-ff9d-5cb7-8d36-56f51c5adc11",
+            "topic": "Interpret conditions",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          },
+          {
+            "choiceExplanations": {
+              "Access may be revoked pending review.": "The notice uses 'will be revoked,' not 'may be'; introducing uncertainty misrepresents the stated commitment.",
+              "Access will be revoked.": "Condition (a) is fully met and has no exception; 'either' means one condition alone is sufficient, so revocation is committed to.",
+              "Access will not be revoked due to the location exception.": "The location exception applies only to condition (b); condition (a)—sharing credentials—carries no exception and independently triggers revocation.",
+              "The notice is silent on this combination of facts.": "Condition (a) is explicitly addressed with no exception, so the notice directly covers this situation."
+            },
+            "choices": [
+              "Access will be revoked.",
+              "Access will not be revoked due to the location exception.",
+              "Access may be revoked pending review.",
+              "The notice is silent on this combination of facts."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "Access will be revoked.",
+            "explanation": "An 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue.",
+            "format": "Multiple Choice",
+            "prompt": "Notice: \"Access will be revoked if either (a) credentials are shared, or (b) login attempts from unrecognized locations exceed three, unless the user has pre-registered those locations.\" User Z shared credentials and had four unrecognized logins without pre-registration. What does the notice commit to?",
+            "remoteID": "30adeeef-3e48-55a6-85b1-09903a33b5b8",
+            "topic": "exceptions",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          },
+          {
+            "choiceExplanations": {
+              "Proceeding is not permitted.": "Rule 1 requires both sensors normal; Sensor B shows alert, so rule 1 bars proceeding. Rule 2 requires the override to be engaged, which it is not, so rule 2 does not apply. No rule permits proceeding.",
+              "Proceeding is permitted with caution.": "The instructions offer no 'with caution' option; this adds a condition not present in the text.",
+              "Proceeding is permitted.": "Rule 1 fails because Sensor B is not normal; rule 2 fails because the override is disengaged. Neither rule authorizes proceeding.",
+              "The instructions are contradictory.": "The two rules address mutually exclusive override states and do not conflict; there is no contradiction."
+            },
+            "choices": [
+              "Proceeding is not permitted.",
+              "Proceeding is permitted.",
+              "Proceeding is permitted with caution.",
+              "The instructions are contradictory."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "Proceeding is not permitted.",
+            "explanation": "Rule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding.",
+            "format": "Multiple Choice",
+            "prompt": "Instructions: \"Do not proceed unless both sensors indicate normal status and the manual override is disengaged; if the override is engaged, you may proceed regardless of sensor status.\" Sensor A shows normal, Sensor B shows alert, and the override is disengaged. What do the instructions permit?",
+            "remoteID": "f77d6e93-696c-5ede-b72d-f45ae4be2ecd",
+            "topic": "negation",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          }
+        ],
+        "readyCount": 0,
+        "status": "empty",
+        "targetCount": 3
+      },
+      "bank_claimable_count": 3,
+      "transaction_count": 1,
+      "queued_message_count": 0,
+      "checks": {
+        "prepare_preserves_all_returned_items": true,
+        "prepared_content_exact_except_assigned_remote_id": true,
+        "claim_content_exact": true,
+        "repeat_claim_exact": true,
+        "repeat_claim_adds_no_transaction": true,
+        "single_atomic_claim_transaction": true,
+        "no_queue_messages": true,
+        "input_unchanged": true
+      },
+      "passed": true,
+      "runtime_status": "completed",
+      "requested_count": 5,
+      "result_category": "partial_delivery"
+    },
+    {
+      "operation_index": 2,
+      "case_id": "plant_water_transport",
+      "request": {
+        "goal": {
+          "title": "Explain water movement and gas exchange in plants",
+          "category": "Custom",
+          "currentLevel": "I know the basic roles of roots, xylem, and stomata, and want to connect those structures to how plants respond to their environment.",
+          "focusAreas": "Apply water-potential gradients, transpiration, and stomatal regulation to observations and environmental changes. Explain tradeoffs between carbon dioxide uptake and water loss."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Plant water transport: selective study notes",
+            "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants\n\nNet water movement follows a gradient from higher to lower total water potential. Solute concentration and pressure contribute to that total; knowing one component alone need not determine the total gradient. Evaporation from leaves creates tension that helps pull water through xylem, with water cohesion and adhesion helping sustain the column. The leaf-to-air vapor gradient influences transpiration. At otherwise matching temperatures, higher atmospheric humidity reduces that gradient. Guard cells regulate stomatal openings in response to environmental and internal signals. Open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss. Restricting stomatal opening therefore involves a tradeoff between carbon dioxide entry and water conservation. Leaf water status, light, and carbon dioxide can affect stomatal behavior; a change in one environmental factor does not establish a fixed rate for every plant. These notes give general mechanisms, not measurements for any particular plant or experiment.",
+            "truncated": true
+          }
+        ]
+      },
+      "runtime_questions": [
+        {
+          "prompt": "A researcher measures water potential in two adjacent plant cells. Cell A has higher solute concentration but is also under greater turgor pressure than Cell B. Which outcome is certain if the cells are connected by open plasmodesmata?",
+          "expectedAnswer": "Cannot be determined from the information given.",
+          "choices": [
+            "Cannot be determined from the information given.",
+            "Water will move from Cell A to Cell B.",
+            "Water will move from Cell B to Cell A.",
+            "No net water movement will occur."
+          ],
+          "explanation": "Total water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient.",
+          "topic": "Apply water-potential gradients",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "No net water movement will occur.": "Equal water potentials would require the solute and pressure effects to exactly cancel, but no magnitudes are given to confirm this.",
+            "Cannot be determined from the information given.": "Higher solute lowers osmotic potential while higher turgor raises pressure potential; without magnitudes the net direction cannot be established.",
+            "Water will move from Cell A to Cell B.": "This requires Cell A's total water potential to exceed Cell B's, which cannot be confirmed without knowing the magnitude of each component.",
+            "Water will move from Cell B to Cell A.": "This requires Cell B's total water potential to exceed Cell A's, equally unconfirmable without component magnitudes."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "prompt": "A student observes that a potted wilting plant recovers turgidity within hours after watering, even though the soil was dry. Which mechanism best explains how water reached the leaf cells so quickly?",
+          "expectedAnswer": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+          "choices": [
+            "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+            "Root pressure pushed water rapidly to the leaves.",
+            "Phloem transported water from storage tissues to leaves.",
+            "Osmosis directly from soil to leaf cells without vascular tissue."
+          ],
+          "explanation": "Transpiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored.",
+          "topic": "transpiration",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Phloem transported water from storage tissues to leaves.": "Phloem carries sugars and organic solutes; bulk long-distance water delivery to wilting leaves is not its function.",
+            "Osmosis directly from soil to leaf cells without vascular tissue.": "Direct soil-to-leaf osmosis bypassing vascular tissue is not a recognized mechanism for rapid whole-plant water delivery.",
+            "Tension in the xylem from transpiration pulled water upward as soil water became available.": "The source describes transpiration-generated tension sustained by cohesion and adhesion; once soil water is available this tension rapidly draws water up through xylem.",
+            "Root pressure pushed water rapidly to the leaves.": "Root pressure is a weak, slow mechanism and is insufficient to explain rapid recovery of turgidity, especially after drought."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "prompt": "A botanist compares two species: Species M keeps stomata open in moderate light even when soil dries slightly; Species N closes stomata under the same conditions. Based on the source's description of stomatal regulation, what can be concluded about their relative strategies?",
+          "expectedAnswer": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+          "choices": [
+            "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+            "Species M has damaged guard cells that cannot respond to water status.",
+            "Species N has higher photosynthetic efficiency that requires less CO₂.",
+            "Both species will show identical growth rates under all conditions."
+          ],
+          "explanation": "The source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff.",
+          "topic": "stomatal regulation to observations and environm",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Species M has damaged guard cells that cannot respond to water status.": "Keeping stomata open under mild drought is a regulatory strategy; attributing it to guard-cell damage adds an unsupported condition not present in the scenario.",
+            "Species N has higher photosynthetic efficiency that requires less CO₂.": "No information about photosynthetic efficiency is given; closing stomata under drying conditions reflects a water-conservation strategy, not a reduced CO₂ need.",
+            "Both species will show identical growth rates under all conditions.": "Different stomatal strategies produce different CO₂ uptake and water loss, making identical growth rates under all conditions unsupported.",
+            "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.": "The source's stated tradeoff—open stomata favor CO₂ entry, closed stomata favor water retention—maps directly onto the observed behaviors of each species."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "prompt": "A researcher places two identical potted plants in a growth chamber at 25°C with bright light. Plant P has its leaves misted with water every hour; Plant Q remains dry. Both have adequate soil moisture and open stomata. Which outcome is expected after several hours?",
+          "expectedAnswer": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+          "choices": [
+            "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+            "Plant P shows higher transpiration due to added surface moisture.",
+            "Both plants show identical transpiration because soil water is adequate.",
+            "Plant Q shows lower transpiration because dry leaves conserve water."
+          ],
+          "explanation": "Transpiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q.",
+          "topic": "transpiration",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Plant P shows lower transpiration and higher leaf turgor than Plant Q.": "Misting raises local humidity at the leaf surface, reducing the leaf-to-air vapor gradient and thus lowering transpiration; better water retention supports higher turgor.",
+            "Plant P shows higher transpiration due to added surface moisture.": "Transpiration is driven by the vapor-pressure gradient; misting raises local humidity and reduces that gradient, so transpiration decreases rather than increases.",
+            "Both plants show identical transpiration because soil water is adequate.": "Soil water adequacy affects supply, not the vapor gradient; misting creates a humidity difference between the two plants, so their transpiration rates will differ.",
+            "Plant Q shows lower transpiration because dry leaves conserve water.": "Plant Q has normal ambient humidity and no surface moisture, giving a steeper vapor gradient than misted Plant P, which drives higher—not lower—transpiration."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "prompt": "A plant physiologist exposes a well-watered plant to bright light while gradually raising ambient CO₂ concentration. Stomata begin partially closed at elevated CO₂. Which tradeoff shifts as a result of this response?",
+          "expectedAnswer": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+          "choices": [
+            "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+            "Increased water loss is traded for higher carbon dioxide uptake.",
+            "Photosynthesis stops completely to maximize water conservation.",
+            "Carbon dioxide uptake becomes unlimited while water loss is eliminated."
+          ],
+          "explanation": "Partial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff.",
+          "topic": "stomatal regulation to observations and environm",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Reduced water loss is traded for continued adequate carbon dioxide uptake.": "Partial stomatal closure reduces the aperture for water-vapor escape; elevated ambient CO₂ means adequate CO₂ still diffuses in through the narrower opening, preserving the tradeoff balance.",
+            "Increased water loss is traded for higher carbon dioxide uptake.": "Stomata partially close at elevated CO₂, which reduces—not increases—water loss; this choice inverts the actual direction of both changes in the scenario.",
+            "Photosynthesis stops completely to maximize water conservation.": "The scenario specifies only partial closure, so some CO₂ entry continues; complete photosynthetic shutdown is not supported by the source or the stated conditions.",
+            "Carbon dioxide uptake becomes unlimited while water loss is eliminated.": "Partial closure restricts rather than eliminates water loss and also limits CO₂ entry; neither quantity reaches the extreme this choice claims."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "runtime_returned_count": 5,
+      "content_observation": "returned_questions",
+      "client_retained_count": null,
+      "client_check": "pending XCTest; backend delivery is not client admission",
+      "prepared_questions": [
+        {
+          "prompt": "A researcher measures water potential in two adjacent plant cells. Cell A has higher solute concentration but is also under greater turgor pressure than Cell B. Which outcome is certain if the cells are connected by open plasmodesmata?",
+          "expectedAnswer": "Cannot be determined from the information given.",
+          "choices": [
+            "Cannot be determined from the information given.",
+            "Water will move from Cell A to Cell B.",
+            "Water will move from Cell B to Cell A.",
+            "No net water movement will occur."
+          ],
+          "explanation": "Total water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient.",
+          "topic": "Apply water-potential gradients",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "No net water movement will occur.": "Equal water potentials would require the solute and pressure effects to exactly cancel, but no magnitudes are given to confirm this.",
+            "Cannot be determined from the information given.": "Higher solute lowers osmotic potential while higher turgor raises pressure potential; without magnitudes the net direction cannot be established.",
+            "Water will move from Cell A to Cell B.": "This requires Cell A's total water potential to exceed Cell B's, which cannot be confirmed without knowing the magnitude of each component.",
+            "Water will move from Cell B to Cell A.": "This requires Cell B's total water potential to exceed Cell A's, equally unconfirmable without component magnitudes."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "a7a6577a-a5da-5166-a237-e09b52f45940"
+        },
+        {
+          "prompt": "A student observes that a potted wilting plant recovers turgidity within hours after watering, even though the soil was dry. Which mechanism best explains how water reached the leaf cells so quickly?",
+          "expectedAnswer": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+          "choices": [
+            "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+            "Root pressure pushed water rapidly to the leaves.",
+            "Phloem transported water from storage tissues to leaves.",
+            "Osmosis directly from soil to leaf cells without vascular tissue."
+          ],
+          "explanation": "Transpiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored.",
+          "topic": "transpiration",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Phloem transported water from storage tissues to leaves.": "Phloem carries sugars and organic solutes; bulk long-distance water delivery to wilting leaves is not its function.",
+            "Osmosis directly from soil to leaf cells without vascular tissue.": "Direct soil-to-leaf osmosis bypassing vascular tissue is not a recognized mechanism for rapid whole-plant water delivery.",
+            "Tension in the xylem from transpiration pulled water upward as soil water became available.": "The source describes transpiration-generated tension sustained by cohesion and adhesion; once soil water is available this tension rapidly draws water up through xylem.",
+            "Root pressure pushed water rapidly to the leaves.": "Root pressure is a weak, slow mechanism and is insufficient to explain rapid recovery of turgidity, especially after drought."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "454c37be-389b-56a2-b860-6db657354830"
+        },
+        {
+          "prompt": "A botanist compares two species: Species M keeps stomata open in moderate light even when soil dries slightly; Species N closes stomata under the same conditions. Based on the source's description of stomatal regulation, what can be concluded about their relative strategies?",
+          "expectedAnswer": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+          "choices": [
+            "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+            "Species M has damaged guard cells that cannot respond to water status.",
+            "Species N has higher photosynthetic efficiency that requires less CO₂.",
+            "Both species will show identical growth rates under all conditions."
+          ],
+          "explanation": "The source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff.",
+          "topic": "stomatal regulation to observations and environm",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Species M has damaged guard cells that cannot respond to water status.": "Keeping stomata open under mild drought is a regulatory strategy; attributing it to guard-cell damage adds an unsupported condition not present in the scenario.",
+            "Species N has higher photosynthetic efficiency that requires less CO₂.": "No information about photosynthetic efficiency is given; closing stomata under drying conditions reflects a water-conservation strategy, not a reduced CO₂ need.",
+            "Both species will show identical growth rates under all conditions.": "Different stomatal strategies produce different CO₂ uptake and water loss, making identical growth rates under all conditions unsupported.",
+            "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.": "The source's stated tradeoff—open stomata favor CO₂ entry, closed stomata favor water retention—maps directly onto the observed behaviors of each species."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "95f7ff31-a42c-51a1-935f-119eb425d09c"
+        },
+        {
+          "prompt": "A researcher places two identical potted plants in a growth chamber at 25°C with bright light. Plant P has its leaves misted with water every hour; Plant Q remains dry. Both have adequate soil moisture and open stomata. Which outcome is expected after several hours?",
+          "expectedAnswer": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+          "choices": [
+            "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+            "Plant P shows higher transpiration due to added surface moisture.",
+            "Both plants show identical transpiration because soil water is adequate.",
+            "Plant Q shows lower transpiration because dry leaves conserve water."
+          ],
+          "explanation": "Transpiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q.",
+          "topic": "transpiration",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Plant P shows lower transpiration and higher leaf turgor than Plant Q.": "Misting raises local humidity at the leaf surface, reducing the leaf-to-air vapor gradient and thus lowering transpiration; better water retention supports higher turgor.",
+            "Plant P shows higher transpiration due to added surface moisture.": "Transpiration is driven by the vapor-pressure gradient; misting raises local humidity and reduces that gradient, so transpiration decreases rather than increases.",
+            "Both plants show identical transpiration because soil water is adequate.": "Soil water adequacy affects supply, not the vapor gradient; misting creates a humidity difference between the two plants, so their transpiration rates will differ.",
+            "Plant Q shows lower transpiration because dry leaves conserve water.": "Plant Q has normal ambient humidity and no surface moisture, giving a steeper vapor gradient than misted Plant P, which drives higher—not lower—transpiration."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "9591bd29-f7d7-57a6-ad10-826cc3603b7a"
+        },
+        {
+          "prompt": "A plant physiologist exposes a well-watered plant to bright light while gradually raising ambient CO₂ concentration. Stomata begin partially closed at elevated CO₂. Which tradeoff shifts as a result of this response?",
+          "expectedAnswer": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+          "choices": [
+            "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+            "Increased water loss is traded for higher carbon dioxide uptake.",
+            "Photosynthesis stops completely to maximize water conservation.",
+            "Carbon dioxide uptake becomes unlimited while water loss is eliminated."
+          ],
+          "explanation": "Partial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff.",
+          "topic": "stomatal regulation to observations and environm",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Reduced water loss is traded for continued adequate carbon dioxide uptake.": "Partial stomatal closure reduces the aperture for water-vapor escape; elevated ambient CO₂ means adequate CO₂ still diffuses in through the narrower opening, preserving the tradeoff balance.",
+            "Increased water loss is traded for higher carbon dioxide uptake.": "Stomata partially close at elevated CO₂, which reduces—not increases—water loss; this choice inverts the actual direction of both changes in the scenario.",
+            "Photosynthesis stops completely to maximize water conservation.": "The scenario specifies only partial closure, so some CO₂ entry continues; complete photosynthetic shutdown is not supported by the source or the stated conditions.",
+            "Carbon dioxide uptake becomes unlimited while water loss is eliminated.": "Partial closure restricts rather than eliminates water loss and also limits CO₂ entry; neither quantity reaches the extreme this choice claims."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2,
+          "remoteID": "f86843a3-8083-5119-8552-5121c2173828"
+        }
+      ],
+      "prepared_count": 5,
+      "claim_request": {
+        "bankID": "700db33b407d8c2ace1878b978023352ce73d7c11b1fe241107009716f867fe2",
+        "claimID": "delivery-operation-2",
+        "limit": 5,
+        "minimumVerificationVersion": 1,
+        "minimumVerificationPolicyRevision": 2
+      },
+      "claim_response": {
+        "bankID": "700db33b407d8c2ace1878b978023352ce73d7c11b1fe241107009716f867fe2",
+        "status": "empty",
+        "readyCount": 0,
+        "targetCount": 5,
+        "questions": [
+          {
+            "prompt": "A researcher measures water potential in two adjacent plant cells. Cell A has higher solute concentration but is also under greater turgor pressure than Cell B. Which outcome is certain if the cells are connected by open plasmodesmata?",
+            "expectedAnswer": "Cannot be determined from the information given.",
+            "choices": [
+              "Cannot be determined from the information given.",
+              "Water will move from Cell A to Cell B.",
+              "Water will move from Cell B to Cell A.",
+              "No net water movement will occur."
+            ],
+            "explanation": "Total water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient.",
+            "topic": "Apply water-potential gradients",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "No net water movement will occur.": "Equal water potentials would require the solute and pressure effects to exactly cancel, but no magnitudes are given to confirm this.",
+              "Cannot be determined from the information given.": "Higher solute lowers osmotic potential while higher turgor raises pressure potential; without magnitudes the net direction cannot be established.",
+              "Water will move from Cell A to Cell B.": "This requires Cell A's total water potential to exceed Cell B's, which cannot be confirmed without knowing the magnitude of each component.",
+              "Water will move from Cell B to Cell A.": "This requires Cell B's total water potential to exceed Cell A's, equally unconfirmable without component magnitudes."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "a7a6577a-a5da-5166-a237-e09b52f45940"
+          },
+          {
+            "prompt": "A student observes that a potted wilting plant recovers turgidity within hours after watering, even though the soil was dry. Which mechanism best explains how water reached the leaf cells so quickly?",
+            "expectedAnswer": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+            "choices": [
+              "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+              "Root pressure pushed water rapidly to the leaves.",
+              "Phloem transported water from storage tissues to leaves.",
+              "Osmosis directly from soil to leaf cells without vascular tissue."
+            ],
+            "explanation": "Transpiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored.",
+            "topic": "transpiration",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "Phloem transported water from storage tissues to leaves.": "Phloem carries sugars and organic solutes; bulk long-distance water delivery to wilting leaves is not its function.",
+              "Osmosis directly from soil to leaf cells without vascular tissue.": "Direct soil-to-leaf osmosis bypassing vascular tissue is not a recognized mechanism for rapid whole-plant water delivery.",
+              "Tension in the xylem from transpiration pulled water upward as soil water became available.": "The source describes transpiration-generated tension sustained by cohesion and adhesion; once soil water is available this tension rapidly draws water up through xylem.",
+              "Root pressure pushed water rapidly to the leaves.": "Root pressure is a weak, slow mechanism and is insufficient to explain rapid recovery of turgidity, especially after drought."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "454c37be-389b-56a2-b860-6db657354830"
+          },
+          {
+            "prompt": "A botanist compares two species: Species M keeps stomata open in moderate light even when soil dries slightly; Species N closes stomata under the same conditions. Based on the source's description of stomatal regulation, what can be concluded about their relative strategies?",
+            "expectedAnswer": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+            "choices": [
+              "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+              "Species M has damaged guard cells that cannot respond to water status.",
+              "Species N has higher photosynthetic efficiency that requires less CO₂.",
+              "Both species will show identical growth rates under all conditions."
+            ],
+            "explanation": "The source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff.",
+            "topic": "stomatal regulation to observations and environm",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "Species M has damaged guard cells that cannot respond to water status.": "Keeping stomata open under mild drought is a regulatory strategy; attributing it to guard-cell damage adds an unsupported condition not present in the scenario.",
+              "Species N has higher photosynthetic efficiency that requires less CO₂.": "No information about photosynthetic efficiency is given; closing stomata under drying conditions reflects a water-conservation strategy, not a reduced CO₂ need.",
+              "Both species will show identical growth rates under all conditions.": "Different stomatal strategies produce different CO₂ uptake and water loss, making identical growth rates under all conditions unsupported.",
+              "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.": "The source's stated tradeoff—open stomata favor CO₂ entry, closed stomata favor water retention—maps directly onto the observed behaviors of each species."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "95f7ff31-a42c-51a1-935f-119eb425d09c"
+          },
+          {
+            "prompt": "A researcher places two identical potted plants in a growth chamber at 25°C with bright light. Plant P has its leaves misted with water every hour; Plant Q remains dry. Both have adequate soil moisture and open stomata. Which outcome is expected after several hours?",
+            "expectedAnswer": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+            "choices": [
+              "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+              "Plant P shows higher transpiration due to added surface moisture.",
+              "Both plants show identical transpiration because soil water is adequate.",
+              "Plant Q shows lower transpiration because dry leaves conserve water."
+            ],
+            "explanation": "Transpiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q.",
+            "topic": "transpiration",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "Plant P shows lower transpiration and higher leaf turgor than Plant Q.": "Misting raises local humidity at the leaf surface, reducing the leaf-to-air vapor gradient and thus lowering transpiration; better water retention supports higher turgor.",
+              "Plant P shows higher transpiration due to added surface moisture.": "Transpiration is driven by the vapor-pressure gradient; misting raises local humidity and reduces that gradient, so transpiration decreases rather than increases.",
+              "Both plants show identical transpiration because soil water is adequate.": "Soil water adequacy affects supply, not the vapor gradient; misting creates a humidity difference between the two plants, so their transpiration rates will differ.",
+              "Plant Q shows lower transpiration because dry leaves conserve water.": "Plant Q has normal ambient humidity and no surface moisture, giving a steeper vapor gradient than misted Plant P, which drives higher—not lower—transpiration."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "9591bd29-f7d7-57a6-ad10-826cc3603b7a"
+          },
+          {
+            "prompt": "A plant physiologist exposes a well-watered plant to bright light while gradually raising ambient CO₂ concentration. Stomata begin partially closed at elevated CO₂. Which tradeoff shifts as a result of this response?",
+            "expectedAnswer": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+            "choices": [
+              "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+              "Increased water loss is traded for higher carbon dioxide uptake.",
+              "Photosynthesis stops completely to maximize water conservation.",
+              "Carbon dioxide uptake becomes unlimited while water loss is eliminated."
+            ],
+            "explanation": "Partial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff.",
+            "topic": "stomatal regulation to observations and environm",
+            "difficulty": 3,
+            "format": "Multiple Choice",
+            "choiceExplanations": {
+              "Reduced water loss is traded for continued adequate carbon dioxide uptake.": "Partial stomatal closure reduces the aperture for water-vapor escape; elevated ambient CO₂ means adequate CO₂ still diffuses in through the narrower opening, preserving the tradeoff balance.",
+              "Increased water loss is traded for higher carbon dioxide uptake.": "Stomata partially close at elevated CO₂, which reduces—not increases—water loss; this choice inverts the actual direction of both changes in the scenario.",
+              "Photosynthesis stops completely to maximize water conservation.": "The scenario specifies only partial closure, so some CO₂ entry continues; complete photosynthetic shutdown is not supported by the source or the stated conditions.",
+              "Carbon dioxide uptake becomes unlimited while water loss is eliminated.": "Partial closure restricts rather than eliminates water loss and also limits CO₂ entry; neither quantity reaches the extreme this choice claims."
+            },
+            "verificationVersion": 1,
+            "verificationPolicyRevision": 2,
+            "remoteID": "f86843a3-8083-5119-8552-5121c2173828"
+          }
+        ]
+      },
+      "repeat_claim_response": {
+        "bankID": "700db33b407d8c2ace1878b978023352ce73d7c11b1fe241107009716f867fe2",
+        "questions": [
+          {
+            "choiceExplanations": {
+              "Cannot be determined from the information given.": "Higher solute lowers osmotic potential while higher turgor raises pressure potential; without magnitudes the net direction cannot be established.",
+              "No net water movement will occur.": "Equal water potentials would require the solute and pressure effects to exactly cancel, but no magnitudes are given to confirm this.",
+              "Water will move from Cell A to Cell B.": "This requires Cell A's total water potential to exceed Cell B's, which cannot be confirmed without knowing the magnitude of each component.",
+              "Water will move from Cell B to Cell A.": "This requires Cell B's total water potential to exceed Cell A's, equally unconfirmable without component magnitudes."
+            },
+            "choices": [
+              "Cannot be determined from the information given.",
+              "Water will move from Cell A to Cell B.",
+              "Water will move from Cell B to Cell A.",
+              "No net water movement will occur."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "Cannot be determined from the information given.",
+            "explanation": "Total water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient.",
+            "format": "Multiple Choice",
+            "prompt": "A researcher measures water potential in two adjacent plant cells. Cell A has higher solute concentration but is also under greater turgor pressure than Cell B. Which outcome is certain if the cells are connected by open plasmodesmata?",
+            "remoteID": "a7a6577a-a5da-5166-a237-e09b52f45940",
+            "topic": "Apply water-potential gradients",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          },
+          {
+            "choiceExplanations": {
+              "Osmosis directly from soil to leaf cells without vascular tissue.": "Direct soil-to-leaf osmosis bypassing vascular tissue is not a recognized mechanism for rapid whole-plant water delivery.",
+              "Phloem transported water from storage tissues to leaves.": "Phloem carries sugars and organic solutes; bulk long-distance water delivery to wilting leaves is not its function.",
+              "Root pressure pushed water rapidly to the leaves.": "Root pressure is a weak, slow mechanism and is insufficient to explain rapid recovery of turgidity, especially after drought.",
+              "Tension in the xylem from transpiration pulled water upward as soil water became available.": "The source describes transpiration-generated tension sustained by cohesion and adhesion; once soil water is available this tension rapidly draws water up through xylem."
+            },
+            "choices": [
+              "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+              "Root pressure pushed water rapidly to the leaves.",
+              "Phloem transported water from storage tissues to leaves.",
+              "Osmosis directly from soil to leaf cells without vascular tissue."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+            "explanation": "Transpiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored.",
+            "format": "Multiple Choice",
+            "prompt": "A student observes that a potted wilting plant recovers turgidity within hours after watering, even though the soil was dry. Which mechanism best explains how water reached the leaf cells so quickly?",
+            "remoteID": "454c37be-389b-56a2-b860-6db657354830",
+            "topic": "transpiration",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          },
+          {
+            "choiceExplanations": {
+              "Both species will show identical growth rates under all conditions.": "Different stomatal strategies produce different CO₂ uptake and water loss, making identical growth rates under all conditions unsupported.",
+              "Species M has damaged guard cells that cannot respond to water status.": "Keeping stomata open under mild drought is a regulatory strategy; attributing it to guard-cell damage adds an unsupported condition not present in the scenario.",
+              "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.": "The source's stated tradeoff—open stomata favor CO₂ entry, closed stomata favor water retention—maps directly onto the observed behaviors of each species.",
+              "Species N has higher photosynthetic efficiency that requires less CO₂.": "No information about photosynthetic efficiency is given; closing stomata under drying conditions reflects a water-conservation strategy, not a reduced CO₂ need."
+            },
+            "choices": [
+              "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+              "Species M has damaged guard cells that cannot respond to water status.",
+              "Species N has higher photosynthetic efficiency that requires less CO₂.",
+              "Both species will show identical growth rates under all conditions."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+            "explanation": "The source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff.",
+            "format": "Multiple Choice",
+            "prompt": "A botanist compares two species: Species M keeps stomata open in moderate light even when soil dries slightly; Species N closes stomata under the same conditions. Based on the source's description of stomatal regulation, what can be concluded about their relative strategies?",
+            "remoteID": "95f7ff31-a42c-51a1-935f-119eb425d09c",
+            "topic": "stomatal regulation to observations and environm",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          },
+          {
+            "choiceExplanations": {
+              "Both plants show identical transpiration because soil water is adequate.": "Soil water adequacy affects supply, not the vapor gradient; misting creates a humidity difference between the two plants, so their transpiration rates will differ.",
+              "Plant P shows higher transpiration due to added surface moisture.": "Transpiration is driven by the vapor-pressure gradient; misting raises local humidity and reduces that gradient, so transpiration decreases rather than increases.",
+              "Plant P shows lower transpiration and higher leaf turgor than Plant Q.": "Misting raises local humidity at the leaf surface, reducing the leaf-to-air vapor gradient and thus lowering transpiration; better water retention supports higher turgor.",
+              "Plant Q shows lower transpiration because dry leaves conserve water.": "Plant Q has normal ambient humidity and no surface moisture, giving a steeper vapor gradient than misted Plant P, which drives higher—not lower—transpiration."
+            },
+            "choices": [
+              "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+              "Plant P shows higher transpiration due to added surface moisture.",
+              "Both plants show identical transpiration because soil water is adequate.",
+              "Plant Q shows lower transpiration because dry leaves conserve water."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+            "explanation": "Transpiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q.",
+            "format": "Multiple Choice",
+            "prompt": "A researcher places two identical potted plants in a growth chamber at 25°C with bright light. Plant P has its leaves misted with water every hour; Plant Q remains dry. Both have adequate soil moisture and open stomata. Which outcome is expected after several hours?",
+            "remoteID": "9591bd29-f7d7-57a6-ad10-826cc3603b7a",
+            "topic": "transpiration",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          },
+          {
+            "choiceExplanations": {
+              "Carbon dioxide uptake becomes unlimited while water loss is eliminated.": "Partial closure restricts rather than eliminates water loss and also limits CO₂ entry; neither quantity reaches the extreme this choice claims.",
+              "Increased water loss is traded for higher carbon dioxide uptake.": "Stomata partially close at elevated CO₂, which reduces—not increases—water loss; this choice inverts the actual direction of both changes in the scenario.",
+              "Photosynthesis stops completely to maximize water conservation.": "The scenario specifies only partial closure, so some CO₂ entry continues; complete photosynthetic shutdown is not supported by the source or the stated conditions.",
+              "Reduced water loss is traded for continued adequate carbon dioxide uptake.": "Partial stomatal closure reduces the aperture for water-vapor escape; elevated ambient CO₂ means adequate CO₂ still diffuses in through the narrower opening, preserving the tradeoff balance."
+            },
+            "choices": [
+              "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+              "Increased water loss is traded for higher carbon dioxide uptake.",
+              "Photosynthesis stops completely to maximize water conservation.",
+              "Carbon dioxide uptake becomes unlimited while water loss is eliminated."
+            ],
+            "difficulty": 3,
+            "expectedAnswer": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+            "explanation": "Partial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff.",
+            "format": "Multiple Choice",
+            "prompt": "A plant physiologist exposes a well-watered plant to bright light while gradually raising ambient CO₂ concentration. Stomata begin partially closed at elevated CO₂. Which tradeoff shifts as a result of this response?",
+            "remoteID": "f86843a3-8083-5119-8552-5121c2173828",
+            "topic": "stomatal regulation to observations and environm",
+            "verificationPolicyRevision": 2,
+            "verificationVersion": 1
+          }
+        ],
+        "readyCount": 0,
+        "status": "empty",
+        "targetCount": 5
+      },
+      "bank_claimable_count": 5,
+      "transaction_count": 1,
+      "queued_message_count": 0,
+      "checks": {
+        "prepare_preserves_all_returned_items": true,
+        "prepared_content_exact_except_assigned_remote_id": true,
+        "claim_content_exact": true,
+        "repeat_claim_exact": true,
+        "repeat_claim_adds_no_transaction": true,
+        "single_atomic_claim_transaction": true,
+        "no_queue_messages": true,
+        "input_unchanged": true
+      },
+      "passed": true,
+      "runtime_status": "completed",
+      "requested_count": 5,
+      "result_category": "full_delivery"
+    }
+  ],
+  "runtime_returned_count": 12,
+  "bank_claimable_count": 12,
+  "client_retained_count": null,
+  "passed": true,
+  "native_capture_binding": {
+    "experiment": "native-fresh-workflow-v1",
+    "capture_canonical_sha256": "6f04bdd6c02d7d65fda962e587d5f8b518f2ee244b67f3a01ae4e578e093a591",
+    "plan_sha256": "3cd55295f466fff4bbb62ed1f860696f441c6d4d421f30e1553935e2d2a5a02c",
+    "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+    "source_sha256": {
+      "complete_question_solution.py": "2c45b726a73349c37af9d9b0a79f997a3dbd19dab6271dd294275e961436a3f8",
+      "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "generation_diagnostics.py": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227",
+      "lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+      "native_output_contracts.py": "e392852db55e6430c7f25f1edb33cddb2faea6354e7a28f3aa305d0ec0a48bef",
+      "question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+      "question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+      "question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+      "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "question_generation.py": "75c3052162938f84d05ec889bfbddef0aaeddc424a950230c0dbe5780f7690dd",
+      "question_quality.py": "764497658989ecc9430cc80757cdb5b9b28010a369b38062bbe2672bfc73eab1",
+      "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "question_source_guidance.py": "15118351a77988b5d7aec6250b9b5d7cf47ba6b41085f4f8bc9e9bbc4a85aa50",
+      "question_teaching.py": "b29d6ebf63d42cbba1eccdd69f9b0225bfcb33c3c695ebf956f962d72655603c",
+      "question_verification.py": "7f151f3db5a6fcf2a7d7a79d9ce2fb4073fea7e968ff1ec7ebcfad7b1726e981",
+      "request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+      "service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+      "smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+      "source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+      "verification_policy.py": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+      "web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+      "evals/checkpoint_source_authoring_eval.py": "fd31a7a9862ef86eb35bc75da5f48cf17d934c3e9593694c68367606d95a92c1",
+      "evals/checkpoint_model_comparison.py": "07627ef9771ef52f5924e1f9b2e6c5bb87b3aceac2ef5399c452bb76b881fb25",
+      "evals/checkpoint_full_pipeline_smoke.py": "0d25ea87943581ec139943a06165b78446d3f133e1770db95e96702c87a86b3c",
+      "evals/checkpoint_learning_eval.py": "452e9cab86d7f35aa3c3b9d7a60a777d32b64e4b3ff1fc2fc6c70b8a745638df",
+      "evals/checkpoint_prompt_ablation.py": "8f252c95f9a6c21ca41128ca2d48d661ab462ee0057bdf7e83a7a3092ce31714",
+      "evals/checkpoint_solution_compatibility_eval.py": "7ce9c8e2343fe34a1b7c5f62c607658afdbdc61c9842dbe0db924beddcf60eb6",
+      "evals/checkpoint_runtime_qualification.py": "a1574df22ec03aeead5a4803a718ab061b711a388b2e45f33eaf33ef5162ca31",
+      "evals/checkpoint_author_latency_probe.py": "089713524f6236df8c58e3d97c927cb5ef518230bfbc4ef8f27374d87847fe9a",
+      "evals/checkpoint_immutable_review_eval.py": "0303e2120097b1b5ecd47bee4da64ee6147532814353cf38e38ec45e695994b9",
+      "evals/question_immutable_review.py": "38b4405673655d624820623e0b6335c3538ae33421b6e3abf954a0b49b5cc91f",
+      "evals/question_complete_author.py": "6c8f4fa70e0fceac58ea620c14814702872c8d4c3ac99db57cb1047a4f88ec86"
+    },
+    "delivery_source_sha256": {
+      "Checkpoint/App/AdaptiveLearningPolicy.swift": "54413b997c7472777cb7ecf0435586b49c0037e69b3b4c434d6f5d2edc94db4d",
+      "Checkpoint/App/AppSnapshotPersistence.swift": "b3e012607d7601cb533ba0450149f0efedbb518e8c8532b871a3aafc9341fd2b",
+      "Checkpoint/App/CheckpointQuestionSelector.swift": "35f2e9e70ce153b7a791d3165ba2c1eb98f3294ff6d1b21e43f7a557322faf28",
+      "Checkpoint/App/CheckpointStore.swift": "01071f97d37a299495fed228211432160768b8071970de0cec985c5c00c76cff",
+      "Checkpoint/App/CheckpointWorkflowCoordinator.swift": "2ad5ae486cab40476b0dc265071fbc5b90484e14616a0855f7ae30e8c60a2f71",
+      "Checkpoint/App/FirstRunSetupCoordinator.swift": "2a35d4dfec95ea279277d11a4dd050e909adb52d25a6721f975f4e0b780399a7",
+      "Checkpoint/App/SkillMapReconciler.swift": "6ee54121788bafcca63edf16af6de957cd3ac142824bde5fe030cef7ec82565c",
+      "Checkpoint/App/WeeklyMetricsCalculator.swift": "a2fd18ea67057fbf4e1fb9ad8775ab79e26641b26443311953d0c91653283411",
+      "Checkpoint/CheckpointApp.swift": "33c73573d9a4c478fcd3736bc4dc09941f9a31a549481f87e629639161ecf621",
+      "Checkpoint/Models/AnswerGrader.swift": "0491c13827340b775bf506c391e021c36828db67f6baf0661c4c7c6077e727cf",
+      "Checkpoint/Models/AppSnapshot.swift": "9a6fe2b111486838f8db5cb5c9625efc3bb2b890f3c46f7d618dba50dafa2272",
+      "Checkpoint/Models/CheckpointSessionModels.swift": "d029e836a65708db610f9208d0ae2b6e812ccbf5611a2c397231c0dfdbc09d38",
+      "Checkpoint/Models/GoalModels.swift": "34c4a84da6ae405d611eaf0c1292b5c16884fac492b83a0c6852680f4eaac866",
+      "Checkpoint/Models/MembershipPlanPresentation.swift": "c7acfe68a8d98b74e259228250b84de5fe9ff94e4f282a0cb3a6e4ed1fcf1cad",
+      "Checkpoint/Models/ProductAccessModels.swift": "4736f01128df224f0e340ebe097c1a6a1ee0546327bf459573162007add670a6",
+      "Checkpoint/Models/QuestionModels.swift": "3d8bc257f442dd768da0b1dcc7faaff7ab64e3b98a9004ad6d89b97016f5c006",
+      "Checkpoint/Services/AppleFoundationQuestionEngine.swift": "b3bb23fa82ba1f8c5de8e7893dbbb5d4ad572e6dd3f55e59de69b3f9d27ef21c",
+      "Checkpoint/Services/BackendClientSupport.swift": "f00d772f224d7648cd909aceeb86b630a98427a07571f37d909d38efab59bb87",
+      "Checkpoint/Services/BackendPayloads.swift": "3b48e873cae9bcd87c44d0eb02b87c8229a3827a12a4ef38c34275874bffb133",
+      "Checkpoint/Services/BackendQuestionBankClient.swift": "ac53e871663149bbb2861232c380ae3d4c213d0796ee9deb77e614e97e768e77",
+      "Checkpoint/Services/BackendQuestionEngine.swift": "154bf3211cf7d0c3f1f37d1d66c65cab3ddbad1e4064512769f0ec2c206c9424",
+      "Checkpoint/Services/GoalSourceDocumentImporter.swift": "34c5a01af4d015cdc4757792c307956da75d650ec7ebad887d079f6a29ca6fdd",
+      "Checkpoint/Services/LegalLinks.swift": "9e9158d5629710ea1a4dfc004d9e83bad9cb14da76625d6427782f4992246c25",
+      "Checkpoint/Services/PurchaseController.swift": "fb1d48ab94bf70d59938b8cdaea2ca511c1742c7d5bdeb0114a36690fff75ead",
+      "Checkpoint/Services/QuestionBatchSanitizer.swift": "9e7e5aba5bbf92a57b05fb2934584005b7bcf7658d1ca6f0cb97d2d0f1d25b54",
+      "Checkpoint/Services/QuestionContext.swift": "cbe2558582e843b62a464ca63e796336fae177782add58c40daee85ef2e1d6cc",
+      "Checkpoint/Services/QuestionEngine.swift": "4a997d06ccf427970348261d50fcbefd23a1aebceec1075e3fb8897d0c5900c5",
+      "Checkpoint/Services/ScreenTimeController.swift": "8fcfb1740236e4c0115a9dc0742d67fc39c4006af2a76c40ad40e0d55e9f25f5",
+      "Checkpoint/Shared/SharedAppGroup.swift": "03046277dc45e3bac34f9e3d7e7c350ef95d9e4197fda61aae38eda398412110",
+      "Checkpoint/Views/CheckpointAttemptView.swift": "8c7adcc48b80f092a2de3829fb8cf5a35e56c225d1ecb2b3f07805eefa69bdce",
+      "Checkpoint/Views/CompetencyRow.swift": "b97c28319f00b69ef5bba4a58a809973657251f6821b060958a29f158499de21",
+      "Checkpoint/Views/CompetencyView.swift": "3411ec416a2cf075ef32c4c168ad6848597f5b6c246fa6ee110fbdcc56464966",
+      "Checkpoint/Views/Components/CheckpointComponents.swift": "d2d6fcc6c9e4e722b8fc6b905b706318ac69549beef88adc1dda5f15148c941b",
+      "Checkpoint/Views/Components/CheckpointSetupGuide.swift": "d11d9f16a972ac5a1ec682515700f99f02f94da6ae66ae20da68ce3b02e35108",
+      "Checkpoint/Views/FirstRunSkillMapView.swift": "7333442108f1234eb2ea4307c2630015f3233f9a1b03175c35309fd3df502d72",
+      "Checkpoint/Views/FocusWinsView.swift": "c477ee1eac511ffc7960524cadecb4d41012c888e51085e1a9a1036afc72a330",
+      "Checkpoint/Views/HistoryView.swift": "94538706b2e4393430f8e421d26d96c3d99b35c6921da2f15058806d8e39cb44",
+      "Checkpoint/Views/HomeProtectionControls.swift": "029e458ce527a006aa83520c30d1133ea3be9546b5618931173200f60680ddec",
+      "Checkpoint/Views/HomeStudyBeaconViews.swift": "d770e1aa0571de15f32a8ad96ccee3cbe624ca2fa49281e4de66071bc21c0557",
+      "Checkpoint/Views/HomeView.swift": "1c21770586190545ea6b3cee9826990e1b3b4a1d187f852648c8ade33a35f104",
+      "Checkpoint/Views/LearningMapEditorView.swift": "f875e56eb6b2f01f7a0b5d0abcd387f28e193cab21afe6e2f3978202398c16a1",
+      "Checkpoint/Views/LearningMapGraph.swift": "72dbbde7764bb25ae76e1bb68826c36c0e7c7af5bc3bff172cab2c2c0368bc97",
+      "Checkpoint/Views/LearningMapNavigator.swift": "516938f3fa26a693d06a4aeabcba75d8b851bf9f77fa29d103b0a84708fdb04c",
+      "Checkpoint/Views/LearningMapPresentation.swift": "0b5e8c078603b7fd41ff6c8a589b74d6f2308ca28bbd98e28d76e776729d7733",
+      "Checkpoint/Views/LearningMapView.swift": "bcb06a0a9c4028790b5cd34b64e10ee5f7a368345c47451062938376fe4a4cea",
+      "Checkpoint/Views/LearningMapVisuals.swift": "e64250856246b49f06dc8a8b16b4bd9f089a37027b3743de6de02bc2c3f675c2",
+      "Checkpoint/Views/MembershipView.swift": "ae88e316194752b684b34ee51b004d0c641c11bc7b951c522525628f901dd2dc",
+      "Checkpoint/Views/OnboardingView.swift": "59cf751a5586a02db2c10f1fb5ec10c8f4c27f3d02c439e67f0943240fe1833d",
+      "Checkpoint/Views/PracticeSettingsControls.swift": "ceb39b4099a47ff572a88fcc9de2561d205841f62c9a799361858f68f451d652",
+      "Checkpoint/Views/ProgressWeeklyImpactCard.swift": "a83d063368a3c393b90fff4a7d3340b256ec2411d9cff34a8754eed65c1fb3de",
+      "Checkpoint/Views/QuestionGenerationDiagnosticsView.swift": "13eb674c6763004d3d2cb09d658b653d044a532c381b60574109940ce51fc6c9",
+      "Checkpoint/Views/QuestionQualityFeedbackView.swift": "b71fad13556a8444b5b095bb263f0d9264b8ebbb4fa4198776ef99de97ecd5b4",
+      "Checkpoint/Views/QuestionReportsView.swift": "61a5d7e9582e627de863b80c099b47cea88d26e0ded801eec735ccf56f40d657",
+      "Checkpoint/Views/RequiredScreenTimeAccessView.swift": "06d57de95310ceaa9035c3ca508b7583f664566dc572eda83c0f4a6effcb23c9",
+      "Checkpoint/Views/RestrictedAppsView.swift": "cd0b1ff324c21513cef6084e517c8836a37c2b93e3924314e466125a104be74f",
+      "Checkpoint/Views/RootView.swift": "12475572fdf7da2d154da64758ca2ef9437498b5e75e1476e2d55937d473a86c",
+      "Checkpoint/Views/SettingsSupportViews.swift": "2e925f09609b625624e9edfeb52654cdecdbc6da11fa6f0124c220e7365c0755",
+      "Checkpoint/Views/SettingsView.swift": "492c0a16b58308bcb10799418a6eb830ccb57c4a08fe5ab847c337d457a259bb",
+      "Checkpoint/Views/SkillMapEditorViews.swift": "6e0e993091fe697134cc452e55498a945989e140fe7528e4ad1374b06f0b1a96",
+      "Checkpoint/Views/WeeklyReviewView.swift": "445ed95b5e7fde8e2ffed65876441cfddb4ac82e5388580417c72d06d0d8e771",
+      "CheckpointTests/QuestionDeliveryCaptureTests.swift": "190f8eaa130a5fbb2a2300fe20032dc79cf79944542c375387bcca1b390f656b",
+      "CheckpointTests/TestSupport/CheckpointTestFixtures.swift": "cafb739bb61d199cf8f6d8fe90ce30c4c7cd9538b7277dae8da4b1f665b1d4e0",
+      "CheckpointTests/TestSupport/CheckpointWorkflowTestCase.swift": "d5abf7d30afc04aa5f282f2f9519839b69fdf079534ebf373faa3ec1e278f672",
+      "CheckpointTests/TestSupport/HostedViewRenderer.swift": "2291d1134f3148fe9ceb5e4c29df30259307baea138c89334d1d698eccce01a8",
+      "CheckpointTests/TestSupport/QuestionBankTestDoubles.swift": "c5ceb6c04694edf912ebd0a8bd81bc9f1afc3350f02c6dc45b435083e181427e",
+      "CheckpointTests/TestSupport/QuestionEngineTestDoubles.swift": "3c3c86ec33fcf51a98d0da3612d024beeffcf2409a3e4309c8349cb011e6aaab",
+      "backend/bedrock-question-service/complete_question_solution.py": "2c45b726a73349c37af9d9b0a79f997a3dbd19dab6271dd294275e961436a3f8",
+      "backend/bedrock-question-service/evals/checkpoint_delivery_check.py": "11037de14ada23f871ee9200f2765242d823ef9797ff2f27b359350866238697",
+      "backend/bedrock-question-service/evals/checkpoint_native_delivery.py": "4a29912e1395dd152403311d5db3b39f815f2dd377350e95149ea7325a89af46",
+      "backend/bedrock-question-service/execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "backend/bedrock-question-service/generation_diagnostics.py": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227",
+      "backend/bedrock-question-service/lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+      "backend/bedrock-question-service/native_output_contracts.py": "e392852db55e6430c7f25f1edb33cddb2faea6354e7a28f3aa305d0ec0a48bef",
+      "backend/bedrock-question-service/question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+      "backend/bedrock-question-service/question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+      "backend/bedrock-question-service/question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "backend/bedrock-question-service/question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "backend/bedrock-question-service/question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+      "backend/bedrock-question-service/question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "backend/bedrock-question-service/question_generation.py": "75c3052162938f84d05ec889bfbddef0aaeddc424a950230c0dbe5780f7690dd",
+      "backend/bedrock-question-service/question_quality.py": "764497658989ecc9430cc80757cdb5b9b28010a369b38062bbe2672bfc73eab1",
+      "backend/bedrock-question-service/question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "backend/bedrock-question-service/question_source_guidance.py": "15118351a77988b5d7aec6250b9b5d7cf47ba6b41085f4f8bc9e9bbc4a85aa50",
+      "backend/bedrock-question-service/question_teaching.py": "b29d6ebf63d42cbba1eccdd69f9b0225bfcb33c3c695ebf956f962d72655603c",
+      "backend/bedrock-question-service/question_verification.py": "7f151f3db5a6fcf2a7d7a79d9ce2fb4073fea7e968ff1ec7ebcfad7b1726e981",
+      "backend/bedrock-question-service/request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+      "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "backend/bedrock-question-service/skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+      "backend/bedrock-question-service/smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+      "backend/bedrock-question-service/source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+      "backend/bedrock-question-service/tests/question_bank_test_support.py": "649872e776fa58c1c98235f65e8cd43a1bd909cc7b218c1a686e118d77006562",
+      "backend/bedrock-question-service/verification_policy.py": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+      "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d"
+    },
+    "dependencies": {
+      "python": "3.12.11",
+      "boto3": "1.43.91",
+      "botocore": "1.43.91"
+    },
+    "exact_runtime_replay": true,
+    "capture_status": "completed"
+  },
+  "requested_count": 15,
+  "capture_sha256": "fed7a2261f2baf58bddbc3c6749fef409fd41d7dcf70b91bc27da0047c6848df",
+  "capture_path": "/private/tmp/checkpoint-native-workflow-live-20260910/capture.json"
+}

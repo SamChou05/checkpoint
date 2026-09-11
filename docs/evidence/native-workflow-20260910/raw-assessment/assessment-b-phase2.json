@@ -1,0 +1,734 @@
+{
+  "assessor": "B",
+  "input_sha256": {
+    "raw-stems-and-choices.json": "45b40eec6cea9de6c51530a4a042c21bf8867851709a502f4afa0078e9184b5c",
+    "authored-key-main.json": "1a1261840f6abe69c848f8de96131aecc0b3c98a02ece3d1159c933b3d235963",
+    "raw/assessment-b-phase1.json": "6cd35e4c45a059a3680d674e3e0cb2573261c28461c2f8d03484f9fa30764f70",
+    "client-stems-and-choices.json": "a6a0481cfb3d7fdd9bff81b4b1dee929892157720f65bcd4b09e44a8b4ece664",
+    "client-keys.json": "64308355aa862a1ae6fe5c6a29d6027bdb40743362581dde2fe52e65c349483e",
+    "client-teaching.json": "1d8267c1ad318aa17461b003355a350777657fd06b50e67eafb07d6fac507a35",
+    "client/assessment-b-phase1.json": "e9969b3de5edd84ecfc316a3c7f7ebec5bf216180015f29dfb468993eb89eb44"
+  },
+  "authored_items": [
+    {
+      "id": "q001",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correct same-reference intensity comparison; no SPL substitution occurs in this authored main."
+    },
+    {
+      "id": "q002",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Independently computed 94-20*log10(4)=81.9588 dB; the rounded answer and stated intensity ratio are correct."
+    },
+    {
+      "id": "q003",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correctly says off-frequency response deviation is needed, rather than assuming frequency alone supplies the whole calibration."
+    },
+    {
+      "id": "q004",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correct tier/tenure classification and explicit all-other-accounts fallback."
+    },
+    {
+      "id": "q005",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correct direct stomatal water-loss/CO2-entry tradeoff."
+    },
+    {
+      "id": "q006",
+      "key_matches_prior_unique": false,
+      "key_status": "wrong",
+      "main_support": "unsupported",
+      "main_issues": [
+        "False physical rule: coherent in-phase equal pressure contributions produce four times one-source mean-square pressure/intensity, not twice.",
+        "The claim that phase alignment ensures a 3 dB increase reverses the coherent-versus-uncorrelated distinction."
+      ],
+      "notes": "The arithmetic 10*log10(2) is fine; the physical combination rule and keyed result are wrong for the accepted in-phase reading. Correct result is 80+20*log10(2)=86.0206 dB."
+    },
+    {
+      "id": "q007",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correct mean-square/intensity addition for uncorrelated sources. Not adding pressures is acceptable shorthand for not adding their RMS amplitudes coherently."
+    },
+    {
+      "id": "q008",
+      "key_matches_prior_unique": false,
+      "key_status": "ambiguous",
+      "main_support": "uncertain",
+      "main_issues": [
+        "The exception-reactivates-fees interpretation is plausible, but the main does not establish a unique fee-bearing option under the incomplete fee rule."
+      ],
+      "notes": "The main supports the ordinary expedited exception reading but does not resolve the frozen ambiguity over the rest of the fee schedule."
+    },
+    {
+      "id": "q009",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correctly distinguishes the verification limit from account balance."
+    },
+    {
+      "id": "q010",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Accept as the ordinary qualitative elevated-CO2 water-use-efficiency response, preserving the phase1 limitation that adequate uptake is not a universal measured rate."
+    },
+    {
+      "id": "q011",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correct conjunction and continuing prohibition when the supervisor is absent."
+    },
+    {
+      "id": "q012",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correct qualitative vapor-gradient argument under the controlled matched-condition convention."
+    },
+    {
+      "id": "q013",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Accept the ordinary local reading of the location exception. The stated absence of preregistration makes revocation follow even under wider exception scope; no key revision is needed."
+    },
+    {
+      "id": "q014",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "The late-return exclusion explicitly establishes nonqualification. Calling it an exception is imprecise terminology but does not change this result."
+    },
+    {
+      "id": "q015",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Supported qualitative strategy comparison; no growth-rate or efficiency measurements are invented."
+    },
+    {
+      "id": "q016",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "The staff-shortage otherwise clause supports the result. Read the condition statement as necessary for a guarantee; can reschedule should not be taught as independently guaranteeing rescheduling when both hold."
+    },
+    {
+      "id": "q017",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correct separation of subjective loudness, intensity and logarithmic level. Does not claim that doubling perceived loudness is a 3 dB increase."
+    },
+    {
+      "id": "q018",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correct threshold application with no close-enough exception."
+    },
+    {
+      "id": "q019",
+      "key_matches_prior_unique": false,
+      "key_status": "ambiguous",
+      "main_support": "uncertain",
+      "main_issues": [
+        "Hourly misting is treated as establishing the relevant sustained local humidity difference; the stem supplies no persistence or measurement timing.",
+        "The keyed higher-turgor comparison is not independently established by the supplied case or the main."
+      ],
+      "notes": "A plausible wet-leaf tendency is asserted as the several-hour case outcome; the frozen absence of sustained wetness/local humidity and hydraulic information remains."
+    },
+    {
+      "id": "q020",
+      "key_matches_prior_unique": false,
+      "key_status": "wrong",
+      "main_support": "unsupported",
+      "main_issues": [
+        "Invents that the billing complaint is not about service quality, excluding an overlapping category without evidence.",
+        "Being within a filing deadline does not establish that a complaint must be accepted."
+      ],
+      "notes": "The authored explanation adds a material exclusion of service-quality overlap that was never given. It also confuses timely filing with mandatory acceptance."
+    },
+    {
+      "id": "q021",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "A legitimate cannot-determine answer: opposing unknown-magnitude contributions prevent deciding the total potential ordering."
+    },
+    {
+      "id": "q022",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Correct for the given disengaged override under the ordinary exception reading frozen in phase1."
+    },
+    {
+      "id": "q023",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Independently computed 70-20*log10(2)=63.9794 dB; the stated reduction and rounding are correct."
+    },
+    {
+      "id": "q024",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "unsupported",
+      "main_issues": [
+        "Rapid turgor recovery does not by itself demonstrate which hydraulic mechanism was established or dominant.",
+        "The categorical claim that root pressure is too slow and weak to contribute to recovery over hours is unsupported and conflicts with observed root pressure during post-drought rewatering."
+      ],
+      "notes": "The frozen key remains the standard best-mechanism answer. It does not license the stronger claim that observed speed proves tension was already established or rules out root-pressure contribution. Primary evidence: https://pmc.ncbi.nlm.nih.gov/articles/PMC7886691/ and https://www.ars.usda.gov/research/publications/publication/?seqNo115=309162 . These show possible contribution, not that root pressure caused this unspecified case."
+    },
+    {
+      "id": "q025",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "notes": "Independently verified intensity ratio 4 and difference 6.0206 dB; common medium terms cancel."
+    }
+  ],
+  "client_items": [
+    {
+      "id": "q001",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "Increased water loss is traded for higher carbon dioxide uptake.",
+          "feedback_support": "unsupported",
+          "display_support": "unsupported",
+          "issues": [
+            "Claims both changes are inverted, thereby asserting CO2 uptake actually decreases. Elevated external CO2 and reduced conductance do not establish that direction, and uptake may increase."
+          ]
+        },
+        {
+          "choice_index": 1,
+          "choice": "Photosynthesis stops completely to maximize water conservation.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 2,
+          "choice": "Carbon dioxide uptake becomes unlimited while water loss is eliminated.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 3,
+          "choice": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": false,
+      "notes": "The supported qualitative main does not establish that CO2 uptake actually decreases as external CO2 rises. This is a new overstatement in feedback, not a change to the prior key judgment. Elevated CO2 may increase assimilation while conductance falls: https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2016.01568/full ."
+    },
+    {
+      "id": "q002",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "The email commits to nothing specific.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 1,
+          "choice": "Rescheduling is guaranteed.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 2,
+          "choice": "Rescheduling is not guaranteed.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 3,
+          "choice": "Rescheduling is permitted but requires manager approval.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": true,
+      "notes": "The explicit otherwise clause establishes non-guarantee for this case. The teaching should not be generalized into a positive guarantee from can when both favorable conditions hold; the present necessary-condition explanation supports this case."
+    },
+    {
+      "id": "q003",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "Access may be revoked pending review.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 1,
+          "choice": "Access will not be revoked due to the location exception.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 2,
+          "choice": "The notice is silent on this combination of facts.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 3,
+          "choice": "Access will be revoked.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": true,
+      "notes": "Supported under the ordinary location-specific exception reading. Preregistration is absent, so the observed result does not depend on resolving wider scope counterfactuals."
+    },
+    {
+      "id": "q004",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "Cannot be determined from the information given.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 1,
+          "choice": "Water will move from Cell A to Cell B.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 2,
+          "choice": "Water will move from Cell B to Cell A.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 3,
+          "choice": "No net water movement will occur.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": true,
+      "notes": "All four displays correctly distinguish unconfirmed directions/equality from the warranted indeterminacy answer."
+    },
+    {
+      "id": "q005",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "The atmospheric temperature during measurement.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 1,
+          "choice": "The impedance of the recording interface.",
+          "feedback_support": "unsupported",
+          "display_support": "unsupported",
+          "issues": [
+            "Already measuring output voltage does not remove load-dependent sensitivity. The conclusion needs matching/negligible loading, not merely an observed voltage."
+          ]
+        },
+        {
+          "choice_index": 2,
+          "choice": "The frequency of the measured sound to verify sensitivity applies.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 3,
+          "choice": "The microphone's self-noise floor in dB SPL.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": false,
+      "notes": "Key and main retain the ordinary calibration assumptions from phase1; the loading distractor is dismissed using a new, false reason. Measuring loaded voltage does not eliminate the need to know the applicable loaded sensitivity. Source: https://service.shure.com/articles/en_US/Knowledge/should-i-match-impedances-of-my-microphone-to-my-mixer ."
+    },
+    {
+      "id": "q006",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 1,
+          "choice": "No; the comparison is valid because the medium is identical for both tones.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 2,
+          "choice": "Yes; the absolute intensity values require knowing ρ and v to compute.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 3,
+          "choice": "No; but only because the ratio happens to be a perfect square.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": true,
+      "notes": "All displays consistently apply common-medium cancellation and the pressure-squared intensity ratio; 10*log10(4)=6.0206 dB."
+    },
+    {
+      "id": "q007",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "Phloem transported water from storage tissues to leaves.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 1,
+          "choice": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 2,
+          "choice": "Root pressure pushed water rapidly to the leaves.",
+          "feedback_support": "unsupported",
+          "display_support": "unsupported",
+          "issues": [
+            "Root pressure is not categorically too weak or slow to contribute to rehydration over hours, including after drought; neither species nor a measurement excluding it is supplied."
+          ]
+        },
+        {
+          "choice_index": 3,
+          "choice": "Osmosis directly from soil to leaf cells without vascular tissue.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": false,
+      "notes": "Standard best-mechanism key and generic xylem main remain supported. The root-pressure feedback adds an unjustified categorical exclusion. Root pressure is documented after drought/rewatering: https://pmc.ncbi.nlm.nih.gov/articles/PMC7886691/ ; this does not identify the mechanism in this unspecified potted plant."
+    },
+    {
+      "id": "q008",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "unsupported",
+      "main_issues": [
+        "Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+      ],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+          "feedback_support": "unsupported",
+          "display_support": "unsupported",
+          "issues": [
+            "Converts lower intensity at equal pressure into lower SPL, which does not follow and conflicts with the definition of SPL.",
+            "The exact composed display also contains the main issue: Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+          ]
+        },
+        {
+          "choice_index": 1,
+          "choice": "Equal, because pressure amplitude determines level directly.",
+          "feedback_support": "supported",
+          "display_support": "unsupported",
+          "issues": [
+            "The exact composed display also contains the main issue: Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+          ]
+        },
+        {
+          "choice_index": 2,
+          "choice": "Higher, because water's incompressibility increases pressure effects.",
+          "feedback_support": "supported",
+          "display_support": "unsupported",
+          "issues": [
+            "The exact composed display also contains the main issue: Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+          ]
+        },
+        {
+          "choice_index": 3,
+          "choice": "Higher, because water transmits sound more efficiently.",
+          "feedback_support": "supported",
+          "display_support": "unsupported",
+          "issues": [
+            "The exact composed display also contains the main issue: Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+          ]
+        }
+      ],
+      "all_teaching_supported": false,
+      "notes": "The authored main used intensity level correctly; this final main switches to SPL, changing the physical quantity. SPL is 20*log10(p_rms/p_ref): equal pressures give equal SPL at a common pressure reference. Conventional water/air references instead make the same pressure 26.02 dB higher numerically in water, never lower for the asserted impedance reason. Source: https://www.ncbi.nlm.nih.gov/books/NBK236684/ . The frozen intensity-level key remains supported."
+    },
+    {
+      "id": "q009",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "Proceeding is permitted with caution.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 1,
+          "choice": "Proceeding is not permitted.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 2,
+          "choice": "The instructions are contradictory.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 3,
+          "choice": "Proceeding is permitted.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": true,
+      "notes": "All displays assessed under the ordinary override-exception reading accepted in phase1. The claim about mutually exclusive states is an interpretive paraphrase, not a literal unrestricted formalization of the first sentence."
+    },
+    {
+      "id": "q010",
+      "key_matches_prior_unique": false,
+      "key_status": "ambiguous",
+      "main_support": "uncertain",
+      "main_issues": [
+        "Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+        "Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+      ],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+          "feedback_support": "uncertain",
+          "display_support": "uncertain",
+          "issues": [
+            "A wet-leaf tendency is promoted to the definite several-hour lower-transpiration/higher-turgor comparison without the missing persistence and hydraulic facts.",
+            "The exact composed display also contains the main issue: Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+            "The exact composed display also contains the main issue: Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+          ]
+        },
+        {
+          "choice_index": 1,
+          "choice": "Plant Q shows lower transpiration because dry leaves conserve water.",
+          "feedback_support": "uncertain",
+          "display_support": "uncertain",
+          "issues": [
+            "A steeper actual vapor gradient for Q at the observation time is asserted rather than established from hourly misting.",
+            "The exact composed display also contains the main issue: Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+            "The exact composed display also contains the main issue: Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+          ]
+        },
+        {
+          "choice_index": 2,
+          "choice": "Both plants show identical transpiration because soil water is adequate.",
+          "feedback_support": "uncertain",
+          "display_support": "uncertain",
+          "issues": [
+            "Adequate soil water alone does not establish equality, but saying the rates will differ still requires a relevant persistent humidity difference.",
+            "The exact composed display also contains the main issue: Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+            "The exact composed display also contains the main issue: Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+          ]
+        },
+        {
+          "choice_index": 3,
+          "choice": "Plant P shows higher transpiration due to added surface moisture.",
+          "feedback_support": "uncertain",
+          "display_support": "uncertain",
+          "issues": [
+            "The humidity-gradient explanation is plausible while wet, but the stated misting schedule does not establish the later rate direction.",
+            "The exact composed display also contains the main issue: Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+            "The exact composed display also contains the main issue: Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+          ]
+        }
+      ],
+      "all_teaching_supported": false,
+      "notes": "Prior ambiguity remains: repeated wetting can reduce evaporative demand while wet, but persistence and higher turgor after hours are not established. These are plausible but unproved outcome assertions, not proof that the opposite outcome occurs."
+    },
+    {
+      "id": "q011",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "76 dB",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 1,
+          "choice": "70 dB",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 2,
+          "choice": "88 dB",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 3,
+          "choice": "82 dB",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": true,
+      "notes": "Verified 10^(18/10)=63.0957, 10^(24/10)=251.1886, and the correct 16-fold attenuation/81.9588 dB result. All feedback is numerically consistent."
+    },
+    {
+      "id": "q012",
+      "key_matches_prior_unique": true,
+      "key_status": "supported_unique",
+      "main_support": "supported",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "choice_index": 0,
+          "choice": "Species M has damaged guard cells that cannot respond to water status.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 1,
+          "choice": "Species N has higher photosynthetic efficiency that requires less CO₂.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 2,
+          "choice": "Both species will show identical growth rates under all conditions.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        },
+        {
+          "choice_index": 3,
+          "choice": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+          "feedback_support": "supported",
+          "display_support": "supported",
+          "issues": []
+        }
+      ],
+      "all_teaching_supported": true,
+      "notes": "All displays preserve the observed qualitative CO2-entry/water-conservation strategy comparison and reject unmeasured efficiency, damage and all-condition growth claims."
+    }
+  ]
+}

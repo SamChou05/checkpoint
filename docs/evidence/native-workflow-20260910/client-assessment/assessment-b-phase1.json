@@ -1,0 +1,425 @@
+{
+  "packet_sha256": "a6a0481cfb3d7fdd9bff81b4b1dee929892157720f65bcd4b09e44a8b4ece664",
+  "assessor": "B",
+  "blinding_note": "Assessor knew protocol and aggregate operational counts; no item-level keys, explanations or model judgments supplied before phase1. Exact displayed stems and choices were matched to frozen raw phase1 judgments without changing judgments because items were delivered.",
+  "items": [
+    {
+      "id": "q001",
+      "supported_choice_indices": [
+        3
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Partial closure reduces conductance; increased water loss is the wrong direction for the stated response."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Partial closure at elevated CO2 does not imply complete cessation of photosynthesis."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Neither unlimited uptake nor elimination of water loss follows from partial closure."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "supported",
+          "reason": "Higher external CO2 can support assimilation with smaller stomatal openings and reduced water loss, shifting water-use efficiency."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "Choice 3 is the ordinary qualitative physiological expectation, not a guaranteed assimilation rate for every species or CO2 exposure. Its wording describes two benefits awkwardly as a trade, but the intended change is interpretable. Evidence: https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2016.01568/full Reused frozen raw judgment q010 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q002",
+      "supported_choice_indices": [
+        2
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "The email makes the specific non-guarantee statement for this case."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "A staff shortage makes the qualifying conjunction fail."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "supported",
+          "reason": "The explicit otherwise clause states that rescheduling is not guaranteed."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "No manager-approval requirement is stated."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Not guaranteed is not the same as impossible or forbidden. Reused frozen raw judgment q016 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q003",
+      "supported_choice_indices": [
+        3
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Will is a commitment; the notice supplies no pending-review qualification."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "No locations were pre-registered, so the exception cannot apply."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "At least one trigger suffices, and both are given here."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "supported",
+          "reason": "Credentials were shared and the excess-location condition also holds without the exception."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Both triggers hold and the exception is absent; wording length does not make the application advanced. Reused frozen raw judgment q013 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q004",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "The magnitudes of the opposing contributions are needed to compare total potentials."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Greater pressure raises A's potential, but the solute contribution lowers it by an unspecified amount."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Greater solute concentration lowers A's potential, but the pressure contribution may offset or exceed that effect."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Equality of total potentials is possible but is not established."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "The explicit indeterminacy choice correctly represents insufficient quantitative information; that is the solution rather than a defective missing premise. Solute and pressure effects must be combined. Reused frozen raw judgment q021 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q005",
+      "supported_choice_indices": [
+        2
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Temperature is not required for the usual pressure-to-voltage calibration and SPL reference."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "No loading mismatch is stated; interface impedance is not the identified gap in the 1 kHz calibration."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "supported",
+          "reason": "A sensitivity specified at 1 kHz need not apply at the frequencies in the other field."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Self-noise is not the missing calibration applicability information for this stated signal."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Frequency or spectrum is needed to check applicability; frequency alone need not supply a complete off-frequency calibration. Treat the quoted sensitivity/output using ordinary microphone RMS and loading conventions. Source: https://www.analog.com/en/resources/analog-dialogue/articles/understanding-microphone-sensitivity.html Reused frozen raw judgment q003 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q006",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "For the stated sinusoidal pressure-intensity model, frequency is not an additional factor in this same-medium level ratio."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "The shared rho*v cancels in the intensity ratio, leaving (4/2)^2 = 4 and a 6.0206 dB level difference."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Absolute intensities require medium data, but this relative comparison does not."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Cancellation works for any pressure ratio; no perfect-square exception is needed."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "Reads 6 dB louder in the normal audio-engineering sense of a level difference, not a quantified perceived-loudness ratio. Requires separating an absolute calculation from a relative one. Source: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level Reused frozen raw judgment q025 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q007",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Redistributing stored water through phloem is not the main route for newly available soil water to leaves."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "The usual cohesion-tension mechanism transports newly available root water upward through xylem, permitting leaf rehydration."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Root pressure can contribute in some plants, but is not the general best explanation of rapid bulk upward transport in the standard transpiration-stream model."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Long-distance transport to leaves is not direct soil-to-leaf osmosis without vascular tissue."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Accept the ordinary textbook best-mechanism question, not proof that root pressure is absent. The observation alone does not experimentally isolate contributions, and an explanation should avoid categorical claims that root pressure never helps recovery. Reused frozen raw judgment q024 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q008",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "For equal pressure amplitude, I is inversely proportional to acoustic impedance rho*v, which is much larger in water."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Equal pressure does not give equal intensity across different acoustic impedances."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "This ignores the larger impedance in the denominator of the intensity relation."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Efficient transmission is not a basis for higher intensity at the specified equal pressure amplitude."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Use the supplied common intensity reference I0, not different underwater versus airborne pressure-level references. Qualitative substitution into the stated relation. Source: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level Reused frozen raw judgment q001 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q009",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "No caution-based permission is stated."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "The normal-sensor requirement fails and the engaged-override exception is unavailable."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "On ordinary instructional reading the later override clause is an exception, not a reason to discard the applicable disengaged-override rule."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "With override disengaged, both sensors must be normal; sensor B is not."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "The text is awkward if formalized as two unrestricted universal statements, but its ordinary exception reading resolves this specified case. Do not invent an override that is engaged. Reused frozen raw judgment q022 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q010",
+      "supported_choice_indices": [],
+      "status": "ambiguous",
+      "premise_status": "missing_material",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "uncertain",
+          "reason": "Misting can reduce transpiration while leaves remain wet, but hourly misting alone does not establish sustained humidity/wetness or a higher turgor outcome several hours later."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Dry leaf surfaces do not by themselves impose a water-conserving stomatal response; both plants have open stomata."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Adequate soil water does not force identical transpiration under different leaf conditions."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Evaporation of surface droplets is not itself transpiration from the plant, so this causal explanation is unsound."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "Choice 0 is a plausible expected tendency while wet, not a definite falsehood. Its compound several-hour prediction needs effective leaf wetting/local vapor conditions, timing and hydraulic response. Do not silently turn intermittent misting into sustained high humidity. Experimental leaf-wetting effects vary with species and season: https://pubmed.ncbi.nlm.nih.gov/32474806/ Reused frozen raw judgment q019 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q011",
+      "supported_choice_indices": [
+        3
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "An 18 dB reduction exceeds the stated spherical-spreading attenuation."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "A 24 dB reduction double-counts the pressure/intensity distance conversion."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "This is only a 6 dB reduction, appropriate to doubling rather than quadrupling distance."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "supported",
+          "reason": "94 - 20*log10(4/1) = 81.9588 dB, approximately 82 dB."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Single familiar inverse-distance level calculation; additional arithmetic does not establish level three. Reused frozen raw judgment q002 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    },
+    {
+      "id": "q012",
+      "supported_choice_indices": [
+        3
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Keeping stomata open under this condition does not diagnose damaged guard cells."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Photosynthetic efficiency is not measured by the stated opening response."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "The observation cannot establish equal growth across all environments."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "supported",
+          "reason": "Relative opening favors continued CO2 exchange, whereas closure favors conserving water."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "A qualitative description of these observed strategies, not a claim about immutable species priorities or future growth. Reused frozen raw judgment q015 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+    }
+  ]
+}

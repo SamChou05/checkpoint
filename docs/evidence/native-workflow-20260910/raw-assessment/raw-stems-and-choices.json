@@ -1,0 +1,742 @@
+{
+  "capture_byte_sha256": "fed7a2261f2baf58bddbc3c6749fef409fd41d7dcf70b91bc27da0047c6848df",
+  "capture_canonical_sha256": "6f04bdd6c02d7d65fda962e587d5f8b518f2ee244b67f3a01ae4e578e093a591",
+  "plan_sha256": "3cd55295f466fff4bbb62ed1f860696f441c6d4d421f30e1553935e2d2a5a02c",
+  "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+  "items": [
+    {
+      "id": "q001",
+      "goal": {
+        "title": "Understand sound intensity and decibels for audio work",
+        "category": "Custom",
+        "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements.",
+        "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+        "learningTarget": "Understand sound intensity and decibels for audio work",
+        "contentTopics": [
+          "Apply sound intensity and decibel relationships to comparisons with several chan"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Sound intensity and level: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A tone has pressure amplitude 1.0 Pa in air at 20 °C. In water at the same temperature, a tone with identical pressure amplitude is produced. How does the sound intensity level in water compare to that in air?",
+      "choices": [
+        "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+        "Higher, because water transmits sound more efficiently.",
+        "Equal, because pressure amplitude determines level directly.",
+        "Higher, because water's incompressibility increases pressure effects."
+      ]
+    },
+    {
+      "id": "q002",
+      "goal": {
+        "title": "Understand sound intensity and decibels for audio work",
+        "category": "Custom",
+        "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements.",
+        "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+        "learningTarget": "Understand sound intensity and decibels for audio work",
+        "contentTopics": [
+          "Apply sound intensity and decibel relationships to comparisons with several chan"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Sound intensity and level: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A sound engineer measures 94 dB SPL at 1 m from a small loudspeaker in an anechoic chamber. The speaker is moved to 4 m distance with no other changes. What SPL is expected, assuming spherical spreading?",
+      "choices": [
+        "88 dB",
+        "82 dB",
+        "76 dB",
+        "70 dB"
+      ]
+    },
+    {
+      "id": "q003",
+      "goal": {
+        "title": "Understand sound intensity and decibels for audio work",
+        "category": "Custom",
+        "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements.",
+        "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+        "learningTarget": "Understand sound intensity and decibels for audio work",
+        "contentTopics": [
+          "Apply sound intensity and decibel relationships to comparisons with several chan"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Sound intensity and level: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A microphone datasheet states sensitivity: –40 dBV/Pa at 1 kHz. An engineer measures 0.1 V output from this mic in a different sound field. What additional information is needed to find the sound pressure level in dB SPL?",
+      "choices": [
+        "The microphone's self-noise floor in dB SPL.",
+        "The frequency of the measured sound to verify sensitivity applies.",
+        "The atmospheric temperature during measurement.",
+        "The impedance of the recording interface."
+      ]
+    },
+    {
+      "id": "q004",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Terms: \"Premium support is included for enterprise accounts and for pro accounts that have been active 12+ months; all other accounts must purchase support separately.\" Account Y is a 10-month-old pro account. What follows?",
+      "choices": [
+        "Premium support is included.",
+        "Support must be purchased separately.",
+        "The terms do not address this situation.",
+        "Support inclusion depends on usage volume."
+      ]
+    },
+    {
+      "id": "q005",
+      "goal": {
+        "title": "Explain water movement and gas exchange in plants",
+        "category": "Custom",
+        "focusAreas": "Apply water-potential gradients, transpiration, and stomatal regulation to observations and environmental changes. Explain tradeoffs between carbon dioxide uptake and water loss.",
+        "currentLevel": "I know the basic roles of roots, xylem, and stomata, and want to connect those structures to how plants respond to their environment.",
+        "learningTarget": "Explain water movement and gas exchange in plants",
+        "contentTopics": [
+          "Apply water-potential gradients",
+          "transpiration",
+          "and stomatal regulation to observations and environmental changes. Explain trade"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Plant water transport: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants\n\nNet water movement follows a gradient from higher to lower total water potential. Solute concentration and pressure contribute to that total; knowing one component alone need not determine the total gradient. Evaporation from leaves creates tension that helps pull water through xylem, with water cohesion and adhesion helping sustain the column. The leaf-to-air vapor gradient influences transpiration. At otherwise matching temperatures, higher atmospheric humidity reduces that gradient. Guard cells regulate stomatal openings in response to environmental and internal signals. Open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss. Restricting stomatal opening therefore involves a tradeoff between carbon dioxide entry and water conservation. Leaf water status, light, and carbon dioxide can affect stomatal behavior; a change in one environmental factor does not establish a fixed rate for every plant. These notes give general mechanisms, not measurements for any particular plant or experiment.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A desert plant experiences prolonged drought. Its guard cells respond by partially closing stomata. Which tradeoff does this response most directly illustrate?",
+      "choices": [
+        "Reduced water loss versus reduced carbon dioxide uptake.",
+        "Reduced oxygen production versus increased photorespiration.",
+        "Reduced root pressure versus increased xylem tension.",
+        "Reduced light absorption versus increased sugar transport."
+      ]
+    },
+    {
+      "id": "q006",
+      "goal": {
+        "title": "Understand sound intensity and decibels for audio work",
+        "category": "Custom",
+        "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements.",
+        "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+        "learningTarget": "Understand sound intensity and decibels for audio work",
+        "contentTopics": [
+          "Apply sound intensity and decibel relationships to comparisons with several chan"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Sound intensity and level: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+          "truncated": true
+        }
+      ],
+      "prompt": "Two identical speakers each produce 80 dB at a measurement point when operated alone. When both operate together in phase at the same frequency, what level is expected at that point?",
+      "choices": [
+        "86 dB",
+        "83 dB",
+        "80 dB",
+        "160 dB"
+      ]
+    },
+    {
+      "id": "q007",
+      "goal": {
+        "title": "Understand sound intensity and decibels for audio work",
+        "category": "Custom",
+        "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements.",
+        "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+        "learningTarget": "Understand sound intensity and decibels for audio work",
+        "contentTopics": [
+          "Apply sound intensity and decibel relationships to comparisons with several chan"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Sound intensity and level: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+          "truncated": true
+        }
+      ],
+      "prompt": "Two uncorrelated noise sources each produce 70 dB at a measurement point. What total level results when both operate simultaneously?",
+      "choices": [
+        "73 dB",
+        "76 dB",
+        "140 dB",
+        "70 dB"
+      ]
+    },
+    {
+      "id": "q008",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Terms: \"Service fees shall not apply to transactions under $50 except where expedited processing is requested.\" Which transaction incurs a fee?",
+      "choices": [
+        "A $30 transaction with expedited processing requested.",
+        "A $75 transaction with standard processing.",
+        "A $45 transaction with standard processing.",
+        "A $50 transaction with expedited processing."
+      ]
+    },
+    {
+      "id": "q009",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Policy: \"Unless your account is verified, you may not withdraw more than $500 daily; verified accounts may withdraw up to $5,000.\" Account X is unverified and has $3,000. Which conclusion follows?",
+      "choices": [
+        "Account X cannot withdraw more than $500 today.",
+        "Account X may withdraw up to $5,000 because it has sufficient funds.",
+        "Account X cannot withdraw any amount until verified.",
+        "Account X may withdraw $3,000 if requested before noon."
+      ]
+    },
+    {
+      "id": "q010",
+      "goal": {
+        "title": "Explain water movement and gas exchange in plants",
+        "category": "Custom",
+        "focusAreas": "Apply water-potential gradients, transpiration, and stomatal regulation to observations and environmental changes. Explain tradeoffs between carbon dioxide uptake and water loss.",
+        "currentLevel": "I know the basic roles of roots, xylem, and stomata, and want to connect those structures to how plants respond to their environment.",
+        "learningTarget": "Explain water movement and gas exchange in plants",
+        "contentTopics": [
+          "Apply water-potential gradients",
+          "transpiration",
+          "and stomatal regulation to observations and environmental changes. Explain trade"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Plant water transport: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants\n\nNet water movement follows a gradient from higher to lower total water potential. Solute concentration and pressure contribute to that total; knowing one component alone need not determine the total gradient. Evaporation from leaves creates tension that helps pull water through xylem, with water cohesion and adhesion helping sustain the column. The leaf-to-air vapor gradient influences transpiration. At otherwise matching temperatures, higher atmospheric humidity reduces that gradient. Guard cells regulate stomatal openings in response to environmental and internal signals. Open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss. Restricting stomatal opening therefore involves a tradeoff between carbon dioxide entry and water conservation. Leaf water status, light, and carbon dioxide can affect stomatal behavior; a change in one environmental factor does not establish a fixed rate for every plant. These notes give general mechanisms, not measurements for any particular plant or experiment.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A plant physiologist exposes a well-watered plant to bright light while gradually raising ambient CO₂ concentration. Stomata begin partially closed at elevated CO₂. Which tradeoff shifts as a result of this response?",
+      "choices": [
+        "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+        "Increased water loss is traded for higher carbon dioxide uptake.",
+        "Photosynthesis stops completely to maximize water conservation.",
+        "Carbon dioxide uptake becomes unlimited while water loss is eliminated."
+      ]
+    },
+    {
+      "id": "q011",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Instructions: \"Do not disable the alarm unless maintenance mode is active and a supervisor is present.\" The alarm is disabled while maintenance mode is active but no supervisor is present. Was this permitted?",
+      "choices": [
+        "No; disabling required both conditions to be met.",
+        "Yes; maintenance mode alone was sufficient.",
+        "Yes; the supervisor requirement applies only to re-enabling.",
+        "Cannot be determined from the information given."
+      ]
+    },
+    {
+      "id": "q012",
+      "goal": {
+        "title": "Explain water movement and gas exchange in plants",
+        "category": "Custom",
+        "focusAreas": "Apply water-potential gradients, transpiration, and stomatal regulation to observations and environmental changes. Explain tradeoffs between carbon dioxide uptake and water loss.",
+        "currentLevel": "I know the basic roles of roots, xylem, and stomata, and want to connect those structures to how plants respond to their environment.",
+        "learningTarget": "Explain water movement and gas exchange in plants",
+        "contentTopics": [
+          "Apply water-potential gradients",
+          "transpiration",
+          "and stomatal regulation to observations and environmental changes. Explain trade"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Plant water transport: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants\n\nNet water movement follows a gradient from higher to lower total water potential. Solute concentration and pressure contribute to that total; knowing one component alone need not determine the total gradient. Evaporation from leaves creates tension that helps pull water through xylem, with water cohesion and adhesion helping sustain the column. The leaf-to-air vapor gradient influences transpiration. At otherwise matching temperatures, higher atmospheric humidity reduces that gradient. Guard cells regulate stomatal openings in response to environmental and internal signals. Open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss. Restricting stomatal opening therefore involves a tradeoff between carbon dioxide entry and water conservation. Leaf water status, light, and carbon dioxide can affect stomatal behavior; a change in one environmental factor does not establish a fixed rate for every plant. These notes give general mechanisms, not measurements for any particular plant or experiment.",
+          "truncated": true
+        }
+      ],
+      "prompt": "In a controlled experiment, two identical plants are placed at the same temperature. Plant X is in 30% relative humidity; Plant Y is in 70% relative humidity. Both have open stomata and adequate soil water. What difference in transpiration is expected?",
+      "choices": [
+        "Plant X will have higher transpiration than Plant Y.",
+        "Plant Y will have higher transpiration than Plant X.",
+        "Both will have equal transpiration because temperature is identical.",
+        "Transpiration will stop in Plant Y due to humidity."
+      ]
+    },
+    {
+      "id": "q013",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Notice: \"Access will be revoked if either (a) credentials are shared, or (b) login attempts from unrecognized locations exceed three, unless the user has pre-registered those locations.\" User Z shared credentials and had four unrecognized logins without pre-registration. What does the notice commit to?",
+      "choices": [
+        "Access will be revoked.",
+        "Access will not be revoked due to the location exception.",
+        "Access may be revoked pending review.",
+        "The notice is silent on this combination of facts."
+      ]
+    },
+    {
+      "id": "q014",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Email states: \"We will process your refund provided that the item is returned within 14 days and is unused. Items returned after 14 days will not qualify.\" A customer returned an unused item on day 15. What does the email commit to?",
+      "choices": [
+        "No refund will be processed because the return was late.",
+        "A partial refund may be processed at the company's discretion.",
+        "The refund will be processed because the item was unused.",
+        "The refund will be delayed until next month."
+      ]
+    },
+    {
+      "id": "q015",
+      "goal": {
+        "title": "Explain water movement and gas exchange in plants",
+        "category": "Custom",
+        "focusAreas": "Apply water-potential gradients, transpiration, and stomatal regulation to observations and environmental changes. Explain tradeoffs between carbon dioxide uptake and water loss.",
+        "currentLevel": "I know the basic roles of roots, xylem, and stomata, and want to connect those structures to how plants respond to their environment.",
+        "learningTarget": "Explain water movement and gas exchange in plants",
+        "contentTopics": [
+          "Apply water-potential gradients",
+          "transpiration",
+          "and stomatal regulation to observations and environmental changes. Explain trade"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Plant water transport: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants\n\nNet water movement follows a gradient from higher to lower total water potential. Solute concentration and pressure contribute to that total; knowing one component alone need not determine the total gradient. Evaporation from leaves creates tension that helps pull water through xylem, with water cohesion and adhesion helping sustain the column. The leaf-to-air vapor gradient influences transpiration. At otherwise matching temperatures, higher atmospheric humidity reduces that gradient. Guard cells regulate stomatal openings in response to environmental and internal signals. Open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss. Restricting stomatal opening therefore involves a tradeoff between carbon dioxide entry and water conservation. Leaf water status, light, and carbon dioxide can affect stomatal behavior; a change in one environmental factor does not establish a fixed rate for every plant. These notes give general mechanisms, not measurements for any particular plant or experiment.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A botanist compares two species: Species M keeps stomata open in moderate light even when soil dries slightly; Species N closes stomata under the same conditions. Based on the source's description of stomatal regulation, what can be concluded about their relative strategies?",
+      "choices": [
+        "Species M has damaged guard cells that cannot respond to water status.",
+        "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+        "Species N has higher photosynthetic efficiency that requires less CO₂.",
+        "Both species will show identical growth rates under all conditions."
+      ]
+    },
+    {
+      "id": "q016",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Email: \"We can reschedule your appointment if you notify us at least 48 hours in advance and no staff shortages exist; otherwise, rescheduling is not guaranteed.\" The recipient notifies 72 hours in advance during a staff shortage. What does the email commit to?",
+      "choices": [
+        "Rescheduling is guaranteed.",
+        "Rescheduling is not guaranteed.",
+        "The email commits to nothing specific.",
+        "Rescheduling is permitted but requires manager approval."
+      ]
+    },
+    {
+      "id": "q017",
+      "goal": {
+        "title": "Understand sound intensity and decibels for audio work",
+        "category": "Custom",
+        "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements.",
+        "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+        "learningTarget": "Understand sound intensity and decibels for audio work",
+        "contentTopics": [
+          "Apply sound intensity and decibel relationships to comparisons with several chan"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Sound intensity and level: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+          "truncated": true
+        }
+      ],
+      "prompt": "In a controlled test, sound A measures 60 dB. Sound B is perceived as \"twice as loud\" in a psychoacoustic test. An assistant concludes B must be 120 dB, arguing that doubling the level doubles the decibels. What is wrong with this reasoning?",
+      "choices": [
+        "The reference intensity I₀ was different for the two sounds.",
+        "Decibels are logarithmic; doubling perceived loudness does not double the dB value.",
+        "Sound B must have been measured in a different medium.",
+        "The assistant forgot to subtract the reference level before doubling."
+      ]
+    },
+    {
+      "id": "q018",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Notice: \"Applicants must submit transcripts unless they have five or more years of relevant experience, in which case references may substitute.\" Priya has four years of experience and offers references instead. Does the notice permit this?",
+      "choices": [
+        "No; she has insufficient experience to substitute references.",
+        "Yes; references are acceptable for any experienced applicant.",
+        "Yes; four years is close enough to qualify.",
+        "No; references are never permitted under any circumstances."
+      ]
+    },
+    {
+      "id": "q019",
+      "goal": {
+        "title": "Explain water movement and gas exchange in plants",
+        "category": "Custom",
+        "focusAreas": "Apply water-potential gradients, transpiration, and stomatal regulation to observations and environmental changes. Explain tradeoffs between carbon dioxide uptake and water loss.",
+        "currentLevel": "I know the basic roles of roots, xylem, and stomata, and want to connect those structures to how plants respond to their environment.",
+        "learningTarget": "Explain water movement and gas exchange in plants",
+        "contentTopics": [
+          "Apply water-potential gradients",
+          "transpiration",
+          "and stomatal regulation to observations and environmental changes. Explain trade"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Plant water transport: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants\n\nNet water movement follows a gradient from higher to lower total water potential. Solute concentration and pressure contribute to that total; knowing one component alone need not determine the total gradient. Evaporation from leaves creates tension that helps pull water through xylem, with water cohesion and adhesion helping sustain the column. The leaf-to-air vapor gradient influences transpiration. At otherwise matching temperatures, higher atmospheric humidity reduces that gradient. Guard cells regulate stomatal openings in response to environmental and internal signals. Open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss. Restricting stomatal opening therefore involves a tradeoff between carbon dioxide entry and water conservation. Leaf water status, light, and carbon dioxide can affect stomatal behavior; a change in one environmental factor does not establish a fixed rate for every plant. These notes give general mechanisms, not measurements for any particular plant or experiment.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A researcher places two identical potted plants in a growth chamber at 25°C with bright light. Plant P has its leaves misted with water every hour; Plant Q remains dry. Both have adequate soil moisture and open stomata. Which outcome is expected after several hours?",
+      "choices": [
+        "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+        "Plant P shows higher transpiration due to added surface moisture.",
+        "Both plants show identical transpiration because soil water is adequate.",
+        "Plant Q shows lower transpiration because dry leaves conserve water."
+      ]
+    },
+    {
+      "id": "q020",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Policy: \"Complaints must be filed within 30 days unless the issue involves billing errors, in which case the deadline extends to 90 days; however, complaints about service quality are never accepted after 60 days regardless of type.\" A customer submits a billing-error complaint on day 75. What does the policy commit to?",
+      "choices": [
+        "The complaint must be accepted.",
+        "The complaint must be rejected.",
+        "The deadline cannot be determined from the information given.",
+        "The complaint may be accepted at the company's discretion."
+      ]
+    },
+    {
+      "id": "q021",
+      "goal": {
+        "title": "Explain water movement and gas exchange in plants",
+        "category": "Custom",
+        "focusAreas": "Apply water-potential gradients, transpiration, and stomatal regulation to observations and environmental changes. Explain tradeoffs between carbon dioxide uptake and water loss.",
+        "currentLevel": "I know the basic roles of roots, xylem, and stomata, and want to connect those structures to how plants respond to their environment.",
+        "learningTarget": "Explain water movement and gas exchange in plants",
+        "contentTopics": [
+          "Apply water-potential gradients",
+          "transpiration",
+          "and stomatal regulation to observations and environmental changes. Explain trade"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Plant water transport: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants\n\nNet water movement follows a gradient from higher to lower total water potential. Solute concentration and pressure contribute to that total; knowing one component alone need not determine the total gradient. Evaporation from leaves creates tension that helps pull water through xylem, with water cohesion and adhesion helping sustain the column. The leaf-to-air vapor gradient influences transpiration. At otherwise matching temperatures, higher atmospheric humidity reduces that gradient. Guard cells regulate stomatal openings in response to environmental and internal signals. Open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss. Restricting stomatal opening therefore involves a tradeoff between carbon dioxide entry and water conservation. Leaf water status, light, and carbon dioxide can affect stomatal behavior; a change in one environmental factor does not establish a fixed rate for every plant. These notes give general mechanisms, not measurements for any particular plant or experiment.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A researcher measures water potential in two adjacent plant cells. Cell A has higher solute concentration but is also under greater turgor pressure than Cell B. Which outcome is certain if the cells are connected by open plasmodesmata?",
+      "choices": [
+        "Water will move from Cell A to Cell B.",
+        "Water will move from Cell B to Cell A.",
+        "No net water movement will occur.",
+        "Cannot be determined from the information given."
+      ]
+    },
+    {
+      "id": "q022",
+      "goal": {
+        "title": "Read conditions and exceptions accurately in English",
+        "category": "Language Learning",
+        "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to.",
+        "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+        "learningTarget": "Read conditions and exceptions accurately in English",
+        "contentTopics": [
+          "Interpret conditions",
+          "exceptions",
+          "negation",
+          "and modal verbs in short instructions or correspondence. Compare paraphrases and"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "prompt": "Instructions: \"Do not proceed unless both sensors indicate normal status and the manual override is disengaged; if the override is engaged, you may proceed regardless of sensor status.\" Sensor A shows normal, Sensor B shows alert, and the override is disengaged. What do the instructions permit?",
+      "choices": [
+        "Proceeding is permitted.",
+        "Proceeding is not permitted.",
+        "Proceeding is permitted with caution.",
+        "The instructions are contradictory."
+      ]
+    },
+    {
+      "id": "q023",
+      "goal": {
+        "title": "Understand sound intensity and decibels for audio work",
+        "category": "Custom",
+        "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements.",
+        "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+        "learningTarget": "Understand sound intensity and decibels for audio work",
+        "contentTopics": [
+          "Apply sound intensity and decibel relationships to comparisons with several chan"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Sound intensity and level: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A speaker produces 70 dB at 1 meter. At 2 meters, assuming spherical spreading and no reflections, what is the sound intensity level?",
+      "choices": [
+        "67 dB",
+        "64 dB",
+        "61 dB",
+        "58 dB"
+      ]
+    },
+    {
+      "id": "q024",
+      "goal": {
+        "title": "Explain water movement and gas exchange in plants",
+        "category": "Custom",
+        "focusAreas": "Apply water-potential gradients, transpiration, and stomatal regulation to observations and environmental changes. Explain tradeoffs between carbon dioxide uptake and water loss.",
+        "currentLevel": "I know the basic roles of roots, xylem, and stomata, and want to connect those structures to how plants respond to their environment.",
+        "learningTarget": "Explain water movement and gas exchange in plants",
+        "contentTopics": [
+          "Apply water-potential gradients",
+          "transpiration",
+          "and stomatal regulation to observations and environmental changes. Explain trade"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Plant water transport: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants\n\nNet water movement follows a gradient from higher to lower total water potential. Solute concentration and pressure contribute to that total; knowing one component alone need not determine the total gradient. Evaporation from leaves creates tension that helps pull water through xylem, with water cohesion and adhesion helping sustain the column. The leaf-to-air vapor gradient influences transpiration. At otherwise matching temperatures, higher atmospheric humidity reduces that gradient. Guard cells regulate stomatal openings in response to environmental and internal signals. Open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss. Restricting stomatal opening therefore involves a tradeoff between carbon dioxide entry and water conservation. Leaf water status, light, and carbon dioxide can affect stomatal behavior; a change in one environmental factor does not establish a fixed rate for every plant. These notes give general mechanisms, not measurements for any particular plant or experiment.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A student observes that a potted wilting plant recovers turgidity within hours after watering, even though the soil was dry. Which mechanism best explains how water reached the leaf cells so quickly?",
+      "choices": [
+        "Root pressure pushed water rapidly to the leaves.",
+        "Phloem transported water from storage tissues to leaves.",
+        "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+        "Osmosis directly from soil to leaf cells without vascular tissue."
+      ]
+    },
+    {
+      "id": "q025",
+      "goal": {
+        "title": "Understand sound intensity and decibels for audio work",
+        "category": "Custom",
+        "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements.",
+        "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+        "learningTarget": "Understand sound intensity and decibels for audio work",
+        "contentTopics": [
+          "Apply sound intensity and decibel relationships to comparisons with several chan"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Sound intensity and level: selective study notes",
+          "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+          "truncated": true
+        }
+      ],
+      "prompt": "A mixing engineer compares two sine-wave tones in air at 20 °C. Tone A has pressure amplitude 2.0 Pa; tone B has amplitude 4.0 Pa. The engineer calculates that B is 6 dB louder than A. A colleague claims this comparison is invalid because the calculation ignores air density and sound speed. Is the colleague correct?",
+      "choices": [
+        "No; the comparison is valid because the medium is identical for both tones.",
+        "Yes; the absolute intensity values require knowing ρ and v to compute.",
+        "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+        "No; but only because the ratio happens to be a perfect square."
+      ]
+    }
+  ]
+}

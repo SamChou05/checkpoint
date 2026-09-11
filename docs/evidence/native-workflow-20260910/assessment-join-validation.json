@@ -1,0 +1,33 @@
+{
+  "reproduction": "/tmp/checkpoint-native-assessment-join-independent-20260910.json",
+  "full_json_identical": true,
+  "full_bytes_identical": true,
+  "assessment_join_sha256": "9d300c28e5bc598ad0156ba54cb8ba9913a3bd621805404579414eef6f61fbff",
+  "raw_keys_independently_recounted": {
+    "supported_unique": 19,
+    "wrong": 2,
+    "ambiguous": 2,
+    "disagreement": 2
+  },
+  "all_16_packet_assessment_archives_match_original_bytes": true,
+  "all_16_join_inputs_strict_json_and_recorded_hashes_valid": true,
+  "all_packet_manifest_and_phase1_freeze_hashes_valid": true,
+  "all_phase2_7_input_hash_bindings_valid": true,
+  "client_counts": {
+    "retained": 12,
+    "agreed_unique_key": 9,
+    "key_and_all_teaching_supported": 5,
+    "useful_at_preregistered_difficulty_and_choice_quality": 1
+  },
+  "display_counts": {
+    "total": 48,
+    "supported": 30,
+    "unsupported": 7,
+    "uncertain": 4,
+    "disagreement": 7
+  },
+  "requested_slot_denominator": 15,
+  "q004_intentional_indeterminacy_correctly_included": true,
+  "defects_found": [],
+  "limitations": "Read-only validation of archive integrity, exact joins and the recorded assessor-agreement criterion; not new ground-truth adjudication."
+}

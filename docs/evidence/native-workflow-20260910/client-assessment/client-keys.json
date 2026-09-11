@@ -1,0 +1,58 @@
+{
+  "capture_byte_sha256": "fed7a2261f2baf58bddbc3c6749fef409fd41d7dcf70b91bc27da0047c6848df",
+  "capture_canonical_sha256": "6f04bdd6c02d7d65fda962e587d5f8b518f2ee244b67f3a01ae4e578e093a591",
+  "plan_sha256": "3cd55295f466fff4bbb62ed1f860696f441c6d4d421f30e1553935e2d2a5a02c",
+  "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+  "bank_delivery_byte_sha256": "0274b4ff0f5ed9d5d94f60be482bb5bbb79749507db02e1a741523c9e48ab081",
+  "swift_attachment_byte_sha256": "134c5ca8f191cb6339909aba5bc295907abf3717d699e4dd1f9d0203c620d675",
+  "items": [
+    {
+      "id": "q001",
+      "expectedAnswer": "Reduced water loss is traded for continued adequate carbon dioxide uptake."
+    },
+    {
+      "id": "q002",
+      "expectedAnswer": "Rescheduling is not guaranteed."
+    },
+    {
+      "id": "q003",
+      "expectedAnswer": "Access will be revoked."
+    },
+    {
+      "id": "q004",
+      "expectedAnswer": "Cannot be determined from the information given."
+    },
+    {
+      "id": "q005",
+      "expectedAnswer": "The frequency of the measured sound to verify sensitivity applies."
+    },
+    {
+      "id": "q006",
+      "expectedAnswer": "No; the comparison is valid because the medium is identical for both tones."
+    },
+    {
+      "id": "q007",
+      "expectedAnswer": "Tension in the xylem from transpiration pulled water upward as soil water became available."
+    },
+    {
+      "id": "q008",
+      "expectedAnswer": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude."
+    },
+    {
+      "id": "q009",
+      "expectedAnswer": "Proceeding is not permitted."
+    },
+    {
+      "id": "q010",
+      "expectedAnswer": "Plant P shows lower transpiration and higher leaf turgor than Plant Q."
+    },
+    {
+      "id": "q011",
+      "expectedAnswer": "82 dB"
+    },
+    {
+      "id": "q012",
+      "expectedAnswer": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation."
+    }
+  ]
+}

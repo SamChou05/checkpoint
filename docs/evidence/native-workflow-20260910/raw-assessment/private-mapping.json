@@ -1,0 +1,701 @@
+{
+  "capture_byte_sha256": "fed7a2261f2baf58bddbc3c6749fef409fd41d7dcf70b91bc27da0047c6848df",
+  "capture_canonical_sha256": "6f04bdd6c02d7d65fda962e587d5f8b518f2ee244b67f3a01ae4e578e093a591",
+  "plan_sha256": "3cd55295f466fff4bbb62ed1f860696f441c6d4d421f30e1553935e2d2a5a02c",
+  "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+  "items": [
+    {
+      "id": "q001",
+      "call_index": 3,
+      "operation_index": 0,
+      "operation_call_index": 3,
+      "question_index": 2,
+      "role": "author",
+      "case_id": "sound_intensity_and_decibels",
+      "request_sha256": "1d3485642e4f43fcb84310ce573fdee372def80e057e8790e8534a6ff5b0105c",
+      "response_text_sha256": "d5e563faa8c2812a26c5bf34dacaf6b4e67cdf15bfbbac42232384f7ad29f8e0",
+      "question": {
+        "prompt": "A tone has pressure amplitude 1.0 Pa in air at 20 °C. In water at the same temperature, a tone with identical pressure amplitude is produced. How does the sound intensity level in water compare to that in air?",
+        "explanation": "Intensity I = (Δp)²/(2ρv). Water has higher ρ and v than air, so for equal Δp, I_water < I_air. Since β depends on I, the level in water is lower despite equal pressure amplitude.",
+        "expectedAnswer": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+        "choices": [
+          "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+          "Higher, because water transmits sound more efficiently.",
+          "Equal, because pressure amplitude determines level directly.",
+          "Higher, because water's incompressibility increases pressure effects."
+        ],
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q002",
+      "call_index": 3,
+      "operation_index": 0,
+      "operation_call_index": 3,
+      "question_index": 0,
+      "role": "author",
+      "case_id": "sound_intensity_and_decibels",
+      "request_sha256": "1d3485642e4f43fcb84310ce573fdee372def80e057e8790e8534a6ff5b0105c",
+      "response_text_sha256": "d5e563faa8c2812a26c5bf34dacaf6b4e67cdf15bfbbac42232384f7ad29f8e0",
+      "question": {
+        "prompt": "A sound engineer measures 94 dB SPL at 1 m from a small loudspeaker in an anechoic chamber. The speaker is moved to 4 m distance with no other changes. What SPL is expected, assuming spherical spreading?",
+        "explanation": "Intensity follows inverse-square law: I ∝ 1/r². Quadrupling distance reduces intensity by factor 16. Level change is 10 log₁₀(1/16) ≈ –12 dB, so 94 dB – 12 dB = 82 dB.",
+        "expectedAnswer": "82 dB",
+        "choices": [
+          "88 dB",
+          "82 dB",
+          "76 dB",
+          "70 dB"
+        ],
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q003",
+      "call_index": 0,
+      "operation_index": 0,
+      "operation_call_index": 0,
+      "question_index": 3,
+      "role": "author",
+      "case_id": "sound_intensity_and_decibels",
+      "request_sha256": "7a6cb225bcb1777b20f2cbe7c8dffffc497256f4502d151aec0521ea31254dc5",
+      "response_text_sha256": "b864b87c7c8292c871b28d210a1ef988c87802fa65279ec714dd409720a9370c",
+      "question": {
+        "prompt": "A microphone datasheet states sensitivity: –40 dBV/Pa at 1 kHz. An engineer measures 0.1 V output from this mic in a different sound field. What additional information is needed to find the sound pressure level in dB SPL?",
+        "explanation": "The sensitivity gives volts per pascal at reference conditions. To find SPL from output voltage, one needs the actual sound pressure: SPL = 20 log₁₀(p/p₀) where p₀ = 20 μPa. From V_out and sensitivity (V/Pa), one computes p = V_out / sensitivity. However, the sensitivity is specified at 1 kHz; if the measured sound differs in frequency, the frequency response deviation is needed. The critical missing piece is whether the frequency matches the calibration condition.",
+        "expectedAnswer": "The frequency of the measured sound to verify sensitivity applies.",
+        "choices": [
+          "The microphone's self-noise floor in dB SPL.",
+          "The frequency of the measured sound to verify sensitivity applies.",
+          "The atmospheric temperature during measurement.",
+          "The impedance of the recording interface."
+        ],
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q004",
+      "call_index": 9,
+      "operation_index": 1,
+      "operation_call_index": 3,
+      "question_index": 2,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "081e350f66f2e20632cddadb0f8baa2c6db3785e69589a41bc5f85f75b91258e",
+      "response_text_sha256": "94f45555731e990ba1973c9b6ef49e463ecf7cee045c8b50b6a602dbc6cdaff1",
+      "question": {
+        "prompt": "Terms: \"Premium support is included for enterprise accounts and for pro accounts that have been active 12+ months; all other accounts must purchase support separately.\" Account Y is a 10-month-old pro account. What follows?",
+        "explanation": "The account fails both inclusion paths: it is not enterprise, and as a pro account it has not met the 12-month activity requirement. Therefore it falls into 'all other accounts' and must purchase support separately.",
+        "expectedAnswer": "Support must be purchased separately.",
+        "choices": [
+          "Premium support is included.",
+          "Support must be purchased separately.",
+          "The terms do not address this situation.",
+          "Support inclusion depends on usage volume."
+        ],
+        "topic": "exceptions",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q005",
+      "call_index": 12,
+      "operation_index": 2,
+      "operation_call_index": 0,
+      "question_index": 2,
+      "role": "author",
+      "case_id": "plant_water_transport",
+      "request_sha256": "e1caa144a64347a5b8d62ac109ffd65d2dae0f7fd358d995665fd2f1fbe2880d",
+      "response_text_sha256": "56d98776c8e9a82b28eebaf6673101becd5d06db42c1c1afe908592693010f9e",
+      "question": {
+        "prompt": "A desert plant experiences prolonged drought. Its guard cells respond by partially closing stomata. Which tradeoff does this response most directly illustrate?",
+        "explanation": "The source explicitly states that open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss, and that restricting stomatal opening involves a tradeoff between carbon dioxide entry and water conservation. Partial closure reduces water loss at the cost of reduced CO₂ uptake.",
+        "expectedAnswer": "Reduced water loss versus reduced carbon dioxide uptake.",
+        "choices": [
+          "Reduced water loss versus reduced carbon dioxide uptake.",
+          "Reduced oxygen production versus increased photorespiration.",
+          "Reduced root pressure versus increased xylem tension.",
+          "Reduced light absorption versus increased sugar transport."
+        ],
+        "topic": "Explain tradeoffs between carbon dioxide uptake and water loss",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q006",
+      "call_index": 0,
+      "operation_index": 0,
+      "operation_call_index": 0,
+      "question_index": 2,
+      "role": "author",
+      "case_id": "sound_intensity_and_decibels",
+      "request_sha256": "7a6cb225bcb1777b20f2cbe7c8dffffc497256f4502d151aec0521ea31254dc5",
+      "response_text_sha256": "b864b87c7c8292c871b28d210a1ef988c87802fa65279ec714dd409720a9370c",
+      "question": {
+        "prompt": "Two identical speakers each produce 80 dB at a measurement point when operated alone. When both operate together in phase at the same frequency, what level is expected at that point?",
+        "explanation": "Intensity adds for incoherent or coherent sources at the same point. Doubling intensity adds 3.01 dB. Each speaker alone has intensity I; together they have 2I. Level = 80 dB + 10 log₁₀(2) ≈ 80 + 3.01 = 83 dB. The 3 dB increase assumes perfect addition; phase alignment at the measurement point ensures this.",
+        "expectedAnswer": "83 dB",
+        "choices": [
+          "86 dB",
+          "83 dB",
+          "80 dB",
+          "160 dB"
+        ],
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q007",
+      "call_index": 3,
+      "operation_index": 0,
+      "operation_call_index": 3,
+      "question_index": 1,
+      "role": "author",
+      "case_id": "sound_intensity_and_decibels",
+      "request_sha256": "1d3485642e4f43fcb84310ce573fdee372def80e057e8790e8534a6ff5b0105c",
+      "response_text_sha256": "d5e563faa8c2812a26c5bf34dacaf6b4e67cdf15bfbbac42232384f7ad29f8e0",
+      "question": {
+        "prompt": "Two uncorrelated noise sources each produce 70 dB at a measurement point. What total level results when both operate simultaneously?",
+        "explanation": "Uncorrelated sources add intensities, not pressures. Each has intensity I, so total is 2I. Level increase is 10 log₁₀(2) ≈ 3 dB, giving 73 dB. Adding pressures would incorrectly give 76 dB.",
+        "expectedAnswer": "73 dB",
+        "choices": [
+          "73 dB",
+          "76 dB",
+          "140 dB",
+          "70 dB"
+        ],
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q008",
+      "call_index": 6,
+      "operation_index": 1,
+      "operation_call_index": 0,
+      "question_index": 3,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "7ad5b1a3091f960505854e672c54f5aae5854d6fc972f61abd056a038a4c2106",
+      "response_text_sha256": "6c75dd36e4788fb77d6fe94f6f828353d3aa36531a3d99a388265ffe71b7c8ca",
+      "question": {
+        "prompt": "Terms: \"Service fees shall not apply to transactions under $50 except where expedited processing is requested.\" Which transaction incurs a fee?",
+        "explanation": "The exception reactivates fees when expedited processing is requested, even for small transactions. Without that trigger, sub-$50 transactions remain fee-free.",
+        "expectedAnswer": "A $30 transaction with expedited processing requested.",
+        "choices": [
+          "A $30 transaction with expedited processing requested.",
+          "A $75 transaction with standard processing.",
+          "A $45 transaction with standard processing.",
+          "A $50 transaction with expedited processing."
+        ],
+        "topic": "exceptions",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q009",
+      "call_index": 6,
+      "operation_index": 1,
+      "operation_call_index": 0,
+      "question_index": 0,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "7ad5b1a3091f960505854e672c54f5aae5854d6fc972f61abd056a038a4c2106",
+      "response_text_sha256": "6c75dd36e4788fb77d6fe94f6f828353d3aa36531a3d99a388265ffe71b7c8ca",
+      "question": {
+        "prompt": "Policy: \"Unless your account is verified, you may not withdraw more than $500 daily; verified accounts may withdraw up to $5,000.\" Account X is unverified and has $3,000. Which conclusion follows?",
+        "explanation": "The condition \"unless verified\" restricts unverified accounts to $500. Being unverified, Account X cannot exceed that limit regardless of its balance. The $5,000 limit applies only if verified.",
+        "expectedAnswer": "Account X cannot withdraw more than $500 today.",
+        "choices": [
+          "Account X cannot withdraw more than $500 today.",
+          "Account X may withdraw up to $5,000 because it has sufficient funds.",
+          "Account X cannot withdraw any amount until verified.",
+          "Account X may withdraw $3,000 if requested before noon."
+        ],
+        "topic": "Interpret conditions",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q010",
+      "call_index": 15,
+      "operation_index": 2,
+      "operation_call_index": 3,
+      "question_index": 1,
+      "role": "author",
+      "case_id": "plant_water_transport",
+      "request_sha256": "efc1c864c32bb4b689b617010f9c36f30750b3a6508190eafd2ab1b09002becb",
+      "response_text_sha256": "ea63e6359dbe2bb452d42d4fd681debfb606a4a1e99d4661b8d169a45641a578",
+      "question": {
+        "prompt": "A plant physiologist exposes a well-watered plant to bright light while gradually raising ambient CO₂ concentration. Stomata begin partially closed at elevated CO₂. Which tradeoff shifts as a result of this response?",
+        "explanation": "Guard cells regulate stomatal openings to balance carbon dioxide entry against water-vapor loss. When CO₂ is abundant, less opening is needed for photosynthesis, so partial closure reduces water loss without strongly limiting carbon uptake. The source describes this as a tradeoff between carbon dioxide entry and water conservation.",
+        "expectedAnswer": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+        "choices": [
+          "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+          "Increased water loss is traded for higher carbon dioxide uptake.",
+          "Photosynthesis stops completely to maximize water conservation.",
+          "Carbon dioxide uptake becomes unlimited while water loss is eliminated."
+        ],
+        "topic": "stomatal regulation to observations and environmental changes",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q011",
+      "call_index": 6,
+      "operation_index": 1,
+      "operation_call_index": 0,
+      "question_index": 4,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "7ad5b1a3091f960505854e672c54f5aae5854d6fc972f61abd056a038a4c2106",
+      "response_text_sha256": "6c75dd36e4788fb77d6fe94f6f828353d3aa36531a3d99a388265ffe71b7c8ca",
+      "question": {
+        "prompt": "Instructions: \"Do not disable the alarm unless maintenance mode is active and a supervisor is present.\" The alarm is disabled while maintenance mode is active but no supervisor is present. Was this permitted?",
+        "explanation": "Both conditions joined by \"and\" must hold. Absence of a supervisor violates the exception's requirements, so the prohibition against disabling remains in force.",
+        "expectedAnswer": "No; disabling required both conditions to be met.",
+        "choices": [
+          "No; disabling required both conditions to be met.",
+          "Yes; maintenance mode alone was sufficient.",
+          "Yes; the supervisor requirement applies only to re-enabling.",
+          "Cannot be determined from the information given."
+        ],
+        "topic": "negation",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q012",
+      "call_index": 12,
+      "operation_index": 2,
+      "operation_call_index": 0,
+      "question_index": 1,
+      "role": "author",
+      "case_id": "plant_water_transport",
+      "request_sha256": "e1caa144a64347a5b8d62ac109ffd65d2dae0f7fd358d995665fd2f1fbe2880d",
+      "response_text_sha256": "56d98776c8e9a82b28eebaf6673101becd5d06db42c1c1afe908592693010f9e",
+      "question": {
+        "prompt": "In a controlled experiment, two identical plants are placed at the same temperature. Plant X is in 30% relative humidity; Plant Y is in 70% relative humidity. Both have open stomata and adequate soil water. What difference in transpiration is expected?",
+        "explanation": "The source states that the leaf-to-air vapor gradient influences transpiration, and that higher atmospheric humidity reduces that gradient at otherwise matching temperatures. The steeper vapor pressure deficit in 30% humidity creates a stronger driving force for water loss, so Plant X loses water faster.",
+        "expectedAnswer": "Plant X will have higher transpiration than Plant Y.",
+        "choices": [
+          "Plant X will have higher transpiration than Plant Y.",
+          "Plant Y will have higher transpiration than Plant X.",
+          "Both will have equal transpiration because temperature is identical.",
+          "Transpiration will stop in Plant Y due to humidity."
+        ],
+        "topic": "transpiration",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q013",
+      "call_index": 9,
+      "operation_index": 1,
+      "operation_call_index": 3,
+      "question_index": 3,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "081e350f66f2e20632cddadb0f8baa2c6db3785e69589a41bc5f85f75b91258e",
+      "response_text_sha256": "94f45555731e990ba1973c9b6ef49e463ecf7cee045c8b50b6a602dbc6cdaff1",
+      "question": {
+        "prompt": "Notice: \"Access will be revoked if either (a) credentials are shared, or (b) login attempts from unrecognized locations exceed three, unless the user has pre-registered those locations.\" User Z shared credentials and had four unrecognized logins without pre-registration. What does the notice commit to?",
+        "explanation": "Condition (a) alone is sufficient for revocation—the 'or' creates independent triggers. The exception for pre-registered locations only applies to condition (b), not to credential sharing.",
+        "expectedAnswer": "Access will be revoked.",
+        "choices": [
+          "Access will be revoked.",
+          "Access will not be revoked due to the location exception.",
+          "Access may be revoked pending review.",
+          "The notice is silent on this combination of facts."
+        ],
+        "topic": "exceptions",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q014",
+      "call_index": 6,
+      "operation_index": 1,
+      "operation_call_index": 0,
+      "question_index": 1,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "7ad5b1a3091f960505854e672c54f5aae5854d6fc972f61abd056a038a4c2106",
+      "response_text_sha256": "6c75dd36e4788fb77d6fe94f6f828353d3aa36531a3d99a388265ffe71b7c8ca",
+      "question": {
+        "prompt": "Email states: \"We will process your refund provided that the item is returned within 14 days and is unused. Items returned after 14 days will not qualify.\" A customer returned an unused item on day 15. What does the email commit to?",
+        "explanation": "Both conditions must be met: within 14 days AND unused. Day 15 fails the time condition, so the exception applies regardless of the item's condition.",
+        "expectedAnswer": "No refund will be processed because the return was late.",
+        "choices": [
+          "No refund will be processed because the return was late.",
+          "A partial refund may be processed at the company's discretion.",
+          "The refund will be processed because the item was unused.",
+          "The refund will be delayed until next month."
+        ],
+        "topic": "exceptions",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q015",
+      "call_index": 12,
+      "operation_index": 2,
+      "operation_call_index": 0,
+      "question_index": 4,
+      "role": "author",
+      "case_id": "plant_water_transport",
+      "request_sha256": "e1caa144a64347a5b8d62ac109ffd65d2dae0f7fd358d995665fd2f1fbe2880d",
+      "response_text_sha256": "56d98776c8e9a82b28eebaf6673101becd5d06db42c1c1afe908592693010f9e",
+      "question": {
+        "prompt": "A botanist compares two species: Species M keeps stomata open in moderate light even when soil dries slightly; Species N closes stomata under the same conditions. Based on the source's description of stomatal regulation, what can be concluded about their relative strategies?",
+        "explanation": "The source notes that leaf water status, light, and CO₂ affect stomatal behavior, and that a change in one factor does not establish a fixed rate for every plant. Species M prioritizes carbon gain (risking water loss), while Species N prioritizes water conservation (limiting carbon gain). This represents different adaptive strategies, not that one is malfunctioning.",
+        "expectedAnswer": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+        "choices": [
+          "Species M has damaged guard cells that cannot respond to water status.",
+          "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+          "Species N has higher photosynthetic efficiency that requires less CO₂.",
+          "Both species will show identical growth rates under all conditions."
+        ],
+        "topic": "stomatal regulation to observations and environmental changes",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q016",
+      "call_index": 9,
+      "operation_index": 1,
+      "operation_call_index": 3,
+      "question_index": 1,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "081e350f66f2e20632cddadb0f8baa2c6db3785e69589a41bc5f85f75b91258e",
+      "response_text_sha256": "94f45555731e990ba1973c9b6ef49e463ecf7cee045c8b50b6a602dbc6cdaff1",
+      "question": {
+        "prompt": "Email: \"We can reschedule your appointment if you notify us at least 48 hours in advance and no staff shortages exist; otherwise, rescheduling is not guaranteed.\" The recipient notifies 72 hours in advance during a staff shortage. What does the email commit to?",
+        "explanation": "Both conditions (48-hour notice AND no staff shortages) must be satisfied for rescheduling to be guaranteed. The staff shortage means the 'otherwise' clause applies, so rescheduling is not guaranteed.",
+        "expectedAnswer": "Rescheduling is not guaranteed.",
+        "choices": [
+          "Rescheduling is guaranteed.",
+          "Rescheduling is not guaranteed.",
+          "The email commits to nothing specific.",
+          "Rescheduling is permitted but requires manager approval."
+        ],
+        "topic": "Interpret conditions",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q017",
+      "call_index": 0,
+      "operation_index": 0,
+      "operation_call_index": 0,
+      "question_index": 4,
+      "role": "author",
+      "case_id": "sound_intensity_and_decibels",
+      "request_sha256": "7a6cb225bcb1777b20f2cbe7c8dffffc497256f4502d151aec0521ea31254dc5",
+      "response_text_sha256": "b864b87c7c8292c871b28d210a1ef988c87802fa65279ec714dd409720a9370c",
+      "question": {
+        "prompt": "In a controlled test, sound A measures 60 dB. Sound B is perceived as \"twice as loud\" in a psychoacoustic test. An assistant concludes B must be 120 dB, arguing that doubling the level doubles the decibels. What is wrong with this reasoning?",
+        "explanation": "Decibels are logarithmic. Doubling perceived loudness (a subjective psychoacoustic quantity) does not double the decibel value. Physically, doubling intensity adds only ~3 dB. The assistant confuses the logarithmic intensity level with a linear scale and conflates subjective loudness with physical intensity level. The error is treating decibels as linear.",
+        "expectedAnswer": "Decibels are logarithmic; doubling perceived loudness does not double the dB value.",
+        "choices": [
+          "The reference intensity I₀ was different for the two sounds.",
+          "Decibels are logarithmic; doubling perceived loudness does not double the dB value.",
+          "Sound B must have been measured in a different medium.",
+          "The assistant forgot to subtract the reference level before doubling."
+        ],
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q018",
+      "call_index": 6,
+      "operation_index": 1,
+      "operation_call_index": 0,
+      "question_index": 2,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "7ad5b1a3091f960505854e672c54f5aae5854d6fc972f61abd056a038a4c2106",
+      "response_text_sha256": "6c75dd36e4788fb77d6fe94f6f828353d3aa36531a3d99a388265ffe71b7c8ca",
+      "question": {
+        "prompt": "Notice: \"Applicants must submit transcripts unless they have five or more years of relevant experience, in which case references may substitute.\" Priya has four years of experience and offers references instead. Does the notice permit this?",
+        "explanation": "The exception applies only with \"five or more years.\" Four years does not trigger the substitution clause; the default requirement (transcripts) still binds her.",
+        "expectedAnswer": "No; she has insufficient experience to substitute references.",
+        "choices": [
+          "No; she has insufficient experience to substitute references.",
+          "Yes; references are acceptable for any experienced applicant.",
+          "Yes; four years is close enough to qualify.",
+          "No; references are never permitted under any circumstances."
+        ],
+        "topic": "Interpret conditions",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q019",
+      "call_index": 15,
+      "operation_index": 2,
+      "operation_call_index": 3,
+      "question_index": 0,
+      "role": "author",
+      "case_id": "plant_water_transport",
+      "request_sha256": "efc1c864c32bb4b689b617010f9c36f30750b3a6508190eafd2ab1b09002becb",
+      "response_text_sha256": "ea63e6359dbe2bb452d42d4fd681debfb606a4a1e99d4661b8d169a45641a578",
+      "question": {
+        "prompt": "A researcher places two identical potted plants in a growth chamber at 25°C with bright light. Plant P has its leaves misted with water every hour; Plant Q remains dry. Both have adequate soil moisture and open stomata. Which outcome is expected after several hours?",
+        "explanation": "Misting raises the humidity immediately surrounding the leaves, reducing the leaf-to-air vapor gradient. Since transpiration rate depends on this gradient, Plant P loses less water. The source notes that higher atmospheric humidity reduces the gradient driving transpiration, and that open stomata permit water-vapor loss.",
+        "expectedAnswer": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+        "choices": [
+          "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+          "Plant P shows higher transpiration due to added surface moisture.",
+          "Both plants show identical transpiration because soil water is adequate.",
+          "Plant Q shows lower transpiration because dry leaves conserve water."
+        ],
+        "topic": "transpiration",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q020",
+      "call_index": 9,
+      "operation_index": 1,
+      "operation_call_index": 3,
+      "question_index": 0,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "081e350f66f2e20632cddadb0f8baa2c6db3785e69589a41bc5f85f75b91258e",
+      "response_text_sha256": "94f45555731e990ba1973c9b6ef49e463ecf7cee045c8b50b6a602dbc6cdaff1",
+      "question": {
+        "prompt": "Policy: \"Complaints must be filed within 30 days unless the issue involves billing errors, in which case the deadline extends to 90 days; however, complaints about service quality are never accepted after 60 days regardless of type.\" A customer submits a billing-error complaint on day 75. What does the policy commit to?",
+        "explanation": "The 90-day extension applies specifically to billing errors, and day 75 falls within that window. The 60-day cap on service quality complaints does not apply here because the complaint type is billing, not service quality.",
+        "expectedAnswer": "The complaint must be accepted.",
+        "choices": [
+          "The complaint must be accepted.",
+          "The complaint must be rejected.",
+          "The deadline cannot be determined from the information given.",
+          "The complaint may be accepted at the company's discretion."
+        ],
+        "topic": "Interpret conditions",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q021",
+      "call_index": 12,
+      "operation_index": 2,
+      "operation_call_index": 0,
+      "question_index": 0,
+      "role": "author",
+      "case_id": "plant_water_transport",
+      "request_sha256": "e1caa144a64347a5b8d62ac109ffd65d2dae0f7fd358d995665fd2f1fbe2880d",
+      "response_text_sha256": "56d98776c8e9a82b28eebaf6673101becd5d06db42c1c1afe908592693010f9e",
+      "question": {
+        "prompt": "A researcher measures water potential in two adjacent plant cells. Cell A has higher solute concentration but is also under greater turgor pressure than Cell B. Which outcome is certain if the cells are connected by open plasmodesmata?",
+        "explanation": "Total water potential depends on both solute (Ψs) and pressure (Ψp) components. The source notes that knowing one component alone need not determine the total gradient. Without knowing the actual magnitudes, we cannot determine which way net water will move. The scenario deliberately provides incomplete information to test whether the learner recognizes that both components matter.",
+        "expectedAnswer": "Cannot be determined from the information given.",
+        "choices": [
+          "Water will move from Cell A to Cell B.",
+          "Water will move from Cell B to Cell A.",
+          "No net water movement will occur.",
+          "Cannot be determined from the information given."
+        ],
+        "topic": "Apply water-potential gradients",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q022",
+      "call_index": 9,
+      "operation_index": 1,
+      "operation_call_index": 3,
+      "question_index": 4,
+      "role": "author",
+      "case_id": "english_conditions_and_scope",
+      "request_sha256": "081e350f66f2e20632cddadb0f8baa2c6db3785e69589a41bc5f85f75b91258e",
+      "response_text_sha256": "94f45555731e990ba1973c9b6ef49e463ecf7cee045c8b50b6a602dbc6cdaff1",
+      "question": {
+        "prompt": "Instructions: \"Do not proceed unless both sensors indicate normal status and the manual override is disengaged; if the override is engaged, you may proceed regardless of sensor status.\" Sensor A shows normal, Sensor B shows alert, and the override is disengaged. What do the instructions permit?",
+        "explanation": "The 'unless' clause requires BOTH sensors normal AND override disengaged. With Sensor B showing alert, the condition fails, so proceeding is not permitted. The override exception does not apply because the override is disengaged.",
+        "expectedAnswer": "Proceeding is not permitted.",
+        "choices": [
+          "Proceeding is permitted.",
+          "Proceeding is not permitted.",
+          "Proceeding is permitted with caution.",
+          "The instructions are contradictory."
+        ],
+        "topic": "negation",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q023",
+      "call_index": 0,
+      "operation_index": 0,
+      "operation_call_index": 0,
+      "question_index": 1,
+      "role": "author",
+      "case_id": "sound_intensity_and_decibels",
+      "request_sha256": "7a6cb225bcb1777b20f2cbe7c8dffffc497256f4502d151aec0521ea31254dc5",
+      "response_text_sha256": "b864b87c7c8292c871b28d210a1ef988c87802fa65279ec714dd409720a9370c",
+      "question": {
+        "prompt": "A speaker produces 70 dB at 1 meter. At 2 meters, assuming spherical spreading and no reflections, what is the sound intensity level?",
+        "explanation": "Intensity follows the inverse-square law: I ∝ 1/r². Doubling distance reduces intensity by factor 4 (2²). Level change = 10 log₁₀(1/4) = –10 log₁₀(4) ≈ –6.02 dB. New level = 70 dB – 6 dB ≈ 64 dB. The 6 dB drop is the key; exact value is ~63.98 dB.",
+        "expectedAnswer": "64 dB",
+        "choices": [
+          "67 dB",
+          "64 dB",
+          "61 dB",
+          "58 dB"
+        ],
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q024",
+      "call_index": 12,
+      "operation_index": 2,
+      "operation_call_index": 0,
+      "question_index": 3,
+      "role": "author",
+      "case_id": "plant_water_transport",
+      "request_sha256": "e1caa144a64347a5b8d62ac109ffd65d2dae0f7fd358d995665fd2f1fbe2880d",
+      "response_text_sha256": "56d98776c8e9a82b28eebaf6673101becd5d06db42c1c1afe908592693010f9e",
+      "question": {
+        "prompt": "A student observes that a potted wilting plant recovers turgidity within hours after watering, even though the soil was dry. Which mechanism best explains how water reached the leaf cells so quickly?",
+        "explanation": "The source describes evaporation from leaves creating tension that pulls water through xylem, with cohesion and adhesion sustaining the column. Rapid recovery after watering shows this tension-cohesion mechanism already established; root pressure is too slow and weak for this. The xylem pathway, not phloem or osmosis alone, explains the speed.",
+        "expectedAnswer": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+        "choices": [
+          "Root pressure pushed water rapidly to the leaves.",
+          "Phloem transported water from storage tissues to leaves.",
+          "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+          "Osmosis directly from soil to leaf cells without vascular tissue."
+        ],
+        "topic": "transpiration",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    },
+    {
+      "id": "q025",
+      "call_index": 0,
+      "operation_index": 0,
+      "operation_call_index": 0,
+      "question_index": 0,
+      "role": "author",
+      "case_id": "sound_intensity_and_decibels",
+      "request_sha256": "7a6cb225bcb1777b20f2cbe7c8dffffc497256f4502d151aec0521ea31254dc5",
+      "response_text_sha256": "b864b87c7c8292c871b28d210a1ef988c87802fa65279ec714dd409720a9370c",
+      "question": {
+        "prompt": "A mixing engineer compares two sine-wave tones in air at 20 °C. Tone A has pressure amplitude 2.0 Pa; tone B has amplitude 4.0 Pa. The engineer calculates that B is 6 dB louder than A. A colleague claims this comparison is invalid because the calculation ignores air density and sound speed. Is the colleague correct?",
+        "explanation": "Intensity scales with squared pressure amplitude when the medium is unchanged (I ∝ (Δp)²). The ratio I_B/I_A = (4.0/2.0)² = 4, giving 10 log₁₀(4) ≈ 6.02 dB. Since both tones are in the same air at the same temperature, ρ and v are identical and cancel in the ratio. The colleague is incorrect; the 6 dB result is valid.",
+        "expectedAnswer": "No; the comparison is valid because the medium is identical for both tones.",
+        "choices": [
+          "No; the comparison is valid because the medium is identical for both tones.",
+          "Yes; the absolute intensity values require knowing ρ and v to compute.",
+          "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+          "No; but only because the ratio happens to be a perfect square."
+        ],
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      }
+    }
+  ],
+  "author_calls": [
+    {
+      "call_index": 0,
+      "operation_index": 0,
+      "operation_call_index": 0,
+      "role": "author",
+      "lifecycle": "completed",
+      "response_text_sha256": "b864b87c7c8292c871b28d210a1ef988c87802fa65279ec714dd409720a9370c",
+      "parser": "whole_object_or_sole_fence",
+      "status": "parsed",
+      "question_occurrences": 5
+    },
+    {
+      "call_index": 3,
+      "operation_index": 0,
+      "operation_call_index": 3,
+      "role": "author",
+      "lifecycle": "completed",
+      "response_text_sha256": "d5e563faa8c2812a26c5bf34dacaf6b4e67cdf15bfbbac42232384f7ad29f8e0",
+      "parser": "whole_object_or_sole_fence",
+      "status": "parsed",
+      "question_occurrences": 3
+    },
+    {
+      "call_index": 6,
+      "operation_index": 1,
+      "operation_call_index": 0,
+      "role": "author",
+      "lifecycle": "completed",
+      "response_text_sha256": "6c75dd36e4788fb77d6fe94f6f828353d3aa36531a3d99a388265ffe71b7c8ca",
+      "parser": "whole_object_or_sole_fence",
+      "status": "parsed",
+      "question_occurrences": 5
+    },
+    {
+      "call_index": 9,
+      "operation_index": 1,
+      "operation_call_index": 3,
+      "role": "author",
+      "lifecycle": "completed",
+      "response_text_sha256": "94f45555731e990ba1973c9b6ef49e463ecf7cee045c8b50b6a602dbc6cdaff1",
+      "parser": "whole_object_or_sole_fence",
+      "status": "parsed",
+      "question_occurrences": 5
+    },
+    {
+      "call_index": 12,
+      "operation_index": 2,
+      "operation_call_index": 0,
+      "role": "author",
+      "lifecycle": "completed",
+      "response_text_sha256": "56d98776c8e9a82b28eebaf6673101becd5d06db42c1c1afe908592693010f9e",
+      "parser": "whole_object_or_sole_fence",
+      "status": "parsed",
+      "question_occurrences": 5
+    },
+    {
+      "call_index": 15,
+      "operation_index": 2,
+      "operation_call_index": 3,
+      "role": "author",
+      "lifecycle": "completed",
+      "response_text_sha256": "ea63e6359dbe2bb452d42d4fd681debfb606a4a1e99d4661b8d169a45641a578",
+      "parser": "whole_object_or_sole_fence",
+      "status": "parsed",
+      "question_occurrences": 2
+    }
+  ]
+}

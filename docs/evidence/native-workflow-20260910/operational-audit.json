@@ -1,0 +1,876 @@
+{
+  "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+  "plan_sha256": "3cd55295f466fff4bbb62ed1f860696f441c6d4d421f30e1553935e2d2a5a02c",
+  "capture_byte_sha256": "fed7a2261f2baf58bddbc3c6749fef409fd41d7dcf70b91bc27da0047c6848df",
+  "status": "completed",
+  "planned_slots": 15,
+  "calls": 18,
+  "all_workers_reaped_and_groups_cleaned": true,
+  "stop_reasons": {
+    "end_turn": 18
+  },
+  "output_tokens_range": [
+    414,
+    1793
+  ],
+  "max_input_bytes": 21486,
+  "sdk_elapsed_seconds_range": [
+    4.411093082977459,
+    24.398666792025324
+  ],
+  "accounting": {
+    "prepared_calls": 18,
+    "observed_dispatch_attempts": 18,
+    "known_not_dispatched_calls": 0,
+    "unknown_dispatch_calls": 0,
+    "known_usage_subtotal": {
+      "inputTokens": 52500,
+      "outputTokens": 18352
+    },
+    "unknown_usage_calls": 0,
+    "input_utf8_bytes": 246749
+  },
+  "raw_author_occurrences": 25,
+  "operations": [
+    {
+      "case_id": "sound_intensity_and_decibels",
+      "status": "completed",
+      "category": "partial_delivery",
+      "requested": 5,
+      "returned": 4,
+      "budget_calls": 6,
+      "quality_metrics": {
+        "sanitize": {
+          "accepted": 8
+        },
+        "review": {
+          "solver_multiple_supported": 1,
+          "accepted": 4,
+          "difficulty_floor": 3
+        }
+      }
+    },
+    {
+      "case_id": "english_conditions_and_scope",
+      "status": "completed",
+      "category": "partial_delivery",
+      "requested": 5,
+      "returned": 3,
+      "budget_calls": 6,
+      "quality_metrics": {
+        "sanitize": {
+          "accepted": 9,
+          "prompt_length": 1
+        },
+        "review": {
+          "solver_multiple_supported": 1,
+          "difficulty_floor": 5,
+          "accepted": 3
+        }
+      }
+    },
+    {
+      "case_id": "plant_water_transport",
+      "status": "completed",
+      "category": "full_delivery",
+      "requested": 5,
+      "returned": 5,
+      "budget_calls": 6,
+      "quality_metrics": {
+        "sanitize": {
+          "accepted": 7
+        },
+        "review": {
+          "accepted": 5,
+          "difficulty_floor": 2
+        }
+      }
+    }
+  ],
+  "observed_output_orders": [
+    {
+      "call_index": 0,
+      "role": "author",
+      "item_count": 5,
+      "field_orders": [
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ]
+      ]
+    },
+    {
+      "call_index": 1,
+      "role": "solver",
+      "field_orders": [
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ]
+      ]
+    },
+    {
+      "call_index": 3,
+      "role": "author",
+      "item_count": 3,
+      "field_orders": [
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ]
+      ]
+    },
+    {
+      "call_index": 4,
+      "role": "solver",
+      "field_orders": [
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ]
+      ]
+    },
+    {
+      "call_index": 6,
+      "role": "author",
+      "item_count": 5,
+      "field_orders": [
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ]
+      ]
+    },
+    {
+      "call_index": 7,
+      "role": "solver",
+      "field_orders": [
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ]
+      ]
+    },
+    {
+      "call_index": 9,
+      "role": "author",
+      "item_count": 5,
+      "field_orders": [
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ]
+      ]
+    },
+    {
+      "call_index": 10,
+      "role": "solver",
+      "field_orders": [
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ]
+      ]
+    },
+    {
+      "call_index": 12,
+      "role": "author",
+      "item_count": 5,
+      "field_orders": [
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ]
+      ]
+    },
+    {
+      "call_index": 13,
+      "role": "solver",
+      "field_orders": [
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ]
+      ]
+    },
+    {
+      "call_index": 15,
+      "role": "author",
+      "item_count": 2,
+      "field_orders": [
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ],
+        [
+          "prompt",
+          "explanation",
+          "expectedAnswer",
+          "choices",
+          "topic",
+          "difficulty",
+          "format"
+        ]
+      ]
+    },
+    {
+      "call_index": 16,
+      "role": "solver",
+      "field_orders": [
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ],
+        [
+          "choice",
+          "reason",
+          "judgment"
+        ]
+      ]
+    }
+  ],
+  "scope": "Operational and serialization observations only. Admission/difficulty labels are model/runtime decisions, not independently established factual correctness."
+}

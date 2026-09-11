@@ -1,0 +1,3266 @@
+{
+  "method": "Exact occurrence and return-index join, then independent assessor agreement; no adjudication overrides.",
+  "limitations": "Assessor judgments are fallible. Disagreements and uncertainty are unresolved, not definitely false. This is one selected three-goal trial, not a population error-rate estimate.",
+  "input_byte_sha256": {
+    "raw-assessment/raw-stems-and-choices.json": "45b40eec6cea9de6c51530a4a042c21bf8867851709a502f4afa0078e9184b5c",
+    "client-assessment/client-stems-and-choices.json": "a6a0481cfb3d7fdd9bff81b4b1dee929892157720f65bcd4b09e44a8b4ece664",
+    "raw-assessment/private-mapping.json": "03c7207eb2070e8a9594b581f33b437c23a1d38ab12aacbb3d2a7f1e44a72837",
+    "client-assessment/private-mapping.json": "0f68d5c0287d3365a63fb7cb19dce84579c1613c8585c13050588da5feb219dc",
+    "raw-assessment/authored-key-main.json": "1a1261840f6abe69c848f8de96131aecc0b3c98a02ece3d1159c933b3d235963",
+    "client-assessment/client-keys.json": "64308355aa862a1ae6fe5c6a29d6027bdb40743362581dde2fe52e65c349483e",
+    "client-assessment/client-teaching.json": "1d8267c1ad318aa17461b003355a350777657fd06b50e67eafb07d6fac507a35",
+    "stage-lineage.json": "f00d9c5a15ae88ff8a9e6ce9745e78a1cf1e627a6ff4cc970dc674b33b57096d",
+    "raw-phase-one-freeze.json": "58b63e7bcae31b34fbe2882c2ac9a43fd9ef567cc03f97562e26d3d84b6b780f",
+    "raw-assessment/assessment-a-phase1.json": "0cdb026768965bd26a673db2c802dfe3c1398956d57817cf86c5514d0e0235fb",
+    "raw-assessment/assessment-b-phase1.json": "6cd35e4c45a059a3680d674e3e0cb2573261c28461c2f8d03484f9fa30764f70",
+    "client-phase-one-freeze.json": "015d12945f683ad56ee76948e5e6b535db88a93f41b51df52592a6288cf2ba0e",
+    "client-assessment/assessment-a-phase1.json": "f09081c33ac438c19db5e385b5668519a838cc0c6f5aa223ecebefd0ed7cac50",
+    "client-assessment/assessment-b-phase1.json": "e9969b3de5edd84ecfc316a3c7f7ebec5bf216180015f29dfb468993eb89eb44",
+    "raw-assessment/assessment-a-phase2.json": "2a20226097c66eeaf158a8669dc991d18a5ca5a53bf3a57e99b201d3336a94cc",
+    "raw-assessment/assessment-b-phase2.json": "9c706fde3c8960628bfb0a0ab071d38ee42036720468419bbcced0fe70e16603"
+  },
+  "summary": {
+    "requested_slots": 15,
+    "raw_occurrences": 25,
+    "client_retained": 12,
+    "raw_key_agreement": {
+      "ambiguous": 2,
+      "disagreement": 2,
+      "supported_unique": 19,
+      "wrong": 2
+    },
+    "client_key_agreement": {
+      "ambiguous": 1,
+      "disagreement": 2,
+      "supported_unique": 9
+    },
+    "whole_content_supported_by_both": 5,
+    "useful_by_frozen_criterion": 1,
+    "composed_displays": 48,
+    "display_agreement": {
+      "disagreement": 7,
+      "supported": 30,
+      "uncertain": 4,
+      "unsupported": 7
+    },
+    "display_support_by_assessor": {
+      "a": {
+        "unsupported": 8,
+        "uncertain": 10,
+        "supported": 30
+      },
+      "b": {
+        "unsupported": 7,
+        "supported": 37,
+        "uncertain": 4
+      }
+    },
+    "operations": [
+      {
+        "case_id": "sound_intensity_and_decibels",
+        "requested_slots": 5,
+        "raw_occurrences": 8,
+        "client_retained": 4,
+        "whole_content_supported_by_both": 2,
+        "useful_by_frozen_criterion": 0
+      },
+      {
+        "case_id": "english_conditions_and_scope",
+        "requested_slots": 5,
+        "raw_occurrences": 10,
+        "client_retained": 3,
+        "whole_content_supported_by_both": 1,
+        "useful_by_frozen_criterion": 0
+      },
+      {
+        "case_id": "plant_water_transport",
+        "requested_slots": 5,
+        "raw_occurrences": 7,
+        "client_retained": 5,
+        "whole_content_supported_by_both": 2,
+        "useful_by_frozen_criterion": 1
+      }
+    ]
+  },
+  "raw_items": [
+    {
+      "raw_id": "q001",
+      "occurrence_id": "author-call-03-item-02",
+      "case_id": "sound_intensity_and_decibels",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q008",
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q002",
+      "occurrence_id": "author-call-03-item-00",
+      "case_id": "sound_intensity_and_decibels",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q011",
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q003",
+      "occurrence_id": "author-call-00-item-03",
+      "case_id": "sound_intensity_and_decibels",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q005",
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q004",
+      "occurrence_id": "author-call-09-item-02",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q005",
+      "occurrence_id": "author-call-12-item-02",
+      "case_id": "plant_water_transport",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 1,
+        "b": 1
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q006",
+      "occurrence_id": "author-call-00-item-02",
+      "case_id": "sound_intensity_and_decibels",
+      "terminal_outcome": {
+        "stage": "solver",
+        "reason": "solver_multiple_supported"
+      },
+      "client_id": null,
+      "key_agreement": "wrong",
+      "main_support": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 3
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q007",
+      "occurrence_id": "author-call-03-item-01",
+      "case_id": "sound_intensity_and_decibels",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q008",
+      "occurrence_id": "author-call-06-item-03",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "solver",
+        "reason": "solver_multiple_supported"
+      },
+      "client_id": null,
+      "key_agreement": "ambiguous",
+      "main_support": {
+        "a": "uncertain",
+        "b": "uncertain"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 3
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q009",
+      "occurrence_id": "author-call-06-item-00",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q010",
+      "occurrence_id": "author-call-15-item-01",
+      "case_id": "plant_water_transport",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q001",
+      "key_agreement": "disagreement",
+      "main_support": {
+        "a": "uncertain",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 3
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": false,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q011",
+      "occurrence_id": "author-call-06-item-04",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q012",
+      "occurrence_id": "author-call-12-item-01",
+      "case_id": "plant_water_transport",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q013",
+      "occurrence_id": "author-call-09-item-03",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q003",
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "uncertain",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q014",
+      "occurrence_id": "author-call-06-item-01",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q015",
+      "occurrence_id": "author-call-12-item-04",
+      "case_id": "plant_water_transport",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q012",
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": false,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q016",
+      "occurrence_id": "author-call-09-item-01",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q002",
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q017",
+      "occurrence_id": "author-call-00-item-04",
+      "case_id": "sound_intensity_and_decibels",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q018",
+      "occurrence_id": "author-call-06-item-02",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": false,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q019",
+      "occurrence_id": "author-call-15-item-00",
+      "case_id": "plant_water_transport",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q010",
+      "key_agreement": "ambiguous",
+      "main_support": {
+        "a": "uncertain",
+        "b": "uncertain"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 3
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": false
+      }
+    },
+    {
+      "raw_id": "q020",
+      "occurrence_id": "author-call-09-item-00",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "sanitize",
+        "reason": "prompt_length"
+      },
+      "client_id": null,
+      "key_agreement": "wrong",
+      "main_support": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "difficulty": {
+        "a": 3,
+        "b": 3
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q021",
+      "occurrence_id": "author-call-12-item-00",
+      "case_id": "plant_water_transport",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q004",
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 3,
+        "b": 3
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q022",
+      "occurrence_id": "author-call-09-item-04",
+      "case_id": "english_conditions_and_scope",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q009",
+      "key_agreement": "disagreement",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q023",
+      "occurrence_id": "author-call-00-item-01",
+      "case_id": "sound_intensity_and_decibels",
+      "terminal_outcome": {
+        "stage": "reviewer",
+        "reason": "difficulty_floor"
+      },
+      "client_id": null,
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q024",
+      "occurrence_id": "author-call-12-item-03",
+      "case_id": "plant_water_transport",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q007",
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 2
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    },
+    {
+      "raw_id": "q025",
+      "occurrence_id": "author-call-00-item-00",
+      "case_id": "sound_intensity_and_decibels",
+      "terminal_outcome": {
+        "stage": "returned",
+        "reason": "accepted"
+      },
+      "client_id": "q006",
+      "key_agreement": "supported_unique",
+      "main_support": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "difficulty": {
+        "a": 2,
+        "b": 3
+      },
+      "distinct_choices": {
+        "a": true,
+        "b": true
+      },
+      "plausible_distractors": {
+        "a": true,
+        "b": true
+      }
+    }
+  ],
+  "client_items": [
+    {
+      "client_id": "q001",
+      "raw_id": "q010",
+      "occurrence_id": "author-call-15-item-01",
+      "case_id": "plant_water_transport",
+      "operation_index": 2,
+      "returned_question_index": 4,
+      "key_agreement": "disagreement",
+      "whole_content_supported_by_both": false,
+      "goal_and_choice_quality_supported_by_both": false,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q001",
+          "supported_choice_indices": [],
+          "status": "ambiguous",
+          "premise_status": "missing_material",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "Partial closure ordinarily reduces stomatal water loss, rather than increasing it."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Partial closure does not imply complete cessation of photosynthesis."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Partial closure cannot create unlimited carbon uptake or eliminate all water loss."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "uncertain",
+              "reason": "Partial closure tends to conserve water, and elevated CO₂ can sustain uptake, but continued adequate uptake is not established by the supplied observations."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": false,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Choice 3 is the recognizable textbook expectation, but it bundles water conservation with an unmeasured adequacy claim. The stem gives no CO₂ range, assimilation requirement, or remaining conductance sufficient to establish adequacy in this particular plant. Wording “begin partially closed” is awkward but interpretable; it is not itself a semantic contradiction. Two distractors use obvious extreme claims. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q001",
+          "supported_choice_indices": [
+            3
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "Partial closure reduces conductance; increased water loss is the wrong direction for the stated response."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Partial closure at elevated CO2 does not imply complete cessation of photosynthesis."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Neither unlimited uptake nor elimination of water loss follows from partial closure."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "supported",
+              "reason": "Higher external CO2 can support assimilation with smaller stomatal openings and reduced water loss, shifting water-use efficiency."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": false,
+          "goal_relevant": true,
+          "difficulty": 3,
+          "notes": "Choice 3 is the ordinary qualitative physiological expectation, not a guaranteed assimilation rate for every species or CO2 exposure. Its wording describes two benefits awkwardly as a trade, but the intended change is interpretable. Evidence: https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2016.01568/full Reused frozen raw judgment q010 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q001",
+          "key_matches_prior_unique": false,
+          "key_status": "ambiguous",
+          "main_support": "uncertain",
+          "main_issues": [
+            "The main asserts adequate CO₂ uptake through the smaller opening without a supplied conductance, CO₂ gradient, or assimilation measure establishing that adequacy."
+          ],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Increased water loss is traded for higher carbon dioxide uptake.",
+              "feedback_support": "unsupported",
+              "display_support": "unsupported",
+              "issues": [
+                "“Inverts the actual direction of both changes” asserts a determined CO₂-uptake direction. Partial closure reduces aperture, but elevated ambient CO₂ can offset it; the stem states no measured uptake direction.",
+                "Composed display inherits main issue: The main asserts adequate CO₂ uptake through the smaller opening without a supplied conductance, CO₂ gradient, or assimilation measure establishing that adequacy."
+              ]
+            },
+            {
+              "choice_index": 1,
+              "choice": "Photosynthesis stops completely to maximize water conservation.",
+              "feedback_support": "supported",
+              "display_support": "uncertain",
+              "issues": [
+                "Composed display inherits main issue: The main asserts adequate CO₂ uptake through the smaller opening without a supplied conductance, CO₂ gradient, or assimilation measure establishing that adequacy."
+              ]
+            },
+            {
+              "choice_index": 2,
+              "choice": "Carbon dioxide uptake becomes unlimited while water loss is eliminated.",
+              "feedback_support": "supported",
+              "display_support": "uncertain",
+              "issues": [
+                "Composed display inherits main issue: The main asserts adequate CO₂ uptake through the smaller opening without a supplied conductance, CO₂ gradient, or assimilation measure establishing that adequacy."
+              ]
+            },
+            {
+              "choice_index": 3,
+              "choice": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "The feedback repeats the unproved claim that elevated ambient CO₂ ensures adequate uptake in this plant.",
+                "Composed display inherits main issue: The main asserts adequate CO₂ uptake through the smaller opening without a supplied conductance, CO₂ gradient, or assimilation measure establishing that adequacy."
+              ]
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "The physical water-loss mechanism is supported, while case-specific adequacy is only a plausible interpretation. Main text cannot supply the missing evidence. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q001",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Increased water loss is traded for higher carbon dioxide uptake.",
+              "feedback_support": "unsupported",
+              "display_support": "unsupported",
+              "issues": [
+                "Claims both changes are inverted, thereby asserting CO2 uptake actually decreases. Elevated external CO2 and reduced conductance do not establish that direction, and uptake may increase."
+              ]
+            },
+            {
+              "choice_index": 1,
+              "choice": "Photosynthesis stops completely to maximize water conservation.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Carbon dioxide uptake becomes unlimited while water loss is eliminated.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "The supported qualitative main does not establish that CO2 uptake actually decreases as external CO2 rises. This is a new overstatement in feedback, not a change to the prior key judgment. Elevated CO2 may increase assimilation while conductance falls: https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2016.01568/full ."
+        }
+      }
+    },
+    {
+      "client_id": "q002",
+      "raw_id": "q016",
+      "occurrence_id": "author-call-09-item-01",
+      "case_id": "english_conditions_and_scope",
+      "operation_index": 1,
+      "returned_question_index": 0,
+      "key_agreement": "supported_unique",
+      "whole_content_supported_by_both": true,
+      "goal_and_choice_quality_supported_by_both": false,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q002",
+          "supported_choice_indices": [
+            2
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "The otherwise clause makes the specific non-guarantee statement."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "The staff-shortage condition puts this case in the explicit otherwise clause."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "supported",
+              "reason": "With a staff shortage, the stated result is that rescheduling is not guaranteed."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "No manager-approval requirement is given."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "The initial “can” also need not guarantee rescheduling, but the explicit otherwise clause makes the answer determinate. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q002",
+          "supported_choice_indices": [
+            2
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "The email makes the specific non-guarantee statement for this case."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "A staff shortage makes the qualifying conjunction fail."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "supported",
+              "reason": "The explicit otherwise clause states that rescheduling is not guaranteed."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "No manager-approval requirement is stated."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": false,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Not guaranteed is not the same as impossible or forbidden. Reused frozen raw judgment q016 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q002",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "The email commits to nothing specific.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Rescheduling is guaranteed.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Rescheduling is not guaranteed.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "Rescheduling is permitted but requires manager approval.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "The otherwise clause determines non-guarantee. The teaching states both conditions are necessary for any guarantee; it must not be read as claiming “can” guarantees rescheduling whenever both are met. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q002",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "The email commits to nothing specific.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Rescheduling is guaranteed.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Rescheduling is not guaranteed.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "Rescheduling is permitted but requires manager approval.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "The explicit otherwise clause establishes non-guarantee for this case. The teaching should not be generalized into a positive guarantee from can when both favorable conditions hold; the present necessary-condition explanation supports this case."
+        }
+      }
+    },
+    {
+      "client_id": "q003",
+      "raw_id": "q013",
+      "occurrence_id": "author-call-09-item-03",
+      "case_id": "english_conditions_and_scope",
+      "operation_index": 1,
+      "returned_question_index": 1,
+      "key_agreement": "supported_unique",
+      "whole_content_supported_by_both": false,
+      "goal_and_choice_quality_supported_by_both": true,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q003",
+          "supported_choice_indices": [
+            3
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "“Will” commits to revocation without the proposed pending-review qualification."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "No locations were pre-registered, so the exception is unavailable."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "The stated triggers directly cover these facts."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "supported",
+              "reason": "Credential sharing triggers revocation; the excess unregistered-location logins also satisfy the stated trigger."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Potential scope ambiguity in the location exception does not affect this case because pre-registration is absent. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q003",
+          "supported_choice_indices": [
+            3
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "Will is a commitment; the notice supplies no pending-review qualification."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "No locations were pre-registered, so the exception cannot apply."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "At least one trigger suffices, and both are given here."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "supported",
+              "reason": "Credentials were shared and the excess-location condition also holds without the exception."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Both triggers hold and the exception is absent; wording length does not make the application advanced. Reused frozen raw judgment q013 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q003",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Access may be revoked pending review.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Access will not be revoked due to the location exception.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "The categorical claim that the exception applies only to (b) selects a plausible local attachment, although a broader grammatical scope is possible."
+              ]
+            },
+            {
+              "choice_index": 2,
+              "choice": "The notice is silent on this combination of facts.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "“Condition (a) ... with no exception” may assert an absolute scope restriction beyond the text; what is certain is that no exception is applicable to the supplied facts."
+              ]
+            },
+            {
+              "choice_index": 3,
+              "choice": "Access will be revoked.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "“Has no exception” overstates the certainty of the trailing unless-clause’s scope; in this case, the absent pre-registration is enough to rule the exception out."
+              ]
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "The key and main case result remain uniquely correct under either exception scope. These are limited interpretation qualifications, not evidence that the account avoids revocation. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q003",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Access may be revoked pending review.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Access will not be revoked due to the location exception.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "The notice is silent on this combination of facts.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "Access will be revoked.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "Supported under the ordinary location-specific exception reading. Preregistration is absent, so the observed result does not depend on resolving wider scope counterfactuals."
+        }
+      }
+    },
+    {
+      "client_id": "q004",
+      "raw_id": "q021",
+      "occurrence_id": "author-call-12-item-00",
+      "case_id": "plant_water_transport",
+      "operation_index": 2,
+      "returned_question_index": 0,
+      "key_agreement": "supported_unique",
+      "whole_content_supported_by_both": true,
+      "goal_and_choice_quality_supported_by_both": true,
+      "difficulty_at_least_three_by_both": true,
+      "useful_by_frozen_criterion": true,
+      "phase1": {
+        "a": {
+          "id": "q004",
+          "supported_choice_indices": [
+            0
+          ],
+          "status": "unique",
+          "premise_status": "missing_material",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "supported",
+              "reason": "Net movement depends on the total water-potential difference, which the qualitative component comparisons do not fix."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Greater pressure favors A-to-B movement, but the opposing solute effect could dominate; this direction is not certain."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Greater solute concentration favors B-to-A movement, but the opposing pressure effect could dominate; this direction is not certain."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "The opposing components need not cancel exactly."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 3,
+          "notes": "Intentional insufficiency is handled by an available correct choice. For example, changing the relative magnitudes of ΔΨs < 0 and ΔΨp > 0 can produce either sign or zero for their sum. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q004",
+          "supported_choice_indices": [
+            0
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "supported",
+              "reason": "The magnitudes of the opposing contributions are needed to compare total potentials."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Greater pressure raises A's potential, but the solute contribution lowers it by an unspecified amount."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Greater solute concentration lowers A's potential, but the pressure contribution may offset or exceed that effect."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Equality of total potentials is possible but is not established."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 3,
+          "notes": "The explicit indeterminacy choice correctly represents insufficient quantitative information; that is the solution rather than a defective missing premise. Solute and pressure effects must be combined. Reused frozen raw judgment q021 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q004",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Cannot be determined from the information given.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Water will move from Cell A to Cell B.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Water will move from Cell B to Cell A.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "No net water movement will occur.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "All four displays correctly explain why opposing component signs alone do not determine total water potential. The intentional missing magnitudes are not a defect in this cannot-determine item. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q004",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Cannot be determined from the information given.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Water will move from Cell A to Cell B.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Water will move from Cell B to Cell A.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "No net water movement will occur.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "All four displays correctly distinguish unconfirmed directions/equality from the warranted indeterminacy answer."
+        }
+      }
+    },
+    {
+      "client_id": "q005",
+      "raw_id": "q003",
+      "occurrence_id": "author-call-00-item-03",
+      "case_id": "sound_intensity_and_decibels",
+      "operation_index": 0,
+      "returned_question_index": 1,
+      "key_agreement": "supported_unique",
+      "whole_content_supported_by_both": false,
+      "goal_and_choice_quality_supported_by_both": true,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q005",
+          "supported_choice_indices": [
+            2
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "Pressure level can be obtained from calibrated pressure without using atmospheric temperature."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Interface impedance alone does not address the missing frequency applicability of the quoted sensitivity."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "supported",
+              "reason": "The supplied sensitivity is specified at 1 kHz; the measured sound’s frequency is needed to check its applicability."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Self-noise characterizes a measurement limit; it does not establish whether the quoted signal sensitivity applies."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Identifying needed frequency information is sound. Frequency alone would not supply sensitivity at another frequency; a full measurement may also require response, loading, and RMS/gain calibration. The stem does not request a complete calibration protocol. Manufacturer reference: https://www.bksv.com/de/knowledge/blog/sound/measurement-microphones Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q005",
+          "supported_choice_indices": [
+            2
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "Temperature is not required for the usual pressure-to-voltage calibration and SPL reference."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "No loading mismatch is stated; interface impedance is not the identified gap in the 1 kHz calibration."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "supported",
+              "reason": "A sensitivity specified at 1 kHz need not apply at the frequencies in the other field."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Self-noise is not the missing calibration applicability information for this stated signal."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Frequency or spectrum is needed to check applicability; frequency alone need not supply a complete off-frequency calibration. Treat the quoted sensitivity/output using ordinary microphone RMS and loading conventions. Source: https://www.analog.com/en/resources/analog-dialogue/articles/understanding-microphone-sensitivity.html Reused frozen raw judgment q003 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q005",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "The atmospheric temperature during measurement.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "The impedance of the recording interface.",
+              "feedback_support": "unsupported",
+              "display_support": "unsupported",
+              "issues": [
+                "Measuring output voltage does not remove electrical loading from the voltage-to-pressure calibration. If sensitivity is open-circuit, V_loaded = S_open·p·Z_load/(Z_source+Z_load); the same measured voltage can imply different pressures for different loading.",
+                "The explanation’s stated reason for dismissing impedance is invalid even though frequency applicability remains the frozen uniquely supported answer."
+              ]
+            },
+            {
+              "choice_index": 2,
+              "choice": "The frequency of the measured sound to verify sensitivity applies.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "The microphone's self-noise floor in dB SPL.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "Frequency calibration is correctly taught by the main. The loading issue concerns a new categorical explanation, not a retrospective change to the phase1 key judgment. The equation is an independent voltage-divider counterexample, not an added case premise. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q005",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "The atmospheric temperature during measurement.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "The impedance of the recording interface.",
+              "feedback_support": "unsupported",
+              "display_support": "unsupported",
+              "issues": [
+                "Already measuring output voltage does not remove load-dependent sensitivity. The conclusion needs matching/negligible loading, not merely an observed voltage."
+              ]
+            },
+            {
+              "choice_index": 2,
+              "choice": "The frequency of the measured sound to verify sensitivity applies.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "The microphone's self-noise floor in dB SPL.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "Key and main retain the ordinary calibration assumptions from phase1; the loading distractor is dismissed using a new, false reason. Measuring loaded voltage does not eliminate the need to know the applicable loaded sensitivity. Source: https://service.shure.com/articles/en_US/Knowledge/should-i-match-impedances-of-my-microphone-to-my-mixer ."
+        }
+      }
+    },
+    {
+      "client_id": "q006",
+      "raw_id": "q025",
+      "occurrence_id": "author-call-00-item-00",
+      "case_id": "sound_intensity_and_decibels",
+      "operation_index": 0,
+      "returned_question_index": 0,
+      "key_agreement": "supported_unique",
+      "whole_content_supported_by_both": true,
+      "goal_and_choice_quality_supported_by_both": true,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q006",
+          "supported_choice_indices": [
+            1
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "For the stated physical pressure/intensity comparison in the same medium, the level ratio follows from pressure amplitude; frequency is not an extra factor."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "supported",
+              "reason": "The common ρv factor cancels: I_B/I_A = (4/2)² = 4, giving 10 log10(4) = 6.02 dB."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Absolute intensities would require medium properties, but the question asks for their ratio and level difference."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Cancellation works for any pressure-amplitude ratio, not only perfect squares."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "“6 dB louder” is interpreted as a 6 dB physical level increase, consistent with the context, not a quantified subjective loudness ratio. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q006",
+          "supported_choice_indices": [
+            1
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "For the stated sinusoidal pressure-intensity model, frequency is not an additional factor in this same-medium level ratio."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "supported",
+              "reason": "The shared rho*v cancels in the intensity ratio, leaving (4/2)^2 = 4 and a 6.0206 dB level difference."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Absolute intensities require medium data, but this relative comparison does not."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Cancellation works for any pressure ratio; no perfect-square exception is needed."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 3,
+          "notes": "Reads 6 dB louder in the normal audio-engineering sense of a level difference, not a quantified perceived-loudness ratio. Requires separating an absolute calculation from a relative one. Source: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level Reused frozen raw judgment q025 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q006",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "No; the comparison is valid because the medium is identical for both tones.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Yes; the absolute intensity values require knowing ρ and v to compute.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "No; but only because the ratio happens to be a perfect square.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "All displayed arithmetic and ratio reasoning are correct in the stated sinusoidal same-medium model. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q006",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "No; the comparison is valid because the medium is identical for both tones.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Yes; the absolute intensity values require knowing ρ and v to compute.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "No; but only because the ratio happens to be a perfect square.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "All displays consistently apply common-medium cancellation and the pressure-squared intensity ratio; 10*log10(4)=6.0206 dB."
+        }
+      }
+    },
+    {
+      "client_id": "q007",
+      "raw_id": "q024",
+      "occurrence_id": "author-call-12-item-03",
+      "case_id": "plant_water_transport",
+      "operation_index": 2,
+      "returned_question_index": 1,
+      "key_agreement": "supported_unique",
+      "whole_content_supported_by_both": false,
+      "goal_and_choice_quality_supported_by_both": true,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q007",
+          "supported_choice_indices": [
+            1
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "Phloem redistribution from storage is not the standard route explaining uptake of newly supplied soil water."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "supported",
+              "reason": "Cohesion–tension transport in xylem is the standard main mechanism carrying newly available root water toward leaves."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Root pressure can contribute in some plants and conditions, but it is not the best general explanation for upward vascular water transport."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Soil-to-leaf transport in a vascular potted plant cannot bypass intervening tissues and the vascular pathway in this way."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "The “best explains” formulation supports the standard general xylem mechanism; recovery alone would not experimentally prove that transpiration, rather than root pressure, dominated this individual episode. Cellular turgor recovery also requires water entry down water-potential gradients. “Soil was dry” is naturally the pre-watering condition, not a contradiction. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q007",
+          "supported_choice_indices": [
+            1
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "Redistributing stored water through phloem is not the main route for newly available soil water to leaves."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "supported",
+              "reason": "The usual cohesion-tension mechanism transports newly available root water upward through xylem, permitting leaf rehydration."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Root pressure can contribute in some plants, but is not the general best explanation of rapid bulk upward transport in the standard transpiration-stream model."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Long-distance transport to leaves is not direct soil-to-leaf osmosis without vascular tissue."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Accept the ordinary textbook best-mechanism question, not proof that root pressure is absent. The observation alone does not experimentally isolate contributions, and an explanation should avoid categorical claims that root pressure never helps recovery. Reused frozen raw judgment q024 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q007",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Phloem transported water from storage tissues to leaves.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Root pressure pushed water rapidly to the leaves.",
+              "feedback_support": "unsupported",
+              "display_support": "unsupported",
+              "issues": [
+                "The feedback categorically calls root pressure weak, slow, and insufficient for recovery without the plant/species/height and hydraulic conditions needed to exclude it.",
+                "A recovery observed within hours does not discriminate the driving force. Root pressure can contribute to recovery after water stress; drought is not a general reason to rule out that role after rewatering."
+              ]
+            },
+            {
+              "choice_index": 3,
+              "choice": "Osmosis directly from soil to leaf cells without vascular tissue.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "The main provides the standard general xylem explanation and avoids the authored main’s stronger assertion that recovery proves the mechanism. Phloem feedback is accepted as a statement about its primary transport function, not a denial that phloem sap contains and moves water. Primary evidence of positive-pressure contribution to recovery: https://jplanthydro.org/article/view/2503 Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q007",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Phloem transported water from storage tissues to leaves.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Root pressure pushed water rapidly to the leaves.",
+              "feedback_support": "unsupported",
+              "display_support": "unsupported",
+              "issues": [
+                "Root pressure is not categorically too weak or slow to contribute to rehydration over hours, including after drought; neither species nor a measurement excluding it is supplied."
+              ]
+            },
+            {
+              "choice_index": 3,
+              "choice": "Osmosis directly from soil to leaf cells without vascular tissue.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "Standard best-mechanism key and generic xylem main remain supported. The root-pressure feedback adds an unjustified categorical exclusion. Root pressure is documented after drought/rewatering: https://pmc.ncbi.nlm.nih.gov/articles/PMC7886691/ ; this does not identify the mechanism in this unspecified potted plant."
+        }
+      }
+    },
+    {
+      "client_id": "q008",
+      "raw_id": "q001",
+      "occurrence_id": "author-call-03-item-02",
+      "case_id": "sound_intensity_and_decibels",
+      "operation_index": 0,
+      "returned_question_index": 3,
+      "key_agreement": "supported_unique",
+      "whole_content_supported_by_both": false,
+      "goal_and_choice_quality_supported_by_both": true,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q008",
+          "supported_choice_indices": [
+            0
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "supported",
+              "reason": "At fixed pressure amplitude, I = p²/(2ρv); water has much greater acoustic impedance ρv than air."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Equal pressure amplitudes do not imply equal intensities in media with different acoustic impedances."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Water’s larger acoustic impedance lowers, rather than raises, intensity at fixed pressure amplitude."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Efficient transmission is not the relation between pressure amplitude and intensity in the medium."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Sound intensity level uses a common intensity reference. Do not substitute the different conventional underwater and airborne pressure-level references for that quantity. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q008",
+          "supported_choice_indices": [
+            0
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "supported",
+              "reason": "For equal pressure amplitude, I is inversely proportional to acoustic impedance rho*v, which is much larger in water."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Equal pressure does not give equal intensity across different acoustic impedances."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "This ignores the larger impedance in the denominator of the intensity relation."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Efficient transmission is not a basis for higher intensity at the specified equal pressure amplitude."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Use the supplied common intensity reference I0, not different underwater versus airborne pressure-level references. Qualitative substitution into the stated relation. Source: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level Reused frozen raw judgment q001 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q008",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "unsupported",
+          "main_issues": [
+            "The main switches from the asked sound intensity level to “dB SPL.” Equal pressure amplitude does not produce a lower sound pressure level merely because acoustic impedance is greater.",
+            "With one common pressure reference, equal pressure gives equal SPL. With conventional water and air pressure references of 1 μPa and 20 μPa, respectively, the same pressure gives an underwater numerical SPL about 26.02 dB higher, not lower."
+          ],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+              "feedback_support": "unsupported",
+              "display_support": "unsupported",
+              "issues": [
+                "The impedance values and lower intensity are reasonable, but “thus lower dB SPL” is a false conclusion conflating intensity level with pressure level.",
+                "Composed display inherits main issue: The main switches from the asked sound intensity level to “dB SPL.” Equal pressure amplitude does not produce a lower sound pressure level merely because acoustic impedance is greater.",
+                "Composed display inherits main issue: With one common pressure reference, equal pressure gives equal SPL. With conventional water and air pressure references of 1 μPa and 20 μPa, respectively, the same pressure gives an underwater numerical SPL about 26.02 dB higher, not lower."
+              ]
+            },
+            {
+              "choice_index": 1,
+              "choice": "Equal, because pressure amplitude determines level directly.",
+              "feedback_support": "supported",
+              "display_support": "unsupported",
+              "issues": [
+                "Composed display inherits main issue: The main switches from the asked sound intensity level to “dB SPL.” Equal pressure amplitude does not produce a lower sound pressure level merely because acoustic impedance is greater.",
+                "Composed display inherits main issue: With one common pressure reference, equal pressure gives equal SPL. With conventional water and air pressure references of 1 μPa and 20 μPa, respectively, the same pressure gives an underwater numerical SPL about 26.02 dB higher, not lower."
+              ]
+            },
+            {
+              "choice_index": 2,
+              "choice": "Higher, because water's incompressibility increases pressure effects.",
+              "feedback_support": "supported",
+              "display_support": "unsupported",
+              "issues": [
+                "Composed display inherits main issue: The main switches from the asked sound intensity level to “dB SPL.” Equal pressure amplitude does not produce a lower sound pressure level merely because acoustic impedance is greater.",
+                "Composed display inherits main issue: With one common pressure reference, equal pressure gives equal SPL. With conventional water and air pressure references of 1 μPa and 20 μPa, respectively, the same pressure gives an underwater numerical SPL about 26.02 dB higher, not lower."
+              ]
+            },
+            {
+              "choice_index": 3,
+              "choice": "Higher, because water transmits sound more efficiently.",
+              "feedback_support": "supported",
+              "display_support": "unsupported",
+              "issues": [
+                "Composed display inherits main issue: The main switches from the asked sound intensity level to “dB SPL.” Equal pressure amplitude does not produce a lower sound pressure level merely because acoustic impedance is greater.",
+                "Composed display inherits main issue: With one common pressure reference, equal pressure gives equal SPL. With conventional water and air pressure references of 1 μPa and 20 μPa, respectively, the same pressure gives an underwater numerical SPL about 26.02 dB higher, not lower."
+              ]
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "All four final displays contain the main’s factual SPL error even when their choice-specific feedback correctly explains intensity. Reference-pressure distinction: https://www.ncbi.nlm.nih.gov/books/NBK236684/ The stem/key remain correct for intensity level using a common intensity reference. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q008",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "unsupported",
+          "main_issues": [
+            "Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+          ],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+              "feedback_support": "unsupported",
+              "display_support": "unsupported",
+              "issues": [
+                "Converts lower intensity at equal pressure into lower SPL, which does not follow and conflicts with the definition of SPL.",
+                "The exact composed display also contains the main issue: Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+              ]
+            },
+            {
+              "choice_index": 1,
+              "choice": "Equal, because pressure amplitude determines level directly.",
+              "feedback_support": "supported",
+              "display_support": "unsupported",
+              "issues": [
+                "The exact composed display also contains the main issue: Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+              ]
+            },
+            {
+              "choice_index": 2,
+              "choice": "Higher, because water's incompressibility increases pressure effects.",
+              "feedback_support": "supported",
+              "display_support": "unsupported",
+              "issues": [
+                "The exact composed display also contains the main issue: Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+              ]
+            },
+            {
+              "choice_index": 3,
+              "choice": "Higher, because water transmits sound more efficiently.",
+              "feedback_support": "supported",
+              "display_support": "unsupported",
+              "issues": [
+                "The exact composed display also contains the main issue: Conflates sound intensity level with sound pressure level (SPL); different acoustic impedances change intensity at equal pressure, not SPL at a shared pressure reference."
+              ]
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "The authored main used intensity level correctly; this final main switches to SPL, changing the physical quantity. SPL is 20*log10(p_rms/p_ref): equal pressures give equal SPL at a common pressure reference. Conventional water/air references instead make the same pressure 26.02 dB higher numerically in water, never lower for the asserted impedance reason. Source: https://www.ncbi.nlm.nih.gov/books/NBK236684/ . The frozen intensity-level key remains supported."
+        }
+      }
+    },
+    {
+      "client_id": "q009",
+      "raw_id": "q022",
+      "occurrence_id": "author-call-09-item-04",
+      "case_id": "english_conditions_and_scope",
+      "operation_index": 1,
+      "returned_question_index": 2,
+      "key_agreement": "disagreement",
+      "whole_content_supported_by_both": false,
+      "goal_and_choice_quality_supported_by_both": true,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q009",
+          "supported_choice_indices": [
+            1,
+            2
+          ],
+          "status": "multiple",
+          "premise_status": "contradictory",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "The instructions supply no caution exception."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "supported",
+              "reason": "For this stated configuration the required sensor conjunction fails, and the engaged-override permission is inactive."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "supported",
+              "reason": "Read literally, the first clause forbids proceeding whenever the override is engaged, while the second explicitly permits it then."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "With override disengaged, the alert sensor fails the prerequisite for proceeding."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Choice 1 correctly resolves the stated case, while choice 2 correctly describes a global contradiction in the quoted instructions. A natural reading can treat the later override sentence as an implicit exception and remove the contradiction, so this is also sensitive to exception-versus-literal reading. Explicitly phrasing the first rule as applying when the override is disengaged would remove the issue. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q009",
+          "supported_choice_indices": [
+            1
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "No caution-based permission is stated."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "supported",
+              "reason": "The normal-sensor requirement fails and the engaged-override exception is unavailable."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "On ordinary instructional reading the later override clause is an exception, not a reason to discard the applicable disengaged-override rule."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "With override disengaged, both sensors must be normal; sensor B is not."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "The text is awkward if formalized as two unrestricted universal statements, but its ordinary exception reading resolves this specified case. Do not invent an override that is engaged. Reused frozen raw judgment q022 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q009",
+          "key_matches_prior_unique": false,
+          "key_status": "non_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Proceeding is permitted with caution.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Proceeding is not permitted.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "The instructions are contradictory.",
+              "feedback_support": "unsupported",
+              "display_support": "unsupported",
+              "issues": [
+                "The first rule is not restricted to the disengaged-override state: “do not proceed unless ... override is disengaged” also prohibits proceeding when it is engaged.",
+                "Thus the claim that the two rules address mutually exclusive states and cannot conflict is false on the literal reading. The second clause can be treated as an intended exception, but that interpretive repair must not be presented as a property of the literal first rule."
+              ]
+            },
+            {
+              "choice_index": 3,
+              "choice": "Proceeding is permitted.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "The main correctly resolves the stated disengaged/alert configuration. The frozen assessment also supports the offered global-contradiction statement, so the key is non-unique on that reading. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q009",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Proceeding is permitted with caution.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Proceeding is not permitted.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "The instructions are contradictory.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "Proceeding is permitted.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "All displays assessed under the ordinary override-exception reading accepted in phase1. The claim about mutually exclusive states is an interpretive paraphrase, not a literal unrestricted formalization of the first sentence."
+        }
+      }
+    },
+    {
+      "client_id": "q010",
+      "raw_id": "q019",
+      "occurrence_id": "author-call-15-item-00",
+      "case_id": "plant_water_transport",
+      "operation_index": 2,
+      "returned_question_index": 3,
+      "key_agreement": "ambiguous",
+      "whole_content_supported_by_both": false,
+      "goal_and_choice_quality_supported_by_both": false,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q010",
+          "supported_choice_indices": [],
+          "status": "ambiguous",
+          "premise_status": "missing_material",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "uncertain",
+              "reason": "Sustained wetting/local humidification can reduce transpiration, but hourly misting does not establish its duration or a strict higher-turgor outcome after several hours."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Dry leaf surfaces do not themselves impose water conservation when stomata remain open."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Adequate soil water does not make transpiration independent of the leaf microenvironment."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Evaporation of externally added surface water is not by itself increased transpiration from within the plant."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Choice 0 is plausible under an intended sustained humidification model, but wetness duration, local vapor gradient, leaf temperature, and the comparison time are unspecified. A shared chamber also does not establish separate ambient humidities. Leaf-wetting effects depend on treatment and leaf properties; a primary experiment documents reduced transpiration while leaves remain wet: https://www.sciencedirect.com/science/article/pii/0002157181901187 Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q010",
+          "supported_choice_indices": [],
+          "status": "ambiguous",
+          "premise_status": "missing_material",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "uncertain",
+              "reason": "Misting can reduce transpiration while leaves remain wet, but hourly misting alone does not establish sustained humidity/wetness or a higher turgor outcome several hours later."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Dry leaf surfaces do not by themselves impose a water-conserving stomatal response; both plants have open stomata."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "Adequate soil water does not force identical transpiration under different leaf conditions."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "refuted",
+              "reason": "Evaporation of surface droplets is not itself transpiration from the plant, so this causal explanation is unsound."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": false,
+          "goal_relevant": true,
+          "difficulty": 3,
+          "notes": "Choice 0 is a plausible expected tendency while wet, not a definite falsehood. Its compound several-hour prediction needs effective leaf wetting/local vapor conditions, timing and hydraulic response. Do not silently turn intermittent misting into sustained high humidity. Experimental leaf-wetting effects vary with species and season: https://pubmed.ncbi.nlm.nih.gov/32474806/ Reused frozen raw judgment q019 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q010",
+          "key_matches_prior_unique": false,
+          "key_status": "ambiguous",
+          "main_support": "uncertain",
+          "main_issues": [
+            "The main presumes a sustained separate local humidity gradient and better turgor for P after several hours; hourly misting and adequate soil water do not establish those comparison outcomes."
+          ],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "The directional mechanism is plausible while the leaves remain effectively wet/humidified, but a strict higher-turgor result is not established.",
+                "Composed display inherits main issue: The main presumes a sustained separate local humidity gradient and better turgor for P after several hours; hourly misting and adequate soil water do not establish those comparison outcomes."
+              ]
+            },
+            {
+              "choice_index": 1,
+              "choice": "Plant Q shows lower transpiration because dry leaves conserve water.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "The asserted steeper gradient around Q is not measured or otherwise fixed for the after-several-hours comparison.",
+                "Composed display inherits main issue: The main presumes a sustained separate local humidity gradient and better turgor for P after several hours; hourly misting and adequate soil water do not establish those comparison outcomes."
+              ]
+            },
+            {
+              "choice_index": 2,
+              "choice": "Both plants show identical transpiration because soil water is adequate.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "“Their transpiration rates will differ” assumes a maintained treatment-induced humidity difference; mist timing, persistence, and shared-chamber effects are unspecified.",
+                "Composed display inherits main issue: The main presumes a sustained separate local humidity gradient and better turgor for P after several hours; hourly misting and adequate soil water do not establish those comparison outcomes."
+              ]
+            },
+            {
+              "choice_index": 3,
+              "choice": "Plant P shows higher transpiration due to added surface moisture.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "Misting can transiently reduce the vapor gradient, but the categorical decrease for the stated later comparison is not established.",
+                "Composed display inherits main issue: The main presumes a sustained separate local humidity gradient and better turgor for P after several hours; hourly misting and adequate soil water do not establish those comparison outcomes."
+              ]
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "These are plausible but unproved experimental outcomes, not a claim that wetting cannot reduce transpiration. All four composed displays retain the main’s missing-premise problem. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q010",
+          "key_matches_prior_unique": false,
+          "key_status": "ambiguous",
+          "main_support": "uncertain",
+          "main_issues": [
+            "Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+            "Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+          ],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "A wet-leaf tendency is promoted to the definite several-hour lower-transpiration/higher-turgor comparison without the missing persistence and hydraulic facts.",
+                "The exact composed display also contains the main issue: Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+                "The exact composed display also contains the main issue: Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+              ]
+            },
+            {
+              "choice_index": 1,
+              "choice": "Plant Q shows lower transpiration because dry leaves conserve water.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "A steeper actual vapor gradient for Q at the observation time is asserted rather than established from hourly misting.",
+                "The exact composed display also contains the main issue: Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+                "The exact composed display also contains the main issue: Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+              ]
+            },
+            {
+              "choice_index": 2,
+              "choice": "Both plants show identical transpiration because soil water is adequate.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "Adequate soil water alone does not establish equality, but saying the rates will differ still requires a relevant persistent humidity difference.",
+                "The exact composed display also contains the main issue: Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+                "The exact composed display also contains the main issue: Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+              ]
+            },
+            {
+              "choice_index": 3,
+              "choice": "Plant P shows higher transpiration due to added surface moisture.",
+              "feedback_support": "uncertain",
+              "display_support": "uncertain",
+              "issues": [
+                "The humidity-gradient explanation is plausible while wet, but the stated misting schedule does not establish the later rate direction.",
+                "The exact composed display also contains the main issue: Treats intermittent misting as the effective sustained local humidity difference at the observation time.",
+                "The exact composed display also contains the main issue: Asserts the resulting between-plant turgor advantage without the hydraulic/timing evidence absent in phase1."
+              ]
+            }
+          ],
+          "all_teaching_supported": false,
+          "notes": "Prior ambiguity remains: repeated wetting can reduce evaporative demand while wet, but persistence and higher turgor after hours are not established. These are plausible but unproved outcome assertions, not proof that the opposite outcome occurs."
+        }
+      }
+    },
+    {
+      "client_id": "q011",
+      "raw_id": "q002",
+      "occurrence_id": "author-call-03-item-00",
+      "case_id": "sound_intensity_and_decibels",
+      "operation_index": 0,
+      "returned_question_index": 2,
+      "key_agreement": "supported_unique",
+      "whole_content_supported_by_both": true,
+      "goal_and_choice_quality_supported_by_both": true,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q011",
+          "supported_choice_indices": [
+            3
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "The stated distance ratio gives a 12.04 dB decrease, not 18 dB."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "The stated distance ratio gives a 12.04 dB decrease, not 24 dB."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "88 dB would correspond approximately to doubling the distance, not quadrupling it."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "supported",
+              "reason": "94 − 20 log10(4/1) = 81.96 dB, rounding to 82 dB."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": " Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q011",
+          "supported_choice_indices": [
+            3
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "An 18 dB reduction exceeds the stated spherical-spreading attenuation."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "A 24 dB reduction double-counts the pressure/intensity distance conversion."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "This is only a 6 dB reduction, appropriate to doubling rather than quadrupling distance."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "supported",
+              "reason": "94 - 20*log10(4/1) = 81.9588 dB, approximately 82 dB."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": true,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "Single familiar inverse-distance level calculation; additional arithmetic does not establish level three. Reused frozen raw judgment q002 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q011",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "76 dB",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "70 dB",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "88 dB",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "82 dB",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "Independent checks: 10^(18/10)=63.0957; 10^(24/10)=251.1886; fourfold distance gives a 12.0412 dB decrease, yielding 81.9588 dB. All displayed rounded values are sound. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q011",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "76 dB",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "70 dB",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "88 dB",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "82 dB",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "Verified 10^(18/10)=63.0957, 10^(24/10)=251.1886, and the correct 16-fold attenuation/81.9588 dB result. All feedback is numerically consistent."
+        }
+      }
+    },
+    {
+      "client_id": "q012",
+      "raw_id": "q015",
+      "occurrence_id": "author-call-12-item-04",
+      "case_id": "plant_water_transport",
+      "operation_index": 2,
+      "returned_question_index": 2,
+      "key_agreement": "supported_unique",
+      "whole_content_supported_by_both": true,
+      "goal_and_choice_quality_supported_by_both": false,
+      "difficulty_at_least_three_by_both": false,
+      "useful_by_frozen_criterion": false,
+      "phase1": {
+        "a": {
+          "id": "q012",
+          "supported_choice_indices": [
+            3
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "Remaining open under mild drying does not establish damaged guard cells."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Different stomatal behavior does not establish higher photosynthetic efficiency or reduced CO₂ requirements."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "The observations cannot imply equal growth across all conditions."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "supported",
+              "reason": "M retains a route for CO₂ uptake; N restricts the route to conserve water."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": false,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "“Prioritizes” is a reasonable qualitative description of the observed strategies, not a claim of conscious intent. The identical-growth-under-all-conditions distractor is conspicuously absolute. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+        },
+        "b": {
+          "id": "q012",
+          "supported_choice_indices": [
+            3
+          ],
+          "status": "unique",
+          "premise_status": "sufficient",
+          "per_choice": [
+            {
+              "choice_index": 0,
+              "judgment": "refuted",
+              "reason": "Keeping stomata open under this condition does not diagnose damaged guard cells."
+            },
+            {
+              "choice_index": 1,
+              "judgment": "refuted",
+              "reason": "Photosynthetic efficiency is not measured by the stated opening response."
+            },
+            {
+              "choice_index": 2,
+              "judgment": "refuted",
+              "reason": "The observation cannot establish equal growth across all environments."
+            },
+            {
+              "choice_index": 3,
+              "judgment": "supported",
+              "reason": "Relative opening favors continued CO2 exchange, whereas closure favors conserving water."
+            }
+          ],
+          "distinct_choices": true,
+          "plausible_distractors": false,
+          "goal_relevant": true,
+          "difficulty": 2,
+          "notes": "A qualitative description of these observed strategies, not a claim about immutable species priorities or future growth. Reused frozen raw judgment q015 after exact UTF-8 stem/choice-set and goal title/category/currentLevel/focusAreas/source match; indices remapped to displayed order. Client packet omits derived provider goal metadata, which does not alter this judgment."
+        }
+      },
+      "phase2": {
+        "a": {
+          "id": "q012",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Species M has damaged guard cells that cannot respond to water status.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Species N has higher photosynthetic efficiency that requires less CO₂.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Both species will show identical growth rates under all conditions.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "All feedback appropriately distinguishes observed strategies from unsupported claims about damage, efficiency, and universally equal growth; it does not need actual growth-rate measurements to reject those extrapolations. Exact composed displays were checked, including the appended main and the actual displayed choice order."
+        },
+        "b": {
+          "id": "q012",
+          "key_matches_prior_unique": true,
+          "key_status": "supported_unique",
+          "main_support": "supported",
+          "main_issues": [],
+          "choice_feedback": [
+            {
+              "choice_index": 0,
+              "choice": "Species M has damaged guard cells that cannot respond to water status.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 1,
+              "choice": "Species N has higher photosynthetic efficiency that requires less CO₂.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 2,
+              "choice": "Both species will show identical growth rates under all conditions.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            },
+            {
+              "choice_index": 3,
+              "choice": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+              "feedback_support": "supported",
+              "display_support": "supported",
+              "issues": []
+            }
+          ],
+          "all_teaching_supported": true,
+          "notes": "All displays preserve the observed qualitative CO2-entry/water-conservation strategy comparison and reject unmeasured efficiency, damage and all-condition growth claims."
+        }
+      }
+    }
+  ],
+  "composed_display_judgments": [
+    {
+      "client_id": "q001",
+      "choice_index": 0,
+      "assessment": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "agreement": "unsupported"
+    },
+    {
+      "client_id": "q001",
+      "choice_index": 1,
+      "assessment": {
+        "a": "uncertain",
+        "b": "supported"
+      },
+      "agreement": "disagreement"
+    },
+    {
+      "client_id": "q001",
+      "choice_index": 2,
+      "assessment": {
+        "a": "uncertain",
+        "b": "supported"
+      },
+      "agreement": "disagreement"
+    },
+    {
+      "client_id": "q001",
+      "choice_index": 3,
+      "assessment": {
+        "a": "uncertain",
+        "b": "supported"
+      },
+      "agreement": "disagreement"
+    },
+    {
+      "client_id": "q002",
+      "choice_index": 0,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q002",
+      "choice_index": 1,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q002",
+      "choice_index": 2,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q002",
+      "choice_index": 3,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q003",
+      "choice_index": 0,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q003",
+      "choice_index": 1,
+      "assessment": {
+        "a": "uncertain",
+        "b": "supported"
+      },
+      "agreement": "disagreement"
+    },
+    {
+      "client_id": "q003",
+      "choice_index": 2,
+      "assessment": {
+        "a": "uncertain",
+        "b": "supported"
+      },
+      "agreement": "disagreement"
+    },
+    {
+      "client_id": "q003",
+      "choice_index": 3,
+      "assessment": {
+        "a": "uncertain",
+        "b": "supported"
+      },
+      "agreement": "disagreement"
+    },
+    {
+      "client_id": "q004",
+      "choice_index": 0,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q004",
+      "choice_index": 1,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q004",
+      "choice_index": 2,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q004",
+      "choice_index": 3,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q005",
+      "choice_index": 0,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q005",
+      "choice_index": 1,
+      "assessment": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "agreement": "unsupported"
+    },
+    {
+      "client_id": "q005",
+      "choice_index": 2,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q005",
+      "choice_index": 3,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q006",
+      "choice_index": 0,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q006",
+      "choice_index": 1,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q006",
+      "choice_index": 2,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q006",
+      "choice_index": 3,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q007",
+      "choice_index": 0,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q007",
+      "choice_index": 1,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q007",
+      "choice_index": 2,
+      "assessment": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "agreement": "unsupported"
+    },
+    {
+      "client_id": "q007",
+      "choice_index": 3,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q008",
+      "choice_index": 0,
+      "assessment": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "agreement": "unsupported"
+    },
+    {
+      "client_id": "q008",
+      "choice_index": 1,
+      "assessment": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "agreement": "unsupported"
+    },
+    {
+      "client_id": "q008",
+      "choice_index": 2,
+      "assessment": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "agreement": "unsupported"
+    },
+    {
+      "client_id": "q008",
+      "choice_index": 3,
+      "assessment": {
+        "a": "unsupported",
+        "b": "unsupported"
+      },
+      "agreement": "unsupported"
+    },
+    {
+      "client_id": "q009",
+      "choice_index": 0,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q009",
+      "choice_index": 1,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q009",
+      "choice_index": 2,
+      "assessment": {
+        "a": "unsupported",
+        "b": "supported"
+      },
+      "agreement": "disagreement"
+    },
+    {
+      "client_id": "q009",
+      "choice_index": 3,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q010",
+      "choice_index": 0,
+      "assessment": {
+        "a": "uncertain",
+        "b": "uncertain"
+      },
+      "agreement": "uncertain"
+    },
+    {
+      "client_id": "q010",
+      "choice_index": 1,
+      "assessment": {
+        "a": "uncertain",
+        "b": "uncertain"
+      },
+      "agreement": "uncertain"
+    },
+    {
+      "client_id": "q010",
+      "choice_index": 2,
+      "assessment": {
+        "a": "uncertain",
+        "b": "uncertain"
+      },
+      "agreement": "uncertain"
+    },
+    {
+      "client_id": "q010",
+      "choice_index": 3,
+      "assessment": {
+        "a": "uncertain",
+        "b": "uncertain"
+      },
+      "agreement": "uncertain"
+    },
+    {
+      "client_id": "q011",
+      "choice_index": 0,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q011",
+      "choice_index": 1,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q011",
+      "choice_index": 2,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q011",
+      "choice_index": 3,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q012",
+      "choice_index": 0,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q012",
+      "choice_index": 1,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q012",
+      "choice_index": 2,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    },
+    {
+      "client_id": "q012",
+      "choice_index": 3,
+      "assessment": {
+        "a": "supported",
+        "b": "supported"
+      },
+      "agreement": "supported"
+    }
+  ]
+}

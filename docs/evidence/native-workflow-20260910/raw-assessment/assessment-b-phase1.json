@@ -1,0 +1,880 @@
+{
+  "packet_sha256": "45b40eec6cea9de6c51530a4a042c21bf8867851709a502f4afa0078e9184b5c",
+  "assessor": "B",
+  "blinding_note": "Assessor knew protocol and aggregate operational counts; no item-level keys, explanations, model judgments or survival supplied before phase1.",
+  "items": [
+    {
+      "id": "q001",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "For equal pressure amplitude, I is inversely proportional to acoustic impedance rho*v, which is much larger in water."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Efficient transmission is not a basis for higher intensity at the specified equal pressure amplitude."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Equal pressure does not give equal intensity across different acoustic impedances."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "This ignores the larger impedance in the denominator of the intensity relation."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Use the supplied common intensity reference I0, not different underwater versus airborne pressure-level references. Qualitative substitution into the stated relation. Source: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level"
+    },
+    {
+      "id": "q002",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "This is only a 6 dB reduction, appropriate to doubling rather than quadrupling distance."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "94 - 20*log10(4/1) = 81.9588 dB, approximately 82 dB."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "An 18 dB reduction exceeds the stated spherical-spreading attenuation."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "A 24 dB reduction double-counts the pressure/intensity distance conversion."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Single familiar inverse-distance level calculation; additional arithmetic does not establish level three."
+    },
+    {
+      "id": "q003",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Self-noise is not the missing calibration applicability information for this stated signal."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "A sensitivity specified at 1 kHz need not apply at the frequencies in the other field."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Temperature is not required for the usual pressure-to-voltage calibration and SPL reference."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "No loading mismatch is stated; interface impedance is not the identified gap in the 1 kHz calibration."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Frequency or spectrum is needed to check applicability; frequency alone need not supply a complete off-frequency calibration. Treat the quoted sensitivity/output using ordinary microphone RMS and loading conventions. Source: https://www.analog.com/en/resources/analog-dialogue/articles/understanding-microphone-sensitivity.html"
+    },
+    {
+      "id": "q004",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "A ten-month pro account fails the twelve-month qualification."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "The stated all-other-accounts rule covers this pro account."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "The fallback clause explicitly addresses accounts outside the qualifying groups."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Usage volume is not a condition in the terms."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Direct threshold and fallback application; usage volume is an invented condition."
+    },
+    {
+      "id": "q005",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "Narrower stomatal openings directly restrict water-vapor loss and carbon dioxide entry."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "These are not the most direct opposing consequences of the opening change."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Partial closure does not establish that root pressure falls while xylem tension rises."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "The stated response does not trade leaf light capture against sugar transport."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 1,
+      "notes": "Essentially recall of the source-stated stomatal tradeoff, with a drought vignette."
+    },
+    {
+      "id": "q006",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "Coherent equal pressures add: twice the pressure gives 80 + 20*log10(2) = 86.0206 dB."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "A 3 dB addition describes uncorrelated equal sources, not coherent in-phase pressure addition."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Equal in-phase pressures reinforce instead of leaving the original level unchanged."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "The two decibel values cannot be added arithmetically."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "Accept the normal acoustics problem convention that in phase describes the contributions at the stated measurement point. If only electrical drive phase were meant, path phase would be needed; the ordinary reading is sufficient. Requires distinguishing coherent amplitude addition from uncorrelated intensity addition."
+    },
+    {
+      "id": "q007",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "Uncorrelated mean-square contributions add: 70 + 10*log10(2) = 73.0103 dB."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Six additional decibels require coherent equal-amplitude constructive addition."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Logarithmic levels cannot be added directly."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Adding a second equal uncorrelated source increases total mean-square signal."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Standard equal-source uncorrelated addition."
+    },
+    {
+      "id": "q008",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "ambiguous",
+      "premise_status": "ambiguous",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "The ordinary exception reading makes expedited processing the fee-bearing exception for this under-$50 transaction."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "uncertain",
+          "reason": "The clause does not explicitly state the fee rule for transactions above $50; an ordinary default-fee reading would also charge this transaction."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "An under-$50 standard transaction is expressly exempt."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "uncertain",
+          "reason": "Exactly $50 is outside the under-$50 exemption, and the scope of the expedited exception beyond that exemption is not specified."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "The clause clearly supplies an exemption, but does not provide a complete fee schedule. Choice 0 follows the ordinary exception implication; a broader ordinary reading charges 0, 1 and 3. On a strict waiver-only reading, even removing an exemption need not impose a fee. This is a scope/uniqueness defect rather than evidence that every expedited transaction is definitely free."
+    },
+    {
+      "id": "q009",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "The account is unverified, so the stated daily $500 ceiling applies."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "The $5,000 permission belongs to verified accounts, and $3,000 is not even $5,000 in available funds."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "A ceiling on withdrawals does not prohibit every withdrawal."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "No before-noon exception is given."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "The balance does not remove the verification limit; several distractors add plainly absent conditions."
+    },
+    {
+      "id": "q010",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "Higher external CO2 can support assimilation with smaller stomatal openings and reduced water loss, shifting water-use efficiency."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Partial closure reduces conductance; increased water loss is the wrong direction for the stated response."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Partial closure at elevated CO2 does not imply complete cessation of photosynthesis."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Neither unlimited uptake nor elimination of water loss follows from partial closure."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "Choice 0 is the ordinary qualitative physiological expectation, not a guaranteed assimilation rate for every species or CO2 exposure. Its wording describes two benefits awkwardly as a trade, but the intended change is interpretable. Evidence: https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2016.01568/full"
+    },
+    {
+      "id": "q011",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "Both maintenance mode and supervisor presence are required; the second condition fails."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "The conjunction does not allow maintenance mode alone."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "The quoted condition concerns disabling, not re-enabling."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "The absent supervisor determines that this disabling was not permitted."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "One conjunctive-rule application, with an invented re-enabling distractor."
+    },
+    {
+      "id": "q012",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "At equal temperature and otherwise controlled conditions, the lower humidity gives a larger leaf-to-air vapor gradient."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Higher humidity reduces rather than increases the evaporative gradient under the stated conditions."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Equal temperature does not erase the humidity difference."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Seventy percent humidity is not saturation and does not require transpiration to stop."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Accept normal controlled-experiment convention that other relevant conditions are matched; no fixed numerical rate is claimed."
+    },
+    {
+      "id": "q013",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "Credentials were shared and the excess-location condition also holds without the exception."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "No locations were pre-registered, so the exception cannot apply."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Will is a commitment; the notice supplies no pending-review qualification."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "At least one trigger suffices, and both are given here."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Both triggers hold and the exception is absent; wording length does not make the application advanced."
+    },
+    {
+      "id": "q014",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "Day 15 violates the explicit nonqualification rule for returns after day 14."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "The email supplies no discretionary partial-refund exception to that exclusion."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Unused condition alone cannot override the late-return exclusion."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Nothing promises a delayed refund next month."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Direct deadline application; does not require assuming a converse because the late-return exclusion is explicit."
+    },
+    {
+      "id": "q015",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Keeping stomata open under this condition does not diagnose damaged guard cells."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "Relative opening favors continued CO2 exchange, whereas closure favors conserving water."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Photosynthetic efficiency is not measured by the stated opening response."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "The observation cannot establish equal growth across all environments."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "A qualitative description of these observed strategies, not a claim about immutable species priorities or future growth."
+    },
+    {
+      "id": "q016",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "A staff shortage makes the qualifying conjunction fail."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "The explicit otherwise clause states that rescheduling is not guaranteed."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "The email makes the specific non-guarantee statement for this case."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "No manager-approval requirement is stated."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Not guaranteed is not the same as impossible or forbidden."
+    },
+    {
+      "id": "q017",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "No change of reference intensity is given or needed to diagnose the mistake."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "Perceived loudness and logarithmic dB level are different quantities; doubling one does not double the numerical dB reading."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "The inference fails without any change of medium."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Subtracting a reference level does not justify doubling a dB number from perceived loudness."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Does not determine B's actual measured level, and no fixed perceived-loudness-to-dB conversion is needed."
+    },
+    {
+      "id": "q018",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "Four years is below the stated five-year minimum for substituting references."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "The exception is restricted to at least five years of relevant experience."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "The rule contains no close-enough threshold allowance."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "References are expressly permitted for qualifying applicants."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Direct threshold application; no need to infer an unstated equivalence."
+    },
+    {
+      "id": "q019",
+      "supported_choice_indices": [],
+      "status": "ambiguous",
+      "premise_status": "missing_material",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "uncertain",
+          "reason": "Misting can reduce transpiration while leaves remain wet, but hourly misting alone does not establish sustained humidity/wetness or a higher turgor outcome several hours later."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Evaporation of surface droplets is not itself transpiration from the plant, so this causal explanation is unsound."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Adequate soil water does not force identical transpiration under different leaf conditions."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Dry leaf surfaces do not by themselves impose a water-conserving stomatal response; both plants have open stomata."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "Choice 0 is a plausible expected tendency while wet, not a definite falsehood. Its compound several-hour prediction needs effective leaf wetting/local vapor conditions, timing and hydraulic response. Do not silently turn intermittent misting into sustained high humidity. Experimental leaf-wetting effects vary with species and season: https://pubmed.ncbi.nlm.nih.gov/32474806/"
+    },
+    {
+      "id": "q020",
+      "supported_choice_indices": [
+        2
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Meeting a filing deadline is not a promise of acceptance; a service-quality overlap could also invoke the 60-day bar."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Rejection follows only if the service-quality category applies, which is not specified."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "supported",
+          "reason": "Billing alone gives 90 days, but a complaint that is also about service quality has a 60-day bar; the facts do not exclude overlap."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "The policy does not grant discretionary acceptance; possibility and company discretion are different claims."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "No assumption that billing and service-quality complaints are mutually exclusive. Independently, a deadline is a necessary filing condition, not a sufficient acceptance guarantee. The insufficiency option handles the missing classification, so the question can have a warranted answer."
+    },
+    {
+      "id": "q021",
+      "supported_choice_indices": [
+        3
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Greater pressure raises A's potential, but the solute contribution lowers it by an unspecified amount."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Greater solute concentration lowers A's potential, but the pressure contribution may offset or exceed that effect."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Equality of total potentials is possible but is not established."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "supported",
+          "reason": "The magnitudes of the opposing contributions are needed to compare total potentials."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "The explicit indeterminacy choice correctly represents insufficient quantitative information; that is the solution rather than a defective missing premise. Solute and pressure effects must be combined."
+    },
+    {
+      "id": "q022",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "With override disengaged, both sensors must be normal; sensor B is not."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "The normal-sensor requirement fails and the engaged-override exception is unavailable."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "No caution-based permission is stated."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "On ordinary instructional reading the later override clause is an exception, not a reason to discard the applicable disengaged-override rule."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "The text is awkward if formalized as two unrestricted universal statements, but its ordinary exception reading resolves this specified case. Do not invent an override that is engaged."
+    },
+    {
+      "id": "q023",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Three dB corresponds to halving intensity, not quartering it through a distance doubling."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "70 - 20*log10(2/1) = 63.9794 dB, approximately 64 dB."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "A nine-decibel loss is not the spherical-spreading result for this distance ratio."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Twelve dB is the attenuation for quadrupling distance."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "One familiar inverse-square spreading calculation."
+    },
+    {
+      "id": "q024",
+      "supported_choice_indices": [
+        2
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Root pressure can contribute in some plants, but is not the general best explanation of rapid bulk upward transport in the standard transpiration-stream model."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Redistributing stored water through phloem is not the main route for newly available soil water to leaves."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "supported",
+          "reason": "The usual cohesion-tension mechanism transports newly available root water upward through xylem, permitting leaf rehydration."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Long-distance transport to leaves is not direct soil-to-leaf osmosis without vascular tissue."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Accept the ordinary textbook best-mechanism question, not proof that root pressure is absent. The observation alone does not experimentally isolate contributions, and an explanation should avoid categorical claims that root pressure never helps recovery."
+    },
+    {
+      "id": "q025",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "The shared rho*v cancels in the intensity ratio, leaving (4/2)^2 = 4 and a 6.0206 dB level difference."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Absolute intensities require medium data, but this relative comparison does not."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "For the stated sinusoidal pressure-intensity model, frequency is not an additional factor in this same-medium level ratio."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Cancellation works for any pressure ratio; no perfect-square exception is needed."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "Reads 6 dB louder in the normal audio-engineering sense of a level difference, not a quantified perceived-loudness ratio. Requires separating an absolute calculation from a relative one. Source: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level"
+    }
+  ]
+}

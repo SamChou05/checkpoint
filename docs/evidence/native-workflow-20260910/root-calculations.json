@@ -1,0 +1,90 @@
+{
+  "packet_byte_sha256": "45b40eec6cea9de6c51530a4a042c21bf8867851709a502f4afa0078e9184b5c",
+  "scope": "Independent standard-library calculations from blind stems. Conditional calculations do not prove the question has sufficient premises or a unique adequate choice. Microphone calibration and cross-medium reference interpretation require separate semantic/domain assessment. No proposed keys or final teaching used.",
+  "items": [
+    {
+      "id": "q002",
+      "prompt": "A sound engineer measures 94 dB SPL at 1 m from a small loudspeaker in an anechoic chamber. The speaker is moved to 4 m distance with no other changes. What SPL is expected, assuming spherical spreading?",
+      "choices": [
+        "88 dB",
+        "82 dB",
+        "76 dB",
+        "70 dB"
+      ],
+      "expression": "94 + 20*log10(1/4)",
+      "value": 81.95880017344075,
+      "conditions": "Fixed source power; spherical spreading as stated; same level reference.",
+      "interpretation": "Rounds to 82 dB, offered choice index 1. Moving from 1 m to 4 m reduces intensity by 16 and pressure magnitude by 4."
+    },
+    {
+      "id": "q023",
+      "prompt": "A speaker produces 70 dB at 1 meter. At 2 meters, assuming spherical spreading and no reflections, what is the sound intensity level?",
+      "choices": [
+        "67 dB",
+        "64 dB",
+        "61 dB",
+        "58 dB"
+      ],
+      "expression": "70 + 20*log10(1/2)",
+      "value": 63.979400086720375,
+      "conditions": "Spherical spreading and no reflections as stated; fixed source output.",
+      "interpretation": "Rounds to 64 dB, offered choice index 1."
+    },
+    {
+      "id": "q025",
+      "prompt": "A mixing engineer compares two sine-wave tones in air at 20 °C. Tone A has pressure amplitude 2.0 Pa; tone B has amplitude 4.0 Pa. The engineer calculates that B is 6 dB louder than A. A colleague claims this comparison is invalid because the calculation ignores air density and sound speed. Is the colleague correct?",
+      "choices": [
+        "No; the comparison is valid because the medium is identical for both tones.",
+        "Yes; the absolute intensity values require knowing ρ and v to compute.",
+        "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+        "No; but only because the ratio happens to be a perfect square."
+      ],
+      "expression": "10*log10((4/2)**2)",
+      "value": 6.020599913279624,
+      "conditions": "Same medium for both tones, so the rho*v factor cancels. Use a shared level reference.",
+      "interpretation": "Difference is approximately 6 dB; knowing numerical density and speed is unnecessary for the ratio. Conventional dB-louder wording denotes a level difference, not a doubled perception claim."
+    },
+    {
+      "id": "q007",
+      "prompt": "Two uncorrelated noise sources each produce 70 dB at a measurement point. What total level results when both operate simultaneously?",
+      "choices": [
+        "73 dB",
+        "76 dB",
+        "140 dB",
+        "70 dB"
+      ],
+      "expression": "70 + 10*log10(2)",
+      "value": 73.01029995663981,
+      "conditions": "Uncorrelated fields at the measurement point; each retains the stated individual intensity.",
+      "interpretation": "Power/intensity addition gives approximately 73 dB, offered choice index 0."
+    },
+    {
+      "id": "q006",
+      "prompt": "Two identical speakers each produce 80 dB at a measurement point when operated alone. When both operate together in phase at the same frequency, what level is expected at that point?",
+      "choices": [
+        "86 dB",
+        "83 dB",
+        "80 dB",
+        "160 dB"
+      ],
+      "expression": "80 + 20*log10(2)",
+      "value": 86.02059991327963,
+      "conditions": "Equal received pressure amplitudes that add in phase at the measurement point in linear acoustics.",
+      "interpretation": "Conditional result is approximately 86 dB. This calculation alone does not resolve whether the stem establishes arrival phase rather than only source synchronization."
+    },
+    {
+      "id": "q017",
+      "prompt": "In a controlled test, sound A measures 60 dB. Sound B is perceived as \"twice as loud\" in a psychoacoustic test. An assistant concludes B must be 120 dB, arguing that doubling the level doubles the decibels. What is wrong with this reasoning?",
+      "choices": [
+        "The reference intensity I₀ was different for the two sounds.",
+        "Decibels are logarithmic; doubling perceived loudness does not double the dB value.",
+        "Sound B must have been measured in a different medium.",
+        "The assistant forgot to subtract the reference level before doubling."
+      ],
+      "expression": "10**((120-60)/10)",
+      "value": 1000000.0,
+      "conditions": "Compare physical intensities under the same decibel reference.",
+      "interpretation": "A 60 dB increase would multiply intensity by one million, not establish twice perceived loudness. Perceptual loudness does not specify a unique physical level without further conditions."
+    }
+  ]
+}

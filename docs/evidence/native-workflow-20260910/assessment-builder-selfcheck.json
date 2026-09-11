@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "builder_byte_sha256": "ad6db06a25e9d5b3d9fbc836b046cceba82bd95c06a81ec6076b37f3433ef25f",
+  "checks": [
+    "capture_bytes_mismatch_rejected_before_output",
+    "plan_hash_mismatch_rejected_before_output",
+    "fixture_bytes_mismatch_rejected_before_output",
+    "source_hashes_mismatch_rejected_before_output",
+    "failed_operation_and_all_requested_slots_preserved",
+    "changed_actual_client_content_preserved_without_selection_or_recomposition"
+  ],
+  "raw_selfcheck": "passed; whole object/root-array recovery, missing keys, malformed question fields, absent response, exact duplicate choices and Unicode, hidden teaching, hashes, no overwrite",
+  "actual_raw_occurrences": 25,
+  "actual_oversize_stems_retained": 1,
+  "actual_client_items": 12,
+  "actual_feedback_displays": 48,
+  "requested_slots": 15
+}

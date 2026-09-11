@@ -1,0 +1,133 @@
+{
+  "capture_byte_sha256": "fed7a2261f2baf58bddbc3c6749fef409fd41d7dcf70b91bc27da0047c6848df",
+  "capture_canonical_sha256": "6f04bdd6c02d7d65fda962e587d5f8b518f2ee244b67f3a01ae4e578e093a591",
+  "plan_sha256": "3cd55295f466fff4bbb62ed1f860696f441c6d4d421f30e1553935e2d2a5a02c",
+  "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+  "items": [
+    {
+      "id": "q001",
+      "expectedAnswer": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+      "explanation": "Intensity I = (Δp)²/(2ρv). Water has higher ρ and v than air, so for equal Δp, I_water < I_air. Since β depends on I, the level in water is lower despite equal pressure amplitude."
+    },
+    {
+      "id": "q002",
+      "expectedAnswer": "82 dB",
+      "explanation": "Intensity follows inverse-square law: I ∝ 1/r². Quadrupling distance reduces intensity by factor 16. Level change is 10 log₁₀(1/16) ≈ –12 dB, so 94 dB – 12 dB = 82 dB."
+    },
+    {
+      "id": "q003",
+      "expectedAnswer": "The frequency of the measured sound to verify sensitivity applies.",
+      "explanation": "The sensitivity gives volts per pascal at reference conditions. To find SPL from output voltage, one needs the actual sound pressure: SPL = 20 log₁₀(p/p₀) where p₀ = 20 μPa. From V_out and sensitivity (V/Pa), one computes p = V_out / sensitivity. However, the sensitivity is specified at 1 kHz; if the measured sound differs in frequency, the frequency response deviation is needed. The critical missing piece is whether the frequency matches the calibration condition."
+    },
+    {
+      "id": "q004",
+      "expectedAnswer": "Support must be purchased separately.",
+      "explanation": "The account fails both inclusion paths: it is not enterprise, and as a pro account it has not met the 12-month activity requirement. Therefore it falls into 'all other accounts' and must purchase support separately."
+    },
+    {
+      "id": "q005",
+      "expectedAnswer": "Reduced water loss versus reduced carbon dioxide uptake.",
+      "explanation": "The source explicitly states that open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss, and that restricting stomatal opening involves a tradeoff between carbon dioxide entry and water conservation. Partial closure reduces water loss at the cost of reduced CO₂ uptake."
+    },
+    {
+      "id": "q006",
+      "expectedAnswer": "83 dB",
+      "explanation": "Intensity adds for incoherent or coherent sources at the same point. Doubling intensity adds 3.01 dB. Each speaker alone has intensity I; together they have 2I. Level = 80 dB + 10 log₁₀(2) ≈ 80 + 3.01 = 83 dB. The 3 dB increase assumes perfect addition; phase alignment at the measurement point ensures this."
+    },
+    {
+      "id": "q007",
+      "expectedAnswer": "73 dB",
+      "explanation": "Uncorrelated sources add intensities, not pressures. Each has intensity I, so total is 2I. Level increase is 10 log₁₀(2) ≈ 3 dB, giving 73 dB. Adding pressures would incorrectly give 76 dB."
+    },
+    {
+      "id": "q008",
+      "expectedAnswer": "A $30 transaction with expedited processing requested.",
+      "explanation": "The exception reactivates fees when expedited processing is requested, even for small transactions. Without that trigger, sub-$50 transactions remain fee-free."
+    },
+    {
+      "id": "q009",
+      "expectedAnswer": "Account X cannot withdraw more than $500 today.",
+      "explanation": "The condition \"unless verified\" restricts unverified accounts to $500. Being unverified, Account X cannot exceed that limit regardless of its balance. The $5,000 limit applies only if verified."
+    },
+    {
+      "id": "q010",
+      "expectedAnswer": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+      "explanation": "Guard cells regulate stomatal openings to balance carbon dioxide entry against water-vapor loss. When CO₂ is abundant, less opening is needed for photosynthesis, so partial closure reduces water loss without strongly limiting carbon uptake. The source describes this as a tradeoff between carbon dioxide entry and water conservation."
+    },
+    {
+      "id": "q011",
+      "expectedAnswer": "No; disabling required both conditions to be met.",
+      "explanation": "Both conditions joined by \"and\" must hold. Absence of a supervisor violates the exception's requirements, so the prohibition against disabling remains in force."
+    },
+    {
+      "id": "q012",
+      "expectedAnswer": "Plant X will have higher transpiration than Plant Y.",
+      "explanation": "The source states that the leaf-to-air vapor gradient influences transpiration, and that higher atmospheric humidity reduces that gradient at otherwise matching temperatures. The steeper vapor pressure deficit in 30% humidity creates a stronger driving force for water loss, so Plant X loses water faster."
+    },
+    {
+      "id": "q013",
+      "expectedAnswer": "Access will be revoked.",
+      "explanation": "Condition (a) alone is sufficient for revocation—the 'or' creates independent triggers. The exception for pre-registered locations only applies to condition (b), not to credential sharing."
+    },
+    {
+      "id": "q014",
+      "expectedAnswer": "No refund will be processed because the return was late.",
+      "explanation": "Both conditions must be met: within 14 days AND unused. Day 15 fails the time condition, so the exception applies regardless of the item's condition."
+    },
+    {
+      "id": "q015",
+      "expectedAnswer": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+      "explanation": "The source notes that leaf water status, light, and CO₂ affect stomatal behavior, and that a change in one factor does not establish a fixed rate for every plant. Species M prioritizes carbon gain (risking water loss), while Species N prioritizes water conservation (limiting carbon gain). This represents different adaptive strategies, not that one is malfunctioning."
+    },
+    {
+      "id": "q016",
+      "expectedAnswer": "Rescheduling is not guaranteed.",
+      "explanation": "Both conditions (48-hour notice AND no staff shortages) must be satisfied for rescheduling to be guaranteed. The staff shortage means the 'otherwise' clause applies, so rescheduling is not guaranteed."
+    },
+    {
+      "id": "q017",
+      "expectedAnswer": "Decibels are logarithmic; doubling perceived loudness does not double the dB value.",
+      "explanation": "Decibels are logarithmic. Doubling perceived loudness (a subjective psychoacoustic quantity) does not double the decibel value. Physically, doubling intensity adds only ~3 dB. The assistant confuses the logarithmic intensity level with a linear scale and conflates subjective loudness with physical intensity level. The error is treating decibels as linear."
+    },
+    {
+      "id": "q018",
+      "expectedAnswer": "No; she has insufficient experience to substitute references.",
+      "explanation": "The exception applies only with \"five or more years.\" Four years does not trigger the substitution clause; the default requirement (transcripts) still binds her."
+    },
+    {
+      "id": "q019",
+      "expectedAnswer": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+      "explanation": "Misting raises the humidity immediately surrounding the leaves, reducing the leaf-to-air vapor gradient. Since transpiration rate depends on this gradient, Plant P loses less water. The source notes that higher atmospheric humidity reduces the gradient driving transpiration, and that open stomata permit water-vapor loss."
+    },
+    {
+      "id": "q020",
+      "expectedAnswer": "The complaint must be accepted.",
+      "explanation": "The 90-day extension applies specifically to billing errors, and day 75 falls within that window. The 60-day cap on service quality complaints does not apply here because the complaint type is billing, not service quality."
+    },
+    {
+      "id": "q021",
+      "expectedAnswer": "Cannot be determined from the information given.",
+      "explanation": "Total water potential depends on both solute (Ψs) and pressure (Ψp) components. The source notes that knowing one component alone need not determine the total gradient. Without knowing the actual magnitudes, we cannot determine which way net water will move. The scenario deliberately provides incomplete information to test whether the learner recognizes that both components matter."
+    },
+    {
+      "id": "q022",
+      "expectedAnswer": "Proceeding is not permitted.",
+      "explanation": "The 'unless' clause requires BOTH sensors normal AND override disengaged. With Sensor B showing alert, the condition fails, so proceeding is not permitted. The override exception does not apply because the override is disengaged."
+    },
+    {
+      "id": "q023",
+      "expectedAnswer": "64 dB",
+      "explanation": "Intensity follows the inverse-square law: I ∝ 1/r². Doubling distance reduces intensity by factor 4 (2²). Level change = 10 log₁₀(1/4) = –10 log₁₀(4) ≈ –6.02 dB. New level = 70 dB – 6 dB ≈ 64 dB. The 6 dB drop is the key; exact value is ~63.98 dB."
+    },
+    {
+      "id": "q024",
+      "expectedAnswer": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+      "explanation": "The source describes evaporation from leaves creating tension that pulls water through xylem, with cohesion and adhesion sustaining the column. Rapid recovery after watering shows this tension-cohesion mechanism already established; root pressure is too slow and weak for this. The xylem pathway, not phloem or osmosis alone, explains the speed."
+    },
+    {
+      "id": "q025",
+      "expectedAnswer": "No; the comparison is valid because the medium is identical for both tones.",
+      "explanation": "Intensity scales with squared pressure amplitude when the medium is unchanged (I ∝ (Δp)²). The ratio I_B/I_A = (4.0/2.0)² = 4, giving 10 log₁₀(4) ≈ 6.02 dB. Since both tones are in the same air at the same temperature, ρ and v are identical and cancel in the ratio. The colleague is incorrect; the 6 dB result is valid."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "61E221DF-0600-492B-9EFA-B7AFE55F60A0",
+        "deviceName" : "Checkpoint Question Integrity QA",
+        "exportedFileName" : "0D4DC3DE-8DD2-41F7-B374-8DB493C5C8AB.json",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "question-delivery-client-observation_0_3D01510C-8358-49B6-9613-71A2EDB87767.json",
+        "timestamp" : 1789093364.026
+      }
+    ],
+    "testIdentifier" : "QuestionDeliveryCaptureTests/testCapturedOperationsThroughRealClientDelivery()",
+    "testIdentifierURL" : "test://com.apple.xcode/CheckpointDeliveryQA/CheckpointTests/QuestionDeliveryCaptureTests/testCapturedOperationsThroughRealClientDelivery"
+  }
+]

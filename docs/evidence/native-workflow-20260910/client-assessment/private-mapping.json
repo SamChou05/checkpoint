@@ -1,0 +1,850 @@
+{
+  "capture_byte_sha256": "fed7a2261f2baf58bddbc3c6749fef409fd41d7dcf70b91bc27da0047c6848df",
+  "capture_canonical_sha256": "6f04bdd6c02d7d65fda962e587d5f8b518f2ee244b67f3a01ae4e578e093a591",
+  "plan_sha256": "3cd55295f466fff4bbb62ed1f860696f441c6d4d421f30e1553935e2d2a5a02c",
+  "source_revision": "661751de3fa0a55fc990be155cb3f6dad5246849",
+  "bank_delivery_byte_sha256": "0274b4ff0f5ed9d5d94f60be482bb5bbb79749507db02e1a741523c9e48ab081",
+  "swift_attachment_byte_sha256": "134c5ca8f191cb6339909aba5bc295907abf3717d699e4dd1f9d0203c620d675",
+  "items": [
+    {
+      "id": "q001",
+      "operation_index": 2,
+      "question_index": 4,
+      "case_id": "plant_water_transport",
+      "question": {
+        "displayed_choices": [
+          "Increased water loss is traded for higher carbon dioxide uptake.",
+          "Photosynthesis stops completely to maximize water conservation.",
+          "Carbon dioxide uptake becomes unlimited while water loss is eliminated.",
+          "Reduced water loss is traded for continued adequate carbon dioxide uptake."
+        ],
+        "expectedAnswer": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+        "feedback_displays": [
+          {
+            "choice": "Increased water loss is traded for higher carbon dioxide uptake.",
+            "choice_feedback": "Stomata partially close at elevated CO₂, which reduces—not increases—water loss; this choice inverts the actual direction of both changes in the scenario.",
+            "display": "Stomata partially close at elevated CO₂, which reduces—not increases—water loss; this choice inverts the actual direction of both changes in the scenario.\n\nPartial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff."
+          },
+          {
+            "choice": "Photosynthesis stops completely to maximize water conservation.",
+            "choice_feedback": "The scenario specifies only partial closure, so some CO₂ entry continues; complete photosynthetic shutdown is not supported by the source or the stated conditions.",
+            "display": "The scenario specifies only partial closure, so some CO₂ entry continues; complete photosynthetic shutdown is not supported by the source or the stated conditions.\n\nPartial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff."
+          },
+          {
+            "choice": "Carbon dioxide uptake becomes unlimited while water loss is eliminated.",
+            "choice_feedback": "Partial closure restricts rather than eliminates water loss and also limits CO₂ entry; neither quantity reaches the extreme this choice claims.",
+            "display": "Partial closure restricts rather than eliminates water loss and also limits CO₂ entry; neither quantity reaches the extreme this choice claims.\n\nPartial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff."
+          },
+          {
+            "choice": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+            "choice_feedback": "Partial stomatal closure reduces the aperture for water-vapor escape; elevated ambient CO₂ means adequate CO₂ still diffuses in through the narrower opening, preserving the tradeoff balance.",
+            "display": "Partial stomatal closure reduces the aperture for water-vapor escape; elevated ambient CO₂ means adequate CO₂ still diffuses in through the narrower opening, preserving the tradeoff balance.\n\nPartial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff."
+          }
+        ],
+        "main": "Partial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff.",
+        "prompt": "A plant physiologist exposes a well-watered plant to bright light while gradually raising ambient CO₂ concentration. Stomata begin partially closed at elevated CO₂. Which tradeoff shifts as a result of this response?",
+        "remoteID": "f86843a3-8083-5119-8552-5121c2173828"
+      },
+      "claimed_question": {
+        "prompt": "A plant physiologist exposes a well-watered plant to bright light while gradually raising ambient CO₂ concentration. Stomata begin partially closed at elevated CO₂. Which tradeoff shifts as a result of this response?",
+        "expectedAnswer": "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+        "choices": [
+          "Reduced water loss is traded for continued adequate carbon dioxide uptake.",
+          "Increased water loss is traded for higher carbon dioxide uptake.",
+          "Photosynthesis stops completely to maximize water conservation.",
+          "Carbon dioxide uptake becomes unlimited while water loss is eliminated."
+        ],
+        "explanation": "Partial stomatal closure at elevated CO₂ reduces the aperture for water-vapor escape while elevated external CO₂ concentration allows adequate uptake through the smaller opening, illustrating the CO₂-uptake versus water-conservation tradeoff.",
+        "topic": "stomatal regulation to observations and environm",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Reduced water loss is traded for continued adequate carbon dioxide uptake.": "Partial stomatal closure reduces the aperture for water-vapor escape; elevated ambient CO₂ means adequate CO₂ still diffuses in through the narrower opening, preserving the tradeoff balance.",
+          "Increased water loss is traded for higher carbon dioxide uptake.": "Stomata partially close at elevated CO₂, which reduces—not increases—water loss; this choice inverts the actual direction of both changes in the scenario.",
+          "Photosynthesis stops completely to maximize water conservation.": "The scenario specifies only partial closure, so some CO₂ entry continues; complete photosynthetic shutdown is not supported by the source or the stated conditions.",
+          "Carbon dioxide uptake becomes unlimited while water loss is eliminated.": "Partial closure restricts rather than eliminates water loss and also limits CO₂ entry; neither quantity reaches the extreme this choice claims."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "f86843a3-8083-5119-8552-5121c2173828"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q002",
+      "operation_index": 1,
+      "question_index": 0,
+      "case_id": "english_conditions_and_scope",
+      "question": {
+        "displayed_choices": [
+          "The email commits to nothing specific.",
+          "Rescheduling is guaranteed.",
+          "Rescheduling is not guaranteed.",
+          "Rescheduling is permitted but requires manager approval."
+        ],
+        "expectedAnswer": "Rescheduling is not guaranteed.",
+        "feedback_displays": [
+          {
+            "choice": "The email commits to nothing specific.",
+            "choice_feedback": "The 'otherwise' clause is itself a specific commitment covering exactly this scenario, so the email is not silent.",
+            "display": "The 'otherwise' clause is itself a specific commitment covering exactly this scenario, so the email is not silent.\n\nThe guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed."
+          },
+          {
+            "choice": "Rescheduling is guaranteed.",
+            "choice_feedback": "The guarantee requires both conditions satisfied; the staff shortage means condition two fails, so the guarantee does not apply.",
+            "display": "The guarantee requires both conditions satisfied; the staff shortage means condition two fails, so the guarantee does not apply.\n\nThe guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed."
+          },
+          {
+            "choice": "Rescheduling is not guaranteed.",
+            "choice_feedback": "Both conditions (48+ hours notice AND no staff shortage) must be met; the shortage means the 'otherwise' clause applies, so the email explicitly commits to rescheduling not being guaranteed.",
+            "display": "Both conditions (48+ hours notice AND no staff shortage) must be met; the shortage means the 'otherwise' clause applies, so the email explicitly commits to rescheduling not being guaranteed.\n\nThe guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed."
+          },
+          {
+            "choice": "Rescheduling is permitted but requires manager approval.",
+            "choice_feedback": "Manager approval appears nowhere in the email; this choice adds an unstated condition.",
+            "display": "Manager approval appears nowhere in the email; this choice adds an unstated condition.\n\nThe guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed."
+          }
+        ],
+        "main": "The guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed.",
+        "prompt": "Email: \"We can reschedule your appointment if you notify us at least 48 hours in advance and no staff shortages exist; otherwise, rescheduling is not guaranteed.\" The recipient notifies 72 hours in advance during a staff shortage. What does the email commit to?",
+        "remoteID": "525ee24d-ff9d-5cb7-8d36-56f51c5adc11"
+      },
+      "claimed_question": {
+        "prompt": "Email: \"We can reschedule your appointment if you notify us at least 48 hours in advance and no staff shortages exist; otherwise, rescheduling is not guaranteed.\" The recipient notifies 72 hours in advance during a staff shortage. What does the email commit to?",
+        "expectedAnswer": "Rescheduling is not guaranteed.",
+        "choices": [
+          "Rescheduling is not guaranteed.",
+          "Rescheduling is guaranteed.",
+          "The email commits to nothing specific.",
+          "Rescheduling is permitted but requires manager approval."
+        ],
+        "explanation": "The guarantee requires both conditions simultaneously; failing either triggers the 'otherwise' clause. The staff shortage breaks condition two, so the email commits only to rescheduling not being guaranteed.",
+        "topic": "Interpret conditions",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Rescheduling is not guaranteed.": "Both conditions (48+ hours notice AND no staff shortage) must be met; the shortage means the 'otherwise' clause applies, so the email explicitly commits to rescheduling not being guaranteed.",
+          "Rescheduling is guaranteed.": "The guarantee requires both conditions satisfied; the staff shortage means condition two fails, so the guarantee does not apply.",
+          "The email commits to nothing specific.": "The 'otherwise' clause is itself a specific commitment covering exactly this scenario, so the email is not silent.",
+          "Rescheduling is permitted but requires manager approval.": "Manager approval appears nowhere in the email; this choice adds an unstated condition."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "525ee24d-ff9d-5cb7-8d36-56f51c5adc11"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q003",
+      "operation_index": 1,
+      "question_index": 1,
+      "case_id": "english_conditions_and_scope",
+      "question": {
+        "displayed_choices": [
+          "Access may be revoked pending review.",
+          "Access will not be revoked due to the location exception.",
+          "The notice is silent on this combination of facts.",
+          "Access will be revoked."
+        ],
+        "expectedAnswer": "Access will be revoked.",
+        "feedback_displays": [
+          {
+            "choice": "Access may be revoked pending review.",
+            "choice_feedback": "The notice uses 'will be revoked,' not 'may be'; introducing uncertainty misrepresents the stated commitment.",
+            "display": "The notice uses 'will be revoked,' not 'may be'; introducing uncertainty misrepresents the stated commitment.\n\nAn 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue."
+          },
+          {
+            "choice": "Access will not be revoked due to the location exception.",
+            "choice_feedback": "The location exception applies only to condition (b); condition (a)—sharing credentials—carries no exception and independently triggers revocation.",
+            "display": "The location exception applies only to condition (b); condition (a)—sharing credentials—carries no exception and independently triggers revocation.\n\nAn 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue."
+          },
+          {
+            "choice": "The notice is silent on this combination of facts.",
+            "choice_feedback": "Condition (a) is explicitly addressed with no exception, so the notice directly covers this situation.",
+            "display": "Condition (a) is explicitly addressed with no exception, so the notice directly covers this situation.\n\nAn 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue."
+          },
+          {
+            "choice": "Access will be revoked.",
+            "choice_feedback": "Condition (a) is fully met and has no exception; 'either' means one condition alone is sufficient, so revocation is committed to.",
+            "display": "Condition (a) is fully met and has no exception; 'either' means one condition alone is sufficient, so revocation is committed to.\n\nAn 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue."
+          }
+        ],
+        "main": "An 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue.",
+        "prompt": "Notice: \"Access will be revoked if either (a) credentials are shared, or (b) login attempts from unrecognized locations exceed three, unless the user has pre-registered those locations.\" User Z shared credentials and had four unrecognized logins without pre-registration. What does the notice commit to?",
+        "remoteID": "30adeeef-3e48-55a6-85b1-09903a33b5b8"
+      },
+      "claimed_question": {
+        "prompt": "Notice: \"Access will be revoked if either (a) credentials are shared, or (b) login attempts from unrecognized locations exceed three, unless the user has pre-registered those locations.\" User Z shared credentials and had four unrecognized logins without pre-registration. What does the notice commit to?",
+        "expectedAnswer": "Access will be revoked.",
+        "choices": [
+          "Access will be revoked.",
+          "Access will not be revoked due to the location exception.",
+          "Access may be revoked pending review.",
+          "The notice is silent on this combination of facts."
+        ],
+        "explanation": "An 'either…or' trigger means one satisfied condition is sufficient. Condition (a) is met with no applicable exception, so the notice unambiguously commits to revocation regardless of the location issue.",
+        "topic": "exceptions",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Access will not be revoked due to the location exception.": "The location exception applies only to condition (b); condition (a)—sharing credentials—carries no exception and independently triggers revocation.",
+          "Access may be revoked pending review.": "The notice uses 'will be revoked,' not 'may be'; introducing uncertainty misrepresents the stated commitment.",
+          "The notice is silent on this combination of facts.": "Condition (a) is explicitly addressed with no exception, so the notice directly covers this situation.",
+          "Access will be revoked.": "Condition (a) is fully met and has no exception; 'either' means one condition alone is sufficient, so revocation is committed to."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "30adeeef-3e48-55a6-85b1-09903a33b5b8"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q004",
+      "operation_index": 2,
+      "question_index": 0,
+      "case_id": "plant_water_transport",
+      "question": {
+        "displayed_choices": [
+          "Cannot be determined from the information given.",
+          "Water will move from Cell A to Cell B.",
+          "Water will move from Cell B to Cell A.",
+          "No net water movement will occur."
+        ],
+        "expectedAnswer": "Cannot be determined from the information given.",
+        "feedback_displays": [
+          {
+            "choice": "Cannot be determined from the information given.",
+            "choice_feedback": "Higher solute lowers osmotic potential while higher turgor raises pressure potential; without magnitudes the net direction cannot be established.",
+            "display": "Higher solute lowers osmotic potential while higher turgor raises pressure potential; without magnitudes the net direction cannot be established.\n\nTotal water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient."
+          },
+          {
+            "choice": "Water will move from Cell A to Cell B.",
+            "choice_feedback": "This requires Cell A's total water potential to exceed Cell B's, which cannot be confirmed without knowing the magnitude of each component.",
+            "display": "This requires Cell A's total water potential to exceed Cell B's, which cannot be confirmed without knowing the magnitude of each component.\n\nTotal water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient."
+          },
+          {
+            "choice": "Water will move from Cell B to Cell A.",
+            "choice_feedback": "This requires Cell B's total water potential to exceed Cell A's, equally unconfirmable without component magnitudes.",
+            "display": "This requires Cell B's total water potential to exceed Cell A's, equally unconfirmable without component magnitudes.\n\nTotal water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient."
+          },
+          {
+            "choice": "No net water movement will occur.",
+            "choice_feedback": "Equal water potentials would require the solute and pressure effects to exactly cancel, but no magnitudes are given to confirm this.",
+            "display": "Equal water potentials would require the solute and pressure effects to exactly cancel, but no magnitudes are given to confirm this.\n\nTotal water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient."
+          }
+        ],
+        "main": "Total water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient.",
+        "prompt": "A researcher measures water potential in two adjacent plant cells. Cell A has higher solute concentration but is also under greater turgor pressure than Cell B. Which outcome is certain if the cells are connected by open plasmodesmata?",
+        "remoteID": "a7a6577a-a5da-5166-a237-e09b52f45940"
+      },
+      "claimed_question": {
+        "prompt": "A researcher measures water potential in two adjacent plant cells. Cell A has higher solute concentration but is also under greater turgor pressure than Cell B. Which outcome is certain if the cells are connected by open plasmodesmata?",
+        "expectedAnswer": "Cannot be determined from the information given.",
+        "choices": [
+          "Cannot be determined from the information given.",
+          "Water will move from Cell A to Cell B.",
+          "Water will move from Cell B to Cell A.",
+          "No net water movement will occur."
+        ],
+        "explanation": "Total water potential combines osmotic and pressure components; opposing changes in Cell A leave the net direction indeterminate without magnitudes. The source explicitly notes that knowing one component alone need not determine the total gradient.",
+        "topic": "Apply water-potential gradients",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "No net water movement will occur.": "Equal water potentials would require the solute and pressure effects to exactly cancel, but no magnitudes are given to confirm this.",
+          "Cannot be determined from the information given.": "Higher solute lowers osmotic potential while higher turgor raises pressure potential; without magnitudes the net direction cannot be established.",
+          "Water will move from Cell A to Cell B.": "This requires Cell A's total water potential to exceed Cell B's, which cannot be confirmed without knowing the magnitude of each component.",
+          "Water will move from Cell B to Cell A.": "This requires Cell B's total water potential to exceed Cell A's, equally unconfirmable without component magnitudes."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "a7a6577a-a5da-5166-a237-e09b52f45940"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q005",
+      "operation_index": 0,
+      "question_index": 1,
+      "case_id": "sound_intensity_and_decibels",
+      "question": {
+        "displayed_choices": [
+          "The atmospheric temperature during measurement.",
+          "The impedance of the recording interface.",
+          "The frequency of the measured sound to verify sensitivity applies.",
+          "The microphone's self-noise floor in dB SPL."
+        ],
+        "expectedAnswer": "The frequency of the measured sound to verify sensitivity applies.",
+        "feedback_displays": [
+          {
+            "choice": "The atmospheric temperature during measurement.",
+            "choice_feedback": "Microphone sensitivity is expressed as voltage per pascal; converting output voltage to SPL does not require knowing temperature.",
+            "display": "Microphone sensitivity is expressed as voltage per pascal; converting output voltage to SPL does not require knowing temperature.\n\nSensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable."
+          },
+          {
+            "choice": "The impedance of the recording interface.",
+            "choice_feedback": "Interface impedance could affect loading, but the problem states the output voltage has already been measured, so impedance is not additionally needed.",
+            "display": "Interface impedance could affect loading, but the problem states the output voltage has already been measured, so impedance is not additionally needed.\n\nSensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable."
+          },
+          {
+            "choice": "The frequency of the measured sound to verify sensitivity applies.",
+            "choice_feedback": "The datasheet sensitivity is rated at 1 kHz; at other frequencies the sensitivity may differ, so the frequency must be known to confirm the −40 dBV/Pa figure is applicable.",
+            "display": "The datasheet sensitivity is rated at 1 kHz; at other frequencies the sensitivity may differ, so the frequency must be known to confirm the −40 dBV/Pa figure is applicable.\n\nSensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable."
+          },
+          {
+            "choice": "The microphone's self-noise floor in dB SPL.",
+            "choice_feedback": "Self-noise determines the minimum detectable signal but is not required to convert a known output voltage to SPL using a known sensitivity.",
+            "display": "Self-noise determines the minimum detectable signal but is not required to convert a known output voltage to SPL using a known sensitivity.\n\nSensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable."
+          }
+        ],
+        "main": "Sensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable.",
+        "prompt": "A microphone datasheet states sensitivity: –40 dBV/Pa at 1 kHz. An engineer measures 0.1 V output from this mic in a different sound field. What additional information is needed to find the sound pressure level in dB SPL?",
+        "remoteID": "b46114e0-dc28-51f2-b206-446595bee7ed"
+      },
+      "claimed_question": {
+        "prompt": "A microphone datasheet states sensitivity: –40 dBV/Pa at 1 kHz. An engineer measures 0.1 V output from this mic in a different sound field. What additional information is needed to find the sound pressure level in dB SPL?",
+        "expectedAnswer": "The frequency of the measured sound to verify sensitivity applies.",
+        "choices": [
+          "The frequency of the measured sound to verify sensitivity applies.",
+          "The microphone's self-noise floor in dB SPL.",
+          "The atmospheric temperature during measurement.",
+          "The impedance of the recording interface."
+        ],
+        "explanation": "Sensitivity specified at 1 kHz may not hold at other frequencies; without knowing the measurement frequency the engineer cannot confirm the −40 dBV/Pa figure applies, making SPL calculation unreliable.",
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "The frequency of the measured sound to verify sensitivity applies.": "The datasheet sensitivity is rated at 1 kHz; at other frequencies the sensitivity may differ, so the frequency must be known to confirm the −40 dBV/Pa figure is applicable.",
+          "The microphone's self-noise floor in dB SPL.": "Self-noise determines the minimum detectable signal but is not required to convert a known output voltage to SPL using a known sensitivity.",
+          "The atmospheric temperature during measurement.": "Microphone sensitivity is expressed as voltage per pascal; converting output voltage to SPL does not require knowing temperature.",
+          "The impedance of the recording interface.": "Interface impedance could affect loading, but the problem states the output voltage has already been measured, so impedance is not additionally needed."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "b46114e0-dc28-51f2-b206-446595bee7ed"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q006",
+      "operation_index": 0,
+      "question_index": 0,
+      "case_id": "sound_intensity_and_decibels",
+      "question": {
+        "displayed_choices": [
+          "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+          "No; the comparison is valid because the medium is identical for both tones.",
+          "Yes; the absolute intensity values require knowing ρ and v to compute.",
+          "No; but only because the ratio happens to be a perfect square."
+        ],
+        "expectedAnswer": "No; the comparison is valid because the medium is identical for both tones.",
+        "feedback_displays": [
+          {
+            "choice": "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+            "choice_feedback": "In the sinusoidal model I=(Δp)²/(2ρv), frequency does not appear, so the dB difference from a pressure ratio is frequency-independent.",
+            "display": "In the sinusoidal model I=(Δp)²/(2ρv), frequency does not appear, so the dB difference from a pressure ratio is frequency-independent.\n\nBecause I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid."
+          },
+          {
+            "choice": "No; the comparison is valid because the medium is identical for both tones.",
+            "choice_feedback": "When the medium is the same, ρ and v appear in both intensities and cancel in the ratio, so the 6 dB difference follows directly from the 2:1 pressure amplitude ratio.",
+            "display": "When the medium is the same, ρ and v appear in both intensities and cancel in the ratio, so the 6 dB difference follows directly from the 2:1 pressure amplitude ratio.\n\nBecause I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid."
+          },
+          {
+            "choice": "Yes; the absolute intensity values require knowing ρ and v to compute.",
+            "choice_feedback": "Absolute intensities do require ρ and v, but the question concerns the dB difference, which depends only on the intensity ratio where those terms cancel.",
+            "display": "Absolute intensities do require ρ and v, but the question concerns the dB difference, which depends only on the intensity ratio where those terms cancel.\n\nBecause I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid."
+          },
+          {
+            "choice": "No; but only because the ratio happens to be a perfect square.",
+            "choice_feedback": "The cancellation of ρ and v in the intensity ratio holds for any pressure amplitude ratio, not only perfect squares; the qualifier introduces a false restriction.",
+            "display": "The cancellation of ρ and v in the intensity ratio holds for any pressure amplitude ratio, not only perfect squares; the qualifier introduces a false restriction.\n\nBecause I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid."
+          }
+        ],
+        "main": "Because I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid.",
+        "prompt": "A mixing engineer compares two sine-wave tones in air at 20 °C. Tone A has pressure amplitude 2.0 Pa; tone B has amplitude 4.0 Pa. The engineer calculates that B is 6 dB louder than A. A colleague claims this comparison is invalid because the calculation ignores air density and sound speed. Is the colleague correct?",
+        "remoteID": "cb019f97-f328-5794-bd76-5072bde365d8"
+      },
+      "claimed_question": {
+        "prompt": "A mixing engineer compares two sine-wave tones in air at 20 °C. Tone A has pressure amplitude 2.0 Pa; tone B has amplitude 4.0 Pa. The engineer calculates that B is 6 dB louder than A. A colleague claims this comparison is invalid because the calculation ignores air density and sound speed. Is the colleague correct?",
+        "expectedAnswer": "No; the comparison is valid because the medium is identical for both tones.",
+        "choices": [
+          "No; the comparison is valid because the medium is identical for both tones.",
+          "Yes; the absolute intensity values require knowing ρ and v to compute.",
+          "Yes; the decibel difference depends on frequency, not just pressure amplitude.",
+          "No; but only because the ratio happens to be a perfect square."
+        ],
+        "explanation": "Because I=(Δp)²/(2ρv), the ratio I_B/I_A=(Δp_B/Δp_A)²=4, giving 10log10(4)≈6 dB; ρ and v cancel whenever the medium is the same, making the colleague's objection invalid.",
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "No; the comparison is valid because the medium is identical for both tones.": "When the medium is the same, ρ and v appear in both intensities and cancel in the ratio, so the 6 dB difference follows directly from the 2:1 pressure amplitude ratio.",
+          "Yes; the absolute intensity values require knowing ρ and v to compute.": "Absolute intensities do require ρ and v, but the question concerns the dB difference, which depends only on the intensity ratio where those terms cancel.",
+          "Yes; the decibel difference depends on frequency, not just pressure amplitude.": "In the sinusoidal model I=(Δp)²/(2ρv), frequency does not appear, so the dB difference from a pressure ratio is frequency-independent.",
+          "No; but only because the ratio happens to be a perfect square.": "The cancellation of ρ and v in the intensity ratio holds for any pressure amplitude ratio, not only perfect squares; the qualifier introduces a false restriction."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "cb019f97-f328-5794-bd76-5072bde365d8"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q007",
+      "operation_index": 2,
+      "question_index": 1,
+      "case_id": "plant_water_transport",
+      "question": {
+        "displayed_choices": [
+          "Phloem transported water from storage tissues to leaves.",
+          "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+          "Root pressure pushed water rapidly to the leaves.",
+          "Osmosis directly from soil to leaf cells without vascular tissue."
+        ],
+        "expectedAnswer": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+        "feedback_displays": [
+          {
+            "choice": "Phloem transported water from storage tissues to leaves.",
+            "choice_feedback": "Phloem carries sugars and organic solutes; bulk long-distance water delivery to wilting leaves is not its function.",
+            "display": "Phloem carries sugars and organic solutes; bulk long-distance water delivery to wilting leaves is not its function.\n\nTranspiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored."
+          },
+          {
+            "choice": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+            "choice_feedback": "The source describes transpiration-generated tension sustained by cohesion and adhesion; once soil water is available this tension rapidly draws water up through xylem.",
+            "display": "The source describes transpiration-generated tension sustained by cohesion and adhesion; once soil water is available this tension rapidly draws water up through xylem.\n\nTranspiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored."
+          },
+          {
+            "choice": "Root pressure pushed water rapidly to the leaves.",
+            "choice_feedback": "Root pressure is a weak, slow mechanism and is insufficient to explain rapid recovery of turgidity, especially after drought.",
+            "display": "Root pressure is a weak, slow mechanism and is insufficient to explain rapid recovery of turgidity, especially after drought.\n\nTranspiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored."
+          },
+          {
+            "choice": "Osmosis directly from soil to leaf cells without vascular tissue.",
+            "choice_feedback": "Direct soil-to-leaf osmosis bypassing vascular tissue is not a recognized mechanism for rapid whole-plant water delivery.",
+            "display": "Direct soil-to-leaf osmosis bypassing vascular tissue is not a recognized mechanism for rapid whole-plant water delivery.\n\nTranspiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored."
+          }
+        ],
+        "main": "Transpiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored.",
+        "prompt": "A student observes that a potted wilting plant recovers turgidity within hours after watering, even though the soil was dry. Which mechanism best explains how water reached the leaf cells so quickly?",
+        "remoteID": "454c37be-389b-56a2-b860-6db657354830"
+      },
+      "claimed_question": {
+        "prompt": "A student observes that a potted wilting plant recovers turgidity within hours after watering, even though the soil was dry. Which mechanism best explains how water reached the leaf cells so quickly?",
+        "expectedAnswer": "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+        "choices": [
+          "Tension in the xylem from transpiration pulled water upward as soil water became available.",
+          "Root pressure pushed water rapidly to the leaves.",
+          "Phloem transported water from storage tissues to leaves.",
+          "Osmosis directly from soil to leaf cells without vascular tissue."
+        ],
+        "explanation": "Transpiration creates negative pressure (tension) in the xylem; cohesion and adhesion sustain the water column so that newly available soil water is pulled upward quickly once the tension gradient is restored.",
+        "topic": "transpiration",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Phloem transported water from storage tissues to leaves.": "Phloem carries sugars and organic solutes; bulk long-distance water delivery to wilting leaves is not its function.",
+          "Osmosis directly from soil to leaf cells without vascular tissue.": "Direct soil-to-leaf osmosis bypassing vascular tissue is not a recognized mechanism for rapid whole-plant water delivery.",
+          "Tension in the xylem from transpiration pulled water upward as soil water became available.": "The source describes transpiration-generated tension sustained by cohesion and adhesion; once soil water is available this tension rapidly draws water up through xylem.",
+          "Root pressure pushed water rapidly to the leaves.": "Root pressure is a weak, slow mechanism and is insufficient to explain rapid recovery of turgidity, especially after drought."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "454c37be-389b-56a2-b860-6db657354830"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q008",
+      "operation_index": 0,
+      "question_index": 3,
+      "case_id": "sound_intensity_and_decibels",
+      "question": {
+        "displayed_choices": [
+          "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+          "Equal, because pressure amplitude determines level directly.",
+          "Higher, because water's incompressibility increases pressure effects.",
+          "Higher, because water transmits sound more efficiently."
+        ],
+        "expectedAnswer": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+        "feedback_displays": [
+          {
+            "choice": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+            "choice_feedback": "I = (Δp)²/(2ρv); water's ρv ≈ 1.5×10⁶ vs. air's ≈ 415 Pa·s/m, so the same Δp yields far lower intensity and thus lower dB SPL.",
+            "display": "I = (Δp)²/(2ρv); water's ρv ≈ 1.5×10⁶ vs. air's ≈ 415 Pa·s/m, so the same Δp yields far lower intensity and thus lower dB SPL.\n\nIntensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level."
+          },
+          {
+            "choice": "Equal, because pressure amplitude determines level directly.",
+            "choice_feedback": "Pressure amplitude alone does not fix intensity; the medium's ρv also appears in I = (Δp)²/(2ρv), so equal Δp gives different intensities in different media.",
+            "display": "Pressure amplitude alone does not fix intensity; the medium's ρv also appears in I = (Δp)²/(2ρv), so equal Δp gives different intensities in different media.\n\nIntensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level."
+          },
+          {
+            "choice": "Higher, because water's incompressibility increases pressure effects.",
+            "choice_feedback": "The formula I = (Δp)²/(2ρv) shows intensity is inversely proportional to ρv; water's high ρv means lower intensity for the same pressure amplitude, not higher.",
+            "display": "The formula I = (Δp)²/(2ρv) shows intensity is inversely proportional to ρv; water's high ρv means lower intensity for the same pressure amplitude, not higher.\n\nIntensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level."
+          },
+          {
+            "choice": "Higher, because water transmits sound more efficiently.",
+            "choice_feedback": "Lower absorption over distance does not apply here; for identical Δp the formula gives lower intensity in water due to its much higher ρv.",
+            "display": "Lower absorption over distance does not apply here; for identical Δp the formula gives lower intensity in water due to its much higher ρv.\n\nIntensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level."
+          }
+        ],
+        "main": "Intensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level.",
+        "prompt": "A tone has pressure amplitude 1.0 Pa in air at 20 °C. In water at the same temperature, a tone with identical pressure amplitude is produced. How does the sound intensity level in water compare to that in air?",
+        "remoteID": "c71ae349-b4c5-5e85-879b-a861f3d0f6c6"
+      },
+      "claimed_question": {
+        "prompt": "A tone has pressure amplitude 1.0 Pa in air at 20 °C. In water at the same temperature, a tone with identical pressure amplitude is produced. How does the sound intensity level in water compare to that in air?",
+        "expectedAnswer": "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+        "choices": [
+          "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.",
+          "Higher, because water transmits sound more efficiently.",
+          "Equal, because pressure amplitude determines level directly.",
+          "Higher, because water's incompressibility increases pressure effects."
+        ],
+        "explanation": "Intensity depends on both pressure amplitude and the medium's specific acoustic impedance ρv via I = (Δp)²/(2ρv). Water's ρv is roughly 3600× that of air, so the same Δp produces far lower intensity and a lower dB SPL level.",
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 4,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Lower, because water's higher ρv reduces intensity for the same pressure amplitude.": "I = (Δp)²/(2ρv); water's ρv ≈ 1.5×10⁶ vs. air's ≈ 415 Pa·s/m, so the same Δp yields far lower intensity and thus lower dB SPL.",
+          "Higher, because water transmits sound more efficiently.": "Lower absorption over distance does not apply here; for identical Δp the formula gives lower intensity in water due to its much higher ρv.",
+          "Equal, because pressure amplitude determines level directly.": "Pressure amplitude alone does not fix intensity; the medium's ρv also appears in I = (Δp)²/(2ρv), so equal Δp gives different intensities in different media.",
+          "Higher, because water's incompressibility increases pressure effects.": "The formula I = (Δp)²/(2ρv) shows intensity is inversely proportional to ρv; water's high ρv means lower intensity for the same pressure amplitude, not higher."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "c71ae349-b4c5-5e85-879b-a861f3d0f6c6"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q009",
+      "operation_index": 1,
+      "question_index": 2,
+      "case_id": "english_conditions_and_scope",
+      "question": {
+        "displayed_choices": [
+          "Proceeding is permitted with caution.",
+          "Proceeding is not permitted.",
+          "The instructions are contradictory.",
+          "Proceeding is permitted."
+        ],
+        "expectedAnswer": "Proceeding is not permitted.",
+        "feedback_displays": [
+          {
+            "choice": "Proceeding is permitted with caution.",
+            "choice_feedback": "The instructions offer no 'with caution' option; this adds a condition not present in the text.",
+            "display": "The instructions offer no 'with caution' option; this adds a condition not present in the text.\n\nRule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding."
+          },
+          {
+            "choice": "Proceeding is not permitted.",
+            "choice_feedback": "Rule 1 requires both sensors normal; Sensor B shows alert, so rule 1 bars proceeding. Rule 2 requires the override to be engaged, which it is not, so rule 2 does not apply. No rule permits proceeding.",
+            "display": "Rule 1 requires both sensors normal; Sensor B shows alert, so rule 1 bars proceeding. Rule 2 requires the override to be engaged, which it is not, so rule 2 does not apply. No rule permits proceeding.\n\nRule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding."
+          },
+          {
+            "choice": "The instructions are contradictory.",
+            "choice_feedback": "The two rules address mutually exclusive override states and do not conflict; there is no contradiction.",
+            "display": "The two rules address mutually exclusive override states and do not conflict; there is no contradiction.\n\nRule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding."
+          },
+          {
+            "choice": "Proceeding is permitted.",
+            "choice_feedback": "Rule 1 fails because Sensor B is not normal; rule 2 fails because the override is disengaged. Neither rule authorizes proceeding.",
+            "display": "Rule 1 fails because Sensor B is not normal; rule 2 fails because the override is disengaged. Neither rule authorizes proceeding.\n\nRule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding."
+          }
+        ],
+        "main": "Rule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding.",
+        "prompt": "Instructions: \"Do not proceed unless both sensors indicate normal status and the manual override is disengaged; if the override is engaged, you may proceed regardless of sensor status.\" Sensor A shows normal, Sensor B shows alert, and the override is disengaged. What do the instructions permit?",
+        "remoteID": "f77d6e93-696c-5ede-b72d-f45ae4be2ecd"
+      },
+      "claimed_question": {
+        "prompt": "Instructions: \"Do not proceed unless both sensors indicate normal status and the manual override is disengaged; if the override is engaged, you may proceed regardless of sensor status.\" Sensor A shows normal, Sensor B shows alert, and the override is disengaged. What do the instructions permit?",
+        "expectedAnswer": "Proceeding is not permitted.",
+        "choices": [
+          "Proceeding is not permitted.",
+          "Proceeding is permitted.",
+          "Proceeding is permitted with caution.",
+          "The instructions are contradictory."
+        ],
+        "explanation": "Rule 1 requires both sensors normal AND override disengaged; Sensor B's alert fails that requirement. Rule 2 applies only when the override is engaged, which it is not. Neither rule permits proceeding.",
+        "topic": "negation",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Proceeding is not permitted.": "Rule 1 requires both sensors normal; Sensor B shows alert, so rule 1 bars proceeding. Rule 2 requires the override to be engaged, which it is not, so rule 2 does not apply. No rule permits proceeding.",
+          "Proceeding is permitted.": "Rule 1 fails because Sensor B is not normal; rule 2 fails because the override is disengaged. Neither rule authorizes proceeding.",
+          "Proceeding is permitted with caution.": "The instructions offer no 'with caution' option; this adds a condition not present in the text.",
+          "The instructions are contradictory.": "The two rules address mutually exclusive override states and do not conflict; there is no contradiction."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "f77d6e93-696c-5ede-b72d-f45ae4be2ecd"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q010",
+      "operation_index": 2,
+      "question_index": 3,
+      "case_id": "plant_water_transport",
+      "question": {
+        "displayed_choices": [
+          "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+          "Plant Q shows lower transpiration because dry leaves conserve water.",
+          "Both plants show identical transpiration because soil water is adequate.",
+          "Plant P shows higher transpiration due to added surface moisture."
+        ],
+        "expectedAnswer": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+        "feedback_displays": [
+          {
+            "choice": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+            "choice_feedback": "Misting raises local humidity at the leaf surface, reducing the leaf-to-air vapor gradient and thus lowering transpiration; better water retention supports higher turgor.",
+            "display": "Misting raises local humidity at the leaf surface, reducing the leaf-to-air vapor gradient and thus lowering transpiration; better water retention supports higher turgor.\n\nTranspiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q."
+          },
+          {
+            "choice": "Plant Q shows lower transpiration because dry leaves conserve water.",
+            "choice_feedback": "Plant Q has normal ambient humidity and no surface moisture, giving a steeper vapor gradient than misted Plant P, which drives higher—not lower—transpiration.",
+            "display": "Plant Q has normal ambient humidity and no surface moisture, giving a steeper vapor gradient than misted Plant P, which drives higher—not lower—transpiration.\n\nTranspiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q."
+          },
+          {
+            "choice": "Both plants show identical transpiration because soil water is adequate.",
+            "choice_feedback": "Soil water adequacy affects supply, not the vapor gradient; misting creates a humidity difference between the two plants, so their transpiration rates will differ.",
+            "display": "Soil water adequacy affects supply, not the vapor gradient; misting creates a humidity difference between the two plants, so their transpiration rates will differ.\n\nTranspiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q."
+          },
+          {
+            "choice": "Plant P shows higher transpiration due to added surface moisture.",
+            "choice_feedback": "Transpiration is driven by the vapor-pressure gradient; misting raises local humidity and reduces that gradient, so transpiration decreases rather than increases.",
+            "display": "Transpiration is driven by the vapor-pressure gradient; misting raises local humidity and reduces that gradient, so transpiration decreases rather than increases.\n\nTranspiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q."
+          }
+        ],
+        "main": "Transpiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q.",
+        "prompt": "A researcher places two identical potted plants in a growth chamber at 25°C with bright light. Plant P has its leaves misted with water every hour; Plant Q remains dry. Both have adequate soil moisture and open stomata. Which outcome is expected after several hours?",
+        "remoteID": "9591bd29-f7d7-57a6-ad10-826cc3603b7a"
+      },
+      "claimed_question": {
+        "prompt": "A researcher places two identical potted plants in a growth chamber at 25°C with bright light. Plant P has its leaves misted with water every hour; Plant Q remains dry. Both have adequate soil moisture and open stomata. Which outcome is expected after several hours?",
+        "expectedAnswer": "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+        "choices": [
+          "Plant P shows lower transpiration and higher leaf turgor than Plant Q.",
+          "Plant P shows higher transpiration due to added surface moisture.",
+          "Both plants show identical transpiration because soil water is adequate.",
+          "Plant Q shows lower transpiration because dry leaves conserve water."
+        ],
+        "explanation": "Transpiration rate depends on the leaf-to-air vapor gradient; misting raises local humidity around Plant P, reducing that gradient and lowering water loss while better maintaining turgor compared to unmisted Plant Q.",
+        "topic": "transpiration",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Plant P shows lower transpiration and higher leaf turgor than Plant Q.": "Misting raises local humidity at the leaf surface, reducing the leaf-to-air vapor gradient and thus lowering transpiration; better water retention supports higher turgor.",
+          "Plant P shows higher transpiration due to added surface moisture.": "Transpiration is driven by the vapor-pressure gradient; misting raises local humidity and reduces that gradient, so transpiration decreases rather than increases.",
+          "Both plants show identical transpiration because soil water is adequate.": "Soil water adequacy affects supply, not the vapor gradient; misting creates a humidity difference between the two plants, so their transpiration rates will differ.",
+          "Plant Q shows lower transpiration because dry leaves conserve water.": "Plant Q has normal ambient humidity and no surface moisture, giving a steeper vapor gradient than misted Plant P, which drives higher—not lower—transpiration."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "9591bd29-f7d7-57a6-ad10-826cc3603b7a"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q011",
+      "operation_index": 0,
+      "question_index": 2,
+      "case_id": "sound_intensity_and_decibels",
+      "question": {
+        "displayed_choices": [
+          "76 dB",
+          "70 dB",
+          "88 dB",
+          "82 dB"
+        ],
+        "expectedAnswer": "82 dB",
+        "feedback_displays": [
+          {
+            "choice": "76 dB",
+            "choice_feedback": "An 18 dB drop would require an intensity ratio of about 63×, not the 16× from the inverse-square law at 4× distance.",
+            "display": "An 18 dB drop would require an intensity ratio of about 63×, not the 16× from the inverse-square law at 4× distance.\n\nSpherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB."
+          },
+          {
+            "choice": "70 dB",
+            "choice_feedback": "A 24 dB drop implies an intensity ratio of ~251×, far exceeding the inverse-square factor of 16 for a 4× distance increase.",
+            "display": "A 24 dB drop implies an intensity ratio of ~251×, far exceeding the inverse-square factor of 16 for a 4× distance increase.\n\nSpherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB."
+          },
+          {
+            "choice": "88 dB",
+            "choice_feedback": "This corresponds to a 6 dB drop, which matches only a 2× distance increase, not the 4× stated.",
+            "display": "This corresponds to a 6 dB drop, which matches only a 2× distance increase, not the 4× stated.\n\nSpherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB."
+          },
+          {
+            "choice": "82 dB",
+            "choice_feedback": "Inverse-square law gives a 16× intensity drop over 4× distance; 10 log10(16) ≈ 12 dB, so 94 − 12 = 82 dB.",
+            "display": "Inverse-square law gives a 16× intensity drop over 4× distance; 10 log10(16) ≈ 12 dB, so 94 − 12 = 82 dB.\n\nSpherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB."
+          }
+        ],
+        "main": "Spherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB.",
+        "prompt": "A sound engineer measures 94 dB SPL at 1 m from a small loudspeaker in an anechoic chamber. The speaker is moved to 4 m distance with no other changes. What SPL is expected, assuming spherical spreading?",
+        "remoteID": "4f5ca08d-3d48-5ae3-9cb2-e874806e7885"
+      },
+      "claimed_question": {
+        "prompt": "A sound engineer measures 94 dB SPL at 1 m from a small loudspeaker in an anechoic chamber. The speaker is moved to 4 m distance with no other changes. What SPL is expected, assuming spherical spreading?",
+        "expectedAnswer": "82 dB",
+        "choices": [
+          "82 dB",
+          "88 dB",
+          "76 dB",
+          "70 dB"
+        ],
+        "explanation": "Spherical spreading follows the inverse-square law: intensity ∝ 1/r². A 4× distance increase reduces intensity by 16×, a drop of 10 log10(16) ≈ 12 dB.",
+        "topic": "Sound intensity and decibels for audio work",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "88 dB": "This corresponds to a 6 dB drop, which matches only a 2× distance increase, not the 4× stated.",
+          "76 dB": "An 18 dB drop would require an intensity ratio of about 63×, not the 16× from the inverse-square law at 4× distance.",
+          "70 dB": "A 24 dB drop implies an intensity ratio of ~251×, far exceeding the inverse-square factor of 16 for a 4× distance increase.",
+          "82 dB": "Inverse-square law gives a 16× intensity drop over 4× distance; 10 log10(16) ≈ 12 dB, so 94 − 12 = 82 dB."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "4f5ca08d-3d48-5ae3-9cb2-e874806e7885"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    },
+    {
+      "id": "q012",
+      "operation_index": 2,
+      "question_index": 2,
+      "case_id": "plant_water_transport",
+      "question": {
+        "displayed_choices": [
+          "Species M has damaged guard cells that cannot respond to water status.",
+          "Species N has higher photosynthetic efficiency that requires less CO₂.",
+          "Both species will show identical growth rates under all conditions.",
+          "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation."
+        ],
+        "expectedAnswer": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+        "feedback_displays": [
+          {
+            "choice": "Species M has damaged guard cells that cannot respond to water status.",
+            "choice_feedback": "Keeping stomata open under mild drought is a regulatory strategy; attributing it to guard-cell damage adds an unsupported condition not present in the scenario.",
+            "display": "Keeping stomata open under mild drought is a regulatory strategy; attributing it to guard-cell damage adds an unsupported condition not present in the scenario.\n\nThe source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff."
+          },
+          {
+            "choice": "Species N has higher photosynthetic efficiency that requires less CO₂.",
+            "choice_feedback": "No information about photosynthetic efficiency is given; closing stomata under drying conditions reflects a water-conservation strategy, not a reduced CO₂ need.",
+            "display": "No information about photosynthetic efficiency is given; closing stomata under drying conditions reflects a water-conservation strategy, not a reduced CO₂ need.\n\nThe source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff."
+          },
+          {
+            "choice": "Both species will show identical growth rates under all conditions.",
+            "choice_feedback": "Different stomatal strategies produce different CO₂ uptake and water loss, making identical growth rates under all conditions unsupported.",
+            "display": "Different stomatal strategies produce different CO₂ uptake and water loss, making identical growth rates under all conditions unsupported.\n\nThe source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff."
+          },
+          {
+            "choice": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+            "choice_feedback": "The source's stated tradeoff—open stomata favor CO₂ entry, closed stomata favor water retention—maps directly onto the observed behaviors of each species.",
+            "display": "The source's stated tradeoff—open stomata favor CO₂ entry, closed stomata favor water retention—maps directly onto the observed behaviors of each species.\n\nThe source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff."
+          }
+        ],
+        "main": "The source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff.",
+        "prompt": "A botanist compares two species: Species M keeps stomata open in moderate light even when soil dries slightly; Species N closes stomata under the same conditions. Based on the source's description of stomatal regulation, what can be concluded about their relative strategies?",
+        "remoteID": "95f7ff31-a42c-51a1-935f-119eb425d09c"
+      },
+      "claimed_question": {
+        "prompt": "A botanist compares two species: Species M keeps stomata open in moderate light even when soil dries slightly; Species N closes stomata under the same conditions. Based on the source's description of stomatal regulation, what can be concluded about their relative strategies?",
+        "expectedAnswer": "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+        "choices": [
+          "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.",
+          "Species M has damaged guard cells that cannot respond to water status.",
+          "Species N has higher photosynthetic efficiency that requires less CO₂.",
+          "Both species will show identical growth rates under all conditions."
+        ],
+        "explanation": "The source's CO₂-versus-water tradeoff directly explains the two strategies: keeping stomata open favors carbon assimilation while closing them conserves water, so each species' behavior reflects a different side of that tradeoff.",
+        "topic": "stomatal regulation to observations and environm",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "Species M has damaged guard cells that cannot respond to water status.": "Keeping stomata open under mild drought is a regulatory strategy; attributing it to guard-cell damage adds an unsupported condition not present in the scenario.",
+          "Species N has higher photosynthetic efficiency that requires less CO₂.": "No information about photosynthetic efficiency is given; closing stomata under drying conditions reflects a water-conservation strategy, not a reduced CO₂ need.",
+          "Both species will show identical growth rates under all conditions.": "Different stomatal strategies produce different CO₂ uptake and water loss, making identical growth rates under all conditions unsupported.",
+          "Species M prioritizes carbon dioxide uptake; Species N prioritizes water conservation.": "The source's stated tradeoff—open stomata favor CO₂ entry, closed stomata favor water retention—maps directly onto the observed behaviors of each species."
+        },
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 2,
+        "remoteID": "95f7ff31-a42c-51a1-935f-119eb425d09c"
+      },
+      "claim_client_checks": {
+        "prompt_exact": true,
+        "key_exact": true,
+        "main_exact": true,
+        "choices_same_multiset": true,
+        "feedback_order_matches_choices": true
+      }
+    }
+  ]
+}

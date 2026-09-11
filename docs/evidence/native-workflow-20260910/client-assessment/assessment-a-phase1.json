@@ -1,0 +1,423 @@
+{
+  "packet_sha256": "a6a0481cfb3d7fdd9bff81b4b1dee929892157720f65bcd4b09e44a8b4ece664",
+  "assessor": "A",
+  "items": [
+    {
+      "id": "q001",
+      "supported_choice_indices": [],
+      "status": "ambiguous",
+      "premise_status": "missing_material",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Partial closure ordinarily reduces stomatal water loss, rather than increasing it."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Partial closure does not imply complete cessation of photosynthesis."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Partial closure cannot create unlimited carbon uptake or eliminate all water loss."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "uncertain",
+          "reason": "Partial closure tends to conserve water, and elevated CO₂ can sustain uptake, but continued adequate uptake is not established by the supplied observations."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Choice 3 is the recognizable textbook expectation, but it bundles water conservation with an unmeasured adequacy claim. The stem gives no CO₂ range, assimilation requirement, or remaining conductance sufficient to establish adequacy in this particular plant. Wording “begin partially closed” is awkward but interpretable; it is not itself a semantic contradiction. Two distractors use obvious extreme claims. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q002",
+      "supported_choice_indices": [
+        2
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "The otherwise clause makes the specific non-guarantee statement."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "The staff-shortage condition puts this case in the explicit otherwise clause."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "supported",
+          "reason": "With a staff shortage, the stated result is that rescheduling is not guaranteed."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "No manager-approval requirement is given."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "The initial “can” also need not guarantee rescheduling, but the explicit otherwise clause makes the answer determinate. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q003",
+      "supported_choice_indices": [
+        3
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "“Will” commits to revocation without the proposed pending-review qualification."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "No locations were pre-registered, so the exception is unavailable."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "The stated triggers directly cover these facts."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "supported",
+          "reason": "Credential sharing triggers revocation; the excess unregistered-location logins also satisfy the stated trigger."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Potential scope ambiguity in the location exception does not affect this case because pre-registration is absent. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q004",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "missing_material",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "Net movement depends on the total water-potential difference, which the qualitative component comparisons do not fix."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Greater pressure favors A-to-B movement, but the opposing solute effect could dominate; this direction is not certain."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Greater solute concentration favors B-to-A movement, but the opposing pressure effect could dominate; this direction is not certain."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "The opposing components need not cancel exactly."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 3,
+      "notes": "Intentional insufficiency is handled by an available correct choice. For example, changing the relative magnitudes of ΔΨs < 0 and ΔΨp > 0 can produce either sign or zero for their sum. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q005",
+      "supported_choice_indices": [
+        2
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Pressure level can be obtained from calibrated pressure without using atmospheric temperature."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Interface impedance alone does not address the missing frequency applicability of the quoted sensitivity."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "supported",
+          "reason": "The supplied sensitivity is specified at 1 kHz; the measured sound’s frequency is needed to check its applicability."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Self-noise characterizes a measurement limit; it does not establish whether the quoted signal sensitivity applies."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Identifying needed frequency information is sound. Frequency alone would not supply sensitivity at another frequency; a full measurement may also require response, loading, and RMS/gain calibration. The stem does not request a complete calibration protocol. Manufacturer reference: https://www.bksv.com/de/knowledge/blog/sound/measurement-microphones Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q006",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "For the stated physical pressure/intensity comparison in the same medium, the level ratio follows from pressure amplitude; frequency is not an extra factor."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "The common ρv factor cancels: I_B/I_A = (4/2)² = 4, giving 10 log10(4) = 6.02 dB."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Absolute intensities would require medium properties, but the question asks for their ratio and level difference."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Cancellation works for any pressure-amplitude ratio, not only perfect squares."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "“6 dB louder” is interpreted as a 6 dB physical level increase, consistent with the context, not a quantified subjective loudness ratio. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q007",
+      "supported_choice_indices": [
+        1
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Phloem redistribution from storage is not the standard route explaining uptake of newly supplied soil water."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "Cohesion–tension transport in xylem is the standard main mechanism carrying newly available root water toward leaves."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Root pressure can contribute in some plants and conditions, but it is not the best general explanation for upward vascular water transport."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Soil-to-leaf transport in a vascular potted plant cannot bypass intervening tissues and the vascular pathway in this way."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "The “best explains” formulation supports the standard general xylem mechanism; recovery alone would not experimentally prove that transpiration, rather than root pressure, dominated this individual episode. Cellular turgor recovery also requires water entry down water-potential gradients. “Soil was dry” is naturally the pre-watering condition, not a contradiction. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q008",
+      "supported_choice_indices": [
+        0
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "supported",
+          "reason": "At fixed pressure amplitude, I = p²/(2ρv); water has much greater acoustic impedance ρv than air."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Equal pressure amplitudes do not imply equal intensities in media with different acoustic impedances."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Water’s larger acoustic impedance lowers, rather than raises, intensity at fixed pressure amplitude."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Efficient transmission is not the relation between pressure amplitude and intensity in the medium."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Sound intensity level uses a common intensity reference. Do not substitute the different conventional underwater and airborne pressure-level references for that quantity. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q009",
+      "supported_choice_indices": [
+        1,
+        2
+      ],
+      "status": "multiple",
+      "premise_status": "contradictory",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "The instructions supply no caution exception."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "supported",
+          "reason": "For this stated configuration the required sensor conjunction fails, and the engaged-override permission is inactive."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "supported",
+          "reason": "Read literally, the first clause forbids proceeding whenever the override is engaged, while the second explicitly permits it then."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "With override disengaged, the alert sensor fails the prerequisite for proceeding."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Choice 1 correctly resolves the stated case, while choice 2 correctly describes a global contradiction in the quoted instructions. A natural reading can treat the later override sentence as an implicit exception and remove the contradiction, so this is also sensitive to exception-versus-literal reading. Explicitly phrasing the first rule as applying when the override is disengaged would remove the issue. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q010",
+      "supported_choice_indices": [],
+      "status": "ambiguous",
+      "premise_status": "missing_material",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "uncertain",
+          "reason": "Sustained wetting/local humidification can reduce transpiration, but hourly misting does not establish its duration or a strict higher-turgor outcome after several hours."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Dry leaf surfaces do not themselves impose water conservation when stomata remain open."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "Adequate soil water does not make transpiration independent of the leaf microenvironment."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "refuted",
+          "reason": "Evaporation of externally added surface water is not by itself increased transpiration from within the plant."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "Choice 0 is plausible under an intended sustained humidification model, but wetness duration, local vapor gradient, leaf temperature, and the comparison time are unspecified. A shared chamber also does not establish separate ambient humidities. Leaf-wetting effects depend on treatment and leaf properties; a primary experiment documents reduced transpiration while leaves remain wet: https://www.sciencedirect.com/science/article/pii/0002157181901187 Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q011",
+      "supported_choice_indices": [
+        3
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "The stated distance ratio gives a 12.04 dB decrease, not 18 dB."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "The stated distance ratio gives a 12.04 dB decrease, not 24 dB."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "88 dB would correspond approximately to doubling the distance, not quadrupling it."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "supported",
+          "reason": "94 − 20 log10(4/1) = 81.96 dB, rounding to 82 dB."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": true,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": " Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    },
+    {
+      "id": "q012",
+      "supported_choice_indices": [
+        3
+      ],
+      "status": "unique",
+      "premise_status": "sufficient",
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "judgment": "refuted",
+          "reason": "Remaining open under mild drying does not establish damaged guard cells."
+        },
+        {
+          "choice_index": 1,
+          "judgment": "refuted",
+          "reason": "Different stomatal behavior does not establish higher photosynthetic efficiency or reduced CO₂ requirements."
+        },
+        {
+          "choice_index": 2,
+          "judgment": "refuted",
+          "reason": "The observations cannot imply equal growth across all conditions."
+        },
+        {
+          "choice_index": 3,
+          "judgment": "supported",
+          "reason": "M retains a route for CO₂ uptake; N restricts the route to conserve water."
+        }
+      ],
+      "distinct_choices": true,
+      "plausible_distractors": false,
+      "goal_relevant": true,
+      "difficulty": 2,
+      "notes": "“Prioritizes” is a reasonable qualitative description of the observed strategies, not a claim of conscious intent. The identical-growth-under-all-conditions distractor is conspicuously absolute. Display audit: stem and choice texts exactly match the independently assessed raw item; reordered choices contain no order-dependent references. Judgments are unchanged and indices use the displayed order."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "phase": "raw_stems_choices_before_keys_or_teaching",
+  "packet_byte_sha256": "45b40eec6cea9de6c51530a4a042c21bf8867851709a502f4afa0078e9184b5c",
+  "assessments": {
+    "a": {
+      "byte_sha256": "0cdb026768965bd26a673db2c802dfe3c1398956d57817cf86c5514d0e0235fb",
+      "item_count": 25,
+      "choice_count": 100
+    },
+    "b": {
+      "byte_sha256": "6cd35e4c45a059a3680d674e3e0cb2573261c28461c2f8d03484f9fa30764f70",
+      "item_count": 25,
+      "choice_count": 100
+    }
+  },
+  "blinding": "A started without parent history. B knew protocol and aggregate operational counts but neither assessor had item-level keys, feedback, model judgments or survival before saving raw phase1. Their original files are retained without revision."
+}

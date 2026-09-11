@@ -1,0 +1,16 @@
+{
+  "phase": "displayed_stems_choices_before_keys_teaching",
+  "packet_byte_sha256": "a6a0481cfb3d7fdd9bff81b4b1dee929892157720f65bcd4b09e44a8b4ece664",
+  "assessments": {
+    "a": {
+      "byte_sha256": "f09081c33ac438c19db5e385b5668519a838cc0c6f5aa223ecebefd0ed7cac50",
+      "item_count": 12,
+      "choice_count": 48
+    },
+    "b": {
+      "byte_sha256": "e9969b3de5edd84ecfc316a3c7f7ebec5bf216180015f29dfb468993eb89eb44",
+      "item_count": 12,
+      "choice_count": 48
+    }
+  }
+}
