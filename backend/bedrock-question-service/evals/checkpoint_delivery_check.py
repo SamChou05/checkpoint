@@ -27,7 +27,11 @@ import question_bank_worker  # noqa: E402
 from question_bank_test_support import (  # noqa: E402
     SECRET, ClaimDynamo, FakeQueue, _claim_records, _event,
 )
-from verification_policy import VERIFICATION_POLICY_REVISION  # noqa: E402
+from verification_policy import (  # noqa: E402
+    COMPLETE_TEACHING_VERIFICATION_POLICY_REVISION,
+    MAX_SUPPORTED_VERIFICATION_POLICY_REVISION,
+    VERIFICATION_POLICY_REVISION,
+)
 
 SOURCE_FILES = sorted({
     str(path.relative_to(ROOT))
@@ -58,6 +62,17 @@ def check_operation(operation, request, index):
     questions = copy.deepcopy(operation["questions"])
     if not isinstance(questions, list) or not all(isinstance(q, dict) for q in questions):
         raise ValueError("Each operation must contain a questions array of objects.")
+    contract = request.get("feedbackContract")
+    if contract is not None and contract != "authored_complete":
+        raise ValueError("Unsupported delivery feedback contract.")
+    for question in questions:
+        revision = question.get("verificationPolicyRevision")
+        if revision is not None and (type(revision) is not int or not 0 <= revision <= MAX_SUPPORTED_VERIFICATION_POLICY_REVISION):
+            raise ValueError("Unsupported delivery verification policy revision.")
+    minimum_policy = (
+        COMPLETE_TEACHING_VERIFICATION_POLICY_REVISION
+        if contract == "authored_complete" else VERIFICATION_POLICY_REVISION
+    )
     result = {
         "operation_index": index,
         "case_id": operation.get("case_id"),
@@ -72,6 +87,10 @@ def check_operation(operation, request, index):
         socket.socket, "connect", side_effect=AssertionError("Delivery check forbids network")
     ):
         bank_id, meta, pointer, template = _claim_records(low=0)
+        if contract is not None:
+            meta["feedbackContract"] = {"S": contract}
+        original_bank_contract = copy.deepcopy(meta.get("feedbackContract"))
+        result["bank_feedback_contract"] = contract
         prepared = question_bank_worker._prepare_questions(bank_id, questions, [])
         result["prepared_questions"] = prepared
         result["prepared_count"] = len(prepared)
@@ -92,7 +111,7 @@ def check_operation(operation, request, index):
             "bankID": bank_id, "claimID": f"delivery-operation-{index}",
             "limit": min(question_bank.MAX_CLAIM_COUNT, max(1, len(questions))),
             "minimumVerificationVersion": 1,
-            "minimumVerificationPolicyRevision": VERIFICATION_POLICY_REVISION,
+            "minimumVerificationPolicyRevision": minimum_policy,
         }
         result["claim_request"] = claim
         first = second = None
@@ -126,6 +145,7 @@ def check_operation(operation, request, index):
             "single_atomic_claim_transaction": len(dynamo.transactions) == 1,
             "no_queue_messages": not queue.messages,
             "input_unchanged": questions == operation["questions"],
+            "bank_feedback_contract_unchanged": meta.get("feedbackContract") == original_bank_contract,
         }
         result["passed"] = all(result["checks"].values())
     return result
@@ -145,6 +165,8 @@ def check_capture(capture):
         request = copy.deepcopy(originals.get(operation.get("case_id"), job.get("request")))
         if not isinstance(request, dict) or not isinstance(request.get("goal"), dict):
             raise ValueError(f"Operation {index} lacks its original goal/request context.")
+        if request.get("feedbackContract") != job.get("request", request).get("feedbackContract"):
+            raise ValueError(f"Operation {index} changed its original feedback contract.")
         for key in ("targetCount", "minimumDifficulty"):
             request[key] = job.get("request", request).get(key, request.get(key))
             if not isinstance(request[key], int):

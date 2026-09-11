@@ -7,6 +7,7 @@ Authored-solution mode: three fresh two-item goals, at most three calls each.
 Author comparison: repeat those inputs with two author models, eighteen calls.
 Focused application: compare two Kimi author prompts under the same limits.
 Native workflow: three fresh five-item goals, at most six calls each.
+Complete-teaching native workflow: the same limits with explicit authored teaching.
 The unchanged runtime owns parsing, filtering, top-offs and JSON repair. The
 existing isolated caller owns transport/deadlines; this file adds no supervisor.
 Operational completion and policy stamps are not factual correctness scores.
@@ -37,6 +38,7 @@ from question_verification import (  # noqa: E402
     COMPLETE_REVIEW_SYSTEM_PROMPT, verify_questions,
 )
 from complete_question_solution import COMPLETE_SOLUTION_SYSTEM_PROMPT  # noqa: E402
+from complete_question_teaching import COMPLETE_TEACHING_REVIEW_SYSTEM_PROMPT  # noqa: E402
 from request_contract import _normalize_request  # noqa: E402
 from question_quality import _extract_json_object, _sanitize_questions  # noqa: E402
 from question_teaching import AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT  # noqa: E402
@@ -52,11 +54,14 @@ AUTHORED_EXPERIMENT = "authored-solution-fresh-v1"
 AUTHOR_COMPARISON_EXPERIMENT = "authored-solution-author-comparison-v1"
 FOCUSED_APPLICATION_EXPERIMENT = "authored-solution-focused-application-v1"
 NATIVE_WORKFLOW_EXPERIMENT = "native-fresh-workflow-v1"
+NATIVE_COMPLETE_TEACHING_EXPERIMENT = "native-complete-teaching-workflow-v1"
+NATIVE_WORKFLOW_EXPERIMENTS = frozenset({NATIVE_WORKFLOW_EXPERIMENT, NATIVE_COMPLETE_TEACHING_EXPERIMENT})
 AUTHOR_COMPARISON_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/authored-solution-fresh-fixture-20260908.json"
 AUTHOR_COMPARISON_ORIGIN_SHA256 = "6fe797f70ab10c8d6418743c213337b406d15448f75ffb4bebe0abdb2fb2693d"
 RECHECK_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/runtime-qualification-capture-20260908.json"
 RECHECK_ORIGIN_SHA256 = "6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d"
 MAX_CALLS, MAX_INPUT_BYTES = 8, 32 * 1024
+COMPLETE_TEACHING_MAX_INPUT_BYTES = 64 * 1024
 OPERATION_SECONDS = 240
 SETTINGS = {
     "AWS_REGION": "us-east-1", "BEDROCK_REGION": "us-east-1",
@@ -84,9 +89,10 @@ class _RequestCaptured(BaseException):
     pass
 
 
-def _first_request(request, questions=None, *, settings=None):
+def _first_request(request, questions=None, *, settings=None, maximum_input_bytes=MAX_INPUT_BYTES):
     settings = SETTINGS if settings is None else settings
     captured = []
+    contracts = _native_stage_contracts(request) if settings.get("BEDROCK_STRUCTURED_OUTPUT_MODE") == "native" else None
 
     class Client:
         def converse(self, **kwargs):
@@ -102,7 +108,8 @@ def _first_request(request, questions=None, *, settings=None):
         if questions is None:
             if settings.get("BEDROCK_STRUCTURED_OUTPUT_MODE") == "native":
                 generation._generate_with_bedrock(
-                    request, Client(), settings["BEDROCK_MODEL_ID"], contract="question_author_v1",
+                    request, Client(), settings["BEDROCK_MODEL_ID"],
+                    contract=contracts["author"]["contract_metadata"]["name"],
                 )
             else:
                 generation._generate_legacy_with_bedrock(request, Client(), settings["BEDROCK_MODEL_ID"])
@@ -113,16 +120,19 @@ def _first_request(request, questions=None, *, settings=None):
         pass
     if len(captured) != 1:
         raise ValueError("The initial runtime request must exist.")
-    _guard_request(captured[0], settings)
+    _guard_request(captured[0], settings, contracts, maximum_input_bytes=maximum_input_bytes)
     return captured[0]
 
 
-def _native_stage_contracts():
+def _native_stage_contracts(request=None):
+    complete = request is not None and generation._feedback_contract(request) == "authored_complete"
+    author_system = generation._system_prompt(feedback_contract="authored_complete") if complete else generation._system_prompt()
     result = {}
     for role, contract, system in (
-        ("author", "question_author_v1", generation._system_prompt()),
+        ("author", "question_author_complete_v1" if complete else "question_author_v1", author_system),
         ("solver", "complete_choice_solver_v1", COMPLETE_SOLUTION_SYSTEM_PROMPT),
-        ("reviewer", "default_reviewer_v1", COMPLETE_REVIEW_SYSTEM_PROMPT),
+        ("reviewer", "complete_teaching_reviewer_v1" if complete else "default_reviewer_v1",
+         COMPLETE_TEACHING_REVIEW_SYSTEM_PROMPT if complete else COMPLETE_REVIEW_SYSTEM_PROMPT),
     ):
         prompt = native.native_prompt(system, contract)
         result[role] = {
@@ -155,7 +165,7 @@ def _role(request, settings=None, native_contracts=None):
     raise ValueError("Unexpected runtime role.")
 
 
-def _guard_request(request, settings=None, native_contracts=None):
+def _guard_request(request, settings=None, native_contracts=None, *, maximum_input_bytes=MAX_INPUT_BYTES):
     settings = SETTINGS if settings is None else settings
     is_native = settings.get("BEDROCK_STRUCTURED_OUTPUT_MODE") == "native"
     contracts = (native_contracts or _native_stage_contracts()) if is_native else None
@@ -173,7 +183,7 @@ def _guard_request(request, settings=None, native_contracts=None):
         or not _same(request.get("additionalModelRequestFields"), additional)
         or set(request) != ({"modelId", "messages", "system", "inferenceConfig", "additionalModelRequestFields"}
                             | ({"outputConfig"} if is_native else set()))
-        or len(shared.canonical(request).encode("utf-8")) > MAX_INPUT_BYTES
+        or len(shared.canonical(request).encode("utf-8")) > maximum_input_bytes
     ):
         raise ValueError("Unexpected provider settings/shape or input allowance exceeded.")
     if is_native:
@@ -190,7 +200,7 @@ def _guard_request(request, settings=None, native_contracts=None):
 
 
 def make_plan(packet, *, source_revision=None):
-    if type(packet) is dict and packet.get("experiment") == NATIVE_WORKFLOW_EXPERIMENT:
+    if type(packet) is dict and packet.get("experiment") in NATIVE_WORKFLOW_EXPERIMENTS:
         return _make_native_workflow_plan(packet, source_revision=source_revision)
     if type(packet) is dict and packet.get("experiment") in {
         AUTHOR_COMPARISON_EXPERIMENT, FOCUSED_APPLICATION_EXPERIMENT,
@@ -243,6 +253,8 @@ def make_plan(packet, *, source_revision=None):
 
 
 def _make_native_workflow_plan(packet, *, source_revision):
+    complete = packet["experiment"] == NATIVE_COMPLETE_TEACHING_EXPERIMENT
+    maximum_input_bytes = COMPLETE_TEACHING_MAX_INPUT_BYTES if complete else MAX_INPUT_BYTES
     cases = packet.get("cases")
     if (set(packet) != {"experiment", "cases"} or type(cases) is not list or len(cases) != 3
             or any(type(case) is not dict or set(case) != {"case_id", "payload"}
@@ -252,18 +264,24 @@ def _make_native_workflow_plan(packet, *, source_revision):
     settings = {**SETTINGS, "BEDROCK_STRUCTURED_OUTPUT_MODE": "native", "MAX_QUESTIONS_PER_BATCH": "5"}
     operations = []
     with patch.dict(os.environ, settings):
-        contracts = _native_stage_contracts()
+        contracts = _native_stage_contracts({"feedbackContract": "authored_complete"} if complete else None)
         for case in cases:
             payload = case["payload"]
             if (type(payload) is not dict or type(payload.get("targetCount")) is not int
                     or payload["targetCount"] != 5 or type(payload.get("minimumDifficulty")) is not int
                     or payload["minimumDifficulty"] != 3):
                 raise ValueError("Each fresh goal must request five questions at minimum difficulty three.")
+            if complete and payload.get("feedbackContract") != "authored_complete":
+                raise ValueError("Complete-teaching qualification requires the explicit authored_complete selector.")
+            if not complete and "feedbackContract" in payload:
+                raise ValueError("The historical native workflow does not select authored teaching.")
             request = _normalize_request(copy.deepcopy(payload))
             if request["targetCount"] != 5 or request["minimumDifficulty"] != 3:
                 raise ValueError("Normalization changed the fixed target or difficulty.")
             operations.append({"kind": "fresh", "case_id": case["case_id"], "request": request,
-                               "maximum_calls": 6, "first_request": _first_request(request, settings=settings)})
+                               "maximum_calls": 6, "first_request": _first_request(
+                                   request, settings=settings, maximum_input_bytes=maximum_input_bytes,
+                               )})
     # Only this new mode binds the later offline backend/Swift delivery path.
     # Historical plans retain their original source-snapshot scope.
     from evals import checkpoint_delivery_check as delivery
@@ -271,14 +289,14 @@ def _make_native_workflow_plan(packet, *, source_revision):
         "backend/bedrock-question-service/evals/checkpoint_native_delivery.py",
     })
     return {
-        "experiment": NATIVE_WORKFLOW_EXPERIMENT, "fixture": copy.deepcopy(packet), "fixture_sha256": _hash(packet),
+        "experiment": packet["experiment"], "fixture": copy.deepcopy(packet), "fixture_sha256": _hash(packet),
         **_source_snapshot(source_revision), "settings": settings, "native_contracts": contracts,
         "delivery_source_sha256": {
             name: hashlib.sha256((delivery.ROOT / name).read_bytes()).hexdigest() for name in delivery_sources
         },
         "operations": operations, "maximum_calls": 18,
-        "maximum_input_utf8_bytes_per_call": MAX_INPUT_BYTES,
-        "maximum_input_utf8_bytes_total": 18 * MAX_INPUT_BYTES,
+        "maximum_input_utf8_bytes_per_call": maximum_input_bytes,
+        "maximum_input_utf8_bytes_total": 18 * maximum_input_bytes,
         "operation_seconds": OPERATION_SECONDS, "sdk_total_max_attempts": 1,
         "runtime_deadline_constants": {
             "client_setup_milliseconds": generation.DEFAULT_PROVIDER_CLIENT_SETUP_MILLISECONDS,
@@ -286,8 +304,16 @@ def _make_native_workflow_plan(packet, *, source_revision):
         },
         "maximum_worker_capture_bytes": caller.MAX_CAPTURE_BYTES,
         "failure_policy": "Six calls and three ordinary generation attempts per goal; eighteen calls total. Native author, solver and reviewer requests must match frozen prompt/schema bytes, hashes, models and inference settings. Completed content rejection or recognized native format failure may continue to the next independent goal. Ordinary call-budget exhaustion is a coverage failure. Observer, dispatch, correlation, unknown-usage, unfinished-response, cleanup and persistence failures latch a global stop even if runtime retains a partial batch. Deadline/durable-budget and unrecognized exceptions stop. No added repair, retry, fallback, resume or replacement operation; an exclusive claim beside the original plan prevents its reuse with another output directory.",
-        "scope": "Three fresh five-item local production workflows use Kimi authoring and Sonnet verification, disabled thinking, temperature0.2,6000tokens, native structured output and reviewer_written feedback. Only each original payload enters normalization and provider prompts. New source guidance and author/solver ordering remain part of the exact frozen runtime. No deployment, bank write or quality certification. Returned counts, format compliance and policy stamps do not establish factual correctness, reasonable distractors, teaching or difficulty.",
-        "timing_scope": "Three separate240-second operation clocks; existing isolated observers use read75/connect3/SDK1 and at most32KiB per serialized request. Local cleanup can extend a wait slightly; parent persistence is not hard real-time. Fixed75 transport admission is conservative versus deployed late-operation read shortening. Missing responses leave remote completion and billing unknown.",
+        "scope": (
+            "Three fresh five-item local production workflows use Kimi complete authoring and Sonnet complete-choice solving/teaching audit, disabled thinking, temperature0.2,6000tokens and native structured output. Every original payload explicitly selects authored_complete while the environment remains reviewer_written; the request selector owns the teaching contract. Exact authored main, every choice explanation and composed displays are audited before policy4 admission without reviewer rewriting. Only original payload data enters normalization and provider prompts. No deployment, bank write or quality certification. Returned counts, format compliance and policy stamps do not establish factual correctness, reasonable distractors, teaching or difficulty."
+            if complete else
+            "Three fresh five-item local production workflows use Kimi authoring and Sonnet verification, disabled thinking, temperature0.2,6000tokens, native structured output and reviewer_written feedback. Only each original payload enters normalization and provider prompts. New source guidance and author/solver ordering remain part of the exact frozen runtime. No deployment, bank write or quality certification. Returned counts, format compliance and policy stamps do not establish factual correctness, reasonable distractors, teaching or difficulty."
+        ),
+        "timing_scope": (
+            "Three separate240-second operation clocks; existing isolated observers use read75/connect3/SDK1 and at most64KiB per serialized request, prospectively allowing complete teaching and all copied displays. Local cleanup can extend a wait slightly; parent persistence is not hard real-time. Fixed75 transport admission is conservative versus deployed late-operation read shortening. Missing responses leave remote completion and billing unknown."
+            if complete else
+            "Three separate240-second operation clocks; existing isolated observers use read75/connect3/SDK1 and at most32KiB per serialized request. Local cleanup can extend a wait slightly; parent persistence is not hard real-time. Fixed75 transport admission is conservative versus deployed late-operation read shortening. Missing responses leave remote completion and billing unknown."
+        ),
     }
 
 
@@ -560,12 +586,15 @@ class _RuntimeClient:
         position = len(self.report["calls"])
         count = sum(c["operation_index"] == self.operation_index for c in self.report["calls"])
         try:
-            role = _guard_request(request, self.settings, self.report["plan"].get("native_contracts"))
+            role = _guard_request(
+                request, self.settings, self.report["plan"].get("native_contracts"),
+                maximum_input_bytes=self.report["plan"]["maximum_input_utf8_bytes_per_call"],
+            )
             if position >= self.report["plan"]["maximum_calls"] or count >= operation["maximum_calls"]:
                 raise ValueError("Call cap exceeded.")
             if operation["kind"] == "fixed" and role not in ("solver", "reviewer"):
                 raise ValueError("Fixed batch cannot invoke an author.")
-            if (self.report["plan"]["experiment"] == NATIVE_WORKFLOW_EXPERIMENT and count == 0
+            if (self.report["plan"]["experiment"] in NATIVE_WORKFLOW_EXPERIMENTS and count == 0
                     and not _same(request, self.report["plan"]["operations"][self.operation_index]["first_request"])):
                 raise ValueError("Initial native request differs from the frozen plan.")
             remaining = self.context.get_remaining_time_in_millis()
@@ -605,7 +634,7 @@ class _RuntimeClient:
                         raise ValueError("Saved observer admission contradicts the runtime deadline gate.")
                 if saved["observation"] is not None:
                     usable = _usable_observation(saved["observation"])
-                    if (self.report["plan"]["experiment"] == NATIVE_WORKFLOW_EXPERIMENT
+                    if (self.report["plan"]["experiment"] in NATIVE_WORKFLOW_EXPERIMENTS
                             and not saved["observation"]["usage_known"]):
                         usable = False
                 else:
@@ -659,7 +688,7 @@ class _RuntimeClient:
                                       on_progress=progress, timeout=remaining / 1000)
                 call["observation"] = copy.deepcopy(state)
                 if (self.failed or not _usable_observation(state)
-                        or self.report["plan"]["experiment"] == NATIVE_WORKFLOW_EXPERIMENT and not state["usage_known"]):
+                        or self.report["plan"]["experiment"] in NATIVE_WORKFLOW_EXPERIMENTS and not state["usage_known"]):
                     raise QualificationFailure("Provider observation did not complete safely.")
                 call["lifecycle"] = "completed"
                 phase = "response_persistence"
@@ -712,7 +741,7 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
     client = _RuntimeClient(report, persist, observer, cli_credentials, replay and replay["calls"])
     for index, job in enumerate(plan["operations"]):
         settings = job.get("settings", plan["settings"])
-        native_workflow = plan["experiment"] == NATIVE_WORKFLOW_EXPERIMENT
+        native_workflow = plan["experiment"] in NATIVE_WORKFLOW_EXPERIMENTS
         environment = {**settings, "BEDROCK_STRUCTURED_OUTPUT_MODE": "native" if native_workflow else "legacy"}
         with patch.dict(os.environ, environment), patch.object(caller, "SETTINGS", copy.deepcopy(settings)):
             result = report["operations"][index]
@@ -813,7 +842,7 @@ def _empty_report(plan):
                             **({key: copy.deepcopy(j[key]) for key in ("arm", "case_id", "settings")}
                                if plan["experiment"] in {AUTHOR_COMPARISON_EXPERIMENT,
                                                          FOCUSED_APPLICATION_EXPERIMENT} else {}),
-                            **({"case_id": j["case_id"]} if plan["experiment"] == NATIVE_WORKFLOW_EXPERIMENT else {}),
+                            **({"case_id": j["case_id"]} if plan["experiment"] in NATIVE_WORKFLOW_EXPERIMENTS else {}),
                             "status": "unattempted", "remaining_milliseconds": [], "questions": []}
                            for j in plan["operations"]]}
 
@@ -821,7 +850,7 @@ def _empty_report(plan):
 def run_trial(plan_path, approved_hash, directory, *, observer=None, cli_credentials=False):
     plan = load_frozen_plan(plan_path, approved_hash)
     directory = Path(directory)
-    if plan["experiment"] == NATIVE_WORKFLOW_EXPERIMENT:
+    if plan["experiment"] in NATIVE_WORKFLOW_EXPERIMENTS:
         if directory.exists():
             raise FileExistsError(directory)
         path = Path(plan_path).resolve()

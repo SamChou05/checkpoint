@@ -1,0 +1,56 @@
+{
+  "experiment": "native-complete-teaching-workflow-v1",
+  "cases": [
+    {
+      "case_id": "sqlite_query_results",
+      "payload": {
+        "goal": {
+          "title": "Predict and explain SQLite query results",
+          "category": "Custom",
+          "currentLevel": "I can write basic SELECT queries, but struggle to predict results when joins, NULL values, duplicate rows and subqueries interact.",
+          "focusAreas": "Apply SQLite 3 semantics to concrete small tables and compare alternative queries. Practice left joins, filtering, membership tests, EXISTS and duplicate results. Explain why a query returns particular rows or differs from another query."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "feedbackContract": "authored_complete",
+        "sourceDocuments": [
+          {
+            "name": "SQLite query behavior: selective study notes",
+            "text": "Assistant-written selective notes checked 2026-09-10; not a quotation or complete specification. References: https://www.sqlite.org/lang_select.html and https://www.sqlite.org/lang_expr.html\n\nSQLite evaluates a WHERE condition for each input row and keeps only rows where it is true; false and NULL are excluded. A LEFT JOIN adds a NULL-extended row for each unmatched left row after ON filtering and before WHERE filtering. Moving a right-side condition between ON and WHERE can therefore change the result. Ordinary equality with NULL yields NULL; IS handles NULL comparisons without a NULL result. IN and NOT IN depend on membership, NULLs and whether the right-hand set is empty. For a non-NULL unmatched left value, a nonempty right set containing NULL makes both results NULL. With an empty right set, IN is false and NOT IN is true, even for a NULL left value. EXISTS tests whether its subquery returns any rows, regardless of the values in those rows. SELECT DISTINCT removes duplicate result rows and treats two NULLs as equal for this purpose. These are general rules, not data for any particular table.",
+            "truncated": true
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "study_design_and_inference",
+      "payload": {
+        "goal": {
+          "title": "Judge what a research study can establish",
+          "category": "Custom",
+          "currentLevel": "I understand averages and correlations, but struggle to evaluate the conclusions of studies described in articles and reports.",
+          "focusAreas": "Apply random assignment, sampling, controls, confounding, attrition and the unit of assignment to practical research scenarios. Distinguish what reported results support from conclusions requiring additional evidence, and compare design changes."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "feedbackContract": "authored_complete",
+        "sourceDocuments": []
+      }
+    },
+    {
+      "case_id": "spanish_past_tense_narrative",
+      "payload": {
+        "goal": {
+          "title": "Choose Spanish past tenses to express the intended meaning",
+          "category": "Language Learning",
+          "currentLevel": "I can conjugate common verbs in the pretérito indefinido and imperfecto, but struggle to choose between them in a story.",
+          "focusAreas": "Interpret tense choices in short narratives and select wording consistent with the stated timeline and intended meaning. Practice background events, bounded events, repeated events and interruptions; explain how a tense change affects meaning."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "feedbackContract": "authored_complete",
+        "sourceDocuments": []
+      }
+    }
+  ]
+}

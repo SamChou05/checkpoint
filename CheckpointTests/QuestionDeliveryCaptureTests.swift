@@ -82,6 +82,71 @@ final class QuestionDeliveryCaptureTests: XCTestCase {
             "claim_response": ["questions": [wire]]
         ])
         XCTAssertEqual(observation["client_retained_count"] as? Int, 1)
+        XCTAssertTrue(observation["request_feedback_contract"] is NSNull)
+        XCTAssertEqual(observation["minimum_verification_policy_revision"] as? Int, 2)
+    }
+
+    func testSyntheticCompleteTeachingControlRetainsExactFourDisplays() throws {
+        let operation = try completeTeachingOperation()
+        let observation = try inspect(operation)
+        XCTAssertEqual(observation["client_retained_count"] as? Int, 1)
+        XCTAssertEqual(observation["request_feedback_contract"] as? String, "authored_complete")
+        XCTAssertEqual(observation["minimum_verification_policy_revision"] as? Int, 4)
+        let retained = try XCTUnwrap(observation["retained_questions"] as? [[String: Any]])
+        let displays = try XCTUnwrap(retained.first?["feedback_displays"] as? [[String: Any]])
+        let main = try XCTUnwrap(retained.first?["main"] as? String)
+        XCTAssertEqual(displays.count, 4)
+        XCTAssertTrue(displays.contains { ($0["display"] as? String) == main })
+    }
+
+    func testSyntheticCompleteTeachingControlRejectsOlderAndIncompleteContent() throws {
+        for damage in ["revision2", "revision3", "missingFeedback", "canonicalKeyMismatch"] {
+            var operation = try completeTeachingOperation()
+            var response = try XCTUnwrap(operation["claim_response"] as? [String: Any])
+            var questions = try XCTUnwrap(response["questions"] as? [[String: Any]])
+            switch damage {
+            case "revision2": questions[0]["verificationPolicyRevision"] = 2
+            case "revision3": questions[0]["verificationPolicyRevision"] = 3
+            case "missingFeedback": questions[0]["choiceExplanations"] = [:] as [String: String]
+            default: questions[0]["expectedAnswer"] = "Caf\u{e9} reasoning"
+            }
+            response["questions"] = questions
+            operation["claim_response"] = response
+            let observation = try inspect(operation, expectedRetainedCount: 0)
+            XCTAssertEqual(observation["runtime_returned_count"] as? Int, 1)
+            XCTAssertEqual(observation["bank_claimable_count"] as? Int, 1)
+            XCTAssertEqual(observation["client_retained_count"] as? Int, 0, damage)
+            XCTAssertEqual((observation["client_dropped_remote_ids"] as? [String])?.count, 1)
+        }
+    }
+
+    func testSyntheticCaptureRejectsUnsupportedFeedbackContract() throws {
+        var operation = try completeTeachingOperation()
+        var request = try XCTUnwrap(operation["request"] as? [String: Any])
+        request["feedbackContract"] = "unknown_contract"
+        operation["request"] = request
+        XCTAssertThrowsError(try inspect(operation))
+    }
+
+    private func completeTeachingOperation() throws -> [String: Any] {
+        let goal = makeGoal()
+        var question = makeQuestion(goal: goal, index: 601,
+                                    expectedAnswer: "Cafe\u{301} reasoning",
+                                    choices: ["Cafe\u{301} reasoning", "Second offered choice", "Third offered choice", "Fourth offered choice"],
+                                    explanation: "\r\nThe complete main solution preserves e\u{301} and spaces.\t\r\n",
+                                    verificationPolicyRevision: 4, difficulty: 3)
+        question.remoteID = UUID(uuidString: "00000000-0000-0000-0000-000000000601")!.uuidString
+        question.choiceExplanations = Dictionary(uniqueKeysWithValues: question.choices.enumerated().map { index, choice in
+            (choice, index == 1
+             ? question.explanation.precomposedStringWithCanonicalMapping
+             : "\tChoice \(index) has exact feedback preserving '  e\u{301}  '.\r\n")
+        })
+        let wire = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(question)) as? [String: Any])
+        return ["operation_index": 0, "runtime_returned_count": 1, "bank_claimable_count": 1,
+                "request": ["goal": ["title": goal.title, "currentLevel": goal.currentLevel,
+                                     "focusAreas": goal.focusAreas, "category": goal.category.rawValue],
+                            "targetCount": 5, "minimumDifficulty": 3, "feedbackContract": "authored_complete"],
+                "claim_response": ["questions": [wire]]]
     }
 
     private struct Claim: Decodable { var questions: [GeneratedQuestionPayload] }
@@ -101,9 +166,10 @@ final class QuestionDeliveryCaptureTests: XCTestCase {
         var sourceDocuments: [Source]?
         var targetCount: Int
         var minimumDifficulty: Int
+        var feedbackContract: QuestionFeedbackContract?
     }
 
-    private func inspect(_ operation: [String: Any]) throws -> [String: Any] {
+    private func inspect(_ operation: [String: Any], expectedRetainedCount: Int? = nil) throws -> [String: Any] {
         let requestData = try JSONSerialization.data(withJSONObject: XCTUnwrap(operation["request"]))
         let input = try JSONDecoder().decode(Request.self, from: requestData)
         let sources = (input.sourceDocuments ?? []).map {
@@ -113,10 +179,12 @@ final class QuestionDeliveryCaptureTests: XCTestCase {
                         category: GoalCategory(rawValue: input.goal.category ?? "") ?? .custom,
                         currentLevel: input.goal.currentLevel ?? "",
                         focusAreas: input.goal.focusAreas ?? "",
-                        sourceDocuments: sources, preferredQuestionStyle: .multipleChoice)
+                        sourceDocuments: sources, preferredQuestionStyle: .multipleChoice,
+                        questionFeedbackContract: input.feedbackContract)
         var request = makeRequest(goal: goal, targetCount: input.targetCount,
                                   minimumDifficulty: input.minimumDifficulty)
         request.requiresVerifiedQuestions = true
+        XCTAssertEqual(request.feedbackContract, input.feedbackContract)
         let claimData = try JSONSerialization.data(withJSONObject: XCTUnwrap(operation["claim_response"]))
         let payloads = try QuestionContentJSONDecoder.decode(Claim.self, from: claimData).questions
         let received = payloads.map { $0.makeQuestion(goalID: goal.id, sourcePrompt: "captured delivery") }
@@ -124,7 +192,8 @@ final class QuestionDeliveryCaptureTests: XCTestCase {
         let admitted = QuestionBatchSanitizer.sanitize(received, for: request)
         let persisted = try JSONEncoder().encode(admitted)
         let restored = try QuestionContentJSONDecoder.decode([CheckpointQuestion].self, from: persisted)
-        XCTAssertEqual(admitted.count, payloads.count, "Client admission loss in operation \(operation["operation_index"] ?? -1)")
+        XCTAssertEqual(admitted.count, expectedRetainedCount ?? payloads.count,
+                       "Client admission loss in operation \(operation["operation_index"] ?? -1)")
         XCTAssertEqual(restored.count, admitted.count)
         var retained: [[String: Any]] = []
         for question in restored {
@@ -160,9 +229,14 @@ final class QuestionDeliveryCaptureTests: XCTestCase {
             }
             retained.append(["remoteID": question.remoteID ?? "", "prompt": question.prompt,
                              "expectedAnswer": question.expectedAnswer, "main": question.explanation,
+                             "verificationVersion": question.verificationVersion,
+                             "verificationPolicyRevision": question.verificationPolicyRevision,
                              "displayed_choices": question.choices, "feedback_displays": displays])
         }
         return ["operation_index": operation["operation_index"] ?? -1,
+                "case_id": operation["case_id"] ?? NSNull(),
+                "request_feedback_contract": request.feedbackContract.map { $0.rawValue as Any } ?? NSNull(),
+                "minimum_verification_policy_revision": request.minimumVerificationPolicyRevision,
                 "runtime_returned_count": operation["runtime_returned_count"] ?? payloads.count,
                 "bank_claimable_count": payloads.count, "client_retained_count": restored.count,
                 "client_dropped_remote_ids": payloads.compactMap { payload in

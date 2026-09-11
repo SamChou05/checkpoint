@@ -9,12 +9,13 @@ import unittest
 from unittest.mock import patch
 
 from evals import checkpoint_native_delivery as native
-from test_delivery_check import captured_question
+from test_delivery_check import captured_question, complete_question
+import test_complete_teaching_workflow_qualification as complete_workflow_tests
 import test_native_workflow_qualification as workflow_tests
 from test_runtime_qualification import completed
 
 
-def capture():
+def capture(*, complete=False):
     cases, jobs, operations = [], [], []
     for index in range(3):
         case_id = f"fresh-{index}"
@@ -24,12 +25,16 @@ def capture():
             "sourceDocuments": [{"name": "Rate", "text": "Distance = speed × time.", "truncated": False}],
             "targetCount": 5, "minimumDifficulty": 3,
         }
+        if complete:
+            payload["feedbackContract"] = "authored_complete"
         cases.append({"case_id": case_id, "payload": payload})
         jobs.append({"case_id": case_id, "kind": "fresh", "request": copy.deepcopy(payload)})
         operations.append({"case_id": case_id, "kind": "fresh", "status": "completed",
-                           "questions": [captured_question(index + 1)], "result_category": "partial_delivery"})
-    plan = {"experiment": native.EXPERIMENT,
-            "fixture": {"experiment": native.EXPERIMENT, "cases": cases},
+                           "questions": [(complete_question if complete else captured_question)(index + 1)],
+                           "result_category": "partial_delivery"})
+    experiment = native.COMPLETE_TEACHING_EXPERIMENT if complete else native.EXPERIMENT
+    plan = {"experiment": experiment,
+            "fixture": {"experiment": experiment, "cases": cases},
             "operations": jobs, "source_revision": "a" * 40, "source_sha256": {}, "dependencies": {},
             "delivery_source_sha256": native.delivery_source_hashes()}
     return {"plan": plan, "plan_sha256": native.runtime._hash(plan),
@@ -37,6 +42,44 @@ def capture():
 
 
 class NativeDeliveryTests(unittest.TestCase):
+    def test_complete_native_replay_preserves_explicit_context_through_actual_bank(self):
+        harness = complete_workflow_tests.CompleteTeachingWorkflowQualificationTests()
+        try:
+            harness.setUp()
+            harness.packet = copy.deepcopy(capture(complete=True)["plan"]["fixture"])
+            harness.plan = native.runtime.make_plan(harness.packet)
+            native.runtime.shared.write_json(harness.plan_path, harness.plan)
+            value = harness.run_trial()
+            report = native.check_capture(value)
+            self.assertTrue(report["passed"])
+            self.assertEqual(report["runtime_returned_count"], 15)
+            self.assertEqual(report["bank_claimable_count"], 15)
+            self.assertEqual(report["native_capture_binding"]["experiment"], native.COMPLETE_TEACHING_EXPERIMENT)
+            self.assertEqual(report["source_sha256"], value["plan"]["delivery_source_sha256"])
+            for result, original in zip(report["operations"], harness.packet["cases"], strict=True):
+                self.assertEqual(result["request"], original["payload"])
+                self.assertEqual(result["bank_feedback_contract"], "authored_complete")
+                self.assertEqual(result["claim_request"]["minimumVerificationPolicyRevision"], 4)
+                self.assertTrue(all(q["verificationPolicyRevision"] == 4 for q in result["claim_response"]["questions"]))
+        finally:
+            harness.doCleanups()
+
+    def test_complete_selector_cannot_be_removed_rewritten_or_added_to_old_mode(self):
+        for side in ("raw", "normalized"):
+            for selector in (None, "reviewer_written", "authored_solution", True):
+                value = capture(complete=True)
+                request = (value["plan"]["fixture"]["cases"][0]["payload"] if side == "raw"
+                           else value["plan"]["operations"][0]["request"])
+                request["feedbackContract"] = selector
+                with self.subTest(side=side, selector=selector), patch.object(native.runtime, "replay_capture") as replay:
+                    with self.assertRaises(ValueError):
+                        native.check_capture(value)
+                    replay.assert_not_called()
+        value = capture()
+        value["plan"]["fixture"]["cases"][0]["payload"]["feedbackContract"] = "authored_complete"
+        with self.assertRaises(ValueError):
+            native.check_capture(value)
+
     def test_real_native_replay_and_delivery_preserve_content_failed_and_empty_goals(self):
         for scenario in ("full", "invalid", "empty"):
             with self.subTest(scenario=scenario):

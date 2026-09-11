@@ -25,7 +25,9 @@ from evals import checkpoint_runtime_qualification as runtime  # noqa: E402
 from question_quality import _strict_json_object  # noqa: E402
 
 EXPERIMENT = "native-fresh-workflow-v1"
-REQUEST_FIELDS = {"goal", "sourceDocuments", "targetCount", "minimumDifficulty"}
+COMPLETE_TEACHING_EXPERIMENT = "native-complete-teaching-workflow-v1"
+EXPERIMENTS = {EXPERIMENT, COMPLETE_TEACHING_EXPERIMENT}
+REQUEST_FIELDS = {"goal", "sourceDocuments", "targetCount", "minimumDifficulty", "feedbackContract"}
 GOAL_FIELDS = {"title", "category", "currentLevel", "focusAreas"}
 SOURCE_FIELDS = {"name", "text", "truncated"}
 # Exact GoalCategory raw values; reject Swift's fallback to Custom for unknown input.
@@ -44,12 +46,13 @@ def _delivery_view(capture):
     if type(capture) is not dict or capture.get("status") not in {"completed", "operational_failure"}:
         raise ValueError("A terminal native workflow capture is required.")
     plan = capture.get("plan")
-    if type(plan) is not dict or plan.get("experiment") != EXPERIMENT:
-        raise ValueError("Only the native fresh workflow is supported.")
+    if type(plan) is not dict or plan.get("experiment") not in EXPERIMENTS:
+        raise ValueError("Only the supported native fresh workflows are supported.")
+    experiment = plan["experiment"]
     fixture = plan.get("fixture")
     cases = fixture.get("cases") if type(fixture) is dict else None
     planned, observed = plan.get("operations"), capture.get("operations")
-    if type(fixture) is not dict or fixture.get("experiment") != EXPERIMENT or any(
+    if type(fixture) is not dict or fixture.get("experiment") != experiment or any(
         type(rows) is not list or len(rows) != 3 for rows in (cases, planned, observed)
     ):
         raise ValueError("Exactly three planned and observed fresh operations are required.")
@@ -67,6 +70,9 @@ def _delivery_view(capture):
         if (type(payload) is not dict or set(payload) - REQUEST_FIELDS
                 or type(request) is not dict):
             raise ValueError("The Swift delivery helper does not support this request context.")
+        expected_contract = "authored_complete" if experiment == COMPLETE_TEACHING_EXPERIMENT else None
+        if any(value.get("feedbackContract") != expected_contract for value in (payload, request)):
+            raise ValueError("The original and normalized feedback contract must match the native workflow.")
         goal = payload.get("goal")
         if type(goal) is not dict or set(goal) - GOAL_FIELDS or type(goal.get("title")) is not str:
             raise ValueError("The Swift delivery helper does not support this goal context.")
@@ -115,7 +121,7 @@ def check_capture(capture):
             raise ValueError("Native delivery requires exact, nonmutating runtime replay.")
         report = delivery.check_capture(view)
     report["native_capture_binding"] = {
-        "experiment": EXPERIMENT,
+        "experiment": plan["experiment"],
         "capture_canonical_sha256": runtime._hash(capture),
         "plan_sha256": capture["plan_sha256"],
         "source_revision": plan["source_revision"],

@@ -1,0 +1,91 @@
+{
+  "kind": "offline complete-audit size measurement",
+  "fixture_sha256": "37cca3225537b1da049a5c35de6b52164f7fd68e91203060fe7ff2f90ce087fa",
+  "measurements": [
+    {
+      "case_id": "sqlite_query_results",
+      "synthetic_shape": "prompt_targets",
+      "stem_main_choice_feedback_codepoints": [
+        220,
+        320,
+        40,
+        120
+      ],
+      "item_count": 5,
+      "serialized_audit_utf8_bytes": 28446,
+      "under_frozen_65536_cap": true,
+      "request_sha256": "ad1b3c78df1a7f7144e81972b05b01c4559eb7d89c3268b11134dcf5dc770c58"
+    },
+    {
+      "case_id": "sqlite_query_results",
+      "synthetic_shape": "legal_ascii_limits",
+      "stem_main_choice_feedback_codepoints": [
+        320,
+        420,
+        140,
+        280
+      ],
+      "item_count": 5,
+      "serialized_audit_utf8_bytes": 43846,
+      "under_frozen_65536_cap": true,
+      "request_sha256": "2c47521c0c3b7fe6dade86e4c7e330d507295508cb52a917c9b78fe124b01d8f"
+    },
+    {
+      "case_id": "study_design_and_inference",
+      "synthetic_shape": "prompt_targets",
+      "stem_main_choice_feedback_codepoints": [
+        220,
+        320,
+        40,
+        120
+      ],
+      "item_count": 5,
+      "serialized_audit_utf8_bytes": 27222,
+      "under_frozen_65536_cap": true,
+      "request_sha256": "0c5e4dd5eea195bbd7802047943165eeb4d22610bd882ac9406671bebe142519"
+    },
+    {
+      "case_id": "study_design_and_inference",
+      "synthetic_shape": "legal_ascii_limits",
+      "stem_main_choice_feedback_codepoints": [
+        320,
+        420,
+        140,
+        280
+      ],
+      "item_count": 5,
+      "serialized_audit_utf8_bytes": 42622,
+      "under_frozen_65536_cap": true,
+      "request_sha256": "538fe77a81d0fa7dab3b83e57a62ef227b2c4e16bbb29c98c98d7f00851b5c51"
+    },
+    {
+      "case_id": "spanish_past_tense_narrative",
+      "synthetic_shape": "prompt_targets",
+      "stem_main_choice_feedback_codepoints": [
+        220,
+        320,
+        40,
+        120
+      ],
+      "item_count": 5,
+      "serialized_audit_utf8_bytes": 27261,
+      "under_frozen_65536_cap": true,
+      "request_sha256": "4125918c4a4a8ce0c44ec20c9633fff3119227338603ec90789f0f0227c52841"
+    },
+    {
+      "case_id": "spanish_past_tense_narrative",
+      "synthetic_shape": "legal_ascii_limits",
+      "stem_main_choice_feedback_codepoints": [
+        320,
+        420,
+        140,
+        280
+      ],
+      "item_count": 5,
+      "serialized_audit_utf8_bytes": 42661,
+      "under_frozen_65536_cap": true,
+      "request_sha256": "0d5607bd851f1edab1f626aeca3438b701ddcfbfa96a3194736a0d235a6de4e4"
+    }
+  ],
+  "scope": "Scripted solver declarations cause actual production verify_questions and native provider serialization to emit an audit request. No provider dispatched and no semantic claim. ASCII measurements do not bound every legal Unicode output."
+}
