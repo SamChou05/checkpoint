@@ -112,7 +112,11 @@ class NativePipelineTests(unittest.TestCase):
         def respond(request):
             data = task_data(request, "question_solution_json")
             item = data["items"][0]
-            self.assertEqual(set(item), {"index", "prompt", "choices", "skillID", "objectiveID", "topic"})
+            fields = {"index", "prompt", "choices", "skillID", "objectiveID", "topic"}
+            if "objective" in question:
+                fields.add("objective")
+                self.assertEqual(item["objective"], question["objective"])
+            self.assertEqual(set(item), fields)
             self.assertNotIn("expectedAnswer", json.dumps(data))
             self.assertNotIn(question["explanation"], json.dumps(data))
             result = _complete_solution(item, question["expectedAnswer"])
@@ -163,6 +167,10 @@ class NativePipelineTests(unittest.TestCase):
         self.assertEqual(len(accepted), 1)
         self.assertEqual(accepted[0]["skillID"].lower(), skill["id"].lower())
         self.assertEqual(accepted[0]["objectiveID"].lower(), objective["id"].lower())
+        self.assertEqual(
+            task_data(client.calls[2], "question_review_json")["items"][0]["objective"],
+            objective["name"],
+        )
         schema = client.calls[0]["outputConfig"]
         self.assertNotIn(skill["id"], json.dumps(schema))
         self.assertNotIn(question["prompt"], json.dumps(schema))

@@ -117,6 +117,7 @@ def make_plan(packet):
         "question_quality.py",
         "request_contract.py",
         "question_difficulty.py",
+        "question_source_guidance.py",
         "generation_diagnostics.py",
         "native_output_contracts.py",
         "service_errors.py",

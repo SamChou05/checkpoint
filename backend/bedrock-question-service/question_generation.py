@@ -25,6 +25,7 @@ from question_bank_common import (
     _max_provider_calls,
 )
 from question_difficulty import DIFFICULTY_RUBRIC, _difficulty_guidance
+from question_source_guidance import SOURCE_EVIDENCE_GUIDANCE
 
 from question_quality import (
     _extract_json_object,
@@ -36,6 +37,7 @@ from question_quality import (
 from request_contract import (
     _bounded_float_env,
     _canonical,
+    _clean_subject_text,
     _clean_text,
     _clip,
     _int_env,
@@ -823,9 +825,10 @@ def _system_prompt() -> str:
     construction = """For each requested item:
 1. Choose the assigned objective and a concrete decision or application to test.
 2. Establish the facts and solve the problem. Ensure those facts determine a
-   unique answer. If the answer needs another assumption, put it in the stem or
-   choose a different problem. Preserve units, quantifiers, exceptions, and the
-   exact conditions of any rule. Do not promise an optimum without enough facts.
+   unique answer. If the answer needs another case-specific assumption, include
+   it in the stem or choose a different problem. Preserve units, quantifiers,
+   exceptions, and the exact conditions of any rule. Do not promise an optimum
+   without enough facts.
 3. Write the correct answer and three plausible but demonstrably wrong answers.
    Verify each choice against the unchanged stem. If two work, change the item.
 4. Give a brief explanation consistent with the final stem and answer. Return
@@ -836,9 +839,10 @@ def _system_prompt() -> str:
    or decision. Its solution may require integrating several facts or steps.
    State the task explicitly instead of asking which miscellaneous statement is
    correct. Joint outcomes are appropriate when the task actually requires them.
-2. Establish and solve that task using the exact displayed facts. Preserve units,
-   quantifiers, exceptions and rule conditions. Put every necessary premise in
-   the stem; add a missing condition or choose a different complete problem.
+2. Establish and solve that task using the exact displayed case facts and justified
+   subject knowledge. Preserve units, quantifiers, exceptions and rule conditions.
+   Put every necessary case-specific premise in the stem or choices; add a missing
+   condition or choose a different complete problem.
    Do not promise an optimum or causal conclusion without sufficient evidence.
 3. Make all four choices answer that same request in the same dimensions. For
    a requested joint outcome, every choice supplies the same components. Do not
@@ -873,7 +877,7 @@ Return only one JSON object:
 Exactly four distinct choices; expectedAnswer exactly equals one of them.
 Make choices parallel, mutually exclusive, and similar in specificity. No answer
 letters, all/none-of-the-above options, duplicate JSON keys, or options in the stem.
-Each stem must be self-contained and understandable without opening another file.
+Display the complete task and any required case stimulus without opening another file.
 Use plain text, including plain-text equations/code when relevant. When syntax
 or layout carries meaning, preserve literal content and necessary line breaks
 and indentation. Do not flatten compound statements in ways that change syntax
@@ -886,10 +890,11 @@ Stem at most
 cannot fit completely, use a narrower problem with all necessary facts. Never
 remove a necessary condition just to meet a length limit.
 
-Use supplied substantive material to support source-based claims. An outline
-establishes scope only; use established subject knowledge for its facts. Respect
-supplied hypothetical rules. Never fill gaps in truncated material or invent
-citations. Use original examples.
+"""
+        + SOURCE_EVIDENCE_GUIDANCE
+        + """
+
+Use original examples.
 
 Generate exactly targetCount items and honor requestedSkillAllocation and
 requestedObjectiveAllocation. For a supplied skillMap, copy its skillID and
@@ -906,8 +911,8 @@ Difficulty rubric:
 
 Naming a familiar technique inside a scenario remains level 1 or 2. At level 3
 and above, the evidence, representation, or constraints must matter to solving
-the problem. Keep all necessary information in the stem. Long wording, obscure
-facts, and tricky phrasing do not establish greater cognitive challenge.
+the problem. Display all necessary case data in the stem or choices. Long wording,
+obscure facts, and tricky phrasing do not establish greater cognitive challenge.
 Keep tasks answerable in 30 seconds to three minutes.
 
 On retries, previousAttemptFeedback contains counts of rejected items, grouped
@@ -951,7 +956,8 @@ that establishes the answer. For a calculation, show how the supplied quantities
 produce the result; for an inference or decision, connect the stated conditions
 to the conclusion. Merely naming the correct answer is not sufficient teaching.
 Preserve necessary qualifications without inventing observations or unrelated
-counterfactuals. Put premises needed by the answer in the stem, not only here.
+counterfactuals. Put necessary case-specific premises in the stem or choices,
+not only in this explanation.
 Finish the explanation now, within the existing bounds. A later reviewer may
 reject it but cannot rewrite, shorten, or add learner-facing content. Do not
 produce choiceExplanations; all four alternatives will still be independently
@@ -968,8 +974,8 @@ connecting the relevant stated facts to the conclusion. Keep a general rule's
 conditions when using it, but do not turn evidence for this case into a universal
 requirement or add a causal story the task does not establish. A correct answer
 name alone is not teaching; include the reasoning that makes it follow here.
-Keep premises needed by the answer in the stem. Preserve the required challenge;
-several reasoning steps can establish one precisely asked result.
+Display necessary case-specific premises in the stem or choices. Preserve the
+required challenge; several reasoning steps can establish one precisely asked result.
 Finish the complete explanation within the existing bounds. A later reviewer
 may reject it but cannot rewrite, shorten or add learner-facing content. Do not
 produce choiceExplanations. All four choices will still be independently checked
@@ -997,7 +1003,7 @@ def _prompt_variant_instructions() -> str:
     }:
         return """
 Prompt experiment variant: checklist
-- Before final JSON, silently grade each candidate item against: subject fit, one objective skill, self-contained stem, exactly one defensible answer, four parallel choices, nontrivial distractors, requested difficulty, and safe prompt length.
+- Before final JSON, silently grade each candidate item against: subject fit, one objective skill, complete displayed task and case stimulus, exactly one defensible answer, four parallel choices, nontrivial distractors, requested difficulty, and safe prompt length.
 - Discard and replace any item that fails one checklist point instead of explaining the failure.
 """.strip()
     if variant == "compact":
@@ -1099,12 +1105,13 @@ def _source_grounding_text(request: dict[str, Any]) -> str:
 
     return (
         f"Ground questions in the {len(documents)} source document(s) listed in the request JSON. "
-        "Use their text as the primary content scope and keep every question self-contained."
+        "Use relevant substantive text as study material and evidence; topic-only outlines establish scope only. "
+        "Learned knowledge need not be restated, but display any case stimulus needed to answer."
     )
 
 
 def _learner_level_text(request: dict[str, Any]) -> str:
-    explicit_level = _clean_text(request.get("goal", {}).get("currentLevel"))
+    explicit_level = _clean_subject_text(request.get("goal", {}).get("currentLevel") or "")
     if explicit_level:
         return explicit_level
 

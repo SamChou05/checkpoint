@@ -536,7 +536,7 @@ class LambdaQualityTests(BackendTestCase):
 
         self.assertIn("for any learning goal", system_prompt)
         self.assertIn("Test the subject itself", system_prompt)
-        self.assertIn("Each stem must be self-contained", system_prompt)
+        self.assertIn("Display the complete task and any required case stimulus", system_prompt)
         self.assertIn("three plausible but demonstrably wrong answers", system_prompt)
         self.assertIn("Choose the assigned objective", system_prompt)
         for overfit_term in [
