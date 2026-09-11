@@ -1,0 +1,430 @@
+{
+  "scope": "Synthetic four-question beginner diagnostic; one pass, maximum three provider calls; no production writes.",
+  "runtimeRevision": "18b0201",
+  "baselineRevision": "d0a96dd",
+  "deployment": {
+    "checkedAtUTC": "2026-09-11T07:29:25.722331+00:00",
+    "functions": [
+      {
+        "kind": "api",
+        "lastModified": "2026-09-08T07:07:54.000+0000",
+        "source": {
+          "question_generation.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "da4ed110565c78694716b7f74d7f3c849cc57da6c4f8fae8678f93f2b118c857"
+          },
+          "question_quality.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "e2178e578b081c56c128876e4f29fb9e2ff9d78302a78aeae84daa170bc076c0"
+          },
+          "question_verification.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "2f6be813a738544a076c2186943712175a976fca3cf2922a5bef7d3b53957798"
+          },
+          "request_contract.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "70b8f2a7a5f233bdf5bf027a83f8871f7fab78f803eaf2070bec0b73ea1508f2"
+          },
+          "verification_policy.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "fade0c88ff8721dba6da44a029ec90e7456f45574057c22f160dd449d6fdf397"
+          }
+        }
+      },
+      {
+        "kind": "worker",
+        "lastModified": "2026-09-08T07:07:54.000+0000",
+        "source": {
+          "question_generation.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "da4ed110565c78694716b7f74d7f3c849cc57da6c4f8fae8678f93f2b118c857"
+          },
+          "question_quality.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "e2178e578b081c56c128876e4f29fb9e2ff9d78302a78aeae84daa170bc076c0"
+          },
+          "question_verification.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "2f6be813a738544a076c2186943712175a976fca3cf2922a5bef7d3b53957798"
+          },
+          "request_contract.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "70b8f2a7a5f233bdf5bf027a83f8871f7fab78f803eaf2070bec0b73ea1508f2"
+          },
+          "verification_policy.py": {
+            "matches601d273": true,
+            "matchesCurrentMain": false,
+            "sha256": "fade0c88ff8721dba6da44a029ec90e7456f45574057c22f160dd449d6fdf397"
+          }
+        }
+      }
+    ],
+    "logs": {
+      "qualityEvents": 0,
+      "firstTimestamp": null,
+      "lastTimestamp": null,
+      "counts": {}
+    }
+  },
+  "request": {
+    "goal": {
+      "title": "Recognize nouns, verbs, adjectives and adverbs in sentence context",
+      "category": "",
+      "focusAreas": "Identify the function of a word in its sentence",
+      "currentLevel": "Beginner",
+      "learningTarget": "English parts of speech",
+      "contentTopics": [
+        "Parts of speech"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "competencies": [],
+    "existingPrompts": [],
+    "existingQuestionCoverage": [],
+    "reportedPrompts": [],
+    "blockedStemFingerprints": [],
+    "stemFingerprintVersion": 1,
+    "sourceDocuments": [
+      {
+        "name": "Practice scope",
+        "text": "Classify words as nouns, verbs, adjectives or adverbs using their function in a sentence. A noun names an entity. A verb expresses an action or state. An adjective modifies a noun. An adverb can modify a verb, adjective or another adverb. A word can have different functions in different sentences; for example, fast is an adjective in a fast train and an adverb in she runs fast."
+      }
+    ],
+    "targetCount": 4,
+    "minimumDifficulty": 1,
+    "requiresFullObjectiveCoverage": false,
+    "difficultyGuidance": "Recognize or recall a fact or concept.",
+    "adaptiveSkillPlans": []
+  },
+  "rawQuestions": [
+    {
+      "prompt": "In the sentence \"The quick fox jumps,\" what part of speech is \"quick\"?",
+      "explanation": "\"Quick\" modifies the noun \"fox,\" describing what kind of fox it is. Words that modify nouns are adjectives.",
+      "expectedAnswer": "Adjective",
+      "choices": [
+        "Noun",
+        "Verb",
+        "Adjective",
+        "Adverb"
+      ],
+      "topic": "Parts of speech",
+      "skillID": "Parts of speech",
+      "objectiveID": "",
+      "objective": "Identify adjectives that modify nouns",
+      "difficulty": 1,
+      "format": "Multiple Choice"
+    },
+    {
+      "prompt": "In the sentence \"She sings beautifully,\" what part of speech is \"beautifully\"?",
+      "explanation": "\"Beautifully\" modifies the verb \"sings,\" describing how she sings. Words that modify verbs are adverbs.",
+      "expectedAnswer": "Adverb",
+      "choices": [
+        "Noun",
+        "Verb",
+        "Adjective",
+        "Adverb"
+      ],
+      "topic": "Parts of speech",
+      "skillID": "Parts of speech",
+      "objectiveID": "",
+      "objective": "Identify adverbs that modify verbs",
+      "difficulty": 1,
+      "format": "Multiple Choice"
+    },
+    {
+      "prompt": "In the sentence \"The team won,\" what part of speech is \"won\"?",
+      "explanation": "\"Won\" expresses an action performed by the subject \"team.\" Words that express actions are verbs.",
+      "expectedAnswer": "Verb",
+      "choices": [
+        "Noun",
+        "Verb",
+        "Adjective",
+        "Adverb"
+      ],
+      "topic": "Parts of speech",
+      "skillID": "Parts of speech",
+      "objectiveID": "",
+      "objective": "Identify verbs that express actions",
+      "difficulty": 1,
+      "format": "Multiple Choice"
+    },
+    {
+      "prompt": "In the sentence \"The cat sleeps,\" what part of speech is \"cat\"?",
+      "explanation": "\"Cat\" names an entity (an animal). Words that name entities are nouns.",
+      "expectedAnswer": "Noun",
+      "choices": [
+        "Noun",
+        "Verb",
+        "Adjective",
+        "Adverb"
+      ],
+      "topic": "Parts of speech",
+      "skillID": "Parts of speech",
+      "objectiveID": "",
+      "objective": "Identify nouns that name entities",
+      "difficulty": 1,
+      "format": "Multiple Choice"
+    }
+  ],
+  "returned": [
+    {
+      "prompt": "In the sentence \"The quick fox jumps,\" what part of speech is \"quick\"?",
+      "expectedAnswer": "Adjective",
+      "choices": [
+        "Adjective",
+        "Noun",
+        "Verb",
+        "Adverb"
+      ],
+      "explanation": "'quick' precedes and directly modifies the noun 'fox', which is the defining syntactic function of an adjective.",
+      "topic": "Parts of speech",
+      "difficulty": 2,
+      "format": "Multiple Choice",
+      "choiceExplanations": {
+        "Verb": "'quick' does not express an action or state; it describes a noun.",
+        "Adverb": "Adverbs modify verbs, adjectives, or other adverbs, not nouns; 'quick' modifies the noun 'fox'.",
+        "Adjective": "'quick' modifies the noun 'fox', fulfilling the core function of an adjective.",
+        "Noun": "'quick' does not name an entity; it describes one."
+      },
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 2
+    },
+    {
+      "prompt": "In the sentence \"She sings beautifully,\" what part of speech is \"beautifully\"?",
+      "expectedAnswer": "Adverb",
+      "choices": [
+        "Adverb",
+        "Noun",
+        "Verb",
+        "Adjective"
+      ],
+      "explanation": "'beautifully' modifies the verb 'sings', describing the manner of the action, which is a defining function of an adverb.",
+      "topic": "Parts of speech",
+      "difficulty": 2,
+      "format": "Multiple Choice",
+      "choiceExplanations": {
+        "Verb": "'beautifully' describes how singing occurs; it does not itself express an action or state.",
+        "Adjective": "Adjectives modify nouns; 'beautifully' modifies the verb 'sings', not a noun.",
+        "Adverb": "'beautifully' modifies the verb 'sings', indicating manner, which is the core function of an adverb.",
+        "Noun": "'beautifully' does not name an entity; it modifies a verb."
+      },
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 2
+    },
+    {
+      "prompt": "In the sentence \"The team won,\" what part of speech is \"won\"?",
+      "expectedAnswer": "Verb",
+      "choices": [
+        "Verb",
+        "Noun",
+        "Adjective",
+        "Adverb"
+      ],
+      "explanation": "'won' is the past tense of 'win' and serves as the main predicate of the sentence, expressing the action performed by 'the team'.",
+      "topic": "Parts of speech",
+      "difficulty": 2,
+      "format": "Multiple Choice",
+      "choiceExplanations": {
+        "Noun": "'won' expresses an action, not an entity; the noun in this sentence is 'team'.",
+        "Adjective": "'won' does not modify a noun; it is the predicate expressing what the team did.",
+        "Adverb": "'won' is the main predicate, not a modifier of another verb, adjective, or adverb.",
+        "Verb": "'won' is the past-tense main verb expressing the action of winning."
+      },
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 2
+    },
+    {
+      "prompt": "In the sentence \"The cat sleeps,\" what part of speech is \"cat\"?",
+      "expectedAnswer": "Noun",
+      "choices": [
+        "Noun",
+        "Verb",
+        "Adjective",
+        "Adverb"
+      ],
+      "explanation": "'cat' names an animal and functions as the subject of the sentence, the defining role of a noun.",
+      "topic": "Parts of speech",
+      "difficulty": 1,
+      "format": "Multiple Choice",
+      "choiceExplanations": {
+        "Adjective": "'cat' does not modify a noun; it names the subject entity.",
+        "Adverb": "'cat' does not modify a verb, adjective, or adverb; it names an entity.",
+        "Noun": "'cat' names an animal and serves as the grammatical subject, fulfilling the core function of a noun.",
+        "Verb": "'sleeps' is the verb; 'cat' names the entity performing the action, not the action itself."
+      },
+      "verificationVersion": 1,
+      "verificationPolicyRevision": 2
+    }
+  ],
+  "beforeMetrics": {
+    "QuestionQuality": {
+      "sanitize": {
+        "accepted": 1,
+        "duplicate_choices": 3
+      }
+    }
+  },
+  "afterMetrics": {
+    "QuestionQuality": {
+      "sanitize": {
+        "accepted": 4
+      }
+    }
+  },
+  "deployedModuleReplay": {
+    "count": 1,
+    "metrics": {
+      "QuestionQuality": {
+        "sanitize": {
+          "accepted": 1,
+          "duplicate_choices": 3
+        }
+      }
+    },
+    "scope": "Exact downloaded question_quality.py with current shared dependencies; isolated sanitizer replay, not a deployed invocation."
+  },
+  "providerMetrics": {
+    "ProviderCalls": 3,
+    "BedrockInputTokens": 5315,
+    "BedrockOutputTokens": 1797,
+    "ProviderObservations": [
+      {
+        "model": "moonshotai.kimi-k2.5",
+        "systemPromptSHA256": "f297fdb4b7a92214ca8f254441ddd3d815188c240517ba4d09832aa90218edc9",
+        "inferenceConfig": {
+          "maxTokens": 6000,
+          "temperature": 0.2
+        },
+        "reasoningConfig": {
+          "thinking": {
+            "type": "disabled"
+          }
+        },
+        "reasoningContentBlockCount": 0,
+        "stopReason": "end_turn",
+        "elapsedSeconds": 6.178,
+        "usage": {
+          "inputTokens": 1865,
+          "outputTokens": 416,
+          "totalTokens": 2281
+        },
+        "structuredOutput": {
+          "mode": "legacy",
+          "name": "question_author_v1",
+          "version": "1",
+          "sha256": "25c2c85d94ae1543ef4a46a3f97e845c37739cec5b77aacbf219d935a13df1a9"
+        }
+      },
+      {
+        "model": "us.anthropic.claude-sonnet-4-6",
+        "systemPromptSHA256": "a723c001b718646232dd71e2bbb301df246f422e092c20ae3a65b68d443c19ba",
+        "inferenceConfig": {
+          "maxTokens": 6000,
+          "temperature": 0.2
+        },
+        "reasoningConfig": {
+          "thinking": {
+            "type": "disabled"
+          }
+        },
+        "reasoningContentBlockCount": 0,
+        "stopReason": "end_turn",
+        "elapsedSeconds": 7.46,
+        "usage": {
+          "inputTokens": 1171,
+          "outputTokens": 723,
+          "totalTokens": 1894,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        },
+        "structuredOutput": {
+          "mode": "legacy",
+          "name": "complete_choice_solver_v1",
+          "version": "1",
+          "sha256": "bac691665f8f937805ca6fbb3cbd858320ccbc19d582c22b5dffaee1e6d1d446"
+        }
+      },
+      {
+        "model": "us.anthropic.claude-sonnet-4-6",
+        "systemPromptSHA256": "567387e8ceb6866af1db1689d20b3468882f5e20d0b0294a9610a868626940eb",
+        "inferenceConfig": {
+          "maxTokens": 6000,
+          "temperature": 0.2
+        },
+        "reasoningConfig": {
+          "thinking": {
+            "type": "disabled"
+          }
+        },
+        "reasoningContentBlockCount": 0,
+        "stopReason": "end_turn",
+        "elapsedSeconds": 8.308,
+        "usage": {
+          "inputTokens": 2279,
+          "outputTokens": 658,
+          "totalTokens": 2937,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        },
+        "structuredOutput": {
+          "mode": "legacy",
+          "name": "default_reviewer_v1",
+          "version": "1",
+          "sha256": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe"
+        }
+      }
+    ],
+    "QuestionQuality": {
+      "sanitize": {
+        "accepted": 4
+      },
+      "review": {
+        "accepted": 4
+      }
+    }
+  },
+  "keyAssessment": [
+    {
+      "word": "quick",
+      "sentence": "The quick fox jumps.",
+      "answer": "Adjective",
+      "basis": "Modifies the noun fox."
+    },
+    {
+      "word": "beautifully",
+      "sentence": "She sings beautifully.",
+      "answer": "Adverb",
+      "basis": "Modifies the verb sings."
+    },
+    {
+      "word": "won",
+      "sentence": "The team won.",
+      "answer": "Verb",
+      "basis": "The finite past-tense predicate."
+    },
+    {
+      "word": "cat",
+      "sentence": "The cat sleeps.",
+      "answer": "Noun",
+      "basis": "Names the animal and heads the subject noun phrase."
+    }
+  ],
+  "limits": [
+    "One selected beginner grammar batch, not a general accuracy, difficulty or learner-benefit estimate.",
+    "The old sanitizer comparison reuses the same raw author output; the old solver/reviewer were not invoked.",
+    "Manual key/choice assessment by the investigating assistant; no human teacher or separate assessor.",
+    "The final noun explanation calls subject position the defining role of a noun, which overstates the general rule; this run does not establish wholly accurate teaching.",
+    "No Lambda deployment, question-bank writes, model changes or prompt changes."
+  ]
+}
