@@ -383,7 +383,10 @@ final class QuestionGenerationTests: XCTestCase {
 
     @MainActor
     func testInitialGoalGenerationTopsOffRemainingQuestionBankInBackground() async throws {
-        let backendEngine = TargetCountQuestionEngine(provider: .backend)
+        let backendEngine = TargetCountQuestionEngine(
+            provider: .backend,
+            largeRequestDelayNanoseconds: 300_000_000
+        )
         let engine = HybridQuestionEngine(
             backendEngine: backendEngine,
             appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
@@ -405,8 +408,14 @@ final class QuestionGenerationTests: XCTestCase {
             preferredQuestionStyle: .multipleChoice
         )
 
-        try? await Task.sleep(nanoseconds: 150_000_000)
+        let topOffDeadline = Date().addingTimeInterval(5)
+        while (store.isQuestionBankTopOffInProgress
+            || store.activeQuestions.count != ProductLimits.starterQuestionBankTargetCount),
+            Date() < topOffDeadline {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
 
+        XCTAssertFalse(store.isQuestionBankTopOffInProgress)
         XCTAssertEqual(backendEngine.receivedRequests.map(\.targetCount), [5, 35])
         XCTAssertEqual(backendEngine.receivedRequests.first?.existingQuestions.count, 0)
         XCTAssertEqual(backendEngine.receivedRequests.last?.existingQuestions.count, 5)
