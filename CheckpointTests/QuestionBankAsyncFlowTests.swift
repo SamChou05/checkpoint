@@ -4,6 +4,60 @@ import XCTest
 // MARK: - Asynchronous question bank flow
 
 final class QuestionBankAsyncFlowTests: XCTestCase {
+    @MainActor
+    func testCompleteTeachingSelectionFencesAnInFlightOlderBankAndPreservesNilContext() async throws {
+        let suiteName = "CompleteTeachingBankContextTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let client = CompleteTeachingContextBankClient()
+        let store = CheckpointStore(
+            questionBankClient: client, defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [60_000_000_000]
+        )
+        store.updateMembershipTier(.member)
+        store.updateAIProviderPreference(.backend)
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+        var goal = makeGoal()
+        store.goal = goal
+        store.goalProfiles = [goal]
+        let historical = makeQuestion(goal: goal, index: 310, verificationPolicyRevision: 2)
+        store.questions = [historical]
+        let refresh = Task { await store.refreshQuestionBatch() }
+        for _ in 0..<500 {
+            if await client.hasPendingEnsure() { break }
+            await Task.yield()
+        }
+        let pending = await client.hasPendingEnsure()
+        XCTAssertTrue(pending)
+        let oldIntent = try XCTUnwrap(store.questionBankSyncIntents.first)
+        goal.questionFeedbackContract = .authoredComplete
+        store.goal = goal
+        store.goalProfiles = [goal]
+        await client.releaseFirstEnsure()
+        await refresh.value
+        let fenced = try XCTUnwrap(store.questionBankSyncIntents.first)
+        XCTAssertNotEqual(fenced.contextRevision, oldIntent.contextRevision)
+        XCTAssertNotEqual(fenced.bankContextRevision, oldIntent.bankContextRevision)
+        XCTAssertNotEqual(fenced.claimID, oldIntent.claimID)
+        XCTAssertNil(fenced.bankID, "The old ensure response must not attach its bank to the new contract.")
+        let claims = await client.claimCount()
+        XCTAssertEqual(claims, 0, "Changing the goal contract fences the pending old bank before claim.")
+        XCTAssertEqual(store.questions, [historical])
+        XCTAssertNil(store.nextQuestion())
+        await store.refreshQuestionBatch()
+        let selectedRequests = await client.requests()
+        XCTAssertEqual(selectedRequests.last?.feedbackContract, .authoredComplete)
+        XCTAssertEqual(selectedRequests.last?.minimumVerificationPolicyRevision, 4)
+        XCTAssertEqual(store.questionBankSyncIntents.first?.contextRevision, fenced.contextRevision)
+        goal.questionFeedbackContract = nil
+        store.goal = goal
+        store.goalProfiles = [goal]
+        await store.refreshQuestionBatch()
+        XCTAssertEqual(store.questionBankSyncIntents.first?.contextRevision, oldIntent.contextRevision,
+                       "Removing the selector restores the unchanged existing context hash.")
+        XCTAssertEqual(store.questions, [historical], "Contract selection never relabels or deletes history.")
+    }
+
     func testQuestionBankEndpointsAreSiblingsOfGenerationEndpoint() throws {
         let generationEndpoint = try XCTUnwrap(
             URL(string: "https://api.example.com/prod/v1/questions")
@@ -1049,6 +1103,42 @@ final class QuestionBankAsyncFlowTests: XCTestCase {
         XCTAssertEqual(session.questions.count, UnlockPolicy.default.questionsPerSession)
         XCTAssertTrue(bankClient.ensureRequests.isEmpty)
         XCTAssertTrue(bankClient.claimIDs.isEmpty)
+    }
+}
+
+private actor CompleteTeachingContextBankClient: QuestionBankSyncing {
+    private var seenRequests: [QuestionGenerationRequest] = []
+    private var firstEnsureRelease: CheckedContinuation<Void, Never>?
+    private var claims = 0
+
+    func hasPendingEnsure() -> Bool { firstEnsureRelease != nil }
+    func requests() -> [QuestionGenerationRequest] { seenRequests }
+    func claimCount() -> Int { claims }
+
+    func releaseFirstEnsure() {
+        firstEnsureRelease?.resume()
+        firstEnsureRelease = nil
+    }
+
+    func ensureQuestionBank(
+        for request: QuestionGenerationRequest,
+        contextRevision: String,
+        desiredCount: Int,
+        lowWatermark: Int
+    ) async throws -> QuestionBankPreparationReceipt {
+        seenRequests.append(request)
+        if seenRequests.count == 1 {
+            await withCheckedContinuation { firstEnsureRelease = $0 }
+            return QuestionBankPreparationReceipt(bankID: "old-bank", status: .ready, readyCount: 1, targetCount: desiredCount)
+        }
+        return QuestionBankPreparationReceipt(bankID: "bank-\(contextRevision)", status: .queued, readyCount: 0, targetCount: desiredCount)
+    }
+
+    func claimQuestions(
+        from bankID: String, claimID: String, limit: Int, for request: QuestionGenerationRequest
+    ) async throws -> QuestionBankClaimReceipt {
+        claims += 1
+        return QuestionBankClaimReceipt(questions: [], status: .empty, readyCount: 0, targetCount: 20)
     }
 }
 

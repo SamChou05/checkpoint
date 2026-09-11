@@ -19,6 +19,7 @@ struct BackendQuestionRequest: Encodable {
     private var desiredCount: Int?
     private var lowWatermark: Int?
     private var requiresFullObjectiveCoverage: Bool?
+    private var feedbackContract: QuestionFeedbackContract?
 
     init(
         request: QuestionGenerationRequest,
@@ -28,6 +29,7 @@ struct BackendQuestionRequest: Encodable {
         lowWatermark: Int? = nil
     ) {
         goal = GoalPayload(goal: request.goal, questionContext: request.questionContext)
+        feedbackContract = request.feedbackContract
         competencies = request.competencies.prefix(20).map(CompetencyPayload.init)
         let activeSkillIDs = request.goal.derivedSkillMap.map {
             Set($0.topics.filter { !$0.isPaused }.map(\.id))

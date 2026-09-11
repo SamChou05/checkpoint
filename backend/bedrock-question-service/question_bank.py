@@ -14,7 +14,12 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
-from verification_policy import VERIFICATION_POLICY_REVISION, meets_verification_policy
+from verification_policy import (
+    COMPLETE_TEACHING_VERIFICATION_POLICY_REVISION,
+    MAX_SUPPORTED_VERIFICATION_POLICY_REVISION,
+    VERIFICATION_POLICY_REVISION,
+    meets_verification_policy,
+)
 
 from question_bank_common import (
     DEFAULT_BANK_TTL_SECONDS,
@@ -157,7 +162,14 @@ def ensure_bank(
     _validate_durable_skill_allocation(normalized, desired_count)
     context_revision = _required_revision(payload.get("contextRevision"))
     goal_key = _secret_digest("goal", goal_id)
-    bank_id = _secret_digest("bank", f"{owner_digest}:{goal_key}:{context_revision}")
+    bank_identity = f"{owner_digest}:{goal_key}:{context_revision}"
+    bank_namespace = "bank"
+    if normalized.get("feedbackContract") == "authored_complete":
+        # The caller's revision alone cannot fence a changed teaching contract.
+        # A separate domain also prevents a crafted legacy revision from colliding
+        # with a suffix. Historical identities remain unchanged without the opt-in.
+        bank_namespace = "bank-authored-complete"
+    bank_id = _secret_digest(bank_namespace, bank_identity)
     bank_key = _bank_key(owner_digest, bank_id)
     pointer_key = _pointer_key(owner_digest, goal_key)
     now = int(time.time())
@@ -234,11 +246,12 @@ def claim_questions(
     minimum_policy = payload.get("minimumVerificationPolicyRevision", 0)
     if (
         type(minimum_policy) is not int
-        or not 0 <= minimum_policy <= VERIFICATION_POLICY_REVISION
+        or not 0 <= minimum_policy <= MAX_SUPPORTED_VERIFICATION_POLICY_REVISION
     ):
         raise QuestionBankError(
             400,
-            f"minimumVerificationPolicyRevision must be an integer between 0 and {VERIFICATION_POLICY_REVISION}.",
+            "minimumVerificationPolicyRevision must be an integer between 0 and "
+            f"{MAX_SUPPORTED_VERIFICATION_POLICY_REVISION}.",
             "invalid_request",
         )
     bank_key = _bank_key(owner_digest, bank_id)
@@ -246,6 +259,9 @@ def claim_questions(
 
     meta = _get_item(client, table_name, bank_key, consistent=True)
     _require_active_meta(meta, owner_digest)
+    # A complete-teaching bank cannot be downgraded by a legacy claim caller,
+    # including when the response has already been cached under this claim ID.
+    minimum_policy = max(minimum_policy, _bank_verification_requirement(meta))
     pointer_key = _pointer_key(owner_digest, _string(meta, "goalKey"))
     _require_current_bank(client, table_name, pointer_key, bank_id)
 
@@ -534,6 +550,14 @@ def _require_claim_verification(
             "Claim was created under an older question quality requirement.",
             "claim_conflict",
         )
+
+
+def _bank_verification_requirement(meta: dict[str, Any]) -> int:
+    return (
+        COMPLETE_TEACHING_VERIFICATION_POLICY_REVISION
+        if _string(meta, "feedbackContract") == "authored_complete"
+        else 0
+    )
 
 
 def _consume_duplicate_question_rows(
@@ -874,6 +898,15 @@ def _process_job(
         raise ProviderAttemptLimitError
 
     generation_request = json.loads(_string(meta, "generationRequest"))
+    if meta.get("feedbackContract") or generation_request.get("feedbackContract"):
+        if _string(meta, "feedbackContract") != generation_request.get("feedbackContract"):
+            # A stored request must retain the contract fenced by this bank ID.
+            # Do not reinterpret queued work using the process environment.
+            _mark_generation_blocked(
+                client, table_name, bank_key, job_key, lease_token,
+                "feedback_contract_mismatch",
+            )
+            return
     existing_items = _query_question_history(client, table_name, bank_key)
     recent_items = _recent_question_items(
         [item for item in existing_items if _string(item, "state") != "discarded"],
@@ -938,6 +971,14 @@ def _process_job(
     commit_started = False
     try:
         generated = generate_questions(generation_request, reservation)
+        if minimum_policy := _bank_verification_requirement(meta):
+            # Reject incompatible generation before it counts as ready/lifetime
+            # inventory. Never upgrade a lower-stamped question on storage.
+            generated = [
+                question for question in generated
+                if isinstance(question, dict)
+                and meets_verification_policy(question, minimum_policy)
+            ]
         prepared = _prepare_questions(bank_id, generated, existing_items)
         if not prepared:
             raise RuntimeError("Provider returned no new usable questions.")

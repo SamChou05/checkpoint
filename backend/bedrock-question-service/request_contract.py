@@ -387,6 +387,14 @@ def _normalized_archived_skill_name_fingerprints(value: Any) -> list[str]:
 
 
 def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
+    # This selector is an application contract, never model-supplied metadata.
+    # Omission keeps legacy/default behavior; an explicit request must survive
+    # queue persistence and cannot silently fall back to reviewer-written text.
+    if "feedbackContract" in payload and (
+        type(payload["feedbackContract"]) is not str
+        or payload["feedbackContract"] != "authored_complete"
+    ):
+        raise BadRequestError("feedbackContract must be authored_complete when supplied.")
     goal = payload.get("goal")
     if not isinstance(goal, dict):
         raise BadRequestError("Missing goal object.")
@@ -543,6 +551,8 @@ def _normalize_request(payload: dict[str, Any]) -> dict[str, Any]:
         "requiresFullObjectiveCoverage": requires_full_objective_coverage,
         "difficultyGuidance": _difficulty_guidance(minimum_difficulty),
     }
+    if "feedbackContract" in payload:
+        normalized_request["feedbackContract"] = payload["feedbackContract"]
     if skill_map:
         normalized_request["skillMap"] = skill_map
         normalized_request["desiredSkillAllocation"] = desired_skill_allocation

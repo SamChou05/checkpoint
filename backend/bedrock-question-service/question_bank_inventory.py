@@ -134,6 +134,8 @@ def _activate_goal_version(
             "updatedAt": _n(now),
             "expiresAt": _n(now + _bank_ttl_seconds()),
         }
+        if normalized.get("feedbackContract") == "authored_complete":
+            item["feedbackContract"] = _s("authored_complete")
         try:
             client.put_item(
                 TableName=table_name,
@@ -217,6 +219,12 @@ def _update_bank_configuration(
         ":ttl": _n(now + _bank_ttl_seconds()),
         ":revision": _s(context_revision),
     }
+    # This field is immutable for a bank. Updates may refresh learner history
+    # and allocations, but cannot retarget already queued fills to another mode.
+    contract_condition = " AND attribute_not_exists(feedbackContract)"
+    if normalized.get("feedbackContract") == "authored_complete":
+        values[":feedbackContract"] = _s("authored_complete")
+        contract_condition = " AND feedbackContract = :feedbackContract"
     try:
         return client.update_item(
             TableName=table_name,
@@ -231,7 +239,7 @@ def _update_bank_configuration(
                 "AND (attribute_not_exists(skillAllocationKey) OR "
                 "skillAllocationKey = :allocation) "
                 "AND (attribute_not_exists(desiredCount) OR desiredCount <= :desired)"
-            ),
+            ) + contract_condition,
             ExpressionAttributeValues=values,
             ReturnValues="ALL_NEW",
         )["Attributes"]
@@ -251,7 +259,7 @@ def _update_bank_configuration(
                 "contextRevision = :revision AND attribute_not_exists(tombstonedAt) "
                 "AND (attribute_not_exists(skillAllocationKey) OR "
                 "skillAllocationKey = :allocation) AND desiredCount >= :desired"
-            ),
+            ) + contract_condition,
             ExpressionAttributeValues=values,
             ReturnValues="ALL_NEW",
         )["Attributes"]

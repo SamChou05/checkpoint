@@ -1,5 +1,6 @@
 """Independent, answer-blind review before generated questions enter inventory."""
 
+import copy
 import hashlib
 import json
 import re
@@ -10,6 +11,14 @@ from complete_question_solution import (
     build_solver_prompt,
     rejection_reason as complete_solution_rejection_reason,
     validate_batch,
+)
+from complete_question_teaching import (
+    COMPLETE_TEACHING_REVIEW_SYSTEM_PROMPT,
+    CompleteTeachingFormatError,
+    complete_teaching_rejection_reason,
+    compose_feedback_displays,
+    freeze_complete_question,
+    validate_complete_teaching_reviews,
 )
 from generation_diagnostics import record_quality
 from question_difficulty import DIFFICULTY_RUBRIC
@@ -27,6 +36,7 @@ from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
 from verification_policy import (
     AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION,
     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION,
+    COMPLETE_TEACHING_VERIFICATION_POLICY_REVISION,
     LEGACY_VERIFICATION_POLICY_REVISION,
     VERIFICATION_VERSION,
 )
@@ -218,7 +228,7 @@ def verify_questions(
     *,
     solve: Callable[[str, str], str] | None = None,
     solver_contract: Literal["stem_only", "complete_choices"] = "stem_only",
-    feedback_contract: Literal["reviewer_written", "authored_solution"] = "reviewer_written",
+    feedback_contract: Literal["reviewer_written", "authored_solution", "authored_complete"] = "reviewer_written",
     preserve_reviewed_text: bool = False,
 ) -> list[dict[str, Any]]:
     """Review with an explicit solver contract; legacy remains the eval default.
@@ -229,12 +239,20 @@ def verify_questions(
     """
     if solver_contract not in ("stem_only", "complete_choices"):
         raise ValueError("Unknown independent-solver contract.")
-    if feedback_contract not in ("reviewer_written", "authored_solution"):
+    if feedback_contract not in ("reviewer_written", "authored_solution", "authored_complete"):
         raise ValueError("Unknown teaching-feedback contract.")
     complete_choices = solver_contract == "complete_choices"
     authored_solution = feedback_contract == "authored_solution"
-    if authored_solution and not complete_choices:
+    complete_teaching = feedback_contract == "authored_complete"
+    immutable_teaching = authored_solution or complete_teaching
+    if immutable_teaching and not complete_choices:
         raise ValueError("Authored teaching requires the complete-choice solver contract.")
+    if complete_teaching:
+        # Both semantic stages and the final difficulty gates must use the same
+        # request facts. Callbacks receive serialized strings, never this private
+        # snapshot or its nested objects, so neither caller nor payload mutations
+        # can substitute context or requirements after verification begins.
+        request = copy.deepcopy(request)
     original_count = len(questions)
     questions = [
         question for question in questions if _has_reviewable_choices(question)
@@ -242,12 +260,15 @@ def verify_questions(
     record_quality(
         request_metrics, "review", "invalid_choices", original_count - len(questions)
     )
-    if authored_solution:
+    if immutable_teaching:
         frozen = []
         for question in questions:
             try:
-                frozen.append(freeze_authored_question(question))
-            except AuthoredTeachingFormatError:
+                frozen.append(
+                    freeze_complete_question(question) if complete_teaching
+                    else freeze_authored_question(question)
+                )
+            except (AuthoredTeachingFormatError, CompleteTeachingFormatError):
                 record_quality(request_metrics, "review", "invalid_feedback")
         questions = frozen
     if not questions:
@@ -280,7 +301,7 @@ def verify_questions(
         {key: value for key, value in entry.items()
          if key in {"prompt", "topic", "skillID", "objectiveID", "objective"}}
         for entry in history
-    ] if authored_solution else history
+    ] if immutable_teaching else history
     data["items"] = items
     if solve is not None:
         if complete_choices:
@@ -341,25 +362,36 @@ def verify_questions(
             item["index"] = new_index
             solution["index"] = new_index
         solutions = supported
-        if not authored_solution:
+        if not immutable_teaching:
             data["independentSolutions"] = solutions
-    if authored_solution:
+    if immutable_teaching:
         # The solver remains answer/feedback blind. Only dense survivors now
         # expose their already-frozen teaching for an audit that cannot rewrite it.
         for item, question in zip(data["items"], questions, strict=True):
             item["explanation"] = question["explanation"]
+            if complete_teaching:
+                item["choiceExplanations"] = dict(question["choiceExplanations"])
+                item["feedbackDisplays"] = compose_feedback_displays(item)
     prompt = (
         "<question_review_json>\n"
         + json.dumps(data, ensure_ascii=False)
         + "\n</question_review_json>"
     )
     raw = review(
-        AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT if authored_solution else (
+        COMPLETE_TEACHING_REVIEW_SYSTEM_PROMPT if complete_teaching else (
+            AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT if authored_solution else (
             COMPLETE_REVIEW_SYSTEM_PROMPT if complete_choices else REVIEW_SYSTEM_PROMPT
+            )
         ),
         prompt,
     )
-    if authored_solution:
+    if complete_teaching:
+        try:
+            reviews = validate_complete_teaching_reviews(raw, data["items"])
+        except CompleteTeachingFormatError:
+            record_quality(request_metrics, "review", "invalid_complete_teaching_review", len(questions))
+            return []
+    elif authored_solution:
         try:
             reviews = validate_authored_reviews(raw, data["items"])
         except AuthoredTeachingFormatError:
@@ -385,7 +417,7 @@ def verify_questions(
                 request_metrics, "review", "invalid_envelope", len(questions)
             )
             return []
-        if not authored_solution and set(item) - {
+        if not immutable_teaching and set(item) - {
             "index", "valid", "answer", "difficulty", "explanation", "choiceExplanations",
         }:
             # Extra fields can contain competing verdicts or proposed repairs.
@@ -406,8 +438,11 @@ def verify_questions(
     accepted = []
     for index, question in enumerate(questions):
         item = by_index[index]
-        if authored_solution:
-            reason = authored_review_rejection_reason(item, question)
+        if immutable_teaching:
+            reason = (
+                complete_teaching_rejection_reason(item, question) if complete_teaching
+                else authored_review_rejection_reason(item, question)
+            )
             if reason is not None:
                 record_quality(request_metrics, "review", reason)
                 continue
@@ -437,7 +472,10 @@ def verify_questions(
         if target is not None and difficulty != target:
             record_quality(request_metrics, "review", "difficulty_target")
             continue
-        if authored_solution:
+        if complete_teaching:
+            explanation = question["explanation"]
+            choices = dict(question["choiceExplanations"])
+        elif authored_solution:
             explanation, choices = question["explanation"], {}
         else:
             explanation = item.get("explanation")
@@ -471,9 +509,9 @@ def verify_questions(
                 if key != "verificationPolicyRevision"
             },
             "difficulty": difficulty,
-            "explanation": explanation if authored_solution or preserve_reviewed_text else explanation.strip(),
+            "explanation": explanation if immutable_teaching or preserve_reviewed_text else explanation.strip(),
             "choiceExplanations": {
-                key: value if preserve_reviewed_text else value.strip()
+                key: value if immutable_teaching or preserve_reviewed_text else value.strip()
                 for key, value in choices.items()
             },
             "verificationVersion": VERIFICATION_VERSION,
@@ -482,9 +520,11 @@ def verify_questions(
             # Each path owns its revision. A legacy solver must never acquire
             # the current complete-choice policy by a constant/version bump.
             verified_question["verificationPolicyRevision"] = (
-                AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION if authored_solution else (
+                COMPLETE_TEACHING_VERIFICATION_POLICY_REVISION if complete_teaching else (
+                    AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION if authored_solution else (
                     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION if complete_choices
                     else LEGACY_VERIFICATION_POLICY_REVISION
+                    )
                 )
             )
         accepted.append(verified_question)

@@ -274,9 +274,8 @@ struct BackendQuestionBankClaimRequest: Encodable {
         self.bankID = bankID
         self.claimID = claimID
         self.limit = limit
-        minimumVerificationVersion = request?.requiresVerifiedQuestions == true ? 1 : 0
-        minimumVerificationPolicyRevision = request?.requiresVerifiedQuestions == true
-            ? QuestionVerificationPolicy.currentRevision : 0
+        minimumVerificationPolicyRevision = request?.minimumVerificationPolicyRevision ?? 0
+        minimumVerificationVersion = minimumVerificationPolicyRevision > 0 ? 1 : 0
         stemFingerprintVersion = QuestionBatchSanitizer.stemFingerprintVersion
         blockedStemFingerprints = request.map {
             BackendQuestionHistory.blockedStemFingerprints(for: $0)

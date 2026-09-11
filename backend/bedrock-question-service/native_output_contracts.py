@@ -15,11 +15,13 @@ from service_errors import ProviderError, ServiceConfigurationError
 
 Contract = Literal[
     "question_author_v1",
+    "question_author_complete_v1",
     "skill_map_inference_v1",
     "skill_map_evolution_v1",
     "complete_choice_solver_v1",
     "default_reviewer_v1",
     "authored_solution_reviewer_v1",
+    "complete_teaching_reviewer_v1",
 ]
 
 _STRING = {"type": "string"}
@@ -91,7 +93,31 @@ _SCHEMAS: dict[Contract, dict[str, Any]] = {
             "issues": {"type": "array", "items": _STRING},
         })}
     }),
+    "complete_teaching_reviewer_v1": _object({
+        "reviews": {"type": "array", "items": _object({
+            "index": _INTEGER, "valid": _BOOLEAN, "answer": _STRING,
+            "difficulty": _INTEGER,
+            "explanationSupport": {"type": "string", "enum": ["supported", "unsupported", "uncertain"]},
+            "choiceFeedbackSupport": {"type": "array", "items": _object({
+                "choice": _STRING,
+                "feedbackSupport": {"type": "string", "enum": ["supported", "unsupported", "uncertain"]},
+                "displaySupport": {"type": "string", "enum": ["supported", "unsupported", "uncertain"]},
+            })},
+            "issues": {"type": "array", "items": _STRING},
+        })}
+    }),
 }
+
+# Extend only the new author contract. Required fields and optional identities
+# from question_author_v1 remain unchanged in both contracts. Bedrock supports
+# minItems only at zero or one; exact four-choice coverage is enforced below.
+_SCHEMAS["question_author_complete_v1"] = copy.deepcopy(_SCHEMAS["question_author_v1"])
+_complete_author_item = _SCHEMAS["question_author_complete_v1"]["properties"]["questions"]["items"]
+_complete_author_item["properties"]["choiceFeedback"] = {
+    "type": "array", "items": _object({"choice": _STRING, "explanation": _STRING}),
+}
+_complete_author_item["required"].append("choiceFeedback")
+del _complete_author_item
 
 
 def output_mode() -> str:
@@ -106,7 +132,7 @@ def output_mode() -> str:
 def native_output_config(contract: Contract) -> dict[str, Any]:
     """Return an independent wrapper with stable schema serialization."""
     schema = json.dumps(_SCHEMAS[contract], sort_keys=True, separators=(",", ":"))
-    if contract in {"question_author_v1", "complete_choice_solver_v1"}:
+    if contract in {"question_author_v1", "question_author_complete_v1", "complete_choice_solver_v1"}:
         ordered = json.loads(schema)
         if contract == "complete_choice_solver_v1":
             row = ordered["properties"]["solutions"]["items"]["properties"]["choices"]["items"]
@@ -117,6 +143,8 @@ def native_output_config(contract: Contract) -> dict[str, Any]:
             # Within each group, match the author prompt's finished-item example.
             fields = ("prompt", "explanation", "expectedAnswer", "choices", "topic",
                       "difficulty", "format", "skillID", "objectiveID", "objective")
+            if contract == "question_author_complete_v1":
+                fields = fields[:4] + ("choiceFeedback",) + fields[4:]
         # Match the prompts' explanation-before-answer examples at the provider
         # boundary. Preserve every other serialized key order and required list;
         # sorting again would erase this intervention without changing validity.
@@ -142,6 +170,19 @@ def ensure_supported_model(model_id: str) -> None:
 
 
 def native_prompt(system_prompt: str, contract: Contract) -> str:
+    if contract == "question_author_complete_v1":
+        return system_prompt + """
+
+NATIVE TRANSPORT OVERRIDE: Return the question_author_complete_v1 schema's
+choiceFeedback array instead of a choiceExplanations map. Every question must
+contain exactly four offered choices and exactly four choiceFeedback rows,
+one for each exact offered choice, each with only choice and explanation.
+Preserve every choice and explanation exactly; do not rename, trim or clip text.
+Emit prompt, explanation, expectedAnswer, choices, then choiceFeedback, followed
+by topic, difficulty, format and any optional skillID, objectiveID and objective.
+This replaces only the choiceExplanations transport field in the earlier example.
+Do not add fields or verification metadata.
+"""
     if contract == "default_reviewer_v1":
         return system_prompt + """
 
@@ -167,6 +208,8 @@ def adapt_native_response(raw: str, contract: Contract) -> str:
         _validate_schema_value(payload, _SCHEMAS[contract])
     except ValueError as error:
         raise ProviderError("Native stage response violates its contract.") from error
+    if contract == "question_author_complete_v1":
+        return _adapt_complete_author(payload)
     if contract != "default_reviewer_v1":
         return raw
     if type(payload) is not dict or set(payload) != {"reviews"} or type(payload["reviews"]) is not list:
@@ -191,6 +234,32 @@ def adapt_native_response(raw: str, contract: Contract) -> str:
             raise ProviderError("Native rejected review contains learner feedback or an answer.")
         review["choiceExplanations"] = feedback
     return json.dumps(adapted, ensure_ascii=False, allow_nan=False)
+
+
+def _adapt_complete_author(payload: dict[str, Any]) -> str:
+    """Replace transport rows in place while preserving authored text/order."""
+    questions = []
+    for question in payload["questions"]:
+        choices = question["choices"]
+        rows = question["choiceFeedback"]
+        if len(choices) != 4 or len(set(choices)) != 4 or len(rows) != 4:
+            raise ProviderError("Complete native author requires four unique choices and feedback rows.")
+        feedback: dict[str, str] = {}
+        for row in rows:
+            choice = row["choice"]
+            if choice not in choices or choice in feedback:
+                raise ProviderError("Complete native author feedback must cover exact offered choices once.")
+            feedback[choice] = row["explanation"]
+        if set(feedback) != set(choices):
+            raise ProviderError("Complete native author feedback is missing an offered choice.")
+        # A comprehension substitutes the transport field at its original
+        # position. All other fields and the feedback row order remain intact.
+        questions.append({
+            "choiceExplanations" if key == "choiceFeedback" else key:
+            feedback if key == "choiceFeedback" else value
+            for key, value in question.items()
+        })
+    return json.dumps({"questions": questions}, ensure_ascii=False, allow_nan=False)
 
 
 def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:

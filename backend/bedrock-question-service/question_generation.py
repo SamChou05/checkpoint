@@ -143,6 +143,10 @@ def _generate_provider_payload(
     call_budget: ProviderCallBudget | None = None,
     request_metrics: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    author_contract = (
+        "question_author_complete_v1"
+        if _feedback_contract(request) == "authored_complete" else "question_author_v1"
+    )
     errors: list[ProviderError] = []
     for model_id in _model_attempts():
         try:
@@ -152,7 +156,7 @@ def _generate_provider_payload(
                 model_id=model_id,
                 call_budget=call_budget,
                 request_metrics=request_metrics,
-                contract="question_author_v1",
+                contract=author_contract,
             )
         except (
             SafetyInterventionError,
@@ -180,7 +184,7 @@ def _generate_provider_payload(
                 user_prompt=_json_retry_prompt(request, raw_text),
                 call_budget=call_budget,
                 request_metrics=request_metrics,
-                contract="question_author_v1",
+                contract=author_contract,
             )
         except (
             SafetyInterventionError,
@@ -211,7 +215,7 @@ def _generate_sanitized_questions(
     call_budget: ProviderCallBudget | None = None,
     request_metrics: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    feedback_contract = _feedback_contract()
+    feedback_contract = _feedback_contract(request)
     target_count = request["targetCount"]
     questions: list[dict[str, Any]] = []
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
@@ -248,6 +252,7 @@ def _generate_sanitized_questions(
             candidates = _sanitize_questions(
                 provider_payload.get("questions", []), current_request, request_metrics,
                 preserve_authored_explanation=feedback_contract == "authored_solution",
+                preserve_complete_teaching=feedback_contract == "authored_complete",
             )
             generated_questions = verify_questions(
                 candidates,
@@ -261,9 +266,11 @@ def _generate_sanitized_questions(
                     call_budget=call_budget,
                     request_metrics=request_metrics,
                     contract=(
-                        "authored_solution_reviewer_v1"
-                        if feedback_contract == "authored_solution"
-                        else "default_reviewer_v1"
+                        "complete_teaching_reviewer_v1" if feedback_contract == "authored_complete"
+                        else (
+                            "authored_solution_reviewer_v1" if feedback_contract == "authored_solution"
+                            else "default_reviewer_v1"
+                        )
                     ),
                 ),
                 request_metrics=request_metrics,
@@ -364,7 +371,9 @@ def _generate_with_bedrock(
 ) -> str:
     guardrail_config = _guardrail_config()
     prompt = user_prompt or _user_prompt(normalized_request)
-    resolved_system_prompt = system_prompt or _system_prompt()
+    resolved_system_prompt = system_prompt or _system_prompt(
+        feedback_contract=_feedback_contract(normalized_request)
+    )
     if legacy_transport and contract is not None:
         raise ServiceConfigurationError("Legacy transport cannot select a native stage contract.")
     mode = "legacy" if legacy_transport else output_mode()
@@ -653,11 +662,15 @@ def _model_setting(key: str, default: str, allowed: set[str]) -> str:
     return value
 
 
-def _feedback_contract() -> str:
+def _feedback_contract(request: dict[str, Any] | None = None) -> str:
     """Opt-in until fresh content qualification; never inferred from model text."""
+    if request is not None and "feedbackContract" in request:
+        if request["feedbackContract"] != "authored_complete":
+            raise ServiceConfigurationError("Unsupported requested teaching contract.")
+        return "authored_complete"
     return _model_setting(
         "QUESTION_FEEDBACK_CONTRACT", "reviewer_written",
-        {"reviewer_written", "authored_solution"},
+        {"reviewer_written", "authored_solution", "authored_complete"},
     )
 
 
@@ -817,7 +830,7 @@ def _guardrail_config() -> dict[str, str] | None:
     }
 
 
-def _system_prompt() -> str:
+def _system_prompt(*, feedback_contract: str | None = None) -> str:
     focused_application = (
         os.getenv("CHECKPOINT_PROMPT_VARIANT", "balanced").strip().lower()
         == "focused_application"
@@ -947,7 +960,43 @@ of existing/reported questions, while allowing deliberate practice of a concept.
 Vary the decision, evidence, or operation across the batch. Return final JSON only.
 """
     ).strip()
-    if _feedback_contract() == "authored_solution":
+    selected_feedback_contract = feedback_contract or _feedback_contract()
+    if selected_feedback_contract == "authored_complete":
+        # Finish every learner-facing field before independent review. This
+        # changes content ownership, not the number of verification stages or
+        # the requested cognitive challenge. Existing modes stay byte-stable.
+        base_prompt = base_prompt.replace(
+            '"choices":["...","...","...","..."],"topic"',
+            '"choices":["...","...","...","..."],'
+            '"choiceExplanations":{"exact choice text":"..."},"topic"',
+        )
+        base_prompt += """
+
+Write the complete teaching item now: the main worked explanation and exactly
+one choiceExplanations entry for each of the four verbatim choices. The main
+must derive the answer from the stated facts and justified subject rules. Each
+choice explanation must explain why that exact choice does or does not answer
+this task. Preserve necessary qualifications; do not invent observations,
+categorical exclusions, causes or a learner's thinking to justify an answer.
+An incorrect alternative may contain a true statement that does not answer
+the question. Explain that mismatch without claiming the statement is false.
+
+The main keeps its existing authoring bound. Each choice explanation must be
+12..280 characters; aim for 120. Write feedback after the choices, using their
+exact text as map keys, never answer letters. The app displays the selected
+choice's explanation followed by the main (or just the main when they match).
+All four complete displays must teach the same warranted result without
+contradictions or extra assumptions. A correct key alone is insufficient.
+
+The independent solver will not see the key or teaching. The final auditor
+will inspect these exact completed fields and displays. It can reject the item
+but cannot rewrite or add any learner-facing text. Finish a complete supported
+item now; do not leave explanations for that reviewer. Unsupported or uncertain
+teaching or reported issues require a new complete item, never merely changing
+a verdict or dropping a qualification. These are fallible semantic checks,
+not permission to assume your preferred answer is correct.
+""".rstrip()
+    elif selected_feedback_contract == "authored_solution":
         teaching = """
 
 The main explanation is the complete worked solution that the learner will see.

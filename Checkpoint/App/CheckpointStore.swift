@@ -1483,6 +1483,7 @@ final class CheckpointStore {
             derivedSkillMap: preservedSkillMap,
             preferredQuestionStyle: draft.preferredQuestionStyle,
             minimumQuestionDifficulty: draft.minimumQuestionDifficulty,
+            questionFeedbackContract: existingGoal?.questionFeedbackContract,
             createdAt: createdAt
         )
     }
@@ -2516,6 +2517,7 @@ final class CheckpointStore {
             derivedSkillMap: skillContextChanged ? nil : currentGoal.derivedSkillMap,
             preferredQuestionStyle: preferredQuestionStyle,
             minimumQuestionDifficulty: normalizedDifficulty,
+            questionFeedbackContract: currentGoal.questionFeedbackContract,
             createdAt: currentGoal.createdAt
         )
 
@@ -6740,10 +6742,11 @@ final class CheckpointStore {
         let currentPlans = adaptiveSkillPlans(for: goal)
         let revisionPlans = isMember && currentPlans.isEmpty
             ? AdaptiveLearningPolicy.plans(for: goal, attempts: []) : currentPlans
+        let verificationContext = goal.questionFeedbackContract.map {
+            "verified-learning-v1:policy-\(QuestionVerificationPolicy.completeRevision):feedback-\($0.rawValue)"
+        } ?? (isMember ? "verified-learning-v1:policy-\(QuestionVerificationPolicy.currentRevision)" : "starter")
         let components = [
-            isMember
-                ? "verified-learning-v1:policy-\(QuestionVerificationPolicy.currentRevision)"
-                : "starter",
+            verificationContext,
             goal.title,
             goal.currentLevel,
             goal.focusAreas,

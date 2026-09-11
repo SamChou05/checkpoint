@@ -400,7 +400,10 @@ struct CheckpointQuestionSelector {
     }
 
     func isSelectableQuestion(_ question: CheckpointQuestion) -> Bool {
-        guard !requiresVerifiedQuestions || QuestionVerificationPolicy.meetsCurrentRequirement(question) else { return false }
+        guard QuestionVerificationPolicy.meetsRequirement(
+            question, feedbackContract: storedGoalProfile(withID: question.goalID)?.questionFeedbackContract,
+            requiresVerifiedQuestions: requiresVerifiedQuestions
+        ) else { return false }
         guard question.status != .retired,
               question.timesAsked < maximumExactQuestionAskCount else {
             return false

@@ -55,6 +55,14 @@ struct QuestionGenerationRequest: Sendable {
     var backendEndpoint: URL?
     var backendAuthorizationToken: String? = nil
 
+    var feedbackContract: QuestionFeedbackContract? { goal.questionFeedbackContract }
+
+    var minimumVerificationPolicyRevision: Int {
+        QuestionVerificationPolicy.minimumRevision(
+            feedbackContract: feedbackContract, requiresVerifiedQuestions: requiresVerifiedQuestions
+        )
+    }
+
     var questionContext: GoalQuestionContext {
         GoalQuestionContext(goal: goal)
     }

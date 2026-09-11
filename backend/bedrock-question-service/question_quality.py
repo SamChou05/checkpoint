@@ -157,7 +157,10 @@ def _sanitize_questions(
     request_metrics: dict[str, Any] | None = None,
     *,
     preserve_authored_explanation: bool = False,
+    preserve_complete_teaching: bool = False,
 ) -> list[dict[str, Any]]:
+    if preserve_authored_explanation and preserve_complete_teaching:
+        raise ValueError("Select one authored teaching contract.")
     if not isinstance(raw_questions, list):
         record_quality(request_metrics, "sanitize", "invalid_envelope")
         return []
@@ -203,6 +206,21 @@ def _sanitize_questions(
             record_quality(request_metrics, "sanitize", "invalid_item")
             continue
 
+        if preserve_complete_teaching:
+            # Import at the call boundary: the pure teaching parser reuses this
+            # module's strict JSON parser. Preserve the full displayed artifact
+            # before any legacy stem/answer/choice cleanup can change its meaning.
+            from complete_question_teaching import (
+                CompleteTeachingFormatError,
+                freeze_complete_question,
+            )
+
+            try:
+                raw_question = freeze_complete_question(raw_question)
+            except CompleteTeachingFormatError:
+                record_quality(request_metrics, "sanitize", "invalid_complete_teaching")
+                continue
+
         skill_tag = _normalized_question_skill_tag(raw_question, request)
         if request.get("skillMap") and skill_tag is None:
             record_quality(request_metrics, "sanitize", "invalid_skill")
@@ -220,19 +238,24 @@ def _sanitize_questions(
                     record_quality(request_metrics, "sanitize", "objective_quota")
                     continue
 
-        raw_prompt = _prompt_without_trailing_choice_echo(
-            raw_question.get("prompt"),
-            raw_question.get("choices"),
+        raw_prompt = (
+            raw_question["prompt"] if preserve_complete_teaching
+            else _prompt_without_trailing_choice_echo(
+                raw_question.get("prompt"), raw_question.get("choices"),
+            )
         )
         if len(raw_prompt) > MAX_PROVIDER_PROMPT_CHARS:
             record_quality(request_metrics, "sanitize", "prompt_length")
             continue
 
         prompt = raw_prompt
-        expected_answer = _choice_uniqueness_key(
-            str(raw_question.get("expectedAnswer") or "")
+        expected_answer = (
+            raw_question["expectedAnswer"] if preserve_complete_teaching
+            else _choice_uniqueness_key(str(raw_question.get("expectedAnswer") or ""))
         )
-        if preserve_authored_explanation:
+        if preserve_complete_teaching:
+            explanation = raw_question["explanation"]
+        elif preserve_authored_explanation:
             # This text will be audited and then displayed unchanged. Reject
             # incomplete/oversized content instead of silently clipping it.
             explanation = raw_question.get("explanation")
@@ -268,7 +291,11 @@ def _sanitize_questions(
             len(prompt) < 12
             or not expected_answer
             or not explanation
-            or _explanation_admits_bad_answer(explanation)
+            # Complete teaching receives a semantic audit of every exact field.
+            # Legacy phrase matching also rejects justified negative conclusions
+            # such as "the answer is not determined"; preserve it only for the
+            # existing contracts rather than preempting the new full audit.
+            or (not preserve_complete_teaching and _explanation_admits_bad_answer(explanation))
             or _looks_like_study_strategy(prompt, request["goal"])
             or _prompt_contains_embedded_options(prompt)
             or _prompt_contains_latex_markup(prompt)
@@ -285,7 +312,10 @@ def _sanitize_questions(
             record_quality(request_metrics, "sanitize", "duplicate_answer")
             continue
 
-        choices = _normalized_choices(raw_question.get("choices"), expected_answer)
+        choices = (
+            list(raw_question["choices"]) if preserve_complete_teaching
+            else _normalized_choices(raw_question.get("choices"), expected_answer)
+        )
         if len(choices) != 4:
             record_quality(request_metrics, "sanitize", "invalid_choices")
             continue
@@ -332,6 +362,8 @@ def _sanitize_questions(
             "difficulty": difficulty,
             "format": "Multiple Choice",
         }
+        if preserve_complete_teaching:
+            question["choiceExplanations"] = dict(raw_question["choiceExplanations"])
         if skill_tag:
             question.update(skill_tag)
             accepted_skill_counts[skill_tag["skillID"]] = (

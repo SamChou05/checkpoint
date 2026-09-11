@@ -1,6 +1,194 @@
 import XCTest
 @testable import Checkpoint
 
+final class CompleteTeachingSelectionTests: XCTestCase {
+    private func completeQuestion(goal: Goal) -> CheckpointQuestion {
+        var question = makeQuestion(
+            goal: goal, index: 91, topic: "Exact strings",
+            prompt: "Preserve the exact label, including its Unicode scalars. Which label is supplied?",
+            expectedAnswer: "cafe\u{301}", choices: ["cafe\u{301}", "water", "salt", "sugar"],
+            explanation: "  The supplied label retains its original Unicode scalars.  ",
+            verificationPolicyRevision: QuestionVerificationPolicy.completeRevision, difficulty: 3
+        )
+        question.choiceExplanations = Dictionary(uniqueKeysWithValues: question.choices.map {
+            ($0, "  Exact feedback about \($0), preserved without trimming.\n")
+        })
+        return question
+    }
+
+    private func object<Value: Encodable>(_ value: Value) throws -> [String: Any] {
+        try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(value)) as? [String: Any])
+    }
+
+    func testOldGoalDefaultsToNoContractAndNewSelectionPersists() throws {
+        let old = makeGoal()
+        let encoded = try object(old)
+        XCTAssertNil(encoded["questionFeedbackContract"])
+        let restored = try JSONDecoder().decode(Goal.self, from: JSONSerialization.data(withJSONObject: encoded))
+        XCTAssertNil(restored.questionFeedbackContract)
+        XCTAssertEqual(restored, old)
+        var selected = restored
+        selected.questionFeedbackContract = .authoredComplete
+        XCTAssertEqual(try object(selected)["questionFeedbackContract"] as? String, "authored_complete")
+        XCTAssertEqual(try JSONDecoder().decode(Goal.self, from: JSONEncoder().encode(selected)), selected)
+    }
+
+    @MainActor
+    func testOrdinaryGoalEditsPreserveThePersistedContract() async throws {
+        let suiteName = "CompleteTeachingGoalEdits.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let store = CheckpointStore(defaults: defaults)
+        var goal = makeGoal()
+        goal.questionFeedbackContract = .authoredComplete
+        store.goal = goal
+        store.goalProfiles = [goal]
+        await store.updateActiveGoal(
+            title: goal.title, deadline: goal.deadline.addingTimeInterval(86_400),
+            currentLevel: goal.currentLevel, focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle
+        )
+        XCTAssertEqual(store.goal?.questionFeedbackContract, .authoredComplete)
+        let draft = GoalProfileDraft(
+            title: goal.title, deadline: goal.deadline.addingTimeInterval(172_800),
+            category: goal.category, currentLevel: goal.currentLevel, focusAreas: goal.focusAreas,
+            preferredQuestionStyle: goal.preferredQuestionStyle, minimumQuestionDifficulty: goal.minimumQuestionDifficulty
+        )
+        let request = GoalProfileMutationRequest(operation: .edit(expectedGoalID: goal.id, draft: draft))
+        guard case let .eligible(plan) = store.prepareGoalProfileMutation(request) else {
+            return XCTFail("Expected a reviewable deadline edit.")
+        }
+        XCTAssertEqual(plan.resultingActiveGoal?.questionFeedbackContract, .authoredComplete)
+    }
+
+    func testRequestDerivesContractFromGoalAndCarriesItThroughGenerationPreparationAndClaim() throws {
+        var request = makeRequest(goal: makeGoal())
+        for verified in [false, true] {
+            request.requiresVerifiedQuestions = verified
+            XCTAssertNil(request.feedbackContract)
+            let original = try object(BackendQuestionRequest(request: request))
+            XCTAssertNil(original["feedbackContract"])
+            XCTAssertEqual(request.minimumVerificationPolicyRevision, verified ? 2 : 0)
+            request.goal.questionFeedbackContract = .authoredComplete
+            XCTAssertEqual(request.feedbackContract, .authoredComplete)
+            for payload in [BackendQuestionRequest(request: request), BackendQuestionRequest(
+                request: request, contextRevision: "context", desiredCount: 20, lowWatermark: 0
+            )] {
+                XCTAssertEqual(try object(payload)["feedbackContract"] as? String, "authored_complete")
+            }
+            let claim = try object(BackendQuestionBankClaimRequest(bankID: "bank", claimID: "claim", limit: 5, request: request))
+            XCTAssertEqual(claim["minimumVerificationVersion"] as? Int, 1)
+            XCTAssertEqual(claim["minimumVerificationPolicyRevision"] as? Int, 4)
+            request.goal.questionFeedbackContract = nil
+            XCTAssertEqual(try object(BackendQuestionRequest(request: request)) as NSDictionary, original as NSDictionary)
+        }
+    }
+
+    func testCompleteWirePersistenceAndAllFourFeedbackDisplaysRemainExact() throws {
+        var goal = makeGoal()
+        goal.questionFeedbackContract = .authoredComplete
+        let original = completeQuestion(goal: goal)
+        let payload = try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: JSONEncoder().encode(original))
+        let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: "backend")
+        let accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([received], for: makeRequest(goal: goal)).first)
+        let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: JSONEncoder().encode(accepted))
+        XCTAssertEqual(Data(restored.prompt.utf8), Data(original.prompt.utf8))
+        XCTAssertEqual(Data(restored.expectedAnswer.utf8), Data(original.expectedAnswer.utf8))
+        XCTAssertEqual(Data(restored.explanation.utf8), Data(original.explanation.utf8))
+        XCTAssertEqual(Set(restored.choices.map { Data($0.utf8) }), Set(original.choices.map { Data($0.utf8) }))
+        XCTAssertEqual(restored.choiceExplanations.count, 4)
+        for choice in original.choices {
+            let feedback = try XCTUnwrap(original.choiceExplanations[choice])
+            XCTAssertEqual(Data(try XCTUnwrap(restored.choiceExplanations[choice]).utf8), Data(feedback.utf8))
+            XCTAssertEqual(Data(restored.feedbackExplanation(for: choice).utf8), Data((feedback + "\n\n" + original.explanation).utf8))
+        }
+        var canonical = original
+        canonical.explanation = "The label café is shown with exact source bytes."
+        canonical.choiceExplanations[canonical.choices[0]] = "The label cafe\u{301} is shown with exact source bytes."
+        let retained = try XCTUnwrap(QuestionBatchSanitizer.sanitize([canonical], for: makeRequest(goal: goal)).first)
+        XCTAssertEqual(Data(retained.feedbackExplanation(for: canonical.choices[0]).utf8), Data(canonical.explanation.utf8))
+        XCTAssertNotEqual(Data(try XCTUnwrap(retained.choiceExplanations[canonical.choices[0]]).utf8), Data(retained.explanation.utf8))
+    }
+
+    func testCompleteRevisionRejectsMissingFeedbackWrongKeyBytesAndStructuralDamageEvenWithoutSelection() {
+        let goal = makeGoal()
+        let original = completeQuestion(goal: goal)
+        let mutations: [(inout CheckpointQuestion) -> Void] = [
+            { $0.choiceExplanations = [:] },
+            { $0.choiceExplanations.removeValue(forKey: $0.choices[0]) },
+            { $0.expectedAnswer = "café" },
+            { question in
+                let feedback = question.choiceExplanations.removeValue(forKey: question.choices[0])
+                question.choiceExplanations["café"] = feedback
+            },
+            { $0.explanation = String(repeating: "x", count: 421) },
+            { $0.prompt = String(repeating: "x", count: 321) },
+            { $0.choiceExplanations[$0.choices[0]] = String(repeating: "x", count: 281) },
+            { $0.choiceExplanations[$0.choices[0]] = "too short" },
+            { $0.verificationVersion = 0 },
+            { $0.choices[1] = $0.choices[0] },
+        ]
+        for mutate in mutations {
+            var question = original
+            mutate(&question)
+            for selected in [false, true] {
+                var request = makeRequest(goal: goal)
+                request.goal.questionFeedbackContract = selected ? .authoredComplete : nil
+                XCTAssertTrue(QuestionBatchSanitizer.sanitize([question], for: request).isEmpty)
+            }
+        }
+    }
+
+    func testCompleteTeachingRejectsUnicodeWhitespaceOnlyChoicesWithoutChangingValidChoiceBytes() throws {
+        let goal = makeGoal()
+        for choice in ["\u{00A0}", "\u{2003}", "\u{2029}", " \u{00A0}\t", " \u{00A0}x\u{00A0} "] {
+            var question = completeQuestion(goal: goal)
+            let prior = question.choices[1]
+            let feedback = question.choiceExplanations.removeValue(forKey: prior)
+            question.choices[1] = choice
+            question.choiceExplanations[choice] = feedback
+            let shouldPass = choice.contains("x")
+            for selected in [false, true] {
+                var request = makeRequest(goal: goal)
+                request.goal.questionFeedbackContract = selected ? .authoredComplete : nil
+                let result = QuestionBatchSanitizer.sanitize([question], for: request)
+                XCTAssertEqual(!result.isEmpty, shouldPass)
+                if shouldPass {
+                    XCTAssertTrue(try XCTUnwrap(result.first).choices.contains { Data($0.utf8) == Data(choice.utf8) })
+                }
+            }
+        }
+    }
+
+    @MainActor
+    func testExplicitLocalSelectionWithholdsOlderPoliciesWithoutRewritingHistory() throws {
+        var goal = makeGoal()
+        goal.questionFeedbackContract = .authoredComplete
+        let historical = [2, 3].map { revision in
+            makeQuestion(goal: goal, index: revision, verificationPolicyRevision: revision, status: .incorrect, timesAsked: 1)
+        }
+        let originalBytes = try JSONEncoder().encode(historical)
+        let complete = completeQuestion(goal: goal)
+        let selector = CheckpointQuestionSelector(
+            questions: historical + [complete], goalProfiles: [goal], currentGoal: goal,
+            competencies: [], activeQuestionDifficulty: 1, maximumExactQuestionAskCount: 2,
+            requiresVerifiedQuestions: false
+        )
+        historical.forEach { XCTAssertFalse(selector.isSelectableQuestion($0)) }
+        XCTAssertEqual(selector.nextQuestions(limit: 3).map(\.id), [complete.id])
+        let restored = try QuestionContentJSONDecoder.decode([CheckpointQuestion].self, from: originalBytes)
+        XCTAssertEqual(restored, historical)
+        XCTAssertEqual(restored.map(\.verificationPolicyRevision), [2, 3])
+        var oldGoal = goal
+        oldGoal.questionFeedbackContract = nil
+        let oldSelector = CheckpointQuestionSelector(
+            questions: historical, goalProfiles: [oldGoal], currentGoal: oldGoal,
+            competencies: [], activeQuestionDifficulty: 1, maximumExactQuestionAskCount: 2
+        )
+        historical.forEach { XCTAssertTrue(oldSelector.isSelectableQuestion($0)) }
+    }
+}
+
 // MARK: - Question validation
 
 final class QuestionValidationTests: XCTestCase {

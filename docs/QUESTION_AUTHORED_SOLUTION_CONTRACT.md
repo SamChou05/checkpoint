@@ -19,6 +19,13 @@ The iOS client already displays the main when choice-specific feedback is absent
 
 Revision 3 identifies execution of this particular contract. It does not certify semantic correctness. The default generation contract and current request/claim policy remain revision 2; requesting a revision-3-only bank is not yet supported. Existing revision-2 inventory and claim replays remain eligible, so enabling the environment flag alone does not guarantee that every delivered bank question used this path. Old content is never relabeled.
 
+September 10 update: the [complete-teaching implementation](QUESTION_COMPLETE_TEACHING_CONTRACT.md)
+adds claim minima through revision 4 and a persisted `authored_complete` selector
+that binds generation and bank inventory to revision 4. It does not add a
+persisted `authored_solution` selector. A caller can now explicitly demand a
+revision-3 minimum at claim time, but the environment flag alone still does not
+require that minimum or change an existing bank's identity.
+
 The application can enforce unchanged teaching and blocking review outcomes. It cannot establish that a model's `supported` label accurately describes its reasoning. Tests deliberately preserve an example where two falsely supportive model responses still admit incorrect teaching. Neither this path nor more output tokens replaces subject evidence or independent assessment.
 
 The fresh prospective trial across non-math goals did not meet its criterion. Further qualification must inspect every raw candidate as well as returned content, measure usable yield and difficulty, and retain malformed output and rejected questions in the denominator. Passing a small trial would establish feasibility, not arbitrary-subject accuracy or full-bank release readiness.

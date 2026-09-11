@@ -271,7 +271,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
         self.assertEqual(raised.exception.code, "claim_conflict")
 
     def test_minimum_policy_is_strict_integer_and_known_request_bound(self):
-        for invalid in (True, False, "1", 1.0, -1, 3, None, [], {}):
+        for invalid in (True, False, "1", 1.0, -1, 5, None, [], {}):
             with self.subTest(invalid=invalid):
                 bank_id, dynamo, _, _ = self.bank(revision=1)
                 with mock.patch.object(

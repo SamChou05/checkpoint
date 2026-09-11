@@ -99,11 +99,13 @@ class AuthoredSolutionIntegrationTests(unittest.TestCase):
             verify_questions([self.question], self.request, reviewer, feedback_contract="unknown")
         request = {**self.request, "feedbackContract": "authored_solution"}
         with patch.dict("os.environ", {"QUESTION_FEEDBACK_CONTRACT": "reviewer_written"}):
-            result = generation._generate_sanitized_questions(
-                request, FakeBedrockClient.returning_questions(self.question),
-                generation.ProviderCallBudget(3),
-            )
-        self.assertEqual(result[0]["verificationPolicyRevision"], 2)
+            # A supplied application selector now has an explicit contract;
+            # unsupported values cannot silently become reviewer-written text.
+            with self.assertRaises(ServiceConfigurationError):
+                generation._generate_sanitized_questions(
+                    request, FakeBedrockClient.returning_questions(self.question),
+                    generation.ProviderCallBudget(3),
+                )
 
     def test_incoming_teaching_is_rejected_before_sanitization_can_drop_or_clip_it(self):
         for changes in (

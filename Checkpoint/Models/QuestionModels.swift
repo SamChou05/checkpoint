@@ -58,6 +58,49 @@ enum QuestionVerificationPolicy {
     // Revision 2 requires complete-choice solver judgments and final review.
     // It records the checks performed, not a guarantee of factual accuracy.
     static let currentRevision = 2
+    static let completeRevision = 4
+
+    static func minimumRevision(
+        feedbackContract: QuestionFeedbackContract?, requiresVerifiedQuestions: Bool
+    ) -> Int {
+        feedbackContract == .authoredComplete ? completeRevision : (requiresVerifiedQuestions ? currentRevision : 0)
+    }
+
+    static func meetsRequirement(
+        _ question: CheckpointQuestion,
+        feedbackContract: QuestionFeedbackContract?,
+        requiresVerifiedQuestions: Bool
+    ) -> Bool {
+        if feedbackContract == .authoredComplete || question.verificationPolicyRevision >= completeRevision {
+            guard question.verificationVersion == 1,
+                  question.verificationPolicyRevision >= completeRevision,
+                  hasCompleteTeaching(question) else { return false }
+        }
+        return !requiresVerifiedQuestions || meetsCurrentRequirement(question)
+    }
+
+    /// Complete audits bind all displayed content, including exact key bytes.
+    /// Never fill missing feedback, normalize a key, or clip audited text here.
+    static func hasCompleteTeaching(_ question: CheckpointQuestion) -> Bool {
+        let choices = question.choices
+        let exactChoices = Set(choices.map { Data($0.utf8) })
+        return question.format == .multipleChoice
+            && (1...5).contains(question.difficulty)
+            && isBoundedCompleteText(question.prompt, maximum: 320)
+            && isBoundedCompleteText(question.explanation, maximum: 420)
+            && choices.count == 4
+            && MultipleChoiceAnswerNormalizer.hasUnambiguousChoices(choices)
+            && choices.allSatisfy { isBoundedCompleteText($0, minimum: 1, maximum: 140) }
+            && choices.filter { Data($0.utf8) == Data(question.expectedAnswer.utf8) }.count == 1
+            && question.choiceExplanations.count == 4
+            && Set(question.choiceExplanations.keys.map { Data($0.utf8) }) == exactChoices
+            && question.choiceExplanations.values.allSatisfy { isBoundedCompleteText($0, maximum: 280) }
+    }
+
+    private static func isBoundedCompleteText(_ text: String, minimum: Int = 12, maximum: Int) -> Bool {
+        text.unicodeScalars.count <= maximum
+            && text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.count >= minimum
+    }
 
     /// Fresh practice requires the server's current acceptance policy. The
     /// separate wire version still controls how historical content is graded.

@@ -593,6 +593,10 @@ struct GoalSourceDocument: Identifiable, Codable, Equatable, Sendable {
     }
 }
 
+enum QuestionFeedbackContract: String, Codable, Sendable {
+    case authoredComplete = "authored_complete"
+}
+
 struct Goal: Identifiable, Codable, Equatable, Sendable {
     var id = UUID()
     var title: String
@@ -604,6 +608,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
     var derivedSkillMap: GoalSkillMap?
     var preferredQuestionStyle: QuestionFormat
     var minimumQuestionDifficulty: Int
+    var questionFeedbackContract: QuestionFeedbackContract?
     var createdAt = Date()
 
     init(
@@ -617,6 +622,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         derivedSkillMap: GoalSkillMap? = nil,
         preferredQuestionStyle: QuestionFormat,
         minimumQuestionDifficulty: Int = UnlockPolicy.default.minimumQuestionDifficulty,
+        questionFeedbackContract: QuestionFeedbackContract? = nil,
         createdAt: Date = Date()
     ) {
         self.id = id
@@ -629,6 +635,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         self.derivedSkillMap = derivedSkillMap
         self.preferredQuestionStyle = preferredQuestionStyle
         self.minimumQuestionDifficulty = UnlockPolicy.normalizedQuestionDifficulty(minimumQuestionDifficulty)
+        self.questionFeedbackContract = questionFeedbackContract
         self.createdAt = createdAt
     }
 
@@ -662,6 +669,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
         case derivedSkillMap
         case preferredQuestionStyle
         case minimumQuestionDifficulty
+        case questionFeedbackContract
         case createdAt
     }
 
@@ -682,6 +690,7 @@ struct Goal: Identifiable, Codable, Equatable, Sendable {
             try container.decodeIfPresent(Int.self, forKey: .minimumQuestionDifficulty)
                 ?? UnlockPolicy.default.minimumQuestionDifficulty
         )
+        questionFeedbackContract = try container.decodeIfPresent(QuestionFeedbackContract.self, forKey: .questionFeedbackContract)
         createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
     }
 }
