@@ -1,0 +1,2203 @@
+[
+  {
+    "id": "o019fcb1a96397b75",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+          "choices": [
+            "=$A1*B$1*$A3",
+            "=$A$1*B1*$A$3",
+            "=$A$1*B$1*$A3",
+            "=$A$1*$B$1*A3"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "reason": "The quarter factor should come from $A$1 (fixed cell), but $A1 has a relative row — filling down changes it to $A2, $A3, etc., reading wrong cells. Also the regional target should be from $B$1 but B$1 fixes only the row; filling across changes the column (C$1, D$1), which would read regional targets correctly but the quarter factor anchor is wrong."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "reason": "$A$1 is the fixed quarter factor (correct). B1 has a relative row — filling down changes it to B2, B3, etc., reading wrong cells instead of the fixed regional target row. $A$3 fixes the quarter column and row, so filling down won't adjust the quarter factor from A3:A6. This is incorrect."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "reason": "$A$1 is the fixed quarter factor cell (correct, stays fixed). B$1 fixes row 1 so the regional target row stays fixed; filling across changes B to C, D, E (correct regional targets). $A3 fixes column A so the quarter factor column stays A; filling down changes row 3 to 4,5,6 (correct quarters). All three relationships are preserved."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "reason": "$A$1 is fixed (correct). $B$1 fixes both column and row of the regional target — filling across to C3, D3, E3 always uses B1 instead of C1, D1, E1. The regional target column must be relative. A3 has a relative column — filling across changes it to B3, C3, reading wrong cells for the quarter factor."
+      }
+    ]
+  },
+  {
+    "id": "o0a02b0c3c9e71de9",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+          "choices": [
+            "=$A1*B$1*$A3",
+            "=$A$1*B1*$A$3",
+            "=$A$1*B$1*$A3",
+            "=$A$1*$B$1*A3"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "reason": "$A1: column A fixed, row relative — filling down adjusts row (correct for quarter factor in A3:A6), but filling across also keeps column A (correct). However, $A1 starts at row 1 not row 3, and B$1 fixes row 1 for regional target (correct). But $A1 references row 1 for the quarter factor, not $A3. The quarter factor should come from A3:A6, not A1. This formula references $A1 (row 1) for the quarter factor instead of $A3, so it's wrong."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "reason": "$A$1 is the quarter factor fixed cell (correct). B1 has relative row — filling down changes it to B2, B3, etc., but the regional target should stay in row 1 ($B$1 area). $A$3 fixes the quarter factor at A3 always, but filling down should adjust the row for A3:A6. This formula doesn't correctly handle filling down for the quarter factor."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "reason": "$A$1: absolute reference to the quarter factor in A1 (fixed). B$1: column relative, row fixed at 1 — filling across changes B to C,D,E (correct for regional targets in B1:E1), row stays at 1 (correct). $A3: column A fixed, row relative — filling down adjusts row from 3 to 4,5,6 (correct for quarters in A3:A6), filling across keeps column A (correct). All three references behave correctly when filling across to E3 and down to E6."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "reason": "$A$1 fixed (correct). $B$1 fixes both column B and row 1 — filling across to C3,D3,E3 keeps the reference at B1 instead of adjusting to C1,D1,E1. So all columns use the same regional target (B1) instead of their own. A3 is fully relative — filling across changes column from A to B,C,D, which would reference wrong cells instead of staying in column A. This is incorrect."
+      }
+    ]
+  },
+  {
+    "id": "o0a59011f19029474",
+    "subject": {
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine explicitly described feeding links",
+          "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 2,
+          "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+          "choices": [
+            "10%",
+            "15%",
+            "25%",
+            "Cannot be determined from the information given"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "trophic production and stated transfer efficienc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "10%",
+        "reason": "Transfer efficiency from plants to snails = snail production / plant production = 800/8,000 = 10%. This is directly calculable from the given values."
+      },
+      {
+        "choice": "15%",
+        "reason": "800/8,000 = 10%, not 15%. This value is incorrect."
+      },
+      {
+        "choice": "25%",
+        "reason": "800/8,000 = 10%, not 25%. This value is incorrect."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "reason": "Both plant production (8,000 kJ) and snail production (800 kJ) are explicitly given, so transfer efficiency = 800/8,000 = 10% is directly determinable."
+      }
+    ]
+  },
+  {
+    "id": "o162e24f4aff8d18f",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 3,
+          "prompt": "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+          "choices": [
+            "=K$9+$O5",
+            "=K$5+$L9",
+            "=N$9+$L5",
+            "=N$5+$L9"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=K$9+$O5",
+        "reason": "From M5 to P9: displacement +3 cols, +4 rows. K$5: K relative shifts +3→N, row locked stays 5 → N$5. $L5: col locked stays L, row relative 5+4=9 → $L9. Result: =N$5+$L9, not K$9+$O5."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "reason": "K$5: K should shift +3 cols to N (relative), giving N$5 not K$5. $L9 is correct for the second term. First term is wrong."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "reason": "N$5 is correct for first term but row should stay 5 (locked), not become 9. $L9 is correct for second term but this has $L5. Both terms are wrong."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "reason": "From M5 to P9: +3 cols, +4 rows. K$5: K relative +3=N, row locked stays 5 → N$5. $L5: col locked stays L, row relative 5+4=9 → $L9. Result: =N$5+$L9. Correct."
+      }
+    ]
+  },
+  {
+    "id": "o1a4133c82f298852",
+    "subject": {
+      "goal": {
+        "title": "Interpret map distances and scale after resizing",
+        "category": "Geography",
+        "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+        "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+        "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine map-to-ground unit conversion",
+          "route measurements and uniform changes in printed size. Distinguish a printed nu"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Ordnance Survey map distance: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+          "truncated": true
+        },
+        {
+          "name": "Penn State map reproduction: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along the curves. The map is then photocopied at 150% enlargement. What ground distance does the original 8 cm measurement represent?",
+          "choices": [
+            "5 km",
+            "2 km",
+            "3 km",
+            "1.33 km"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine map-to-ground unit conversion"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "5 km",
+        "reason": "8 cm × 25,000 = 200,000 cm = 2,000 m = 2 km. The question asks what the original 8 cm measurement represents, so the 150% enlargement is irrelevant. 5 km would require 20 cm at 1:25,000. Refuted."
+      },
+      {
+        "choice": "2 km",
+        "reason": "8 cm on a 1:25,000 map = 8 × 25,000 = 200,000 cm = 2,000 m = 2 km. The photocopying at 150% is irrelevant because the question asks about the original 8 cm measurement on the original map. This is correct."
+      },
+      {
+        "choice": "3 km",
+        "reason": "3 km = 300,000 cm; at 1:25,000 that would require 12 cm on the map. The original measurement is 8 cm, not 12 cm. Refuted."
+      },
+      {
+        "choice": "1.33 km",
+        "reason": "1.33 km ≈ 133,000 cm; at 1:25,000 that would require ~5.33 cm. This might come from dividing 2 km by 1.5 (the enlargement factor), but the question asks about the original 8 cm measurement, not a measurement on the enlarged copy. Refuted."
+      }
+    ]
+  },
+  {
+    "id": "o2a21794c19aff7f2",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+          "choices": [
+            "=$F4+G$2",
+            "=B8+G$2",
+            "=$F8+G$6",
+            "=$F8+C$2"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=$F4+G$2",
+        "reason": "Copying from H4 to D8 moves 4 columns left and 4 rows down. $F is column-locked so stays F; row 4 is relative, shifts +4 to row 8 → $F8. G is relative, shifts -4 columns from G → C; $2 is row-locked stays 2 → C$2. Result should be =$F8+C$2, not =$F4+G$2."
+      },
+      {
+        "choice": "=B8+G$2",
+        "reason": "$F column anchor means column stays F, not B. This would only be correct if F were relative, but it has a $ anchor."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "reason": "$F8 is correct for the first term. But G$2: G is relative (shifts -4 cols to C) and $2 is row-locked (stays 2), giving C$2, not G$6."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "reason": "From H4 to D8: displacement is -4 cols, +4 rows. $F4: column locked → F, row relative 4+4=8 → $F8. G$2: column relative G-4=C, row locked → C$2. Combined: =$F8+C$2. Correct."
+      }
+    ]
+  },
+  {
+    "id": "o2b4f373d984acc2d",
+    "subject": {
+      "goal": {
+        "title": "Interpret map distances and scale after resizing",
+        "category": "Geography",
+        "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+        "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+        "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine map-to-ground unit conversion",
+          "route measurements and uniform changes in printed size. Distinguish a printed nu"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Ordnance Survey map distance: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+          "truncated": true
+        },
+        {
+          "name": "Penn State map reproduction: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along the curves. The map is then photocopied at 150% enlargement. What ground distance does the original 8 cm measurement represent?",
+          "choices": [
+            "5 km",
+            "2 km",
+            "3 km",
+            "1.33 km"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine map-to-ground unit conversion"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "5 km",
+        "reason": "8 cm × 25,000 = 200,000 cm = 2,000 m = 2 km. 5 km would require 20 cm at 1:25,000. This is incorrect."
+      },
+      {
+        "choice": "2 km",
+        "reason": "8 cm on a 1:25,000 map represents 8 × 25,000 = 200,000 cm = 2,000 m = 2 km. The photocopying at 150% is irrelevant because the question asks what the original 8 cm measurement represents on the original map at its stated scale."
+      },
+      {
+        "choice": "3 km",
+        "reason": "3 km = 300,000 cm; dividing by 25,000 gives 12 cm, not 8 cm. This does not follow from the original scale and measurement."
+      },
+      {
+        "choice": "1.33 km",
+        "reason": "1.33 km ≈ 133,333 cm; dividing by 25,000 gives ~5.33 cm, not 8 cm. This might arise from incorrectly dividing 2 km by 1.5 (the enlargement factor), but the question asks about the original measurement on the original map, making the enlargement irrelevant."
+      }
+    ]
+  },
+  {
+    "id": "o2faadaf67521b1f5",
+    "subject": {
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine explicitly described feeding links",
+          "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+          "choices": [
+            "400 kJ/m²/year",
+            "800 kJ/m²/year",
+            "2,000 kJ/m²/year",
+            "160 kJ/m²/year"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine explicitly described feeding links"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "400 kJ/m²/year",
+        "reason": "This ignores the shrimp pathway. Zooplankton receive 10,000×20%=2,000 kJ from algae. Shrimp also receive 2,000 kJ from algae (stated). Small fish eat both zooplankton (2,000×20%=400 kJ) and shrimp (2,000×20%=400 kJ), totaling 800 kJ. Large fish receive 800×20%=160 kJ. 400 is not the correct result."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "reason": "800 kJ is the production of small fish (combining both pathways), not what reaches large fish. Large fish receive 20% of 800 = 160 kJ/m²/year."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "reason": "2,000 kJ is the production at the zooplankton level (or shrimp level), not at large fish. Multiple transfer steps reduce this further."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "reason": "Zooplankton get 10,000×20%=2,000 kJ; shrimp get 2,000 kJ (stated). Small fish get 20% of each: 400+400=800 kJ. Large fish get 20% of 800=160 kJ/m²/year. This correctly combines both feeding pathways."
+      }
+    ]
+  },
+  {
+    "id": "o50fe6de3dd9194bb",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 4,
+          "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+          "choices": [
+            "=N2/12",
+            "=$N2/12",
+            "=N$2/12",
+            "=$N$2/12"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=N2/12",
+        "reason": "N is a relative column reference. Filling across from B2 to M2 shifts the column: C2 would use O2, D2 uses P2, etc., moving away from column N. The column must be anchored."
+      },
+      {
+        "choice": "=$N2/12",
+        "reason": "$N fixes column N so filling across always reads from column N. The row 2 is relative so filling down to row 10 correctly picks up N3, N4,…N10 for each category. This satisfies both fill directions."
+      },
+      {
+        "choice": "=N$2/12",
+        "reason": "N is relative so filling across shifts the column away from N. Also $2 fixes row 2, so filling down would always use row 2 instead of the correct category row."
+      },
+      {
+        "choice": "=$N$2/12",
+        "reason": "$N$2 is fully absolute. Filling down would always use N2 instead of the correct category row (N3, N4,…N10)."
+      }
+    ]
+  },
+  {
+    "id": "o56c3344687f0607c",
+    "subject": {
+      "goal": {
+        "title": "Interpret map distances and scale after resizing",
+        "category": "Geography",
+        "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+        "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+        "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine map-to-ground unit conversion",
+          "route measurements and uniform changes in printed size. Distinguish a printed nu"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Ordnance Survey map distance: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+          "truncated": true
+        },
+        {
+          "name": "Penn State map reproduction: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along the curves. The map is then photocopied at 150% enlargement. What ground distance does the original 8 cm measurement represent?",
+          "choices": [
+            "5 km",
+            "2 km",
+            "3 km",
+            "1.33 km"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine map-to-ground unit conversion"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "5 km",
+        "reason": "8 cm × 25,000 = 200,000 cm = 2,000 m = 2 km. The 150% enlargement is irrelevant to the original measurement. 5 km would require 20 cm at 1:25,000. Refuted."
+      },
+      {
+        "choice": "2 km",
+        "reason": "8 cm on a 1:25,000 map represents 8 × 25,000 = 200,000 cm = 2,000 m = 2 km. The photocopying at 150% does not change what the original 8 cm measurement represented. This is correct."
+      },
+      {
+        "choice": "3 km",
+        "reason": "3 km = 300,000 cm; at 1:25,000 that would require 12 cm on the original map, not 8 cm. No calculation yields 3 km from 8 cm at 1:25,000. Refuted."
+      },
+      {
+        "choice": "1.33 km",
+        "reason": "1.33 km ≈ 133,333 cm; dividing by 25,000 gives ~5.3 cm, not 8 cm. This might arise from dividing 2 km by 1.5 (the enlargement factor), but the question asks what the original measurement represents, not the enlarged copy's measurement. Refuted."
+      }
+    ]
+  },
+  {
+    "id": "o5fe3634798dc0b6d",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 3,
+          "prompt": "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+          "choices": [
+            "=K$9+$O5",
+            "=K$5+$L9",
+            "=N$9+$L5",
+            "=N$5+$L9"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=K$9+$O5",
+        "reason": "From M5 to P9: col shift=+3, row shift=+4. K$5: col K+3=N, row fixed=5 → N$5. $L5: col fixed=L, row 5+4=9 → $L9. Result: =N$5+$L9. This choice has K$9 and $O5, neither matches. Refuted."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "reason": "K$5: col K (no shift applied to K), row fixed 5. But col should shift +3: K+3=N. So K$5 is wrong for first term. Refuted."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "reason": "N$5 is correct for first term but this shows N$9 (row 9 not fixed 5). $L5 should be $L9 (row shifts +4). Refuted."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "reason": "Col shift M→P=+3, row shift 5→9=+4. K$5: col K+3=N, row fixed=5 → N$5 ✓. $L5: col fixed=L, row 5+4=9 → $L9 ✓. Result =N$5+$L9. Supported."
+      }
+    ]
+  },
+  {
+    "id": "o711659f9bac7a87c",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+          "choices": [
+            "=A2*B1",
+            "=$A2*B$1",
+            "=A$2*$B1",
+            "=$A$2*B$1"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=A2*B1",
+        "reason": "Filling across: A2 column shifts right (wrong rate). Filling down: B1 row shifts down (wrong amount). Both references are fully relative and break when copied."
+      },
+      {
+        "choice": "=$A2*B$1",
+        "reason": "$A2 fixes column A so rates always come from column A when filling right. B$1 fixes row 1 so amounts always come from row 1 when filling down. Both relationships are preserved throughout the table."
+      },
+      {
+        "choice": "=A$2*$B1",
+        "reason": "A$2 fixes row 2 (wrong—rates are in A1:A5, need row to vary) and $B1 fixes column B (wrong—amounts are in B1:F1, need column to vary). This is the opposite anchoring."
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "reason": "$A$2 fixes both column A and row 2, so filling down would always use A2 instead of the correct rate for each row."
+      }
+    ]
+  },
+  {
+    "id": "o72b1dffad194f4c3",
+    "subject": {
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine explicitly described feeding links",
+          "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+          "choices": [
+            "400 kJ/m²/year",
+            "800 kJ/m²/year",
+            "2,000 kJ/m²/year",
+            "160 kJ/m²/year"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine explicitly described feeding links"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "400 kJ/m²/year",
+        "reason": "Zooplankton receive 10,000×0.20=2,000 kJ from algae. Shrimp also receive 2,000 kJ from algae. Small fish eat both zooplankton and shrimp. Small fish production = (2,000+2,000)×0.20=800 kJ. Large fish = 800×0.20=160 kJ. This choice gives 400, which is incorrect."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "reason": "This would be small fish production (800 kJ), not large fish production. Large fish = 800×0.20=160 kJ. This choice is incorrect."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "reason": "This equals zooplankton or shrimp production, not large fish production. Clearly too high."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "reason": "Zooplankton get 10,000×0.20=2,000 kJ; shrimp get 2,000 kJ from algae. Small fish eat both: (2,000+2,000)×0.20=800 kJ. Large fish: 800×0.20=160 kJ. This matches the calculation."
+      }
+    ]
+  },
+  {
+    "id": "o73d0838f817a048f",
+    "subject": {
+      "goal": {
+        "title": "Apply a small fictional rule system",
+        "currentLevel": "I know the basics and want to check precise applications.",
+        "focusAreas": "Derive permissions and exclusions from explicit fictional rules",
+        "learningTarget": "Derive permissions and exclusions from explicit fictional rules",
+        "contentTopics": [
+          "Derive permissions and exclusions from explicit fictional rules"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Fictional badge rules",
+          "text": "Fictional badge rules: Each person has exactly one badge, either amber or violet. Every amber-badge holder is permitted to enter Room R. No violet-badge holder is permitted to enter Room R. These are the complete badge and entry-permission rules for this exercise.",
+          "truncated": false
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "Mina has an amber badge. Under the supplied rules, which statement must follow?",
+          "choices": [
+            "Mina has a violet badge.",
+            "Mina is not permitted to enter Room R.",
+            "Mina has both badge colors.",
+            "Mina has no badge."
+          ],
+          "topic": "Derive permissions and exclusions from explicit fictional rules"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "Mina has a violet badge.",
+        "reason": "Each person has exactly one badge. Mina is given an amber badge, so she cannot have a violet badge."
+      },
+      {
+        "choice": "Mina is not permitted to enter Room R.",
+        "reason": "The rules state every amber-badge holder is permitted to enter Room R. Mina has an amber badge, so she is permitted, not excluded."
+      },
+      {
+        "choice": "Mina has both badge colors.",
+        "reason": "Each person has exactly one badge under the rules, so having both colors is impossible."
+      },
+      {
+        "choice": "Mina has no badge.",
+        "reason": "The rules state each person has exactly one badge. Mina is given an amber badge, so she has a badge."
+      }
+    ]
+  },
+  {
+    "id": "o74c0d447c66633ab",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 3,
+          "prompt": "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+          "choices": [
+            "=K$9+$O5",
+            "=K$5+$L9",
+            "=N$9+$L5",
+            "=N$5+$L9"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=K$9+$O5",
+        "reason": "From M5 to P9: column shift +3, row shift +4. K$5: column K relative → K+3=N, row locked at 5 → N$5. $L5: column L locked → $L, row 5 relative → 5+4=9 → $L9. Result: =N$5+$L9. Not =K$9+$O5."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "reason": "K$5 would require column K unchanged (but K is relative, should shift to N) and row stays 5. $L9 is correct for second term. First term is wrong."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "reason": "N$5 is correct for first term but this shows N$9 (row should be locked at 5, not 9). $L5 is wrong for second term (row should shift to 9). Refuted."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "reason": "K$5: K relative shifts +3 columns → N, row locked at 5 → N$5. $L5: column L locked → $L, row 5 shifts +4 → 9 → $L9. Result: =N$5+$L9. This matches."
+      }
+    ]
+  },
+  {
+    "id": "o82fc85db4e44dd0f",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+          "choices": [
+            "=A2*B1",
+            "=$A2*B$1",
+            "=A$2*$B1",
+            "=$A$2*B$1"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=A2*B1",
+        "reason": "Filling across: A2 column shifts right, so rates column A is lost. Filling down: B1 row shifts down, so amounts row 1 is lost. Both references are fully relative, so neither the rate column nor the amount row is preserved correctly."
+      },
+      {
+        "choice": "=$A2*B$1",
+        "reason": "$A fixes column A (rates always from column A as we fill across), row 2 is relative (adjusts down for each rate row). B is relative (adjusts right for each sales column), $1 fixes row 1 (amounts always from row 1 as we fill down). This correctly anchors rates column and amounts row."
+      },
+      {
+        "choice": "=A$2*$B1",
+        "reason": "A$2 fixes row 2 but not column A; filling across would shift column away from rates. $B1 fixes column B but not row 1; filling down would shift row away from amounts. This is the opposite of what's needed."
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "reason": "$A$2 fixes both row and column of the rate, so filling down would always use A2 instead of A3, A4, A5. Rates would not adjust per row."
+      }
+    ]
+  },
+  {
+    "id": "o85d51f81afb44078",
+    "subject": {
+      "goal": {
+        "title": "Apply a small fictional rule system",
+        "currentLevel": "I know the basics and want to check precise applications.",
+        "focusAreas": "Derive permissions and exclusions from explicit fictional rules",
+        "learningTarget": "Derive permissions and exclusions from explicit fictional rules",
+        "contentTopics": [
+          "Derive permissions and exclusions from explicit fictional rules"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Fictional badge rules",
+          "text": "Fictional badge rules: Each person has exactly one badge, either amber or violet. Every amber-badge holder is permitted to enter Room R. No violet-badge holder is permitted to enter Room R. These are the complete badge and entry-permission rules for this exercise.",
+          "truncated": false
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "Mina has an amber badge. Under the supplied rules, which statement must follow?",
+          "choices": [
+            "Mina has a violet badge.",
+            "Mina is not permitted to enter Room R.",
+            "Mina has both badge colors.",
+            "Mina has no badge."
+          ],
+          "topic": "Derive permissions and exclusions from explicit fictional rules"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "Mina has a violet badge.",
+        "reason": "Mina is stated to have an amber badge, and each person has exactly one badge. She cannot have a violet badge; this is directly refuted."
+      },
+      {
+        "choice": "Mina is not permitted to enter Room R.",
+        "reason": "The rules state every amber-badge holder is permitted to enter Room R. Mina has an amber badge, so she IS permitted. This statement is directly refuted."
+      },
+      {
+        "choice": "Mina has both badge colors.",
+        "reason": "The rules state each person has exactly one badge. Mina cannot have both colors; this is directly refuted."
+      },
+      {
+        "choice": "Mina has no badge.",
+        "reason": "Mina is stated to have an amber badge, so she clearly has a badge. This is directly refuted."
+      }
+    ]
+  },
+  {
+    "id": "o89ef29455a06a959",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+          "choices": [
+            "=$A1*B$1*$A3",
+            "=$A$1*B1*$A$3",
+            "=$A$1*B$1*$A3",
+            "=$A$1*$B$1*A3"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "reason": "$A1 fixes column A but row is relative—filling down changes the row, so it references A2, A3… instead of staying at A1. B$1 fixes row 1 for the regional target but column B is relative, which is correct for filling across. $A3 fixes column A with relative row, correct for quarter factors. But $A1 drifting away from A1 makes this wrong."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "reason": "$A$1 correctly anchors the quarter factor. B1 has a relative row—filling down changes it to B2, B3… instead of staying at row 1 for the regional target. $A$3 fixes both column and row of the quarter factor, so filling down won't pick up Q2, Q3, Q4. Both the regional target and quarter factor references are wrong."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "reason": "$A$1 is the fixed quarter factor in A1—stays constant. B$1 fixes row 1 but column B is relative, so filling across picks up C1, D1, E1 (regional targets). $A3 fixes column A but row is relative, so filling down picks up A4, A5, A6 (quarter rows). All three relationships are preserved correctly."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "reason": "$B$1 fixes both column and row of the regional target. Filling across to C3, D3, E3 still references B1 instead of C1, D1, E1. The regional target never changes across columns, making all columns use the North target."
+      }
+    ]
+  },
+  {
+    "id": "o8bc6e25c901460e7",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+          "choices": [
+            "=$F4+G$2",
+            "=B8+G$2",
+            "=$F8+G$6",
+            "=$F8+C$2"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=$F4+G$2",
+        "reason": "=$F4 locks column F (stays F), row adjusts. G$2 locks row 2, column adjusts. Copying from H4 to D8: column shift = D-H = -4, row shift = 8-4 = +4. $F4: column fixed=F, row 4+4=8 → $F8. G$2: column G+(-4)=C, row fixed=2 → C$2. Result: =$F8+C$2. This choice =$F4+G$2 is unchanged (no adjustment), so refuted."
+      },
+      {
+        "choice": "=B8+G$2",
+        "reason": "$F4 has column locked so it stays F not B. Refuted."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "reason": "$F8 is correct for the first term. But G$2 has row locked at 2, so column adjusts to C and row stays 2, giving C$2, not G$6. Refuted."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "reason": "Column shift H→D = -4, row shift 4→8 = +4. $F4: F fixed, row 4+4=8 → $F8 ✓. G$2: row 2 fixed, column G-4=C → C$2 ✓. This matches =$F8+C$2. Supported."
+      }
+    ]
+  },
+  {
+    "id": "o8d995a1f8c3babc6",
+    "subject": {
+      "goal": {
+        "title": "Trace simple Python list operations",
+        "currentLevel": "I know the basics and want to check precise applications.",
+        "focusAreas": "Python 3 list aliasing, copying and append output",
+        "learningTarget": "Python 3 list aliasing, copying and append output",
+        "contentTopics": [
+          "Python 3 list aliasing, copying and append output"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "In Python 3, what does this print?\na = [1, 2]\nb = a.copy()\nb.append(3)\nprint(a)",
+          "choices": [
+            "[1, 2, 3]",
+            "[3]",
+            "[]",
+            "[1, 2, [3]]"
+          ],
+          "topic": "Python 3 list aliasing, copying and append output"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "[1, 2, 3]",
+        "reason": "b = a.copy() creates a shallow copy, so b and a are separate list objects. b.append(3) only modifies b; a remains [1,2], not [1,2,3]."
+      },
+      {
+        "choice": "[3]",
+        "reason": "a is never modified; it stays [1,2]. There is no operation that would make a equal to [3]."
+      },
+      {
+        "choice": "[]",
+        "reason": "a is initialized to [1,2] and never modified, so it cannot be empty."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "reason": "a.copy() makes b independent. b.append(3) does not affect a. Also, append(3) adds integer 3, not [3]. a remains [1,2], not [1,2,[3]]."
+      }
+    ]
+  },
+  {
+    "id": "o94f7d6f9762cc181",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+          "choices": [
+            "=$F4+G$2",
+            "=B8+G$2",
+            "=$F8+G$6",
+            "=$F8+C$2"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=$F4+G$2",
+        "reason": "=$F4 has column F locked (absolute column), so column doesn't change. Copying from H4 to D8: row displacement is +4, column displacement is -4. $F4: column stays F, row 4+4=8 → $F8. G$2: column G relative, G+(-4)=C, row locked at 2 → C$2. Result should be =$F8+C$2, not =$F4+G$2."
+      },
+      {
+        "choice": "=B8+G$2",
+        "reason": "$F4 with absolute column F would give $F8 (not B8). B8 would result if F were relative (F-4=B), but F is locked. Refuted."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "reason": "$F8 is correct for the first term. For G$2: column G shifts by -4 columns → C, row locked at 2 → C$2. G$6 is wrong (row should stay 2, not become 6). Refuted."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "reason": "$F4 copied down 4 rows: column F locked → $F, row 4+4=8 → $F8. G$2 copied left 4 columns: column G relative, G-4=C → C, row 2 locked → C$2. Result: =$F8+C$2. This is correct."
+      }
+    ]
+  },
+  {
+    "id": "o9b2e993dc8d54354",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 4,
+          "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+          "choices": [
+            "=N2/12",
+            "=$N2/12",
+            "=N$2/12",
+            "=$N$2/12"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=N2/12",
+        "reason": "N is a relative column reference. Filling across from B to M shifts the column: C2 would reference O2, D2 would reference P2, etc., moving away from column N. The formula breaks when filled across."
+      },
+      {
+        "choice": "=$N2/12",
+        "reason": "$N locks column N so filling across always references column N. Row 2 is relative so filling down picks the correct category row. This satisfies both fill directions correctly."
+      },
+      {
+        "choice": "=N$2/12",
+        "reason": "N is relative so filling across shifts the column away from N. $2 locks row 2 so filling down always uses row 2 instead of the correct category row. Both behaviors are wrong."
+      },
+      {
+        "choice": "=$N$2/12",
+        "reason": "$N$2 locks both row and column. Filling down would always use row 2's target instead of each category's own row, giving wrong results for rows 3–10."
+      }
+    ]
+  },
+  {
+    "id": "o9f63b45d0eaadee5",
+    "subject": {
+      "goal": {
+        "title": "Use subject–verb agreement in standard written English",
+        "currentLevel": "I know the basics and want to check precise applications.",
+        "focusAreas": "Subject–verb agreement in affirmative present-tense declarative sentences",
+        "learningTarget": "Subject–verb agreement in affirmative present-tense declarative sentences",
+        "contentTopics": [
+          "Subject–verb agreement in affirmative present-tense declarative sentences"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "Which sentence has standard English subject–verb agreement?",
+          "choices": [
+            "Each of the boxes is sealed.",
+            "The boxes are sealed.",
+            "Each of the boxes are sealed.",
+            "The boxes is sealed."
+          ],
+          "topic": "Subject–verb agreement in affirmative present-tense declarative sentences"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "reason": "'Each' is an indefinite pronoun that is always singular in standard English. The singular verb 'is' correctly agrees with 'each'."
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "reason": "'The boxes' is a plural noun phrase; 'are' is the correct plural verb. This sentence has proper subject–verb agreement."
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "reason": "'Each' is singular in standard English, so 'are' (plural) does not agree with it. This violates standard subject–verb agreement."
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "reason": "'The boxes' is plural; 'is' is a singular verb. This violates standard subject–verb agreement."
+      }
+    ]
+  },
+  {
+    "id": "oa5106ca3c95626b7",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 4,
+          "prompt": "A budget sheet has categories in A2:A10 and months in B1:M1. The formula in B2 divides category target (column N, same row) by 12 for monthly amount. B2 must fill across to M2 and down to M10. What should B2 contain?",
+          "choices": [
+            "=N2/12",
+            "=$N2/12",
+            "=N$2/12",
+            "=$N$2/12"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=N2/12",
+        "reason": "N is relative; filling across from B to M shifts N rightward (O,P,Q...), moving away from column N targets. This is wrong."
+      },
+      {
+        "choice": "=$N2/12",
+        "reason": "$N fixes column N (always references column N targets as formula fills across columns B-M). Row 2 is relative, so filling down adjusts to row 3,4...10 for each category. This correctly references each category's target in column N for every month column and every category row."
+      },
+      {
+        "choice": "=N$2/12",
+        "reason": "N is relative; filling across shifts column away from N. $2 fixes row 2; filling down always uses row 2 target instead of each category's row. Both components are wrong for this use case."
+      },
+      {
+        "choice": "=$N$2/12",
+        "reason": "$N$2 is fully absolute; filling down would always reference row 2 target instead of each category's own row. Wrong for filling down."
+      }
+    ]
+  },
+  {
+    "id": "oaac8798713bf5a5b",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 3,
+          "prompt": "Cell M5 contains =K$5+$L5. It is copied to P9. What formula appears in P9?",
+          "choices": [
+            "=K$9+$O5",
+            "=K$5+$L9",
+            "=N$9+$L5",
+            "=N$5+$L9"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=K$9+$O5",
+        "reason": "Copy M5→P9 is +3 columns, +4 rows. K$5: column relative K+3=N, row fixed→N$5. $L5: column fixed L, row relative 5+4=9→$L9. Result should be =N$5+$L9, not K$9+$O5."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "reason": "K$5: column should shift K+3=N→N$5, not stay K$5. $L9 is correct for second term. First term is wrong."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "reason": "N$9: column N is correct but row should be fixed at 5 (not 9). $L5: row should shift to 9 (not stay 5). Both components wrong."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "reason": "Copy M5→P9: +3 cols, +4 rows. K$5: col relative K+3=N, row fixed at 5→N$5. $L5: col fixed L, row relative 5+4=9→$L9. Result: =N$5+$L9. Correct."
+      }
+    ]
+  },
+  {
+    "id": "oad439e4fe1d96a7d",
+    "subject": {
+      "goal": {
+        "title": "Trace simple Python list operations",
+        "currentLevel": "I know the basics and want to check precise applications.",
+        "focusAreas": "Python 3 list aliasing, copying and append output",
+        "learningTarget": "Python 3 list aliasing, copying and append output",
+        "contentTopics": [
+          "Python 3 list aliasing, copying and append output"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "In Python 3, what does this print?\na = [1, 2]\nb = a.copy()\nb.append(3)\nprint(a)",
+          "choices": [
+            "[1, 2, 3]",
+            "[3]",
+            "[]",
+            "[1, 2, [3]]"
+          ],
+          "topic": "Python 3 list aliasing, copying and append output"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "[1, 2, 3]",
+        "reason": "b = a.copy() creates a shallow copy, so b is a different list object. b.append(3) only modifies b, leaving a unchanged as [1, 2]."
+      },
+      {
+        "choice": "[3]",
+        "reason": "a is unchanged after b.append(3) because b is a copy. a remains [1, 2], not [3]."
+      },
+      {
+        "choice": "[]",
+        "reason": "a starts as [1, 2] and is never modified; it cannot be empty."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "reason": "a is not modified at all (b is a copy), so a remains [1, 2]. Also, append(3) would add integer 3, not [3]. The correct output is [1, 2]."
+      }
+    ]
+  },
+  {
+    "id": "ob7bc49eec4b66d7e",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "Cell H4 contains =$F4+G$2. It is copied to D8. What formula appears in D8?",
+          "choices": [
+            "=$F4+G$2",
+            "=B8+G$2",
+            "=$F8+G$6",
+            "=$F8+C$2"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=$F4+G$2",
+        "reason": "Copying from H4 to D8 shifts by -4 columns and +4 rows. $F4: column fixed at F, row relative (4+4=8) → $F8. G$2: column relative (G-4=C), row fixed → C$2. Result should be =$F8+C$2, not =$F4+G$2."
+      },
+      {
+        "choice": "=B8+G$2",
+        "reason": "$F column anchor is lost (becomes B instead of F), and G$2 column should shift to C. This is incorrect."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "reason": "$F8 is correct for the first term. But G$2: column relative shifts G by -4 columns = C, and row is fixed at 2, so it should be C$2, not G$6."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "reason": "Copy displacement: H4→D8 is -4 columns, +4 rows. $F4: column fixed→$F, row relative 4+4=8→$F8. G$2: column relative G-4=C→C, row fixed→$2. Result: =$F8+C$2. Correct."
+      }
+    ]
+  },
+  {
+    "id": "ob9c870774dc0b6ab",
+    "subject": {
+      "goal": {
+        "title": "Use subject–verb agreement in standard written English",
+        "currentLevel": "I know the basics and want to check precise applications.",
+        "focusAreas": "Subject–verb agreement in affirmative present-tense declarative sentences",
+        "learningTarget": "Subject–verb agreement in affirmative present-tense declarative sentences",
+        "contentTopics": [
+          "Subject–verb agreement in affirmative present-tense declarative sentences"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "Which sentence has standard English subject–verb agreement?",
+          "choices": [
+            "Each of the boxes is sealed.",
+            "The boxes are sealed.",
+            "Each of the boxes are sealed.",
+            "The boxes is sealed."
+          ],
+          "topic": "Subject–verb agreement in affirmative present-tense declarative sentences"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "reason": "'Each' is an indefinite pronoun that is always singular in standard English. 'Is' correctly agrees with the singular subject 'each'. This sentence has correct subject–verb agreement."
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "reason": "'Boxes' is plural and 'are' is the correct plural verb. This sentence also has correct subject–verb agreement."
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "reason": "'Each' is singular in standard English, so 'are' (plural) does not agree with it. This violates standard subject–verb agreement."
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "reason": "'Boxes' is plural, but 'is' is singular. This violates standard subject–verb agreement."
+      }
+    ]
+  },
+  {
+    "id": "obfab5a89634c5dd2",
+    "subject": {
+      "goal": {
+        "title": "Use subject–verb agreement in standard written English",
+        "currentLevel": "I know the basics and want to check precise applications.",
+        "focusAreas": "Subject–verb agreement in affirmative present-tense declarative sentences",
+        "learningTarget": "Subject–verb agreement in affirmative present-tense declarative sentences",
+        "contentTopics": [
+          "Subject–verb agreement in affirmative present-tense declarative sentences"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "Which sentence has standard English subject–verb agreement?",
+          "choices": [
+            "Each of the boxes is sealed.",
+            "The boxes are sealed.",
+            "Each of the boxes are sealed.",
+            "The boxes is sealed."
+          ],
+          "topic": "Subject–verb agreement in affirmative present-tense declarative sentences"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "reason": "'Each' is an indefinite pronoun that is always singular; 'is' correctly agrees with the singular subject 'each' in standard English."
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "reason": "'The boxes' is a plural noun phrase; 'are' is the correct plural present-tense verb, satisfying standard subject–verb agreement."
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "reason": "'Each' is singular; using the plural verb 'are' violates standard subject–verb agreement rules."
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "reason": "'The boxes' is plural; using the singular verb 'is' violates standard subject–verb agreement rules."
+      }
+    ]
+  },
+  {
+    "id": "oc0a62ea29bfba9c7",
+    "subject": {
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine explicitly described feeding links",
+          "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 2,
+          "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+          "choices": [
+            "10%",
+            "15%",
+            "25%",
+            "Cannot be determined from the information given"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "trophic production and stated transfer efficienc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "10%",
+        "reason": "Transfer efficiency from plants to snails = snail production / plant production = 800/8,000 = 10%. This is directly calculable from the given data."
+      },
+      {
+        "choice": "15%",
+        "reason": "800/8,000 = 10%, not 15%. This value is incorrect."
+      },
+      {
+        "choice": "25%",
+        "reason": "800/8,000 = 10%, not 25%. This value is incorrect."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "reason": "Both plant production (8,000) and snail production (800) are explicitly stated, so efficiency = 800/8,000 = 10% is directly determinable. This choice is incorrect."
+      }
+    ]
+  },
+  {
+    "id": "oce9a40e1ecf0736c",
+    "subject": {
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine explicitly described feeding links",
+          "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 2,
+          "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+          "choices": [
+            "10%",
+            "15%",
+            "25%",
+            "Cannot be determined from the information given"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "trophic production and stated transfer efficienc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "10%",
+        "reason": "Transfer efficiency = snail production / plant production = 800/8,000 = 10%. This calculation is straightforward and yields exactly 10%, so this choice IS supported, not refuted. Correcting: supported."
+      },
+      {
+        "choice": "15%",
+        "reason": "15% would require snail production of 1,200 kJ from 8,000 kJ plant production. Actual snail production is 800 kJ, giving 800/8,000 = 10%, not 15%."
+      },
+      {
+        "choice": "25%",
+        "reason": "25% would require snail production of 2,000 kJ from 8,000 kJ. Actual snail production is 800 kJ, giving 10% efficiency."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "reason": "Both plant production (8,000 kJ/m²/year) and snail production (800 kJ/m²/year) are explicitly stated. Transfer efficiency = 800/8,000 = 10%, which is fully determinable."
+      }
+    ]
+  },
+  {
+    "id": "od4dcf897914bdd27",
+    "subject": {
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine explicitly described feeding links",
+          "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 2,
+          "prompt": "A wetland food web: plants → crabs → herons. Plants also → snails → ducks. Crabs eat only plants; herons eat only crabs. Ducks eat only snails. Plant production is 8,000 kJ/m²/year. Crab production is 1,200 kJ/m²/year. Snail production is 800 kJ/m²/year. What is the transfer efficiency from plants to snails?",
+          "choices": [
+            "10%",
+            "15%",
+            "25%",
+            "Cannot be determined from the information given"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "trophic production and stated transfer efficienc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "10%",
+        "reason": "Transfer efficiency = snail production / plant production = 800/8,000 = 10%. Wait—this is actually correct mathematically. 800/8000=0.10=10%. So this IS supported."
+      },
+      {
+        "choice": "15%",
+        "reason": "15% would require snail production of 1,200 kJ (8,000×0.15=1,200), but snail production is stated as 800 kJ. 800/8,000=10%, not 15%."
+      },
+      {
+        "choice": "25%",
+        "reason": "25% would require snail production of 2,000 kJ (8,000×0.25=2,000), but snail production is stated as 800 kJ. 800/8,000=10%."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "reason": "Plant production (8,000 kJ/m²/year) and snail production (800 kJ/m²/year) are both explicitly stated. Transfer efficiency = 800/8,000 = 10%, which is determinable from the given information."
+      }
+    ]
+  },
+  {
+    "id": "oe30a117b19ac7952",
+    "subject": {
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine explicitly described feeding links",
+          "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+          "choices": [
+            "400 kJ/m²/year",
+            "800 kJ/m²/year",
+            "2,000 kJ/m²/year",
+            "160 kJ/m²/year"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine explicitly described feeding links"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "400 kJ/m²/year",
+        "reason": "Zooplankton receive 20% of 10,000 = 2,000 kJ from algae. Shrimp also receive 2,000 kJ from algae (stated). Small fish eat both zooplankton (20% of 2,000 = 400 kJ) and shrimp (20% of 2,000 = 400 kJ), so small fish production = 800 kJ. Large fish receive 20% of 800 = 160 kJ. 400 is not the correct answer."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "reason": "800 kJ is the production of small fish, not what reaches large fish. Large fish receive 20% of 800 = 160 kJ/m²/year."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "reason": "2,000 kJ is the production at the zooplankton level (or shrimp level), not what reaches large fish after two more transfer steps."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "reason": "Zooplankton production = 20% × 10,000 = 2,000 kJ. Shrimp production = 2,000 kJ (stated). Small fish eat both: 20% × 2,000 + 20% × 2,000 = 400 + 400 = 800 kJ. Large fish = 20% × 800 = 160 kJ/m²/year."
+      }
+    ]
+  },
+  {
+    "id": "oe513a455c82cd337",
+    "subject": {
+      "goal": {
+        "title": "Interpret map distances and scale after resizing",
+        "category": "Geography",
+        "currentLevel": "I understand map symbols and simple scale ratios, but get confused when a map is resized or a route bends.",
+        "focusAreas": "Combine map-to-ground unit conversion, route measurements and uniform changes in printed size. Distinguish a printed numerical scale from a scale bar copied with the map.",
+        "learningTarget": "Explain which distance or scale interpretation follows from the stated measurements and reproduction conditions for a local map, treating its stated scale as uniform over the measured region.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine map-to-ground unit conversion",
+          "route measurements and uniform changes in printed size. Distinguish a printed nu"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Ordnance Survey map distance: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://www.ordnancesurvey.co.uk/documents/resources/map-reading-made-easy.pdf (sections What is scale? and How do we measure distance?)\n\nA scale written 1:n relates one unit on the map to n of the same units on the ground. Convert units consistently before comparing distances. A straight measurement between endpoints represents their direct separation; measuring a winding route requires following its bends. The measured map length can be converted using the numerical scale or compared with a scale bar. Changing which path is measured changes the distance being estimated. These methods estimate distance represented on the map, not additional walking distance due to unrepresented terrain or detours.",
+          "truncated": true
+        },
+        {
+          "name": "Penn State map reproduction: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Sources: https://www.e-education.psu.edu/natureofgeoinfo/c2_p6.html and https://www.e-education.psu.edu/natureofgeoinfo/c2_p8.html\n\nUniformly resizing a map changes its representative fraction because printed lengths change while represented ground distances do not. A scale bar remains usable when it is resized together with the map by the same factor; an unchanged printed numerical ratio does not automatically remain valid. A stated percentage of width and height is a linear factor, not an area factor. Enlarging an existing map does not add geographic detail or accuracy. Real map projections can have varying scale; a single scale statement or bar need not apply equally everywhere on a large-area map.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A local trail map is printed at 1:25,000. A hiker measures a winding path as 8 cm along the curves. The map is then photocopied at 150% enlargement. What ground distance does the original 8 cm measurement represent?",
+          "choices": [
+            "5 km",
+            "2 km",
+            "3 km",
+            "1.33 km"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine map-to-ground unit conversion"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "5 km",
+        "reason": "8 cm × 25,000 = 200,000 cm = 2,000 m = 2 km. 5 km would require 20 cm at this scale."
+      },
+      {
+        "choice": "2 km",
+        "reason": "8 cm on a 1:25,000 map represents 8 × 25,000 = 200,000 cm = 2,000 m = 2 km. The photocopying at 150% is irrelevant because the question asks what the original 8 cm measurement represents, not a measurement taken from the enlarged copy."
+      },
+      {
+        "choice": "3 km",
+        "reason": "3 km = 300,000 cm; at 1:25,000 that would require 12 cm on the map, not 8 cm."
+      },
+      {
+        "choice": "1.33 km",
+        "reason": "1.33 km ≈ 133,333 cm; dividing by 25,000 gives ~5.3 cm, not 8 cm. This might arise from incorrectly dividing 2 km by 1.5 (the enlargement factor), but the question asks about the original measurement, making the enlargement irrelevant."
+      }
+    ]
+  },
+  {
+    "id": "oe9ecc6a965386006",
+    "subject": {
+      "goal": {
+        "title": "Reason about energy flow through food webs",
+        "category": "Ecology",
+        "currentLevel": "I know producers, consumers and food chains, and want to explain how energy pathways and transfer efficiencies constrain an ecosystem.",
+        "focusAreas": "Combine explicitly described feeding links, trophic production and stated transfer efficiencies. Distinguish energy flow over time from a snapshot of standing biomass.",
+        "learningTarget": "Interpret compact textual food-web information and explain what follows about energy reaching consumers without assuming unreported diets, efficiencies or population responses.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine explicitly described feeding links",
+          "trophic production and stated transfer efficiencies. Distinguish energy flow ove"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "OpenStax food-web structure: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-1-ecology-of-ecosystems (Food Chains and Food Webs)\n\nA food chain traces one route through feeding relationships; a food web includes intersecting routes. Primary consumers eat producers, while secondary consumers eat primary consumers. A species may feed at more than one trophic level, so its role depends on its feeding links. In the chapter's food-web convention, an arrow goes from food to the organism consuming it, showing the direction of energy transfer. A list of feeding links is not by itself a quantitative prediction of every population's response to a disturbance. Matter can be recycled through decomposers, while energy is lost from food-web transfers as heat.",
+          "truncated": true
+        },
+        {
+          "name": "OpenStax trophic production: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://openstax.org/books/biology-2e/pages/46-2-energy-flow-through-ecosystems (Ecological Efficiency and Ecological Pyramids)\n\nTrophic-level transfer efficiency compares production at a receiving trophic level with production at the preceding level, expressed as a percentage. Such efficiencies need not equal ten percent; use measured or explicitly stated values. Compare production over matching areas and time intervals. Successive trophic transfers leave less energy available along a chain. Standing biomass and energy production are different quantities: a small producer biomass can support a larger consumer biomass when producers replenish rapidly. An inverted biomass pyramid therefore does not establish an inverted energy-flow pyramid.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 0,
+          "prompt": "A food web includes: algae → zooplankton → small fish → large fish. Algae produce 10,000 kJ/m²/year. Small fish also eat zooplankton-eating shrimp that receive 2,000 kJ/m²/year from algae. Transfer efficiency is 20% at each step. What energy reaches large fish annually?",
+          "choices": [
+            "400 kJ/m²/year",
+            "800 kJ/m²/year",
+            "2,000 kJ/m²/year",
+            "160 kJ/m²/year"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine explicitly described feeding links"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "400 kJ/m²/year",
+        "reason": "Zooplankton receive 10,000×0.20=2,000 kJ from algae. Shrimp also receive 2,000 kJ from algae. Small fish eat both zooplankton and shrimp. Small fish production = (2,000+2,000)×0.20=800 kJ. Large fish = 800×0.20=160 kJ. So 400 is not the correct result."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "reason": "This would be the production at the small fish level, not large fish. Large fish = small fish production × 0.20 = 800×0.20=160 kJ. 800 kJ is not what reaches large fish."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "reason": "2,000 kJ is the production at zooplankton level (or shrimp level), not large fish. Large fish receive 160 kJ. This is incorrect."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "reason": "Zooplankton get 10,000×0.20=2,000 kJ. Shrimp get 2,000 kJ from algae. Small fish eat both: (2,000+2,000)×0.20=800 kJ. Large fish: 800×0.20=160 kJ/m²/year. This matches the calculation."
+      }
+    ]
+  },
+  {
+    "id": "of9c227deb9c0dabb",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "A sales summary has regions in B2:E2 (North, South, East, West) and quarters in A3:A6 (Q1-Q4). Cell B3 should multiply the quarter factor in $A$1 by the regional target in $B$1, then fill across to E3 and down to E6. What should B3 contain?",
+          "choices": [
+            "=$A1*B$1*$A3",
+            "=$A$1*B1*$A$3",
+            "=$A$1*B$1*$A3",
+            "=$A$1*$B$1*A3"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "reason": "$A1: column A fixed, row relative — filling down adjusts row (correct for quarter factor in A3:A6), but filling across also keeps column A (correct). However row starts at 1 not 3, so $A1 in B3 references A1 not A3. B$1: column relative, row fixed at 1 — filling across adjusts column (correct for regional targets in B1:E1). $A3: column A fixed, row relative — correct for quarter factors. But $A1 references A1 (the quarter factor cell), not A3. The problem says quarter factors are in A3:A6, so $A1 in B3 is wrong. Refuted."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "reason": "$A$1: fully fixed — correct for the fixed factor in A1. B1: both relative — filling across adjusts column (B→C→D→E, correct for regional targets), but filling down also adjusts row (B1→B2→B3...), which is wrong; regional targets should stay in row 1. $A$3: fully fixed — quarter factor always stays at A3, never adjusts for rows Q2-Q4. Refuted."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "reason": "$A$1: fixed — correct for the fixed multiplier in A1. B$1: column relative, row fixed at 1 — filling across adjusts column (B→C→D→E for regional targets), row stays at 1. Correct. $A3: column A fixed, row relative — filling down adjusts row (A3→A4→A5→A6 for Q1-Q4). Correct. This formula correctly handles all three factors when filled across and down. Supported."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "reason": "$A$1: fixed — correct. $B$1: fully fixed — regional target always stays at B1, never adjusts to C1, D1, E1 when filling across. Wrong for regional targets. A3: both relative — filling across shifts column (A3→B3→C3...), which is wrong; quarter factors are in column A only. Refuted."
+      }
+    ]
+  },
+  {
+    "id": "ofbdc430655c39c3b",
+    "subject": {
+      "goal": {
+        "title": "Build Excel formulas that copy correctly across a worksheet",
+        "category": "Spreadsheets",
+        "currentLevel": "I can write basic formulas and recognize dollar signs in cell references, but copied formulas sometimes use the wrong inputs.",
+        "focusAreas": "Combine relative, absolute and mixed A1 references when copying or filling formulas across both rows and columns in Excel for Microsoft 365. Work with ordinary cells on one unchanged worksheet.",
+        "learningTarget": "Predict and explain copied formulas or choose reference anchors that preserve several stated input relationships throughout a table.",
+        "questionDirective": "",
+        "preferredQuestionStyle": "Multiple Choice",
+        "needsSkillMap": false,
+        "contentTopics": [
+          "Combine relative",
+          "absolute and mixed A1 references when copying or filling formulas across both ro"
+        ]
+      },
+      "skillMap": null,
+      "sourceDocuments": [
+        {
+          "name": "Microsoft Excel reference rules: selective source summary",
+          "text": "Assistant-written selective summary, checked 2026-09-09; not a quotation or complete acquired page. Source: https://support.microsoft.com/en-us/excel/get-started/overview-of-formulas-in-excel\n\nIn Excel's A1 notation, letters identify columns and numbers identify rows. When a formula is copied or filled, a relative reference preserves its offset from the formula cell: its row and column adjust with the copy displacement. A dollar sign fixes the component immediately following it. An absolute reference fixes both components; a mixed reference fixes only its column or only its row. Each reference in a formula follows its own anchors. These are copying/filling rules for ordinary cell references; cutting or moving cells, structural edits and structured table references are outside this summary.",
+          "truncated": true
+        }
+      ],
+      "items": [
+        {
+          "index": 1,
+          "prompt": "A commission sheet has rates in A1:A5 and sales amounts in B1:F1. Cell B2 needs =A2*B1 so it can fill across to F2 and down to B5, always using the correct rate and amount. What should B2 contain?",
+          "choices": [
+            "=A2*B1",
+            "=$A2*B$1",
+            "=A$2*$B1",
+            "=$A$2*B$1"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Combine relative, absolute and mixed A1 referenc"
+        }
+      ]
+    },
+    "choice_reasons": [
+      {
+        "choice": "=A2*B1",
+        "reason": "Filling across: A2 column shifts right, so rates column A is lost. Filling down: B1 row shifts down, so amounts row 1 is lost. Both references are fully relative and break when copied."
+      },
+      {
+        "choice": "=$A2*B$1",
+        "reason": "$A locks column A (rates) so filling across keeps the correct rate; row 2 is relative so filling down picks the correct rate row. B is relative so filling across picks the correct amount column; $1 locks row 1 so filling down keeps the amounts row. This is the correct mixed-reference formula."
+      },
+      {
+        "choice": "=A$2*$B1",
+        "reason": "$2 locks row 2 for rates (wrong when filling down) and $B locks column B for amounts (wrong when filling across). This is the opposite of what is needed."
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "reason": "$A$2 locks both row and column of the rate, so filling down always uses A2's rate instead of the correct row's rate."
+      }
+    ]
+  }
+]

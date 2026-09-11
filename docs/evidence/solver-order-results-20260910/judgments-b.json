@@ -1,0 +1,779 @@
+[
+  {
+    "id": "o019fcb1a96397b75",
+    "choice_judgments": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o0a02b0c3c9e71de9",
+    "choice_judgments": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o0a59011f19029474",
+    "choice_judgments": [
+      {
+        "choice": "10%",
+        "judgment": "supported"
+      },
+      {
+        "choice": "15%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "25%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o162e24f4aff8d18f",
+    "choice_judgments": [
+      {
+        "choice": "=K$9+$O5",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=K$5+$L9",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=N$9+$L5",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=N$5+$L9",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o1a4133c82f298852",
+    "choice_judgments": [
+      {
+        "choice": "5 km",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2 km",
+        "judgment": "supported"
+      },
+      {
+        "choice": "3 km",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "1.33 km",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o2a21794c19aff7f2",
+    "choice_judgments": [
+      {
+        "choice": "=$F4+G$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B8+G$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$F8+G$6",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$F8+C$2",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o2b4f373d984acc2d",
+    "choice_judgments": [
+      {
+        "choice": "5 km",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2 km",
+        "judgment": "supported"
+      },
+      {
+        "choice": "3 km",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "1.33 km",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o2faadaf67521b1f5",
+    "choice_judgments": [
+      {
+        "choice": "400 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o50fe6de3dd9194bb",
+    "choice_judgments": [
+      {
+        "choice": "=N2/12",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$N2/12",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=N$2/12",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$N$2/12",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o56c3344687f0607c",
+    "choice_judgments": [
+      {
+        "choice": "5 km",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2 km",
+        "judgment": "supported"
+      },
+      {
+        "choice": "3 km",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "1.33 km",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o5fe3634798dc0b6d",
+    "choice_judgments": [
+      {
+        "choice": "=K$9+$O5",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=K$5+$L9",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=N$9+$L5",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=N$5+$L9",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o711659f9bac7a87c",
+    "choice_judgments": [
+      {
+        "choice": "=A2*B1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A2*B$1",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=A$2*$B1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o72b1dffad194f4c3",
+    "choice_judgments": [
+      {
+        "choice": "400 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o73d0838f817a048f",
+    "choice_judgments": [
+      {
+        "choice": "Mina has a violet badge.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Mina is not permitted to enter Room R.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Mina has both badge colors.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Mina has no badge.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o74c0d447c66633ab",
+    "choice_judgments": [
+      {
+        "choice": "=K$9+$O5",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=K$5+$L9",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=N$9+$L5",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=N$5+$L9",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o82fc85db4e44dd0f",
+    "choice_judgments": [
+      {
+        "choice": "=A2*B1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A2*B$1",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=A$2*$B1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o85d51f81afb44078",
+    "choice_judgments": [
+      {
+        "choice": "Mina has a violet badge.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Mina is not permitted to enter Room R.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Mina has both badge colors.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Mina has no badge.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o89ef29455a06a959",
+    "choice_judgments": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o8bc6e25c901460e7",
+    "choice_judgments": [
+      {
+        "choice": "=$F4+G$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B8+G$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$F8+G$6",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$F8+C$2",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o8d995a1f8c3babc6",
+    "choice_judgments": [
+      {
+        "choice": "[1, 2, 3]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[3]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o94f7d6f9762cc181",
+    "choice_judgments": [
+      {
+        "choice": "=$F4+G$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B8+G$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$F8+G$6",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$F8+C$2",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o9b2e993dc8d54354",
+    "choice_judgments": [
+      {
+        "choice": "=N2/12",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$N2/12",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=N$2/12",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$N$2/12",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o9f63b45d0eaadee5",
+    "choice_judgments": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oa5106ca3c95626b7",
+    "choice_judgments": [
+      {
+        "choice": "=N2/12",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$N2/12",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=N$2/12",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$N$2/12",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oaac8798713bf5a5b",
+    "choice_judgments": [
+      {
+        "choice": "=K$9+$O5",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=K$5+$L9",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=N$9+$L5",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=N$5+$L9",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "oad439e4fe1d96a7d",
+    "choice_judgments": [
+      {
+        "choice": "[1, 2, 3]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[3]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "ob7bc49eec4b66d7e",
+    "choice_judgments": [
+      {
+        "choice": "=$F4+G$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B8+G$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$F8+G$6",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$F8+C$2",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "ob9c870774dc0b6ab",
+    "choice_judgments": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "obfab5a89634c5dd2",
+    "choice_judgments": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oc0a62ea29bfba9c7",
+    "choice_judgments": [
+      {
+        "choice": "10%",
+        "judgment": "supported"
+      },
+      {
+        "choice": "15%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "25%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oce9a40e1ecf0736c",
+    "choice_judgments": [
+      {
+        "choice": "10%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "15%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "25%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "od4dcf897914bdd27",
+    "choice_judgments": [
+      {
+        "choice": "10%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "15%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "25%",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oe30a117b19ac7952",
+    "choice_judgments": [
+      {
+        "choice": "400 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "oe513a455c82cd337",
+    "choice_judgments": [
+      {
+        "choice": "5 km",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2 km",
+        "judgment": "supported"
+      },
+      {
+        "choice": "3 km",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "1.33 km",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oe9ecc6a965386006",
+    "choice_judgments": [
+      {
+        "choice": "400 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "of9c227deb9c0dabb",
+    "choice_judgments": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "ofbdc430655c39c3b",
+    "choice_judgments": [
+      {
+        "choice": "=A2*B1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A2*B$1",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=A$2*$B1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "judgment": "refuted"
+      }
+    ]
+  }
+]

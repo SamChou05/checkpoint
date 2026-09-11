@@ -1,0 +1,938 @@
+[
+  {
+    "id": "o00b7551c935ee821",
+    "choices": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "consistent": false,
+        "note": "Declared refuted, but the reason explicitly says the mixed-reference formula works correctly for filling down and that its column anchors are harmless."
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": false
+  },
+  {
+    "id": "o0d067852801dcf71",
+    "choices": [
+      {
+        "choice": "The list of names are on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "The list of names is on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "The list of names am on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "The list of names be on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o15770efcb84ad08a",
+    "choices": [
+      {
+        "choice": "625 kJ/m²/year",
+        "consistent": false,
+        "note": "Declared refuted, but the reason calculates 625, retracts its initial wording objection, and explicitly ends with This IS supported."
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": false
+  },
+  {
+    "id": "o19e7dbfe26c5199c",
+    "choices": [
+      {
+        "choice": "=$D$3+E$2",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$B$3+E$2",
+        "consistent": false,
+        "note": "Declared refuted, but the reason derives exactly this formula and explicitly concludes that the choice is correct."
+      },
+      {
+        "choice": "=$B$5+E$4",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$B$3+E$4",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": false
+  },
+  {
+    "id": "o27131ff5c82320ca",
+    "choices": [
+      {
+        "choice": "Ivo is permitted to enter Room R.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Ivo has both badge colors.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Ivo is not permitted to enter Room R.",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "Ivo has an amber badge.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o2b1ec59f432f7108",
+    "choices": [
+      {
+        "choice": "=$A4*D$1",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=$A2*D$1",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A4*B$1",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=A4*D1",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o2f4c5c8bc4474596",
+    "choices": [
+      {
+        "choice": "=D2-C3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$D2-C$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=D$2-$C3",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o2f6057782a251257",
+    "choices": [
+      {
+        "choice": "The list of names are on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "The list of names is on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "The list of names am on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "The list of names be on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o34a0b5c49f7ac239",
+    "choices": [
+      {
+        "choice": "=$A4*B$3",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=A4*B3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=A$4*$B3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o47e5c751c1f9f8e9",
+    "choices": [
+      {
+        "choice": "=$A4*B$3",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=A4*B3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=A$4*$B3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o4dba6d14875cfae7",
+    "choices": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o50ac03f2440264da",
+    "choices": [
+      {
+        "choice": "=$D$3+E$2",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$B$3+E$2",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=$B$5+E$4",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$B$3+E$4",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o581de1587a848ad3",
+    "choices": [
+      {
+        "choice": "625 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o581fdde4ce380314",
+    "choices": [
+      {
+        "choice": "[1, 2]",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[3]",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[1, 2, 3]",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o5bd4bb0b1f080540",
+    "choices": [
+      {
+        "choice": "=$D$3+E$2",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$B$3+E$2",
+        "consistent": false,
+        "note": "Declared refuted, but the reason derives exactly this formula and explicitly concludes that the choice is correct."
+      },
+      {
+        "choice": "=$B$5+E$4",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$B$3+E$4",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": false
+  },
+  {
+    "id": "o6f87aeb057d756fa",
+    "choices": [
+      {
+        "choice": "=D2-C3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$D2-C$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=D$2-$C3",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o72b257638047c480",
+    "choices": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o7bffc799fbe35555",
+    "choices": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o86730a93385fde7f",
+    "choices": [
+      {
+        "choice": "[1, 2]",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[3]",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[1, 2, 3]",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o8873cf762d601622",
+    "choices": [
+      {
+        "choice": "Ivo is permitted to enter Room R.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Ivo has both badge colors.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Ivo is not permitted to enter Room R.",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "Ivo has an amber badge.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o930b448a72840844",
+    "choices": [
+      {
+        "choice": "The list of names are on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "The list of names is on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "The list of names am on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "The list of names be on the desk.",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o980ce5c09c0af3a3",
+    "choices": [
+      {
+        "choice": "625 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o9bcb1af71c5f8a5a",
+    "choices": [
+      {
+        "choice": "Only column B",
+        "consistent": true,
+        "note": "The reason argues that the choice is refuted under its reference-structure reading, matching the declared refuted judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      },
+      {
+        "choice": "Only row 2",
+        "consistent": true,
+        "note": "The reason argues that the choice is refuted under its reference-structure reading, matching the declared refuted judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      },
+      {
+        "choice": "Only B2",
+        "consistent": true,
+        "note": "The reason argues that the choice is supported under its reference-structure reading, matching the declared supported judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      },
+      {
+        "choice": "The entire range B2:F6",
+        "consistent": true,
+        "note": "The reason argues that the choice is refuted under its reference-structure reading, matching the declared refuted judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o9c02ee5c40ecad1c",
+    "choices": [
+      {
+        "choice": "=D2-C3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$D2-C$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=D$2-$C3",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o9ed79be191bb3b90",
+    "choices": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oa7ad205a00a7adcb",
+    "choices": [
+      {
+        "choice": "Only column B",
+        "consistent": true,
+        "note": "The reason argues that the choice is refuted under its reference-structure reading, matching the declared refuted judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      },
+      {
+        "choice": "Only row 2",
+        "consistent": true,
+        "note": "The reason argues that the choice is refuted under its reference-structure reading, matching the declared refuted judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      },
+      {
+        "choice": "Only B2",
+        "consistent": true,
+        "note": "The reason argues that the choice is supported under its reference-structure reading, matching the declared supported judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      },
+      {
+        "choice": "The entire range B2:F6",
+        "consistent": true,
+        "note": "The reason argues that the choice is refuted under its reference-structure reading, matching the declared refuted judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oba101dcb2cc87e8e",
+    "choices": [
+      {
+        "choice": "625 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "obea1cde15c8f1286",
+    "choices": [
+      {
+        "choice": "=$A4*B$3",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=A4*B3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=A$4*$B3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oc60fefd89173874f",
+    "choices": [
+      {
+        "choice": "=$A4*B$3",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=A4*B3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=A$4*$B3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oddc789a2667ccff6",
+    "choices": [
+      {
+        "choice": "Only column B",
+        "consistent": true,
+        "note": "The reason argues that the choice is refuted under its reference-structure reading, matching the declared refuted judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      },
+      {
+        "choice": "Only row 2",
+        "consistent": true,
+        "note": "Consistent despite factual error: the reason incorrectly concludes that all of row 2 works and explicitly calls this a valid answer; supported matches that actual implication."
+      },
+      {
+        "choice": "Only B2",
+        "consistent": true,
+        "note": "The reason retracts its earlier row-2 claim within this option and ends with Only B2 fully correct, so supported matches its final implication. This remains separate from the false row-2 rationale for the other option."
+      },
+      {
+        "choice": "The entire range B2:F6",
+        "consistent": true,
+        "note": "The reason argues that the choice is refuted under its reference-structure reading, matching the declared refuted judgment. The separate ambiguity about numeric coincidences does not change what this reason claims."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oe27623f01ca5e816",
+    "choices": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "consistent": false,
+        "note": "Declared refuted, but the reason explicitly says the mixed-reference formula works correctly for filling down and that its column anchors are harmless."
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": false
+  },
+  {
+    "id": "oe918524b7903ba70",
+    "choices": [
+      {
+        "choice": "=$A4*D$1",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=$A2*D$1",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A4*B$1",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=A4*D1",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oeed49733b1e6f05a",
+    "choices": [
+      {
+        "choice": "=$A4*D$1",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=$A2*D$1",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A4*B$1",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=A4*D1",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "of1b0876657939520",
+    "choices": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "of3e0c53410a42084",
+    "choices": [
+      {
+        "choice": "=D2-C3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$D2-C$3",
+        "consistent": true,
+        "note": "The reason's final implication is refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=D$2-$C3",
+        "consistent": true,
+        "note": "The reason's final implication is supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "ofc637280bf975ea1",
+    "choices": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "consistent": true,
+        "note": "The reason rejects this formula, chiefly for self-reference in B2, so refuted is consistent. Any additional false or unsupported rationale statement is a factual-correctness issue rather than a label–reason mismatch."
+      }
+    ],
+    "all_consistent": true
+  }
+]

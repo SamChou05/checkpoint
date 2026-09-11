@@ -1,0 +1,964 @@
+[
+  {
+    "id": "o019fcb1a96397b75",
+    "choices": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o0a02b0c3c9e71de9",
+    "choices": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o0a59011f19029474",
+    "choices": [
+      {
+        "choice": "10%",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "15%",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "25%",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o162e24f4aff8d18f",
+    "choices": [
+      {
+        "choice": "=K$9+$O5",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o1a4133c82f298852",
+    "choices": [
+      {
+        "choice": "5 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "2 km",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "3 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "1.33 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o2a21794c19aff7f2",
+    "choices": [
+      {
+        "choice": "=$F4+G$2",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=B8+G$2",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o2b4f373d984acc2d",
+    "choices": [
+      {
+        "choice": "5 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "2 km",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "3 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "1.33 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o2faadaf67521b1f5",
+    "choices": [
+      {
+        "choice": "400 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o50fe6de3dd9194bb",
+    "choices": [
+      {
+        "choice": "=N2/12",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$N2/12",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=N$2/12",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$N$2/12",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o56c3344687f0607c",
+    "choices": [
+      {
+        "choice": "5 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "2 km",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "3 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "1.33 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o5fe3634798dc0b6d",
+    "choices": [
+      {
+        "choice": "=K$9+$O5",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o711659f9bac7a87c",
+    "choices": [
+      {
+        "choice": "=A2*B1",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A2*B$1",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=A$2*$B1",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o72b1dffad194f4c3",
+    "choices": [
+      {
+        "choice": "400 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o73d0838f817a048f",
+    "choices": [
+      {
+        "choice": "Mina has a violet badge.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Mina is not permitted to enter Room R.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Mina has both badge colors.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Mina has no badge.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o74c0d447c66633ab",
+    "choices": [
+      {
+        "choice": "=K$9+$O5",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o82fc85db4e44dd0f",
+    "choices": [
+      {
+        "choice": "=A2*B1",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A2*B$1",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=A$2*$B1",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o85d51f81afb44078",
+    "choices": [
+      {
+        "choice": "Mina has a violet badge.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Mina is not permitted to enter Room R.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Mina has both badge colors.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Mina has no badge.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o89ef29455a06a959",
+    "choices": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o8bc6e25c901460e7",
+    "choices": [
+      {
+        "choice": "=$F4+G$2",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=B8+G$2",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o8d995a1f8c3babc6",
+    "choices": [
+      {
+        "choice": "[1, 2, 3]",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[3]",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[]",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o94f7d6f9762cc181",
+    "choices": [
+      {
+        "choice": "=$F4+G$2",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=B8+G$2",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o9b2e993dc8d54354",
+    "choices": [
+      {
+        "choice": "=N2/12",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$N2/12",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=N$2/12",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$N$2/12",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "o9f63b45d0eaadee5",
+    "choices": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oa5106ca3c95626b7",
+    "choices": [
+      {
+        "choice": "=N2/12",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$N2/12",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=N$2/12",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$N$2/12",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oaac8798713bf5a5b",
+    "choices": [
+      {
+        "choice": "=K$9+$O5",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oad439e4fe1d96a7d",
+    "choices": [
+      {
+        "choice": "[1, 2, 3]",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[3]",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[]",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "ob7bc49eec4b66d7e",
+    "choices": [
+      {
+        "choice": "=$F4+G$2",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=B8+G$2",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "ob9c870774dc0b6ab",
+    "choices": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "obfab5a89634c5dd2",
+    "choices": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oc0a62ea29bfba9c7",
+    "choices": [
+      {
+        "choice": "10%",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "15%",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "25%",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oce9a40e1ecf0736c",
+    "choices": [
+      {
+        "choice": "10%",
+        "consistent": false,
+        "note": "The reason explicitly calculates 800/8,000 = 10% and affirms this choice as supported, while the declared judgment is refuted; the two contradict each other."
+      },
+      {
+        "choice": "15%",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "25%",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": false
+  },
+  {
+    "id": "od4dcf897914bdd27",
+    "choices": [
+      {
+        "choice": "10%",
+        "consistent": false,
+        "note": "The reason explicitly calculates 800/8,000 = 10% and affirms this choice as supported, while the declared judgment is refuted; the two contradict each other."
+      },
+      {
+        "choice": "15%",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "25%",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": false
+  },
+  {
+    "id": "oe30a117b19ac7952",
+    "choices": [
+      {
+        "choice": "400 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oe513a455c82cd337",
+    "choices": [
+      {
+        "choice": "5 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "2 km",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "3 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "1.33 km",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "oe9ecc6a965386006",
+    "choices": [
+      {
+        "choice": "400 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "of9c227deb9c0dabb",
+    "choices": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment. This is internal consistency only; it does not validate the reason's assumptions."
+      }
+    ],
+    "all_consistent": true
+  },
+  {
+    "id": "ofbdc430655c39c3b",
+    "choices": [
+      {
+        "choice": "=A2*B1",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A2*B$1",
+        "consistent": true,
+        "note": "The reason implies supported, matching the declared supported judgment."
+      },
+      {
+        "choice": "=A$2*$B1",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "consistent": true,
+        "note": "The reason implies refuted, matching the declared refuted judgment."
+      }
+    ],
+    "all_consistent": true
+  }
+]

@@ -1,0 +1,174 @@
+{
+  "capture_byte_sha256": "375b12b4250d43638cccab3018267083fdab5405d3c104734aea7e0c4125b397",
+  "plan_sha256": "d2293b2ec2d290d3af72f6aa2459cd0cc866d8e35f5af816fbcd3a34add396e7",
+  "capture_status": "operational_failure",
+  "offline_replayed_calls": 28,
+  "usage_known_calls": 27,
+  "usage": {
+    "cacheReadInputTokens": 0,
+    "cacheWriteInputTokens": 0,
+    "inputTokens": 49330,
+    "outputTokens": 24332,
+    "totalTokens": 73662
+  },
+  "usage_scope": "Observed completed responses only; timed-out request usage is unknown.",
+  "by_arm": {
+    "judgment_first": {
+      "calls": {
+        "planned": 16,
+        "completed": 14,
+        "passed": 14,
+        "unattempted": 2
+      },
+      "items": {
+        "planned": 44,
+        "available": 40,
+        "scorable_planned": 40,
+        "scorable_available": 36,
+        "exact_choice_match": 27,
+        "choice_rows_planned": 160,
+        "choice_rows_available": 144,
+        "choice_rows_match": 135,
+        "valid_planned": 28,
+        "valid_available": 26,
+        "valid_eligible": 21,
+        "valid_vetoed": 5,
+        "ambiguous_planned": 4,
+        "defective_planned": 12,
+        "defective_available": 10,
+        "defective_eligible": 4,
+        "defective_vetoed": 6
+      },
+      "orders": {
+        "choice/judgment/reason": 160
+      },
+      "historical": {
+        "planned": 32,
+        "available": 32,
+        "scorable_planned": 28,
+        "scorable_available": 28,
+        "exact_choice_match": 19,
+        "choice_rows_planned": 112,
+        "choice_rows_available": 112,
+        "choice_rows_match": 103,
+        "valid_planned": 22,
+        "valid_available": 22,
+        "valid_eligible": 17,
+        "valid_vetoed": 5,
+        "ambiguous_planned": 4,
+        "defective_planned": 6,
+        "defective_available": 6,
+        "defective_eligible": 4,
+        "defective_vetoed": 2
+      },
+      "fresh": {
+        "planned": 12,
+        "available": 8,
+        "scorable_planned": 12,
+        "scorable_available": 8,
+        "exact_choice_match": 8,
+        "choice_rows_planned": 48,
+        "choice_rows_available": 32,
+        "choice_rows_match": 32,
+        "valid_planned": 6,
+        "valid_available": 4,
+        "valid_eligible": 4,
+        "valid_vetoed": 0,
+        "defective_planned": 6,
+        "defective_available": 4,
+        "defective_eligible": 0,
+        "defective_vetoed": 4
+      }
+    },
+    "reason_first": {
+      "calls": {
+        "planned": 16,
+        "completed": 13,
+        "passed": 12,
+        "rejected": 1,
+        "operational_failure": 1,
+        "unavailable": 1,
+        "unattempted": 2
+      },
+      "items": {
+        "planned": 44,
+        "available": 33,
+        "scorable_planned": 40,
+        "scorable_available": 30,
+        "exact_choice_match": 28,
+        "choice_rows_planned": 160,
+        "choice_rows_available": 120,
+        "choice_rows_match": 118,
+        "valid_planned": 28,
+        "valid_available": 21,
+        "valid_eligible": 21,
+        "valid_vetoed": 0,
+        "ambiguous_planned": 4,
+        "defective_planned": 12,
+        "defective_available": 9,
+        "defective_eligible": 2,
+        "defective_vetoed": 7
+      },
+      "orders": {
+        "choice/reason/judgment": 152
+      },
+      "historical": {
+        "planned": 32,
+        "available": 27,
+        "scorable_planned": 28,
+        "scorable_available": 24,
+        "exact_choice_match": 22,
+        "choice_rows_planned": 112,
+        "choice_rows_available": 96,
+        "choice_rows_match": 94,
+        "valid_planned": 22,
+        "valid_available": 18,
+        "valid_eligible": 18,
+        "valid_vetoed": 0,
+        "ambiguous_planned": 4,
+        "defective_planned": 6,
+        "defective_available": 6,
+        "defective_eligible": 2,
+        "defective_vetoed": 4
+      },
+      "fresh": {
+        "planned": 12,
+        "available": 6,
+        "scorable_planned": 12,
+        "scorable_available": 6,
+        "exact_choice_match": 6,
+        "choice_rows_planned": 48,
+        "choice_rows_available": 24,
+        "choice_rows_match": 24,
+        "valid_planned": 6,
+        "valid_available": 3,
+        "valid_eligible": 3,
+        "valid_vetoed": 0,
+        "defective_planned": 6,
+        "defective_available": 3,
+        "defective_eligible": 0,
+        "defective_vetoed": 3
+      }
+    }
+  },
+  "validation_failures": [
+    {
+      "position": 16,
+      "phase": "batch_format_or_correlation",
+      "detail": "Malformed choice judgment."
+    }
+  ],
+  "paired_scored_responses": {
+    "both_correct": 22,
+    "reason_first_only": 6,
+    "neither_correct": 2,
+    "unavailable": 10
+  },
+  "completed_stop_reasons": {
+    "end_turn": 27
+  },
+  "completed_output_tokens_min": 316,
+  "completed_output_tokens_max": 1792,
+  "rationale_assessment": "pending",
+  "production_acceptance": "not_run"
+}

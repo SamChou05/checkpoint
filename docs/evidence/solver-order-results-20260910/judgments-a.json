@@ -1,0 +1,758 @@
+[
+  {
+    "id": "o00b7551c935ee821",
+    "choice_judgments": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o0d067852801dcf71",
+    "choice_judgments": [
+      {
+        "choice": "The list of names are on the desk.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "The list of names is on the desk.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "The list of names am on the desk.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "The list of names be on the desk.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o15770efcb84ad08a",
+    "choice_judgments": [
+      {
+        "choice": "625 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o19e7dbfe26c5199c",
+    "choice_judgments": [
+      {
+        "choice": "=$D$3+E$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$3+E$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$5+E$4",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$3+E$4",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o27131ff5c82320ca",
+    "choice_judgments": [
+      {
+        "choice": "Ivo is permitted to enter Room R.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Ivo has both badge colors.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Ivo is not permitted to enter Room R.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "Ivo has an amber badge.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o2b1ec59f432f7108",
+    "choice_judgments": [
+      {
+        "choice": "=$A4*D$1",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=$A2*D$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A4*B$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=A4*D1",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o2f4c5c8bc4474596",
+    "choice_judgments": [
+      {
+        "choice": "=D2-C3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$D2-C$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=D$2-$C3",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o2f6057782a251257",
+    "choice_judgments": [
+      {
+        "choice": "The list of names are on the desk.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "The list of names is on the desk.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "The list of names am on the desk.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "The list of names be on the desk.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o34a0b5c49f7ac239",
+    "choice_judgments": [
+      {
+        "choice": "=$A4*B$3",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=A4*B3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=A$4*$B3",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o47e5c751c1f9f8e9",
+    "choice_judgments": [
+      {
+        "choice": "=$A4*B$3",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=A4*B3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=A$4*$B3",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o4dba6d14875cfae7",
+    "choice_judgments": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o50ac03f2440264da",
+    "choice_judgments": [
+      {
+        "choice": "=$D$3+E$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$3+E$2",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=$B$5+E$4",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$3+E$4",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o581de1587a848ad3",
+    "choice_judgments": [
+      {
+        "choice": "625 kJ/m²/year",
+        "judgment": "supported"
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o581fdde4ce380314",
+    "choice_judgments": [
+      {
+        "choice": "[1, 2]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[3]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[1, 2, 3]",
+        "judgment": "supported"
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o5bd4bb0b1f080540",
+    "choice_judgments": [
+      {
+        "choice": "=$D$3+E$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$3+E$2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$5+E$4",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$3+E$4",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o6f87aeb057d756fa",
+    "choice_judgments": [
+      {
+        "choice": "=D2-C3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$D2-C$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=D$2-$C3",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o72b257638047c480",
+    "choice_judgments": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o7bffc799fbe35555",
+    "choice_judgments": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o86730a93385fde7f",
+    "choice_judgments": [
+      {
+        "choice": "[1, 2]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[3]",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "[1, 2, 3]",
+        "judgment": "supported"
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o8873cf762d601622",
+    "choice_judgments": [
+      {
+        "choice": "Ivo is permitted to enter Room R.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Ivo has both badge colors.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Ivo is not permitted to enter Room R.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "Ivo has an amber badge.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o930b448a72840844",
+    "choice_judgments": [
+      {
+        "choice": "The list of names are on the desk.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "The list of names is on the desk.",
+        "judgment": "supported"
+      },
+      {
+        "choice": "The list of names am on the desk.",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "The list of names be on the desk.",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o980ce5c09c0af3a3",
+    "choice_judgments": [
+      {
+        "choice": "625 kJ/m²/year",
+        "judgment": "supported"
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o9bcb1af71c5f8a5a",
+    "choice_judgments": [
+      {
+        "choice": "Only column B",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Only row 2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Only B2",
+        "judgment": "supported"
+      },
+      {
+        "choice": "The entire range B2:F6",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "o9c02ee5c40ecad1c",
+    "choice_judgments": [
+      {
+        "choice": "=D2-C3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$D2-C$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=D$2-$C3",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "o9ed79be191bb3b90",
+    "choice_judgments": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oa7ad205a00a7adcb",
+    "choice_judgments": [
+      {
+        "choice": "Only column B",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Only row 2",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Only B2",
+        "judgment": "supported"
+      },
+      {
+        "choice": "The entire range B2:F6",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oba101dcb2cc87e8e",
+    "choice_judgments": [
+      {
+        "choice": "625 kJ/m²/year",
+        "judgment": "supported"
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "obea1cde15c8f1286",
+    "choice_judgments": [
+      {
+        "choice": "=$A4*B$3",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=A4*B3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=A$4*$B3",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oc60fefd89173874f",
+    "choice_judgments": [
+      {
+        "choice": "=$A4*B$3",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=A4*B3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=A$4*$B3",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oddc789a2667ccff6",
+    "choice_judgments": [
+      {
+        "choice": "Only column B",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "Only row 2",
+        "judgment": "supported"
+      },
+      {
+        "choice": "Only B2",
+        "judgment": "supported"
+      },
+      {
+        "choice": "The entire range B2:F6",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oe27623f01ca5e816",
+    "choice_judgments": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oe918524b7903ba70",
+    "choice_judgments": [
+      {
+        "choice": "=$A4*D$1",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=$A2*D$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A4*B$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=A4*D1",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "oeed49733b1e6f05a",
+    "choice_judgments": [
+      {
+        "choice": "=$A4*D$1",
+        "judgment": "supported"
+      },
+      {
+        "choice": "=$A2*D$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$A4*B$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=A4*D1",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "of1b0876657939520",
+    "choice_judgments": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "judgment": "refuted"
+      }
+    ]
+  },
+  {
+    "id": "of3e0c53410a42084",
+    "choice_judgments": [
+      {
+        "choice": "=D2-C3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$D2-C$3",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=D$2-$C3",
+        "judgment": "supported"
+      }
+    ]
+  },
+  {
+    "id": "ofc637280bf975ea1",
+    "choice_judgments": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "judgment": "refuted"
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "judgment": "refuted"
+      }
+    ]
+  }
+]

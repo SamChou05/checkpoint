@@ -1,0 +1,1186 @@
+[
+  {
+    "id": "o019fcb1a96397b75",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The reference mechanics are mostly right and the drifting A1 row is a valid objection, but the reason also invents regional targets across row 1 and/or numeric quarter factors in A3:A6. These additions prevent the full reason from being correct against the stem."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "B1 does drift down, which is a valid objection to preserving B1; the reason additionally invents a varying quarter factor in A3:A6 and treats the extra A3 multiplier as required. Quarter labels are not stated factors."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "rationale_correct": false,
+        "reason_implication": "supported",
+        "note": "The copy mechanics are correct, but the claimed suitability is false for the stated task: the third multiplier is unrequested, quarter labels are treated as factors, and C1:E1 targets are assumed."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The described anchor mechanics are correct, but the claim that the B1 target must change across columns is unstated and conflicts with the literal fixed-B1 reading. Treating A3 as a required numeric quarter factor also repairs the stem."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "On the literal stem none of the choices is correct: it asks for A1 times B1, whereas every option multiplies by an extra A3 reference. A3:A6 are quarter labels (Q1-Q4), not stated numeric factors, and targets in C1:E1 are not specified. The third choice fits a plausible rewritten three-input table, but that repair is not licensed by the supplied context."
+  },
+  {
+    "id": "o0a02b0c3c9e71de9",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The reason falsely says the quarter factor should be in A3:A6 rather than A1; the stem explicitly places it in A1 and gives Q1-Q4 labels in A3:A6. It also overlooks that this choice already contains $A3. Its refutation is based on a misreading, despite correct anchor mechanics."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "B1 does drift down, which is a valid objection to preserving B1; the reason additionally invents a varying quarter factor in A3:A6 and treats the extra A3 multiplier as required. Quarter labels are not stated factors."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "rationale_correct": false,
+        "reason_implication": "supported",
+        "note": "The copy mechanics are correct, but the claimed suitability is false for the stated task: the third multiplier is unrequested, quarter labels are treated as factors, and C1:E1 targets are assumed."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The described anchor mechanics are correct, but the claim that the B1 target must change across columns is unstated and conflicts with the literal fixed-B1 reading. Treating A3 as a required numeric quarter factor also repairs the stem."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "On the literal stem none of the choices is correct: it asks for A1 times B1, whereas every option multiplies by an extra A3 reference. A3:A6 are quarter labels (Q1-Q4), not stated numeric factors, and targets in C1:E1 are not specified. The third choice fits a plausible rewritten three-input table, but that repair is not licensed by the supplied context."
+  },
+  {
+    "id": "o0a59011f19029474",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "10%",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "The stated production ratio is 800/8,000 = 0.10 = 10%."
+      },
+      {
+        "choice": "15%",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relevant ratio is 10%; 15% uses the crab figure rather than snail production."
+      },
+      {
+        "choice": "25%",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relevant ratio is 10%, not 25%."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The given matched production values suffice to calculate the 10% ratio under the supplied definition."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o162e24f4aff8d18f",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=K$9+$O5",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A copy by +3 columns and +4 rows yields =N$5+$L9, which refutes this choice."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relative K column must move to N; identifying that single mismatch sufficiently refutes this choice."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The first row must remain 5 and the second row must become 9, so both terms differ from the required formula."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correctly applies both anchors and the copy displacement to get =N$5+$L9."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o1a4133c82f298852",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "5 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "8 cm at 1:25,000 represents 2 km; 5 km would require 20 cm."
+      },
+      {
+        "choice": "2 km",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct conversion to 2 km; later enlargement does not change what the original measurement represents."
+      },
+      {
+        "choice": "3 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "3 km would require 12 cm on the original map, so it is not the original 8 cm distance."
+      },
+      {
+        "choice": "1.33 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correctly rejects applying the enlargement factor to the original measurement; the approximate alternate lengths are harmless rounding."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o2a21794c19aff7f2",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$F4+G$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A copy by -4 columns and +4 rows yields =$F8+C$2, not the unchanged formula."
+      },
+      {
+        "choice": "=B8+G$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The locked F column cannot become B; that decisive mismatch sufficiently refutes the choice."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The second term must be C$2: relative G shifts left four columns and fixed row 2 stays 2."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correctly applies both anchors and the displacement to get =$F8+C$2."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o2b4f373d984acc2d",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "5 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "8 cm at 1:25,000 represents 2 km; 5 km would require 20 cm."
+      },
+      {
+        "choice": "2 km",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct conversion to 2 km; later enlargement does not change what the original measurement represents."
+      },
+      {
+        "choice": "3 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "3 km would require 12 cm on the original map, so it is not the original 8 cm distance."
+      },
+      {
+        "choice": "1.33 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correctly rejects applying the enlargement factor to the original measurement; the approximate alternate lengths are harmless rounding."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o2faadaf67521b1f5",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "400 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The arithmetic yields 160 only after treating 2,000 as independent total shrimp production and transferring the full zooplankton contribution again directly to small fish. The stated zooplankton-eating shrimp link and the meaning of energy received are not resolved, so the categorical evaluation is unsupported. Saying 400 merely ignores the shrimp pathway is also misleading: 400 is the simple-chain small-fish figure, while the simple-chain large-fish figure is 80."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The assertion that small-fish production is 800 is not established by this ambiguous food web. This refutation inherits the unqualified independent-prey-production assumption."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "Zooplankton production of 2,000 follows from the first link, but equating that with shrimp production is not established. Transfer losses are a sensible objection to this large-fish value; the full reason nevertheless makes an unsupported shrimp-production claim."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "supported",
+        "note": "The numerical multiplication is coherent, but it assumes 2,000 is independent total shrimp production and bypasses the stated zooplankton-to-shrimp feeding link. Thus it does not establish 160 as an answer to the supplied stem."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "The stem calls shrimp zooplankton-eating yet says they receive 2,000 from algae. It does not clearly say whether that is direct input, indirect algae-derived energy, or total shrimp production, nor how the shared zooplankton pathway is allocated. Reading the 2,000 as independent total shrimp production gives the reasons' 160 calculation, but omits or reinterprets the stated zooplankton-to-shrimp link. A unique quantitative answer is not established without a clarification."
+  },
+  {
+    "id": "o50fe6de3dd9194bb",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=N2/12",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Relative N shifts away from the target column when filled right."
+      },
+      {
+        "choice": "=$N2/12",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Fixed column N and relative row retain each category target through both fill directions."
+      },
+      {
+        "choice": "=N$2/12",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The column changes when it must remain N and row 2 remains fixed when it must vary."
+      },
+      {
+        "choice": "=$N$2/12",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A fully fixed N2 prevents the target row from adjusting down the table."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o56c3344687f0607c",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "5 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "8 cm at 1:25,000 represents 2 km; 5 km would require 20 cm."
+      },
+      {
+        "choice": "2 km",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct conversion to 2 km; later enlargement does not change what the original measurement represents."
+      },
+      {
+        "choice": "3 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "3 km would require 12 cm on the original map, so it is not the original 8 cm distance."
+      },
+      {
+        "choice": "1.33 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correctly rejects applying the enlargement factor to the original measurement; the approximate alternate lengths are harmless rounding."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o5fe3634798dc0b6d",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=K$9+$O5",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A copy by +3 columns and +4 rows yields =N$5+$L9, which refutes this choice."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relative K column must move to N; identifying that single mismatch sufficiently refutes this choice."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The first row must remain 5 and the second row must become 9, so both terms differ from the required formula."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correctly applies both anchors and the copy displacement to get =N$5+$L9."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o711659f9bac7a87c",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=A2*B1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Fully relative references lose the rate column when filled right and the sales row when filled down."
+      },
+      {
+        "choice": "=$A2*B$1",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Anchoring rate column A and sales row 1 while leaving the other components relative satisfies the stated table."
+      },
+      {
+        "choice": "=A$2*$B1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The anchors fix the components that should vary and fail to fix the components that must stay constant."
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Fixed rate row 2 prevents selecting each row's rate when filled down."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o72b1dffad194f4c3",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "400 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The arithmetic yields 160 only after treating 2,000 as independent total shrimp production and transferring the full zooplankton contribution again directly to small fish. The stated zooplankton-eating shrimp link and the meaning of energy received are not resolved, so the categorical evaluation is unsupported."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The assertion that small-fish production is 800 is not established by this ambiguous food web. This refutation inherits the unqualified independent-prey-production assumption."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "Zooplankton production of 2,000 follows from the first link, but equating that with shrimp production is not established. Transfer losses are a sensible objection to this large-fish value; the full reason nevertheless makes an unsupported shrimp-production claim."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "supported",
+        "note": "The numerical multiplication is coherent, but it assumes 2,000 is independent total shrimp production and bypasses the stated zooplankton-to-shrimp feeding link. Thus it does not establish 160 as an answer to the supplied stem."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "The stem calls shrimp zooplankton-eating yet says they receive 2,000 from algae. It does not clearly say whether that is direct input, indirect algae-derived energy, or total shrimp production, nor how the shared zooplankton pathway is allocated. Reading the 2,000 as independent total shrimp production gives the reasons' 160 calculation, but omits or reinterprets the stated zooplankton-to-shrimp link. A unique quantitative answer is not established without a clarification."
+  },
+  {
+    "id": "o73d0838f817a048f",
+    "question_status": "none",
+    "choices": [
+      {
+        "choice": "Mina has a violet badge.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Exactly one badge plus an amber badge excludes violet."
+      },
+      {
+        "choice": "Mina is not permitted to enter Room R.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The supplied amber rule permits Mina to enter Room R, so this exclusion is false."
+      },
+      {
+        "choice": "Mina has both badge colors.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Exactly one badge excludes having both colors."
+      },
+      {
+        "choice": "Mina has no badge.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The explicit amber badge excludes having no badge."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "None of the four choices follows: Mina has one amber badge and is permitted to enter Room R."
+  },
+  {
+    "id": "o74c0d447c66633ab",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=K$9+$O5",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A copy by +3 columns and +4 rows yields =N$5+$L9, which refutes this choice."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relative K column must move to N; identifying that single mismatch sufficiently refutes this choice."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The first row must remain 5 and the second row must become 9, so both terms differ from the required formula."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correctly applies both anchors and the copy displacement to get =N$5+$L9."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o82fc85db4e44dd0f",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=A2*B1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Fully relative references lose the rate column when filled right and the sales row when filled down."
+      },
+      {
+        "choice": "=$A2*B$1",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Anchoring rate column A and sales row 1 while leaving the other components relative satisfies the stated table."
+      },
+      {
+        "choice": "=A$2*$B1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The anchors fix the components that should vary and fail to fix the components that must stay constant."
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Fixed rate row 2 prevents selecting each row's rate when filled down."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o85d51f81afb44078",
+    "question_status": "none",
+    "choices": [
+      {
+        "choice": "Mina has a violet badge.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Exactly one badge plus an amber badge excludes violet."
+      },
+      {
+        "choice": "Mina is not permitted to enter Room R.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The supplied amber rule permits Mina to enter Room R, so this exclusion is false."
+      },
+      {
+        "choice": "Mina has both badge colors.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Exactly one badge excludes having both colors."
+      },
+      {
+        "choice": "Mina has no badge.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The explicit amber badge excludes having no badge."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "None of the four choices follows: Mina has one amber badge and is permitted to enter Room R."
+  },
+  {
+    "id": "o89ef29455a06a959",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The reference mechanics are mostly right and the drifting A1 row is a valid objection, but the reason also invents regional targets across row 1 and/or numeric quarter factors in A3:A6. These additions prevent the full reason from being correct against the stem."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "B1 does drift down, which is a valid objection to preserving B1; the reason additionally invents a varying quarter factor in A3:A6 and treats the extra A3 multiplier as required. Quarter labels are not stated factors."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "rationale_correct": false,
+        "reason_implication": "supported",
+        "note": "The copy mechanics are correct, but the claimed suitability is false for the stated task: the third multiplier is unrequested, quarter labels are treated as factors, and C1:E1 targets are assumed."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The reason refutes the fixed B1 anchor solely by inventing targets in C1:E1. The stem explicitly identifies $B$1 and supplies no such row of targets; it also misses the unrequested A3 multiplier."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "On the literal stem none of the choices is correct: it asks for A1 times B1, whereas every option multiplies by an extra A3 reference. A3:A6 are quarter labels (Q1-Q4), not stated numeric factors, and targets in C1:E1 are not specified. The third choice fits a plausible rewritten three-input table, but that repair is not licensed by the supplied context."
+  },
+  {
+    "id": "o8bc6e25c901460e7",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$F4+G$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A copy by -4 columns and +4 rows yields =$F8+C$2, not the unchanged formula."
+      },
+      {
+        "choice": "=B8+G$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The locked F column cannot become B; that decisive mismatch sufficiently refutes the choice."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The second term must be C$2: relative G shifts left four columns and fixed row 2 stays 2."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correctly applies both anchors and the displacement to get =$F8+C$2."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o8d995a1f8c3babc6",
+    "question_status": "none",
+    "choices": [
+      {
+        "choice": "[1, 2, 3]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The shallow copy creates a separate list, so appending to b leaves a as [1, 2]."
+      },
+      {
+        "choice": "[3]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "No operation changes a to [3]; it remains [1, 2]."
+      },
+      {
+        "choice": "[]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "No operation empties a; it remains [1, 2]."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Appending integer 3 to the copied list cannot create this nested result in a; a remains [1, 2]."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "The actual printed output is [1, 2], which is absent from the choices. Independence is appropriate for these list objects and this append operation; shallow copying would not generally clone nested mutable elements."
+  },
+  {
+    "id": "o94f7d6f9762cc181",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$F4+G$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A copy by -4 columns and +4 rows yields =$F8+C$2, not the unchanged formula."
+      },
+      {
+        "choice": "=B8+G$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The locked F column cannot become B; that decisive mismatch sufficiently refutes the choice."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The second term must be C$2: relative G shifts left four columns and fixed row 2 stays 2."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correctly applies both anchors and the displacement to get =$F8+C$2."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o9b2e993dc8d54354",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=N2/12",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Relative N shifts away from the target column when filled right."
+      },
+      {
+        "choice": "=$N2/12",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Fixed column N and relative row retain each category target through both fill directions."
+      },
+      {
+        "choice": "=N$2/12",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The column changes when it must remain N and row 2 remains fixed when it must vary."
+      },
+      {
+        "choice": "=$N$2/12",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A fully fixed N2 prevents the target row from adjusting down the table."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o9f63b45d0eaadee5",
+    "question_status": "multiple",
+    "choices": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Each as the subject of this sentence requires singular is."
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Plural boxes correctly takes are."
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Plural are fails to agree with singular subject each in this standard written-English sentence."
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Singular is fails to agree with plural boxes."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "Both the first and second choices have standard subject-verb agreement."
+  },
+  {
+    "id": "oa5106ca3c95626b7",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=N2/12",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Relative N shifts away from the target column when filled right."
+      },
+      {
+        "choice": "=$N2/12",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Fixed column N and relative row retain each category target through both fill directions."
+      },
+      {
+        "choice": "=N$2/12",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The column changes when it must remain N and row 2 remains fixed when it must vary."
+      },
+      {
+        "choice": "=$N$2/12",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A fully fixed N2 prevents the target row from adjusting down the table."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "oaac8798713bf5a5b",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=K$9+$O5",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A copy by +3 columns and +4 rows yields =N$5+$L9, which refutes this choice."
+      },
+      {
+        "choice": "=K$5+$L9",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relative K column must move to N; identifying that single mismatch sufficiently refutes this choice."
+      },
+      {
+        "choice": "=N$9+$L5",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The first row must remain 5 and the second row must become 9, so both terms differ from the required formula."
+      },
+      {
+        "choice": "=N$5+$L9",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correctly applies both anchors and the copy displacement to get =N$5+$L9."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "oad439e4fe1d96a7d",
+    "question_status": "none",
+    "choices": [
+      {
+        "choice": "[1, 2, 3]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The shallow copy creates a separate list, so appending to b leaves a as [1, 2]."
+      },
+      {
+        "choice": "[3]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "No operation changes a to [3]; it remains [1, 2]."
+      },
+      {
+        "choice": "[]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "No operation empties a; it remains [1, 2]."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Appending integer 3 to the copied list cannot create this nested result in a; a remains [1, 2]."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "The actual printed output is [1, 2], which is absent from the choices. Independence is appropriate for these list objects and this append operation; shallow copying would not generally clone nested mutable elements."
+  },
+  {
+    "id": "ob7bc49eec4b66d7e",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$F4+G$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "A copy by -4 columns and +4 rows yields =$F8+C$2, not the unchanged formula."
+      },
+      {
+        "choice": "=B8+G$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The locked F column cannot become B; that decisive mismatch sufficiently refutes the choice."
+      },
+      {
+        "choice": "=$F8+G$6",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The second term must be C$2: relative G shifts left four columns and fixed row 2 stays 2."
+      },
+      {
+        "choice": "=$F8+C$2",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correctly applies both anchors and the displacement to get =$F8+C$2."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "ob9c870774dc0b6ab",
+    "question_status": "multiple",
+    "choices": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Each as the subject of this sentence requires singular is."
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Plural boxes correctly takes are."
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Plural are fails to agree with singular subject each in this standard written-English sentence."
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Singular is fails to agree with plural boxes."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "Both the first and second choices have standard subject-verb agreement."
+  },
+  {
+    "id": "obfab5a89634c5dd2",
+    "question_status": "multiple",
+    "choices": [
+      {
+        "choice": "Each of the boxes is sealed.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Each as the subject of this sentence requires singular is."
+      },
+      {
+        "choice": "The boxes are sealed.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Plural boxes correctly takes are."
+      },
+      {
+        "choice": "Each of the boxes are sealed.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Plural are fails to agree with singular subject each in this standard written-English sentence."
+      },
+      {
+        "choice": "The boxes is sealed.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Singular is fails to agree with plural boxes."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "Both the first and second choices have standard subject-verb agreement."
+  },
+  {
+    "id": "oc0a62ea29bfba9c7",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "10%",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "The stated production ratio is 800/8,000 = 0.10 = 10%."
+      },
+      {
+        "choice": "15%",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relevant ratio is 10%; 15% uses the crab figure rather than snail production."
+      },
+      {
+        "choice": "25%",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relevant ratio is 10%, not 25%."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The given matched production values suffice to calculate the 10% ratio under the supplied definition."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "oce9a40e1ecf0736c",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "10%",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "The stated production ratio is 800/8,000 = 0.10 = 10%."
+      },
+      {
+        "choice": "15%",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relevant ratio is 10%; 15% uses the crab figure rather than snail production."
+      },
+      {
+        "choice": "25%",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relevant ratio is 10%, not 25%."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The given matched production values suffice to calculate the 10% ratio under the supplied definition."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "od4dcf897914bdd27",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "10%",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "The stated production ratio is 800/8,000 = 0.10 = 10%."
+      },
+      {
+        "choice": "15%",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relevant ratio is 10%; 15% uses the crab figure rather than snail production."
+      },
+      {
+        "choice": "25%",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The relevant ratio is 10%, not 25%."
+      },
+      {
+        "choice": "Cannot be determined from the information given",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The given matched production values suffice to calculate the 10% ratio under the supplied definition."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "oe30a117b19ac7952",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "400 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The arithmetic yields 160 only after treating 2,000 as independent total shrimp production and transferring the full zooplankton contribution again directly to small fish. The stated zooplankton-eating shrimp link and the meaning of energy received are not resolved, so the categorical evaluation is unsupported."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The assertion that small-fish production is 800 is not established by this ambiguous food web. This refutation inherits the unqualified independent-prey-production assumption."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "Zooplankton production of 2,000 follows from the first link, but equating that with shrimp production is not established. Transfer losses are a sensible objection to this large-fish value; the full reason nevertheless makes an unsupported shrimp-production claim."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "supported",
+        "note": "The numerical multiplication is coherent, but it assumes 2,000 is independent total shrimp production and bypasses the stated zooplankton-to-shrimp feeding link. Thus it does not establish 160 as an answer to the supplied stem."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "The stem calls shrimp zooplankton-eating yet says they receive 2,000 from algae. It does not clearly say whether that is direct input, indirect algae-derived energy, or total shrimp production, nor how the shared zooplankton pathway is allocated. Reading the 2,000 as independent total shrimp production gives the reasons' 160 calculation, but omits or reinterprets the stated zooplankton-to-shrimp link. A unique quantitative answer is not established without a clarification."
+  },
+  {
+    "id": "oe513a455c82cd337",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "5 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "8 cm at 1:25,000 represents 2 km; 5 km would require 20 cm."
+      },
+      {
+        "choice": "2 km",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct conversion to 2 km; later enlargement does not change what the original measurement represents."
+      },
+      {
+        "choice": "3 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "3 km would require 12 cm on the original map, so it is not the original 8 cm distance."
+      },
+      {
+        "choice": "1.33 km",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correctly rejects applying the enlargement factor to the original measurement; the approximate alternate lengths are harmless rounding."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "oe9ecc6a965386006",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "400 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The arithmetic yields 160 only after treating 2,000 as independent total shrimp production and transferring the full zooplankton contribution again directly to small fish. The stated zooplankton-eating shrimp link and the meaning of energy received are not resolved, so the categorical evaluation is unsupported."
+      },
+      {
+        "choice": "800 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The assertion that small-fish production is 800 is not established by this ambiguous food web. This refutation inherits the unqualified independent-prey-production assumption."
+      },
+      {
+        "choice": "2,000 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "Zooplankton production of 2,000 follows from the first link, but equating that with shrimp production is not established. Transfer losses are a sensible objection to this large-fish value; the full reason nevertheless makes an unsupported shrimp-production claim."
+      },
+      {
+        "choice": "160 kJ/m²/year",
+        "rationale_correct": false,
+        "reason_implication": "supported",
+        "note": "The numerical multiplication is coherent, but it assumes 2,000 is independent total shrimp production and bypasses the stated zooplankton-to-shrimp feeding link. Thus it does not establish 160 as an answer to the supplied stem."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "The stem calls shrimp zooplankton-eating yet says they receive 2,000 from algae. It does not clearly say whether that is direct input, indirect algae-derived energy, or total shrimp production, nor how the shared zooplankton pathway is allocated. Reading the 2,000 as independent total shrimp production gives the reasons' 160 calculation, but omits or reinterprets the stated zooplankton-to-shrimp link. A unique quantitative answer is not established without a clarification."
+  },
+  {
+    "id": "of9c227deb9c0dabb",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "=$A1*B$1*$A3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The reason falsely says the quarter factor should be in A3:A6 rather than A1; the stem explicitly places it in A1 and gives Q1-Q4 labels in A3:A6. It also overlooks that this choice already contains $A3. Its refutation is based on a misreading, despite correct anchor mechanics."
+      },
+      {
+        "choice": "=$A$1*B1*$A$3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "B1 does drift down, which is a valid objection to preserving B1; the reason additionally invents a varying quarter factor in A3:A6 and treats the extra A3 multiplier as required. Quarter labels are not stated factors."
+      },
+      {
+        "choice": "=$A$1*B$1*$A3",
+        "rationale_correct": false,
+        "reason_implication": "supported",
+        "note": "The copy mechanics are correct, but the claimed suitability is false for the stated task: the third multiplier is unrequested, quarter labels are treated as factors, and C1:E1 targets are assumed."
+      },
+      {
+        "choice": "=$A$1*$B$1*A3",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The described anchor mechanics are correct, but the claim that the B1 target must change across columns is unstated and conflicts with the literal fixed-B1 reading. Treating A3 as a required numeric quarter factor also repairs the stem."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "On the literal stem none of the choices is correct: it asks for A1 times B1, whereas every option multiplies by an extra A3 reference. A3:A6 are quarter labels (Q1-Q4), not stated numeric factors, and targets in C1:E1 are not specified. The third choice fits a plausible rewritten three-input table, but that repair is not licensed by the supplied context."
+  },
+  {
+    "id": "ofbdc430655c39c3b",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=A2*B1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Fully relative references lose the rate column when filled right and the sales row when filled down."
+      },
+      {
+        "choice": "=$A2*B$1",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Anchoring rate column A and sales row 1 while leaving the other components relative satisfies the stated table."
+      },
+      {
+        "choice": "=A$2*$B1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "The anchors fix the components that should vary and fail to fix the components that must stay constant."
+      },
+      {
+        "choice": "=$A$2*B$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Fixed rate row 2 prevents selecting each row's rate when filled down."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  }
+]

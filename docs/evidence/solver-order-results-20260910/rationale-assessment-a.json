@@ -1,0 +1,1154 @@
+[
+  {
+    "id": "o00b7551c935ee821",
+    "question_status": "multiple",
+    "choices": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fixing row 2 prevents the references following each student when filled down."
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: fixed B/F columns and relative rows preserve each student's score range on a vertical fill."
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: a vertical fill changes relative rows without changing the columns, so this also works."
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the absolute range keeps using row 2 instead of following the student row."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "Both =AVERAGE($B2:$F2) and =AVERAGE(B2:F2) meet the stated fill-down requirement. A single-answer key would be defective. Correctness concerns the required input relationship, regardless of coincidentally equal student averages."
+  },
+  {
+    "id": "o0d067852801dcf71",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "The list of names are on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the third-person singular head noun list does not agree with are."
+      },
+      {
+        "choice": "The list of names is on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: is agrees with singular list; of names does not change the subject number."
+      },
+      {
+        "choice": "The list of names am on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: am is the first-person singular form and does not agree with list."
+      },
+      {
+        "choice": "The list of names be on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct in the stated ordinary present-tense declarative context: bare be is not the required finite form."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o15770efcb84ad08a",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "625 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "The arithmetic and final, explicit conclusion are correct. The reason briefly questions the word reaches but retracts that objection within the reason and settles on 625 as supported."
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: 1,250 does not equal the production from two 25% transfers."
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: 2,500 is the minnow production after only the first transfer."
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct for the stated chain: a 25%-efficient transfer sequence cannot yield pike production exceeding producer production."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "The natural reading applies the stated 25% transfer efficiency at both links. Production at the pike level is being requested; standing biomass does not enter this calculation. Shorthand kJ in a reason is read with the stem's area/time units."
+  },
+  {
+    "id": "o19e7dbfe26c5199c",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$D$3+E$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the absolute $B$3 cannot become $D$3 during these fills."
+      },
+      {
+        "choice": "=$B$3+E$2",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: the net displacement is two columns and two rows; only relative column C changes to E, yielding =$B$3+E$2."
+      },
+      {
+        "choice": "=$B$5+E$4",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: both $B$3 and the anchored row $2 remain fixed, contradicting this choice."
+      },
+      {
+        "choice": "=$B$3+E$4",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the second reference retains row $2 and cannot become E$4."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o27131ff5c82320ca",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "Ivo is permitted to enter Room R.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the explicit violet rule excludes permission to enter Room R."
+      },
+      {
+        "choice": "Ivo has both badge colors.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: exactly one badge color excludes having both colors."
+      },
+      {
+        "choice": "Ivo is not permitted to enter Room R.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: the no-violet-entry rule directly entails this statement for Ivo."
+      },
+      {
+        "choice": "Ivo has an amber badge.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: Ivo's violet badge and the exactly-one-color rule exclude amber."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o2b1ec59f432f7108",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$A4*D$1",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: +2 columns/+2 rows changes relative row 2 to 4 and relative column B to D while preserving both anchors."
+      },
+      {
+        "choice": "=$A2*D$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the unanchored row in $A2 must change to 4."
+      },
+      {
+        "choice": "=$A4*B$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the unanchored column in B$1 must change to D."
+      },
+      {
+        "choice": "=A4*D1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: filling preserves dollar signs; =A4*D1 is not the formula that appears, despite referencing the same cells at this destination."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o2f4c5c8bc4474596",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=D2-C3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fully relative references lose the actuals row on a downward fill and the target column on a rightward fill."
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fully absolute references cannot follow different months or regions."
+      },
+      {
+        "choice": "=$D2-C$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the anchors prevent the needed movement or allow movement away from the stated input row/column."
+      },
+      {
+        "choice": "=D$2-$C3",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: D$2 follows months across row 2 and $C3 follows regions down column C."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o2f6057782a251257",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "The list of names are on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the third-person singular head noun list does not agree with are."
+      },
+      {
+        "choice": "The list of names is on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: is agrees with singular list; of names does not change the subject number."
+      },
+      {
+        "choice": "The list of names am on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: am is the first-person singular form and does not agree with list."
+      },
+      {
+        "choice": "The list of names be on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct in the stated ordinary present-tense declarative context: bare be is not the required finite form."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o34a0b5c49f7ac239",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$A4*B$3",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: $A4 follows student rows in column A and B$3 follows assignment columns in row 3."
+      },
+      {
+        "choice": "=A4*B3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: relative A4 leaves the score column when filled across, and relative B3 leaves the weights row when filled down."
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: absolute A4/B3 keep the same student and assignment instead of following both dimensions."
+      },
+      {
+        "choice": "=A$4*$B3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the row/column anchors are reversed from the needed score-column and weight-row anchors."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o47e5c751c1f9f8e9",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$A4*B$3",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: $A4 follows student rows in column A and B$3 follows assignment columns in row 3."
+      },
+      {
+        "choice": "=A4*B3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: relative A4 leaves the score column when filled across, and relative B3 leaves the weights row when filled down."
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: absolute A4/B3 keep the same student and assignment instead of following both dimensions."
+      },
+      {
+        "choice": "=A$4*$B3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the row/column anchors are reversed from the needed score-column and weight-row anchors."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o4dba6d14875cfae7",
+    "question_status": "none",
+    "choices": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct decisive objection: placing this formula in B2 directly references B2 itself. For a single fixed multiplier G2, $G2 also fails to preserve its row."
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The circular-reference and relative-input objections are correct, but the claim that B2 shifts away from category names is false: B2 is the formula cell, while category names are in row 1. The conclusion still clearly refutes the choice."
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the circular reference suffices; additionally, G$2 fixes row 2 but its column moves on a rightward fill, while $F$1 preserves the rate."
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: $B$2 is circular, $G$2 remains fixed, and relative F1 moves on a fill. The reason does not explicitly claim that keeping G2 fixed is itself wrong."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "All four choices are circular in B2 under ordinary worksheet calculation. The stem also does not identify a separate numeric base amount or say whether multipliers vary by month/category; no reason should invent one. Reading the named rate and multiplier as fixed cells would require $F$1 and $G$2, but the circularity independently defeats every option."
+  },
+  {
+    "id": "o50ac03f2440264da",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$D$3+E$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the absolute $B$3 cannot become $D$3 during these fills."
+      },
+      {
+        "choice": "=$B$3+E$2",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: the net displacement is two columns and two rows; only relative column C changes to E, yielding =$B$3+E$2."
+      },
+      {
+        "choice": "=$B$5+E$4",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: both $B$3 and the anchored row $2 remain fixed, contradicting this choice."
+      },
+      {
+        "choice": "=$B$3+E$4",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the second reference retains row $2 and cannot become E$4."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o581de1587a848ad3",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "625 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: two successive 25% transfers give 10,000 × 0.25 × 0.25 = 625 kJ/m²/year."
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: 1,250 does not equal the production from two 25% transfers."
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: 2,500 is the minnow production after only the first transfer."
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct for the stated chain: a 25%-efficient transfer sequence cannot yield pike production exceeding producer production."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "The natural reading applies the stated 25% transfer efficiency at both links. Production at the pike level is being requested; standing biomass does not enter this calculation. Shorthand kJ in a reason is read with the stem's area/time units."
+  },
+  {
+    "id": "o581fdde4ce380314",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "[1, 2]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: b aliases a and the append mutates the same list, so the list does not remain [1, 2]."
+      },
+      {
+        "choice": "[3]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: append retains the existing elements and adds 3; it does not replace the list with [3]."
+      },
+      {
+        "choice": "[1, 2, 3]",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: both names refer to the mutated list, and print(a) outputs [1, 2, 3]."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: append(3) adds an integer; a nested list would require append([3])."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o5bd4bb0b1f080540",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$D$3+E$2",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the absolute $B$3 cannot become $D$3 during these fills."
+      },
+      {
+        "choice": "=$B$3+E$2",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: the net displacement is two columns and two rows; only relative column C changes to E, yielding =$B$3+E$2."
+      },
+      {
+        "choice": "=$B$5+E$4",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: both $B$3 and the anchored row $2 remain fixed, contradicting this choice."
+      },
+      {
+        "choice": "=$B$3+E$4",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the second reference retains row $2 and cannot become E$4."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o6f87aeb057d756fa",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=D2-C3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fully relative references lose the actuals row on a downward fill and the target column on a rightward fill."
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fully absolute references cannot follow different months or regions."
+      },
+      {
+        "choice": "=$D2-C$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the anchors prevent the needed movement or allow movement away from the stated input row/column."
+      },
+      {
+        "choice": "=D$2-$C3",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: D$2 follows months across row 2 and $C3 follows regions down column C."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o72b257638047c480",
+    "question_status": "none",
+    "choices": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct decisive objection: placing this formula in B2 directly references B2 itself. For a single fixed multiplier G2, $G2 also fails to preserve its row."
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct decisive objection: this directly self-references B2. Relative G2 and F1 additionally fail to preserve the stated fixed input cells across the fill."
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct decisive objection: this directly self-references B2, so the choice does not provide an ordinary budget calculation."
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "The circular-reference objection and the statement that $B$2 stays fixed are correct. However, it invents a current category input cell that should vary: the stem provides category names, not a numeric category base reference. That additional anchoring diagnosis is unsupported."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "All four choices are circular in B2 under ordinary worksheet calculation. The stem also does not identify a separate numeric base amount or say whether multipliers vary by month/category; no reason should invent one. Reading the named rate and multiplier as fixed cells would require $F$1 and $G$2, but the circularity independently defeats every option."
+  },
+  {
+    "id": "o7bffc799fbe35555",
+    "question_status": "multiple",
+    "choices": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fixing row 2 prevents the references following each student when filled down."
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: fixed B/F columns and relative rows preserve each student's score range on a vertical fill."
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: a vertical fill changes relative rows without changing the columns, so this also works."
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the absolute range keeps using row 2 instead of following the student row."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "Both =AVERAGE($B2:$F2) and =AVERAGE(B2:F2) meet the stated fill-down requirement. A single-answer key would be defective. Correctness concerns the required input relationship, regardless of coincidentally equal student averages."
+  },
+  {
+    "id": "o86730a93385fde7f",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "[1, 2]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: b aliases a and the append mutates the same list, so the list does not remain [1, 2]."
+      },
+      {
+        "choice": "[3]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: append retains the existing elements and adds 3; it does not replace the list with [3]."
+      },
+      {
+        "choice": "[1, 2, 3]",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: both names refer to the mutated list, and print(a) outputs [1, 2, 3]."
+      },
+      {
+        "choice": "[1, 2, [3]]",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: append(3) adds an integer; a nested list would require append([3])."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o8873cf762d601622",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "Ivo is permitted to enter Room R.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the explicit violet rule excludes permission to enter Room R."
+      },
+      {
+        "choice": "Ivo has both badge colors.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: exactly one badge color excludes having both colors."
+      },
+      {
+        "choice": "Ivo is not permitted to enter Room R.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: the no-violet-entry rule directly entails this statement for Ivo."
+      },
+      {
+        "choice": "Ivo has an amber badge.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: Ivo's violet badge and the exactly-one-color rule exclude amber."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o930b448a72840844",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "The list of names are on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the third-person singular head noun list does not agree with are."
+      },
+      {
+        "choice": "The list of names is on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: is agrees with singular list; of names does not change the subject number."
+      },
+      {
+        "choice": "The list of names am on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: am is the first-person singular form and does not agree with list."
+      },
+      {
+        "choice": "The list of names be on the desk.",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct in the stated ordinary present-tense declarative context: bare be is not the required finite form."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o980ce5c09c0af3a3",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "625 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: two successive 25% transfers give 10,000 × 0.25 × 0.25 = 625 kJ/m²/year."
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: 1,250 does not equal the production from two 25% transfers."
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: 2,500 is the minnow production after only the first transfer."
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct for the stated chain: a 25%-efficient transfer sequence cannot yield pike production exceeding producer production."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "The natural reading applies the stated 25% transfer efficiency at both links. Production at the pike level is being requested; standing biomass does not enter this calculation. Shorthand kJ in a reason is read with the stem's area/time units."
+  },
+  {
+    "id": "o9bcb1af71c5f8a5a",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "Only column B",
+        "rationale_correct": null,
+        "reason_implication": "refuted",
+        "note": "The reference tracing correctly defeats column B as a generally valid fill: B3 uses B2 rather than B1. A claim about which numerical results are actually wrong needs values or a no-coincidences assumption."
+      },
+      {
+        "choice": "Only row 2",
+        "rationale_correct": null,
+        "reason_implication": "refuted",
+        "note": "The reference tracing correctly defeats row 2 as a generally valid fill: C2 uses B2 rather than A2. Numerical outputs could nevertheless coincide for particular values."
+      },
+      {
+        "choice": "Only B2",
+        "rationale_correct": null,
+        "reason_implication": "supported",
+        "note": "Only B2 preserves both intended input references. Saying it is the only cell with a correct numerical result is not established without cell values; the reason is adequate under the structural-reference reading only."
+      },
+      {
+        "choice": "The entire range B2:F6",
+        "rationale_correct": null,
+        "reason_implication": "refuted",
+        "note": "The reason correctly identifies shifted inputs elsewhere in the range. That defeats guaranteed formula correctness, but does not establish that coincidental correct numerical outputs are impossible."
+      }
+    ],
+    "all_rationales_correct": null,
+    "caveat": "Only B2 necessarily uses the intended pair of input cells. The literal question asks which cells show correct results without providing numeric values: for example, all numeric inputs equal to 1 make the entire range numerically match. Thus the structural reading yields Only B2, while actual-result reading is underdetermined. Null rationale scores preserve that wording ambiguity, not uncertainty about A1 reference rules."
+  },
+  {
+    "id": "o9c02ee5c40ecad1c",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=D2-C3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fully relative references lose the actuals row on a downward fill and the target column on a rightward fill."
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fully absolute references cannot follow different months or regions."
+      },
+      {
+        "choice": "=$D2-C$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the anchors prevent the needed movement or allow movement away from the stated input row/column."
+      },
+      {
+        "choice": "=D$2-$C3",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: D$2 follows months across row 2 and $C3 follows regions down column C."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "o9ed79be191bb3b90",
+    "question_status": "multiple",
+    "choices": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fixing row 2 prevents the references following each student when filled down."
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: fixed B/F columns and relative rows preserve each student's score range on a vertical fill."
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: a vertical fill changes relative rows without changing the columns, so this also works."
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the absolute range keeps using row 2 instead of following the student row."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "Both =AVERAGE($B2:$F2) and =AVERAGE(B2:F2) meet the stated fill-down requirement. A single-answer key would be defective. Correctness concerns the required input relationship, regardless of coincidentally equal student averages."
+  },
+  {
+    "id": "oa7ad205a00a7adcb",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "Only column B",
+        "rationale_correct": null,
+        "reason_implication": "refuted",
+        "note": "The copied formula B3=B2*A3 is correct, but B2≠B1 is not guaranteed as a value comparison. It is true only as a distinction between cell addresses; numeric equality is possible. The reason rejects the column under the structural reading."
+      },
+      {
+        "choice": "Only row 2",
+        "rationale_correct": null,
+        "reason_implication": "refuted",
+        "note": "The copied formula C2=C1*B2 is correct, but B2≠A2 is not guaranteed numerically. The region input reference is wrong structurally, while a numeric coincidence remains possible."
+      },
+      {
+        "choice": "Only B2",
+        "rationale_correct": null,
+        "reason_implication": "supported",
+        "note": "Only B2 preserves both intended input references. Saying it is the only cell with a correct numerical result is not established without cell values; the reason is adequate under the structural-reference reading only."
+      },
+      {
+        "choice": "The entire range B2:F6",
+        "rationale_correct": null,
+        "reason_implication": "refuted",
+        "note": "The reason correctly identifies shifted inputs elsewhere in the range. That defeats guaranteed formula correctness, but does not establish that coincidental correct numerical outputs are impossible."
+      }
+    ],
+    "all_rationales_correct": null,
+    "caveat": "Only B2 necessarily uses the intended pair of input cells. The literal question asks which cells show correct results without providing numeric values: for example, all numeric inputs equal to 1 make the entire range numerically match. Thus the structural reading yields Only B2, while actual-result reading is underdetermined. Null rationale scores preserve that wording ambiguity, not uncertainty about A1 reference rules."
+  },
+  {
+    "id": "oba101dcb2cc87e8e",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "625 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: two successive 25% transfers give 10,000 × 0.25 × 0.25 = 625 kJ/m²/year."
+      },
+      {
+        "choice": "1,250 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: 1,250 does not equal the production from two 25% transfers."
+      },
+      {
+        "choice": "2,500 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: 2,500 is the minnow production after only the first transfer."
+      },
+      {
+        "choice": "12,500 kJ/m²/year",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct for the stated chain: a 25%-efficient transfer sequence cannot yield pike production exceeding producer production."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "The natural reading applies the stated 25% transfer efficiency at both links. Production at the pike level is being requested; standing biomass does not enter this calculation. Shorthand kJ in a reason is read with the stem's area/time units."
+  },
+  {
+    "id": "obea1cde15c8f1286",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$A4*B$3",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: $A4 follows student rows in column A and B$3 follows assignment columns in row 3."
+      },
+      {
+        "choice": "=A4*B3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: relative A4 leaves the score column when filled across, and relative B3 leaves the weights row when filled down."
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: absolute A4/B3 keep the same student and assignment instead of following both dimensions."
+      },
+      {
+        "choice": "=A$4*$B3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the row/column anchors are reversed from the needed score-column and weight-row anchors."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "oc60fefd89173874f",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$A4*B$3",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: $A4 follows student rows in column A and B$3 follows assignment columns in row 3."
+      },
+      {
+        "choice": "=A4*B3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: relative A4 leaves the score column when filled across, and relative B3 leaves the weights row when filled down."
+      },
+      {
+        "choice": "=$A$4*$B$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: absolute A4/B3 keep the same student and assignment instead of following both dimensions."
+      },
+      {
+        "choice": "=A$4*$B3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the row/column anchors are reversed from the needed score-column and weight-row anchors."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "oddc789a2667ccff6",
+    "question_status": "ambiguous",
+    "choices": [
+      {
+        "choice": "Only column B",
+        "rationale_correct": null,
+        "reason_implication": "refuted",
+        "note": "The reason initially confuses row movement, then explicitly corrects itself: filling down column B moves B1 to B2/B3 and loses the row-1 input. Its final implication refutes the column; literal numerical-result ambiguity remains."
+      },
+      {
+        "choice": "Only row 2",
+        "rationale_correct": false,
+        "reason_implication": "supported",
+        "note": "False reference rule and conclusion: zero row displacement does not keep A2 fixed when filling across. In C2, A2 becomes B2, so the claim that all of B2:F2 is correct because the row has not shifted is invalid. The reason nevertheless explicitly supports this choice."
+      },
+      {
+        "choice": "Only B2",
+        "rationale_correct": null,
+        "reason_implication": "supported",
+        "note": "The reason explicitly corrects its initial row-2 claim and traces A2 shifting to B2/C2, plus B1 shifting down in column B. Its final implication supports Only B2 on structural grounds; actual numeric exclusivity still is not established."
+      },
+      {
+        "choice": "The entire range B2:F6",
+        "rationale_correct": null,
+        "reason_implication": "refuted",
+        "note": "The reason correctly identifies shifted inputs elsewhere in the range. That defeats guaranteed formula correctness, but does not establish that coincidental correct numerical outputs are impossible."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "Only B2 necessarily uses the intended pair of input cells. The literal question asks which cells show correct results without providing numeric values: for example, all numeric inputs equal to 1 make the entire range numerically match. Thus the structural reading yields Only B2, while actual-result reading is underdetermined. Null rationale scores preserve that wording ambiguity, not uncertainty about A1 reference rules."
+  },
+  {
+    "id": "oe27623f01ca5e816",
+    "question_status": "multiple",
+    "choices": [
+      {
+        "choice": "=AVERAGE(B$2:F$2)",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fixing row 2 prevents the references following each student when filled down."
+      },
+      {
+        "choice": "=AVERAGE($B2:$F2)",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: fixed B/F columns and relative rows preserve each student's score range on a vertical fill."
+      },
+      {
+        "choice": "=AVERAGE(B2:F2)",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: a vertical fill changes relative rows without changing the columns, so this also works."
+      },
+      {
+        "choice": "=AVERAGE($B$2:$F$2)",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the absolute range keeps using row 2 instead of following the student row."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": "Both =AVERAGE($B2:$F2) and =AVERAGE(B2:F2) meet the stated fill-down requirement. A single-answer key would be defective. Correctness concerns the required input relationship, regardless of coincidentally equal student averages."
+  },
+  {
+    "id": "oe918524b7903ba70",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$A4*D$1",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: +2 columns/+2 rows changes relative row 2 to 4 and relative column B to D while preserving both anchors."
+      },
+      {
+        "choice": "=$A2*D$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the unanchored row in $A2 must change to 4."
+      },
+      {
+        "choice": "=$A4*B$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the unanchored column in B$1 must change to D."
+      },
+      {
+        "choice": "=A4*D1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: filling preserves dollar signs; =A4*D1 is not the formula that appears, despite referencing the same cells at this destination."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "oeed49733b1e6f05a",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=$A4*D$1",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: +2 columns/+2 rows changes relative row 2 to 4 and relative column B to D while preserving both anchors."
+      },
+      {
+        "choice": "=$A2*D$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the unanchored row in $A2 must change to 4."
+      },
+      {
+        "choice": "=$A4*B$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the unanchored column in B$1 must change to D."
+      },
+      {
+        "choice": "=A4*D1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: filling preserves dollar signs; =A4*D1 is not the formula that appears, despite referencing the same cells at this destination."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "of1b0876657939520",
+    "question_status": "none",
+    "choices": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "Correctly identifies circularity, but falsely prescribes referencing category names and months as calculation inputs. Those are labels, and no such arithmetic or lookup requirement is supplied. Its ultimate implication is still to refute the option."
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct decisive objection: this directly self-references B2. Relative G2 and F1 additionally fail to preserve the stated fixed input cells across the fill."
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: G$2 does lock the multiplier row and $F$1 locks the rate; the decisive self-reference remains. Calling the row lock correct does not establish that the whole G reference is sufficient across columns."
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct decisive objection: the formula directly self-references B2; an absolute self-reference does not solve that problem."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "All four choices are circular in B2 under ordinary worksheet calculation. The stem also does not identify a separate numeric base amount or say whether multipliers vary by month/category; no reason should invent one. Reading the named rate and multiplier as fixed cells would require $F$1 and $G$2, but the circularity independently defeats every option."
+  },
+  {
+    "id": "of3e0c53410a42084",
+    "question_status": "unique",
+    "choices": [
+      {
+        "choice": "=D2-C3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fully relative references lose the actuals row on a downward fill and the target column on a rightward fill."
+      },
+      {
+        "choice": "=$D$2-$C$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: fully absolute references cannot follow different months or regions."
+      },
+      {
+        "choice": "=$D2-C$3",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct: the anchors prevent the needed movement or allow movement away from the stated input row/column."
+      },
+      {
+        "choice": "=D$2-$C3",
+        "rationale_correct": true,
+        "reason_implication": "supported",
+        "note": "Correct: D$2 follows months across row 2 and $C3 follows regions down column C."
+      }
+    ],
+    "all_rationales_correct": true,
+    "caveat": ""
+  },
+  {
+    "id": "ofc637280bf975ea1",
+    "question_status": "none",
+    "choices": [
+      {
+        "choice": "=B2*$G2*$F$1",
+        "rationale_correct": false,
+        "reason_implication": "refuted",
+        "note": "Correctly identifies the B2 circular reference. However, the proposed repair G$2 is insufficient to preserve the named G2 multiplier when also filling across; it would need $G$2 under that reading. The row-only prescription is incorrect."
+      },
+      {
+        "choice": "=B2*G2*F1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct decisive objection: this directly self-references B2. Relative G2 and F1 additionally fail to preserve the stated fixed input cells across the fill."
+      },
+      {
+        "choice": "=B2*G$2*$F$1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct decisive objection: this directly self-references B2, so the choice does not provide an ordinary budget calculation."
+      },
+      {
+        "choice": "=$B$2*$G$2*F1",
+        "rationale_correct": true,
+        "reason_implication": "refuted",
+        "note": "Correct decisive objection: the formula directly self-references B2; an absolute self-reference does not solve that problem."
+      }
+    ],
+    "all_rationales_correct": false,
+    "caveat": "All four choices are circular in B2 under ordinary worksheet calculation. The stem also does not identify a separate numeric base amount or say whether multipliers vary by month/category; no reason should invent one. Reading the named rate and multiplier as fixed cells would require $F$1 and $G$2, but the circularity independently defeats every option."
+  }
+]
