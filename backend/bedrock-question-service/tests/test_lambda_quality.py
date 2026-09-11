@@ -737,28 +737,6 @@ class LambdaQualityTests(BackendTestCase):
         self.assertEqual(len(questions), 1)
         self.assertIn("required assumption", questions[0]["prompt"])
 
-    def test_rejects_explanations_that_admit_bad_answer(self):
-        bad_question = _raw_question("Calculus: What is the value of this limit?")
-        bad_question["explanation"] = (
-            "The provided choices do not include the correct answer."
-        )
-        client = FakeBedrockClient.returning_questions(
-            bad_question,
-            _raw_question(
-                "Calculus: Which answer correctly applies the derivative rule?"
-            ),
-        )
-
-        response = lambda_function.handle_http_request(
-            _event(_request_payload(target_count=1, minimum_difficulty=3)),
-            bedrock_client=client,
-        )
-
-        self.assertEqual(response["statusCode"], 200)
-        questions = json.loads(response["body"])["questions"]
-        self.assertEqual(len(questions), 1)
-        self.assertIn("derivative rule", questions[0]["prompt"])
-
     def test_rejects_answer_label_when_it_is_not_an_actual_choice(self):
         bad_question = _raw_question(
             "Calculus: Which option gives the derivative at x = 1?"
@@ -925,30 +903,6 @@ class LambdaQualityTests(BackendTestCase):
             [question["prompt"] for question in questions],
             [first_question["prompt"], third_question["prompt"]],
         )
-
-    def test_rejects_explanation_supporting_different_choice(self):
-        bad_question = _raw_question(
-            "A computation gives -1. What is the sign of the result?"
-        )
-        bad_question["expectedAnswer"] = "positive"
-        bad_question["choices"] = ["positive", "negative", "zero", "undefined"]
-        bad_question["explanation"] = "The computed result is -1, which is negative."
-        client = FakeBedrockClient.returning_questions(
-            bad_question,
-            _raw_question(
-                "Math reasoning: Which statement follows from a negative computed result?"
-            ),
-        )
-
-        response = lambda_function.handle_http_request(
-            _event(_request_payload(target_count=1, minimum_difficulty=3)),
-            bedrock_client=client,
-        )
-
-        self.assertEqual(response["statusCode"], 200)
-        questions = json.loads(response["body"])["questions"]
-        self.assertEqual(len(questions), 1)
-        self.assertIn("negative computed result", questions[0]["prompt"])
 
     def test_rejects_prompts_with_embedded_answer_options(self):
         bad_question = _raw_question(

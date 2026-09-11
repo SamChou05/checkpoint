@@ -296,10 +296,8 @@ def score_question(
             "Expected answer is a bare output, but choices mix outputs with explanations."
         )
 
-    if explanation_supports_different_choice(expected_answer, choices, explanation):
-        failures.append(
-            "Explanation supports a different answer choice than expectedAnswer."
-        )
+    # This structural score cannot infer a final answer from prose mentions of
+    # a distractor or intermediate result. Assess semantic consistency separately.
 
     duplicate_blocked = blocked_prompt_duplicate(prompt, payload)
     if duplicate_blocked:

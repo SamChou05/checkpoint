@@ -2,6 +2,13 @@
 
 This eval suite measures whether AI-generated checkpoint questions are usable, on-target, and safe to store before a prompt change ships.
 
+The deterministic score is not a correctness verdict. In particular, explanation
+consistency needs semantic assessment: a mention of a negative intermediate
+result or an incorrect distractor does not identify the final answer. The former
+phrase-based contradiction failure was removed on September 11, 2026 after those
+false positives were reproduced. Historical scores remain tied to their recorded
+source revision; a score increase from this correction is not a model improvement.
+
 The design follows the same shape recommended by current eval guidance:
 
 - define the task success criteria

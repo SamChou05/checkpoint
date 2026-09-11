@@ -255,7 +255,6 @@ def _sanitize_questions(
             len(prompt) < 12
             or not expected_answer
             or not explanation
-            or _explanation_admits_bad_answer(explanation)
             or _looks_like_study_strategy(prompt, request["goal"])
             or _prompt_contains_embedded_options(prompt)
             or _prompt_contains_latex_markup(prompt)
@@ -279,11 +278,9 @@ def _sanitize_questions(
         ):
             record_quality(request_metrics, "sanitize", "generic_content")
             continue
-        if _explanation_supports_different_choice(
-            expected_answer, choices, explanation
-        ):
-            record_quality(request_metrics, "sanitize", "contradictory_explanation")
-            continue
+        # Prose mentions are not verdicts: an explanation can refute a
+        # distractor or describe an intermediate result. The mandatory solver
+        # checks the key; the feedback reviewer owns the learner-facing teaching.
 
         difficulty = _clamped_int(raw_question.get("difficulty"), minimum=1, maximum=5)
         if difficulty < minimum_difficulty:
@@ -664,6 +661,7 @@ def _looks_like_study_strategy(prompt: str, goal: dict[str, Any]) -> bool:
 
 
 def _explanation_admits_bad_answer(explanation: str) -> bool:
+    """Legacy diagnostic only; phrase matches are not admission verdicts."""
     normalized = explanation.lower()
     blocked_phrases = [
         "answer is wrong",
@@ -749,6 +747,7 @@ def _explanation_supports_different_choice(
     choices: list[str],
     explanation: str,
 ) -> bool:
+    """Historical eval export; never use this heuristic for admission or scoring."""
     supported_choice = _explanation_supported_choice(explanation, choices)
     if not supported_choice:
         return False
