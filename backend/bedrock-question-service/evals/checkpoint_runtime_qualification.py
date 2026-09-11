@@ -6,6 +6,7 @@ Frozen-recheck mode: the same archived five candidates in two two-call arms.
 Authored-solution mode: three fresh two-item goals, at most three calls each.
 Author comparison: repeat those inputs with two author models, eighteen calls.
 Focused application: compare two Kimi author prompts under the same limits.
+Native workflow: three fresh five-item goals, at most six calls each.
 The unchanged runtime owns parsing, filtering, top-offs and JSON repair. The
 existing isolated caller owns transport/deadlines; this file adds no supervisor.
 Operational completion and policy stamps are not factual correctness scores.
@@ -31,6 +32,7 @@ sys.path.insert(0, str(SERVICE_DIR))
 
 from evals import checkpoint_author_latency_probe as caller  # noqa: E402
 import question_generation as generation  # noqa: E402
+import native_output_contracts as native  # noqa: E402
 from question_verification import (  # noqa: E402
     COMPLETE_REVIEW_SYSTEM_PROMPT, verify_questions,
 )
@@ -38,7 +40,9 @@ from complete_question_solution import COMPLETE_SOLUTION_SYSTEM_PROMPT  # noqa: 
 from request_contract import _normalize_request  # noqa: E402
 from question_quality import _extract_json_object, _sanitize_questions  # noqa: E402
 from question_teaching import AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT  # noqa: E402
-from service_errors import ProviderError  # noqa: E402
+from service_errors import (  # noqa: E402
+    InvalidProviderResponseError, ProviderCallBudgetExceededError, ProviderError,
+)
 
 shared, recorded = caller.shared, caller.recorded
 _hash, _same = recorded._hash, recorded._same
@@ -47,6 +51,7 @@ RECHECK_EXPERIMENT = "policy-two-frozen-recheck-v1"
 AUTHORED_EXPERIMENT = "authored-solution-fresh-v1"
 AUTHOR_COMPARISON_EXPERIMENT = "authored-solution-author-comparison-v1"
 FOCUSED_APPLICATION_EXPERIMENT = "authored-solution-focused-application-v1"
+NATIVE_WORKFLOW_EXPERIMENT = "native-fresh-workflow-v1"
 AUTHOR_COMPARISON_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/authored-solution-fresh-fixture-20260908.json"
 AUTHOR_COMPARISON_ORIGIN_SHA256 = "6fe797f70ab10c8d6418743c213337b406d15448f75ffb4bebe0abdb2fb2693d"
 RECHECK_ORIGIN = SERVICE_DIR.parents[1] / "docs/evidence/runtime-qualification-capture-20260908.json"
@@ -95,7 +100,12 @@ def _first_request(request, questions=None, *, settings=None):
 
     try:
         if questions is None:
-            generation._generate_legacy_with_bedrock(request, Client(), settings["BEDROCK_MODEL_ID"])
+            if settings.get("BEDROCK_STRUCTURED_OUTPUT_MODE") == "native":
+                generation._generate_with_bedrock(
+                    request, Client(), settings["BEDROCK_MODEL_ID"], contract="question_author_v1",
+                )
+            else:
+                generation._generate_legacy_with_bedrock(request, Client(), settings["BEDROCK_MODEL_ID"])
         else:
             verify_questions(copy.deepcopy(questions), request, invoke, solve=invoke,
                              solver_contract="complete_choices")
@@ -107,7 +117,31 @@ def _first_request(request, questions=None, *, settings=None):
     return captured[0]
 
 
-def _role(request):
+def _native_stage_contracts():
+    result = {}
+    for role, contract, system in (
+        ("author", "question_author_v1", generation._system_prompt()),
+        ("solver", "complete_choice_solver_v1", COMPLETE_SOLUTION_SYSTEM_PROMPT),
+        ("reviewer", "default_reviewer_v1", COMPLETE_REVIEW_SYSTEM_PROMPT),
+    ):
+        prompt = native.native_prompt(system, contract)
+        result[role] = {
+            "system": [{"text": prompt}], "system_prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+            "outputConfig": native.native_output_config(contract),
+            "contract_metadata": native.contract_metadata(contract),
+        }
+    return result
+
+
+def _role(request, settings=None, native_contracts=None):
+    if (settings or {}).get("BEDROCK_STRUCTURED_OUTPUT_MODE") == "native":
+        for role, stage in (native_contracts or _native_stage_contracts()).items():
+            if _same(request.get("system"), stage["system"]):
+                user = request["messages"][0]["content"][0]["text"]
+                return "author_json_repair" if role == "author" and user.startswith(
+                    "Your previous response could not be parsed",
+                ) else role
+        raise ValueError("Unexpected native runtime role or changed system prompt.")
     system = request.get("system")
     if system == [{"text": generation._system_prompt()}]:
         user = request["messages"][0]["content"][0]["text"]
@@ -121,9 +155,11 @@ def _role(request):
     raise ValueError("Unexpected runtime role.")
 
 
-def _guard_request(request, settings=None):
+def _guard_request(request, settings=None, native_contracts=None):
     settings = SETTINGS if settings is None else settings
-    role = _role(request)
+    is_native = settings.get("BEDROCK_STRUCTURED_OUTPUT_MODE") == "native"
+    contracts = (native_contracts or _native_stage_contracts()) if is_native else None
+    role = _role(request, settings, contracts)
     expected_model = settings["BEDROCK_MODEL_ID" if role.startswith("author") else "BEDROCK_VERIFICATION_MODEL_ID"]
     adaptive = not role.startswith("author") and settings["BEDROCK_CLAUDE_THINKING"] == "adaptive"
     inference = {"maxTokens": 6000} if adaptive else {"maxTokens": 6000, "temperature": 0.2}
@@ -135,14 +171,27 @@ def _guard_request(request, settings=None):
         or role == "reviewer" and settings["QUESTION_FEEDBACK_CONTRACT"] == "authored_solution"
         or not _same(request.get("inferenceConfig"), inference)
         or not _same(request.get("additionalModelRequestFields"), additional)
-        or set(request) != {"modelId", "messages", "system", "inferenceConfig", "additionalModelRequestFields"}
+        or set(request) != ({"modelId", "messages", "system", "inferenceConfig", "additionalModelRequestFields"}
+                            | ({"outputConfig"} if is_native else set()))
         or len(shared.canonical(request).encode("utf-8")) > MAX_INPUT_BYTES
     ):
         raise ValueError("Unexpected provider settings/shape or input allowance exceeded.")
+    if is_native:
+        stage = contracts["author" if role.startswith("author") else role]
+        config = request.get("outputConfig")
+        if not _same(config, stage["outputConfig"]):
+            raise ValueError("Native output contract bytes changed.")
+        declaration = config["textFormat"]["structure"]["jsonSchema"]
+        if (declaration["name"] != stage["contract_metadata"]["name"]
+                or hashlib.sha256(declaration["schema"].encode()).hexdigest() != stage["contract_metadata"]["sha256"]
+                or hashlib.sha256(request["system"][0]["text"].encode()).hexdigest() != stage["system_prompt_sha256"]):
+            raise ValueError("Native prompt/schema identity mismatch.")
     return role
 
 
 def make_plan(packet, *, source_revision=None):
+    if type(packet) is dict and packet.get("experiment") == NATIVE_WORKFLOW_EXPERIMENT:
+        return _make_native_workflow_plan(packet, source_revision=source_revision)
     if type(packet) is dict and packet.get("experiment") in {
         AUTHOR_COMPARISON_EXPERIMENT, FOCUSED_APPLICATION_EXPERIMENT,
     }:
@@ -190,6 +239,55 @@ def make_plan(packet, *, source_revision=None):
         "failure_policy": "Observer, unfinished response, correlation, input-budget or persistence failure latches a global stop, including runtime-caught top-up failures. No provider-failure retry, model fallback, resumption or replacement operation. Existing runtime content top-offs and malformed-author JSON repair remain within six calls and are recorded distinctly.",
         "scope": "Local direct-model calls through current production functions, not deployed Lambda or bank writes. Observed deployed worker model aliases/read75/token6000/thinking-disabled limits; connect3 and temperature0.2 are runtime defaults. Balanced prompt and disabled guardrails are explicit trial settings. Fixed diagnostic acceptance and fresh yield do not establish factual, feedback or difficulty correctness.",
         "timing_scope": "Two independent 240-second operation clocks. Each existing isolated observer is bounded by the remaining operation time, with read75/connect3 and SDK1; bounded local cleanup can extend that wait slightly. The supplied fixed75 transport causes conservative runtime admission; deployed _bedrock_client can instead shorten its read timeout late in an operation. This is not an exact late-deadline Lambda simulation. Parent persistence is not hard real-time. Missing responses have unknown usage and remote completion.",
+    }
+
+
+def _make_native_workflow_plan(packet, *, source_revision):
+    cases = packet.get("cases")
+    if (set(packet) != {"experiment", "cases"} or type(cases) is not list or len(cases) != 3
+            or any(type(case) is not dict or set(case) != {"case_id", "payload"}
+                   or type(case["case_id"]) is not str or not case["case_id"].strip() for case in cases)
+            or len({case["case_id"] for case in cases}) != 3):
+        raise ValueError("Exactly three distinct fresh case_id/payload cases are required.")
+    settings = {**SETTINGS, "BEDROCK_STRUCTURED_OUTPUT_MODE": "native", "MAX_QUESTIONS_PER_BATCH": "5"}
+    operations = []
+    with patch.dict(os.environ, settings):
+        contracts = _native_stage_contracts()
+        for case in cases:
+            payload = case["payload"]
+            if (type(payload) is not dict or type(payload.get("targetCount")) is not int
+                    or payload["targetCount"] != 5 or type(payload.get("minimumDifficulty")) is not int
+                    or payload["minimumDifficulty"] != 3):
+                raise ValueError("Each fresh goal must request five questions at minimum difficulty three.")
+            request = _normalize_request(copy.deepcopy(payload))
+            if request["targetCount"] != 5 or request["minimumDifficulty"] != 3:
+                raise ValueError("Normalization changed the fixed target or difficulty.")
+            operations.append({"kind": "fresh", "case_id": case["case_id"], "request": request,
+                               "maximum_calls": 6, "first_request": _first_request(request, settings=settings)})
+    # Only this new mode binds the later offline backend/Swift delivery path.
+    # Historical plans retain their original source-snapshot scope.
+    from evals import checkpoint_delivery_check as delivery
+    delivery_sources = sorted(set(delivery.SOURCE_FILES) | {
+        "backend/bedrock-question-service/evals/checkpoint_native_delivery.py",
+    })
+    return {
+        "experiment": NATIVE_WORKFLOW_EXPERIMENT, "fixture": copy.deepcopy(packet), "fixture_sha256": _hash(packet),
+        **_source_snapshot(source_revision), "settings": settings, "native_contracts": contracts,
+        "delivery_source_sha256": {
+            name: hashlib.sha256((delivery.ROOT / name).read_bytes()).hexdigest() for name in delivery_sources
+        },
+        "operations": operations, "maximum_calls": 18,
+        "maximum_input_utf8_bytes_per_call": MAX_INPUT_BYTES,
+        "maximum_input_utf8_bytes_total": 18 * MAX_INPUT_BYTES,
+        "operation_seconds": OPERATION_SECONDS, "sdk_total_max_attempts": 1,
+        "runtime_deadline_constants": {
+            "client_setup_milliseconds": generation.DEFAULT_PROVIDER_CLIENT_SETUP_MILLISECONDS,
+            "safety_milliseconds": generation.DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS,
+        },
+        "maximum_worker_capture_bytes": caller.MAX_CAPTURE_BYTES,
+        "failure_policy": "Six calls and three ordinary generation attempts per goal; eighteen calls total. Native author, solver and reviewer requests must match frozen prompt/schema bytes, hashes, models and inference settings. Completed content rejection or recognized native format failure may continue to the next independent goal. Ordinary call-budget exhaustion is a coverage failure. Observer, dispatch, correlation, unknown-usage, unfinished-response, cleanup and persistence failures latch a global stop even if runtime retains a partial batch. Deadline/durable-budget and unrecognized exceptions stop. No added repair, retry, fallback, resume or replacement operation; an exclusive claim beside the original plan prevents its reuse with another output directory.",
+        "scope": "Three fresh five-item local production workflows use Kimi authoring and Sonnet verification, disabled thinking, temperature0.2,6000tokens, native structured output and reviewer_written feedback. Only each original payload enters normalization and provider prompts. New source guidance and author/solver ordering remain part of the exact frozen runtime. No deployment, bank write or quality certification. Returned counts, format compliance and policy stamps do not establish factual correctness, reasonable distractors, teaching or difficulty.",
+        "timing_scope": "Three separate240-second operation clocks; existing isolated observers use read75/connect3/SDK1 and at most32KiB per serialized request. Local cleanup can extend a wait slightly; parent persistence is not hard real-time. Fixed75 transport admission is conservative versus deployed late-operation read shortening. Missing responses leave remote completion and billing unknown.",
     }
 
 
@@ -462,11 +560,14 @@ class _RuntimeClient:
         position = len(self.report["calls"])
         count = sum(c["operation_index"] == self.operation_index for c in self.report["calls"])
         try:
-            role = _guard_request(request, self.settings)
+            role = _guard_request(request, self.settings, self.report["plan"].get("native_contracts"))
             if position >= self.report["plan"]["maximum_calls"] or count >= operation["maximum_calls"]:
                 raise ValueError("Call cap exceeded.")
             if operation["kind"] == "fixed" and role not in ("solver", "reviewer"):
                 raise ValueError("Fixed batch cannot invoke an author.")
+            if (self.report["plan"]["experiment"] == NATIVE_WORKFLOW_EXPERIMENT and count == 0
+                    and not _same(request, self.report["plan"]["operations"][self.operation_index]["first_request"])):
+                raise ValueError("Initial native request differs from the frozen plan.")
             remaining = self.context.get_remaining_time_in_millis()
             if remaining <= 0:
                 raise ValueError("Operation deadline exhausted.")
@@ -504,6 +605,9 @@ class _RuntimeClient:
                         raise ValueError("Saved observer admission contradicts the runtime deadline gate.")
                 if saved["observation"] is not None:
                     usable = _usable_observation(saved["observation"])
+                    if (self.report["plan"]["experiment"] == NATIVE_WORKFLOW_EXPERIMENT
+                            and not saved["observation"]["usage_known"]):
+                        usable = False
                 else:
                     usable = False
                 if saved["failure_phase"] is not None:
@@ -554,7 +658,8 @@ class _RuntimeClient:
                 state = self.observer(copy.deepcopy(request), cli_credentials=self.cli_credentials,
                                       on_progress=progress, timeout=remaining / 1000)
                 call["observation"] = copy.deepcopy(state)
-                if self.failed or not _usable_observation(state):
+                if (self.failed or not _usable_observation(state)
+                        or self.report["plan"]["experiment"] == NATIVE_WORKFLOW_EXPERIMENT and not state["usage_known"]):
                     raise QualificationFailure("Provider observation did not complete safely.")
                 call["lifecycle"] = "completed"
                 phase = "response_persistence"
@@ -569,11 +674,47 @@ class _RuntimeClient:
             raise
 
 
+def _delivery_content_failure(error, calls):
+    # Exact types exclude deadline/durable subclasses and unrelated failures.
+    if type(error) is ProviderCallBudgetExceededError:
+        return "call_budget_exhausted"
+    if type(error) is InvalidProviderResponseError:
+        return "invalid_provider_content"
+    traceback = error.__traceback__
+    while traceback is not None and traceback.tb_next is not None:
+        traceback = traceback.tb_next
+    if (type(error) is ProviderError and traceback is not None
+            and traceback.tb_frame.f_code is _extract_json_object.__code__
+            and [c["role"] for c in calls[-2:]] == ["author", "author_json_repair"]
+            and all(c["lifecycle"] == "completed" and _usable_observation(c["observation"])
+                    for c in calls[-2:])):
+        return "malformed_author_json"
+    # Native adaptation fails before legacy author JSON repair. Author errors
+    # are wrapped by the payload function; solver/reviewer errors propagate.
+    # Reproduce the content failure through the adapter, not its error prose.
+    if (type(error) is ProviderError and traceback is not None
+            and traceback.tb_frame.f_code in {
+                generation._generate_provider_payload.__code__, generation._generate_with_bedrock.__code__,
+                native.adapt_native_response.__code__,
+            }
+            and calls and calls[-1]["lifecycle"] == "completed" and _usable_observation(calls[-1]["observation"])
+            and "outputConfig" in calls[-1]["request"]):
+        last = calls[-1]
+        contract = last["request"]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"]
+        try:
+            native.adapt_native_response(last["observation"]["response"]["text"].strip(), contract)
+        except ProviderError:
+            return "native_contract_invalid"
+    return None
+
+
 def _execute(plan, report, persist, observer=None, *, cli_credentials=False, replay=None):
     client = _RuntimeClient(report, persist, observer, cli_credentials, replay and replay["calls"])
     for index, job in enumerate(plan["operations"]):
         settings = job.get("settings", plan["settings"])
-        with patch.dict(os.environ, {**settings, "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy"}), patch.object(caller, "SETTINGS", copy.deepcopy(settings)):
+        native_workflow = plan["experiment"] == NATIVE_WORKFLOW_EXPERIMENT
+        environment = {**settings, "BEDROCK_STRUCTURED_OUTPUT_MODE": "native" if native_workflow else "legacy"}
+        with patch.dict(os.environ, environment), patch.object(caller, "SETTINGS", copy.deepcopy(settings)):
             result = report["operations"][index]
             result["status"] = "running"
             context = _OperationContext(result, None if replay is None else replay["operations"][index]["remaining_milliseconds"])
@@ -581,9 +722,11 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
             client.settings = settings
             budget = generation.ProviderCallBudget(job["maximum_calls"], context=context)
             metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
-            error_type, questions = None, []
+            error_type, content_failure, questions = None, None, []
+            runtime_started = False
             try:
                 persist()
+                runtime_started = True
                 request = copy.deepcopy(job["request"])
                 if job["kind"] == "fixed":
                     def invoke(system, user):
@@ -597,13 +740,34 @@ def _execute(plan, report, persist, observer=None, *, cli_credentials=False, rep
                     questions = generation._generate_sanitized_questions(request, client, budget, metrics)
             except Exception as error:
                 error_type = type(error).__name__
-                client.failed = True
+                if native_workflow and runtime_started and not client.failed:
+                    content_failure = _delivery_content_failure(
+                        error, [c for c in report["calls"] if c["operation_index"] == index],
+                    )
+                if content_failure is None:
+                    client.failed = True
             if replay is not None and context.cursor != len(context.frozen):
                 raise ValueError("Unused operation-clock observations.")
             result.update(status="operational_failure" if client.failed else "completed",
                           questions=questions, runtime_error_type=error_type,
                           budget_reservations=budget.calls,
                           metrics=_metrics_without_runtime_intervals(metrics))
+            if native_workflow:
+                roles = [c["role"] for c in report["calls"] if c["operation_index"] == index]
+                target = job["request"]["targetCount"]
+                if not client.failed and not questions:
+                    result["status"] = "coverage_failure"
+                result["result_category"] = (
+                    "operational_failure" if client.failed else content_failure
+                    or ("no_returned_questions" if not questions else
+                        "full_delivery" if len(questions) == target else "partial_delivery")
+                )
+                result["delivery_observation"] = {
+                    "requested_count": target, "returned_count": len(questions),
+                    "shortfall_count": target - len(questions), "author_calls": roles.count("author"),
+                    "topoff_author_calls": max(0, roles.count("author") - 1),
+                    "author_json_repair_calls": roles.count("author_json_repair"),
+                }
             if plan["experiment"] in {AUTHORED_EXPERIMENT, AUTHOR_COMPARISON_EXPERIMENT,
                                       FOCUSED_APPLICATION_EXPERIMENT}:
                 repairs = sum(c["operation_index"] == index and c["role"] == "author_json_repair"
@@ -649,6 +813,7 @@ def _empty_report(plan):
                             **({key: copy.deepcopy(j[key]) for key in ("arm", "case_id", "settings")}
                                if plan["experiment"] in {AUTHOR_COMPARISON_EXPERIMENT,
                                                          FOCUSED_APPLICATION_EXPERIMENT} else {}),
+                            **({"case_id": j["case_id"]} if plan["experiment"] == NATIVE_WORKFLOW_EXPERIMENT else {}),
                             "status": "unattempted", "remaining_milliseconds": [], "questions": []}
                            for j in plan["operations"]]}
 
@@ -656,6 +821,20 @@ def _empty_report(plan):
 def run_trial(plan_path, approved_hash, directory, *, observer=None, cli_credentials=False):
     plan = load_frozen_plan(plan_path, approved_hash)
     directory = Path(directory)
+    if plan["experiment"] == NATIVE_WORKFLOW_EXPERIMENT:
+        if directory.exists():
+            raise FileExistsError(directory)
+        path = Path(plan_path).resolve()
+        claim = path.with_name(path.name + ".execution-claim.json")
+        with claim.open("x", encoding="utf-8") as handle:
+            handle.write(shared.canonical({"plan_sha256": approved_hash, "directory": str(directory.resolve())}))
+            handle.flush()
+            os.fsync(handle.fileno())
+        descriptor = os.open(claim.parent, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
     directory.mkdir(parents=True, exist_ok=False)
     report = _empty_report(plan)
 

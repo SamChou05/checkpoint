@@ -1,0 +1,59 @@
+{
+  "experiment": "native-fresh-workflow-v1",
+  "cases": [
+    {
+      "case_id": "sound_intensity_and_decibels",
+      "payload": {
+        "goal": {
+          "title": "Understand sound intensity and decibels for audio work",
+          "category": "Custom",
+          "currentLevel": "I can work with ratios and logarithms, but confuse changes in sound pressure, intensity, and decibel level.",
+          "focusAreas": "Apply sound intensity and decibel relationships to comparisons with several changes or constraints. Interpret the physical quantities and assumptions behind sound-level measurements."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Sound intensity and level: selective study notes",
+            "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/physics/pages/14-2-sound-intensity-and-sound-level\n\nIntensity measures sound power crossing a unit area: I = P/A, in W/m². For the sinusoidal sound-wave model, pressure amplitude Δp gives I = (Δp)²/(2ρv), where ρ is medium density and v is sound speed. Thus intensity scales with squared pressure amplitude when the medium is unchanged. Sound intensity level is β = 10 log10(I/I₀), using I₀ = 10⁻¹² W/m² as the reference. Subtracting two levels with the same reference gives 10 log10(I₂/I₁). A tenfold intensity ratio corresponds to 10 dB; doubling intensity adds approximately 3.01 dB. Intensity, pressure amplitude, and logarithmic level are different quantities. A ratio of intensities determines a level difference without determining either absolute level. These notes concern physical sound quantities; an equipment dial or perceived loudness is not automatically an intensity measurement.",
+            "truncated": true
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "english_conditions_and_scope",
+      "payload": {
+        "goal": {
+          "title": "Read conditions and exceptions accurately in English",
+          "category": "Language Learning",
+          "currentLevel": "I read everyday English comfortably but sometimes misunderstand qualifications in instructions and emails.",
+          "focusAreas": "Interpret conditions, exceptions, negation, and modal verbs in short instructions or correspondence. Compare paraphrases and conclusions while preserving what the text actually commits the writer to."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "sourceDocuments": []
+      }
+    },
+    {
+      "case_id": "plant_water_transport",
+      "payload": {
+        "goal": {
+          "title": "Explain water movement and gas exchange in plants",
+          "category": "Custom",
+          "currentLevel": "I know the basic roles of roots, xylem, and stomata, and want to connect those structures to how plants respond to their environment.",
+          "focusAreas": "Apply water-potential gradients, transpiration, and stomatal regulation to observations and environmental changes. Explain tradeoffs between carbon dioxide uptake and water loss."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 3,
+        "sourceDocuments": [
+          {
+            "name": "Plant water transport: selective study notes",
+            "text": "Assistant-written selective study notes, checked 2026-09-10; not a quotation or complete page. Reference: https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants\n\nNet water movement follows a gradient from higher to lower total water potential. Solute concentration and pressure contribute to that total; knowing one component alone need not determine the total gradient. Evaporation from leaves creates tension that helps pull water through xylem, with water cohesion and adhesion helping sustain the column. The leaf-to-air vapor gradient influences transpiration. At otherwise matching temperatures, higher atmospheric humidity reduces that gradient. Guard cells regulate stomatal openings in response to environmental and internal signals. Open stomata permit carbon dioxide exchange but also provide a route for water-vapor loss. Restricting stomatal opening therefore involves a tradeoff between carbon dioxide entry and water conservation. Leaf water status, light, and carbon dioxide can affect stomatal behavior; a change in one environmental factor does not establish a fixed rate for every plant. These notes give general mechanisms, not measurements for any particular plant or experiment.",
+            "truncated": true
+          }
+        ]
+      }
+    }
+  ]
+}
