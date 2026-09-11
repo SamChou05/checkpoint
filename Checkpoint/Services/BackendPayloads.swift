@@ -113,10 +113,16 @@ struct BackendSkillMapInferenceRequest: Encodable {
     private var sourceDocuments: [SourceDocumentPayload]
 
     init(request: QuestionGenerationRequest) {
-        goal = GoalPayload(goal: request.goal, questionContext: request.questionContext)
+        let context = request.questionContext
+        goal = GoalPayload(goal: request.goal, questionContext: context)
         let suggestions = request.goal.derivedSkillMap?.topicNames
-            ?? GoalQuestionContext.meaningfulFocusTopics(from: request.goal.focusAreas)
-        suggestedSkills = Array(suggestions.prefix(6))
+            ?? (context.hasUserFocusAreas ? context.contentTopics : [])
+        let names = Array(suggestions.prefix(6))
+        let identities = names.map(SkillMapTopic.canonicalIdentityKey)
+        // Literal focus examples can be distinct subjects but collide as skill
+        // names. Let inference name the skills from the preserved goal instead
+        // of sending conflicting optional names or merging their meanings.
+        suggestedSkills = Set(identities).count == names.count ? names : []
         competencies = request.competencies.prefix(20).map(CompetencyPayload.init)
         sourceDocuments = request.goal.sourceDocuments.map(SourceDocumentPayload.init)
     }

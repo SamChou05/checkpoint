@@ -36,6 +36,7 @@ from question_quality import (
 from request_contract import (
     _bounded_float_env,
     _canonical,
+    _clean_subject_text,
     _clean_text,
     _clip,
     _int_env,
@@ -1104,7 +1105,7 @@ def _source_grounding_text(request: dict[str, Any]) -> str:
 
 
 def _learner_level_text(request: dict[str, Any]) -> str:
-    explicit_level = _clean_text(request.get("goal", {}).get("currentLevel"))
+    explicit_level = _clean_subject_text(request.get("goal", {}).get("currentLevel") or "")
     if explicit_level:
         return explicit_level
 

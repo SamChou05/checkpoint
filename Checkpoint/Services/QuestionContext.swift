@@ -156,7 +156,7 @@ struct QuestionGenerationRequest: Sendable {
     }
 
     private static func currentLevelSummary(_ currentLevel: String) -> String {
-        let normalized = QuestionText.collapsedWhitespace(currentLevel)
+        let normalized = QuestionText.subjectContent(currentLevel)
         return normalized.isEmpty ? "Not provided; infer an appropriate starting point from the goal and requested difficulty." : normalized
     }
 
@@ -279,9 +279,8 @@ struct GoalSetupGuidance: Equatable, Sendable {
     var interpretation: String?
 
     init(title: String, focusAreas: String) {
-        let normalizedTitle = QuestionText.collapsedWhitespace(title)
         let focusTopics = GoalQuestionContext.meaningfulFocusTopics(from: focusAreas)
-        let target = GoalQuestionContext.learningTarget(fromTitle: normalizedTitle)
+        let target = GoalQuestionContext.learningTarget(fromTitle: title)
 
         interpretation = focusTopics.isEmpty && !target.isEmpty
             ? "questions about \(target)"
@@ -303,7 +302,7 @@ struct GoalQuestionContext: Equatable, Sendable {
 
     init(goal: Goal) {
         let target = GoalQuestionContext.learningTarget(from: goal)
-        let focusTopics = GoalQuestionContext.meaningfulFocusTopics(from: goal.focusAreas)
+        let focusTopics = GoalQuestionContext.focusTopics(from: goal.focusAreas, foldCase: false)
         let derivedTopics = goal.derivedSkillMap?.topics.filter { !$0.isPaused }.map(\.name) ?? []
         let resolvedTopics = derivedTopics.isEmpty ? focusTopics : derivedTopics
         learningTarget = target
@@ -330,7 +329,9 @@ struct GoalQuestionContext: Equatable, Sendable {
     }
 
     static func learningTarget(fromTitle rawTitle: String) -> String {
-        let title = QuestionText.collapsedWhitespace(rawTitle)
+        // The target can contain quoted text, code or notation. Cleaning the
+        // subject as UI prose can turn two different literals into one.
+        let title = QuestionText.subjectContent(rawTitle)
         let lowercasedTitle = title.lowercased()
 
         let prefixes = [
@@ -367,16 +368,9 @@ struct GoalQuestionContext: Equatable, Sendable {
     }
 
     private static func fallbackTarget(_ text: String) -> String {
-        var trimmed = QuestionText.collapsedWhitespace(text)
-            .trimmingCharacters(in: CharacterSet(charactersIn: ".:;,- "))
-
-        for article in ["a ", "an ", "the "] where trimmed.lowercased().hasPrefix(article) {
-            let index = trimmed.index(trimmed.startIndex, offsetBy: article.count)
-            trimmed = String(trimmed[index...])
-            break
-        }
-
-        return trimmed
+        // Punctuation and apparent articles can belong to the subject, such as
+        // a sign, decimal, identifier or musical key. Keep the remaining text.
+        QuestionText.subjectContent(text)
     }
 
     private static func contentTopics(
@@ -384,13 +378,22 @@ struct GoalQuestionContext: Equatable, Sendable {
         focusTopics rawTopics: [String]
     ) -> [String] {
         if !rawTopics.isEmpty {
-            return QuestionText.uniqueIgnoringCase(rawTopics)
+            return uniqueSubjectTopics(rawTopics)
         }
 
         return [learningTarget]
     }
 
     static func meaningfulFocusTopics(from focusAreas: String) -> [String] {
+        focusTopics(from: focusAreas, foldCase: true)
+    }
+
+    private static func uniqueSubjectTopics(_ topics: [String]) -> [String] {
+        var seen: Set<Data> = []
+        return topics.filter { seen.insert(Data($0.utf8)).inserted }
+    }
+
+    private static func focusTopics(from focusAreas: String, foldCase: Bool) -> [String] {
         let separators = CharacterSet(charactersIn: ",;\n")
         let placeholderTopics: Set<String> = [
             "none",
@@ -408,7 +411,7 @@ struct GoalQuestionContext: Equatable, Sendable {
 
         let topics = focusAreas
             .components(separatedBy: separators)
-            .map(QuestionText.collapsedWhitespace)
+            .map { QuestionText.subjectContent($0).trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { topic in
                 let normalizedTopic = topic.lowercased()
                 guard !topic.isEmpty,
@@ -421,7 +424,9 @@ struct GoalQuestionContext: Equatable, Sendable {
                 return true
             }
 
-        return QuestionText.uniqueIgnoringCase(topics)
+        // UI summaries may group names by case. Provider context must retain
+        // case-sensitive examples and distinct Unicode sequences as supplied.
+        return foldCase ? QuestionText.uniqueIgnoringCase(topics) : uniqueSubjectTopics(topics)
     }
 
     private static func questionDirective(
@@ -429,7 +434,7 @@ struct GoalQuestionContext: Equatable, Sendable {
         learningTarget: String,
         contentTopics: [String]
     ) -> String {
-        let levelContext = QuestionText.collapsedWhitespace(goal.currentLevel)
+        let levelContext = QuestionText.subjectContent(goal.currentLevel)
         let learnerGuidance = levelContext.isEmpty
             ? "Infer the learner's starting point from the requested difficulty."
             : "Calibrate the questions using this learner context: \(levelContext)."

@@ -199,6 +199,10 @@ def build_solver_prompt(
                 if value is not None and type(value) is not str:
                     raise CompleteSolutionFormatError(f"Invalid item field: {field}.")
                 item[field] = value
+        if "objective" in original:
+            if type(original["objective"]) is not str:
+                raise CompleteSolutionFormatError("Invalid item field: objective.")
+            item["objective"] = original["objective"]
         payload["items"].append(item)
     return (
         COMPLETE_SOLUTION_SYSTEM_PROMPT,

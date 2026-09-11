@@ -252,6 +252,9 @@ def verify_questions(
                 "skillID": question.get("skillID"),
                 "objectiveID": question.get("objectiveID"),
                 "topic": question["topic"],
+                # An inferred objective ID need not resolve to a listed map
+                # objective. Keep its existing label available for scope checks.
+                **({"objective": question["objective"]} if "objective" in question else {}),
             }
         )
     data = {key: request.get(key) for key in ("goal", "skillMap", "sourceDocuments")}

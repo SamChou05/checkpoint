@@ -929,6 +929,76 @@ final class QuestionValidationTests: XCTestCase {
         XCTAssertEqual(GoalQuestionContext(goal: goal).learningTarget, "recursion")
     }
 
+    func testGoalSubjectMeaningSurvivesContextAndBackendPayloads() throws {
+        let target = "Distinguish \"a  b\" from \"a b\" and e\u{301} from é"
+        let focus = "Trace this code:\nif ready:\n    print(\"a  b\")\n\nCompare\tcolumns"
+        let level = "I can trace:\nif ready:\n    print(\"a  b\")"
+        let goal = Goal(
+            title: "Learn \(target)",
+            deadline: Date().addingTimeInterval(60 * 60 * 24 * 30),
+            category: .custom,
+            currentLevel: level,
+            focusAreas: focus,
+            preferredQuestionStyle: .multipleChoice
+        )
+        let request = makeRequest(goal: goal)
+        let context = request.questionContext
+        XCTAssertEqual(Array(context.learningTarget.unicodeScalars), Array(target.unicodeScalars))
+        XCTAssertTrue(context.questionDirective.contains(target))
+        XCTAssertTrue(context.questionDirective.contains(level))
+        XCTAssertTrue(request.sourcePrompt(provider: .backend).contains("Learner's current level or context: \(level)\n"))
+        XCTAssertTrue(context.contentTopics.contains("print(\"a  b\")"))
+
+        let bodies = [
+            try JSONEncoder().encode(BackendQuestionRequest(request: request)),
+            try JSONEncoder().encode(BackendSkillMapInferenceRequest(request: request))
+        ]
+        for body in bodies {
+            let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            let encodedGoal = try XCTUnwrap(payload["goal"] as? [String: Any])
+            XCTAssertEqual(encodedGoal["focusAreas"] as? String, focus)
+            XCTAssertEqual(encodedGoal["currentLevel"] as? String, level)
+            let encodedTarget = try XCTUnwrap(encodedGoal["learningTarget"] as? String)
+            XCTAssertEqual(Array(encodedTarget.unicodeScalars), Array(target.unicodeScalars))
+            XCTAssertEqual(encodedGoal["questionDirective"] as? String, context.questionDirective)
+        }
+    }
+
+    func testLearningTargetPreservesSignsDecimalsAndLayout() {
+        for subject in ["-1 < 0", ".5 versus 5", "A minor", "a = 2", "the definite article", "x := 2;", "if ready:\n    run()", "  indented first line\n  second line"] {
+            XCTAssertEqual(GoalQuestionContext.learningTarget(fromTitle: "Learn \(subject)"), subject)
+        }
+        XCTAssertEqual(
+            GoalSetupGuidance(title: "Learn \"a  b\" versus \"a b\"", focusAreas: "").interpretation,
+            "questions about \"a  b\" versus \"a b\""
+        )
+        XCTAssertEqual(
+            GoalQuestionContext.learningTarget(fromTitle: "\r\nLearn first\r\n\tsecond\u{0000}line\r\n"),
+            "first\n\tsecond line"
+        )
+    }
+
+    func testFocusTopicListsKeepLiteralSpacingAndExistingListRules() throws {
+        XCTAssertEqual(
+            GoalQuestionContext.meaningfulFocusTopics(from: " \"a  b\" ; \"a b\", none, recursion, RECURSION "),
+            ["\"a  b\"", "\"a b\"", "recursion"]
+        )
+        var goal = makeGoal()
+        goal.focusAreas = "\"A\", \"a\", \"e\u{301}\", \"é\""
+        XCTAssertEqual(
+            GoalQuestionContext(goal: goal).contentTopics.map { Array($0.unicodeScalars) },
+            ["\"A\"", "\"a\"", "\"e\u{301}\"", "\"é\""].map { Array($0.unicodeScalars) }
+        )
+        for focus in ["\"a  b\", \"a b\"", "C++, C#", "\"A\", \"a\""] {
+            goal.focusAreas = focus
+            let data = try JSONEncoder().encode(BackendSkillMapInferenceRequest(request: makeRequest(goal: goal)))
+            let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+            let encodedGoal = try XCTUnwrap(payload["goal"] as? [String: Any])
+            XCTAssertEqual(encodedGoal["focusAreas"] as? String, focus)
+            XCTAssertEqual(payload["suggestedSkills"] as? [String], [])
+        }
+    }
+
     func testQuestionContextPreservesUnfocusedGoalsWithoutDomainTrackRewriting() {
         let systemDesignContext = GoalQuestionContext(
             goal: makeInterviewGoal(title: "Study for systems design interview")
