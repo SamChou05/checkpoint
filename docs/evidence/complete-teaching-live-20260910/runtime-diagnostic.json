@@ -1,0 +1,38 @@
+{
+  "exact_replay": true,
+  "status": "operational_failure",
+  "exceptions": [
+    {
+      "file": "generation_diagnostics.py",
+      "line": 64,
+      "function": "record_quality",
+      "error": "Unknown quality diagnostic.",
+      "stage": "review",
+      "reason": "unsupported_choice_feedback"
+    },
+    {
+      "file": "question_verification.py",
+      "line": 447,
+      "function": "verify_questions",
+      "error": "Unknown quality diagnostic.",
+      "stage": null,
+      "reason": "unsupported_choice_feedback"
+    },
+    {
+      "file": "question_generation.py",
+      "line": 257,
+      "function": "_generate_sanitized_questions",
+      "error": "Unknown quality diagnostic.",
+      "stage": null,
+      "reason": null
+    },
+    {
+      "file": "evals/checkpoint_runtime_qualification.py",
+      "line": 769,
+      "function": "_execute",
+      "error": "Unknown quality diagnostic.",
+      "stage": null,
+      "reason": null
+    }
+  ]
+}

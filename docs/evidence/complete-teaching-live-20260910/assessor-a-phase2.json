@@ -1,0 +1,447 @@
+{
+  "assessor": "A",
+  "phase": 2,
+  "input_sha256": {
+    "checkpoint-complete-teaching-assessor-a-phase1-20260910.json": "4df5750c2ee74d283bc295e022b57dd150fbf61467e2656f09f01f324b24855e",
+    "authored-key-teaching.json": "ac80c2f42f3db0a7103738b889df0a1d406b20bae280180f49b82629ebda0025"
+  },
+  "prior_phase1_preserved": true,
+  "scope": "Every raw authored key, exact main and native feedback row was assessed against frozen independent stem/choice judgments. No runtime verdicts, capture or private mappings were read. No delivered displays are inferred from these authored fields.",
+  "references": [
+    {
+      "url": "https://www.sqlite.org/lang_expr.html",
+      "use": "Official definitions of NULL comparisons, empty-set IN/NOT IN and EXISTS; checked against independent execution."
+    },
+    {
+      "url": "https://www.sqlite.org/lang_select.html",
+      "use": "Official SELECT processing, outer joins, WHERE, GROUP BY and DISTINCT; checked against independent execution."
+    }
+  ],
+  "additional_execution": {
+    "sqlite_version": "3.53.3",
+    "checks": [
+      {
+        "query": "SELECT 1=NULL, typeof(1=NULL), (1=NULL) IS FALSE, (1=NULL) IS NULL",
+        "rows": [
+          [
+            null,
+            "null",
+            0,
+            1
+          ]
+        ]
+      },
+      {
+        "query": "SELECT 1 WHERE 1=NULL",
+        "rows": []
+      },
+      {
+        "setup_sql": "CREATE TABLE L(ID); INSERT INTO L VALUES (10),(20); CREATE TABLE R(ID,X); INSERT INTO R VALUES (20,'a'),(30,'b');",
+        "query": "SELECT L.ID, R.X FROM L LEFT JOIN R ON L.ID=R.ID",
+        "rows": [
+          [
+            10,
+            null
+          ],
+          [
+            20,
+            "a"
+          ]
+        ]
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "q001",
+      "key": "1, 2, NULL",
+      "key_status": "supported_unique",
+      "key_matches_prior_unique": true,
+      "key_reason": "Exact match to the sole independently supported choice in unchanged phase one.",
+      "main": "NOT IN with an empty right-hand set returns true for every left value, including NULL, because no counterexample exists. SQLite keeps all three rows.",
+      "main_support": "supported",
+      "main_reason": "The empty S makes the subquery empty. SQLite NOT IN against an empty result is true for all three stated A values, including NULL; the vacuous/no-counterexample explanation fits that rule.",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "row_index": 0,
+          "choice_index": 0,
+          "choice": "1, 2",
+          "explanation": "Incorrect: NULL is also returned because NOT IN with an empty set is true even for NULL.",
+          "feedback_support": "supported",
+          "reason": "The NULL left value also passes the empty-set NOT IN test, so excluding it is incorrect.",
+          "issues": []
+        },
+        {
+          "row_index": 1,
+          "choice_index": 1,
+          "choice": "1, 2, NULL",
+          "explanation": "Correct: NOT IN against an empty set yields true for all values, including NULL, so all rows pass.",
+          "feedback_support": "supported",
+          "reason": "All three specified values satisfy NOT IN against the empty subquery.",
+          "issues": []
+        },
+        {
+          "row_index": 2,
+          "choice_index": 2,
+          "choice": "NULL only",
+          "explanation": "Incorrect: Non-NULL values also satisfy NOT IN when the right set is empty.",
+          "feedback_support": "supported",
+          "reason": "The two non-NULL left values pass too, so the NULL-only choice is incomplete.",
+          "issues": []
+        },
+        {
+          "row_index": 3,
+          "choice_index": 3,
+          "choice": "No rows",
+          "explanation": "Incorrect: An empty right set makes NOT IN true, not false; rows are kept.",
+          "feedback_support": "supported",
+          "reason": "The empty right-hand result yields true, retaining every stated outer row.",
+          "issues": []
+        }
+      ],
+      "structure_assessment": {
+        "complete_main": true,
+        "four_exact_feedback_rows": true,
+        "native_row_format_valid": true,
+        "notes": "Native choiceFeedback rows are the supplied teaching representation; absence of an adapted choiceExplanations map is not a defect."
+      },
+      "all_teaching_supported": true,
+      "authored_difficulty": 3,
+      "independent_difficulty": 2,
+      "independent_difficulty_reason": "A single empty-set NOT IN rule determines all rows; the extra subquery filter does no work because S has no rows.",
+      "useful_gate": {
+        "unique_key_supported": true,
+        "premises_sufficient": true,
+        "goal_relevant": true,
+        "distinct_choices": true,
+        "plausible_distractors": true,
+        "all_teaching_supported": true,
+        "independent_difficulty_at_least_3": false
+      },
+      "useful": false,
+      "useful_blockers": [
+        "independent_difficulty_at_least_3"
+      ]
+    },
+    {
+      "id": "q002",
+      "key": "1, NULL",
+      "key_status": "supported_unique",
+      "key_matches_prior_unique": true,
+      "key_reason": "Exact match to the sole independently supported choice in unchanged phase one.",
+      "main": "LEFT JOIN produces (1, NULL) and (NULL, NULL). WHERE B.Y IS NULL keeps both. However, ordinary equality in ON: 1=NULL is NULL (no match), NULL=NULL is NULL (no match). Both left rows are unmatched, so both have B.Y NULL.",
+      "main_support": "supported",
+      "main_reason": "Both left rows have no true ON match. The join rows are (1,NULL) and (NULL,NULL), and the right-side IS NULL test keeps both. Its explicit comparison results are correctly stated as NULL.",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "row_index": 0,
+          "choice_index": 0,
+          "choice": "1",
+          "explanation": "Incorrect: The NULL row in A also has B.Y NULL after left join and passes the filter.",
+          "feedback_support": "supported",
+          "reason": "The NULL-valued left row is unmatched, receives B.Y=NULL and passes IS NULL.",
+          "issues": []
+        },
+        {
+          "row_index": 1,
+          "choice_index": 1,
+          "choice": "NULL",
+          "explanation": "Incorrect: The row with A.X=1 is unmatched (1=NULL is false in ON), so B.Y is NULL and it passes.",
+          "feedback_support": "unsupported",
+          "reason": "The no-match and retained-row conclusions are correct, but 1=NULL evaluates to SQL NULL, not false. In ON it fails to be true; that does not change its expression value to false.",
+          "issues": [
+            {
+              "type": "incorrect_literal_truth_value",
+              "claim": "1=NULL is false in ON",
+              "reason": "SQLite evaluates 1=NULL to NULL. ON accepts only true, so NULL gives no match without becoming false. The main explicitly and correctly says this comparison is NULL.",
+              "interpretation_note": "False in ON could be intended as operational shorthand for no match; the actual nonmatch is correct. As learner-facing literal explanation of NULL handling, it conflates false with unknown and is not fully supported."
+            }
+          ]
+        },
+        {
+          "row_index": 2,
+          "choice_index": 2,
+          "choice": "1, NULL",
+          "explanation": "Correct: Both A rows are unmatched in the join (no ON equality holds), so both have B.Y NULL and satisfy WHERE.",
+          "feedback_support": "supported",
+          "reason": "Neither left row has a true equality match, and both NULL-extended B.Y values pass WHERE.",
+          "issues": []
+        },
+        {
+          "row_index": 3,
+          "choice_index": 3,
+          "choice": "No rows",
+          "explanation": "Incorrect: LEFT JOIN guarantees all A rows appear; with no matches, B.Y is NULL for both.",
+          "feedback_support": "supported",
+          "reason": "The LEFT JOIN stage preserves each unmatched A row with NULL on the right; in this query the stated IS NULL filter also preserves them. The guarantee is read as about the join stage.",
+          "issues": []
+        }
+      ],
+      "structure_assessment": {
+        "complete_main": true,
+        "four_exact_feedback_rows": true,
+        "native_row_format_valid": true,
+        "notes": "Native choiceFeedback rows are the supplied teaching representation; absence of an adapted choiceExplanations map is not a defect."
+      },
+      "all_teaching_supported": false,
+      "authored_difficulty": 3,
+      "independent_difficulty": 3,
+      "independent_difficulty_reason": "Combines NULL equality in ON, preservation of unmatched left rows, and a subsequent IS NULL filter; these related decisions determine both output rows.",
+      "useful_gate": {
+        "unique_key_supported": true,
+        "premises_sufficient": true,
+        "goal_relevant": true,
+        "distinct_choices": true,
+        "plausible_distractors": true,
+        "all_teaching_supported": false,
+        "independent_difficulty_at_least_3": true
+      },
+      "useful": false,
+      "useful_blockers": [
+        "all_teaching_supported"
+      ]
+    },
+    {
+      "id": "q003",
+      "key": "Both return identical single-row results",
+      "key_status": "supported_unique",
+      "key_matches_prior_unique": true,
+      "key_reason": "Exact match to the sole independently supported choice in unchanged phase one.",
+      "main": "Both queries return one row with value 2. DISTINCT removes duplicates after filtering; GROUP BY collapses to one row per group. With no aggregate, both produce identical single-row output.",
+      "main_support": "supported",
+      "main_reason": "Each WHERE clause leaves only V=2. DISTINCT then retains one result row, and GROUP BY V produces one group and one selected V value. The main is sound when read as explaining these exact queries and data.",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "row_index": 0,
+          "choice_index": 0,
+          "choice": "Q1 returns 2; Q2 returns 2, 2",
+          "explanation": "Incorrect: DISTINCT and GROUP BY both collapse duplicates; neither produces duplicate 2s.",
+          "feedback_support": "supported",
+          "reason": "For these queries grouping/deduplication cannot produce duplicate 2 rows; only one input row survives WHERE.",
+          "issues": []
+        },
+        {
+          "row_index": 1,
+          "choice_index": 1,
+          "choice": "Q1 returns 2; Q2 returns no rows",
+          "explanation": "Incorrect: GROUP BY with no aggregate still returns grouped values; V=2 passes the filter.",
+          "feedback_support": "supported",
+          "reason": "A grouping query need not contain an aggregate function, and its V=2 group produces one selected row.",
+          "issues": []
+        },
+        {
+          "row_index": 2,
+          "choice_index": 2,
+          "choice": "Both return identical single-row results",
+          "explanation": "Correct: After filtering to V=2, both DISTINCT and GROUP BY yield one row containing 2.",
+          "feedback_support": "supported",
+          "reason": "Filtering leaves V=2, so both specified query forms return that one row.",
+          "issues": []
+        },
+        {
+          "row_index": 3,
+          "choice_index": 3,
+          "choice": "Q1 returns no rows; Q2 returns 2",
+          "explanation": "Incorrect: The filter V>1 is applied in both queries, and 2 satisfies it.",
+          "feedback_support": "supported",
+          "reason": "The same V>1 condition retains 2 in both queries; Q1 cannot be empty.",
+          "issues": []
+        }
+      ],
+      "structure_assessment": {
+        "complete_main": true,
+        "four_exact_feedback_rows": true,
+        "native_row_format_valid": true,
+        "notes": "Native choiceFeedback rows are the supplied teaching representation; absence of an adapted choiceExplanations map is not a defect."
+      },
+      "all_teaching_supported": true,
+      "authored_difficulty": 3,
+      "independent_difficulty": 2,
+      "independent_difficulty_reason": "One simple filter leaves a single row, making the DISTINCT/GROUP BY comparison trivial on these data; no meaningful duplicate interaction remains.",
+      "useful_gate": {
+        "unique_key_supported": true,
+        "premises_sufficient": true,
+        "goal_relevant": true,
+        "distinct_choices": true,
+        "plausible_distractors": false,
+        "all_teaching_supported": true,
+        "independent_difficulty_at_least_3": false
+      },
+      "useful": false,
+      "useful_blockers": [
+        "plausible_distractors",
+        "independent_difficulty_at_least_3"
+      ]
+    },
+    {
+      "id": "q004",
+      "key": "5",
+      "key_status": "supported_unique",
+      "key_matches_prior_unique": true,
+      "key_reason": "Exact match to the sole independently supported choice in unchanged phase one.",
+      "main": "EXISTS checks if the subquery returns any rows. For P.K=5, Q has row (5,1) where M>0 is true, so EXISTS is true. For P.K=10, no Q rows match, so EXISTS is false.",
+      "main_support": "supported",
+      "main_reason": "The correlated subquery has qualifying row (5,1) for outer K=5 and no qualifying row for outer K=10. Its nonempty/empty results determine EXISTS as stated.",
+      "main_issues": [],
+      "choice_feedback": [
+        {
+          "row_index": 0,
+          "choice_index": 0,
+          "choice": "5",
+          "explanation": "Correct: EXISTS is true for P.K=5 due to matching row (5,1); false for P.K=10 with no matches.",
+          "feedback_support": "supported",
+          "reason": "Qualifying inner row (5,1) makes EXISTS true only for the outer key 5.",
+          "issues": []
+        },
+        {
+          "row_index": 1,
+          "choice_index": 1,
+          "choice": "5, 10",
+          "explanation": "Incorrect: P.K=10 has no matching Q rows, so EXISTS evaluates to false and is excluded.",
+          "feedback_support": "supported",
+          "reason": "No Q row matches outer key 10, so the correlated EXISTS excludes it.",
+          "issues": []
+        },
+        {
+          "row_index": 2,
+          "choice_index": 2,
+          "choice": "10",
+          "explanation": "Incorrect: P.K=10 has no Q matches; EXISTS is false. P.K=5 satisfies the condition.",
+          "feedback_support": "supported",
+          "reason": "The proposed 10 is excluded while the other outer key 5 qualifies.",
+          "issues": []
+        },
+        {
+          "row_index": 3,
+          "choice_index": 3,
+          "choice": "No rows",
+          "explanation": "Incorrect: P.K=5 has at least one matching row with M>0, so EXISTS is true.",
+          "feedback_support": "supported",
+          "reason": "The qualifying row with M=1 is enough for EXISTS to include P.K=5.",
+          "issues": []
+        }
+      ],
+      "structure_assessment": {
+        "complete_main": true,
+        "four_exact_feedback_rows": true,
+        "native_row_format_valid": true,
+        "notes": "Native choiceFeedback rows are the supplied teaching representation; absence of an adapted choiceExplanations map is not a defect."
+      },
+      "all_teaching_supported": true,
+      "authored_difficulty": 3,
+      "independent_difficulty": 3,
+      "independent_difficulty_reason": "Requires evaluating the correlated condition for each outer key, filtering NULL versus positive M, and applying existence to the surviving inner rows.",
+      "useful_gate": {
+        "unique_key_supported": true,
+        "premises_sufficient": true,
+        "goal_relevant": true,
+        "distinct_choices": true,
+        "plausible_distractors": true,
+        "all_teaching_supported": true,
+        "independent_difficulty_at_least_3": true
+      },
+      "useful": true,
+      "useful_blockers": []
+    },
+    {
+      "id": "q005",
+      "key": "20, 'a'",
+      "key_status": "supported_unique",
+      "key_matches_prior_unique": true,
+      "key_reason": "Exact match to the sole independently supported choice in unchanged phase one.",
+      "main": "LEFT JOIN preserves all L rows, but the WHERE clause filters after join formation. Only L.ID=20 has R.X='a'; L.ID=20 with NULL X is excluded by WHERE.",
+      "main_support": "unsupported",
+      "main_reason": "The overall join/filter rule and retained (20,'a') row are correct. The last clause wrongly identifies the excluded NULL-extended row as L.ID=20; the stated join produces (10,NULL), not (20,NULL).",
+      "main_issues": [
+        {
+          "type": "wrong_intermediate_row",
+          "claim": "L.ID=20 with NULL X is excluded by WHERE.",
+          "reason": "There is no (20,NULL) join row in the stated data: L.ID=20 matches R.X='a'. The excluded row is (10,NULL). Changing 20 to 10 would repair the explanation, but the authored text has not made that correction.",
+          "interpretation_note": "A hypothetical (20,NULL) row would fail the predicate, but this explanation presents it as the row excluded in the actual query; no such case is stated."
+        }
+      ],
+      "choice_feedback": [
+        {
+          "row_index": 0,
+          "choice_index": 0,
+          "choice": "10, NULL; 20, 'a'",
+          "explanation": "Incorrect: The WHERE clause removes the NULL-extended row for L.ID=10 before output.",
+          "feedback_support": "supported",
+          "reason": "The actual NULL-extended join row is (10,NULL), and it fails the post-join WHERE comparison.",
+          "issues": []
+        },
+        {
+          "row_index": 1,
+          "choice_index": 1,
+          "choice": "20, 'a'",
+          "explanation": "Correct: LEFT JOIN produces two rows, but WHERE R.X='a' keeps only the matched row with L.ID=20.",
+          "feedback_support": "supported",
+          "reason": "The stated join has exactly two rows; only (20,a) passes R.X=a.",
+          "issues": []
+        },
+        {
+          "row_index": 2,
+          "choice_index": 2,
+          "choice": "10, NULL",
+          "explanation": "Incorrect: The WHERE condition fails for this row; it is filtered out.",
+          "feedback_support": "supported",
+          "reason": "The offered (10,NULL) row does not satisfy the WHERE predicate and is removed.",
+          "issues": []
+        },
+        {
+          "row_index": 3,
+          "choice_index": 3,
+          "choice": "No rows",
+          "explanation": "Incorrect: The row with L.ID=20 satisfies both join and filter conditions.",
+          "feedback_support": "supported",
+          "reason": "The matched outer row 20 has X=a and passes both conditions, so the result is not empty.",
+          "issues": []
+        }
+      ],
+      "structure_assessment": {
+        "complete_main": true,
+        "four_exact_feedback_rows": true,
+        "native_row_format_valid": true,
+        "notes": "Native choiceFeedback rows are the supplied teaching representation; absence of an adapted choiceExplanations map is not a defect."
+      },
+      "all_teaching_supported": false,
+      "authored_difficulty": 3,
+      "independent_difficulty": 3,
+      "independent_difficulty_reason": "Requires constructing matched/unmatched LEFT JOIN rows and then applying a right-side filter that removes the preserved unmatched row; placement after the join matters.",
+      "useful_gate": {
+        "unique_key_supported": true,
+        "premises_sufficient": true,
+        "goal_relevant": true,
+        "distinct_choices": true,
+        "plausible_distractors": true,
+        "all_teaching_supported": false,
+        "independent_difficulty_at_least_3": true
+      },
+      "useful": false,
+      "useful_blockers": [
+        "all_teaching_supported"
+      ]
+    }
+  ],
+  "summary": {
+    "raw_items_assessed": 5,
+    "keys_matching_prior_unique": 5,
+    "supported_mains": 4,
+    "unsupported_mains": 1,
+    "native_feedback_rows_assessed": 20,
+    "supported_native_feedback_rows": 19,
+    "unsupported_native_feedback_rows": 1,
+    "all_teaching_supported_items": [
+      "q001",
+      "q003",
+      "q004"
+    ],
+    "useful_items": [
+      "q004"
+    ],
+    "scope": "Descriptive counts for this raw packet and assessor only; not delivered precision, agreement between assessors or a production accuracy estimate."
+  }
+}

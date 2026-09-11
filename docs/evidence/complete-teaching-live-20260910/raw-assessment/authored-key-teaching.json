@@ -1,0 +1,423 @@
+{
+  "capture_byte_sha256": "f8be6159328b6ee6270823d71a5713a1f5c44611913c57aecf591a59d09c972d",
+  "capture_canonical_sha256": "3144838e3d3720eca9bc4cbfa6a4b49817c927c6030d7b64a2ebf8c4d41dd7ee",
+  "plan_sha256": "481cb561a4d7fac53ebe83b86668452f785f9861c545262a2768984b12044043",
+  "source_revision": "a31a56c188d522dd40fb7ee45a49a7b1d6e20f74",
+  "items": [
+    {
+      "id": "q001",
+      "authored": {
+        "prompt": "Table: T(A) with rows 1, 2, NULL. Query: SELECT A FROM T WHERE A NOT IN (SELECT B FROM S WHERE B>0). Table S(B) is empty. What is returned?",
+        "explanation": "NOT IN with an empty right-hand set returns true for every left value, including NULL, because no counterexample exists. SQLite keeps all three rows.",
+        "expectedAnswer": "1, 2, NULL",
+        "choices": [
+          "1, 2",
+          "1, 2, NULL",
+          "NULL only",
+          "No rows"
+        ],
+        "choiceFeedback": [
+          {
+            "choice": "1, 2",
+            "explanation": "Incorrect: NULL is also returned because NOT IN with an empty set is true even for NULL."
+          },
+          {
+            "choice": "1, 2, NULL",
+            "explanation": "Correct: NOT IN against an empty set yields true for all values, including NULL, so all rows pass."
+          },
+          {
+            "choice": "NULL only",
+            "explanation": "Incorrect: Non-NULL values also satisfy NOT IN when the right set is empty."
+          },
+          {
+            "choice": "No rows",
+            "explanation": "Incorrect: An empty right set makes NOT IN true, not false; rows are kept."
+          }
+        ],
+        "topic": "SQLite membership tests",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "structure": {
+        "question_type": "dict",
+        "present_fields": [
+          "choiceFeedback",
+          "choices",
+          "difficulty",
+          "expectedAnswer",
+          "explanation",
+          "format",
+          "prompt",
+          "topic"
+        ],
+        "field_types": {
+          "prompt": "str",
+          "choices": "list",
+          "expectedAnswer": "str",
+          "explanation": "str",
+          "choiceFeedback": "list",
+          "choiceExplanations": "missing"
+        },
+        "empty_string_fields": [],
+        "choice_feedback_row_count": 4,
+        "missing_choice_indices": [],
+        "duplicate_choice_indices": [],
+        "unmatched_row_indices": [],
+        "malformed_row_indices": [],
+        "wrong_row_fields_indices": [],
+        "blank_explanation_indices": [],
+        "explanation_lengths": [
+          {
+            "row_index": 0,
+            "code_points": 88
+          },
+          {
+            "row_index": 1,
+            "code_points": 98
+          },
+          {
+            "row_index": 2,
+            "code_points": 75
+          },
+          {
+            "row_index": 3,
+            "code_points": 74
+          }
+        ],
+        "four_exact_feedback_rows": true
+      }
+    },
+    {
+      "id": "q002",
+      "authored": {
+        "prompt": "Table: A(X) rows 1, NULL. Table: B(Y) rows NULL, 2. Query: SELECT A.X FROM A LEFT JOIN B ON A.X=B.Y WHERE B.Y IS NULL. What is returned?",
+        "explanation": "LEFT JOIN produces (1, NULL) and (NULL, NULL). WHERE B.Y IS NULL keeps both. However, ordinary equality in ON: 1=NULL is NULL (no match), NULL=NULL is NULL (no match). Both left rows are unmatched, so both have B.Y NULL.",
+        "expectedAnswer": "1, NULL",
+        "choices": [
+          "1",
+          "NULL",
+          "1, NULL",
+          "No rows"
+        ],
+        "choiceFeedback": [
+          {
+            "choice": "1",
+            "explanation": "Incorrect: The NULL row in A also has B.Y NULL after left join and passes the filter."
+          },
+          {
+            "choice": "NULL",
+            "explanation": "Incorrect: The row with A.X=1 is unmatched (1=NULL is false in ON), so B.Y is NULL and it passes."
+          },
+          {
+            "choice": "1, NULL",
+            "explanation": "Correct: Both A rows are unmatched in the join (no ON equality holds), so both have B.Y NULL and satisfy WHERE."
+          },
+          {
+            "choice": "No rows",
+            "explanation": "Incorrect: LEFT JOIN guarantees all A rows appear; with no matches, B.Y is NULL for both."
+          }
+        ],
+        "topic": "SQLite left joins and NULL handling",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "structure": {
+        "question_type": "dict",
+        "present_fields": [
+          "choiceFeedback",
+          "choices",
+          "difficulty",
+          "expectedAnswer",
+          "explanation",
+          "format",
+          "prompt",
+          "topic"
+        ],
+        "field_types": {
+          "prompt": "str",
+          "choices": "list",
+          "expectedAnswer": "str",
+          "explanation": "str",
+          "choiceFeedback": "list",
+          "choiceExplanations": "missing"
+        },
+        "empty_string_fields": [],
+        "choice_feedback_row_count": 4,
+        "missing_choice_indices": [],
+        "duplicate_choice_indices": [],
+        "unmatched_row_indices": [],
+        "malformed_row_indices": [],
+        "wrong_row_fields_indices": [],
+        "blank_explanation_indices": [],
+        "explanation_lengths": [
+          {
+            "row_index": 0,
+            "code_points": 85
+          },
+          {
+            "row_index": 1,
+            "code_points": 97
+          },
+          {
+            "row_index": 2,
+            "code_points": 111
+          },
+          {
+            "row_index": 3,
+            "code_points": 89
+          }
+        ],
+        "four_exact_feedback_rows": true
+      }
+    },
+    {
+      "id": "q003",
+      "authored": {
+        "prompt": "Table: U(V) rows 1, 1, 2. Query Q1: SELECT DISTINCT V FROM U WHERE V>1. Query Q2: SELECT V FROM U WHERE V>1 GROUP BY V. How do results differ?",
+        "explanation": "Both queries return one row with value 2. DISTINCT removes duplicates after filtering; GROUP BY collapses to one row per group. With no aggregate, both produce identical single-row output.",
+        "expectedAnswer": "Both return identical single-row results",
+        "choices": [
+          "Q1 returns 2; Q2 returns 2, 2",
+          "Q1 returns 2; Q2 returns no rows",
+          "Both return identical single-row results",
+          "Q1 returns no rows; Q2 returns 2"
+        ],
+        "choiceFeedback": [
+          {
+            "choice": "Q1 returns 2; Q2 returns 2, 2",
+            "explanation": "Incorrect: DISTINCT and GROUP BY both collapse duplicates; neither produces duplicate 2s."
+          },
+          {
+            "choice": "Q1 returns 2; Q2 returns no rows",
+            "explanation": "Incorrect: GROUP BY with no aggregate still returns grouped values; V=2 passes the filter."
+          },
+          {
+            "choice": "Both return identical single-row results",
+            "explanation": "Correct: After filtering to V=2, both DISTINCT and GROUP BY yield one row containing 2."
+          },
+          {
+            "choice": "Q1 returns no rows; Q2 returns 2",
+            "explanation": "Incorrect: The filter V>1 is applied in both queries, and 2 satisfies it."
+          }
+        ],
+        "topic": "SQLite duplicate results and grouping",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "structure": {
+        "question_type": "dict",
+        "present_fields": [
+          "choiceFeedback",
+          "choices",
+          "difficulty",
+          "expectedAnswer",
+          "explanation",
+          "format",
+          "prompt",
+          "topic"
+        ],
+        "field_types": {
+          "prompt": "str",
+          "choices": "list",
+          "expectedAnswer": "str",
+          "explanation": "str",
+          "choiceFeedback": "list",
+          "choiceExplanations": "missing"
+        },
+        "empty_string_fields": [],
+        "choice_feedback_row_count": 4,
+        "missing_choice_indices": [],
+        "duplicate_choice_indices": [],
+        "unmatched_row_indices": [],
+        "malformed_row_indices": [],
+        "wrong_row_fields_indices": [],
+        "blank_explanation_indices": [],
+        "explanation_lengths": [
+          {
+            "row_index": 0,
+            "code_points": 89
+          },
+          {
+            "row_index": 1,
+            "code_points": 90
+          },
+          {
+            "row_index": 2,
+            "code_points": 87
+          },
+          {
+            "row_index": 3,
+            "code_points": 73
+          }
+        ],
+        "four_exact_feedback_rows": true
+      }
+    },
+    {
+      "id": "q004",
+      "authored": {
+        "prompt": "Tables: P(K) rows 5, 10; Q(K, M) rows (5, NULL), (5, 1). Query: SELECT P.K FROM P WHERE EXISTS (SELECT 1 FROM Q WHERE Q.K=P.K AND Q.M>0). What is returned?",
+        "explanation": "EXISTS checks if the subquery returns any rows. For P.K=5, Q has row (5,1) where M>0 is true, so EXISTS is true. For P.K=10, no Q rows match, so EXISTS is false.",
+        "expectedAnswer": "5",
+        "choices": [
+          "5",
+          "5, 10",
+          "10",
+          "No rows"
+        ],
+        "choiceFeedback": [
+          {
+            "choice": "5",
+            "explanation": "Correct: EXISTS is true for P.K=5 due to matching row (5,1); false for P.K=10 with no matches."
+          },
+          {
+            "choice": "5, 10",
+            "explanation": "Incorrect: P.K=10 has no matching Q rows, so EXISTS evaluates to false and is excluded."
+          },
+          {
+            "choice": "10",
+            "explanation": "Incorrect: P.K=10 has no Q matches; EXISTS is false. P.K=5 satisfies the condition."
+          },
+          {
+            "choice": "No rows",
+            "explanation": "Incorrect: P.K=5 has at least one matching row with M>0, so EXISTS is true."
+          }
+        ],
+        "topic": "SQLite EXISTS and subqueries",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "structure": {
+        "question_type": "dict",
+        "present_fields": [
+          "choiceFeedback",
+          "choices",
+          "difficulty",
+          "expectedAnswer",
+          "explanation",
+          "format",
+          "prompt",
+          "topic"
+        ],
+        "field_types": {
+          "prompt": "str",
+          "choices": "list",
+          "expectedAnswer": "str",
+          "explanation": "str",
+          "choiceFeedback": "list",
+          "choiceExplanations": "missing"
+        },
+        "empty_string_fields": [],
+        "choice_feedback_row_count": 4,
+        "missing_choice_indices": [],
+        "duplicate_choice_indices": [],
+        "unmatched_row_indices": [],
+        "malformed_row_indices": [],
+        "wrong_row_fields_indices": [],
+        "blank_explanation_indices": [],
+        "explanation_lengths": [
+          {
+            "row_index": 0,
+            "code_points": 94
+          },
+          {
+            "row_index": 1,
+            "code_points": 87
+          },
+          {
+            "row_index": 2,
+            "code_points": 83
+          },
+          {
+            "row_index": 3,
+            "code_points": 75
+          }
+        ],
+        "four_exact_feedback_rows": true
+      }
+    },
+    {
+      "id": "q005",
+      "authored": {
+        "prompt": "Tables: L(ID) rows 10, 20; R(ID, X) rows (20, 'a'), (30, 'b'). Query: SELECT L.ID, R.X FROM L LEFT JOIN R ON L.ID=R.ID WHERE R.X='a'. What is returned?",
+        "explanation": "LEFT JOIN preserves all L rows, but the WHERE clause filters after join formation. Only L.ID=20 has R.X='a'; L.ID=20 with NULL X is excluded by WHERE.",
+        "expectedAnswer": "20, 'a'",
+        "choices": [
+          "10, NULL; 20, 'a'",
+          "20, 'a'",
+          "10, NULL",
+          "No rows"
+        ],
+        "choiceFeedback": [
+          {
+            "choice": "10, NULL; 20, 'a'",
+            "explanation": "Incorrect: The WHERE clause removes the NULL-extended row for L.ID=10 before output."
+          },
+          {
+            "choice": "20, 'a'",
+            "explanation": "Correct: LEFT JOIN produces two rows, but WHERE R.X='a' keeps only the matched row with L.ID=20."
+          },
+          {
+            "choice": "10, NULL",
+            "explanation": "Incorrect: The WHERE condition fails for this row; it is filtered out."
+          },
+          {
+            "choice": "No rows",
+            "explanation": "Incorrect: The row with L.ID=20 satisfies both join and filter conditions."
+          }
+        ],
+        "topic": "SQLite left joins and filtering",
+        "difficulty": 3,
+        "format": "Multiple Choice"
+      },
+      "structure": {
+        "question_type": "dict",
+        "present_fields": [
+          "choiceFeedback",
+          "choices",
+          "difficulty",
+          "expectedAnswer",
+          "explanation",
+          "format",
+          "prompt",
+          "topic"
+        ],
+        "field_types": {
+          "prompt": "str",
+          "choices": "list",
+          "expectedAnswer": "str",
+          "explanation": "str",
+          "choiceFeedback": "list",
+          "choiceExplanations": "missing"
+        },
+        "empty_string_fields": [],
+        "choice_feedback_row_count": 4,
+        "missing_choice_indices": [],
+        "duplicate_choice_indices": [],
+        "unmatched_row_indices": [],
+        "malformed_row_indices": [],
+        "wrong_row_fields_indices": [],
+        "blank_explanation_indices": [],
+        "explanation_lengths": [
+          {
+            "row_index": 0,
+            "code_points": 84
+          },
+          {
+            "row_index": 1,
+            "code_points": 96
+          },
+          {
+            "row_index": 2,
+            "code_points": 70
+          },
+          {
+            "row_index": 3,
+            "code_points": 74
+          }
+        ],
+        "four_exact_feedback_rows": true
+      }
+    }
+  ]
+}

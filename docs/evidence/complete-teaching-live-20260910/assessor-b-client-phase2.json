@@ -1,0 +1,17 @@
+{
+  "assessor": "B",
+  "phase": 2,
+  "input_sha256": {
+    "checkpoint-complete-teaching-assessor-b-client-phase1-20260910.json": "12c7e7b9ecfe657c210966a30efce7b502831f47c759b2b8d8e4000733caef56",
+    "client-keys.json": "b2182de629c3be2f11496120a9c6371535da90d9b7beb67150e0637601c22e24",
+    "client-teaching.json": "b2182de629c3be2f11496120a9c6371535da90d9b7beb67150e0637601c22e24"
+  },
+  "items": [],
+  "assessable_client_item_count": 0,
+  "assessable_client_display_count": 0,
+  "precision_estimate": null,
+  "teaching_precision_estimate": null,
+  "useful_precision_estimate": null,
+  "blinding_note": "Client phase1 was saved and hashed before receiving authorization to inspect these client key and teaching files. Both authorized phase2 packets contain no items.",
+  "notes": "No available delivered keys, main explanations or feedback displays can be assessed. Empty evidence is not evidence of correct delivered content; no client precision estimate or delivery-failure cause is inferred."
+}

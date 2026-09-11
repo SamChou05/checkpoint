@@ -1,0 +1,9 @@
+{
+  "capture_byte_sha256": "f8be6159328b6ee6270823d71a5713a1f5c44611913c57aecf591a59d09c972d",
+  "capture_canonical_sha256": "3144838e3d3720eca9bc4cbfa6a4b49817c927c6030d7b64a2ebf8c4d41dd7ee",
+  "plan_sha256": "481cb561a4d7fac53ebe83b86668452f785f9861c545262a2768984b12044043",
+  "source_revision": "a31a56c188d522dd40fb7ee45a49a7b1d6e20f74",
+  "bank_delivery_byte_sha256": "870213818f16d017c00cdb20fd645888fbfc40424ffadb1c6c28b0a1ffed257f",
+  "swift_attachment_byte_sha256": "939217a4a12d2b94405b4a22330b96bd1c4550afef416109ad2d1107eff068ab",
+  "items": []
+}

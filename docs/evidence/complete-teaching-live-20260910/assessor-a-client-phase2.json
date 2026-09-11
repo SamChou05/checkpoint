@@ -1,0 +1,18 @@
+{
+  "assessor": "A",
+  "phase": 2,
+  "input_sha256": {
+    "checkpoint-complete-teaching-assessor-a-client-phase1-20260910.json": "7f0f43505f5a5e6c12c0d263ae1dce1fdf6e2a41f9acff4283438d211f860da6",
+    "client-keys.json": "b2182de629c3be2f11496120a9c6371535da90d9b7beb67150e0637601c22e24",
+    "client-teaching.json": "b2182de629c3be2f11496120a9c6371535da90d9b7beb67150e0637601c22e24"
+  },
+  "prior_client_phase1_preserved": true,
+  "items": [],
+  "assessable_client_items": 0,
+  "assessable_client_feedback_rows": 0,
+  "assessable_client_displays": 0,
+  "precision_estimate": null,
+  "precision_status": "undefined_no_assessable_client_items",
+  "useful_client_items": 0,
+  "notes": "Client stems, keys and teaching packets are all empty. There are no delivered keys, mains, feedback rows or displays to assess; no client item or display was invented. Raw authored judgments do not establish client precision."
+}

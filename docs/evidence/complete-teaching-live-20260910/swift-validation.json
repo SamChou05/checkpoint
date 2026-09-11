@@ -1,0 +1,19 @@
+{
+  "xcodebuild_session": 53551,
+  "exit_code": 0,
+  "tests_passed": 1,
+  "tests_failed": 0,
+  "tests_skipped": 0,
+  "client_attachment_path": "/tmp/checkpoint-complete-teaching-live-delivery-attachments-20260910/82F9F97F-2F34-443B-8D08-C2743F2B9D97.json",
+  "client_export_path": "/tmp/checkpoint-complete-teaching-live-client-20260910.json",
+  "client_attachment_sha256": "939217a4a12d2b94405b4a22330b96bd1c4550afef416109ad2d1107eff068ab",
+  "bank_fixture_sha256": "870213818f16d017c00cdb20fd645888fbfc40424ffadb1c6c28b0a1ffed257f",
+  "runtime_count": 0,
+  "bank_count": 0,
+  "client_count": 0,
+  "actual_display_count": 0,
+  "operation_count": 3,
+  "requested_slots": 15,
+  "frozen_source_hash_entries_verified": 130,
+  "temporary_project_removed": true
+}

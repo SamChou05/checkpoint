@@ -1,0 +1,78 @@
+{
+  "capture_byte_sha256": "f8be6159328b6ee6270823d71a5713a1f5c44611913c57aecf591a59d09c972d",
+  "capture_canonical_sha256": "3144838e3d3720eca9bc4cbfa6a4b49817c927c6030d7b64a2ebf8c4d41dd7ee",
+  "plan_sha256": "481cb561a4d7fac53ebe83b86668452f785f9861c545262a2768984b12044043",
+  "source_revision": "a31a56c188d522dd40fb7ee45a49a7b1d6e20f74",
+  "phase": "raw_author",
+  "operations": [
+    {
+      "operation_index": 0,
+      "case_id": "sqlite_query_results",
+      "requested_slots": 5,
+      "runtime_status": "operational_failure",
+      "runtime_returned_count": 0,
+      "generation_shortfall": 5,
+      "result_category": "operational_failure",
+      "observed_call_count": 3,
+      "author_calls": 1,
+      "parsed_question_occurrences": 5,
+      "masked_subject_occurrences": 5,
+      "readable_subject_occurrences": 5,
+      "malformed_question_occurrences": 0,
+      "unreadable_author_calls": 0
+    },
+    {
+      "operation_index": 1,
+      "case_id": "study_design_and_inference",
+      "requested_slots": 5,
+      "runtime_status": "unattempted",
+      "runtime_returned_count": 0,
+      "generation_shortfall": 5,
+      "result_category": null,
+      "observed_call_count": 0,
+      "author_calls": 0,
+      "parsed_question_occurrences": 0,
+      "masked_subject_occurrences": 0,
+      "readable_subject_occurrences": 0,
+      "malformed_question_occurrences": 0,
+      "unreadable_author_calls": 0
+    },
+    {
+      "operation_index": 2,
+      "case_id": "spanish_past_tense_narrative",
+      "requested_slots": 5,
+      "runtime_status": "unattempted",
+      "runtime_returned_count": 0,
+      "generation_shortfall": 5,
+      "result_category": null,
+      "observed_call_count": 0,
+      "author_calls": 0,
+      "parsed_question_occurrences": 0,
+      "masked_subject_occurrences": 0,
+      "readable_subject_occurrences": 0,
+      "malformed_question_occurrences": 0,
+      "unreadable_author_calls": 0
+    }
+  ],
+  "author_call_count": 1,
+  "masked_subject_count": 5,
+  "readable_subject_count": 5,
+  "parsed_question_occurrence_count": 5,
+  "malformed_question_occurrence_count": 0,
+  "unreadable_author_call_count": 0,
+  "requested_slots": 15,
+  "selection": "Every author/repair/topoff call and every recoverable questions-array occurrence is inventoried. Every array row gets a phase-one ID; non-string subjects or non-string-list choices are null placeholders, not silently repaired. Phase two preserves each entire raw value including every choiceFeedback row and malformed or incomplete teaching. Unreadable calls remain private with unknown item counts. There is no native adaptation, length, correctness, difficulty or survival filtering. Raw questions are extra opportunities, not additional requested slots.",
+  "shuffle": {
+    "seed": "complete-teaching-20260910",
+    "phase": "raw_author",
+    "algorithm": "Python random.Random(int.from_bytes(SHA256(UTF8(seed + ':' + phase)), 'big')).shuffle once over occurrence order"
+  },
+  "builder_byte_sha256": "8030a3108941d1ca030e5d39e4d211636c7e07966b2c6d83db79d877e5b189bb",
+  "parser_byte_sha256": "4b5b65fc62963a87c31561d4f88041d32481ab4f4022c8827fc4490eb5ab3272",
+  "files": {
+    "raw-stems-and-choices.json": "a3491337c54d9cd9d325d71c8d8d16ec28dfd16ae4ba27a3664d91cfc165b5d7",
+    "authored-key-teaching.json": "ac80c2f42f3db0a7103738b889df0a1d406b20bae280180f49b82629ebda0025",
+    "private-mapping.json": "26252a9cb2082bcdd1cd570f4a5836015a778a6544fc3e5045f7a9e3fa943337",
+    "private-malformed-occurrences.json": "064059d4d4d7e31a25e363cc8f2e29c0e631d7d0760e6b26e04787348e489f0a"
+  }
+}

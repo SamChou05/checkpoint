@@ -1,0 +1,33 @@
+{
+  "algorithm": "sha256 file bytes",
+  "files": {
+    "assessment-summary.json": "21d236303b5aaa17494cfea83c68d83c53b0aedbeb955ba285a2c643f9bb8e00",
+    "assessor-a-client-phase1.json": "7f0f43505f5a5e6c12c0d263ae1dce1fdf6e2a41f9acff4283438d211f860da6",
+    "assessor-a-client-phase2.json": "93c828d6c45162214e078deb877ebcc710b7de9fbc634cf3e2320b258f194590",
+    "assessor-a-phase1.json": "4df5750c2ee74d283bc295e022b57dd150fbf61467e2656f09f01f324b24855e",
+    "assessor-a-phase2.json": "d29f56e801a5d053514a84453408f60a52df6bc52e3a9d2f304036127def7635",
+    "assessor-b-client-phase1.json": "12c7e7b9ecfe657c210966a30efce7b502831f47c759b2b8d8e4000733caef56",
+    "assessor-b-client-phase2.json": "5f90d2a32af80822e69c82cca84c4f26421bdded7c0a82ec9569899df7c67f59",
+    "assessor-b-phase1.json": "857bd8d7d95b7384e4097c71fd810b0b7e1c83dd7b2383e0ef3fbb589aee9be1",
+    "assessor-b-phase2.json": "a53845e6095078faedc0be26c25a6ac4fa012e38681de9d9b78f63766bd147bb",
+    "bank-delivery.json": "870213818f16d017c00cdb20fd645888fbfc40424ffadb1c6c28b0a1ffed257f",
+    "capture.json": "f8be6159328b6ee6270823d71a5713a1f5c44611913c57aecf591a59d09c972d",
+    "client-assessment/client-keys.json": "b2182de629c3be2f11496120a9c6371535da90d9b7beb67150e0637601c22e24",
+    "client-assessment/client-stems-and-choices.json": "b2182de629c3be2f11496120a9c6371535da90d9b7beb67150e0637601c22e24",
+    "client-assessment/client-teaching.json": "b2182de629c3be2f11496120a9c6371535da90d9b7beb67150e0637601c22e24",
+    "client-assessment/packet-manifest.json": "92bce468f8082409a1ae211a06c42d36705521dac1831cb538f28c888114bac1",
+    "client-assessment/private-mapping.json": "b2182de629c3be2f11496120a9c6371535da90d9b7beb67150e0637601c22e24",
+    "client-delivery.json": "939217a4a12d2b94405b4a22330b96bd1c4550afef416109ad2d1107eff068ab",
+    "occurrence-lineage.json": "18d40e399bb274828619911512fe730296a938201181a4893cd0ac260ff00757",
+    "raw-assessment/authored-key-teaching.json": "ac80c2f42f3db0a7103738b889df0a1d406b20bae280180f49b82629ebda0025",
+    "raw-assessment/packet-manifest.json": "14c72aff58f5b6c3bc1153edc8515cae9a1fbaaef66404601ff801f02d0b215b",
+    "raw-assessment/private-malformed-occurrences.json": "064059d4d4d7e31a25e363cc8f2e29c0e631d7d0760e6b26e04787348e489f0a",
+    "raw-assessment/private-mapping.json": "26252a9cb2082bcdd1cd570f4a5836015a778a6544fc3e5045f7a9e3fa943337",
+    "raw-assessment/raw-stems-and-choices.json": "a3491337c54d9cd9d325d71c8d8d16ec28dfd16ae4ba27a3664d91cfc165b5d7",
+    "runtime-diagnostic.json": "ba937d506cc3531b96b27f417798ae31f96dbf9ca0e64af9f20e5b6c8f1864fb",
+    "sqlite-checks.json": "10f5578e53eed05879936fc6ac53d6a16176aa727ad4d38f8780af2a53b97333",
+    "swift-summary.json": "99dc4ebb515ff72968415e84da9cef134255c6bcfba80e3583c3281511fd44c0",
+    "swift-validation.json": "e4342c7fdfc526cd8106fe3a3e86e34518c62b84c396ebf0612c53cf988d8b80",
+    "validation.json": "d99b4108763e58dc8177e5dd15c2747c11846fa8720e204e7e5618d09fbfdf41"
+  }
+}

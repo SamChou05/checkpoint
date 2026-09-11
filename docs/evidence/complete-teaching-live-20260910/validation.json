@@ -1,0 +1,16 @@
+{
+  "frozen_runtime_hashes_verified": 36,
+  "frozen_delivery_hashes_verified": 94,
+  "raw_and_client_packet_hashes_verified": true,
+  "bank_and_actual_swift_fixture_binding_verified": true,
+  "all_requested_slots_preserved": 15,
+  "independent_assessors": 2,
+  "original_runtime_replay_exact": true,
+  "original_runtime_outcome": "operational_failure",
+  "swift_tests_passed": 1,
+  "swift_tests_failed": 0,
+  "swift_tests_skipped": 0,
+  "runtime_code_changed_for_evidence": false,
+  "independent_evidence_and_fix_review": "no blockers",
+  "fix_commit": "a71d8db694b583618be51c38c8770fad7945a77a"
+}

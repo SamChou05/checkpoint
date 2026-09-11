@@ -1,0 +1,75 @@
+{
+  "requested_slots": 15,
+  "raw_occurrences": 5,
+  "runtime_returned": 0,
+  "bank_claimable": 0,
+  "client_retained": 0,
+  "actual_client_displays": 0,
+  "both_supported_raw_keys": 5,
+  "both_supported_raw_complete_teaching": 3,
+  "raw_useful_assessor_a": 1,
+  "raw_useful_assessor_b": 0,
+  "raw_useful_both_assessors": 0,
+  "delivered_useful": 0,
+  "delivered_precision": null,
+  "difficulty_disagreements": [
+    "q004"
+  ],
+  "main_teaching_defect": [
+    "q005"
+  ],
+  "feedback_teaching_defect": [
+    "q002"
+  ],
+  "items": [
+    {
+      "id": "q001",
+      "both_unique_keys_supported": true,
+      "both_all_teaching_supported": true,
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "confirmed_useful": false
+    },
+    {
+      "id": "q002",
+      "both_unique_keys_supported": true,
+      "both_all_teaching_supported": false,
+      "difficulty_a": 3,
+      "difficulty_b": 3,
+      "confirmed_useful": false
+    },
+    {
+      "id": "q003",
+      "both_unique_keys_supported": true,
+      "both_all_teaching_supported": true,
+      "difficulty_a": 2,
+      "difficulty_b": 2,
+      "confirmed_useful": false
+    },
+    {
+      "id": "q004",
+      "both_unique_keys_supported": true,
+      "both_all_teaching_supported": true,
+      "difficulty_a": 3,
+      "difficulty_b": 2,
+      "confirmed_useful": false
+    },
+    {
+      "id": "q005",
+      "both_unique_keys_supported": true,
+      "both_all_teaching_supported": false,
+      "difficulty_a": 3,
+      "difficulty_b": 3,
+      "confirmed_useful": false
+    }
+  ],
+  "fix_commit": "a71d8db694b583618be51c38c8770fad7945a77a",
+  "fix_branch": "codex/complete-teaching-diagnostics-fix",
+  "fix_verification": {
+    "backend_tests_passed": 1150,
+    "ruff": "passed",
+    "diff_check": "passed",
+    "additional_live_calls": 0
+  },
+  "limits": "Original live result remains zero delivery. The separate tested registry fix is not a live continuation, semantic correction, or deployment. Conservative difficulty disagreement exclusion does not mean q004 is factually wrong."
+}

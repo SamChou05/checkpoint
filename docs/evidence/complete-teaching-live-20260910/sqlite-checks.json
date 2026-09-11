@@ -1,0 +1,129 @@
+{
+  "sqlite_version": "3.53.3",
+  "packet_byte_sha256": "a3491337c54d9cd9d325d71c8d8d16ec28dfd16ae4ba27a3664d91cfc165b5d7",
+  "method": "Literal named columns and stated numeric/text/NULL data; no added constraints or query repairs. Output row order is observed, not guaranteed. Additional queries inspect intermediate rows/truth values separately.",
+  "sources": [
+    "https://www.sqlite.org/lang_expr.html",
+    "https://www.sqlite.org/lang_select.html"
+  ],
+  "cases": [
+    {
+      "id": "q001",
+      "setup": "CREATE TABLE T(A); INSERT INTO T VALUES(1),(2),(NULL); CREATE TABLE S(B);",
+      "queries": [
+        {
+          "sql": "SELECT A FROM T WHERE A NOT IN (SELECT B FROM S WHERE B>0)",
+          "rows": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              null
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q002",
+      "setup": "CREATE TABLE A(X); INSERT INTO A VALUES(1),(NULL); CREATE TABLE B(Y); INSERT INTO B VALUES(NULL),(2);",
+      "queries": [
+        {
+          "sql": "SELECT A.X FROM A LEFT JOIN B ON A.X=B.Y WHERE B.Y IS NULL",
+          "rows": [
+            [
+              1
+            ],
+            [
+              null
+            ]
+          ]
+        },
+        {
+          "sql": "SELECT 1=NULL, NULL=NULL",
+          "rows": [
+            [
+              null,
+              null
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q003",
+      "setup": "CREATE TABLE U(V); INSERT INTO U VALUES(1),(1),(2);",
+      "queries": [
+        {
+          "sql": "SELECT DISTINCT V FROM U WHERE V>1",
+          "rows": [
+            [
+              2
+            ]
+          ]
+        },
+        {
+          "sql": "SELECT V FROM U WHERE V>1 GROUP BY V",
+          "rows": [
+            [
+              2
+            ]
+          ]
+        },
+        {
+          "sql": "SELECT V FROM U WHERE V>1",
+          "rows": [
+            [
+              2
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q004",
+      "setup": "CREATE TABLE P(K); INSERT INTO P VALUES(5),(10); CREATE TABLE Q(K,M); INSERT INTO Q VALUES(5,NULL),(5,1);",
+      "queries": [
+        {
+          "sql": "SELECT P.K FROM P WHERE EXISTS (SELECT 1 FROM Q WHERE Q.K=P.K AND Q.M>0)",
+          "rows": [
+            [
+              5
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q005",
+      "setup": "CREATE TABLE L(ID); INSERT INTO L VALUES(10),(20); CREATE TABLE R(ID,X); INSERT INTO R VALUES(20,'a'),(30,'b');",
+      "queries": [
+        {
+          "sql": "SELECT L.ID, R.X FROM L LEFT JOIN R ON L.ID=R.ID WHERE R.X='a'",
+          "rows": [
+            [
+              20,
+              "a"
+            ]
+          ]
+        },
+        {
+          "sql": "SELECT L.ID, R.X FROM L LEFT JOIN R ON L.ID=R.ID",
+          "rows": [
+            [
+              10,
+              null
+            ],
+            [
+              20,
+              "a"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

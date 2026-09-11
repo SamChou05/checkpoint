@@ -1,0 +1,178 @@
+{
+  "capture_byte_sha256": "f8be6159328b6ee6270823d71a5713a1f5c44611913c57aecf591a59d09c972d",
+  "capture_canonical_sha256": "3144838e3d3720eca9bc4cbfa6a4b49817c927c6030d7b64a2ebf8c4d41dd7ee",
+  "plan_sha256": "481cb561a4d7fac53ebe83b86668452f785f9861c545262a2768984b12044043",
+  "source_revision": "a31a56c188d522dd40fb7ee45a49a7b1d6e20f74",
+  "items": [
+    {
+      "id": "q001",
+      "goal": {
+        "title": "Predict and explain SQLite query results",
+        "category": "Custom",
+        "focusAreas": "Apply SQLite 3 semantics to concrete small tables and compare alternative queries. Practice left joins, filtering, membership tests, EXISTS and duplicate results. Explain why a query returns particular rows or differs from another query.",
+        "currentLevel": "I can write basic SELECT queries, but struggle to predict results when joins, NULL values, duplicate rows and subqueries interact.",
+        "learningTarget": "Predict and explain SQLite query results",
+        "contentTopics": [
+          "Apply SQLite 3 semantics to concrete small tables and compare alternative querie",
+          "filtering",
+          "membership tests",
+          "EXISTS and duplicate results. Explain why a query returns particular rows or dif"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "SQLite query behavior: selective study notes",
+          "text": "Assistant-written selective notes checked 2026-09-10; not a quotation or complete specification. References: https://www.sqlite.org/lang_select.html and https://www.sqlite.org/lang_expr.html\n\nSQLite evaluates a WHERE condition for each input row and keeps only rows where it is true; false and NULL are excluded. A LEFT JOIN adds a NULL-extended row for each unmatched left row after ON filtering and before WHERE filtering. Moving a right-side condition between ON and WHERE can therefore change the result. Ordinary equality with NULL yields NULL; IS handles NULL comparisons without a NULL result. IN and NOT IN depend on membership, NULLs and whether the right-hand set is empty. For a non-NULL unmatched left value, a nonempty right set containing NULL makes both results NULL. With an empty right set, IN is false and NOT IN is true, even for a NULL left value. EXISTS tests whether its subquery returns any rows, regardless of the values in those rows. SELECT DISTINCT removes duplicate result rows and treats two NULLs as equal for this purpose. These are general rules, not data for any particular table.",
+          "truncated": true
+        }
+      ],
+      "prompt": "Table: T(A) with rows 1, 2, NULL. Query: SELECT A FROM T WHERE A NOT IN (SELECT B FROM S WHERE B>0). Table S(B) is empty. What is returned?",
+      "choices": [
+        "1, 2",
+        "1, 2, NULL",
+        "NULL only",
+        "No rows"
+      ],
+      "subject_status": "readable"
+    },
+    {
+      "id": "q002",
+      "goal": {
+        "title": "Predict and explain SQLite query results",
+        "category": "Custom",
+        "focusAreas": "Apply SQLite 3 semantics to concrete small tables and compare alternative queries. Practice left joins, filtering, membership tests, EXISTS and duplicate results. Explain why a query returns particular rows or differs from another query.",
+        "currentLevel": "I can write basic SELECT queries, but struggle to predict results when joins, NULL values, duplicate rows and subqueries interact.",
+        "learningTarget": "Predict and explain SQLite query results",
+        "contentTopics": [
+          "Apply SQLite 3 semantics to concrete small tables and compare alternative querie",
+          "filtering",
+          "membership tests",
+          "EXISTS and duplicate results. Explain why a query returns particular rows or dif"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "SQLite query behavior: selective study notes",
+          "text": "Assistant-written selective notes checked 2026-09-10; not a quotation or complete specification. References: https://www.sqlite.org/lang_select.html and https://www.sqlite.org/lang_expr.html\n\nSQLite evaluates a WHERE condition for each input row and keeps only rows where it is true; false and NULL are excluded. A LEFT JOIN adds a NULL-extended row for each unmatched left row after ON filtering and before WHERE filtering. Moving a right-side condition between ON and WHERE can therefore change the result. Ordinary equality with NULL yields NULL; IS handles NULL comparisons without a NULL result. IN and NOT IN depend on membership, NULLs and whether the right-hand set is empty. For a non-NULL unmatched left value, a nonempty right set containing NULL makes both results NULL. With an empty right set, IN is false and NOT IN is true, even for a NULL left value. EXISTS tests whether its subquery returns any rows, regardless of the values in those rows. SELECT DISTINCT removes duplicate result rows and treats two NULLs as equal for this purpose. These are general rules, not data for any particular table.",
+          "truncated": true
+        }
+      ],
+      "prompt": "Table: A(X) rows 1, NULL. Table: B(Y) rows NULL, 2. Query: SELECT A.X FROM A LEFT JOIN B ON A.X=B.Y WHERE B.Y IS NULL. What is returned?",
+      "choices": [
+        "1",
+        "NULL",
+        "1, NULL",
+        "No rows"
+      ],
+      "subject_status": "readable"
+    },
+    {
+      "id": "q003",
+      "goal": {
+        "title": "Predict and explain SQLite query results",
+        "category": "Custom",
+        "focusAreas": "Apply SQLite 3 semantics to concrete small tables and compare alternative queries. Practice left joins, filtering, membership tests, EXISTS and duplicate results. Explain why a query returns particular rows or differs from another query.",
+        "currentLevel": "I can write basic SELECT queries, but struggle to predict results when joins, NULL values, duplicate rows and subqueries interact.",
+        "learningTarget": "Predict and explain SQLite query results",
+        "contentTopics": [
+          "Apply SQLite 3 semantics to concrete small tables and compare alternative querie",
+          "filtering",
+          "membership tests",
+          "EXISTS and duplicate results. Explain why a query returns particular rows or dif"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "SQLite query behavior: selective study notes",
+          "text": "Assistant-written selective notes checked 2026-09-10; not a quotation or complete specification. References: https://www.sqlite.org/lang_select.html and https://www.sqlite.org/lang_expr.html\n\nSQLite evaluates a WHERE condition for each input row and keeps only rows where it is true; false and NULL are excluded. A LEFT JOIN adds a NULL-extended row for each unmatched left row after ON filtering and before WHERE filtering. Moving a right-side condition between ON and WHERE can therefore change the result. Ordinary equality with NULL yields NULL; IS handles NULL comparisons without a NULL result. IN and NOT IN depend on membership, NULLs and whether the right-hand set is empty. For a non-NULL unmatched left value, a nonempty right set containing NULL makes both results NULL. With an empty right set, IN is false and NOT IN is true, even for a NULL left value. EXISTS tests whether its subquery returns any rows, regardless of the values in those rows. SELECT DISTINCT removes duplicate result rows and treats two NULLs as equal for this purpose. These are general rules, not data for any particular table.",
+          "truncated": true
+        }
+      ],
+      "prompt": "Table: U(V) rows 1, 1, 2. Query Q1: SELECT DISTINCT V FROM U WHERE V>1. Query Q2: SELECT V FROM U WHERE V>1 GROUP BY V. How do results differ?",
+      "choices": [
+        "Q1 returns 2; Q2 returns 2, 2",
+        "Q1 returns 2; Q2 returns no rows",
+        "Both return identical single-row results",
+        "Q1 returns no rows; Q2 returns 2"
+      ],
+      "subject_status": "readable"
+    },
+    {
+      "id": "q004",
+      "goal": {
+        "title": "Predict and explain SQLite query results",
+        "category": "Custom",
+        "focusAreas": "Apply SQLite 3 semantics to concrete small tables and compare alternative queries. Practice left joins, filtering, membership tests, EXISTS and duplicate results. Explain why a query returns particular rows or differs from another query.",
+        "currentLevel": "I can write basic SELECT queries, but struggle to predict results when joins, NULL values, duplicate rows and subqueries interact.",
+        "learningTarget": "Predict and explain SQLite query results",
+        "contentTopics": [
+          "Apply SQLite 3 semantics to concrete small tables and compare alternative querie",
+          "filtering",
+          "membership tests",
+          "EXISTS and duplicate results. Explain why a query returns particular rows or dif"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "SQLite query behavior: selective study notes",
+          "text": "Assistant-written selective notes checked 2026-09-10; not a quotation or complete specification. References: https://www.sqlite.org/lang_select.html and https://www.sqlite.org/lang_expr.html\n\nSQLite evaluates a WHERE condition for each input row and keeps only rows where it is true; false and NULL are excluded. A LEFT JOIN adds a NULL-extended row for each unmatched left row after ON filtering and before WHERE filtering. Moving a right-side condition between ON and WHERE can therefore change the result. Ordinary equality with NULL yields NULL; IS handles NULL comparisons without a NULL result. IN and NOT IN depend on membership, NULLs and whether the right-hand set is empty. For a non-NULL unmatched left value, a nonempty right set containing NULL makes both results NULL. With an empty right set, IN is false and NOT IN is true, even for a NULL left value. EXISTS tests whether its subquery returns any rows, regardless of the values in those rows. SELECT DISTINCT removes duplicate result rows and treats two NULLs as equal for this purpose. These are general rules, not data for any particular table.",
+          "truncated": true
+        }
+      ],
+      "prompt": "Tables: P(K) rows 5, 10; Q(K, M) rows (5, NULL), (5, 1). Query: SELECT P.K FROM P WHERE EXISTS (SELECT 1 FROM Q WHERE Q.K=P.K AND Q.M>0). What is returned?",
+      "choices": [
+        "5",
+        "5, 10",
+        "10",
+        "No rows"
+      ],
+      "subject_status": "readable"
+    },
+    {
+      "id": "q005",
+      "goal": {
+        "title": "Predict and explain SQLite query results",
+        "category": "Custom",
+        "focusAreas": "Apply SQLite 3 semantics to concrete small tables and compare alternative queries. Practice left joins, filtering, membership tests, EXISTS and duplicate results. Explain why a query returns particular rows or differs from another query.",
+        "currentLevel": "I can write basic SELECT queries, but struggle to predict results when joins, NULL values, duplicate rows and subqueries interact.",
+        "learningTarget": "Predict and explain SQLite query results",
+        "contentTopics": [
+          "Apply SQLite 3 semantics to concrete small tables and compare alternative querie",
+          "filtering",
+          "membership tests",
+          "EXISTS and duplicate results. Explain why a query returns particular rows or dif"
+        ],
+        "questionDirective": "",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [
+        {
+          "name": "SQLite query behavior: selective study notes",
+          "text": "Assistant-written selective notes checked 2026-09-10; not a quotation or complete specification. References: https://www.sqlite.org/lang_select.html and https://www.sqlite.org/lang_expr.html\n\nSQLite evaluates a WHERE condition for each input row and keeps only rows where it is true; false and NULL are excluded. A LEFT JOIN adds a NULL-extended row for each unmatched left row after ON filtering and before WHERE filtering. Moving a right-side condition between ON and WHERE can therefore change the result. Ordinary equality with NULL yields NULL; IS handles NULL comparisons without a NULL result. IN and NOT IN depend on membership, NULLs and whether the right-hand set is empty. For a non-NULL unmatched left value, a nonempty right set containing NULL makes both results NULL. With an empty right set, IN is false and NOT IN is true, even for a NULL left value. EXISTS tests whether its subquery returns any rows, regardless of the values in those rows. SELECT DISTINCT removes duplicate result rows and treats two NULLs as equal for this purpose. These are general rules, not data for any particular table.",
+          "truncated": true
+        }
+      ],
+      "prompt": "Tables: L(ID) rows 10, 20; R(ID, X) rows (20, 'a'), (30, 'b'). Query: SELECT L.ID, R.X FROM L LEFT JOIN R ON L.ID=R.ID WHERE R.X='a'. What is returned?",
+      "choices": [
+        "10, NULL; 20, 'a'",
+        "20, 'a'",
+        "10, NULL",
+        "No rows"
+      ],
+      "subject_status": "readable"
+    }
+  ]
+}

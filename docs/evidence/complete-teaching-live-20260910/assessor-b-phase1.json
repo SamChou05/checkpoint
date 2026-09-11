@@ -1,0 +1,346 @@
+{
+  "assessor": "B",
+  "phase": 1,
+  "packet_sha256": "a3491337c54d9cd9d325d71c8d8d16ec28dfd16ae4ba27a3664d91cfc165b5d7",
+  "blinding_note": "Read only the designated raw-stems-and-choices.json trial packet. No item-level proposed keys, main explanations, choice feedback, runtime verdicts, private mappings or client survival were supplied or inspected before freezing. Prior context includes exporter implementation and synthetic controls.",
+  "method": "Independent literal evaluation followed by in-memory SQLite execution with the stated column-only schemas, rows and unchanged queries. SQLite 3.53.3. No added affinities, constraints, rows or query edits. Checked official SQLite expression and SELECT documentation.",
+  "rubric": {
+    "1": "Recall",
+    "2": "One familiar application or simple query evaluation",
+    "3": "Meaningful linked decisions/inferences/application",
+    "4": "Advanced transfer or analysis",
+    "5": "Synthesis"
+  },
+  "sources": [
+    {
+      "title": "SQLite SQL Language Expressions",
+      "url": "https://www.sqlite.org/lang_expr.html",
+      "sections": [
+        "8. IN and NOT IN",
+        "10. EXISTS",
+        "2. Operators"
+      ]
+    },
+    {
+      "title": "SQLite SELECT",
+      "url": "https://www.sqlite.org/lang_select.html",
+      "sections": [
+        "2.1. FROM and LEFT JOIN",
+        "2.3. WHERE",
+        "2.4. GROUP BY",
+        "2.6. DISTINCT"
+      ]
+    }
+  ],
+  "sqlite_version": "3.53.3",
+  "items": [
+    {
+      "id": "q001",
+      "literal_solution": "The result contains three rows: A=1, A=2 and A=NULL. The subquery is empty; NOT IN is true for every left operand, including NULL.",
+      "supported_choice_indices": [
+        1
+      ],
+      "difficulty": 2,
+      "difficulty_reason": "One direct application of SQLite’s empty-set NOT IN rule. The B>0 filter does not create another substantive decision because S is explicitly empty.",
+      "plausible_distractors": true,
+      "distractors_reason": "The alternatives distinguish excluding the NULL left value, keeping only it, and treating an empty right set as rejecting every row; these reflect membership/NULL misconceptions.",
+      "relevance_reason": "Directly practices the requested interaction between membership predicates, NULL and an empty subquery.",
+      "answer_status": "unique",
+      "premises_sufficient": true,
+      "premise_status": "sufficient",
+      "premise_reason": "The stated rows, column names and exact query determine the result under the specified SQLite context; no added case facts are needed.",
+      "goal_relevant": true,
+      "distinct_choices": true,
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "choice": "1, 2",
+          "judgment": "refuted",
+          "reason": "Incomplete: the NULL row also passes NOT IN against the empty subquery."
+        },
+        {
+          "choice_index": 1,
+          "choice": "1, 2, NULL",
+          "judgment": "supported",
+          "reason": "Exactly the three returned values; all three left operands satisfy NOT IN against the empty set."
+        },
+        {
+          "choice_index": 2,
+          "choice": "NULL only",
+          "judgment": "refuted",
+          "reason": "Incomplete: the ordinary values 1 and 2 pass as well."
+        },
+        {
+          "choice_index": 3,
+          "choice": "No rows",
+          "judgment": "refuted",
+          "reason": "Incorrect: the empty subquery makes NOT IN true, so all three rows pass."
+        }
+      ],
+      "sqlite_execution": {
+        "ddl": "CREATE TABLE T(A); INSERT INTO T VALUES (1), (2), (NULL); CREATE TABLE S(B);",
+        "queries": [
+          {
+            "sql": "SELECT A FROM T WHERE A NOT IN (SELECT B FROM S WHERE B>0)",
+            "rows": [
+              [
+                1
+              ],
+              [
+                2
+              ],
+              [
+                null
+              ]
+            ]
+          }
+        ]
+      },
+      "notes": "Choices are interpreted as complete result rows/multisets, not claims of guaranteed row order; no ORDER BY is present. This is normal query-result MCQ notation."
+    },
+    {
+      "id": "q002",
+      "literal_solution": "Neither A row has an ON match. In particular, NULL=NULL is not true. LEFT JOIN produces one NULL-extended B row per A row, and both satisfy B.Y IS NULL. The output values are 1 and NULL.",
+      "supported_choice_indices": [
+        2
+      ],
+      "difficulty": 3,
+      "difficulty_reason": "Requires connected inferences: distinguish ordinary equality from IS NULL, determine that both left rows lack an ON match, then apply WHERE to the NULL-extended rows. This is meaningful application of interacting NULL and outer-join semantics.",
+      "plausible_distractors": true,
+      "distractors_reason": "The single-value and empty-result alternatives can arise from dropping a NULL left value, confusing original B NULL rows with joined NULL extension, or treating LEFT JOIN like an inner join.",
+      "relevance_reason": "Directly exercises the stated difficulty predicting LEFT JOIN results with NULL comparisons and post-join filtering.",
+      "answer_status": "unique",
+      "premises_sufficient": true,
+      "premise_status": "sufficient",
+      "premise_reason": "The stated rows, column names and exact query determine the result under the specified SQLite context; no added case facts are needed.",
+      "goal_relevant": true,
+      "distinct_choices": true,
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "choice": "1",
+          "judgment": "refuted",
+          "reason": "Incomplete: the NULL-valued A row is preserved by LEFT JOIN and also passes B.Y IS NULL."
+        },
+        {
+          "choice_index": 1,
+          "choice": "NULL",
+          "judgment": "refuted",
+          "reason": "Incomplete: A.X=1 has no B match and its NULL-extended B.Y also passes the filter."
+        },
+        {
+          "choice_index": 2,
+          "choice": "1, NULL",
+          "judgment": "supported",
+          "reason": "Exactly the output: both unmatched A rows survive the IS NULL filter."
+        },
+        {
+          "choice_index": 3,
+          "choice": "No rows",
+          "judgment": "refuted",
+          "reason": "Incorrect: LEFT JOIN preserves each unmatched A row, and their NULL-extended B.Y values satisfy IS NULL."
+        }
+      ],
+      "sqlite_execution": {
+        "ddl": "CREATE TABLE A(X); INSERT INTO A VALUES (1), (NULL); CREATE TABLE B(Y); INSERT INTO B VALUES (NULL), (2);",
+        "queries": [
+          {
+            "sql": "SELECT A.X FROM A LEFT JOIN B ON A.X=B.Y WHERE B.Y IS NULL",
+            "rows": [
+              [
+                1
+              ],
+              [
+                null
+              ]
+            ]
+          }
+        ]
+      },
+      "notes": "Choices are interpreted as complete result rows/multisets, not claims of guaranteed row order; no ORDER BY is present. This is normal query-result MCQ notation."
+    },
+    {
+      "id": "q003",
+      "literal_solution": "V>1 leaves only the single row V=2. DISTINCT leaves that row unchanged, and GROUP BY V forms one group. Both queries return the single row 2.",
+      "supported_choice_indices": [
+        2
+      ],
+      "difficulty": 2,
+      "difficulty_reason": "A simple filter leaves only one row, so the apparent DISTINCT-versus-GROUP BY comparison has no surviving duplicates to analyze. The extra query syntax does not make this level 3.",
+      "plausible_distractors": false,
+      "distractors_reason": "All distractors require either creating a second 2 that does not exist or discarding the only qualifying row without any relevant condition. They are distinct but weak alternatives for the stated basic-SELECT learner.",
+      "relevance_reason": "Relevant to comparing query outputs and duplicate elimination, although filtering out all duplicated values removes the substantive duplicate interaction.",
+      "answer_status": "unique",
+      "premises_sufficient": true,
+      "premise_status": "sufficient",
+      "premise_reason": "The stated rows, column names and exact query determine the result under the specified SQLite context; no added case facts are needed.",
+      "goal_relevant": true,
+      "distinct_choices": true,
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "choice": "Q1 returns 2; Q2 returns 2, 2",
+          "judgment": "refuted",
+          "reason": "Q2 cannot produce two rows for the one surviving V group; both queries return one 2."
+        },
+        {
+          "choice_index": 1,
+          "choice": "Q1 returns 2; Q2 returns no rows",
+          "judgment": "refuted",
+          "reason": "Q2 has a nonempty group for V=2, so it returns a row."
+        },
+        {
+          "choice_index": 2,
+          "choice": "Both return identical single-row results",
+          "judgment": "supported",
+          "reason": "Both queries return exactly one row containing 2."
+        },
+        {
+          "choice_index": 3,
+          "choice": "Q1 returns no rows; Q2 returns 2",
+          "judgment": "refuted",
+          "reason": "Q1 retains V=2 because 2>1; DISTINCT does not remove the only copy."
+        }
+      ],
+      "sqlite_execution": {
+        "ddl": "CREATE TABLE U(V); INSERT INTO U VALUES (1), (1), (2);",
+        "queries": [
+          {
+            "sql": "SELECT DISTINCT V FROM U WHERE V>1",
+            "rows": [
+              [
+                2
+              ]
+            ]
+          },
+          {
+            "sql": "SELECT V FROM U WHERE V>1 GROUP BY V",
+            "rows": [
+              [
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      "notes": "Choices are interpreted as complete result rows/multisets, not claims of guaranteed row order; no ORDER BY is present. This is normal query-result MCQ notation."
+    },
+    {
+      "id": "q004",
+      "literal_solution": "For P.K=5, Q has the qualifying row (5,1), so EXISTS is true. For P.K=10, no Q row has matching K, so EXISTS is false. The result is one row containing 5.",
+      "supported_choice_indices": [
+        0
+      ],
+      "difficulty": 2,
+      "difficulty_reason": "A familiar correlated-EXISTS membership check: identify the sole positive matching row. The NULL-valued Q row does not alter the existence of (5,1), so there is no harder competing NULL or duplicate effect to resolve.",
+      "plausible_distractors": true,
+      "distractors_reason": "Both keys can result from ignoring correlation; 10 alone from reversing EXISTS; no rows from allowing the NULL-valued candidate to invalidate the independently qualifying row.",
+      "relevance_reason": "Directly practices a correlated EXISTS predicate and identifies which outer row has a qualifying inner row.",
+      "answer_status": "unique",
+      "premises_sufficient": true,
+      "premise_status": "sufficient",
+      "premise_reason": "The stated rows, column names and exact query determine the result under the specified SQLite context; no added case facts are needed.",
+      "goal_relevant": true,
+      "distinct_choices": true,
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "choice": "5",
+          "judgment": "supported",
+          "reason": "Exactly correct: only K=5 has a matching Q row whose M is greater than zero."
+        },
+        {
+          "choice_index": 1,
+          "choice": "5, 10",
+          "judgment": "refuted",
+          "reason": "Incorrect: K=10 has no Q match and therefore fails EXISTS."
+        },
+        {
+          "choice_index": 2,
+          "choice": "10",
+          "judgment": "refuted",
+          "reason": "Incorrect: K=10 fails EXISTS, while K=5 passes."
+        },
+        {
+          "choice_index": 3,
+          "choice": "No rows",
+          "judgment": "refuted",
+          "reason": "Incorrect: Q row (5,1) satisfies both predicates for P.K=5."
+        }
+      ],
+      "sqlite_execution": {
+        "ddl": "CREATE TABLE P(K); INSERT INTO P VALUES (5), (10); CREATE TABLE Q(K, M); INSERT INTO Q VALUES (5, NULL), (5, 1);",
+        "queries": [
+          {
+            "sql": "SELECT P.K FROM P WHERE EXISTS (SELECT 1 FROM Q WHERE Q.K=P.K AND Q.M>0)",
+            "rows": [
+              [
+                5
+              ]
+            ]
+          }
+        ]
+      },
+      "notes": "Choices are interpreted as complete result rows/multisets, not claims of guaranteed row order; no ORDER BY is present. This is normal query-result MCQ notation."
+    },
+    {
+      "id": "q005",
+      "literal_solution": "LEFT JOIN produces (10,NULL) and (20,'a'). The WHERE condition R.X='a' rejects (10,NULL), because the comparison is NULL, and keeps (20,'a'). The output is one row (20,'a').",
+      "supported_choice_indices": [
+        1
+      ],
+      "difficulty": 3,
+      "difficulty_reason": "Requires carrying the unmatched left row through the join and then recognizing that a right-side WHERE predicate removes it. These linked decisions apply the ON-versus-WHERE distinction to an actual result, rather than merely recalling that LEFT JOIN retains left rows.",
+      "plausible_distractors": true,
+      "distractors_reason": "Keeping both rows reflects ignoring the post-join filter; keeping the unmatched row alone confuses selection polarity; no rows reflects losing the valid equality match or mishandling NULL.",
+      "relevance_reason": "Directly exercises the requested LEFT JOIN and right-side filtering interaction.",
+      "answer_status": "unique",
+      "premises_sufficient": true,
+      "premise_status": "sufficient",
+      "premise_reason": "The stated rows, column names and exact query determine the result under the specified SQLite context; no added case facts are needed.",
+      "goal_relevant": true,
+      "distinct_choices": true,
+      "per_choice": [
+        {
+          "choice_index": 0,
+          "choice": "10, NULL; 20, 'a'",
+          "judgment": "refuted",
+          "reason": "Incorrect: (10,NULL) fails the WHERE condition; LEFT JOIN preservation occurs before that filter."
+        },
+        {
+          "choice_index": 1,
+          "choice": "20, 'a'",
+          "judgment": "supported",
+          "reason": "Exactly the surviving row: L.ID=20 matches R.ID=20 and R.X is 'a'."
+        },
+        {
+          "choice_index": 2,
+          "choice": "10, NULL",
+          "judgment": "refuted",
+          "reason": "Incorrect: the NULL-extended row is excluded, while (20,'a') survives."
+        },
+        {
+          "choice_index": 3,
+          "choice": "No rows",
+          "judgment": "refuted",
+          "reason": "Incorrect: the matched row (20,'a') satisfies the WHERE condition."
+        }
+      ],
+      "sqlite_execution": {
+        "ddl": "CREATE TABLE L(ID); INSERT INTO L VALUES (10), (20); CREATE TABLE R(ID, X); INSERT INTO R VALUES (20, 'a'), (30, 'b');",
+        "queries": [
+          {
+            "sql": "SELECT L.ID, R.X FROM L LEFT JOIN R ON L.ID=R.ID WHERE R.X='a'",
+            "rows": [
+              [
+                20,
+                "a"
+              ]
+            ]
+          }
+        ]
+      },
+      "notes": "Choices are interpreted as complete result rows/multisets, not claims of guaranteed row order; no ORDER BY is present. This is normal query-result MCQ notation."
+    }
+  ]
+}

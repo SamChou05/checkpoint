@@ -1,0 +1,11 @@
+{
+  "assessor": "B",
+  "phase": 1,
+  "packet_sha256": "b2182de629c3be2f11496120a9c6371535da90d9b7beb67150e0637601c22e24",
+  "items": [],
+  "assessable_client_item_count": 0,
+  "assessable_client_choice_count": 0,
+  "precision_estimate": null,
+  "blinding_note": "Inspected only the designated client stems-and-choices packet for client assessment. No client keys, teaching, private mapping or runtime verdicts were read. Raw phase1 had already been frozen; raw authored teaching was authorized separately.",
+  "notes": "The supplied actual-client stem packet is empty. There are zero assessable delivered items, so no client correctness, teaching precision or useful-item precision estimate is available. No reason for non-delivery is inferred."
+}
