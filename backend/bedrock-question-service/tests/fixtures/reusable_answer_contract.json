@@ -1,0 +1,38 @@
+[
+  [
+    {
+      "prompt": "In 'The fox runs', which part of speech is 'fox'?",
+      "expectedAnswer": "noun",
+      "choices": ["noun", "verb", "adjective", "adverb"],
+      "explanation": "Fox names an animal, so it functions as a noun.",
+      "topic": "Grammar",
+      "difficulty": 1
+    },
+    {
+      "prompt": "In 'The fox runs', which part of speech is 'runs'?",
+      "expectedAnswer": "verb",
+      "choices": ["adverb", "adjective", "verb", "noun"],
+      "explanation": "Runs describes the action performed by the fox.",
+      "topic": "Grammar",
+      "difficulty": 1
+    }
+  ],
+  [
+    {
+      "prompt": "Iron reacts with oxygen to form rust. How is this change classified?",
+      "expectedAnswer": "A chemical change",
+      "choices": ["A chemical change", "A change of state", "A change of location", "A measurement error"],
+      "explanation": "The reaction produces a new substance, making it a chemical change.",
+      "topic": "Changes of matter",
+      "difficulty": 1
+    },
+    {
+      "prompt": "Burning paper produces ash and gases with different chemical compositions. How is this change classified?",
+      "expectedAnswer": "A chemical change",
+      "choices": ["A reversible phase change", "A chemical change", "A change of shape only", "A dilution"],
+      "explanation": "Burning forms new substances with different compositions, making it a chemical change.",
+      "topic": "Changes of matter",
+      "difficulty": 1
+    }
+  ]
+]

@@ -498,7 +498,7 @@ class LambdaQualityTests(BackendTestCase):
         answer_key = lambda_function._choice_uniqueness_key(answer)  # noqa: SLF001
         self.assertIn(f"topic-answer:{len(topic_key.encode('utf-8'))}:{topic_key}{answer_key}", keys)
 
-    def test_rejects_reused_choice_set_across_reworded_questions(self):
+    def test_rejects_repeated_stem_even_with_reordered_choice_set(self):
         request = lambda_function._normalize_request(  # noqa: SLF001
             _request_payload(target_count=2, minimum_difficulty=3)
         )
@@ -518,7 +518,7 @@ class LambdaQualityTests(BackendTestCase):
         }
         duplicate_mechanism = {
             **first,
-            "prompt": "For two-sum on an unsorted array, which method avoids checking every pair?",
+            "choices": list(reversed(choices)),
             "topic": "hash maps",
         }
 
@@ -669,9 +669,9 @@ class LambdaQualityTests(BackendTestCase):
         self.assertEqual(len(sanitized), 1)
         self.assertEqual(set(sanitized[0]["choices"]), set(question["choices"]))
 
-    def test_rejects_same_topic_answer_as_existing_coverage(self):
+    def test_rejects_same_stem_as_existing_coverage(self):
         repeated = {
-            "prompt": "Operating Systems: Which MMU behavior is central to virtual memory?",
+            "prompt": "Operating Systems: What does the MMU do during address translation?",
             "expectedAnswer": "It translates virtual memory addresses to physical memory addresses.",
             "choices": [
                 "It translates virtual memory addresses to physical memory addresses.",
