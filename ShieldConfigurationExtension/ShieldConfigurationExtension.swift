@@ -7,12 +7,12 @@ import UIKit
 
 final class ShieldConfigurationExtension: ShieldConfigurationDataSource {
     private enum Theme {
-        static let background = adaptive(light: 0xF2F5ED, dark: 0x091512)
-        static let title = adaptive(light: 0x0F241F, dark: 0xECF3EF)
-        static let muted = adaptive(light: 0x596961, dark: 0xA8B7B0)
-        static let accent = adaptive(light: 0x1C4F47, dark: 0x72D0B6)
-        static let actionFill = adaptive(light: 0x1C4F47, dark: 0x2C7465)
-        static let actionLabel = color(0xF2F5ED)
+        static let background = adaptive(light: 0xF2EBDD, dark: 0x191714)
+        static let title = adaptive(light: 0x29231E, dark: 0xEDE3D4)
+        static let muted = adaptive(light: 0x71675A, dark: 0xB7A995)
+        static let accent = adaptive(light: 0x805A3B, dark: 0xCBA678)
+        static let actionFill = adaptive(light: 0x29231E, dark: 0xE3D2BA)
+        static let actionLabel = adaptive(light: 0xFAF7F0, dark: 0x29231E)
 
         private static func adaptive(light: UInt32, dark: UInt32) -> UIColor {
             UIColor { traits in

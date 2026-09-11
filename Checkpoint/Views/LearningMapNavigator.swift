@@ -24,28 +24,27 @@ struct LearningMapNavigator: View {
                 var path = Path()
                 path.move(to: start)
                 path.addLine(to: end)
-                context.stroke(path, with: .color(CheckpointTheme.teal.opacity(0.3)), lineWidth: 0.7)
+                context.stroke(path, with: .color(LearningMapPalette.accent.color.opacity(0.3)), lineWidth: 0.7)
             }
             let bounds = camera.visibleWorldBounds(viewport: viewport)
             if !bounds.isNull {
                 let origin = overview.project(bounds.origin, viewport: size)
                 let frame = CGRect(origin: origin, size: CGSize(width: bounds.width * overview.zoom, height: bounds.height * overview.zoom))
                 let path = Path(roundedRect: frame, cornerRadius: 3)
-                context.fill(path, with: .color(CheckpointTheme.teal.opacity(0.09)))
-                context.stroke(path, with: .color(CheckpointTheme.teal.opacity(0.7)), lineWidth: 1)
+                context.fill(path, with: .color(LearningMapPalette.accent.color.opacity(0.09)))
+                context.stroke(path, with: .color(LearningMapPalette.accent.color.opacity(0.7)), lineWidth: 1)
             }
             for node in layout.nodes {
                 guard let point = positions[node.id] else { continue }
                 let radius: CGFloat = node.id == selection ? 3.2 : node.id == .goal ? 2.5 : 1.8
                 let circle = Path(ellipseIn: CGRect(x: point.x - radius, y: point.y - radius, width: radius * 2, height: radius * 2))
-                context.fill(circle, with: .color(CheckpointTheme.teal.opacity(node.id == selection ? 1 : 0.55)))
+                context.fill(circle, with: .color(LearningMapPalette.accent.color.opacity(node.id == selection ? 1 : 0.55)))
             }
         }
         .frame(width: size.width, height: size.height)
-        .background(CheckpointTheme.panel.opacity(0.95))
+        .background(LearningMapPalette.panel.color)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(CheckpointTheme.hairline.opacity(0.7), lineWidth: 1))
-        .shadow(color: CheckpointTheme.shadowElevated, radius: 8, y: 3)
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(LearningMapPalette.border.color, lineWidth: 1))
         .contentShape(RoundedRectangle(cornerRadius: 12))
         .onTapGesture { point in onRecenter(overview.unproject(point, viewport: size)) }
         .accessibilityElement()

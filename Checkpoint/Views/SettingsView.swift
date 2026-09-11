@@ -218,7 +218,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 0) {
                     protectionPanel
                         .reportSettingsLayoutFrame(.protection, using: layoutReporter)
                     goalsPanel
@@ -251,6 +251,13 @@ struct SettingsView: View {
             .checkpointScreenBackground()
             .navigationTitle("Settings")
             .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Settings")
+                        .font(CheckpointTypography.sectionTitle)
+                        .foregroundStyle(CheckpointTheme.text)
+                }
+            }
             .sheet(isPresented: $isRestrictedAppsPresented) {
                 RestrictedAppsView(screenTime: screenTime)
             }
@@ -411,7 +418,7 @@ struct SettingsView: View {
     }
 
     private var protectionPanel: some View {
-        SectionPanel("Protection") {
+        SectionPanel("Protection", style: .editorial) {
             VStack(alignment: .leading, spacing: 14) {
                 protectionStatusHeader
 
@@ -547,7 +554,7 @@ struct SettingsView: View {
     private var goalsPanel: some View {
         let switchPresentation = GoalSwitchMenuPresentation(store: store)
 
-        return SectionPanel("Goals") {
+        return SectionPanel("Goals", style: .editorial) {
             if let goal = store.goal {
                 VStack(alignment: .leading, spacing: 10) {
                     goalSummary(
@@ -673,7 +680,7 @@ struct SettingsView: View {
         if store.availableGoalProfiles.count > 1 || (store.isMember && store.hasReachedGoalProfileLimit) {
             StatusBadge(
                 text: store.goalProfileCapacityText,
-                tint: store.hasReachedGoalProfileLimit ? CheckpointTheme.amber : CheckpointTheme.teal
+                tint: store.hasReachedGoalProfileLimit ? CheckpointTheme.amber : CheckpointTheme.accent
             )
         }
     }
@@ -756,7 +763,7 @@ struct SettingsView: View {
                             .fixedSize(horizontal: false, vertical: true)
 
                         if presentation.isCurrent {
-                            StatusBadge(text: "Current", tint: CheckpointTheme.teal)
+                            StatusBadge(text: "Current", tint: CheckpointTheme.accent)
                         }
                     }
                 } else {
@@ -780,7 +787,7 @@ struct SettingsView: View {
                         Spacer(minLength: 0)
 
                         if presentation.isCurrent {
-                            StatusBadge(text: "Current", tint: CheckpointTheme.teal)
+                            StatusBadge(text: "Current", tint: CheckpointTheme.accent)
                         }
                     }
                 }
@@ -918,8 +925,10 @@ struct SettingsView: View {
         for state: GoalSwitchMenuOptionState
     ) -> Color {
         switch state {
-        case .current, .ready:
-            CheckpointTheme.teal
+        case .current:
+            CheckpointTheme.accent
+        case .ready:
+            CheckpointTheme.success
         case .preparing, .notReady:
             CheckpointTheme.amber
         case .locked, .unavailable:
@@ -1157,7 +1166,7 @@ struct SettingsView: View {
     }
 
     private var activityPanel: some View {
-        SectionPanel("Activity & help") {
+        SectionPanel("Activity & help", style: .editorial) {
             VStack(spacing: 14) {
                 SettingsNavigationRow(
                     title: "Practice history",
@@ -1220,7 +1229,7 @@ struct SettingsView: View {
     }
 
     private var privacyAndSupportPanel: some View {
-        SectionPanel("Privacy & support") {
+        SectionPanel("Privacy & support", style: .editorial) {
             VStack(spacing: 0) {
                 LegalLinkRow(
                     title: "Privacy Policy",
@@ -1253,7 +1262,7 @@ struct SettingsView: View {
     }
 
     private var appDataPanel: some View {
-        SectionPanel("App data") {
+        SectionPanel("App data", style: .editorial) {
             if let resetRecoveryMessage {
                 Label(resetRecoveryMessage, systemImage: "externaldrive.badge.exclamationmark")
                     .font(.footnote.weight(.semibold))
@@ -1284,7 +1293,7 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                 .contentShape(Rectangle())
             }
-            .tint(CheckpointTheme.teal)
+            .tint(CheckpointTheme.accent)
             .accessibilityHint(isAppDataExpanded ? "Collapses reset options." : "Expands reset options.")
         }
         .animation(
@@ -1295,7 +1304,7 @@ struct SettingsView: View {
 
     #if DEBUG
     private var developerToolsPanel: some View {
-        SectionPanel("Developer tools") {
+        SectionPanel("Developer tools", style: .editorial) {
             DisclosureGroup(isExpanded: $isDeveloperToolsExpanded) {
                 VStack(alignment: .leading, spacing: 14) {
                     Text(screenTime.shieldExtensionDiagnosticsText)
@@ -1337,7 +1346,7 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                 .contentShape(Rectangle())
             }
-            .tint(CheckpointTheme.teal)
+            .tint(CheckpointTheme.accent)
             .accessibilityHint(isDeveloperToolsExpanded ? "Collapses developer tools." : "Expands developer tools.")
         }
     }

@@ -866,7 +866,7 @@ struct OnboardingView: View {
                 goalSetupHeader
                     .reportGoalSetupLayoutFrame(.hero, using: layoutReporter)
 
-                SectionPanel(goalTimingSectionTitle) {
+                SectionPanel(goalTimingSectionTitle, style: .editorial) {
                     Text(isFirstRunWalkthrough ? "Your goal" : "Learning goal")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(CheckpointTheme.text)
@@ -957,7 +957,7 @@ struct OnboardingView: View {
                     Button("Cancel") {
                         requestGoalSetupDismissal()
                     }
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .disabled(isGoalSaveWorking)
                 }
             }
@@ -965,7 +965,7 @@ struct OnboardingView: View {
     }
 
     private var firstRunOptionalDetails: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             DisclosureGroup(isExpanded: $isFirstRunDetailsExpanded) {
                 VStack(alignment: .leading, spacing: 16) {
                     firstRunContextField
@@ -984,12 +984,12 @@ struct OnboardingView: View {
                 }
                 .frame(minHeight: 44, alignment: .leading)
             }
-            .tint(CheckpointTheme.teal)
+            .tint(CheckpointTheme.accent)
         }
     }
 
     private var practiceCustomization: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             DisclosureGroup(isExpanded: $isCustomizationExpanded) {
                 VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 8) {
@@ -1072,7 +1072,7 @@ struct OnboardingView: View {
                 }
                 .padding(.trailing, dynamicTypeSize.isAccessibilitySize ? 24 : 0)
             }
-            .tint(CheckpointTheme.teal)
+            .tint(CheckpointTheme.accent)
             .sensoryFeedback(.selection, trigger: isCustomizationExpanded)
         }
     }
@@ -1133,7 +1133,7 @@ struct OnboardingView: View {
                 .fixedSize(horizontal: false, vertical: true)
         } icon: {
             Image(systemName: "info.circle")
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .accessibilityHidden(true)
         }
         .font(.footnote)
@@ -1177,7 +1177,7 @@ struct OnboardingView: View {
             .padding(.top, 12)
             .padding(.bottom, 10)
         }
-        .background(.ultraThinMaterial)
+        .background(CheckpointTheme.panel)
     }
 
     private var primaryActionPresentation: GoalSetupPrimaryActionPresentation {
@@ -1659,7 +1659,7 @@ struct OnboardingView: View {
                 )
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(
-                        importWasStopped ? CheckpointTheme.teal : CheckpointTheme.amber
+                        importWasStopped ? CheckpointTheme.success : CheckpointTheme.amber
                     )
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -1694,10 +1694,10 @@ struct OnboardingView: View {
     private func sourceDocumentRow(_ document: GoalSourceDocument) -> some View {
         HStack(spacing: 10) {
             Image(systemName: "doc.text")
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .frame(width: 28, height: 28)
                 .background(
-                    CheckpointTheme.teal.opacity(0.10),
+                    CheckpointTheme.accent.opacity(0.10),
                     in: RoundedRectangle(
                         cornerRadius: CheckpointTheme.compactCornerRadius,
                         style: .continuous
@@ -1794,7 +1794,7 @@ struct GoalSetupDirectionCard: View {
     }
 
     var body: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             if dynamicTypeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 12) {
                     directionIcon
@@ -1818,10 +1818,10 @@ struct GoalSetupDirectionCard: View {
         Image(systemName: presentation.systemImage)
             .symbolRenderingMode(.hierarchical)
             .font(.system(size: 17, weight: .semibold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .frame(width: 38, height: 38)
             .background(
-                CheckpointTheme.teal.opacity(0.11),
+                CheckpointTheme.accent.opacity(0.11),
                 in: RoundedRectangle(
                     cornerRadius: CheckpointTheme.compactCornerRadius,
                     style: .continuous
@@ -1835,14 +1835,14 @@ struct GoalSetupDirectionCard: View {
     private var directionCopy: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text("PRACTICE DIRECTION")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.8)
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .fixedSize(horizontal: false, vertical: true)
                 .dynamicTypeSize(...DynamicTypeSize.accessibility2)
 
             Text(presentation.title)
-                .font(.headline)
+                .font(.system(.headline, design: .serif))
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .contentTransition(.opacity)
@@ -1920,7 +1920,7 @@ struct GoalSetupHero: View {
 
                 VStack(alignment: .leading, spacing: 5) {
                     Text(presentation.title)
-                        .font(dynamicTypeSize.isAccessibilitySize ? .headline.bold() : .title2.bold())
+                        .font(dynamicTypeSize.isAccessibilitySize ? .system(.headline, design: .serif) : CheckpointTypography.sectionTitle)
                         .foregroundStyle(CheckpointTheme.heroText)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityAddTraits(.isHeader)
@@ -1970,7 +1970,7 @@ struct GoalSetupHero: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("CHECKPOINT")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.7)
                     .foregroundStyle(CheckpointTheme.heroText)
 
@@ -1998,7 +1998,7 @@ struct GoalSetupHero: View {
             .font(.system(size: 20, weight: .semibold))
             .foregroundStyle(accent)
             .frame(width: 42, height: 42)
-            .background(accent.opacity(0.14), in: RoundedRectangle(cornerRadius: 13))
+            .background(accent.opacity(0.14), in: RoundedRectangle(cornerRadius: 12))
             .contentTransition(.symbolEffect(.replace))
             .symbolEffect(.bounce, options: .nonRepeating, value: presentation.state)
             .symbolEffect(
@@ -2027,7 +2027,7 @@ struct GoalSetupHero: View {
         case .upToDate:
             CheckpointTheme.heroSuccess
         case .unsavedChanges:
-            CheckpointTheme.amber
+            CheckpointTheme.heroWarning
         case .working:
             CheckpointTheme.heroInfo
         }
@@ -2050,12 +2050,12 @@ private struct FocusAreaChip: View {
     var body: some View {
         Text(text)
             .font(.caption.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+            .background(CheckpointTheme.accent.opacity(0.10), in: Capsule())
     }
 }
 
@@ -2066,19 +2066,19 @@ private struct FocusAreaTopicRow: View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Image(systemName: "circle.fill")
                 .font(.system(size: 7, weight: .bold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .accessibilityHidden(true)
 
             Text(text)
                 .font(.footnote.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            CheckpointTheme.teal.opacity(0.10),
+            CheckpointTheme.accent.opacity(0.10),
             in: RoundedRectangle(
                 cornerRadius: CheckpointTheme.compactCornerRadius,
                 style: .continuous

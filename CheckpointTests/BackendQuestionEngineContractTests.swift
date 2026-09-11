@@ -311,7 +311,7 @@ final class BackendQuestionEngineContractTests: XCTestCase {
 
     func testSkillMapEvolutionRequestCarriesBoundedEvidenceAndHistory() throws {
         let skills = makeSkills()
-        let archived = (0..<50).map { index in
+        let archived: [ArchivedSkillMapTopic] = (0..<50).map { (index: Int) -> ArchivedSkillMapTopic in
             let topic = SkillMapTopic(
                 name: "Archived skill \(index)",
                 objectives: [SkillMapObjective(name: "Archived objective \(index)")]
@@ -343,18 +343,21 @@ final class BackendQuestionEngineContractTests: XCTestCase {
         competency.partial = 1
         competency.currentStreak = 4
         let attemptDate = Date(timeIntervalSince1970: 1_700_000_000)
-        let attempts = (0..<35).map { index in
-            CheckpointAttempt(
+        let attempts: [CheckpointAttempt] = (0..<35).map { (index: Int) -> CheckpointAttempt in
+            let difficulty: Int = index == 0 ? 4 : 3
+            let result: AnswerResult = index == 0 ? .partial : .correct
+            let createdAt: Date = attemptDate.addingTimeInterval(Double(index))
+            return CheckpointAttempt(
                 questionID: UUID(),
                 goalID: goal.id,
                 skillID: skills[0].id,
                 objectiveID: skills[0].objectives[0].id,
-                questionDifficulty: index == 0 ? 4 : 3,
+                questionDifficulty: difficulty,
                 prompt: "Evidence \(index)",
                 answer: "Answer",
-                result: index == 0 ? .partial : .correct,
+                result: result,
                 unlockMinutes: 0,
-                createdAt: attemptDate.addingTimeInterval(Double(index))
+                createdAt: createdAt
             )
         }
         let request = SkillMapEvolutionRequest(

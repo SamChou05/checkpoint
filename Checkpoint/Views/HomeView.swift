@@ -409,11 +409,11 @@ struct HomeView: View {
                 store.presentActiveGoalEditor()
             } label: {
                 Label("Edit", systemImage: "pencil")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(CheckpointTheme.accent)
                     .padding(.horizontal, 11)
                     .frame(minHeight: 44)
-                    .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+                    .background(CheckpointTheme.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
                     .contentShape(Capsule())
             }
             .buttonStyle(CheckpointPressButtonStyle())
@@ -813,7 +813,7 @@ struct HomeView: View {
     }
 
     private var screenTimePanel: some View {
-        SectionPanel("Protected apps") {
+        SectionPanel("Protected apps", style: .editorial) {
             VStack(alignment: .leading, spacing: 12) {
                 Text(screenTime.restrictedAppsSummary)
                     .font(.subheadline)
@@ -892,14 +892,14 @@ struct HomeView: View {
                         HStack(spacing: 8) {
                             Text("Manage protected apps")
                                 .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(CheckpointTheme.teal)
+                                .foregroundStyle(CheckpointTheme.accent)
                                 .fixedSize(horizontal: false, vertical: true)
 
                             Spacer(minLength: 8)
 
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.bold))
-                                .foregroundStyle(CheckpointTheme.teal)
+                                .foregroundStyle(CheckpointTheme.accent)
                                 .accessibilityHidden(true)
                         }
                         .frame(minHeight: 44)
@@ -912,18 +912,17 @@ struct HomeView: View {
 
                         Text("Manage")
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.teal)
+                            .foregroundStyle(CheckpointTheme.accent)
                             .lineLimit(1)
 
                         Image(systemName: "chevron.right")
                             .font(.caption.weight(.bold))
-                            .foregroundStyle(CheckpointTheme.teal)
+                            .foregroundStyle(CheckpointTheme.accent)
                             .accessibilityHidden(true)
                     }
                 }
             }
-            .padding(14)
-            .background(CheckpointTheme.panelRaised.opacity(0.68), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .padding(.vertical, 14)
         }
         .buttonStyle(CheckpointPressButtonStyle(role: .surface))
         .accessibilityElement(children: .ignore)
@@ -955,10 +954,10 @@ struct HomeView: View {
     }
 
     private var emptyState: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             VStack(alignment: .leading, spacing: 14) {
                 Text("Begin with one goal.")
-                    .font(.title2.bold())
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(CheckpointTheme.text)
 
                 Text("Checkpoint will prepare short practice sets for that goal and place them before the apps you want to use more intentionally.")

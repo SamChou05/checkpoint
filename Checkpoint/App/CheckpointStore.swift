@@ -3654,6 +3654,46 @@ final class CheckpointStore {
         return nil
     }
 
+    /// Prepares practice without silently replacing the learner's selected map skill.
+    /// A targeted session is returned only when the complete set belongs to that stable skill ID.
+    func prepareManualCheckpointSession(for skillID: SkillMapTopic.ID) async -> CheckpointSession? {
+        guard let goal, let map = goal.derivedSkillMap,
+              let skill = map.topics.first(where: { $0.id == skillID }), !skill.isPaused else {
+            checkpointNotice = "That skill is no longer available for practice."
+            return nil
+        }
+        if let cooldownMessage = checkpointRetryCooldownMessage(source: .manual) {
+            checkpointNotice = cooldownMessage
+            return nil
+        }
+
+        let count = unlockPolicy.questionsPerSession
+        func targetedSession() -> CheckpointSession? {
+            let questions = questionSelector.nextQuestions(
+                limit: count,
+                enforcesDifficultyFloor: true,
+                restrictedToSkillID: skillID
+            )
+            guard questions.count == count else { return nil }
+            return CheckpointSession(questions: questions, requiredCorrectAnswers: unlockPolicy.requiredCorrectAnswers)
+        }
+
+        if let session = targetedSession(), canBeginCheckpointRun() {
+            checkpointNotice = nil
+            beginCheckpointRun(session)
+            return session
+        }
+        if needsQuestionRefill(minimumQuestionCount: count) { _ = await refreshQuestionBatchIfNeeded() }
+        guard let session = targetedSession(), canBeginCheckpointRun() else {
+            checkpointNotice = "Practice for \(skill.name) isn't ready yet. Try again after more questions are prepared."
+            save()
+            return nil
+        }
+        checkpointNotice = nil
+        beginCheckpointRun(session)
+        return session
+    }
+
     func prepareManualCheckpointSession() async -> CheckpointSession? {
         if let cooldownMessage = checkpointRetryCooldownMessage(source: .manual) {
             checkpointNotice = cooldownMessage

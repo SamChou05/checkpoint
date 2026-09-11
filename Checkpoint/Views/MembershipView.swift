@@ -253,7 +253,7 @@ struct MembershipView: View {
                         Button(activationPresentation == nil ? "Done" : "Close") {
                             close()
                         }
-                        .foregroundStyle(CheckpointTheme.teal)
+                        .foregroundStyle(CheckpointTheme.accent)
                         .disabled(purchaseController.isCheckoutActionInProgress)
                     }
                 }
@@ -329,7 +329,7 @@ struct MembershipView: View {
                 VStack(spacing: 14) {
                     ProgressView()
                         .controlSize(.large)
-                        .tint(CheckpointTheme.teal)
+                        .tint(CheckpointTheme.accent)
                         .accessibilityHidden(true)
                     Text("Confirming your Pro access…")
                         .font(.headline)
@@ -445,7 +445,7 @@ struct MembershipView: View {
 
                 VStack(spacing: 9) {
                     Text(presentation.title)
-                        .font(.system(.title, design: .rounded, weight: .bold))
+                        .font(CheckpointTypography.goalTitle)
                         .foregroundStyle(CheckpointTheme.heroText)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
@@ -561,9 +561,9 @@ struct MembershipView: View {
     private func activationBenefitIcon(_ systemImage: String) -> some View {
         Image(systemName: systemImage)
             .font(.system(size: 14, weight: .bold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.success)
             .frame(width: 30, height: 30)
-            .background(CheckpointTheme.teal.opacity(0.10), in: Circle())
+            .background(CheckpointTheme.success.opacity(0.10), in: Circle())
             .accessibilityHidden(true)
     }
 
@@ -598,7 +598,6 @@ struct MembershipView: View {
         }
         .padding(.bottom, 9)
         .background(CheckpointTheme.panel)
-        .shadow(color: CheckpointTheme.shadowCard, radius: 12, y: -4)
     }
 
     private func activationSupportText(
@@ -747,8 +746,8 @@ struct MembershipView: View {
                                 store.isMember && !dynamicTypeSize.isAccessibilitySize
                                     ? .largeTitle
                                     : .title2,
-                                design: .rounded,
-                                weight: .bold
+                                design: .serif,
+                                weight: .regular
                             )
                         )
                         .foregroundStyle(proText)
@@ -779,9 +778,6 @@ struct MembershipView: View {
 
                 Spacer(minLength: 6)
 
-                if !dynamicTypeSize.isAccessibilitySize {
-                    ProMomentumMark()
-                }
             }
         } else if dynamicTypeSize.isAccessibilitySize {
             VStack(alignment: .leading, spacing: 10) {
@@ -809,27 +805,20 @@ struct MembershipView: View {
             ProBenefit(title: "Adaptive Next Focus", systemImage: "scope")
         ]
 
-        if dynamicTypeSize.isAccessibilitySize {
-            VStack(spacing: 10) {
-                ForEach(benefits) { benefit in
-                    ProBenefitTile(benefit: benefit)
-                }
-            }
-        } else {
-            LazyVGrid(
-                columns: [GridItem(.flexible()), GridItem(.flexible())],
-                alignment: .leading,
-                spacing: 10
-            ) {
-                ForEach(benefits) { benefit in
-                    ProBenefitTile(benefit: benefit)
+        VStack(spacing: 0) {
+            ForEach(benefits) { benefit in
+                ProBenefitTile(benefit: benefit)
+                if benefit.id != benefits.last?.id {
+                    Divider()
+                        .overlay(CheckpointTheme.hairline)
+                        .accessibilityHidden(true)
                 }
             }
         }
     }
 
     private var proBenefitsPanel: some View {
-        SectionPanel("Included with Pro") {
+        SectionPanel("Included with Pro", style: .editorial) {
             proBenefitGrid
         }
     }
@@ -871,7 +860,8 @@ struct MembershipView: View {
     private func planSelection(presentation: MembershipPaywallPresentation) -> some View {
         let usesCompactDensity = presentation.contentDensity == .compact
 
-        return VStack(alignment: .leading, spacing: usesCompactDensity ? 7 : 12) {
+        // Keep the full offer above sticky checkout when localized prices wrap.
+        return VStack(alignment: .leading, spacing: usesCompactDensity ? 6 : 12) {
             if presentation.offerIntroduction == .compactWithValueProof {
                 compactOfferIntro
             } else if presentation.offerIntroduction == .expanded {
@@ -879,14 +869,14 @@ struct MembershipView: View {
             }
 
             Text("Choose your plan")
-                .font(.subheadline.weight(.semibold))
+                .font(CheckpointTypography.sectionTitle)
                 .foregroundStyle(CheckpointTheme.text)
                 .accessibilityAddTraits(.isHeader)
 
             if purchaseController.isLoadingProducts && planOptions.isEmpty {
                 HStack(spacing: 10) {
                     ProgressView()
-                        .tint(CheckpointTheme.teal)
+                        .tint(CheckpointTheme.accent)
                     Text("Loading App Store plans")
                         .font(.subheadline)
                         .foregroundStyle(CheckpointTheme.muted)
@@ -999,11 +989,11 @@ struct MembershipView: View {
             glowDiameter: 92,
             glowBlurRadius: 8,
             glowOffset: CGSize(width: 52, height: -48),
-            contentPadding: 9
+            contentPadding: 8
         ) {
             VStack(alignment: .leading, spacing: 7) {
                 Text(context.membershipHeadline)
-                    .font(.system(.headline, design: .rounded, weight: .bold))
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(proText)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityLabel("\(context.offerLabel). \(context.membershipHeadline)")
@@ -1052,7 +1042,7 @@ struct MembershipView: View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: "checkmark.seal.fill")
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .accessibilityHidden(true)
 
             Text(compact ? option.compactDetail : option.detail)
@@ -1237,16 +1227,16 @@ struct MembershipView: View {
         HStack(spacing: 11) {
             Image(systemName: presentation.planSystemImage)
                 .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .frame(width: 40, height: 40)
-                .background(CheckpointTheme.teal.opacity(0.11), in: Circle())
+                .background(CheckpointTheme.accent.opacity(0.11), in: Circle())
                 .contentTransition(.symbolEffect(.replace))
                 .symbolEffectsRemoved(!activePlanMotionPolicy.animatesSymbol)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("PRO PLAN")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.8)
                     .foregroundStyle(CheckpointTheme.muted)
                     .lineLimit(1)
@@ -1269,7 +1259,7 @@ struct MembershipView: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "creditcard")
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .accessibilityHidden(true)
 
                 Text(presentation.managementTitle)
@@ -1335,7 +1325,6 @@ struct MembershipView: View {
         }
         .padding(.bottom, presentation.contentDensity == .compact ? 5 : 9)
         .background(CheckpointTheme.panel)
-        .shadow(color: CheckpointTheme.shadowCard, radius: 12, y: -4)
     }
 
     private var inlinePurchaseAction: some View {
@@ -1357,7 +1346,8 @@ struct MembershipView: View {
         PrimaryActionButton(
             title: purchaseButtonTitle(usesCompactTitle: usesCompactTitle),
             systemImage: purchaseButtonSystemImage,
-            isLoading: checkoutPresentation.showsPrimaryProgress
+            isLoading: checkoutPresentation.showsPrimaryProgress,
+            compact: usesCompactTitle
         ) {
             handlePurchaseButton()
         }
@@ -1392,7 +1382,7 @@ struct MembershipView: View {
                 Text(checkoutPresentation.secondaryButtonTitle)
             }
             .font(.footnote.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .frame(maxWidth: .infinity, minHeight: 44)
             .contentShape(Rectangle())
         }
@@ -1689,9 +1679,9 @@ struct MembershipView: View {
     private func memberPlanTint(for tone: MembershipActivePlanTone) -> Color {
         switch tone {
         case .active:
-            CheckpointTheme.teal
+            CheckpointTheme.success
         case .scheduled:
-            CheckpointTheme.blue
+            CheckpointTheme.accent
         case .attention:
             CheckpointTheme.amber
         }
@@ -2039,14 +2029,14 @@ private struct MembershipPlanRow: View {
                 )
                 .background(
                     isSelected
-                        ? CheckpointTheme.teal.opacity(0.10)
-                        : CheckpointTheme.panel.opacity(0.84),
-                    in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        ? CheckpointTheme.selectionFill
+                        : CheckpointTheme.panel,
+                    in: RoundedRectangle(cornerRadius: 8, style: .continuous)
                 )
                 .overlay {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .stroke(
-                            isSelected ? CheckpointTheme.teal.opacity(0.72) : CheckpointTheme.controlStroke,
+                            isSelected ? CheckpointTheme.selectionBorder : CheckpointTheme.controlStroke,
                             lineWidth: isSelected ? 1.5 : 1
                         )
                 }
@@ -2177,7 +2167,7 @@ private struct MembershipPlanRow: View {
     private var compactCadenceText: some View {
         Text(option.cadence)
             .font(.caption2)
-            .foregroundStyle(CheckpointTheme.muted)
+            .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.muted)
             .lineLimit(1)
     }
 
@@ -2195,7 +2185,7 @@ private struct MembershipPlanRow: View {
 
                 Text(option.cadence)
                     .font(.caption)
-                    .foregroundStyle(CheckpointTheme.muted)
+                    .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.muted)
 
                 optionSavings
             }
@@ -2203,7 +2193,7 @@ private struct MembershipPlanRow: View {
 
             Text(option.detail)
                 .font(.footnote)
-                .foregroundStyle(CheckpointTheme.muted)
+                .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.leading, 32)
         }
@@ -2212,7 +2202,7 @@ private struct MembershipPlanRow: View {
     private var selectionIcon: some View {
         Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
             .font(.system(size: 19, weight: .semibold))
-            .foregroundStyle(isSelected ? CheckpointTheme.teal : CheckpointTheme.muted)
+            .foregroundStyle(isSelected ? CheckpointTheme.accent : CheckpointTheme.muted)
             .frame(width: 22)
             .contentTransition(.symbolEffect(.replace))
             .symbolEffectsRemoved(reduceMotion)
@@ -2225,7 +2215,7 @@ private struct MembershipPlanRow: View {
 
             Text(option.detail)
                 .font(.footnote)
-                .foregroundStyle(CheckpointTheme.muted)
+                .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -2238,7 +2228,7 @@ private struct MembershipPlanRow: View {
 
             Text(option.cadence)
                 .font(.caption)
-                .foregroundStyle(CheckpointTheme.muted)
+                .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.muted)
 
             optionSavings
         }
@@ -2270,11 +2260,11 @@ private struct MembershipPlanRow: View {
     private var recommendedBadge: some View {
         if option.isRecommended {
             Text("Best value")
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(CheckpointTheme.selectionText)
+                .font(CheckpointTypography.eyebrow)
+                .foregroundStyle(CheckpointTheme.actionText)
                 .padding(.horizontal, 7)
                 .padding(.vertical, 4)
-                .background(CheckpointTheme.actionTeal, in: Capsule())
+                .background(CheckpointTheme.actionFill, in: Capsule())
         }
     }
 
@@ -2282,8 +2272,8 @@ private struct MembershipPlanRow: View {
     private var optionSavings: some View {
         if let valueBadge = option.valueBadge {
             Text(valueBadge)
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .font(CheckpointTypography.eyebrow)
+                .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.accent)
                 .padding(.top, 2)
         }
     }
@@ -2300,28 +2290,20 @@ private struct ProBenefitTile: View {
     let benefit: ProBenefit
 
     var body: some View {
-        HStack(alignment: .center, spacing: 9) {
+        HStack(alignment: .center, spacing: 12) {
             Image(systemName: benefit.systemImage)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
-                .frame(width: 27, height: 27)
-                .background(
-                    CheckpointTheme.teal.opacity(0.10),
-                    in: RoundedRectangle(cornerRadius: 8)
-                )
+                .font(.system(size: 15, weight: .regular))
+                .foregroundStyle(CheckpointTheme.accent)
+                .frame(width: 22)
                 .accessibilityHidden(true)
 
             Text(benefit.title)
-                .font(.footnote.weight(.semibold))
+                .font(.subheadline)
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(10)
-        .frame(maxWidth: .infinity, minHeight: 50, alignment: .leading)
-        .background(
-            CheckpointTheme.panelRaised.opacity(0.72),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, minHeight: 36, alignment: .leading)
         .accessibilityElement(children: .combine)
     }
 }
@@ -2401,7 +2383,7 @@ private struct CompactLegalLink: View {
             Link(destination: url) {
                 Text(title)
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .frame(minWidth: 44, minHeight: 44, alignment: .leading)
                     .contentShape(Rectangle())
             }

@@ -1270,7 +1270,7 @@ struct WeeklyReviewView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
-                        .foregroundStyle(CheckpointTheme.teal)
+                        .foregroundStyle(CheckpointTheme.accent)
                 }
             }
         }
@@ -1301,7 +1301,7 @@ struct WeeklyReviewView: View {
             if selectedMetrics.id != WeeklyMetricsSummary.allGoalsID,
                metricOptions.count > 2 {
                 Text(selectedMetrics.title)
-                    .font(.headline)
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.opacity)
@@ -1318,7 +1318,7 @@ struct WeeklyReviewView: View {
 
     private var weekEyebrow: some View {
         Text(periodPresentation.eyebrowText)
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(1.0)
             .foregroundStyle(CheckpointTheme.muted)
             .contentTransition(.opacity)
@@ -1342,7 +1342,7 @@ struct WeeklyReviewView: View {
 
     private var weekRangeHeading: some View {
         Text(periodPresentation.rangeText)
-            .font(.title2.weight(.bold))
+            .font(CheckpointTypography.goalTitle)
             .foregroundStyle(CheckpointTheme.text)
             .fixedSize(horizontal: false, vertical: true)
             .contentTransition(.opacity)
@@ -1382,14 +1382,14 @@ struct WeeklyReviewView: View {
         } label: {
             Label(title, systemImage: systemImage)
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(isEnabled ? CheckpointTheme.teal : CheckpointTheme.muted)
+                .foregroundStyle(isEnabled ? CheckpointTheme.accent : CheckpointTheme.muted)
                 .frame(
                     maxWidth: fillsAvailableWidth ? .infinity : nil,
                     minHeight: 44
                 )
                 .padding(.horizontal, 10)
                 .background(
-                    CheckpointTheme.panelRaised.opacity(isEnabled ? 0.78 : 0.45),
+                    CheckpointTheme.panelRaised,
                     in: Capsule()
                 )
                 .overlay {
@@ -1466,16 +1466,16 @@ struct WeeklyReviewView: View {
                     .font(.system(size: 9, weight: .bold))
             }
             .font(.caption.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .padding(.horizontal, 11)
             .frame(minHeight: 44)
             .background {
                 if dynamicTypeSize.isAccessibilitySize {
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .fill(CheckpointTheme.teal.opacity(0.10))
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(CheckpointTheme.accent.opacity(0.10))
                 } else {
                     Capsule()
-                        .fill(CheckpointTheme.teal.opacity(0.10))
+                        .fill(CheckpointTheme.accent.opacity(0.10))
                 }
             }
         }
@@ -1538,26 +1538,17 @@ struct WeeklyReviewView: View {
         .padding(.vertical, 20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(CheckpointTheme.ink)
                 .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-                .overlay(alignment: .topTrailing) {
-                    Circle()
-                        .fill(heroAccent.opacity(0.09))
-                        .frame(width: 180, height: 180)
-                        .blur(radius: 12)
-                        .offset(x: 78, y: -94)
-                        .allowsHitTesting(false)
-                }
         )
-        .shadow(color: CheckpointTheme.shadowElevated, radius: 18, y: 10)
         .accessibilityElement(children: .contain)
     }
 
     private var primaryImpactMetric: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(primaryMetricPresentation.eyebrowText)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(1.05)
                 .foregroundStyle(heroSecondaryText)
                 .contentTransition(.opacity)
@@ -1580,7 +1571,7 @@ struct WeeklyReviewView: View {
 
     private var primaryImpactValue: some View {
         Text("\(primaryMetricPresentation.value)")
-            .font(.system(size: heroMetricSize, weight: .bold, design: .rounded))
+            .font(.system(size: heroMetricSize, weight: .regular, design: .serif))
             .monospacedDigit()
             .foregroundStyle(heroText)
             .contentTransition(.numericText(value: Double(primaryMetricPresentation.value)))
@@ -1651,7 +1642,7 @@ struct WeeklyReviewView: View {
                 }
             }
             .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(CheckpointTheme.panel.opacity(0.90))
                     .stroke(CheckpointTheme.hairline, lineWidth: 1)
             )
@@ -1755,8 +1746,8 @@ struct WeeklyReviewView: View {
                         }
                     }
                     .background(
-                        RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .fill(CheckpointTheme.panel.opacity(0.88))
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(CheckpointTheme.panel)
                             .stroke(CheckpointTheme.hairline, lineWidth: 1)
                     )
                 }
@@ -1771,9 +1762,9 @@ struct WeeklyReviewView: View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "point.3.connected.trianglepath.dotted")
                 .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .frame(width: 38, height: 38)
-                .background(CheckpointTheme.teal.opacity(0.10), in: Circle())
+                .background(CheckpointTheme.accent.opacity(0.10), in: Circle())
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
@@ -1793,7 +1784,7 @@ struct WeeklyReviewView: View {
 
     private func sectionLabel(_ text: String) -> some View {
         Text(text)
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.95)
             .foregroundStyle(CheckpointTheme.muted)
             .accessibilityAddTraits(.isHeader)
@@ -1894,7 +1885,7 @@ struct WeeklyReviewView: View {
 
     private func goalPulseTint(at index: Int) -> Color {
         let tints = [
-            CheckpointTheme.teal,
+            CheckpointTheme.accent,
             CheckpointTheme.blue,
             CheckpointTheme.amber,
             CheckpointTheme.coral
@@ -2011,7 +2002,7 @@ private struct WeeklyGoalPulseRow: View {
             HStack(spacing: 5) {
                 Text("View impact")
                 Image(systemName: "chevron.right")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
             }
             .font(.caption.weight(.semibold))
             .foregroundStyle(tint)
@@ -2052,12 +2043,12 @@ private struct WeeklyGoalPulseRow: View {
     private var currentBadge: some View {
         if item.isCurrentGoal {
             Text("CURRENT")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.65)
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .padding(.horizontal, 7)
                 .padding(.vertical, 4)
-                .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+                .background(CheckpointTheme.accent.opacity(0.10), in: Capsule())
         }
     }
 
@@ -2142,6 +2133,13 @@ private struct WeeklyPracticeBars: View {
     var selectDay: (WeeklyPracticeDay) -> Void
 
     @Namespace private var selectionNamespace
+    @ScaledMetric(relativeTo: .caption2) private var weekdayLabelLineHeight: CGFloat = 14
+
+    private var dayStripHeight: CGFloat {
+        // The bars stay compact while the weekday label gets its full scaled line.
+        // A horizontal ScrollView clips content beyond its proposed height.
+        max(86, 54 + 7 + weekdayLabelLineHeight + 8)
+    }
 
     private var maximumCount: Int {
         WeeklyPracticeBarPresentation.maximumCount(
@@ -2164,12 +2162,14 @@ private struct WeeklyPracticeBars: View {
                 VStack(alignment: .leading, spacing: 6) {
                     overflowAffordance
                     scrollableDayStrip
+                        .frame(height: dayStripHeight)
                 }
             case .fitted:
                 dayStrip(fillsAvailableWidth: true)
+                    .frame(height: dayStripHeight)
             }
         }
-        .frame(height: overflowTreatment == .horizontalScrollWithCue ? 108 : 86)
+        .frame(minHeight: overflowTreatment == .horizontalScrollWithCue ? 108 : 86)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Daily practice")
         .accessibilityHint(
@@ -2192,27 +2192,6 @@ private struct WeeklyPracticeBars: View {
             .onChange(of: selectedDayID) { _, _ in
                 scrollToSelectedDay(using: scrollProxy, animated: !reduceMotion)
             }
-            .overlay {
-                HStack(spacing: 0) {
-                    LinearGradient(
-                        colors: [CheckpointTheme.ink, CheckpointTheme.ink.opacity(0)],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                    .frame(width: 10)
-
-                    Spacer(minLength: 0)
-
-                    LinearGradient(
-                        colors: [CheckpointTheme.ink.opacity(0), CheckpointTheme.ink],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                    .frame(width: 10)
-                }
-                .allowsHitTesting(false)
-                .accessibilityHidden(true)
-            }
         }
     }
 
@@ -2234,7 +2213,7 @@ private struct WeeklyPracticeBars: View {
                 )
             }
         }
-        .font(.caption2.weight(.bold))
+        .font(CheckpointTypography.eyebrow)
         .foregroundStyle(CheckpointTheme.heroMuted)
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .accessibilityHidden(true)
@@ -2315,7 +2294,7 @@ private struct WeeklyPracticeBars: View {
                     .frame(height: 54, alignment: .bottom)
 
                     Text(dateLabelFormatter.narrowWeekday(for: day.date))
-                        .font(.caption2.weight(.bold))
+                        .font(CheckpointTypography.eyebrow)
                         .foregroundStyle(labelColor(for: day, isSelected: isSelected))
                 }
                 .padding(.vertical, 4)
@@ -2403,7 +2382,7 @@ private struct WeeklyPracticeDayDetail: View {
         .padding(.vertical, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(CheckpointTheme.heroText.opacity(0.055))
                 .stroke(CheckpointTheme.heroDivider, lineWidth: 1)
         )
@@ -2429,7 +2408,7 @@ private struct WeeklyPracticeDayDetail: View {
     private var detailCopy: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(presentation.dateEyebrowText)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.7)
                 .foregroundStyle(CheckpointTheme.heroMuted)
 
@@ -2460,7 +2439,7 @@ private struct ImpactMetricTile: View {
         VStack(alignment: .leading, spacing: 13) {
             HStack {
                 Text(label.uppercased())
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.65)
                     .foregroundStyle(CheckpointTheme.muted)
 
@@ -2468,12 +2447,12 @@ private struct ImpactMetricTile: View {
 
                 Image(systemName: systemImage)
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .accessibilityHidden(true)
             }
 
             Text(value)
-                .font(.title2.weight(.bold))
+                .font(CheckpointTypography.sectionTitle)
                 .foregroundStyle(CheckpointTheme.text)
                 .monospacedDigit()
 
@@ -2488,8 +2467,8 @@ private struct ImpactMetricTile: View {
         .padding(15)
         .frame(maxWidth: .infinity, minHeight: 130, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(CheckpointTheme.panel.opacity(0.88))
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(CheckpointTheme.panel)
                 .stroke(CheckpointTheme.hairline, lineWidth: 1)
         )
         .accessibilityElement(children: .ignore)
@@ -2540,7 +2519,7 @@ private struct SkillSnapshotSignalRow: View {
     private var signalCopy: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(eyebrow)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.65)
                 .foregroundStyle(CheckpointTheme.muted)
 
@@ -2599,7 +2578,7 @@ private struct SkillSnapshotSignalRow: View {
         case .highestCurrentEstimate, .checkpointsCleared:
             CheckpointTheme.blue
         case .answersLogged:
-            CheckpointTheme.teal
+            CheckpointTheme.accent
         case .checkpointStreak:
             CheckpointTheme.coral
         }

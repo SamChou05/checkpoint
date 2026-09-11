@@ -218,7 +218,7 @@ struct QuestionReportsView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 0) {
                     supportPanel
                     composerPanel
                     savedDraftsPanel
@@ -235,7 +235,7 @@ struct QuestionReportsView: View {
                     Button("Close") {
                         attemptClose()
                     }
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                 }
             }
         }
@@ -286,61 +286,42 @@ struct QuestionReportsView: View {
     }
 
     private var supportPanel: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(alignment: .top, spacing: 13) {
-                Image(systemName: "lifepreserver.fill")
-                    .font(.system(size: 19, weight: .semibold))
-                    .foregroundStyle(CheckpointTheme.ink)
-                    .frame(width: 46, height: 46)
-                    .background(CheckpointTheme.mint, in: RoundedRectangle(cornerRadius: 14))
+        SectionPanel(style: .editorial) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "lifepreserver")
+                    .font(.system(size: 22, weight: .regular))
+                    .foregroundStyle(CheckpointTheme.accent)
+                    .frame(width: 28, height: 30)
                     .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 7) {
                     Text("Need help now?")
-                        .font(.headline)
-                        .foregroundStyle(CheckpointTheme.heroText)
+                        .font(CheckpointTypography.sectionTitle)
+                        .foregroundStyle(CheckpointTheme.text)
 
                     Text("Open the Checkpoint support page for account, billing, or troubleshooting help.")
                         .font(.subheadline)
-                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
             if let supportURL = legalLinks.supportURL {
-                Button {
+                PrimaryActionButton(title: "Open support", systemImage: "arrow.up.right") {
                     openURL(supportURL)
-                } label: {
-                    Label("Open support", systemImage: "arrow.up.right.square")
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(CheckpointTheme.ink)
-                        .frame(maxWidth: .infinity, minHeight: 48)
-                        .background(
-                            CheckpointTheme.mint,
-                            in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
-                        )
                 }
-                .buttonStyle(CheckpointPressButtonStyle())
                 .accessibilityHint("Opens the configured support page")
             } else {
                 Label("Support isn’t available in this build.", systemImage: "exclamationmark.triangle.fill")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.heroWarning)
+                    .foregroundStyle(CheckpointTheme.amber)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding(18)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
-                .fill(CheckpointTheme.ink)
-                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-        )
-        .shadow(color: CheckpointTheme.shadowCard, radius: 12, y: 5)
     }
 
     private var composerPanel: some View {
-        SectionPanel("New feedback draft") {
+        SectionPanel("New feedback draft", style: .editorial) {
             VStack(alignment: .leading, spacing: 14) {
                 localOnlyDisclosure
                 categoryPicker
@@ -371,9 +352,9 @@ struct QuestionReportsView: View {
         HStack(alignment: .top, spacing: 11) {
             Image(systemName: "lock.shield")
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .frame(width: 34, height: 34)
-                .background(CheckpointTheme.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
+                .background(CheckpointTheme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 3) {
@@ -409,7 +390,7 @@ struct QuestionReportsView: View {
             }
             .pickerStyle(.menu)
             .labelsHidden()
-            .tint(CheckpointTheme.teal)
+            .tint(CheckpointTheme.accent)
             .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
             .padding(.horizontal, 12)
             .background(
@@ -483,7 +464,7 @@ struct QuestionReportsView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .tint(CheckpointTheme.teal)
+        .tint(CheckpointTheme.accent)
         .padding(12)
         .background(
             CheckpointTheme.panelRaised.opacity(0.62),
@@ -500,14 +481,14 @@ struct QuestionReportsView: View {
     }
 
     private var savedDraftsPanel: some View {
-        SectionPanel("Saved drafts") {
+        SectionPanel("Saved drafts", style: .editorial) {
             if store.issueReportDrafts.isEmpty {
                 HStack(alignment: .top, spacing: 12) {
                     Image(systemName: "tray")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(CheckpointTheme.teal)
+                        .foregroundStyle(CheckpointTheme.accent)
                         .frame(width: 38, height: 38)
-                        .background(CheckpointTheme.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 11))
+                        .background(CheckpointTheme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 11))
                         .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 3) {
@@ -591,7 +572,7 @@ struct QuestionReportsView: View {
     private func noticeTint(_ tone: FeedbackDraftNoticeTone) -> Color {
         switch tone {
         case .success:
-            CheckpointTheme.teal
+            CheckpointTheme.success
         case .warning:
             CheckpointTheme.amber
         case .failure:
@@ -681,7 +662,7 @@ private struct FeedbackDraftRow: View {
             if let goalContext = presentation.goalContext {
                 Label(goalContext, systemImage: "scope")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
@@ -711,10 +692,10 @@ private struct FeedbackDraftRow: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             CheckpointTheme.panelRaised.opacity(0.72),
-            in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
         )
         .overlay {
-            RoundedRectangle(cornerRadius: 15, style: .continuous)
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .stroke(CheckpointTheme.hairline, lineWidth: 1)
         }
     }
@@ -731,7 +712,7 @@ private struct FeedbackDraftRow: View {
             draftActionLabel(
                 title: "Share",
                 systemImage: "square.and.arrow.up",
-                tint: CheckpointTheme.teal
+                tint: CheckpointTheme.accent
             )
         }
         .buttonStyle(CheckpointPressButtonStyle())

@@ -1302,6 +1302,14 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
 
         for fixture in fixtures {
             let layoutCapture = HomeWeeklySignalLayoutCapture()
+            XCTAssertEqual(
+                HomeWeeklySignalLayoutPolicy(
+                    viewportWidth: fixture.width,
+                    dynamicTypeSize: fixture.dynamicTypeSize
+                ).layout,
+                fixture.expectedLayout,
+                fixture.name
+            )
             let horizontalMargin: CGFloat =
                 HomeWeeklySignalLayoutPolicy.usesCompactHomeMargins(
                     viewportWidth: fixture.width
@@ -1395,20 +1403,13 @@ final class HomeFirstCheckpointRenderingTests: XCTestCase {
                         layoutCapture.frames[.supportingMetrics],
                         fixture.name
                     )
-                    switch fixture.expectedLayout {
-                    case .regular:
-                        XCTAssertGreaterThanOrEqual(
-                            supportingMetrics.minX,
-                            primaryMetric.maxX,
-                            "\(fixture.name) regular metrics overlap"
-                        )
-                    case .stacked:
-                        XCTAssertGreaterThanOrEqual(
-                            supportingMetrics.minY,
-                            primaryMetric.maxY,
-                            "\(fixture.name) stacked metrics overlap"
-                        )
-                    }
+                    // The editorial layout puts supporting evidence below the
+                    // primary metric and decorative beacon at every text size.
+                    XCTAssertGreaterThanOrEqual(
+                        supportingMetrics.minY,
+                        primaryMetric.maxY,
+                        "\(fixture.name) supporting metrics overlap the primary metric"
+                    )
                     XCTAssertTrue(
                         actionButton.insetBy(dx: -0.5, dy: -0.5).contains(supportingMetrics),
                         "\(fixture.name) supporting metrics escaped the weekly-impact Button"

@@ -354,26 +354,14 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
 
     var body: some View {
         cardContent
-            .padding(cardPadding)
+            .padding(.vertical, cardPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background {
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                CheckpointTheme.panel,
-                                CheckpointTheme.panelRaised.opacity(0.94)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(CheckpointTheme.hairline)
+                    .frame(height: 1)
+                    .accessibilityHidden(true)
             }
-            .overlay {
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .stroke(CheckpointTheme.hairline, lineWidth: 1)
-            }
-            .shadow(color: CheckpointTheme.shadowCard, radius: 14, x: 0, y: 6)
             .animation(motionPolicy.animation, value: presentation.checkpointState)
     }
 
@@ -394,7 +382,7 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
             header
 
             Text(presentation.goalTitle)
-                .font(.title2.weight(.bold))
+                .font(CheckpointTypography.goalTitle)
                 .foregroundStyle(CheckpointTheme.text)
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
                 .fixedSize(horizontal: false, vertical: true)
@@ -414,7 +402,7 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
             compactHeader
 
             Text(presentation.goalTitle)
-                .font(.headline.weight(.bold))
+                .font(.system(.headline, design: .serif))
                 .foregroundStyle(CheckpointTheme.text)
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
@@ -436,7 +424,7 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
             compactHeader
 
             Text(presentation.goalTitle)
-                .font(.headline.weight(.bold))
+                .font(CheckpointTypography.sectionTitle)
                 .foregroundStyle(CheckpointTheme.text)
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
@@ -466,17 +454,17 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
             HStack(spacing: 7) {
                 Image(systemName: "scope")
                     .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .frame(width: 25, height: 25)
                     .background(
-                        CheckpointTheme.teal.opacity(0.10),
+                        CheckpointTheme.accent.opacity(0.10),
                         in: RoundedRectangle(cornerRadius: 8, style: .continuous)
                     )
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text("CURRENT FOCUS")
-                        .font(.caption2.weight(.bold))
+                        .font(CheckpointTypography.eyebrow)
                         .tracking(0.7)
                         .foregroundStyle(CheckpointTheme.muted)
 
@@ -665,10 +653,10 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
     private var scopeIcon: some View {
         Image(systemName: "scope")
             .font(.system(size: 16, weight: .bold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .frame(width: 38, height: 38)
             .background(
-                CheckpointTheme.teal.opacity(0.10),
+                CheckpointTheme.accent.opacity(0.10),
                 in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
             .accessibilityHidden(true)
@@ -676,7 +664,7 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
 
     private var scopeLabel: some View {
         Text("CURRENT FOCUS")
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.95)
             .foregroundStyle(CheckpointTheme.muted)
             .fixedSize(horizontal: false, vertical: true)
@@ -732,10 +720,10 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             CheckpointTheme.panelRaised.opacity(0.72),
-            in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
         )
         .overlay {
-            RoundedRectangle(cornerRadius: 15, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(CheckpointTheme.controlStroke.opacity(0.72), lineWidth: 1)
         }
     }
@@ -796,7 +784,7 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(label)
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.25)
                     .foregroundStyle(CheckpointTheme.muted)
 
@@ -813,10 +801,10 @@ struct HomeGoalOverviewCard<GoalControl: View>: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             CheckpointTheme.panelRaised.opacity(0.72),
-            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
         )
         .overlay {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(CheckpointTheme.controlStroke.opacity(0.72), lineWidth: 1)
         }
         .accessibilityElement(children: .ignore)
@@ -1086,10 +1074,10 @@ private extension View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 tint.opacity(0.075),
-                in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
             .overlay {
-                RoundedRectangle(cornerRadius: 15, style: .continuous)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .stroke(tint.opacity(0.14), lineWidth: 1)
             }
     }
@@ -1618,7 +1606,7 @@ struct HomeFirstWinJourneyCard: View {
     private var sectionHeader: some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text("FIRST WIN")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.95)
                 .foregroundStyle(CheckpointTheme.muted)
                 .accessibilityAddTraits(.isHeader)
@@ -1626,7 +1614,7 @@ struct HomeFirstWinJourneyCard: View {
             Spacer(minLength: 4)
 
             Text(presentation.progressText)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.55)
                 .foregroundStyle(CheckpointTheme.teal)
                 .contentTransition(.numericText())
@@ -1694,12 +1682,12 @@ struct HomeFirstWinJourneyCard: View {
     private var identityCopy: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text("CHECKPOINT")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.8)
                 .foregroundStyle(CheckpointTheme.heroSuccess)
 
             Text(presentation.headline)
-                .font(.title3.weight(.bold))
+                .font(CheckpointTypography.sectionTitle)
                 .foregroundStyle(CheckpointTheme.heroText)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -1751,7 +1739,7 @@ struct HomeFirstWinJourneyCard: View {
                     nodeBadge(node, size: 24)
 
                     Text(node.id.compactTitle)
-                        .font(.caption2.weight(.bold))
+                        .font(CheckpointTypography.eyebrow)
                         .foregroundStyle(
                             node.isCurrent
                                 ? CheckpointTheme.heroText
@@ -1792,7 +1780,7 @@ struct HomeFirstWinJourneyCard: View {
 
             VStack(spacing: 2) {
                 Text(node.id.title)
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .foregroundStyle(node.isCurrent ? CheckpointTheme.heroText : CheckpointTheme.heroMuted)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
@@ -1897,7 +1885,7 @@ struct HomeFirstWinJourneyCard: View {
         VStack(alignment: .leading, spacing: usesCompactJourneyLayout ? 9 : 13) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("NEXT STEP")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.75)
                     .foregroundStyle(currentTint)
 
@@ -1921,10 +1909,10 @@ struct HomeFirstWinJourneyCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             currentTint.opacity(0.10),
-            in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
         )
         .overlay {
-            RoundedRectangle(cornerRadius: 15, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(currentTint.opacity(0.20), lineWidth: 1)
         }
     }
@@ -1970,7 +1958,7 @@ struct HomeFirstWinJourneyCard: View {
             )
             .frame(minHeight: 44)
             .background(
-                action.isProminent ? CheckpointTheme.heroSuccess : CheckpointTheme.heroSubtleFill,
+                action.isProminent ? CheckpointTheme.paper : CheckpointTheme.heroSubtleFill,
                 in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
             .overlay {
@@ -2409,55 +2397,45 @@ struct LightStudyBeaconSection: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            sectionHeaderLabel
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 16) {
+                signalHeader
 
-            Button(action: action) {
-                CheckpointHeroSurface(
-                    glowColor: signalAccent,
-                    glowOpacity: heroPresentation.hasActivity ? 0.12 : 0.07,
-                    glowDiameter: 142,
-                    contentPadding: layoutPolicy.contentPadding
-                ) {
-                    VStack(alignment: .leading, spacing: 16) {
-                        signalHeader
-
-                        if heroPresentation.hasActivity {
-                            activitySummary
-                        } else {
-                            emptySummary
-                        }
-
-                        if let insight = heroPresentation.insight {
-                            Divider()
-                                .overlay(CheckpointTheme.heroDivider)
-
-                            insightRow(insight)
-                                .transition(motionPolicy.conditionalTransition)
-                        }
-                    }
-                    .animation(motionPolicy.animation, value: heroPresentation.insight)
+                if heroPresentation.hasActivity {
+                    activitySummary
+                } else {
+                    emptySummary
                 }
-                .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+
+                if let insight = heroPresentation.insight {
+                    Divider()
+                        .overlay(CheckpointTheme.hairline)
+
+                    insightRow(insight)
+                        .transition(motionPolicy.conditionalTransition)
+                }
             }
-            .buttonStyle(CheckpointPressButtonStyle(role: .surface))
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(HomeWeeklySignalHeroPresentation.actionLabel)
-            .accessibilityValue(weeklySignalAccessibilityValue)
-            .accessibilityHint("Opens weekly impact")
-            .accessibilityIdentifier("home-weekly-signal-action")
-            .reportHomeWeeklySignalLayoutFrame(.actionButton, using: layoutReporter)
+            .padding(.vertical, layoutPolicy.contentPadding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(CheckpointTheme.hairline)
+                    .frame(height: 1)
+                    .accessibilityHidden(true)
+            }
+            .animation(motionPolicy.animation, value: heroPresentation.insight)
+            .contentShape(Rectangle())
         }
+        .buttonStyle(CheckpointPressButtonStyle(role: .surface))
+        .accessibilityElement(children: .ignore)
+        .accessibilityAddTraits(.isHeader)
+        .accessibilityLabel(HomeWeeklySignalHeroPresentation.actionLabel)
+        .accessibilityValue(weeklySignalAccessibilityValue)
+        .accessibilityHint("Opens weekly impact")
+        .accessibilityIdentifier("home-weekly-signal-action")
+        .reportHomeWeeklySignalLayoutFrame(.actionButton, using: layoutReporter)
         .reportHomeWeeklySignalLayoutFrame(.section, using: layoutReporter)
         .coordinateSpace(name: homeWeeklySignalLayoutCoordinateSpaceName)
-    }
-
-    private var sectionHeaderLabel: some View {
-        Text("WEEKLY SIGNAL")
-            .font(.caption2.weight(.bold))
-            .tracking(0.95)
-            .foregroundStyle(CheckpointTheme.muted)
-            .accessibilityAddTraits(.isHeader)
     }
 
     @ViewBuilder
@@ -2490,7 +2468,7 @@ struct LightStudyBeaconSection: View {
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(signalAccent)
                 .frame(width: 32, height: 32)
-                .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 10))
+                .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 10))
                 .contentTransition(.symbolEffect(.replace))
                 .symbolEffect(
                     .bounce,
@@ -2501,7 +2479,7 @@ struct LightStudyBeaconSection: View {
                 .accessibilityHidden(true)
 
             Text("THIS WEEK")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.8)
                 .foregroundStyle(signalSecondaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -2513,14 +2491,13 @@ struct LightStudyBeaconSection: View {
             Text(usesCondensedSignalHeader ? "Impact" : "View impact")
                 .fixedSize(horizontal: false, vertical: true)
             Image(systemName: "arrow.up.right")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .accessibilityHidden(true)
         }
         .font(.caption.weight(.bold))
-        .foregroundStyle(CheckpointTheme.heroSuccess)
-        .padding(.horizontal, 12)
+        .foregroundStyle(CheckpointTheme.accent)
+        .padding(.horizontal, 8)
         .frame(minHeight: 44)
-        .background(CheckpointTheme.heroSubtleFill, in: Capsule())
         .accessibilityHidden(true)
         .reportHomeWeeklySignalLayoutFrame(.actionAffordance, using: layoutReporter)
     }
@@ -2541,28 +2518,16 @@ struct LightStudyBeaconSection: View {
     @ViewBuilder
     private var activitySummary: some View {
         if let primaryMetric = heroPresentation.primaryMetric {
-            if heroPresentation.supportingMetrics.isEmpty {
-                primaryMetricView(primaryMetric)
-            } else if layoutPolicy.layout == .stacked {
-                VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(alignment: .center, spacing: 16) {
                     primaryMetricView(primaryMetric)
-
-                    Rectangle()
-                        .fill(CheckpointTheme.heroDivider)
-                        .frame(height: 1)
+                    Spacer(minLength: 0)
+                    HomeWeeklyBeaconMark()
+                        .frame(width: 76, height: 76)
                         .accessibilityHidden(true)
-
-                    supportingMetrics
                 }
-            } else {
-                HStack(alignment: .center, spacing: 18) {
-                    primaryMetricView(primaryMetric)
 
-                    Rectangle()
-                        .fill(CheckpointTheme.heroDivider)
-                        .frame(width: 1, height: 76)
-                        .accessibilityHidden(true)
-
+                if !heroPresentation.supportingMetrics.isEmpty {
                     supportingMetrics
                 }
             }
@@ -2574,14 +2539,14 @@ struct LightStudyBeaconSection: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(primaryMetric.value)
-                .font(.system(size: primaryMetricSize, weight: .bold, design: .rounded))
+                .font(.system(size: primaryMetricSize, weight: .regular, design: .serif))
                 .monospacedDigit()
                 .foregroundStyle(signalText)
                 .contentTransition(.numericText(value: primaryMetric.numericValue))
                 .animation(motionPolicy.animation, value: primaryMetric.numericValue)
 
             Text(primaryMetric.label)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.8)
                 .foregroundStyle(signalSecondaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -2603,10 +2568,26 @@ struct LightStudyBeaconSection: View {
     }
 
     private var supportingMetrics: some View {
-        VStack(alignment: .leading, spacing: 13) {
-            ForEach(heroPresentation.supportingMetrics) { metric in
-                compactMetric(metric)
-                .transition(motionPolicy.conditionalTransition)
+        Group {
+            if layoutPolicy.layout == .stacked {
+                VStack(alignment: .leading, spacing: 13) {
+                    ForEach(heroPresentation.supportingMetrics) { metric in
+                        compactMetric(metric)
+                            .transition(motionPolicy.conditionalTransition)
+                    }
+                }
+            } else {
+                HStack(alignment: .top, spacing: 12) {
+                    ForEach(heroPresentation.supportingMetrics) { metric in
+                        VStack(alignment: .leading, spacing: 3) {
+                            compactMetricValue(metric)
+                            compactMetricLabel(metric)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityElement(children: .combine)
+                        .transition(motionPolicy.conditionalTransition)
+                    }
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -2634,7 +2615,7 @@ struct LightStudyBeaconSection: View {
 
     private func compactMetricValue(_ metric: HomeWeeklySignalMetricPresentation) -> some View {
         Text(metric.value)
-            .font(.headline.weight(.bold))
+            .font(.headline.weight(.medium))
             .monospacedDigit()
             .foregroundStyle(signalAccent)
             .contentTransition(.numericText(value: metric.numericValue))
@@ -2643,7 +2624,7 @@ struct LightStudyBeaconSection: View {
 
     private func compactMetricLabel(_ metric: HomeWeeklySignalMetricPresentation) -> some View {
         Text(metric.label)
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.55)
             .foregroundStyle(signalSecondaryText)
             .fixedSize(horizontal: false, vertical: true)
@@ -2708,11 +2689,11 @@ struct LightStudyBeaconSection: View {
     private func insightTint(for insight: WeeklySignalInsight) -> Color {
         switch insight.role {
         case .lowestCurrentEstimate:
-            CheckpointTheme.heroWarning
+            CheckpointTheme.amber
         case .highestCurrentEstimate:
-            CheckpointTheme.heroInfo
+            CheckpointTheme.blue
         case .checkpointsCleared, .answersLogged, .checkpointStreak:
-            CheckpointTheme.heroSuccess
+            CheckpointTheme.success
         }
     }
 
@@ -2739,7 +2720,7 @@ struct LightStudyBeaconSection: View {
             .font(.system(size: 17, weight: .semibold))
             .foregroundStyle(signalAccent)
             .frame(width: 40, height: 40)
-            .background(CheckpointTheme.heroSubtleFill, in: RoundedRectangle(cornerRadius: 12))
+            .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 12))
             .accessibilityHidden(true)
     }
 
@@ -2802,7 +2783,37 @@ struct LightStudyBeaconSection: View {
         ].joined(separator: ":")
     }
 
-    private var signalText: Color { CheckpointTheme.heroText }
-    private var signalSecondaryText: Color { CheckpointTheme.heroMuted }
-    private var signalAccent: Color { CheckpointTheme.heroSuccess }
+    private var signalText: Color { CheckpointTheme.text }
+    private var signalSecondaryText: Color { CheckpointTheme.muted }
+    private var signalAccent: Color { CheckpointTheme.accent }
+}
+
+
+private struct HomeWeeklyBeaconMark: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(CheckpointTheme.hairline, lineWidth: 1)
+
+            ForEach(0..<6) { spoke in
+                Capsule()
+                    .fill(CheckpointTheme.accent.opacity(spoke.isMultiple(of: 2) ? 0.55 : 0.28))
+                    .frame(width: 8, height: 30)
+                    .offset(y: -18)
+                    .rotationEffect(.degrees(Double(spoke) * 60))
+            }
+
+            Circle()
+                .fill(CheckpointTheme.panel)
+                .frame(width: 25, height: 25)
+                .overlay {
+                    Circle().stroke(CheckpointTheme.hairline, lineWidth: 1)
+                }
+
+            Image(systemName: "scope")
+                .font(.system(size: 15, weight: .regular))
+                .foregroundStyle(CheckpointTheme.accent)
+        }
+        .accessibilityHidden(true)
+    }
 }

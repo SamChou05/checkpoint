@@ -1,5 +1,21 @@
 import SwiftUI
 
+/// Map presentation shares the app's warm surfaces and independent evidence colors.
+enum LearningMapPalette {
+    static let background = CheckpointPalette.backgroundBase
+    static let panel = CheckpointPalette.panel
+    static let raised = CheckpointPalette.panelRaised
+    static let text = CheckpointPalette.text
+    static let secondary = CheckpointPalette.muted
+    static let accent = CheckpointPalette.accent
+    static let strong = CheckpointPalette.success
+    static let information = CheckpointPalette.blue
+    static let building = CheckpointPalette.amber
+    static let border = CheckpointPalette.hairline
+    static let actionFill = CheckpointPalette.actionFill
+    static let actionText = CheckpointPalette.actionText
+}
+
 struct LearningMapDestination: Identifiable, Equatable {
     let id: UUID
     let goalID: Goal.ID
@@ -79,11 +95,11 @@ struct LearningMapEntryCard: View {
                     connectedMapEmblem
                     VStack(alignment: .leading, spacing: 5) {
                         Text("Learning map")
-                            .font(.headline)
-                            .foregroundStyle(CheckpointTheme.text)
+                            .font(CheckpointTypography.sectionTitle)
+                            .foregroundStyle(LearningMapPalette.text.color)
                         Text(summary.summary)
                             .font(.footnote)
-                            .foregroundStyle(CheckpointTheme.muted)
+                            .foregroundStyle(LearningMapPalette.secondary.color)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,38 +110,24 @@ struct LearningMapEntryCard: View {
                 footerLayout {
                     Text(entryDetail)
                         .font(.caption)
-                        .foregroundStyle(CheckpointTheme.muted)
+                        .foregroundStyle(LearningMapPalette.secondary.color)
                         .fixedSize(horizontal: false, vertical: true)
                     if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
                     Label("Explore map", systemImage: "arrow.right")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.teal)
+                        .foregroundStyle(LearningMapPalette.accent.color)
                         .fixedSize(horizontal: !dynamicTypeSize.isAccessibilitySize, vertical: true)
-                        .padding(.horizontal, 10)
                         .padding(.vertical, 7)
-                        .background(CheckpointTheme.teal.opacity(0.08), in: Capsule())
                 }
             }
             .padding(18)
             .background {
                 RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
-                    .fill(CheckpointTheme.panel)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
-                            .fill(LinearGradient(
-                                colors: [CheckpointTheme.teal.opacity(0.045), .clear, .clear],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
-                    }
+                    .fill(LearningMapPalette.panel.color)
             }
             .overlay {
                 RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius)
-                    .strokeBorder(LinearGradient(
-                        colors: [CheckpointTheme.teal.opacity(0.22), CheckpointTheme.hairline],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ), lineWidth: 1)
+                    .strokeBorder(LearningMapPalette.border.color, lineWidth: 1)
             }
             .contentShape(RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius))
         }
@@ -166,7 +168,7 @@ struct LearningMapEntryCard: View {
                 )
                 context.stroke(
                     path,
-                    with: .color(CheckpointTheme.teal.opacity(primary ? 0.6 : 0.35)),
+                    with: .color(LearningMapPalette.accent.color.opacity(primary ? 0.6 : 0.35)),
                     style: StrokeStyle(lineWidth: primary ? 1.6 : 1.1, lineCap: .round)
                 )
             }
@@ -178,30 +180,26 @@ struct LearningMapEntryCard: View {
 
             func node(_ center: CGPoint, radius: CGFloat, color: Color, filled: Bool) {
                 let bounds = CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2)
-                context.fill(Path(ellipseIn: bounds), with: .color(filled ? color : CheckpointTheme.panel))
+                context.fill(Path(ellipseIn: bounds), with: .color(filled ? color : LearningMapPalette.panel.color))
                 context.stroke(Path(ellipseIn: bounds), with: .color(color), lineWidth: 1.2)
             }
             let halo = CGRect(x: goal.x - 11, y: goal.y - 11, width: 22, height: 22)
-            context.fill(Path(ellipseIn: halo), with: .color(CheckpointTheme.teal.opacity(0.08)))
-            node(goal, radius: 6.2, color: CheckpointTheme.teal, filled: true)
-            node(upperSkill, radius: 4.6, color: CheckpointTheme.teal, filled: false)
-            node(lowerSkill, radius: 4.6, color: CheckpointTheme.blue, filled: false)
-            node(upperFocus, radius: 2.3, color: CheckpointTheme.teal.opacity(0.75), filled: true)
-            node(middleFocus, radius: 2.3, color: CheckpointTheme.teal.opacity(0.75), filled: true)
-            node(lowerFocus, radius: 2.3, color: CheckpointTheme.blue.opacity(0.75), filled: true)
+            context.fill(Path(ellipseIn: halo), with: .color(LearningMapPalette.accent.color.opacity(0.08)))
+            node(goal, radius: 6.2, color: LearningMapPalette.accent.color, filled: true)
+            node(upperSkill, radius: 4.6, color: LearningMapPalette.accent.color, filled: false)
+            node(lowerSkill, radius: 4.6, color: LearningMapPalette.information.color, filled: false)
+            node(upperFocus, radius: 2.3, color: LearningMapPalette.accent.color.opacity(0.75), filled: true)
+            node(middleFocus, radius: 2.3, color: LearningMapPalette.accent.color.opacity(0.75), filled: true)
+            node(lowerFocus, radius: 2.3, color: LearningMapPalette.information.color.opacity(0.75), filled: true)
             context.fill(
                 Path(ellipseIn: CGRect(x: goal.x - 1.5, y: goal.y - 1.5, width: 3, height: 3)),
-                with: .color(CheckpointTheme.panel)
+                with: .color(LearningMapPalette.panel.color)
             )
         }
         .frame(width: 50, height: 50)
         .background {
-            RoundedRectangle(cornerRadius: 15)
-                .fill(LinearGradient(
-                    colors: [CheckpointTheme.teal.opacity(0.1), CheckpointTheme.blue.opacity(0.035)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ))
+            RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius)
+                .fill(LearningMapPalette.raised.color)
         }
         .accessibilityHidden(true)
     }
@@ -210,6 +208,7 @@ struct LearningMapEntryCard: View {
 struct LearningMapContainerView: View {
     let store: CheckpointStore
     let destination: LearningMapDestination
+    let onPracticePrepared: (CheckpointSession) -> Void
 
     private struct EditorDestination: Identifiable {
         let id = UUID()
@@ -219,6 +218,18 @@ struct LearningMapContainerView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var editorDestination: EditorDestination?
+    @State private var practiceError: String?
+    @State private var isPreparingPractice = false
+
+    init(
+        store: CheckpointStore,
+        destination: LearningMapDestination,
+        onPracticePrepared: @escaping (CheckpointSession) -> Void = { _ in }
+    ) {
+        self.store = store
+        self.destination = destination
+        self.onPracticePrepared = onPracticePrepared
+    }
 
     var body: some View {
         NavigationStack {
@@ -226,6 +237,7 @@ struct LearningMapContainerView: View {
                 store: store,
                 goalID: destination.goalID,
                 initialSkillID: destination.initialSkillID,
+                onPractice: preparePractice,
                 onEdit: { skillID in
                     guard store.goal?.id == destination.goalID,
                           let context = SkillMapReviewContext(goal: store.goal) else { return }
@@ -240,12 +252,35 @@ struct LearningMapContainerView: View {
                 }
             }
         }
-        .tint(CheckpointTheme.teal)
+        .tint(LearningMapPalette.accent.color)
         .sheet(item: $editorDestination) { editor in
             LearningMapEditorView(store: store, context: editor.context, initialSkillID: editor.initialSkillID)
         }
         .onChange(of: store.goal?.id) { _, id in
             if id != destination.goalID { dismiss() }
+        }
+        .alert("Practice unavailable", isPresented: Binding(
+            get: { practiceError != nil },
+            set: { if !$0 { practiceError = nil } }
+        )) {
+            Button("OK", role: .cancel) { practiceError = nil }
+        } message: {
+            Text(practiceError ?? "Practice is not ready yet.")
+        }
+    }
+
+    private func preparePractice(_ skillID: SkillMapTopic.ID) {
+        guard !isPreparingPractice else { return }
+        isPreparingPractice = true
+        Task { @MainActor in
+            defer { isPreparingPractice = false }
+            guard let session = await store.prepareManualCheckpointSession(for: skillID) else {
+                practiceError = store.checkpointNotice ?? "Practice for this skill is not ready yet."
+                return
+            }
+            dismiss()
+            try? await Task.sleep(for: .milliseconds(350))
+            onPracticePrepared(session)
         }
     }
 }

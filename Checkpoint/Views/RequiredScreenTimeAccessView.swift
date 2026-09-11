@@ -572,18 +572,18 @@ struct RequiredScreenTimeAccessView: View {
             .padding(.top, 12)
             .padding(.bottom, 10)
         }
-        .background(.ultraThinMaterial)
+        .background(CheckpointTheme.panel)
     }
 
     private var recoveryPanel: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             HStack(alignment: .top, spacing: 13) {
                 Image(systemName: accessPresentation.recoverySystemImage ?? "lock.shield.fill")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.success)
                     .frame(width: 42, height: 42)
                     .background(
-                        CheckpointTheme.teal.opacity(0.10),
+                        CheckpointTheme.success.opacity(0.10),
                         in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                     )
                     .accessibilityHidden(true)
@@ -724,10 +724,10 @@ struct RequiredScreenTimeAccessView: View {
             HStack(spacing: 5) {
                 Text(title)
                 Image(systemName: "arrow.up.right")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
             }
             .font(.footnote.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .frame(minHeight: 44)
             .contentShape(Rectangle())
         }
@@ -803,7 +803,7 @@ struct ScreenTimeAccessHero: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(presentation.heading)
-                        .font(.title2.bold())
+                        .font(CheckpointTypography.sectionTitle)
                         .foregroundStyle(CheckpointTheme.heroText)
                         .fixedSize(horizontal: false, vertical: true)
                         .contentTransition(.opacity)
@@ -857,7 +857,7 @@ struct ScreenTimeAccessHero: View {
                 .frame(width: 42, height: 42)
                 .background(
                     accent.opacity(0.14),
-                    in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                 )
                 .contentTransition(.symbolEffect(.replace))
                 .symbolEffect(
@@ -876,7 +876,7 @@ struct ScreenTimeAccessHero: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("CHECKPOINT")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(1.05)
                     .foregroundStyle(CheckpointTheme.heroText)
 

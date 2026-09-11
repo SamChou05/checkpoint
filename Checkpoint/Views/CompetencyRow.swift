@@ -172,7 +172,7 @@ struct CompetencyRow: View {
             if let learningPlan, learningPlan.evidenceCount > 0 {
                 Text("Level \(learningPlan.targetDifficulty) practice · Adjusts with your answers")
                     .font(.caption)
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.bottom, 10)
             }
@@ -191,7 +191,7 @@ struct CompetencyRow: View {
             }
         }
         .background(
-            CheckpointTheme.blue.opacity(isHighlighted ? 0.08 : 0),
+            CheckpointTheme.accent.opacity(isHighlighted ? 0.08 : 0),
             in: RoundedRectangle(
                 cornerRadius: CheckpointTheme.compactCornerRadius,
                 style: .continuous
@@ -203,7 +203,7 @@ struct CompetencyRow: View {
                 style: .continuous
             )
             .stroke(
-                CheckpointTheme.blue.opacity(isHighlighted ? 0.72 : 0),
+                CheckpointTheme.accent.opacity(isHighlighted ? 0.72 : 0),
                 lineWidth: 1.5
             )
         }
@@ -259,7 +259,7 @@ struct CompetencyRow: View {
 
                 Text(metadataText)
                     .font(.caption.weight(.medium))
-                    .foregroundStyle(CheckpointTheme.muted)
+                    .foregroundStyle(isHighlighted ? CheckpointTheme.text : CheckpointTheme.muted)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
             }
@@ -299,14 +299,14 @@ struct CompetencyRow: View {
 
                     Text(progressBand == .calibrating ? "answers" : "mastery estimate")
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(CheckpointTheme.muted)
+                        .foregroundStyle(isHighlighted ? CheckpointTheme.text : CheckpointTheme.muted)
                         .multilineTextAlignment(.leading)
                 }
             }
 
             Text(metadataText)
                 .font(.subheadline)
-                .foregroundStyle(CheckpointTheme.muted)
+                .foregroundStyle(isHighlighted ? CheckpointTheme.text : CheckpointTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -325,7 +325,7 @@ struct CompetencyRow: View {
 
     private var statusChip: some View {
         Text(progressBand.label)
-            .font(.caption.weight(.bold))
+            .font(.caption.weight(.medium))
             .foregroundStyle(progressBand.tint)
             .fixedSize(
                 horizontal: !usesStackedTypeLayout,
@@ -333,7 +333,7 @@ struct CompetencyRow: View {
             )
             .padding(.horizontal, 9)
             .padding(.vertical, 5)
-            .background(progressBand.tint.opacity(0.12), in: Capsule())
+            .background(progressBand.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius))
             .accessibilityHidden(true)
     }
 
@@ -352,8 +352,8 @@ struct CompetencyRow: View {
 
     private var disclosureChevron: some View {
         Image(systemName: "chevron.down")
-            .font(.caption.weight(.bold))
-            .foregroundStyle(CheckpointTheme.muted)
+            .font(.caption.weight(.medium))
+            .foregroundStyle(isHighlighted ? CheckpointTheme.text : CheckpointTheme.muted)
             .rotationEffect(.degrees(isExpanded ? 180 : 0))
             .frame(width: 24, height: 38)
             .accessibilityHidden(true)
@@ -437,7 +437,7 @@ struct CompetencyRow: View {
     ) -> some View {
         HStack(spacing: 9) {
             Image(systemName: systemImage)
-                .font(.caption.weight(.bold))
+                .font(.caption.weight(.medium))
                 .foregroundStyle(tint)
 
             VStack(alignment: .leading, spacing: 1) {
@@ -448,7 +448,7 @@ struct CompetencyRow: View {
 
                 Text(title)
                     .font(.caption2.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.muted)
+                    .foregroundStyle(isHighlighted ? CheckpointTheme.text : CheckpointTheme.muted)
             }
 
             Spacer(minLength: 0)
@@ -464,7 +464,7 @@ struct CompetencyRow: View {
     private func detailLine(systemImage: String, text: String) -> some View {
         Label(text, systemImage: systemImage)
             .font(.caption.weight(.semibold))
-            .foregroundStyle(CheckpointTheme.muted)
+            .foregroundStyle(isHighlighted ? CheckpointTheme.text : CheckpointTheme.muted)
             .fixedSize(horizontal: false, vertical: true)
     }
 

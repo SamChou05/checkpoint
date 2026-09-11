@@ -151,16 +151,18 @@ final class FirstRunSkillMapTests: CheckpointWorkflowTestCase {
 
     @MainActor
     func testFirstRunMapStatesRenderInLightDarkAndAccessibilitySizes() {
-        let fixtures: [(String, Int, QuestionBatchState, ColorScheme, DynamicTypeSize)] = [
-            ("review-light", 3, .generating, .light, .large),
-            ("review-dark", 3, .failed, .dark, .large),
-            ("review-six-skills", 6, .ready, .light, .large),
-            ("review-large-type", 6, .ready, .light, .accessibility3),
-            ("building", 0, .generating, .light, .large),
-            ("retry", 0, .failed, .dark, .large)
+        let fixtures: [(String, Int, QuestionBatchState, ColorScheme, DynamicTypeSize, CGFloat, CGFloat)] = [
+            ("review-light", 3, .generating, .light, .large, 390, 844),
+            ("review-dark", 3, .failed, .dark, .large, 390, 844),
+            ("review-six-skills", 6, .ready, .light, .large, 390, 844),
+            ("review-large-type", 6, .ready, .light, .accessibility3, 390, 844),
+            ("building", 0, .generating, .light, .large, 390, 844),
+            ("retry", 0, .failed, .dark, .large, 390, 844),
+            ("review-compact-light", 3, .generating, .light, .large, 320, 568),
+            ("review-compact-accessibility2-dark", 6, .ready, .dark, .accessibility2, 320, 740)
         ]
 
-        for (name, topicCount, batchState, scheme, typeSize) in fixtures {
+        for (name, topicCount, batchState, scheme, typeSize, width, height) in fixtures {
             let store = CheckpointStore(defaults: defaults)
             var goal = firstRunGoal()
             if topicCount == 0 {
@@ -191,8 +193,8 @@ final class FirstRunSkillMapTests: CheckpointWorkflowTestCase {
                     )
                 }
                 .environment(\.dynamicTypeSize, typeSize),
-                width: 390,
-                height: 844,
+                width: width,
+                height: height,
                 colorScheme: scheme,
                 renderScale: 1
             )

@@ -58,6 +58,7 @@ struct HistoryView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.locale) private var locale
     @Environment(\.timeZone) private var timeZone
+    @ScaledMetric(relativeTo: .largeTitle) private var archiveMetricSize: CGFloat = 44
     @Namespace private var filterSelectionNamespace
     @State private var selectedFilter: PracticeHistoryFilter
     @State private var requestedScope: PracticeHistoryScope?
@@ -236,7 +237,7 @@ struct HistoryView: View {
                     Button("Close") {
                         dismiss()
                     }
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                 }
             }
             .sheet(item: $questionQualityFeedbackContext) { context in
@@ -271,7 +272,7 @@ struct HistoryView: View {
         VStack(alignment: .leading, spacing: 8) {
             if !usesExpandedTypeLayout {
                 Text("YOUR PRACTICE")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(1)
                     .foregroundStyle(CheckpointTheme.muted)
             }
@@ -305,8 +306,8 @@ struct HistoryView: View {
         Text(usesExpandedTypeLayout ? "Answer log" : "Answer archive")
             .font(
                 usesExpandedTypeLayout
-                    ? .headline.weight(.bold)
-                    : .title2.weight(.bold)
+                    ? .system(.headline, design: .serif)
+                    : CheckpointTypography.goalTitle
             )
             .foregroundStyle(CheckpointTheme.text)
             .lineLimit(usesExpandedTypeLayout ? nil : 1)
@@ -383,16 +384,16 @@ struct HistoryView: View {
             }
         }
         .font(.caption.weight(.bold))
-        .foregroundStyle(CheckpointTheme.teal)
+        .foregroundStyle(CheckpointTheme.accent)
         .padding(.horizontal, 11)
         .frame(maxWidth: expands ? .infinity : nil, minHeight: 44, alignment: .leading)
         .background {
             if expands || usesExpandedTypeLayout {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(CheckpointTheme.teal.opacity(0.10))
+                    .fill(CheckpointTheme.accent.opacity(0.10))
             } else {
                 Capsule()
-                    .fill(CheckpointTheme.teal.opacity(0.10))
+                    .fill(CheckpointTheme.accent.opacity(0.10))
             }
         }
         .contentShape(Rectangle())
@@ -453,22 +454,9 @@ struct HistoryView: View {
         )
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(CheckpointTheme.ink)
                 .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-                .overlay(alignment: .topTrailing) {
-                    Circle()
-                        .fill(CheckpointTheme.mint.opacity(0.08))
-                        .frame(width: 170, height: 170)
-                        .blur(radius: 12)
-                        .offset(x: 76, y: -92)
-                        .allowsHitTesting(false)
-                }
-        )
-        .shadow(
-            color: CheckpointTheme.shadowElevated,
-            radius: density == .compact ? 12 : 18,
-            y: density == .compact ? 6 : 10
         )
         .accessibilityElement(children: .contain)
         .animation(
@@ -594,7 +582,7 @@ struct HistoryView: View {
                 "\(archive.scopedAttempts.count) "
                     + (archive.scopedAttempts.count == 1 ? "saved answer" : "saved answers")
             )
-            .font(.title3.weight(.bold))
+            .font(.system(.title3, design: .serif))
             .monospacedDigit()
             .foregroundStyle(summaryText)
             .lineLimit(staysOnOneLine ? 1 : nil)
@@ -648,13 +636,13 @@ struct HistoryView: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("PRACTICE RECORD")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(1)
                 .foregroundStyle(summarySecondaryText)
 
             HStack(alignment: .firstTextBaseline, spacing: 7) {
                 Text("\(archive.scopedAttempts.count)")
-                    .font(.system(size: 44, weight: .bold, design: .rounded))
+                    .font(.system(size: archiveMetricSize, weight: .regular, design: .serif))
                     .monospacedDigit()
                     .foregroundStyle(summaryText)
                     .contentTransition(.numericText(value: Double(archive.scopedAttempts.count)))
@@ -771,7 +759,7 @@ struct HistoryView: View {
                     .contentTransition(.numericText(value: Double(value)))
 
                 Text(label)
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.55)
                     .foregroundStyle(summarySecondaryText)
             }
@@ -821,8 +809,8 @@ struct HistoryView: View {
             }
             .padding(usesMenu ? 2 : 4)
             .background(
-                CheckpointTheme.panelRaised.opacity(0.78),
-                in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                CheckpointTheme.panelRaised,
+                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
             )
             .animation(
                 motionPolicy.metricAnimation,
@@ -938,7 +926,7 @@ struct HistoryView: View {
                     .foregroundStyle(CheckpointTheme.muted)
                     .accessibilityHidden(true)
             }
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .padding(.horizontal, 12)
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .contentShape(Rectangle())
@@ -968,7 +956,7 @@ struct HistoryView: View {
                     Text(filter.title)
 
                     Text("\(count(for: filter, in: archive))")
-                        .font(.caption2.weight(.bold))
+                        .font(CheckpointTypography.eyebrow)
                         .monospacedDigit()
                         .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.muted)
                         .padding(.horizontal, 6)
@@ -1002,7 +990,7 @@ struct HistoryView: View {
                 .fill(CheckpointTheme.selectionFill)
                 .overlay {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(CheckpointTheme.actionBorder, lineWidth: 1)
+                        .stroke(CheckpointTheme.selectionBorder, lineWidth: 1)
                 }
 
             if motionPolicy.usesMatchedGeometry {
@@ -1051,7 +1039,7 @@ struct HistoryView: View {
                     ForEach(groups) { group in
                         VStack(alignment: .leading, spacing: 8) {
                             Text(dayLabel(for: group.date).uppercased(with: locale))
-                                .font(.caption2.weight(.bold))
+                                .font(CheckpointTypography.eyebrow)
                                 .tracking(0.75)
                                 .foregroundStyle(CheckpointTheme.muted)
                                 .accessibilityAddTraits(.isHeader)
@@ -1107,10 +1095,9 @@ struct HistoryView: View {
                                     cornerRadius: CheckpointTheme.cardCornerRadius,
                                     style: .continuous
                                 )
-                                .fill(CheckpointTheme.panel.opacity(0.96))
+                                .fill(CheckpointTheme.panel)
                                 .stroke(CheckpointTheme.hairline, lineWidth: 1)
                             )
-                            .shadow(color: CheckpointTheme.shadowCard, radius: 12, y: 5)
                         }
                     }
                 }
@@ -1141,7 +1128,7 @@ struct HistoryView: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            CheckpointTheme.panel.opacity(0.88),
+            CheckpointTheme.panel,
             in: RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
         )
         .transition(
@@ -1154,9 +1141,9 @@ struct HistoryView: View {
     private var filteredEmptyIcon: some View {
         Image(systemName: selectedFilter.emptySystemImage)
             .font(.system(size: 17, weight: .semibold))
-            .foregroundStyle(CheckpointTheme.teal)
+            .foregroundStyle(CheckpointTheme.accent)
             .frame(width: 38, height: 38)
-            .background(CheckpointTheme.teal.opacity(0.10), in: Circle())
+            .background(CheckpointTheme.accent.opacity(0.10), in: Circle())
             .accessibilityHidden(true)
     }
 
@@ -1180,17 +1167,17 @@ struct HistoryView: View {
         detail: String,
         systemImage: String
     ) -> some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             VStack(alignment: .leading, spacing: 14) {
                 Image(systemName: systemImage)
                     .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .frame(width: 52, height: 52)
-                    .background(CheckpointTheme.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 16))
+                    .background(CheckpointTheme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
                     .accessibilityHidden(true)
 
                 Text(title)
-                    .font(.title2.bold())
+                    .font(CheckpointTypography.goalTitle)
                     .foregroundStyle(CheckpointTheme.text)
 
                 Text(detail)
@@ -1384,7 +1371,7 @@ struct HistoryView: View {
 
     private func sectionLabel(_ text: String) -> some View {
         Text(text)
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.95)
             .foregroundStyle(CheckpointTheme.muted)
             .accessibilityAddTraits(.isHeader)
@@ -2128,16 +2115,16 @@ private struct AttemptRow: View {
                         .accessibilityHidden(true)
                 }
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
                 .background {
                     if usesFullWidthReviewLayout {
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(CheckpointTheme.teal.opacity(0.09))
+                            .fill(CheckpointTheme.accent.opacity(0.09))
                     } else {
                         Capsule()
-                            .fill(CheckpointTheme.teal.opacity(0.09))
+                            .fill(CheckpointTheme.accent.opacity(0.09))
                     }
                 }
                 .accessibilityElement(children: .ignore)
@@ -2200,7 +2187,7 @@ private struct AttemptRow: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(label.uppercased())
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.55)
                 .foregroundStyle(CheckpointTheme.muted)
 
@@ -2253,7 +2240,7 @@ private struct AttemptRow: View {
 
     private var resultLabel: some View {
         Text(resultPresentation.label.uppercased())
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.55)
             .foregroundStyle(resultTint)
     }
@@ -2264,10 +2251,10 @@ private struct AttemptRow: View {
             Text(QuestionQualityFeedbackPresentation.historyBadgeTitle)
                 .font(.system(size: 9, weight: .bold))
                 .tracking(0.45)
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .padding(.horizontal, 7)
                 .padding(.vertical, 4)
-                .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+                .background(CheckpointTheme.accent.opacity(0.10), in: Capsule())
                 .accessibilityHidden(true)
         }
     }

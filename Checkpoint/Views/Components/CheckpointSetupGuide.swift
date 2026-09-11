@@ -172,18 +172,18 @@ struct CheckpointSetupGuide: View {
 
     private func character(size: CGFloat) -> some View {
         CheckpointMascotCharacter(pose: resolvedPose, size: size)
-            .shadow(color: CheckpointTheme.shadowCard, radius: 6, y: 5)
             .accessibilityHidden(true)
     }
 
     private var speakerName: some View {
         Text("CHECKPOINT")
-            .font(.system(size: 10, weight: .heavy, design: .rounded))
+            .font(CheckpointTypography.eyebrow)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             .tracking(1.4)
             .foregroundStyle(CheckpointTheme.ink)
             .padding(.horizontal, 9)
             .padding(.vertical, 5)
-            .background(CheckpointTheme.heroSuccess, in: RoundedRectangle(cornerRadius: 6))
+            .background(CheckpointTheme.paper, in: RoundedRectangle(cornerRadius: 6))
             .accessibilityHidden(true)
     }
 
@@ -194,7 +194,7 @@ struct CheckpointSetupGuide: View {
             }
 
             Text(title)
-                .font(.title3.weight(.bold))
+                .font(.system(.title3, design: .serif))
                 .foregroundStyle(CheckpointTheme.heroText)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
@@ -209,9 +209,9 @@ struct CheckpointSetupGuide: View {
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(CheckpointTheme.ink)
-                .strokeBorder(CheckpointTheme.heroSuccess.opacity(0.26), lineWidth: 1)
+                .strokeBorder(CheckpointTheme.heroBorder, lineWidth: 1)
         )
         .overlay(alignment: dynamicTypeSize.isAccessibilitySize ? .topLeading : .leading) {
             RoundedRectangle(cornerRadius: 2)

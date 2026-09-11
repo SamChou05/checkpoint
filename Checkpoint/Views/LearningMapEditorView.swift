@@ -176,7 +176,7 @@ struct LearningMapEditorView: View {
                     }
                 }
         }
-        .tint(CheckpointTheme.teal)
+        .tint(CheckpointTheme.accent)
         .safeAreaInset(edge: .bottom) { saveBar }
         .interactiveDismissDisabled(draft.hasChanges)
         .confirmationDialog("Discard your map changes?", isPresented: $isDiscarding, titleVisibility: .visible) {
@@ -202,13 +202,13 @@ struct LearningMapEditorView: View {
             VStack(alignment: .leading, spacing: 18) {
                 VStack(alignment: .leading, spacing: 7) {
                     Text(context.goalTitle)
-                        .font(.title2.weight(.semibold))
+                        .font(CheckpointTypography.goalTitle)
                         .foregroundStyle(CheckpointTheme.text)
                     Text("Shape your skills and the smaller ideas you want to practice. Review your changes before saving.")
                         .font(.subheadline)
                         .foregroundStyle(CheckpointTheme.muted)
                 }
-                SectionPanel("Your skills") {
+                SectionPanel("Your skills", style: .editorial) {
                     VStack(spacing: 0) {
                         ForEach(Array(draft.topics.enumerated()), id: \.element.id) { index, topic in
                             let rowLayout = dynamicTypeSize.isAccessibilitySize
@@ -222,7 +222,7 @@ struct LearningMapEditorView: View {
                                         if !dynamicTypeSize.isAccessibilitySize {
                                             Image(systemName: topic.isPaused ? "pause.circle" : "circle.hexagongrid")
                                                 .font(.title3)
-                                                .foregroundStyle(CheckpointTheme.teal)
+                                                .foregroundStyle(CheckpointTheme.accent)
                                                 .frame(width: 28)
                                                 .accessibilityHidden(true)
                                         }
@@ -282,7 +282,7 @@ struct LearningMapEditorView: View {
     }
 
     private var growthPanel: some View {
-        SectionPanel("How your map grows") {
+        SectionPanel("How your map grows", style: .editorial) {
             if store.isMember {
                 ForEach(SkillMapGrowthMode.allCases, id: \.self) { mode in
                     Button {
@@ -290,7 +290,7 @@ struct LearningMapEditorView: View {
                     } label: {
                         HStack(alignment: .top, spacing: 12) {
                             Image(systemName: draft.growthMode == mode ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(CheckpointTheme.teal)
+                                .foregroundStyle(CheckpointTheme.accent)
                                 .font(.title3)
                                 .accessibilityHidden(true)
                             VStack(alignment: .leading, spacing: 4) {
@@ -314,7 +314,7 @@ struct LearningMapEditorView: View {
             } else {
                 Label("Adaptive growth with Pro", systemImage: "sparkles")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                 Text("You can edit your skills and focus points. Pro also adds harder next steps after enough strong practice evidence. Your saved growth preference is kept.")
                     .font(.footnote)
                     .foregroundStyle(CheckpointTheme.muted)
@@ -334,21 +334,21 @@ struct LearningMapEditorView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 Text("Ready to update your map?")
-                    .font(.title2.weight(.semibold))
+                    .font(CheckpointTypography.sectionTitle)
                     .foregroundStyle(CheckpointTheme.text)
-                SectionPanel("What will change") {
+                SectionPanel("What will change", style: .editorial) {
                     ForEach(Array(draft.changeSummary.enumerated()), id: \.offset) { _, message in
                         Label {
                             Text(message).font(.subheadline).fixedSize(horizontal: false, vertical: true)
                         } icon: {
-                            Image(systemName: "checkmark.circle").foregroundStyle(CheckpointTheme.teal)
+                            Image(systemName: "checkmark.circle").foregroundStyle(CheckpointTheme.success)
                         }
                         .foregroundStyle(CheckpointTheme.text)
                         .padding(.vertical, 4)
                     }
                 }
                 if let impact = editImpact, impact.requiresFreshQuestions || impact.retiresQuestionInventory {
-                    SectionPanel("Upcoming questions") {
+                    SectionPanel("Upcoming questions", style: .editorial) {
                         if impact.retiresQuestionInventory {
                             Text("Questions that no longer match your edited skills or focus points leave upcoming practice. Their saved answers remain in your history.")
                                 .font(.subheadline)

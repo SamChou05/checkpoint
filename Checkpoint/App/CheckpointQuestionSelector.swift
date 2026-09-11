@@ -60,7 +60,8 @@ struct CheckpointQuestionSelector {
     func nextQuestions(
         limit: Int,
         allowsEarlyCorrectReuse: Bool = false,
-        enforcesDifficultyFloor: Bool = false
+        enforcesDifficultyFloor: Bool = false,
+        restrictedToSkillID: SkillMapTopic.ID? = nil
     ) -> [CheckpointQuestion] {
         let maximumSessionQuestionCount = max(
             UnlockPolicy.maximumQuestionsPerSession,
@@ -77,10 +78,11 @@ struct CheckpointQuestionSelector {
                 allowsEarlyCorrectReuse: allowsEarlyCorrectReuse,
                 enforcesDifficultyFloor: enforcesDifficultyFloor,
                 prefersMasteredMaintenance: selectedQuestions.count == targetCount - 1,
-                forcesSkillBreadth: shouldForceSkillBreadth(
+                forcesSkillBreadth: restrictedToSkillID == nil && shouldForceSkillBreadth(
                     for: selectedQuestions,
                     targetCount: targetCount
-                )
+                ),
+                restrictedToSkillID: restrictedToSkillID
               ) {
             selectedQuestions.append(question)
             excludedQuestionIDs.insert(question.id)
@@ -95,9 +97,13 @@ struct CheckpointQuestionSelector {
         allowsEarlyCorrectReuse: Bool = false,
         enforcesDifficultyFloor: Bool = false,
         prefersMasteredMaintenance: Bool = false,
-        forcesSkillBreadth: Bool = false
+        forcesSkillBreadth: Bool = false,
+        restrictedToSkillID: SkillMapTopic.ID? = nil
     ) -> CheckpointQuestion? {
-        let availableQuestions = activeQuestions.filter { !excludedQuestionIDs.contains($0.id) }
+        let availableQuestions = activeQuestions.filter {
+            !excludedQuestionIDs.contains($0.id)
+                && (restrictedToSkillID == nil || skill(for: $0)?.id == restrictedToSkillID)
+        }
         let preferredQuestions = availableQuestions.filter(meetsDifficultyFloor)
         let fallbackQuestions = enforcesDifficultyFloor ? [] : availableQuestions
         if prefersMasteredMaintenance,

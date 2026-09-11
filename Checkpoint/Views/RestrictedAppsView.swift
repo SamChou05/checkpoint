@@ -746,7 +746,7 @@ struct RestrictedAppsView: View {
                                 dismiss()
                             }
                             .fontWeight(.semibold)
-                            .foregroundStyle(CheckpointTheme.teal)
+                            .foregroundStyle(CheckpointTheme.accent)
                             .accessibilityHint("Your protected-app choices are saved automatically.")
                         }
                     }
@@ -835,14 +835,14 @@ struct RestrictedAppsView: View {
             )
         #else
             ScrollView {
-                SectionPanel {
+                SectionPanel(style: .editorial) {
                     VStack(alignment: .leading, spacing: 12) {
                         Image(systemName: "iphone.slash")
                             .font(.system(size: 28, weight: .semibold))
                             .foregroundStyle(CheckpointTheme.amber)
 
                         Text("App protection unavailable")
-                            .font(.title3.bold())
+                            .font(.system(.title3, design: .serif))
                             .foregroundStyle(CheckpointTheme.text)
 
                         Text("App protection is available on iPhone.")
@@ -1021,7 +1021,7 @@ struct FirstRunProtectionActionBar: View {
             if let secondaryTitle = presentation.secondaryTitle {
                 Button(secondaryTitle, action: secondaryAction)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, minHeight: 44)
@@ -1031,7 +1031,7 @@ struct FirstRunProtectionActionBar: View {
             }
         }
         .padding(.bottom, 10)
-        .background(.ultraThinMaterial)
+        .background(CheckpointTheme.panel)
     }
 
     private var detailColor: Color {
@@ -1055,10 +1055,10 @@ struct FirstRunGoalContextStrip: View {
         HStack(alignment: .top, spacing: 9) {
             Image(systemName: "scope")
                 .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .frame(width: 28, height: 28)
                 .background(
-                    CheckpointTheme.teal.opacity(0.10),
+                    CheckpointTheme.accent.opacity(0.10),
                     in: RoundedRectangle(cornerRadius: 9, style: .continuous)
                 )
                 .fixedSize()
@@ -1066,13 +1066,13 @@ struct FirstRunGoalContextStrip: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("CHECKPOINT FOR")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.75)
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
 
                 Text(goalContext.title)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.system(.headline, design: .serif))
                     .foregroundStyle(CheckpointTheme.text)
                     .dynamicTypeSize(...titleMaximumDynamicTypeSize)
                     .lineLimit(
@@ -1245,7 +1245,7 @@ struct FirstRunProtectionStatusView: View {
     private func statusTitle(usesTightSpacing: Bool) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(presentation.eyebrow)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.85)
                 .foregroundStyle(accent)
 
@@ -1261,7 +1261,7 @@ struct FirstRunProtectionStatusView: View {
     }
 
     private var supportingPanel: some View {
-        SectionPanel {
+        SectionPanel(style: .editorial) {
             VStack(alignment: .leading, spacing: 12) {
                 supportingIdentity
 
@@ -1286,7 +1286,7 @@ struct FirstRunProtectionStatusView: View {
                     Button(action: editSelection) {
                         Label("Choose different apps", systemImage: "slider.horizontal.3")
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(CheckpointTheme.teal)
+                            .foregroundStyle(CheckpointTheme.accent)
                             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                             .contentShape(Rectangle())
                     }
@@ -1374,7 +1374,7 @@ struct FirstRunProtectionStatusView: View {
         case .failure:
             CheckpointTheme.coral
         case .success:
-            CheckpointTheme.teal
+            CheckpointTheme.success
         }
     }
 
@@ -1529,7 +1529,7 @@ struct ProtectedAppsManagementHeader: View {
             )
             .background(
                 accent,
-                in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
             .contentTransition(.symbolEffect(.replace))
             .symbolEffect(.bounce, options: .nonRepeating, value: changeSequence)
@@ -1541,7 +1541,7 @@ struct ProtectedAppsManagementHeader: View {
     private var identityCopy: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(presentation.eyebrow)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.85)
                 .foregroundStyle(accent)
 
@@ -1554,7 +1554,7 @@ struct ProtectedAppsManagementHeader: View {
 
     private var statusBadge: some View {
         Text(presentation.status)
-            .font(.caption2.weight(.bold))
+            .font(CheckpointTypography.eyebrow)
             .tracking(0.65)
             .foregroundStyle(accent)
             .fixedSize(horizontal: false, vertical: true)
@@ -1666,7 +1666,7 @@ struct FirstRunAppSelectionHeader: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: usesMinimalAccessibilityLayout ? 4 : 10) {
             if !usesMinimalAccessibilityLayout {
                 mascotIdentity
                     .animation(
@@ -1726,7 +1726,7 @@ struct FirstRunAppSelectionHeader: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("CHECKPOINT · OPTIONAL")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .foregroundStyle(CheckpointTheme.muted)
 
                 Text(presentation.title)

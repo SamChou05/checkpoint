@@ -612,7 +612,7 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
         )
         XCTAssertEqual(accessibilityLayout.style, .stacked)
         XCTAssertGreaterThanOrEqual(accessibilityLayout.minimumControlHeight, 44)
-        XCTAssertEqual(accessibilityLayout.answerGroupHorizontalExpansion, 12)
+        XCTAssertEqual(accessibilityLayout.answerGroupHorizontalExpansion, 0)
         XCTAssertEqual(accessibilityLayout.availableTitleWidth(in: 272), 256)
         XCTAssertGreaterThan(
             accessibilityLayout.availableTitleWidth(in: 272),
@@ -1568,8 +1568,7 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
         let layout = CheckpointChoiceLayoutPolicy(
             usesAccessibilityTextSize: style == .stacked
         )
-        let expectedControlWidth = viewportWidth - 72
-            + layout.answerGroupHorizontalExpansion * 2
+        let expectedControlWidth = viewportWidth - 40
         let containmentTolerance: CGFloat = 0.75
         let expandedPanel = questionPanel.insetBy(
             dx: -containmentTolerance,
@@ -1580,6 +1579,22 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
             dy: -containmentTolerance
         )
 
+        XCTAssertEqual(
+            questionPanel.minX,
+            20,
+            accuracy: 1,
+            "\(fixtureName): editorial question panel must preserve the leading screen gutter",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            questionPanel.maxX,
+            viewportWidth - 20,
+            accuracy: 1,
+            "\(fixtureName): editorial question panel must preserve the trailing screen gutter",
+            file: file,
+            line: line
+        )
         XCTAssertTrue(
             expandedPanel.contains(answerGroup),
             "\(fixtureName): answer group must remain inside its question panel",

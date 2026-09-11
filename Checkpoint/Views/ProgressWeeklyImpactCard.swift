@@ -368,12 +368,9 @@ struct ProgressMomentumCard: View {
 
     var body: some View {
         Button(action: action) {
-            CheckpointHeroSurface(
-                glowColor: CheckpointTheme.heroSuccess,
-                glowOpacity: 0.11,
-                glowDiameter: 170,
-                glowOffset: CGSize(width: 76, height: -92),
-                contentPadding: 17
+            SectionPanel(
+                contentPadding: dynamicTypeSize <= .large ? 13 : 17,
+                style: .editorial
             ) {
                 VStack(alignment: .leading, spacing: 10) {
                     header
@@ -402,9 +399,9 @@ struct ProgressMomentumCard: View {
     private var header: some View {
         HStack(alignment: .center, spacing: 8) {
             Text("THIS WEEK")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(1)
-                .foregroundStyle(CheckpointTheme.heroSuccess)
+                .foregroundStyle(CheckpointTheme.accent)
                 .lineLimit(1)
                 .minimumScaleFactor(0.68)
 
@@ -421,16 +418,16 @@ struct ProgressMomentumCard: View {
                         Text(streakBadgeText.uppercased())
                     }
                 }
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.45)
-                .foregroundStyle(CheckpointTheme.heroSuccess)
+                .foregroundStyle(CheckpointTheme.accent)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
                 .fixedSize(horizontal: true, vertical: false)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 5)
                 .background(
-                    CheckpointTheme.heroSuccess.opacity(0.12),
+                    CheckpointTheme.accent.opacity(0.08),
                     in: Capsule()
                 )
                 .contentTransition(.numericText())
@@ -438,7 +435,7 @@ struct ProgressMomentumCard: View {
 
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.bold))
-                .foregroundStyle(CheckpointTheme.heroSuccess)
+                .foregroundStyle(CheckpointTheme.accent)
                 .accessibilityHidden(true)
         }
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
@@ -464,13 +461,13 @@ struct ProgressMomentumCard: View {
             } else {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("No checkpoint activity yet")
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(CheckpointTheme.heroText)
+                        .font(CheckpointTypography.sectionTitle)
+                        .foregroundStyle(CheckpointTheme.text)
 
                     Text("READY FOR THIS WEEK’S FIRST SIGNAL")
-                        .font(.caption2.weight(.bold))
+                        .font(CheckpointTypography.eyebrow)
                         .tracking(0.8)
-                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
@@ -496,8 +493,8 @@ struct ProgressMomentumCard: View {
 
     private func primaryValue(_ metric: ProgressMomentumMetric) -> some View {
         Text(metric.valueText)
-            .font(.system(size: primaryMetricSize, weight: .bold, design: .rounded))
-            .foregroundStyle(CheckpointTheme.heroText)
+            .font(.system(size: primaryMetricSize, weight: .regular, design: .serif))
+            .foregroundStyle(CheckpointTheme.text)
             .monospacedDigit()
             .lineLimit(1)
             .minimumScaleFactor(0.74)
@@ -508,7 +505,7 @@ struct ProgressMomentumCard: View {
         Text(metric.labelText)
             .font(.caption.weight(.bold))
             .tracking(0.75)
-            .foregroundStyle(CheckpointTheme.heroMuted)
+            .foregroundStyle(CheckpointTheme.muted)
             .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
             .fixedSize(horizontal: false, vertical: true)
     }
@@ -523,7 +520,7 @@ struct ProgressMomentumCard: View {
                     ) { index, metric in
                         if index > 0 {
                             Divider()
-                                .overlay(CheckpointTheme.heroDivider)
+                                .overlay(CheckpointTheme.hairline)
                         }
 
                         accessibilityMetricRow(metric)
@@ -537,7 +534,7 @@ struct ProgressMomentumCard: View {
                     ) { index, metric in
                         if index > 0 {
                             Rectangle()
-                                .fill(CheckpointTheme.heroDivider)
+                                .fill(CheckpointTheme.hairline)
                                 .frame(width: 1, height: 40)
                                 .accessibilityHidden(true)
                         }
@@ -555,16 +552,16 @@ struct ProgressMomentumCard: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(metric.valueText)
                 .font(.headline.weight(.bold))
-                .foregroundStyle(CheckpointTheme.heroText)
+                .foregroundStyle(CheckpointTheme.text)
                 .monospacedDigit()
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
                 .contentTransition(.numericText())
 
             Text(metric.labelText)
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.4)
-                .foregroundStyle(CheckpointTheme.heroMuted)
+                .foregroundStyle(CheckpointTheme.muted)
                 .lineLimit(metric.labelText.contains(" ") ? 2 : 1)
                 .minimumScaleFactor(0.65)
                 .allowsTightening(true)
@@ -577,7 +574,7 @@ struct ProgressMomentumCard: View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text(metric.valueText)
                 .font(.title3.weight(.bold))
-                .foregroundStyle(CheckpointTheme.heroText)
+                .foregroundStyle(CheckpointTheme.text)
                 .monospacedDigit()
                 .lineLimit(1)
                 .contentTransition(.numericText())
@@ -586,13 +583,13 @@ struct ProgressMomentumCard: View {
                 Text(metric.labelText)
                     .font(.caption.weight(.bold))
                     .tracking(0.45)
-                    .foregroundStyle(CheckpointTheme.heroMuted)
+                    .foregroundStyle(CheckpointTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)
 
                 if let detailText = metric.detailText {
                     Text(detailText)
                         .font(.caption)
-                        .foregroundStyle(CheckpointTheme.heroMuted)
+                        .foregroundStyle(CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
@@ -605,7 +602,7 @@ struct ProgressMomentumCard: View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Text(presentation.footerText)
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.heroMuted)
+                .foregroundStyle(CheckpointTheme.muted)
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                 .fixedSize(horizontal: false, vertical: true)
                 .contentTransition(.numericText())
@@ -777,31 +774,31 @@ private struct ProgressMomentumActivityRailBars: View {
     private func dayLabelColor(for state: ProgressWeeklyImpactDayState) -> Color {
         switch state {
         case .active:
-            CheckpointTheme.heroText
+            CheckpointTheme.text
         case .inactive:
-            CheckpointTheme.heroMuted
+            CheckpointTheme.muted
         case .future:
-            CheckpointTheme.heroMuted.opacity(0.7)
+            CheckpointTheme.muted.opacity(0.7)
         }
     }
 
     private func trackColor(for state: ProgressWeeklyImpactDayState) -> Color {
         switch state {
         case .active, .inactive:
-            CheckpointTheme.heroTrack.opacity(0.52)
+            CheckpointTheme.controlStroke.opacity(0.52)
         case .future:
-            CheckpointTheme.heroTrack.opacity(0.22)
+            CheckpointTheme.controlStroke.opacity(0.22)
         }
     }
 
     private func fillColor(for state: ProgressWeeklyImpactDayState) -> Color {
         switch state {
         case .active:
-            CheckpointTheme.heroSuccess
+            CheckpointTheme.accent
         case .inactive:
-            CheckpointTheme.heroTrack.opacity(0.72)
+            CheckpointTheme.controlStroke.opacity(0.72)
         case .future:
-            CheckpointTheme.heroTrack.opacity(0.28)
+            CheckpointTheme.controlStroke.opacity(0.28)
         }
     }
 }

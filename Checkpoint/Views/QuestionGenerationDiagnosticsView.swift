@@ -10,7 +10,7 @@ struct QuestionGenerationDiagnosticsView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Generation Diagnostics")
-                            .font(.largeTitle.bold())
+                            .font(CheckpointTypography.screenTitle)
                             .foregroundStyle(CheckpointTheme.text)
 
                         Text("Recent prompts, providers, and generated question previews.")
@@ -19,7 +19,7 @@ struct QuestionGenerationDiagnosticsView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    SectionPanel("Recent runs") {
+                    SectionPanel("Recent runs", style: .editorial) {
                         if store.questionGenerationTraces.isEmpty {
                             EmptyGenerationDiagnosticsState()
                         } else {
@@ -42,7 +42,7 @@ struct QuestionGenerationDiagnosticsView: View {
                     Button("Close") {
                         dismiss()
                     }
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                 }
 
                 if !store.questionGenerationTraces.isEmpty {
@@ -50,7 +50,7 @@ struct QuestionGenerationDiagnosticsView: View {
                         ShareLink(item: store.questionGenerationDiagnosticsExportText) {
                             Image(systemName: "square.and.arrow.up")
                         }
-                        .foregroundStyle(CheckpointTheme.teal)
+                        .foregroundStyle(CheckpointTheme.accent)
 
                         Button("Clear", role: .destructive) {
                             store.clearQuestionGenerationDiagnostics()
@@ -122,7 +122,7 @@ private struct GenerationTraceRow: View {
 
                     StatusBadge(
                         text: trace.usedFallback ? "Fallback" : trace.resolvedProvider.rawValue,
-                        tint: trace.usedFallback ? CheckpointTheme.amber : CheckpointTheme.teal
+                        tint: trace.usedFallback ? CheckpointTheme.amber : CheckpointTheme.accent
                     )
                 }
 
@@ -134,7 +134,7 @@ private struct GenerationTraceRow: View {
                 .foregroundStyle(CheckpointTheme.muted)
             }
         }
-        .tint(CheckpointTheme.teal)
+        .tint(CheckpointTheme.accent)
         .padding(12)
         .background(CheckpointTheme.panelRaised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
@@ -201,7 +201,7 @@ private struct GenerationQuestionPreviewRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                StatusBadge(text: question.topic, tint: CheckpointTheme.teal)
+                StatusBadge(text: question.topic, tint: CheckpointTheme.accent)
 
                 Spacer()
 

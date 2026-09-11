@@ -151,7 +151,7 @@ struct QuestionQualityFeedbackView: View {
                     Button("Close") {
                         dismiss()
                     }
-                    .foregroundStyle(CheckpointTheme.teal)
+                    .foregroundStyle(CheckpointTheme.accent)
                 }
             }
         }
@@ -166,7 +166,7 @@ struct QuestionQualityFeedbackView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("WHAT WAS OFF?")
-                    .font(.caption2.weight(.bold))
+                    .font(CheckpointTypography.eyebrow)
                     .tracking(0.9)
                     .foregroundStyle(CheckpointTheme.muted)
                     .accessibilityAddTraits(.isHeader)
@@ -189,14 +189,13 @@ struct QuestionQualityFeedbackView: View {
         return HStack(alignment: .top, spacing: 14) {
             Image(systemName: "eye.slash")
                 .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(CheckpointTheme.ink)
-                .frame(width: 48, height: 48)
-                .background(CheckpointTheme.mint, in: RoundedRectangle(cornerRadius: 14))
+                .foregroundStyle(CheckpointTheme.accent)
+                .frame(width: 30, height: 40)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(presentation.title)
-                    .font(.title2.weight(.bold))
+                    .font(CheckpointTypography.goalTitle)
                     .foregroundStyle(CheckpointTheme.text)
                     .fixedSize(horizontal: false, vertical: true)
 
@@ -213,22 +212,23 @@ struct QuestionQualityFeedbackView: View {
     private var questionPreview: some View {
         VStack(alignment: .leading, spacing: 7) {
             Text("QUESTION")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.75)
-                .foregroundStyle(CheckpointTheme.heroSuccess)
+                .foregroundStyle(CheckpointTheme.muted)
 
             Text(context.prompt)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(CheckpointTheme.heroText)
+                .font(.subheadline)
+                .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(16)
+        .padding(.vertical, 16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(CheckpointTheme.ink)
-                .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-        )
+        .overlay(alignment: .top) {
+            Rectangle().fill(CheckpointTheme.hairline).frame(height: 1)
+        }
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(CheckpointTheme.hairline).frame(height: 1)
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Question")
         .accessibilityValue(context.prompt)
@@ -247,10 +247,10 @@ struct QuestionQualityFeedbackView: View {
             HStack(alignment: .center, spacing: 12) {
                 Image(systemName: presentation.systemImage)
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(isSelected ? CheckpointTheme.teal : CheckpointTheme.muted)
+                    .foregroundStyle(isSelected ? CheckpointTheme.accent : CheckpointTheme.muted)
                     .frame(width: 38, height: 38)
                     .background(
-                        (isSelected ? CheckpointTheme.teal.opacity(0.13) : CheckpointTheme.panelRaised),
+                        (isSelected ? CheckpointTheme.accent.opacity(0.13) : CheckpointTheme.panelRaised),
                         in: RoundedRectangle(cornerRadius: 11)
                     )
                     .accessibilityHidden(true)
@@ -262,7 +262,7 @@ struct QuestionQualityFeedbackView: View {
 
                     Text(presentation.detail)
                         .font(.caption)
-                        .foregroundStyle(CheckpointTheme.muted)
+                        .foregroundStyle(isSelected ? CheckpointTheme.selectionText : CheckpointTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
@@ -270,20 +270,20 @@ struct QuestionQualityFeedbackView: View {
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(isSelected ? CheckpointTheme.teal : CheckpointTheme.controlStroke)
+                    .foregroundStyle(isSelected ? CheckpointTheme.accent : CheckpointTheme.controlStroke)
                     .contentTransition(.symbolEffect(.replace))
                     .accessibilityHidden(true)
             }
             .padding(12)
             .frame(maxWidth: .infinity, minHeight: 62, alignment: .leading)
             .background(
-                isSelected ? CheckpointTheme.teal.opacity(0.08) : CheckpointTheme.panel.opacity(0.78),
-                in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+                isSelected ? CheckpointTheme.selectionFill : CheckpointTheme.panel,
+                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
             )
             .overlay {
-                RoundedRectangle(cornerRadius: 15, style: .continuous)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .stroke(
-                        isSelected ? CheckpointTheme.teal.opacity(0.42) : CheckpointTheme.hairline,
+                        isSelected ? CheckpointTheme.selectionBorder : CheckpointTheme.controlStroke,
                         lineWidth: 1
                     )
             }
@@ -300,9 +300,9 @@ struct QuestionQualityFeedbackView: View {
         HStack(alignment: .top, spacing: 11) {
             Image(systemName: "lock.shield")
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(CheckpointTheme.teal)
+                .foregroundStyle(CheckpointTheme.accent)
                 .frame(width: 34, height: 34)
-                .background(CheckpointTheme.teal.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
+                .background(CheckpointTheme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 10))
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 3) {
@@ -326,7 +326,7 @@ struct QuestionQualityFeedbackView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             CheckpointTheme.panelRaised.opacity(0.62),
-            in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
         )
         .accessibilityElement(children: .combine)
     }
@@ -341,17 +341,16 @@ struct QuestionQualityFeedbackView: View {
 
             Image(systemName: "checkmark")
                 .font(.system(size: 25, weight: .bold))
-                .foregroundStyle(CheckpointTheme.ink)
+                .foregroundStyle(CheckpointTheme.success)
                 .frame(width: 64, height: 64)
-                .background(CheckpointTheme.mint, in: RoundedRectangle(cornerRadius: 20))
-                .shadow(color: CheckpointTheme.shadowCard, radius: 12, y: 6)
+                .background(CheckpointTheme.success.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
                 .symbolEffect(.bounce, options: .nonRepeating, value: feedbackSequence)
                 .symbolEffectsRemoved(reduceMotion)
                 .accessibilityHidden(true)
 
             VStack(spacing: 7) {
                 Text(presentation.successTitle)
-                    .font(.title2.weight(.bold))
+                    .font(CheckpointTypography.goalTitle)
                     .foregroundStyle(CheckpointTheme.text)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
@@ -367,7 +366,7 @@ struct QuestionQualityFeedbackView: View {
             .accessibilityFocused($accessibilityFocus, equals: .success)
 
             if let selectedReason {
-                StatusBadge(text: selectedReason.rawValue, tint: CheckpointTheme.teal)
+                StatusBadge(text: selectedReason.rawValue, tint: CheckpointTheme.success)
             }
 
             Spacer(minLength: 12)
@@ -492,7 +491,7 @@ struct QuestionRemovalControl: View {
             .overlay {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .stroke(
-                        report == nil ? CheckpointTheme.hairline : CheckpointTheme.teal.opacity(0.20),
+                        report == nil ? CheckpointTheme.hairline : CheckpointTheme.accent.opacity(0.20),
                         lineWidth: 1
                     )
             }
@@ -507,10 +506,10 @@ struct QuestionRemovalControl: View {
         HStack(spacing: 10) {
             Image(systemName: presentation.systemImage)
                 .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(report == nil ? CheckpointTheme.muted : CheckpointTheme.teal)
+                .foregroundStyle(report == nil ? CheckpointTheme.muted : CheckpointTheme.accent)
                 .frame(width: 38, height: 38)
                 .background(
-                    (report == nil ? CheckpointTheme.panel : CheckpointTheme.teal.opacity(0.11)),
+                    (report == nil ? CheckpointTheme.panel : CheckpointTheme.accent.opacity(0.11)),
                     in: RoundedRectangle(cornerRadius: 11)
                 )
                 .accessibilityHidden(true)
@@ -537,7 +536,7 @@ struct QuestionRemovalControl: View {
                 .accessibilityHidden(true)
         }
         .font(.subheadline.weight(.semibold))
-        .foregroundStyle(CheckpointTheme.teal)
+        .foregroundStyle(CheckpointTheme.accent)
         .frame(minHeight: 44)
     }
 }

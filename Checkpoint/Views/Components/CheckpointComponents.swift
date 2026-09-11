@@ -48,116 +48,74 @@ struct CheckpointAdaptiveColor: Equatable, Sendable {
     }
 }
 
+/// Saddle & Ink: warm surfaces and restrained brand color, with independent status roles.
+/// Fixed hero colors remain paired with fixed espresso; adaptive controls use actionText.
 enum CheckpointPalette {
-    static let ink = CheckpointColorComponents(hex: 0x0F241F)
-    static let paper = CheckpointColorComponents(hex: 0xF2F5ED)
-    static let mint = CheckpointColorComponents(hex: 0x7DE8C7)
-    static let heroText = CheckpointColorComponents(hex: 0xF0FAF5)
-    static let heroMuted = CheckpointColorComponents(hex: 0xA8BFB5)
-    static let heroInfo = CheckpointColorComponents(hex: 0x86BDEB)
-    static let heroWarning = CheckpointColorComponents(hex: 0xF0C36B)
-    static let heroDanger = CheckpointColorComponents(hex: 0xFF9587)
-    static let heroTrack = CheckpointColorComponents(hex: 0x60776E)
-    static let heroDivider = CheckpointColorComponents(hex: 0xFFFFFF, alpha: 0.11)
-    static let heroSubtleFill = CheckpointColorComponents(hex: 0xFFFFFF, alpha: 0.07)
-    static let selectionText = CheckpointColorComponents(hex: 0xFFFFFF)
-    static let selectionCountFill = CheckpointColorComponents(hex: 0x0F241F, alpha: 0.24)
+    static let ink = CheckpointColorComponents(hex: 0x29231E)
+    static let paper = CheckpointColorComponents(hex: 0xFAF7F0)
+    static let mint = CheckpointColorComponents(hex: 0xA9BA97)
+    static let heroText = CheckpointColorComponents(hex: 0xEDE3D4)
+    static let heroMuted = CheckpointColorComponents(hex: 0xB7A995)
+    static let heroInfo = CheckpointColorComponents(hex: 0xA9BACA)
+    static let heroWarning = CheckpointColorComponents(hex: 0xD7B575)
+    static let heroDanger = CheckpointColorComponents(hex: 0xE6A18F)
+    static let heroTrack = CheckpointColorComponents(hex: 0x8E7D6A)
+    static let heroDivider = CheckpointColorComponents(hex: 0xEDE3D4, alpha: 0.16)
+    static let heroSubtleFill = CheckpointColorComponents(hex: 0xEDE3D4, alpha: 0.07)
+    static let selectionCountFill = CheckpointColorComponents(hex: 0x29231E, alpha: 0.10)
 
-    static let actionTeal = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x1C4F47),
-        dark: CheckpointColorComponents(hex: 0x2C7465)
-    )
-    static let actionDeep = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x0F241F),
-        dark: CheckpointColorComponents(hex: 0x245E53)
-    )
-    static let actionBorder = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0xFFFFFF, alpha: 0.12),
-        dark: CheckpointColorComponents(hex: 0x72D0B6, alpha: 0.55)
-    )
-    static let destructiveFill = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x9C4A3D),
-        dark: CheckpointColorComponents(hex: 0xA94F45)
-    )
-    static let selectionFill = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x0F241F),
-        dark: CheckpointColorComponents(hex: 0x328170)
-    )
-    static let heroBorder = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0xFFFFFF, alpha: 0),
-        dark: CheckpointColorComponents(hex: 0x40534C)
-    )
+    static let backgroundBase = adaptive(0xF2EBDD, 0x191714)
+    static let panel = adaptive(0xFAF7F0, 0x27221D)
+    static let panelRaised = adaptive(0xF0E7D9, 0x332B23)
+    static let hairline = adaptive(0xD8CDBD, 0x493F34)
+    static let controlStroke = adaptive(0x8A7B68, 0x8E7D6A)
+    static let text = adaptive(0x29231E, 0xEDE3D4)
+    static let muted = adaptive(0x71675A, 0xB7A995)
+    static let accent = adaptive(0x805A3B, 0xCBA678)
+    static let actionFill = adaptive(0x29231E, 0xE3D2BA)
+    static let actionText = adaptive(0xFAF7F0, 0x29231E)
+    static let selectionFill = adaptive(0xE3D2BA, 0x393027)
+    static let selectionText = text
+    static let selectionBorder = accent
+    static let destructiveFill = adaptive(0x893E32, 0x9C493D)
+    static let success = adaptive(0x486147, 0xA9BA97)
+    static let blue = adaptive(0x435A6B, 0xA9BACA)
+    static let amber = adaptive(0x70501E, 0xD7B575)
+    static let coral = adaptive(0x893E32, 0xE6A18F)
+
+    // Compatibility names for semantic progress and older view call sites.
+    static let teal = success
+    static let actionTeal = actionFill
+    static let actionDeep = actionFill
+    static let actionBorder = actionFill
+    static let backgroundGreen = backgroundBase
+    static let backgroundWarm = backgroundBase
+    static let heroBorder = adaptive(0x493F34, 0x493F34)
     static let shadowCard = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x0F241F, alpha: 0.055),
-        dark: CheckpointColorComponents(hex: 0x000000, alpha: 0.25)
+        light: .init(hex: 0x29231E, alpha: 0.03), dark: .init(hex: 0, alpha: 0.12)
     )
     static let shadowElevated = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x0F241F, alpha: 0.14),
-        dark: CheckpointColorComponents(hex: 0x000000, alpha: 0.38)
+        light: .init(hex: 0x29231E, alpha: 0.08), dark: .init(hex: 0, alpha: 0.20)
     )
 
-    static let backgroundBase = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0xF2F5ED),
-        dark: CheckpointColorComponents(hex: 0x091512)
-    )
-    static let backgroundGreen = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0xE6F0E8),
-        dark: CheckpointColorComponents(hex: 0x10241F)
-    )
-    static let backgroundWarm = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0xF0EADB),
-        dark: CheckpointColorComponents(hex: 0x211E18)
-    )
-    static let panel = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0xFCFAF2),
-        dark: CheckpointColorComponents(hex: 0x14211E)
-    )
-    static let panelRaised = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0xE6EBE0),
-        dark: CheckpointColorComponents(hex: 0x1C2C27)
-    )
-    static let hairline = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0xC9D0C7),
-        dark: CheckpointColorComponents(hex: 0x40534C)
-    )
-    static let controlStroke = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x7C8A82),
-        dark: CheckpointColorComponents(hex: 0x60786D)
-    )
-    static let text = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x0F241F),
-        dark: CheckpointColorComponents(hex: 0xECF3EF)
-    )
-    static let muted = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x596961),
-        dark: CheckpointColorComponents(hex: 0xA8B7B0)
-    )
-    static let teal = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x1C4F47),
-        dark: CheckpointColorComponents(hex: 0x72D0B6)
-    )
-    static let blue = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x294F78),
-        dark: CheckpointColorComponents(hex: 0x86BDEB)
-    )
-    static let amber = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x76500F),
-        dark: CheckpointColorComponents(hex: 0xF0C36B)
-    )
-    static let coral = CheckpointAdaptiveColor(
-        light: CheckpointColorComponents(hex: 0x904034),
-        dark: CheckpointColorComponents(hex: 0xFF9587)
-    )
+    private static func adaptive(_ light: UInt32, _ dark: UInt32) -> CheckpointAdaptiveColor {
+        CheckpointAdaptiveColor(light: .init(hex: light), dark: .init(hex: dark))
+    }
 }
 
 enum CheckpointTheme {
     static var ink: Color { CheckpointPalette.ink.color }
     static var paper: Color { CheckpointPalette.paper.color }
-    static var actionTeal: Color { CheckpointPalette.actionTeal.color }
-    static var actionDeep: Color { CheckpointPalette.actionDeep.color }
+    static var accent: Color { CheckpointPalette.accent.color }
+    static var success: Color { CheckpointPalette.success.color }
+    static var actionFill: Color { CheckpointPalette.actionFill.color }
+    static var actionText: Color { CheckpointPalette.actionText.color }
+    static var actionTeal: Color { actionFill }
+    static var actionDeep: Color { actionFill }
     static var actionBorder: Color { CheckpointPalette.actionBorder.color }
     static var destructiveFill: Color { CheckpointPalette.destructiveFill.color }
     static var selectionFill: Color { CheckpointPalette.selectionFill.color }
+    static var selectionBorder: Color { CheckpointPalette.selectionBorder.color }
     static var heroText: Color { CheckpointPalette.heroText.color }
     static var heroMuted: Color { CheckpointPalette.heroMuted.color }
     static var heroSuccess: Color { CheckpointPalette.mint.color }
@@ -178,26 +136,25 @@ enum CheckpointTheme {
     static var controlStroke: Color { CheckpointPalette.controlStroke.color }
     static var text: Color { CheckpointPalette.text.color }
     static var muted: Color { CheckpointPalette.muted.color }
-    static var teal: Color { CheckpointPalette.teal.color }
+    static var teal: Color { success }
     static var blue: Color { CheckpointPalette.blue.color }
     static var amber: Color { CheckpointPalette.amber.color }
     static var coral: Color { CheckpointPalette.coral.color }
     static var mint: Color { CheckpointPalette.mint.color }
 
-    static let compactCornerRadius: CGFloat = 12
-    static let cardCornerRadius: CGFloat = 18
+    static let compactCornerRadius: CGFloat = 8
+    static let cardCornerRadius: CGFloat = 12
+    static var background: Color { CheckpointPalette.backgroundBase.color }
+}
 
-    static var background: LinearGradient {
-        LinearGradient(
-            colors: [
-                CheckpointPalette.backgroundBase.color,
-                CheckpointPalette.backgroundGreen.color,
-                CheckpointPalette.backgroundWarm.color
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
+/// Native text styles retain Dynamic Type. Serif is reserved for editorial hierarchy;
+/// questions, answers, form fields, and controls continue using the system sans face.
+enum CheckpointTypography {
+    static let screenTitle: Font = .system(.largeTitle, design: .serif)
+    static let goalTitle: Font = .system(.title, design: .serif)
+    static let sectionTitle: Font = .system(.title2, design: .serif)
+    static let metric: Font = .system(.largeTitle, design: .serif)
+    static let eyebrow: Font = .caption2.weight(.medium)
 }
 
 enum CheckpointMotion {
@@ -445,12 +402,12 @@ struct GoalSwitcherCapsuleLabel: View {
                 .font(.caption2.weight(.bold))
                 .accessibilityHidden(true)
         }
-        .font(.caption.weight(.bold))
-        .foregroundStyle(CheckpointTheme.teal)
+        .font(.caption.weight(.medium))
+        .foregroundStyle(CheckpointTheme.accent)
         .fixedSize(horizontal: true, vertical: true)
         .padding(.horizontal, 11)
         .frame(minHeight: 44)
-        .background(CheckpointTheme.teal.opacity(0.10), in: Capsule())
+        .background(CheckpointTheme.accent.opacity(0.10), in: Capsule())
         .contentShape(Capsule())
     }
 }
@@ -688,6 +645,7 @@ struct PrimaryActionButton: View {
     var title: String
     var systemImage: String
     var isLoading: Bool
+    var compact: Bool
     var action: () -> Void
 
     @Environment(\.isEnabled) private var isEnabled
@@ -698,11 +656,13 @@ struct PrimaryActionButton: View {
         title: String,
         systemImage: String,
         isLoading: Bool = false,
+        compact: Bool = false,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.systemImage = systemImage
         self.isLoading = isLoading
+        self.compact = compact
         self.action = action
     }
 
@@ -710,33 +670,31 @@ struct PrimaryActionButton: View {
         Button(action: action) {
             Group {
                 if dynamicTypeSize.isAccessibilitySize {
-                    VStack(spacing: 10) {
-                        actionIcon
+                    VStack(alignment: .leading, spacing: 10) {
                         actionTitle
+                        actionIcon
                     }
                 } else {
-                    HStack(spacing: 8) {
-                        actionIcon
+                    HStack(spacing: 12) {
                         actionTitle
+                        Spacer(minLength: 8)
+                        actionIcon
                     }
                 }
             }
-                .foregroundStyle(CheckpointTheme.paper)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 18 : 15)
+                .foregroundStyle(CheckpointTheme.actionText)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 18)
+                .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 18 : (compact ? 10 : 15))
+                .frame(minHeight: compact ? 50 : 44)
                 .background(
-                    LinearGradient(
-                        colors: [CheckpointTheme.actionTeal, CheckpointTheme.actionDeep],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
+                    CheckpointTheme.actionFill,
                     in: RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
                 )
                 .overlay {
                     RoundedRectangle(cornerRadius: CheckpointTheme.compactCornerRadius, style: .continuous)
                         .stroke(CheckpointTheme.actionBorder, lineWidth: 1)
                 }
-                .shadow(color: CheckpointTheme.shadowElevated, radius: 10, y: 5)
         }
         .buttonStyle(CheckpointPressButtonStyle())
         .opacity(isEnabled || isLoading ? 1 : 0.58)
@@ -748,7 +706,7 @@ struct PrimaryActionButton: View {
             switch actionIconState {
             case .loading:
                 ProgressView()
-                    .tint(CheckpointTheme.paper)
+                    .tint(CheckpointTheme.actionText)
                     .transition(actionIconMotionPolicy.transition)
             case let .symbol(systemImage):
                 Image(systemName: systemImage)
@@ -776,8 +734,8 @@ struct PrimaryActionButton: View {
 
     private var actionTitle: some View {
         Text(title)
-            .font(.headline)
-            .multilineTextAlignment(.center)
+            .font(.body.weight(.semibold))
+            .multilineTextAlignment(.leading)
             .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
             .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.85)
             .fixedSize(horizontal: false, vertical: true)
@@ -815,40 +773,53 @@ struct SecondaryActionButton: View {
     }
 }
 
+enum SectionPanelStyle {
+    case surface
+    case editorial
+}
+
 struct SectionPanel<Content: View>: View {
     var title: String?
     var contentPadding: CGFloat
+    var style: SectionPanelStyle
     @ViewBuilder var content: Content
 
     init(
         _ title: String? = nil,
         contentPadding: CGFloat = 16,
+        style: SectionPanelStyle = .surface,
         @ViewBuilder content: () -> Content
     ) {
         self.title = title
         self.contentPadding = contentPadding
+        self.style = style
         self.content = content()
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 16) {
             if let title {
                 Text(title)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(CheckpointTheme.muted)
                     .accessibilityAddTraits(.isHeader)
             }
-
             content
         }
-        .padding(contentPadding)
+        .padding(.vertical, contentPadding)
+        .padding(.horizontal, style == .surface ? contentPadding : 0)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
-                .fill(CheckpointTheme.panel.opacity(0.96))
-                .stroke(CheckpointTheme.hairline, lineWidth: 1)
-        )
-        .shadow(color: CheckpointTheme.shadowCard, radius: 12, x: 0, y: 5)
+        .background {
+            if style == .surface {
+                RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
+                    .fill(CheckpointTheme.panel)
+            }
+        }
+        .overlay(alignment: .top) {
+            if style == .editorial {
+                Rectangle().fill(CheckpointTheme.hairline).frame(height: 1)
+            }
+        }
     }
 }
 
@@ -903,7 +874,7 @@ struct StudyFocusCard: View {
                     .stroke(accent.opacity(0.16), lineWidth: 1)
                 }
         case .panel:
-            SectionPanel {
+            SectionPanel(style: .editorial) {
                 cardContent
             }
         }
@@ -954,7 +925,7 @@ struct StudyFocusCard: View {
             .frame(width: 44, height: 44)
             .background(
                 accent.opacity(0.11),
-                in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
             )
             .accessibilityHidden(true)
     }
@@ -962,13 +933,13 @@ struct StudyFocusCard: View {
     private var focusCopy: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("NEXT FOCUS")
-                .font(.caption2.weight(.bold))
+                .font(CheckpointTypography.eyebrow)
                 .tracking(0.85)
                 .foregroundStyle(accent)
                 .accessibilityAddTraits(.isHeader)
 
             Text(state.title)
-                .font(.headline)
+                .font(CheckpointTypography.sectionTitle)
                 .foregroundStyle(CheckpointTheme.text)
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -987,7 +958,7 @@ struct StudyFocusCard: View {
 
             accessoryIcon
         }
-        .foregroundStyle(CheckpointTheme.blue)
+        .foregroundStyle(CheckpointTheme.accent)
         .frame(minHeight: 44)
         .accessibilityHidden(true)
     }
@@ -995,12 +966,12 @@ struct StudyFocusCard: View {
     private var accessoryIcon: some View {
         Image(systemName: "chevron.right")
             .font(.caption.weight(.bold))
-            .foregroundStyle(CheckpointTheme.blue)
+            .foregroundStyle(CheckpointTheme.accent)
             .accessibilityHidden(true)
     }
 
     private var accent: Color {
-        state.isRecommendation ? CheckpointTheme.blue : CheckpointTheme.teal
+        state.isRecommendation ? CheckpointTheme.accent : CheckpointTheme.teal
     }
 }
 
@@ -1014,7 +985,7 @@ struct CheckpointHeroSurface<Content: View>: View {
     @ViewBuilder var content: Content
 
     init(
-        glowColor: Color,
+        glowColor: Color = .clear,
         glowOpacity: Double = 0.09,
         glowDiameter: CGFloat = 150,
         glowBlurRadius: CGFloat = 11,
@@ -1036,19 +1007,10 @@ struct CheckpointHeroSurface<Content: View>: View {
             .padding(contentPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                RoundedRectangle(cornerRadius: CheckpointTheme.cardCornerRadius, style: .continuous)
                     .fill(CheckpointTheme.ink)
                     .stroke(CheckpointTheme.heroBorder, lineWidth: 1)
-                    .overlay(alignment: .topTrailing) {
-                        Circle()
-                            .fill(glowColor.opacity(glowOpacity))
-                            .frame(width: glowDiameter, height: glowDiameter)
-                            .blur(radius: glowBlurRadius)
-                            .offset(glowOffset)
-                            .allowsHitTesting(false)
-                    }
             )
-            .shadow(color: CheckpointTheme.shadowElevated, radius: 16, y: 8)
     }
 }
 
@@ -1097,7 +1059,7 @@ struct StatusBadge: View {
 
     var body: some View {
         Text(text)
-            .font(.caption.weight(.bold))
+            .font(.caption.weight(.medium))
             .foregroundStyle(tint)
             .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
             .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.85)
@@ -1105,11 +1067,9 @@ struct StatusBadge: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(
-                tint.opacity(0.14),
+                tint.opacity(0.07),
                 in: RoundedRectangle(
-                    cornerRadius: dynamicTypeSize.isAccessibilitySize
-                        ? CheckpointTheme.compactCornerRadius
-                        : 100,
+                    cornerRadius: CheckpointTheme.compactCornerRadius,
                     style: .continuous
                 )
             )
