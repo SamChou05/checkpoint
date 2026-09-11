@@ -184,9 +184,14 @@ Preparation passed on September 10:
 
 The three first serialized author requests are 16,629, 15,203 and 15,280 bytes in
 fixture order. The code, raw fixture and protocol are saved before plan freezing.
-The exact frozen plan hash is recorded separately after that commit. These are
-synthetic/offline results; no live inference has occurred. AWS credential
-preflight currently reports an expired session, with renewal requested.
+The [frozen plan](evidence/complete-teaching-preparation-20260910/frozen-plan/plan.json)
+binds source commit `a31a56c188d522dd40fb7ee45a49a7b1d6e20f74`, 36 runtime/runner
+files and 94 delivery files. Its canonical SHA-256 is
+`481cb561a4d7fac53ebe83b86668452f785f9861c545262a2768984b12044043`.
+Reloading it verifies the current source, dependencies, prompts, schemas and
+requests exactly. These are synthetic/offline results; no live inference has
+occurred and the plan has no execution claim. AWS credential preflight currently
+reports an expired session, with renewal requested.
 Live results belong in a separate document and must not rewrite this protocol
 or the original fixture.
 
