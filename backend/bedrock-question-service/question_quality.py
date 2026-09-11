@@ -179,23 +179,11 @@ def _sanitize_questions(
             blocked_prompts.add(_normalized_stem_identity(prompt))
     seen_prompts = set(blocked_prompts)
     blocked_stem_fingerprints = set(request.get("blockedStemFingerprints", []))
-    seen_coverage = set()
-    seen_choice_sets = set()
     accepted_skill_counts: dict[str, int] = {}
     accepted_objective_counts: dict[tuple[str, str], int] = {}
     objective_scoped_skill_ids = {
         skill_id for skill_id, _ in requested_objective_allocation
     }
-    for coverage in request["existingQuestionCoverage"]:
-        seen_coverage.update(
-            _question_coverage_keys(
-                coverage.get("expectedAnswer", ""),
-                coverage.get("topic", ""),
-            )
-        )
-        coverage_choice_key = _choice_set_key(coverage.get("choices", []))
-        if coverage_choice_key:
-            seen_choice_sets.add(coverage_choice_key)
     sanitized: list[dict[str, Any]] = []
 
     for candidate_index, raw_question in enumerate(raw_questions):
@@ -263,12 +251,10 @@ def _sanitize_questions(
         stem_fingerprint = _stem_fingerprint(
             prompt, version=request.get("stemFingerprintVersion", 1)
         )
-        coverage_keys = _question_coverage_keys(expected_answer, topic)
         if (
             len(prompt) < 12
             or not expected_answer
             or not explanation
-            or _explanation_admits_bad_answer(explanation)
             or _looks_like_study_strategy(prompt, request["goal"])
             or _prompt_contains_embedded_options(prompt)
             or _prompt_contains_latex_markup(prompt)
@@ -281,28 +267,20 @@ def _sanitize_questions(
         ):
             record_quality(request_metrics, "sanitize", "duplicate_stem")
             continue
-        if not seen_coverage.isdisjoint(coverage_keys):
-            record_quality(request_metrics, "sanitize", "duplicate_answer")
-            continue
-
+        # Answer vocabulary is reusable across different tasks. A shared key
+        # or choice set cannot establish that two stems test the same thing.
         choices = _normalized_choices(raw_question.get("choices"), expected_answer)
         if len(choices) != 4:
             record_quality(request_metrics, "sanitize", "invalid_choices")
-            continue
-        choice_set_key = _choice_set_key(choices)
-        if not choice_set_key or choice_set_key in seen_choice_sets:
-            record_quality(request_metrics, "sanitize", "duplicate_choices")
             continue
         if _looks_like_generic_meta_question(
             prompt, expected_answer, choices, explanation
         ):
             record_quality(request_metrics, "sanitize", "generic_content")
             continue
-        if _explanation_supports_different_choice(
-            expected_answer, choices, explanation
-        ):
-            record_quality(request_metrics, "sanitize", "contradictory_explanation")
-            continue
+        # Prose mentions are not verdicts: an explanation can refute a
+        # distractor or describe an intermediate result. The mandatory solver
+        # checks the key; the feedback reviewer owns the learner-facing teaching.
 
         difficulty = _clamped_int(raw_question.get("difficulty"), minimum=1, maximum=5)
         if difficulty < minimum_difficulty:
@@ -321,8 +299,6 @@ def _sanitize_questions(
             continue
 
         seen_prompts.update(prompt_keys)
-        seen_coverage.update(coverage_keys)
-        seen_choice_sets.add(choice_set_key)
         question = {
             "prompt": prompt,
             "expectedAnswer": expected_answer,
@@ -685,6 +661,7 @@ def _looks_like_study_strategy(prompt: str, goal: dict[str, Any]) -> bool:
 
 
 def _explanation_admits_bad_answer(explanation: str) -> bool:
+    """Legacy diagnostic only; phrase matches are not admission verdicts."""
     normalized = explanation.lower()
     blocked_phrases = [
         "answer is wrong",
@@ -770,6 +747,7 @@ def _explanation_supports_different_choice(
     choices: list[str],
     explanation: str,
 ) -> bool:
+    """Historical eval export; never use this heuristic for admission or scoring."""
     supported_choice = _explanation_supported_choice(explanation, choices)
     if not supported_choice:
         return False

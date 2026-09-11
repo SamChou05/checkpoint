@@ -30,15 +30,6 @@ enum QuestionBatchSanitizer {
         let existingPrompts = Set(request.existingQuestions.flatMap { promptKeys($0.prompt) })
         let reportedPrompts = Set(request.reportedQuestions.flatMap { promptKeys($0.prompt) })
         var seenPrompts = existingPrompts.union(reportedPrompts)
-        let existingCoverage = Set(request.existingQuestions.flatMap(questionCoverageKeys))
-        let reportedCoverage = Set(request.reportedQuestions.flatMap { report in
-            questionCoverageKeys(
-                prompt: report.prompt,
-                expectedAnswer: "",
-                topic: ""
-            )
-        })
-        var seenCoverage = existingCoverage.union(reportedCoverage)
         var sanitizedQuestions: [CheckpointQuestion] = []
 
         for question in questions {
@@ -110,17 +101,15 @@ enum QuestionBatchSanitizer {
             sanitizedQuestion.nextReviewAt = nil
 
             let promptKeys = promptKeys(sanitizedQuestion.prompt)
-            let coverageKeys = questionCoverageKeys(sanitizedQuestion)
-
+            // Different tasks can legitimately reuse an answer or all four
+            // alternatives. Only the stem establishes deterministic duplication.
             guard sanitizedQuestion.difficulty >= request.minimumDifficulty,
                   isUsable(sanitizedQuestion, for: request),
-                  seenPrompts.isDisjoint(with: promptKeys),
-                  seenCoverage.isDisjoint(with: coverageKeys) else {
+                  seenPrompts.isDisjoint(with: promptKeys) else {
                 continue
             }
 
             seenPrompts.formUnion(promptKeys)
-            seenCoverage.formUnion(coverageKeys)
             sanitizedQuestions.append(sanitizedQuestion)
 
             if sanitizedQuestions.count >= request.targetCount {
@@ -136,45 +125,6 @@ enum QuestionBatchSanitizer {
         // clusters. A literal with combining marks can be valid below 12 clusters.
         text.unicodeScalars.count <= maximum
             && text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.count >= 12
-    }
-
-    private static func questionCoverageKeys(_ question: CheckpointQuestion) -> Set<Data> {
-        var keys = questionCoverageKeys(
-            prompt: question.prompt,
-            expectedAnswer: question.expectedAnswer,
-            topic: question.topic
-        )
-
-        let choiceSetKey = question.choices
-            .map(choiceUniquenessKey)
-            .filter { !$0.isEmpty }
-            .sorted { $0.lexicographicallyPrecedes($1) }
-            .reduce(into: Data()) { result, key in
-                result.append(Data("\(key.count):".utf8))
-                result.append(key)
-            }
-        if question.choices.count == 4, !choiceSetKey.isEmpty {
-            keys.insert(Data("choice-set:".utf8) + choiceSetKey)
-        }
-
-        return keys
-    }
-
-    private static func questionCoverageKeys(
-        prompt: String,
-        expectedAnswer: String,
-        topic: String
-    ) -> Set<Data> {
-        var keys: Set<Data> = []
-        let topicKey = choiceUniquenessKey(topic)
-        let answerKey = choiceUniquenessKey(expectedAnswer)
-
-        if MultipleChoiceAnswerNormalizer.text(for: topic).count >= 3,
-           MultipleChoiceAnswerNormalizer.text(for: expectedAnswer).count >= 16 {
-            keys.insert(Data("topic-answer:\(topicKey.count):".utf8) + topicKey + answerKey)
-        }
-
-        return keys
     }
 
     private static func isUsable(_ question: CheckpointQuestion, for request: QuestionGenerationRequest) -> Bool {

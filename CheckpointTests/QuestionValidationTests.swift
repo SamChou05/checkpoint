@@ -4,6 +4,68 @@ import XCTest
 // MARK: - Question validation
 
 final class QuestionValidationTests: XCTestCase {
+    private struct ReusableAnswerQuestion: Decodable {
+        var prompt: String
+        var expectedAnswer: String
+        var choices: [String]
+        var explanation: String
+        var topic: String
+        var difficulty: Int
+    }
+
+    private func reusableAnswerCases(goal: Goal) throws -> [[CheckpointQuestion]] {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        let url = root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/reusable_answer_contract.json")
+        return try JSONDecoder().decode([[ReusableAnswerQuestion]].self, from: Data(contentsOf: url)).map { pair in
+            pair.enumerated().map { index, item in
+                makeQuestion(goal: goal, index: index, topic: item.topic, prompt: item.prompt,
+                             expectedAnswer: item.expectedAnswer, choices: item.choices,
+                             explanation: item.explanation, difficulty: item.difficulty)
+            }
+        }
+    }
+
+    func testDistinctQuestionsCanReuseAnswerVocabularyAndStillGradeTheirOwnKeys() throws {
+        let goal = makeGoal()
+        for pair in try reusableAnswerCases(goal: goal) {
+            let request = makeRequest(goal: goal, targetCount: 2, minimumDifficulty: 1)
+            let received = try pair.map { question in
+                try QuestionContentJSONDecoder.decode(GeneratedQuestionPayload.self, from: JSONEncoder().encode(question))
+                    .makeQuestion(goalID: goal.id, sourcePrompt: "service")
+            }
+            let accepted = QuestionBatchSanitizer.sanitize(received, for: request)
+            XCTAssertEqual(accepted.map(\.prompt), pair.map(\.prompt))
+            for (question, original) in zip(accepted, pair) {
+                let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: JSONEncoder().encode(question))
+                XCTAssertEqual(restored.expectedAnswer, original.expectedAnswer)
+                XCTAssertEqual(Set(restored.choices), Set(original.choices))
+                for choice in restored.choices {
+                    XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: restored).result,
+                                   choice == original.expectedAnswer ? .correct : .incorrect)
+                }
+            }
+        }
+    }
+
+    func testHistoryDoesNotExhaustAnswerVocabulary() throws {
+        let goal = makeGoal()
+        for pair in try reusableAnswerCases(goal: goal) {
+            let request = makeRequest(goal: goal, existingQuestions: [pair[0]], minimumDifficulty: 1)
+            XCTAssertEqual(QuestionBatchSanitizer.sanitize([pair[1]], for: request).map(\.id), [pair[1].id])
+        }
+    }
+
+    func testExactStemStillRejectsAfterChangingItsAnswerAndChoices() throws {
+        let goal = makeGoal()
+        for pair in try reusableAnswerCases(goal: goal) {
+            var repeatQuestion = pair[1]
+            repeatQuestion.prompt = pair[0].prompt
+            let request = makeRequest(goal: goal, existingQuestions: [pair[0]], minimumDifficulty: 1)
+            let accepted = QuestionBatchSanitizer.sanitize([repeatQuestion, pair[1]], for: request)
+            XCTAssertEqual(accepted.map(\.prompt), [pair[1].prompt])
+        }
+    }
+
     private struct IdentityFixtures: Decodable {
         struct Question: Decodable {
             var prompt: String
@@ -595,7 +657,7 @@ final class QuestionValidationTests: XCTestCase {
         XCTAssertEqual(sanitized.map(\.id), [question.id])
     }
 
-    func testSanitizerRejectsSameTopicAndAnswerAsExistingQuestion() {
+    func testSanitizerRejectsSameStemAsExistingQuestion() {
         let goal = makeGoal()
         let existingQuestion = makeQuestion(
             goal: goal,
@@ -617,7 +679,7 @@ final class QuestionValidationTests: XCTestCase {
             goal: goal,
             index: 2,
             topic: "Virtual Memory",
-            prompt: "Operating Systems: Which MMU behavior is central to virtual memory?",
+            prompt: "Operating Systems: What does the MMU do during address translation?",
             expectedAnswer: "It translates virtual memory addresses to physical memory addresses.",
             choices: [
                 "It translates virtual memory addresses to physical memory addresses.",

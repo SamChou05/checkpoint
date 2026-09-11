@@ -238,16 +238,16 @@ class PromptEvalTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertTrue(any("Duplicate or near-duplicate prompt" in failure for failure in result["failures"]))
 
-    def test_rejects_explanation_supporting_another_choice(self):
+    def test_structural_scoring_does_not_misread_an_intermediate_result_as_the_key(self):
         question = {
             **_good_question(),
-            "prompt": "A measured value is -1. What is the sign of this subject fact?",
+            "prompt": "Negate the subject fact's measured value of -1. What is the final sign?",
             "expectedAnswer": "positive",
             "choices": ["positive", "negative", "zero", "undefined"],
-            "explanation": "The measured result is -1, which is negative.",
+            "explanation": "The measured result is -1, which is negative. Negating it gives 1.",
         }
 
-        self.assert_question_rejected_for(question, "different answer choice")
+        self.assertFalse(any("different answer choice" in failure for failure in self.question_failures(question)))
 
     def test_allows_study_schedule_when_study_skills_are_the_goal(self):
         question = {

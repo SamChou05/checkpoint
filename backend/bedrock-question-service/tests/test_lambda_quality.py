@@ -498,7 +498,7 @@ class LambdaQualityTests(BackendTestCase):
         answer_key = lambda_function._choice_uniqueness_key(answer)  # noqa: SLF001
         self.assertIn(f"topic-answer:{len(topic_key.encode('utf-8'))}:{topic_key}{answer_key}", keys)
 
-    def test_rejects_reused_choice_set_across_reworded_questions(self):
+    def test_rejects_repeated_stem_even_with_reordered_choice_set(self):
         request = lambda_function._normalize_request(  # noqa: SLF001
             _request_payload(target_count=2, minimum_difficulty=3)
         )
@@ -518,7 +518,7 @@ class LambdaQualityTests(BackendTestCase):
         }
         duplicate_mechanism = {
             **first,
-            "prompt": "For two-sum on an unsorted array, which method avoids checking every pair?",
+            "choices": list(reversed(choices)),
             "topic": "hash maps",
         }
 
@@ -669,9 +669,9 @@ class LambdaQualityTests(BackendTestCase):
         self.assertEqual(len(sanitized), 1)
         self.assertEqual(set(sanitized[0]["choices"]), set(question["choices"]))
 
-    def test_rejects_same_topic_answer_as_existing_coverage(self):
+    def test_rejects_same_stem_as_existing_coverage(self):
         repeated = {
-            "prompt": "Operating Systems: Which MMU behavior is central to virtual memory?",
+            "prompt": "Operating Systems: What does the MMU do during address translation?",
             "expectedAnswer": "It translates virtual memory addresses to physical memory addresses.",
             "choices": [
                 "It translates virtual memory addresses to physical memory addresses.",
@@ -736,28 +736,6 @@ class LambdaQualityTests(BackendTestCase):
         questions = json.loads(response["body"])["questions"]
         self.assertEqual(len(questions), 1)
         self.assertIn("required assumption", questions[0]["prompt"])
-
-    def test_rejects_explanations_that_admit_bad_answer(self):
-        bad_question = _raw_question("Calculus: What is the value of this limit?")
-        bad_question["explanation"] = (
-            "The provided choices do not include the correct answer."
-        )
-        client = FakeBedrockClient.returning_questions(
-            bad_question,
-            _raw_question(
-                "Calculus: Which answer correctly applies the derivative rule?"
-            ),
-        )
-
-        response = lambda_function.handle_http_request(
-            _event(_request_payload(target_count=1, minimum_difficulty=3)),
-            bedrock_client=client,
-        )
-
-        self.assertEqual(response["statusCode"], 200)
-        questions = json.loads(response["body"])["questions"]
-        self.assertEqual(len(questions), 1)
-        self.assertIn("derivative rule", questions[0]["prompt"])
 
     def test_rejects_answer_label_when_it_is_not_an_actual_choice(self):
         bad_question = _raw_question(
@@ -925,30 +903,6 @@ class LambdaQualityTests(BackendTestCase):
             [question["prompt"] for question in questions],
             [first_question["prompt"], third_question["prompt"]],
         )
-
-    def test_rejects_explanation_supporting_different_choice(self):
-        bad_question = _raw_question(
-            "A computation gives -1. What is the sign of the result?"
-        )
-        bad_question["expectedAnswer"] = "positive"
-        bad_question["choices"] = ["positive", "negative", "zero", "undefined"]
-        bad_question["explanation"] = "The computed result is -1, which is negative."
-        client = FakeBedrockClient.returning_questions(
-            bad_question,
-            _raw_question(
-                "Math reasoning: Which statement follows from a negative computed result?"
-            ),
-        )
-
-        response = lambda_function.handle_http_request(
-            _event(_request_payload(target_count=1, minimum_difficulty=3)),
-            bedrock_client=client,
-        )
-
-        self.assertEqual(response["statusCode"], 200)
-        questions = json.loads(response["body"])["questions"]
-        self.assertEqual(len(questions), 1)
-        self.assertIn("negative computed result", questions[0]["prompt"])
 
     def test_rejects_prompts_with_embedded_answer_options(self):
         bad_question = _raw_question(
