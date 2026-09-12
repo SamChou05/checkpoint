@@ -32,7 +32,7 @@ Parameters:
     Description: Provider JSON transport. Keep legacy until every configured model is qualified.
   BedrockVerificationStructuredOutputMode:
     Type: String
-    Default: inherit
+    Default: native
     AllowedValues: [inherit, legacy, native]
     Description: Solver/reviewer transport override, independent of author and skill-map compatibility.
   BedrockReasoningEffort:

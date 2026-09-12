@@ -1,0 +1,86 @@
+[
+  {
+    "id": "final_mixture_replacement",
+    "payload": {
+      "goal": {
+        "title": "Solve concentration problems with repeated replacement",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "Mixtures with removal and replacement"
+        ],
+        "questionDirective": "Give two different multistep mixture problems. Specify that the mixture is uniform before each removal, all volumes, and whether removed liquid is replaced. Ask for one exact final concentration or required volume."
+      },
+      "targetCount": 2,
+      "minimumDifficulty": 4
+    }
+  },
+  {
+    "id": "final_python_closures",
+    "payload": {
+      "goal": {
+        "title": "Predict Python closures and default arguments",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "Closure lookup and default argument binding"
+        ],
+        "focusAreas": "Python 3 study facts: A closure reads its free variable when the function is called. A default argument expression is evaluated when the function is defined. In a loop, separate lambda expressions that read the same outer variable see its current value at call time; using a default such as lambda i=i: i binds the current value at definition.",
+        "questionDirective": "Ask two different code-output questions about these rules. Show complete short executable Python 3 snippets, including initialization and print calls. Make the learner combine binding time with a later change or function call; do not quote the study rules in the stem."
+      },
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "final_relative_clauses",
+    "payload": {
+      "goal": {
+        "title": "Interpret restrictive and nonrestrictive relative clauses",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "Relative clauses and intended reference"
+        ],
+        "questionDirective": "Ask two different contextual questions about which sentence expresses the intended meaning. Make it clear whether all members or a subset have a property, and whether information identifies the referent or adds a detail. Include punctuation as part of the choices."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Relative-clause study notes",
+          "text": "For this exercise use standard edited English. A restrictive relative clause identifies or limits which people or things are meant and is not set off by commas. A nonrestrictive relative clause adds supplementary information about an already identified referent and is set off by commas. Both that and which can introduce a restrictive clause about things; do not reject restrictive which merely as a style preference. Nonrestrictive clauses about things use which, not that. Who can refer to people in either kind of clause. Compare: The books that are damaged need repair (the damaged subset); The books, which are damaged, need repair (the identified books are all damaged)."
+        }
+      ],
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "final_private_transit",
+    "payload": {
+      "goal": {
+        "title": "Learn the fictional Selden transit handbook",
+        "currentLevel": "beginner",
+        "contentTopics": [
+          "Transit line connections and operating days"
+        ],
+        "questionDirective": "Give one two-step journey question and one operating-day comparison question using the handbook. Include the passenger’s starting point or requested day as needed, but do not repeat the tested handbook facts in the stem."
+      },
+      "skillMap": {
+        "version": 1,
+        "skills": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Selden routes",
+            "detail": "The fictional Selden system has exactly three bidirectional lines and four stations. Copper joins Harbor and Market. Silver joins Market and Ridge. Gold joins Ridge and Park. These are the only links; changing lines is allowed at shared stations.",
+            "objectives": [
+              {
+                "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+                "name": "Apply route and service facts",
+                "detail": "Copper runs only Monday, Wednesday and Friday. Silver runs only Monday and Friday. Gold runs only Wednesday and Friday. A journey is possible only when every line used runs that day. Every named line runs all day on its operating days."
+              }
+            ]
+          }
+        ]
+      },
+      "targetCount": 2,
+      "minimumDifficulty": 2
+    }
+  }
+]
