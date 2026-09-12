@@ -68,3 +68,18 @@ with explicitly selected settings; it was not a test of the deployed skill-map
 configuration. API/worker package hashes and modification timestamps are unchanged.
 The [new configuration record](evidence/correctness-continuation-20260912/deployment-recheck.json)
 includes the previously omitted field. Do not silently relabel the old trace.
+
+## Goal-reference completion audit addendum
+
+The 45-call milestone leaves an unverified loss in the proposed source-only
+boundary: the request contract preserves literal subject material in goal and
+skill descriptions, yet that material is discarded before solving. This repeats
+the source-removal mistake for another supported input field. Use at most the
+**three remaining calls**, keeping the existing total ceiling of 48, to compare
+the same eight fixed questions under source-only and complete subject-reference
+solving. Move the four existing reference texts verbatim into `goal.focusAreas`:
+four valid learned-fact recalls and four missing-case questions. Two native solver
+calls are matched; one candidate final-review call may follow. No new author
+inference, retries, deployment or inventory writes. Preserve author blindness and
+per-item case requirements. This is an evidence-driven boundary correction, not
+an attempt to spend the unused budget or establish population error rates.
