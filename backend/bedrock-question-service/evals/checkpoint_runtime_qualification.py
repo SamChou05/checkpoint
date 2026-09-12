@@ -34,7 +34,7 @@ import question_generation as generation  # noqa: E402
 from question_verification import (  # noqa: E402
     COMPLETE_REVIEW_SYSTEM_PROMPT, verify_questions,
 )
-from complete_question_solution import COMPLETE_SOLUTION_SYSTEM_PROMPT  # noqa: E402
+from complete_question_solution import COMPLETE_SOLUTION_SYSTEM_PROMPT, DISPLAYED_SOLUTION_SYSTEM_PROMPT  # noqa: E402
 from request_contract import _normalize_request  # noqa: E402
 from question_quality import _extract_json_object, _sanitize_questions  # noqa: E402
 from question_teaching import AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT  # noqa: E402
@@ -112,7 +112,7 @@ def _role(request):
     if system == [{"text": generation._system_prompt()}]:
         user = request["messages"][0]["content"][0]["text"]
         return "author_json_repair" if user.startswith("Your previous response could not be parsed") else "author"
-    if system == [{"text": COMPLETE_SOLUTION_SYSTEM_PROMPT}]:
+    if system in ([{"text": COMPLETE_SOLUTION_SYSTEM_PROMPT}], [{"text": DISPLAYED_SOLUTION_SYSTEM_PROMPT}]):
         return "solver"
     if system == [{"text": COMPLETE_REVIEW_SYSTEM_PROMPT}]:
         return "reviewer"

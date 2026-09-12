@@ -54,6 +54,21 @@ class CorrectnessTraceTests(unittest.TestCase):
         self.assertNotIn("private SDK detail", json.dumps(trace))
         self.assertEqual(trace["final"], [])
 
+    def test_fixed_author_capture_enforces_two_actual_calls_with_runtime_reservation(self):
+        case = load_cases(["math_arithmetic"])[0]
+        questions = [_raw_question("Which quantity follows from this stated calculation?")]
+        client = FakeBedrockClient.returning_questions(*questions)
+        client.last_questions = questions
+        # Generation may reserve three stages, but the replaced author is local.
+        # Any top-off after the one accepted question remains inside the cap.
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, SETTINGS), patch(
+            "question_generation._generate_provider_payload", return_value={"questions": questions},
+        ):
+            trace = run_case(case, Path(temp), client, maximum_calls=2)
+        self.assertLessEqual(len(client.solution_calls) + len(client.review_calls) + len(client.calls), 2)
+        self.assertEqual(len(trace["calls"]), 2)
+        self.assertEqual(len(trace["final"]), 1)
+
     def test_capture_excludes_reasoning_and_enforces_cap(self):
         response = {"output": {"message": {"content": [
             {"text": "{}"}, {"reasoningContent": {"reasoningText": {"text": "private reasoning"}}}

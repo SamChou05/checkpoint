@@ -84,14 +84,19 @@ class TraceClient:
             self.save()
 
 
-def run_case(case, directory, client):
+def run_case(case, directory, client, *, maximum_calls=6):
+    if type(maximum_calls) is not int or not 1 <= maximum_calls <= 6:
+        raise ValueError("Audit case limit must be between one and six calls.")
     trace = {"case_id": case["id"], "original_request": copy.deepcopy(case["payload"]),
              "calls": [], "stages": [], "final": [], "metrics": {
                  "ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}}
     def save():
         write(directory / (case["id"] + ".json"), trace)
-    capture = TraceClient(client, trace, save)
-    budget = generation.ProviderCallBudget(6)
+    capture = TraceClient(client, trace, save, cap=maximum_calls)
+    # The orchestration reserves a complete three-stage pass even when the
+    # author is replaced by a fixed offline payload. TraceClient remains the
+    # hard limit on actual SDK invocations for these two-call matched runs.
+    budget = generation.ProviderCallBudget(max(3, maximum_calls))
 
     def observe(module, name, stage, project):
         original = getattr(module, name)

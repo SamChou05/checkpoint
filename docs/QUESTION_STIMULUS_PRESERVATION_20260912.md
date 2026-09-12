@@ -40,3 +40,10 @@ admission, persistence and exact-answer grading. The complete stem must fit the
 existing 360-character limit: a longer echoed stem is now rejected intact,
 rather than shortened on the assumption that its final lines are disposable.
 No existing learner content is rewritten. This change is not deployed.
+
+Final audit verification expanded beyond the initial 53 selected tests to the
+full client suite. It exposed an older expectation that matching labeled option
+lines would be rejected; the test now asserts intact preservation and continued
+rejection of an unmatched extra option. The final run includes the shared
+four-rotation admission/persistence/grading checks and passes (1,034 tests, one
+existing skip; two unrelated app-group tests excluded after reproduction on main).

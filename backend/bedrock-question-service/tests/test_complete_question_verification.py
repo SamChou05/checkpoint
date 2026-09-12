@@ -6,7 +6,7 @@ import json
 import unittest
 from unittest.mock import Mock
 
-from complete_question_solution import COMPLETE_SOLUTION_SYSTEM_PROMPT
+from complete_question_solution import COMPLETE_SOLUTION_SYSTEM_PROMPT, DISPLAYED_SOLUTION_SYSTEM_PROMPT
 from lambda_test_support import (
     FakeBedrockClient,
     _complete_solution,
@@ -80,10 +80,10 @@ class CompleteQuestionVerificationTests(unittest.TestCase):
         accepted = _generate_sanitized_questions(self.request, client, budget)
         self.assertEqual(len(accepted), 1)
         self.assertEqual(budget.calls, 3)
-        self.assertEqual(VERIFICATION_POLICY_REVISION, 2)
+        self.assertEqual(VERIFICATION_POLICY_REVISION, 4)
         self.assertEqual(accepted[0]["verificationVersion"], 1)
-        self.assertEqual(accepted[0]["verificationPolicyRevision"], 2)
-        self.assertEqual(client.solution_calls[0]["system"][0]["text"], COMPLETE_SOLUTION_SYSTEM_PROMPT)
+        self.assertEqual(accepted[0]["verificationPolicyRevision"], 4)
+        self.assertEqual(client.solution_calls[0]["system"][0]["text"], DISPLAYED_SOLUTION_SYSTEM_PROMPT)
         self.assertEqual(client.review_calls[0]["system"][0]["text"], COMPLETE_REVIEW_SYSTEM_PROMPT)
         solver_data = payload(client.solution_calls[0]["messages"][0]["content"][0]["text"])
         self.assertCountEqual(solver_data["items"][0]["choices"], self.question["choices"])

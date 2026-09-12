@@ -94,13 +94,18 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
             self.assertNotIn("outputConfig", request)
         text = request["messages"][0]["content"][0]["text"]
         data = json.loads(text.split(f"<{tag}>\n", 1)[1].split(f"\n</{tag}>", 1)[0])
-        for field, expected in EXPECTED_GOAL_TEXT.items():
-            self.assertEqual(data["goal"][field], expected, (tag, self.mode, field))
+        if tag == "question_solution_json":
+            self.assertEqual(set(data), {"items"})
+            for item in data["items"]:
+                self.assertEqual(set(item), {"index", "prompt", "choices", "topic"})
+        else:
+            for field, expected in EXPECTED_GOAL_TEXT.items():
+                self.assertEqual(data["goal"][field], expected, (tag, self.mode, field))
         if tag == "generation_request_json" and "<malformed_response_excerpt>" not in text:
             self.assertIn("Current learner level: " + EXPECTED_GOAL_TEXT["currentLevel"], text)
         return data
 
-    def test_generation_preserves_goal_through_author_repair_solver_and_review(self):
+    def test_generation_preserves_goal_for_author_repair_and_review_but_not_display_solver(self):
         for mode in ("legacy", "native"):
             with self.subTest(mode=mode), patch.dict(
                 os.environ, {"BEDROCK_STRUCTURED_OUTPUT_MODE": mode},

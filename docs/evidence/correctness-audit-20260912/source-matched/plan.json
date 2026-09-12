@@ -1,0 +1,305 @@
+{
+  "group": "source",
+  "jobs": [
+    [
+      "full",
+      {
+        "goal": {
+          "title": "Interpret synthetic rules and passages",
+          "contentTopics": [
+            "Rules and passages"
+          ]
+        },
+        "minimumDifficulty": 1,
+        "targetCount": 8,
+        "sourceDocuments": [
+          {
+            "name": "math rules",
+            "text": "In the fictional Luma game, a blue token scores 3 points.",
+            "truncated": false
+          },
+          {
+            "name": "programming rules",
+            "text": "The fictional Rho language defines x @ y as 2*x + y.",
+            "truncated": false
+          },
+          {
+            "name": "language rules",
+            "text": "The fictional Zali word 'naro' means 'river'.",
+            "truncated": false
+          },
+          {
+            "name": "factual rules",
+            "text": "The fictional Vale museum opens only on Tuesday.",
+            "truncated": false
+          }
+        ]
+      },
+      [
+        {
+          "prompt": "A Luma player earns 4 blue tokens. How many points does the player earn?",
+          "choices": [
+            "12",
+            "4",
+            "7",
+            "0"
+          ],
+          "expectedAnswer": "12",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "In a game each blue token scores 3 points. A player earns 5 blue tokens. How many points are earned?",
+          "choices": [
+            "15",
+            "5",
+            "8",
+            "0"
+          ],
+          "expectedAnswer": "15",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "What does the expression 4 @ 3 evaluate to in Rho?",
+          "choices": [
+            "11",
+            "7",
+            "12",
+            "1"
+          ],
+          "expectedAnswer": "11",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A language defines x @ y as 2*x + y. What does 5 @ 3 evaluate to?",
+          "choices": [
+            "13",
+            "8",
+            "15",
+            "2"
+          ],
+          "expectedAnswer": "13",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Which English word translates the Zali word 'naro'?",
+          "choices": [
+            "river",
+            "hill",
+            "forest",
+            "cloud"
+          ],
+          "expectedAnswer": "river",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "In Zali, 'pali' means 'forest'. Which English word translates 'pali'?",
+          "choices": [
+            "river",
+            "hill",
+            "forest",
+            "cloud"
+          ],
+          "expectedAnswer": "forest",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "On which day of the week does the Vale museum open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Friday",
+            "Sunday"
+          ],
+          "expectedAnswer": "Tuesday",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "The fictional Fern museum opens only on Friday. On which day does it open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Friday",
+            "Sunday"
+          ],
+          "expectedAnswer": "Friday",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "visible_only",
+      {
+        "goal": {
+          "title": "Interpret synthetic rules and passages",
+          "contentTopics": [
+            "Rules and passages"
+          ]
+        },
+        "minimumDifficulty": 1,
+        "targetCount": 8,
+        "sourceDocuments": []
+      },
+      [
+        {
+          "prompt": "A Luma player earns 4 blue tokens. How many points does the player earn?",
+          "choices": [
+            "12",
+            "4",
+            "7",
+            "0"
+          ],
+          "expectedAnswer": "12",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "In a game each blue token scores 3 points. A player earns 5 blue tokens. How many points are earned?",
+          "choices": [
+            "15",
+            "5",
+            "8",
+            "0"
+          ],
+          "expectedAnswer": "15",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "What does the expression 4 @ 3 evaluate to in Rho?",
+          "choices": [
+            "11",
+            "7",
+            "12",
+            "1"
+          ],
+          "expectedAnswer": "11",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A language defines x @ y as 2*x + y. What does 5 @ 3 evaluate to?",
+          "choices": [
+            "13",
+            "8",
+            "15",
+            "2"
+          ],
+          "expectedAnswer": "13",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Which English word translates the Zali word 'naro'?",
+          "choices": [
+            "river",
+            "hill",
+            "forest",
+            "cloud"
+          ],
+          "expectedAnswer": "river",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "In Zali, 'pali' means 'forest'. Which English word translates 'pali'?",
+          "choices": [
+            "river",
+            "hill",
+            "forest",
+            "cloud"
+          ],
+          "expectedAnswer": "forest",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "On which day of the week does the Vale museum open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Friday",
+            "Sunday"
+          ],
+          "expectedAnswer": "Tuesday",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "The fictional Fern museum opens only on Friday. On which day does it open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Friday",
+            "Sunday"
+          ],
+          "expectedAnswer": "Friday",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        }
+      ]
+    ]
+  ],
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "GENERATION_ATTEMPTS": "3",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": ""
+  },
+  "max_provider_calls": 4
+}

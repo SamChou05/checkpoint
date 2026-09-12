@@ -82,7 +82,7 @@ class ExplanationPrefilterTests(unittest.TestCase):
         for authored in (False, True):
             result, client, _ = self.run_pipeline(QUESTIONS[0], supported_answer="positive", authored=authored)
             self.assertEqual(result[0]["expectedAnswer"], "positive")
-            self.assertEqual(result[0]["verificationPolicyRevision"], 3 if authored else 2)
+            self.assertEqual(result[0]["verificationPolicyRevision"], 5 if authored else 4)
             self.assertEqual(len(client.calls), 3)
             if authored:
                 self.assertEqual(result[0]["explanation"], QUESTIONS[0]["explanation"])

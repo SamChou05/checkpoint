@@ -236,6 +236,8 @@ The service drops duplicate/reported prompts, repeated answer sets, generic fill
 
 ## Adaptive learning validation
 
+Current generation uses [displayed-item verification policy 4](../../docs/QUESTION_DISPLAYED_CONTEXT_POLICY_20260912.md): the independent solver sees only each question's displayed topic, stem and choices. Authoring and final review retain goal/source context. Wire version 1 and historical grading are unchanged. Deploy API support and all workers before releasing an app that requires the new policy; old inventory is never relabeled.
+
 See [the adaptive learning contract](../../docs/ADAPTIVE_LEARNING.md). Pro sends recent distinct-question evidence and a difficulty target for each skill. New questions carry verified answer-specific feedback. Claims with `minimumVerificationVersion: 1` replace old unverified inventory instead of returning it. Deploy the service before updating iOS.
 
 Use `python evals/checkpoint_learning_eval.py --output /tmp/learning-review.json --generation` with synthetic goals and the intended model environment to exercise the actual verification pipeline. It includes known bad questions, valid controls, and bounded local bank top-offs across every generation fixture. Use `--case-id` to select cases or `--generation-fixtures` to supply arbitrary goals. Add `--infer-skills` to build each goal’s map with AI and exercise different per-skill difficulty targets; those targets are synthetic, not a test of device-side progression. This does not deploy or exercise AWS queue delivery. The older `checkpoint_question_eval.py capture-bedrock` tool evaluates raw generation and sanitization; it does not establish post-review quality.

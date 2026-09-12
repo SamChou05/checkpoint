@@ -26,6 +26,8 @@ from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
 from verification_policy import (
     AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION,
     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION,
+    DISPLAYED_AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION,
+    DISPLAYED_QUESTION_VERIFICATION_POLICY_REVISION,
     LEGACY_VERIFICATION_POLICY_REVISION,
     VERIFICATION_VERSION,
 )
@@ -201,6 +203,7 @@ def verify_questions(
     *,
     solve: Callable[[str, str], str] | None = None,
     solver_contract: Literal["stem_only", "complete_choices"] = "stem_only",
+    solver_context: Literal["reference", "displayed"] = "reference",
     feedback_contract: Literal["reviewer_written", "authored_solution"] = "reviewer_written",
     preserve_reviewed_text: bool = False,
 ) -> list[dict[str, Any]]:
@@ -215,6 +218,11 @@ def verify_questions(
     if feedback_contract not in ("reviewer_written", "authored_solution"):
         raise ValueError("Unknown teaching-feedback contract.")
     complete_choices = solver_contract == "complete_choices"
+    if solver_context not in ("reference", "displayed"):
+        raise ValueError("Unknown independent-solver context contract.")
+    displayed_only = solver_context == "displayed"
+    if displayed_only and not complete_choices:
+        raise ValueError("Displayed-only solving requires complete choices.")
     authored_solution = feedback_contract == "authored_solution"
     if authored_solution and not complete_choices:
         raise ValueError("Authored teaching requires the complete-choice solver contract.")
@@ -268,7 +276,9 @@ def verify_questions(
     if solve is not None:
         if complete_choices:
             try:
-                solution_system, solution_prompt = build_solver_prompt(items, request)
+                solution_system, solution_prompt = build_solver_prompt(
+                    items, request, displayed_only=displayed_only,
+                )
             except CompleteSolutionFormatError:
                 record_quality(request_metrics, "review", "invalid_solution", len(items))
                 return []
@@ -464,12 +474,18 @@ def verify_questions(
         if solve is not None:
             # Each path owns its revision. A legacy solver must never acquire
             # the current complete-choice policy by a constant/version bump.
-            verified_question["verificationPolicyRevision"] = (
-                AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION if authored_solution else (
-                    COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION if complete_choices
-                    else LEGACY_VERIFICATION_POLICY_REVISION
+            if displayed_only:
+                verified_question["verificationPolicyRevision"] = (
+                    DISPLAYED_AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION
+                    if authored_solution else DISPLAYED_QUESTION_VERIFICATION_POLICY_REVISION
                 )
-            )
+            else:
+                verified_question["verificationPolicyRevision"] = (
+                    AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION if authored_solution else (
+                        COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION if complete_choices
+                        else LEGACY_VERIFICATION_POLICY_REVISION
+                    )
+                )
         accepted.append(verified_question)
         record_quality(request_metrics, "review", "accepted")
     return accepted

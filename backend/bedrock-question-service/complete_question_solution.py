@@ -1,4 +1,4 @@
-"""Pure complete-MCQ solver boundary used by generation's policy-2 path.
+"""Pure complete-MCQ solver boundaries for reference and displayed contexts.
 
 Exact choice coverage and declared key agreement are enforceable. The reasons
 and judgments remain fallible model statements, not factual certificates or
@@ -60,6 +60,17 @@ each offered choice, and no other fields. Preserve each supplied index and exact
 choice text. Each reason must be nonempty and at most 600 characters. The
 application counts supported choices itself; do not force a preferred answer.
 """.strip()
+
+# The production solver is an answerability check of one displayed task at a
+# time. Reference-context prompts remain available for historical experiments.
+DISPLAYED_SOLUTION_SYSTEM_PROMPT = COMPLETE_SOLUTION_SYSTEM_PROMPT.replace(
+    "Use the goal to establish scope,\nthe supplied sources or fictional rules when relevant, and established subject\nknowledge.",
+    "Assess each item as a separate question using only that item's topic, stem, "
+    "choices and established subject knowledge. Do not borrow premises from "
+    "another item in the batch or infer an omitted rule from an intended lesson. "
+    "Any task-specific source or fictional rule needed to answer must appear "
+    "within that item's displayed content.",
+)
 
 RejectionReason = Literal[
     "solver_zero_supported",
@@ -176,7 +187,7 @@ def _items_by_index(items: Any) -> dict[int, dict[str, Any]]:
 
 
 def build_solver_prompt(
-    items: list[dict[str, Any]], request: dict[str, Any]
+    items: list[dict[str, Any]], request: dict[str, Any], *, displayed_only: bool = False
 ) -> tuple[str, str]:
     """Build answer-blind input from indexed items; never normalize subject text.
 
@@ -185,7 +196,11 @@ def build_solver_prompt(
     itself contain answers; it remains untrusted subject content, not scrubbed.
     """
     by_index = _items_by_index(items)
-    payload = _subject_context(request)
+    # Source notes, goal directives and objective descriptions are not shown
+    # on the attempt screen. They may establish facts for authoring/review,
+    # but cannot supply a missing premise to the learner's answerability check.
+    # Retain reference-context mode for explicitly historical experiments.
+    payload = {} if displayed_only else _subject_context(request)
     payload["items"] = []
     for index in range(len(items)):
         original = by_index[index]
@@ -193,19 +208,19 @@ def build_solver_prompt(
         if not isinstance(prompt, str) or not prompt.strip():
             raise CompleteSolutionFormatError("Missing question prompt.")
         item = {"index": index, "prompt": prompt, "choices": list(original["choices"])}
-        for field in ("skillID", "objectiveID", "topic"):
+        for field in (("topic",) if displayed_only else ("skillID", "objectiveID", "topic")):
             if field in original:
                 value = original[field]
                 if value is not None and type(value) is not str:
                     raise CompleteSolutionFormatError(f"Invalid item field: {field}.")
                 item[field] = value
-        if "objective" in original:
+        if not displayed_only and "objective" in original:
             if type(original["objective"]) is not str:
                 raise CompleteSolutionFormatError("Invalid item field: objective.")
             item["objective"] = original["objective"]
         payload["items"].append(item)
     return (
-        COMPLETE_SOLUTION_SYSTEM_PROMPT,
+        DISPLAYED_SOLUTION_SYSTEM_PROMPT if displayed_only else COMPLETE_SOLUTION_SYSTEM_PROMPT,
         "<question_solution_json>\n"
         + json.dumps(payload, ensure_ascii=False, allow_nan=False)
         + "\n</question_solution_json>",
