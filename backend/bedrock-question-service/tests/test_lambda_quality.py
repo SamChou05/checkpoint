@@ -925,7 +925,7 @@ class LambdaQualityTests(BackendTestCase):
         self.assertEqual(len(questions), 1)
         self.assertIn("subjunctive", questions[0]["prompt"])
 
-    def test_strips_redundant_line_delimited_choice_echo_from_prompt(self):
+    def test_keeps_matching_line_delimited_choices_in_the_prompt(self):
         question = _raw_question(
             "During an inspection, many bees have deformed wings. What is the most likely cause?"
         )
@@ -958,7 +958,7 @@ D. Insufficient queen activity
         self.assertEqual(len(sanitized), 1)
         self.assertEqual(
             sanitized[0]["prompt"],
-            "During an inspection, many bees have deformed wings. What is the most likely cause?",
+            question["prompt"].strip(),
         )
 
     def test_accepts_valid_language_question_without_language_specific_shape_filter(

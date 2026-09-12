@@ -140,12 +140,35 @@ enum QuestionBatchSanitizer {
             && !question.topic.isEmpty
             && !isGenericAssessmentMetaQuestion(question)
             && !isStudyStrategyPrompt(question.prompt, context: request.questionContext)
-            && !containsEmbeddedAnswerOptions(question.prompt)
+            && !(question.verificationVersion == 1
+                 ? containsUnmatchedEmbeddedAnswerOptions(question.prompt, choices: question.choices)
+                 : containsEmbeddedAnswerOptions(question.prompt))
             && (question.verificationVersion == 1 || !explanationSupportsDifferentChoice(
                 expectedAnswer: question.expectedAnswer,
                 choices: question.choices,
                 explanation: question.explanation
             ))
+    }
+
+    private static func containsUnmatchedEmbeddedAnswerOptions(_ prompt: String, choices: [String]) -> Bool {
+        guard containsEmbeddedAnswerOptions(prompt) else { return false }
+        let lines = prompt.components(separatedBy: .newlines)
+            .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        guard choices.count == 4, lines.count > 4 else { return true }
+        let choiceKeys = Set(choices.map(answerKey))
+        let trailingKeys = lines.suffix(4).map { line in
+            let literal = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if choiceKeys.contains(answerKey(literal)) { return answerKey(literal) }
+            let withoutLabel = literal.replacingOccurrences(
+                of: #"^(?:[A-D1-4][).:]|\([A-D1-4]\)|\[[A-D1-4]\])\s+"#,
+                with: "", options: .regularExpression
+            )
+            return answerKey(withoutLabel)
+        }
+        guard Set(trailingKeys) == choiceKeys else { return true }
+        // Inspect a copy only. Matching lines may be indispensable stimulus;
+        // preserve them in the displayed prompt regardless of shuffled order.
+        return containsEmbeddedAnswerOptions(lines.dropLast(4).joined(separator: "\n"))
     }
 
     private static func isGenericAssessmentMetaQuestion(_ question: CheckpointQuestion) -> Bool {

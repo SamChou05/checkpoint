@@ -4,6 +4,33 @@ import XCTest
 // MARK: - Question validation
 
 final class QuestionValidationTests: XCTestCase {
+    func testReviewedMatchingChoicesPreserveCompleteStimulusThroughDisplayAndGrading() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        let path = root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/stimulus_preservation_contract.json")
+        let originals = try QuestionContentJSONDecoder.decode([GeneratedQuestionPayload].self, from: Data(contentsOf: path))
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal, targetCount: 1, minimumDifficulty: 1)
+        for original in originals {
+            var question = original.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed synthetic fixture")
+            question.verificationVersion = 1
+            question.verificationPolicyRevision = QuestionVerificationPolicy.currentRevision
+            // Every rotation must preserve the ordered stimulus independently
+            // of answer-button order, including literal A/B/C/D stimulus labels.
+            for offset in 0..<4 {
+                question.choices = Array(original.choices.dropFirst(offset) + original.choices.prefix(offset))
+                let admitted = QuestionBatchSanitizer.sanitize([question], for: request)
+                let retained = try XCTUnwrap(admitted.first)
+                let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: JSONEncoder().encode(retained))
+                XCTAssertEqual(restored.prompt, original.prompt)
+                XCTAssertEqual(restored.expectedAnswer, original.expectedAnswer)
+                for choice in restored.choices {
+                    XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: restored).result,
+                                   choice == original.expectedAnswer ? .correct : .incorrect)
+                }
+            }
+        }
+    }
+
     private struct ReusableAnswerQuestion: Decodable {
         var prompt: String
         var expectedAnswer: String
