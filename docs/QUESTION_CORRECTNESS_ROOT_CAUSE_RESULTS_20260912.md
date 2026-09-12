@@ -1,8 +1,8 @@
 # Question-generation correctness: root causes, fixes and limits
 
-> **Corrected findings:** the four source-dependent controls did not prove false acceptances. The source-supported continuation replaces displayed-only solving and restores valid study-material recall. See the [corrected contract and matched evidence](QUESTION_SOURCE_SUPPORTED_POLICY_20260912.md). Counts below describe the original 102-call investigation, not the continuation.
+> **Corrected findings:** the four source-dependent controls did not prove false acceptances. The source-supported continuation replaces displayed-only solving and restores valid study-material recall. See the [corrected contract and matched evidence](QUESTION_SOURCE_SUPPORTED_POLICY_20260912.md). Counts below describe the original 102-call investigation. The [completed 45-call continuation](QUESTION_CORRECTNESS_CONTINUATION_RESULTS_20260912.md) adds fresh qualification and current limits.
 
-Required stimulus is preserved. Solver context is now being qualified with learned
+Required stimulus is preserved. Solver context was qualified in the continuation with learned
 source facts retained and hidden lesson intent excluded. **The broader pipeline
 is still not reliably correct.** Author errors, unjustified interpretations,
 confidently wrong verifier judgments and false teaching remain. A verification

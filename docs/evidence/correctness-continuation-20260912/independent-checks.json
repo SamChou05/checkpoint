@@ -1,0 +1,108 @@
+{
+  "method": "Deterministic calculations and manually inspected, literal code; no provider calls.",
+  "fraction_controls": {
+    "sugar_for_6": "9/4",
+    "sugar_for_4": "3/2",
+    "second_option_equals_key": true,
+    "car_times": [
+      "3",
+      "12/5"
+    ]
+  },
+  "tank": {
+    "net_rate": "21/40",
+    "first_fill_hours": "12/7",
+    "unbounded_volume_at_two_hours": "23/20",
+    "interpretation": "Already reaches capacity before the drain closes. Zero additional minutes is defensible under ordinary overflow; 23/20 is unbounded volume, not physical tank contents. Overflow/stopping behavior is not stated."
+  },
+  "cyclist": {
+    "outward_time_coefficient": "7/100",
+    "return_time_coefficient": "1/15",
+    "distance_if_equal_routes": "1500/41",
+    "unequal_route_examples": [
+      {
+        "outward_km": "30",
+        "return_km": "87/2"
+      },
+      {
+        "outward_km": "40",
+        "return_km": "33"
+      }
+    ],
+    "interpretation": "1500/41 requires equal route lengths. The stem says same route and different path but does not establish equal distances; with separate distances there are multiple solutions."
+  },
+  "python": [
+    {
+      "code": "a = [1, 2, [3, 4]]\nb = a[:]\na[2][0] = 99\na[0] = 7\nprint(b)",
+      "stdout": "[1, 2, [99, 4]]\n"
+    },
+    {
+      "code": "x = [[0], [0]]\ny = x\nz = x[:]\nx[0][0] = 5\nx.append([0])\nprint(len(y), len(z), y[0][0], z[0][0])",
+      "stdout": "3 2 5 5\n"
+    },
+    {
+      "code": "a = ['original']\nb = a[:]\nb[0] = 'modified'\nprint(repr(b), type(b).__name__)",
+      "stdout": "['modified'] list\n"
+    },
+    {
+      "code": "a = ['original']\nd = a\nd[0] = 'changed'\nprint(repr(d), type(d).__name__)",
+      "stdout": "['changed'] list\n"
+    }
+  ],
+  "teaching_sql": {
+    "actual": {
+      "query": "SELECT * FROM A LEFT JOIN B ON A.id=B.a_id AND B.y>15 WHERE A.x>0",
+      "rows": [
+        [
+          1,
+          5,
+          1,
+          20
+        ],
+        [
+          2,
+          3,
+          null,
+          null
+        ],
+        [
+          3,
+          7,
+          null,
+          null
+        ]
+      ],
+      "count": 3
+    },
+    "remove_y_predicate": {
+      "query": "SELECT * FROM A LEFT JOIN B ON A.id=B.a_id WHERE A.x>0",
+      "rows": [
+        [
+          1,
+          5,
+          1,
+          10
+        ],
+        [
+          1,
+          5,
+          1,
+          20
+        ],
+        [
+          2,
+          3,
+          2,
+          5
+        ],
+        [
+          3,
+          7,
+          null,
+          null
+        ]
+      ],
+      "count": 4
+    }
+  }
+}

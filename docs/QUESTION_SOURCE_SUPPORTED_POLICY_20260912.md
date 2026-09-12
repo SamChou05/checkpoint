@@ -59,13 +59,14 @@ keys, content and stamps without regrading or relabeling them.
 Release API claim support and every generating worker **before** an app requiring
 6; otherwise the client cannot refill from older inventory. This investigation
 has not deployed the branch or changed learner inventory. The separate native
-verification setting remains opt-in until qualification; it allows legacy Nova
+verification setting remains opt-in after bounded qualification; it allows legacy Nova
 authoring and native Sonnet verification in the same request.
 
 All 1,068 backend tests and seven focused iOS policy/history tests pass.
 Offline checks cover exact source and literal preservation, hidden-intent
 exclusion, solver veto propagation, current/historical provenance, authored and
 reviewer-written contracts, both transports, budgets, storage and client history.
-Fresh two-author qualification remains pending at this milestone. Retaining the
-sources fixes the demonstrated false-rejection mechanism; it does not establish
+Fresh qualification returned all four private-handbook recall items across both
+authors. See the [final results](QUESTION_CORRECTNESS_CONTINUATION_RESULTS_20260912.md)
+for broader failures and yield. Retaining the sources fixes the demonstrated false-rejection mechanism; it does not establish
 general semantic correctness or solve false teaching.

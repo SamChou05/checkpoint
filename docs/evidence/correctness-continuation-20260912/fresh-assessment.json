@@ -1,0 +1,328 @@
+{
+  "method": "All 18 authored drafts, including two in malformed initial JSON, all actual solver/reviewer responses, and final teaching were read. Assistant assessment, not blinded expert review. Original requests and stage traces retain exact content.",
+  "items": [
+    {
+      "trace": "fresh/fresh_conditionals_api_nova.json",
+      "author_call": 1,
+      "author_index": 0,
+      "prompt": "Which sentence correctly expresses a counterfactual present state?\n\nA) If I was taller, I would reach the shelf.\nB) If I were taller, I would reach the shelf.\nC) If I had been taller, I would reach the shelf.\nD) If I had taller, I would reach the shelf.",
+      "authored_key": "B",
+      "assessment": "invalid_author_contract",
+      "reason": "Author writes B instead of exact answer choice and embeds A-D choices in stem. Sanitizer rejects invalid choices, so no solving. Within stipulated edited-English exercise the were sentence is intended; the scenario requirement is unmet.",
+      "distractors_and_difficulty": "Source example repeated; was versus were is constrained by this exercise, not a universal grammar claim.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_conditionals_api_nova.json",
+      "author_call": 1,
+      "author_index": 1,
+      "prompt": "Which sentence correctly expresses a counterfactual past event?\n\nA) If I left earlier, I would have caught the train.\nB) If I had left earlier, I would catch the train.\nC) If I left earlier, I would catch the train.\nD) If I had left earlier, I would have caught the train.",
+      "authored_key": "D",
+      "assessment": "invalid_author_contract",
+      "reason": "Author writes D instead of exact choice, so sanitizer rejects before solving. Exact source example reused and no new scenario; would not establish requested level 3.",
+      "distractors_and_difficulty": "Intended past-perfect/would-have contrast is supported by exercise notes; broader mixed-conditional readings require contextual care.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_conditionals_worker_kimi.json",
+      "author_call": 1,
+      "author_index": 0,
+      "prompt": "Maya says: \"If I had studied medicine, I would be a surgeon now.\" She never attended medical school. Which conditional type does her sentence correctly use?",
+      "authored_key": "Mixed conditional: past condition, present result",
+      "assessment": "supported_return_difficulty_uncertain",
+      "reason": "Past perfect had studied with present would be now is a mixed conditional. Key and feedback supported by exercise notes. Returned at reviewer level 3, but classification of a named pattern may be only level 2 under the rubric; do not count seven returns as seven securely meeting requested difficulty.",
+      "distractors_and_difficulty": "Parallel named conditional types, one supported. Extra fact about medical school is not needed to identify the grammatical pattern.",
+      "returned": true
+    },
+    {
+      "trace": "fresh/fresh_conditionals_worker_kimi.json",
+      "author_call": 1,
+      "author_index": 1,
+      "prompt": "Leo sees his friend shivering in a thin jacket. He thinks: \"If he wore a coat, he wouldn't be cold.\" The friend is cold right now. Which conditional structure matches Leo's thought?",
+      "authored_key": "If + simple past, would + base verb",
+      "assessment": "correct_below_requested_difficulty",
+      "reason": "Wore and would not be match simple-past/would structure for the stated present counterfactual. Key and teaching supported; reviewer gives level 2 and filter rejects below 3.",
+      "distractors_and_difficulty": "Distinct structures; principally recognition rather than a scenario-dependent application.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_fraction_rates_api_nova.json",
+      "author_call": 1,
+      "author_index": 0,
+      "prompt": "A recipe for a cake requires 3/4 cup of sugar for every 2 cups of flour. If you have 6 cups of flour, how much sugar is needed? If you only have 4 cups of flour, how much sugar is needed for that amount? Express your answers as exact fractions.",
+      "authored_key": "9/4 cups for 6 cups of flour, 3/2 cups for 4 cups of flour",
+      "assessment": "multiple_correct",
+      "reason": "Author offers 3/2 and 6/4 as distinct answers although equal. Solver correctly supports both and blocks the item. Numeric teaching is sound; requested interacting level-4 work is also absent.",
+      "distractors_and_difficulty": "Distinctness fails; other alternatives vary only the second numeric answer.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_fraction_rates_api_nova.json",
+      "author_call": 1,
+      "author_index": 1,
+      "prompt": "A car travels at a constant speed of 60 miles per hour. How long will it take to travel 180 miles? If the car's speed increases to 75 miles per hour, how long will it take to travel the same distance? Express your answers in hours.",
+      "authored_key": "3 hours for 60 mph, 2.4 hours for 75 mph",
+      "assessment": "correct_below_requested_difficulty",
+      "reason": "180/60=3 and 180/75=12/5. Unique key, supported reviewer teaching, direct rule use at level 2; rejected below requested level 4.",
+      "distractors_and_difficulty": "Distinct numeric values but no interacting constraints.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_fraction_rates_worker_kimi.json",
+      "author_call": 1,
+      "author_index": 0,
+      "prompt": "A tank has two inlet pipes. Pipe A fills 3/8 of the tank per hour. Pipe B fills 2/5 of the tank per hour. A drain empties 1/4 of the tank per hour. Starting with 1/10 of the tank full, all three operate together for 2 hours, then the drain is closed. How many more minutes until the tank is exactly full?",
+      "authored_key": "0 minutes",
+      "assessment": "interpretation_uncertain",
+      "reason": "Net 21/40 tank/hour reaches capacity at 12/7 h before closing at 2 h. Zero additional minutes is defensible for overflow. Author contains drafting and calls unbounded 23/20 volume tank contents. Solver labels zero refuted although its reason concludes supported; its 744-character reason rejects the entire batch before semantic admission.",
+      "distractors_and_difficulty": "Alternatives 12/24/36 minutes are distinct but arbitrary.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_fraction_rates_worker_kimi.json",
+      "author_call": 1,
+      "author_index": 1,
+      "prompt": "A cyclist rides uphill at 12 km/h and downhill at 20 km/h. The route from A to B is 3/5 uphill and 2/5 downhill by distance. Returning from B to A, the same route is 1/2 uphill and 1/2 downhill by distance due to a different path. The total round trip takes 5 hours exactly. What is the one-way distance from A to B?",
+      "authored_key": "1500/41 km",
+      "assessment": "ambiguous_case",
+      "reason": "Stem calls the return both same route and a different path, without establishing equal distances. Author and solver both substitute outward D for return distance. Equal lengths give 1500/41; distinct lengths admit multiple pairs. No return because the other solver reason violates length, not because this assumption was detected.",
+      "distractors_and_difficulty": "Parallel numerical alternatives; no explicit equal-length premise establishes the key.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_private_archive_api_nova.json",
+      "author_call": 1,
+      "author_index": 0,
+      "prompt": "Which room in the Bracken archive holds photographs?",
+      "authored_key": "Elm",
+      "assessment": "supported_return",
+      "reason": "Source explicitly assigns photographs to Elm. Unstated learned fact correctly reaches solver and reviewer; key/feedback supported. No answer repeated in stem.",
+      "distractors_and_difficulty": "Other source-defined room names are plausible distractors; level 1 appropriate.",
+      "returned": true
+    },
+    {
+      "trace": "fresh/fresh_private_archive_api_nova.json",
+      "author_call": 1,
+      "author_index": 1,
+      "prompt": "Who is responsible for managing the maps in the Bracken archive?",
+      "authored_key": "Ada",
+      "assessment": "supported_return",
+      "reason": "Source assigns maps to Ada. Solver and reviewer use that reference; final content is supported.",
+      "distractors_and_difficulty": "Other source-defined staff names are plausible; level 1 appropriate.",
+      "returned": true
+    },
+    {
+      "trace": "fresh/fresh_private_archive_worker_kimi.json",
+      "author_call": 1,
+      "author_index": 0,
+      "prompt": "Which room in the Bracken archive contains the map collection?",
+      "authored_key": "Cedar room",
+      "assessment": "supported_return",
+      "reason": "Source assigns maps to Cedar. Learned source fact retained without printing the answer in the stem. Key and all feedback supported within the fictional archive.",
+      "distractors_and_difficulty": "Parallel room names defined by handbook; level 1 appropriate.",
+      "returned": true
+    },
+    {
+      "trace": "fresh/fresh_private_archive_worker_kimi.json",
+      "author_call": 1,
+      "author_index": 1,
+      "prompt": "Who is responsible for managing the photograph collection?",
+      "authored_key": "Cleo",
+      "assessment": "supported_return",
+      "reason": "Source assigns photographs to Cleo. Topic/request establish handbook context; key and feedback supported.",
+      "distractors_and_difficulty": "Parallel staff names; level 1 appropriate. Real staff wording is interpreted within the explicitly fictional exercise.",
+      "returned": true
+    },
+    {
+      "trace": "fresh/fresh_python_aliasing_api_nova.json",
+      "author_call": 2,
+      "author_index": 0,
+      "prompt": "Given the following code, what will be the value of list b after executing the line b[0] = 'modified'?\n\n```python\na = ['original']\nb = a[:]\nb[0] = 'modified'```",
+      "authored_key": "'modified'",
+      "assessment": "wrong_value_type",
+      "reason": "After JSON repair, asks for list b but keys string modified, while actual b is a one-element list. Solver silently treats the string as that list and refutes None of the above. No final review: author repair plus author/solver exhaust three-call cap.",
+      "distractors_and_difficulty": "Contains a none-of-above option prohibited by author instructions; string/list mismatch, not normalization.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_python_aliasing_api_nova.json",
+      "author_call": 2,
+      "author_index": 1,
+      "prompt": "Given the following code, what will be the value of list d after executing the line d[0] = 'changed'?\n\n```python\na = ['original']\nd = a\nd[0] = 'changed'```",
+      "authored_key": "'changed'",
+      "assessment": "wrong_value_type",
+      "reason": "Repair replaces original c question with alias d. Asks for list d but keys string changed; actual d is a list. Solver again conflates types; budget stops review, not a semantic rejection.",
+      "distractors_and_difficulty": "Same shape/type defect and none-of-above instruction violation.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_python_aliasing_worker_kimi.json",
+      "author_call": 1,
+      "author_index": 0,
+      "prompt": "What does the following Python 3 code print?\n\na = [1, 2, [3, 4]]\nb = a[:]\na[2][0] = 99\na[0] = 7\nprint(b)",
+      "authored_key": "[1, 2, [99, 4]]",
+      "assessment": "supported_return",
+      "reason": "Executed literal code prints [1, 2, [99, 4]]. Author, solver, final key and teaching match shallow-copy versus nested mutation. Exact multiline stem and feedback survive bank preparation and transport.",
+      "distractors_and_difficulty": "Plausible alias/deep-copy confusions; level 3 supported.",
+      "returned": true
+    },
+    {
+      "trace": "fresh/fresh_python_aliasing_worker_kimi.json",
+      "author_call": 1,
+      "author_index": 1,
+      "prompt": "What does the following Python 3 code print?\n\nx = [[0], [0]]\ny = x\nz = x[:]\nx[0][0] = 5\nx.append([0])\nprint(len(y), len(z), y[0][0], z[0][0])",
+      "authored_key": "3 2 5 5",
+      "assessment": "supported_return",
+      "reason": "Executed code prints 3 2 5 5. Solver gives a false intermediate reason that 2 3 5 0 has correct values (5,5), but final reviewer corrects this and returns supported main/choice teaching.",
+      "distractors_and_difficulty": "Parallel output tuples test aliasing, append, and shared inner state; meets at least requested level 3.",
+      "returned": true
+    },
+    {
+      "trace": "fresh/fresh_python_aliasing_api_nova.json",
+      "author_call": 1,
+      "author_index": 0,
+      "assessment": "invalid_json_and_wrong_value_type",
+      "reason": "Manually read initial malformed envelope. List b is keyed as a string, a defect repeated after repair. Initial JSON is invalid due to a single-quoted token in the other question. None-of-above and code fences also violate author instructions.",
+      "returned": false
+    },
+    {
+      "trace": "fresh/fresh_python_aliasing_api_nova.json",
+      "author_call": 1,
+      "author_index": 1,
+      "assessment": "correct_key_invalid_contract",
+      "reason": "c=a[:1] gives ['original'], as keyed. Choices contain duplicate [] and a single-quoted [] token, making the envelope invalid JSON. The repair replaces this item entirely with the alias-d item. No judgment on this draft reached the solver.",
+      "returned": false
+    }
+  ],
+  "jobs": [
+    {
+      "trace": "fresh/fresh_conditionals_api_nova.json",
+      "calls": 1,
+      "seconds": 2.698,
+      "returned": 0,
+      "quality": {
+        "sanitize": {
+          "invalid_choices": 2
+        }
+      },
+      "error_type": null
+    },
+    {
+      "trace": "fresh/fresh_conditionals_worker_kimi.json",
+      "calls": 3,
+      "seconds": 25.079,
+      "returned": 1,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 1,
+          "difficulty_floor": 1
+        }
+      },
+      "error_type": null
+    },
+    {
+      "trace": "fresh/fresh_fraction_rates_api_nova.json",
+      "calls": 3,
+      "seconds": 13.144,
+      "returned": 0,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "solver_multiple_supported": 1,
+          "difficulty_floor": 1
+        }
+      },
+      "error_type": null
+    },
+    {
+      "trace": "fresh/fresh_fraction_rates_worker_kimi.json",
+      "calls": 2,
+      "seconds": 21.107,
+      "returned": 0,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "invalid_solution": 2
+        }
+      },
+      "error_type": null
+    },
+    {
+      "trace": "fresh/fresh_private_archive_api_nova.json",
+      "calls": 3,
+      "seconds": 8.153,
+      "returned": 2,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 2
+        }
+      },
+      "error_type": null
+    },
+    {
+      "trace": "fresh/fresh_private_archive_worker_kimi.json",
+      "calls": 3,
+      "seconds": 9.351,
+      "returned": 2,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 2
+        }
+      },
+      "error_type": null
+    },
+    {
+      "trace": "fresh/fresh_python_aliasing_api_nova.json",
+      "calls": 3,
+      "seconds": 10.275,
+      "returned": 0,
+      "quality": {
+        "provider": {
+          "invalid_json": 1
+        },
+        "sanitize": {
+          "accepted": 2
+        }
+      },
+      "error_type": "ProviderCallBudgetExceededError"
+    },
+    {
+      "trace": "fresh/fresh_python_aliasing_worker_kimi.json",
+      "calls": 3,
+      "seconds": 21.158,
+      "returned": 2,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 2
+        }
+      },
+      "error_type": null
+    }
+  ],
+  "totals": {
+    "requested_slots": 16,
+    "authored_drafts_including_failed_json": 18,
+    "actual_calls": 21,
+    "elapsed_job_seconds_sum": 110.965,
+    "native_verification_json_responses": 12,
+    "returned_supported_keys_and_teaching": 7,
+    "returned_with_uncertain_difficulty": 1,
+    "securely_meeting_requested_difficulty": 6
+  }
+}
