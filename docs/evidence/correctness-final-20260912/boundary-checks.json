@@ -1,0 +1,141 @@
+{
+  "checks": [
+    {
+      "case": "final_mixture_replacement_api_nova",
+      "calls": 3,
+      "native_verification_json": 2,
+      "references_exact": true,
+      "solver_metadata_blind": true,
+      "stimuli_preserved": true,
+      "reviewed_content_preserved": true,
+      "raw_explanation_lengths": [
+        408,
+        332
+      ],
+      "sanitized_explanation_lengths": [
+        408,
+        332
+      ]
+    },
+    {
+      "case": "final_mixture_replacement_worker_kimi",
+      "calls": 3,
+      "native_verification_json": 2,
+      "references_exact": true,
+      "solver_metadata_blind": true,
+      "stimuli_preserved": true,
+      "reviewed_content_preserved": true,
+      "raw_explanation_lengths": [
+        256,
+        1991
+      ],
+      "sanitized_explanation_lengths": [
+        256,
+        420
+      ]
+    },
+    {
+      "case": "final_private_transit_api_nova",
+      "calls": 2,
+      "native_verification_json": 1,
+      "references_exact": true,
+      "solver_metadata_blind": true,
+      "stimuli_preserved": true,
+      "reviewed_content_preserved": true,
+      "raw_explanation_lengths": [
+        192,
+        203
+      ],
+      "sanitized_explanation_lengths": [
+        192,
+        203
+      ]
+    },
+    {
+      "case": "final_private_transit_worker_kimi",
+      "calls": 2,
+      "native_verification_json": 1,
+      "references_exact": true,
+      "solver_metadata_blind": true,
+      "stimuli_preserved": true,
+      "reviewed_content_preserved": true,
+      "raw_explanation_lengths": [
+        311,
+        405
+      ],
+      "sanitized_explanation_lengths": [
+        311,
+        405
+      ]
+    },
+    {
+      "case": "final_python_closures_api_nova",
+      "calls": 3,
+      "native_verification_json": 2,
+      "references_exact": true,
+      "solver_metadata_blind": true,
+      "stimuli_preserved": true,
+      "reviewed_content_preserved": true,
+      "raw_explanation_lengths": [
+        226,
+        252
+      ],
+      "sanitized_explanation_lengths": [
+        226,
+        252
+      ]
+    },
+    {
+      "case": "final_python_closures_worker_kimi",
+      "calls": 3,
+      "native_verification_json": 2,
+      "references_exact": true,
+      "solver_metadata_blind": true,
+      "stimuli_preserved": true,
+      "reviewed_content_preserved": true,
+      "raw_explanation_lengths": [
+        230,
+        197
+      ],
+      "sanitized_explanation_lengths": [
+        230,
+        197
+      ]
+    },
+    {
+      "case": "final_relative_clauses_api_nova",
+      "calls": 3,
+      "native_verification_json": 2,
+      "references_exact": true,
+      "solver_metadata_blind": true,
+      "stimuli_preserved": true,
+      "reviewed_content_preserved": true,
+      "raw_explanation_lengths": [
+        285,
+        296
+      ],
+      "sanitized_explanation_lengths": [
+        285,
+        296
+      ]
+    },
+    {
+      "case": "final_relative_clauses_worker_kimi",
+      "calls": 3,
+      "native_verification_json": 2,
+      "references_exact": true,
+      "solver_metadata_blind": true,
+      "stimuli_preserved": true,
+      "reviewed_content_preserved": true,
+      "raw_explanation_lengths": [
+        162,
+        186
+      ],
+      "sanitized_explanation_lengths": [
+        162,
+        186
+      ]
+    }
+  ],
+  "code_sha256_match": true
+}

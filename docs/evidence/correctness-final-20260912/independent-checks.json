@@ -1,0 +1,178 @@
+{
+  "method": "Exact fractions, literal bounded Python snippets read before execution, and finite enumeration from the synthetic transit handbook. No model judging and no provider calls.",
+  "math": {
+    "nova_saline_exact_percent": "1024/125",
+    "nova_saline_exact_percent_decimal": 8.192,
+    "nova_alcohol_exact_percent": "384/25",
+    "nova_alcohol_exact_percent_decimal": 15.36,
+    "nova_authored_saline_linear_expression_percent": "4",
+    "nova_authored_alcohol_linear_expression_percent": "12",
+    "kimi_mix_final_percent": "55/2",
+    "kimi_v_from_12_percent_condition": "40",
+    "kimi_final_after_50_liter_replacement_percent": "9",
+    "kimi_v_ignoring_12_percent_condition": "88/3",
+    "counterexample_to_replacement_never_restores_original_percent": "30",
+    "counterexample_to_above_20_implies_above_22_5_percent": "45/2"
+  },
+  "python": [
+    {
+      "case": "final_python_closures_worker_kimi",
+      "author_index": 0,
+      "code": "funcs = []\nfor i in range(3):\n    funcs.append(lambda: i)\ni = 10\nfor f in funcs:\n    print(f(), end='')",
+      "actual_stdout": "101010",
+      "expectedAnswer": "101010",
+      "matches": true
+    },
+    {
+      "case": "final_python_closures_worker_kimi",
+      "author_index": 1,
+      "code": "funcs = []\nfor i in range(3):\n    funcs.append(lambda i=i: i)\ni = 10\nfor f in funcs:\n    print(f(), end='')",
+      "actual_stdout": "012",
+      "expectedAnswer": "012",
+      "matches": true
+    },
+    {
+      "case": "final_python_closures_api_nova",
+      "author_index": 0,
+      "code": "def outer():\n    x = 0\n    def inner():\n        print(x)\n    return inner\n\nf = outer()\nx = 1\nf()",
+      "actual_stdout": "0\n",
+      "expectedAnswer": "0",
+      "matches": true
+    },
+    {
+      "case": "final_python_closures_api_nova",
+      "author_index": 1,
+      "code": "def outer():\n    x = 0\n    def inner(i=x):\n        print(i)\n    return inner\n\nx = 1\nf = outer()\nf()",
+      "actual_stdout": "0\n",
+      "expectedAnswer": "0",
+      "matches": true
+    }
+  ],
+  "python_loop_values": {
+    "range_3": [
+      0,
+      1,
+      2
+    ],
+    "later_assignment": 10,
+    "transient_3_claim": false
+  },
+  "transit": {
+    "Monday": {
+      "active_lines": [
+        "Copper",
+        "Silver"
+      ],
+      "destinations": {
+        "Harbor": [
+          "Market",
+          "Ridge"
+        ],
+        "Market": [
+          "Harbor",
+          "Ridge"
+        ],
+        "Ridge": [
+          "Harbor",
+          "Market"
+        ],
+        "Park": []
+      }
+    },
+    "Tuesday": {
+      "active_lines": [],
+      "destinations": {
+        "Harbor": [],
+        "Market": [],
+        "Ridge": [],
+        "Park": []
+      }
+    },
+    "Wednesday": {
+      "active_lines": [
+        "Copper",
+        "Gold"
+      ],
+      "destinations": {
+        "Harbor": [
+          "Market"
+        ],
+        "Market": [
+          "Harbor"
+        ],
+        "Ridge": [
+          "Park"
+        ],
+        "Park": [
+          "Ridge"
+        ]
+      }
+    },
+    "Thursday": {
+      "active_lines": [],
+      "destinations": {
+        "Harbor": [],
+        "Market": [],
+        "Ridge": [],
+        "Park": []
+      }
+    },
+    "Friday": {
+      "active_lines": [
+        "Copper",
+        "Silver",
+        "Gold"
+      ],
+      "destinations": {
+        "Harbor": [
+          "Market",
+          "Park",
+          "Ridge"
+        ],
+        "Market": [
+          "Harbor",
+          "Park",
+          "Ridge"
+        ],
+        "Ridge": [
+          "Harbor",
+          "Market",
+          "Park"
+        ],
+        "Park": [
+          "Harbor",
+          "Market",
+          "Ridge"
+        ]
+      }
+    },
+    "Saturday": {
+      "active_lines": [],
+      "destinations": {
+        "Harbor": [],
+        "Market": [],
+        "Ridge": [],
+        "Park": []
+      }
+    },
+    "Sunday": {
+      "active_lines": [],
+      "destinations": {
+        "Harbor": [],
+        "Market": [],
+        "Ridge": [],
+        "Park": []
+      }
+    }
+  },
+  "references": [
+    {
+      "url": "https://docs.python.org/3/faq/programming.html#why-do-lambdas-defined-in-a-loop-with-different-values-all-return-the-same-result",
+      "claim": "Free variable lookup occurs at call time; defaults bind at definition."
+    },
+    {
+      "url": "https://dictionary.cambridge.org/grammar/british-grammar/relative-clauses-defining-and-non-defining",
+      "claim": "Restrictive which is allowed; commas distinguish supplementary clauses; nonrestrictive that is not standard."
+    }
+  ]
+}

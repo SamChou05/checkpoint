@@ -1,0 +1,158 @@
+{
+  "calls": 22,
+  "cap": 24,
+  "cumulative_actual_calls": 172,
+  "seconds": 138.578,
+  "drafts": 16,
+  "requested_slots": 16,
+  "returned": 5,
+  "supported_final_keys": 5,
+  "supported_key_and_complete_teaching": 3,
+  "native_verification_json": 14,
+  "author_json": 8,
+  "transport_failures": 0,
+  "provider_repairs": 0,
+  "case_metrics": [
+    {
+      "case": "final_mixture_replacement_api_nova",
+      "calls": 3,
+      "seconds": 8.775,
+      "drafts": 2,
+      "requested_slots": 2,
+      "returned": 0,
+      "supported_key_and_complete_teaching": 0,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "solver_multiple_supported": 1,
+          "rejected_by_model": 1
+        }
+      }
+    },
+    {
+      "case": "final_mixture_replacement_worker_kimi",
+      "calls": 3,
+      "seconds": 35.825,
+      "drafts": 2,
+      "requested_slots": 2,
+      "returned": 1,
+      "supported_key_and_complete_teaching": 0,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 1,
+          "rejected_by_model": 1
+        }
+      }
+    },
+    {
+      "case": "final_private_transit_api_nova",
+      "calls": 2,
+      "seconds": 13.561,
+      "drafts": 2,
+      "requested_slots": 2,
+      "returned": 0,
+      "supported_key_and_complete_teaching": 0,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "invalid_solution": 2
+        }
+      }
+    },
+    {
+      "case": "final_private_transit_worker_kimi",
+      "calls": 2,
+      "seconds": 14.388,
+      "drafts": 2,
+      "requested_slots": 2,
+      "returned": 0,
+      "supported_key_and_complete_teaching": 0,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "solver_multiple_supported": 1,
+          "solver_zero_supported": 1
+        }
+      }
+    },
+    {
+      "case": "final_python_closures_api_nova",
+      "calls": 3,
+      "seconds": 17.887,
+      "drafts": 2,
+      "requested_slots": 2,
+      "returned": 2,
+      "supported_key_and_complete_teaching": 2,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 2
+        }
+      }
+    },
+    {
+      "case": "final_python_closures_worker_kimi",
+      "calls": 3,
+      "seconds": 17.517,
+      "drafts": 2,
+      "requested_slots": 2,
+      "returned": 2,
+      "supported_key_and_complete_teaching": 1,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "accepted": 2
+        }
+      }
+    },
+    {
+      "case": "final_relative_clauses_api_nova",
+      "calls": 3,
+      "seconds": 13.14,
+      "drafts": 2,
+      "requested_slots": 2,
+      "returned": 0,
+      "supported_key_and_complete_teaching": 0,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "solver_multiple_supported": 1,
+          "difficulty_floor": 1
+        }
+      }
+    },
+    {
+      "case": "final_relative_clauses_worker_kimi",
+      "calls": 3,
+      "seconds": 17.485,
+      "drafts": 2,
+      "requested_slots": 2,
+      "returned": 0,
+      "supported_key_and_complete_teaching": 0,
+      "quality": {
+        "sanitize": {
+          "accepted": 2
+        },
+        "review": {
+          "solver_multiple_supported": 1,
+          "invalid_envelope": 1
+        }
+      }
+    }
+  ]
+}

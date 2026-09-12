@@ -1,0 +1,59 @@
+{
+  "actual_calls": 22,
+  "maximum_calls": 24,
+  "scope": "Final policy 8 and deployment defaults at frozen revision; checks and assessments do not certify general correctness. Historical evidence unchanged.",
+  "files": [
+    {
+      "path": "assessment.json",
+      "sha256": "1ee243218b407f01dc675f3635a9ab86a1ed23fc0178cff4f9730878dea82808"
+    },
+    {
+      "path": "boundary-checks.json",
+      "sha256": "1ad750b30e89e75dfe0adf61112a748bb8840b573c335be3dfa6f83f64fd812b"
+    },
+    {
+      "path": "final_mixture_replacement_api_nova.json",
+      "sha256": "38a800624aef1179c240925e68ae98c444f22f43a6e3ce97bb43ce0eaf472c6d"
+    },
+    {
+      "path": "final_mixture_replacement_worker_kimi.json",
+      "sha256": "689598969d48f102ac8bfb5fd77d0f716a55c070720cb64a9bb4f39847e18a51"
+    },
+    {
+      "path": "final_private_transit_api_nova.json",
+      "sha256": "c684e0024ee6dda8652220b192344ae541ba62f56d92c054eddaa0f60e3df01c"
+    },
+    {
+      "path": "final_private_transit_worker_kimi.json",
+      "sha256": "d5c168203418ce9c4469cded6cbec3a46425aae088595f6a2df617631f79e83e"
+    },
+    {
+      "path": "final_python_closures_api_nova.json",
+      "sha256": "7664e1debc8c8c26e06e50f27bb3990d06b5c6b5852a204a40810c9fff9d8e4e"
+    },
+    {
+      "path": "final_python_closures_worker_kimi.json",
+      "sha256": "7ec7301327cded4b0a62d27d66937fc34ad2e3c532ed634ded1f5e4e3977988b"
+    },
+    {
+      "path": "final_relative_clauses_api_nova.json",
+      "sha256": "3316acb96becea4bd54a48b70927bc424e14aab6289611add82e659fb5c33803"
+    },
+    {
+      "path": "final_relative_clauses_worker_kimi.json",
+      "sha256": "979f7cb5105fdee5a1bd25da1b27a17ea68be148e146ac42011e6b2dc1b8fa9a"
+    },
+    {
+      "path": "independent-checks.json",
+      "sha256": "4ada18ac04d78d9cbbb413bc95bef6b3c02a4f415ef92efd78d6f4a198d4ba9e"
+    },
+    {
+      "path": "plan.json",
+      "sha256": "c84074f470b1b4bafc87203c2a8814c3c0f394fca404d05d50d45218fa355aa3"
+    },
+    {
+      "path": "summary.json",
+      "sha256": "9e148bb76036026f58257ef3ddf4e7499784bb2ab5a64ee7c99b6f92c44f0319"
+    }
+  ]
+}

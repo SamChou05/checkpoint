@@ -1,3 +1,5 @@
+> Current combined findings, policy 8/9 defaults and final fresh qualification: [final report](QUESTION_CORRECTNESS_ROOT_CAUSE_RESULTS_20260912.md). This document records its named milestone.
+
 # Preserve learned facts across subject-reference fields
 
 The source-only correction in policy 6/7 still discarded legitimate subject facts

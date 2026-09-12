@@ -1,3 +1,5 @@
+> Current combined findings, policy 8/9 defaults and final fresh qualification: [final report](QUESTION_CORRECTNESS_ROOT_CAUSE_RESULTS_20260912.md). This document records its named milestone.
+
 # Source-supported solving and corrected recall assessment
 
 > **Completion correction:** policy 6/7 also lost learned facts supplied in goal/skill prose. It is superseded by [subject-reference policy 8/9](QUESTION_SUBJECT_REFERENCE_POLICY_20260912.md). The final three-call control brings this phase to 48 calls; the 45-call counts below describe the earlier milestone.
