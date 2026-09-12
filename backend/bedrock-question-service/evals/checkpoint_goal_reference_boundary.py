@@ -21,7 +21,7 @@ REFERENCE_SYSTEM = solution.SOURCE_SOLUTION_SYSTEM_PROMPT.replace(
 
 
 def reference_prompt(items, request, **_):
-    _, prompt = solution.build_solver_prompt(items, request, source_supported=True)
+    _, prompt = solution.build_solver_prompt(items, request, context="source")
     data = json.loads(prompt.split('\n', 1)[1].rsplit('\n', 1)[0])
     data.update(solution._subject_context(request))
     return REFERENCE_SYSTEM, '<question_solution_json>\n'+json.dumps(data, ensure_ascii=False)+'\n</question_solution_json>'
@@ -74,7 +74,7 @@ def main():
         items = [{'index': i, **{k: q[k] for k in ('prompt', 'choices', 'topic')}} for i, q in enumerate(frozen['questions'])]
         try:
             for arm in ('source_only', 'references'):
-                system, prompt = (solution.build_solver_prompt(items, frozen['request'], source_supported=True)
+                system, prompt = (solution.build_solver_prompt(items, frozen['request'], context="source")
                                   if arm == 'source_only' else reference_prompt(items, frozen['request']))
                 raw = infer(system, prompt, 'complete_choice_solver_v1')
                 records = solution.validate_batch(raw, items)

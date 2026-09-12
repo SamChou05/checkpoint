@@ -282,7 +282,7 @@ def _generate_sanitized_questions(
                     contract="complete_choice_solver_v1",
                 ),
                 solver_contract="complete_choices",
-                solver_context="source",
+                solver_context="subject",
                 feedback_contract=feedback_contract,
                 preserve_reviewed_text=native_review,
             )

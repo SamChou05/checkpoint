@@ -1,4 +1,4 @@
-"""Pure complete-MCQ solver boundaries for reference and displayed contexts.
+"""Pure complete-MCQ solver boundaries and explicit historical context contracts.
 
 Exact choice coverage and declared key agreement are enforceable. The reasons
 and judgments remain fallible model statements, not factual certificates or
@@ -82,6 +82,12 @@ SOURCE_SOLUTION_SYSTEM_PROMPT = COMPLETE_SOLUTION_SYSTEM_PROMPT.replace(
     "to select an answer. Assess each item independently; do not borrow case "
     "facts from another item or infer an omitted condition from a lesson's intent.",
 )
+
+SUBJECT_REFERENCE_SYSTEM_PROMPT = SOURCE_SOLUTION_SYSTEM_PROMPT.replace(
+    "supplied study-source facts", "supplied subject-reference facts"
+)
+
+SolverContext = Literal["reference", "displayed", "source", "subject"]
 
 RejectionReason = Literal[
     "solver_zero_supported",
@@ -199,7 +205,7 @@ def _items_by_index(items: Any) -> dict[int, dict[str, Any]]:
 
 def build_solver_prompt(
     items: list[dict[str, Any]], request: dict[str, Any], *,
-    displayed_only: bool = False, source_supported: bool = False
+    context: SolverContext = "reference",
 ) -> tuple[str, str]:
     """Build answer-blind input from indexed items; never normalize subject text.
 
@@ -208,13 +214,13 @@ def build_solver_prompt(
     itself contain answers; it remains untrusted subject content, not scrubbed.
     """
     by_index = _items_by_index(items)
-    if displayed_only and source_supported:
-        raise CompleteSolutionFormatError("Choose only one solver context contract.")
-    item_context_only = displayed_only or source_supported
-    # Author intent cannot supply omitted conditions. Sources may establish
-    # learned definitions and facts, without sharing goal or objective prose.
+    if context not in ("reference", "displayed", "source", "subject"):
+        raise CompleteSolutionFormatError("Unknown solver context contract.")
+    item_context_only = context != "reference"
+    # All normalized request fields may contain learned subject facts. Keep
+    # those references; omit authored tags and feedback from the item itself.
     payload = {} if item_context_only else _subject_context(request)
-    if source_supported:
+    if context in ("source", "subject"):
         payload["sourceDocuments"] = _subject_context(
             {"sourceDocuments": request.get("sourceDocuments", [])}
         )["sourceDocuments"]
@@ -236,10 +242,18 @@ def build_solver_prompt(
                 raise CompleteSolutionFormatError("Invalid item field: objective.")
             item["objective"] = original["objective"]
         payload["items"].append(item)
+    if context == "subject":
+        # Match the qualified reference-preserving payload, including literal
+        # goal and curriculum prose. The system distinguishes facts from intent.
+        payload.update(_subject_context(request))
+    systems = {
+        "reference": COMPLETE_SOLUTION_SYSTEM_PROMPT,
+        "displayed": DISPLAYED_SOLUTION_SYSTEM_PROMPT,
+        "source": SOURCE_SOLUTION_SYSTEM_PROMPT,
+        "subject": SUBJECT_REFERENCE_SYSTEM_PROMPT,
+    }
     return (
-        SOURCE_SOLUTION_SYSTEM_PROMPT if source_supported else (
-            DISPLAYED_SOLUTION_SYSTEM_PROMPT if displayed_only else COMPLETE_SOLUTION_SYSTEM_PROMPT
-        ),
+        systems[context],
         "<question_solution_json>\n"
         + json.dumps(payload, ensure_ascii=False, allow_nan=False)
         + "\n</question_solution_json>",

@@ -96,7 +96,7 @@ class ObjectiveContextTests(unittest.TestCase):
                                (boto3.session.Session, "client")):
             self.enterContext(patch.object(target, method, side_effect=AssertionError("No network or SDK clients")))
 
-    def test_objectives_and_sources_reach_author_and_review_but_not_display_solver(self):
+    def test_request_references_reach_all_stages_but_solver_omits_authored_item_tags(self):
         sources = [
             {"name": "Logic outline with substantive rules",
              "text": 'All red tokens are round.\nLiteral example: "red  token".', "truncated": False},
@@ -146,7 +146,7 @@ class ObjectiveContextTests(unittest.TestCase):
                                     test.assertEqual("independentSolutions" in data, not authored)
                                 data = payload(text, tag)
                                 if tag == "question_solution_json":
-                                    test.assertEqual(set(data), {"items", "sourceDocuments"})
+                                    test.assertEqual(set(data), {"items", "sourceDocuments", "goal", "skillMap"})
                                     test.assertEqual(data["sourceDocuments"], sources)
                                     test.assertEqual(set(data["items"][0]), {"index", "prompt", "choices", "topic"})
                                 else:

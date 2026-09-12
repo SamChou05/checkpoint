@@ -1,12 +1,11 @@
 {
-  "scope": "Provider captures and explicit assessment/correction sidecars; original 45-call manifest retained. Hashes do not certify factual correctness.",
+  "scope": "Immutable provider captures plus explicit correction/assessment sidecars. Hashes do not certify model correctness.",
   "actual_calls": {
     "source-recall": 16,
     "teaching-contrasts": 8,
-    "fresh": 21,
-    "goal-reference": 3
+    "fresh": 21
   },
-  "total_actual_calls": 48,
+  "total_actual_calls": 45,
   "maximum_new_calls": 48,
   "files": [
     {
@@ -54,24 +53,8 @@
       "sha256": "3da572ee8fe6134393271b60b305ca93cb960c2bf4c7bc7f6452517ec1bf0a37"
     },
     {
-      "path": "goal-reference/assessment.json",
-      "sha256": "63662386f3ba831a9506d90cda408d3212ee48ae85c23991f8ab9db448f53f3b"
-    },
-    {
-      "path": "goal-reference/plan.json",
-      "sha256": "2f81adc287337aa638be9771995ddd36fa6c53cc13fbd96bf789c1eafa587b64"
-    },
-    {
-      "path": "goal-reference/trace.json",
-      "sha256": "a6a76f8039ef9704d58e4b2d8b2e1974a8fc471c2eaaba2f5d1e003be3eec97d"
-    },
-    {
       "path": "independent-checks.json",
       "sha256": "e29bdcf96a71c84b87a2c659c4d3c9e1a516ce7d387589639bed0a67173c6db4"
-    },
-    {
-      "path": "manifest-45-call-milestone.json",
-      "sha256": "6012ba697893a15c08ef4924cb63297f8496a106da0ea16f5b0c7b48056f1acb"
     },
     {
       "path": "source-recall/luma_math_displayed.json",

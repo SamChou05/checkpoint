@@ -1,6 +1,6 @@
 # Question-generation correctness: root causes, fixes and limits
 
-> **Corrected findings:** the four source-dependent controls did not prove false acceptances. The source-supported continuation replaces displayed-only solving and restores valid study-material recall. See the [corrected contract and matched evidence](QUESTION_SOURCE_SUPPORTED_POLICY_20260912.md). Counts below describe the original 102-call investigation. The [completed 45-call continuation](QUESTION_CORRECTNESS_CONTINUATION_RESULTS_20260912.md) adds fresh qualification and current limits.
+> **Corrected findings:** the four source-dependent controls did not prove false acceptances. The source-supported continuation replaces displayed-only solving and restores valid study-material recall. See the [corrected contract and matched evidence](QUESTION_SOURCE_SUPPORTED_POLICY_20260912.md). Counts below describe the original 102-call investigation. The continuation used 48 calls; [the final reference correction](QUESTION_SUBJECT_REFERENCE_POLICY_20260912.md) supersedes the intermediate source-only policy.
 
 Required stimulus is preserved. Solver context was qualified in the continuation with learned
 source facts retained and hidden lesson intent excluded. **The broader pipeline
@@ -39,7 +39,7 @@ runtime code; measured times are not queue-to-device service latency.
 | Solver and reviewer | The original source-removal interpretation was too broad: learned facts may be recalled. The corrected solver retains sources but excludes hidden goal/objective intent. Models can still ignore uncertainty, change interpretation, or write false teaching. |
 | Filtering and replacement | Every failed attempt is captured. The 51-call broad run requested 24 slots, authored 49 drafts and returned 10. A structural exclusion does not count as detecting an underlying semantic error. No retry or rejection layer was added. |
 | Bank and transport | Actual bank preparation and JSON roundtrips retain content, plus existing offline worker/claim/replay tests. No live learner storage was touched. Old policy stamps are not upgraded on read. |
-| iOS display and grading | The attempt screen displays topic, stem and shuffled choices, not source documents or objective metadata. Exact UTF-8 grading, feedback keys, persistence and all four option rotations were checked. The corrected client requires policy 6 for fresh practice; historical wire-version-1 grading stays intact. |
+| iOS display and grading | The attempt screen displays topic, stem and shuffled choices, not source documents or objective metadata. Exact UTF-8 grading, feedback keys, persistence and all four option rotations were checked. The corrected client requires policy 8 for fresh practice; historical wire-version-1 grading stays intact. |
 
 [Goal/source trace](evidence/correctness-audit-20260912/goal-source-path/inference.json)
 and [truncation probes](evidence/correctness-audit-20260912/goal-source-path/truncation.json)
@@ -112,8 +112,8 @@ choice rotation without deleting them. Unmatched embedded options and existing
 length limits still apply. [Implementation and controls](QUESTION_STIMULUS_PRESERVATION_20260912.md).
 
 **Source-supported solving** supersedes the displayed-only policy. Learned source
-facts are retained, while hidden goal/objective intent is excluded. New production
-stamps are 6/7; historical paths retain their own revisions. The original 102-call
+facts are retained, while authored item tags and feedback are excluded. New production
+stamps are 8/9; historical paths retain their own revisions. The original 102-call
 results below describe the earlier proposal, not the corrected implementation.
 [Current contract and release order](QUESTION_SOURCE_SUPPORTED_POLICY_20260912.md).
 
@@ -189,7 +189,7 @@ Zero-call preflight failures are retained. No additional live testing is pending
 - Changes and evidence are committed and pushed on the audit branch. No merge,
   backend deployment, app installation or learner-bank mutation occurred.
   **Deploy API support and all generating workers before a client requiring
-  policy 6**, or the new client can reject old inventory without a working refill.
+  policy 8**, or the new client can reject old inventory without a working refill.
 
 The unresolved risks are substantive: authors can omit a defensible alternative,
 solvers can force one answer while their own reasons express uncertainty,

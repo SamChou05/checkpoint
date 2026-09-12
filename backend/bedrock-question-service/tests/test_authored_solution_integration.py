@@ -78,9 +78,9 @@ class AuthoredSolutionIntegrationTests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["explanation"].encode(), authored["explanation"].encode())
         self.assertEqual(result[0]["choiceExplanations"], {})
-        self.assertEqual(result[0]["verificationPolicyRevision"], 7)
+        self.assertEqual(result[0]["verificationPolicyRevision"], 9)
         self.assertEqual(result[0]["verificationVersion"], 1)
-        self.assertEqual(VERIFICATION_POLICY_REVISION, 6)
+        self.assertEqual(VERIFICATION_POLICY_REVISION, 8)
         self.assertEqual(json.loads(json.dumps(result)), result)
 
     def test_configuration_and_solver_contract_cannot_be_inferred_or_downgraded(self):
@@ -103,7 +103,7 @@ class AuthoredSolutionIntegrationTests(unittest.TestCase):
                 request, FakeBedrockClient.returning_questions(self.question),
                 generation.ProviderCallBudget(3),
             )
-        self.assertEqual(result[0]["verificationPolicyRevision"], 6)
+        self.assertEqual(result[0]["verificationPolicyRevision"], 8)
 
     def test_incoming_teaching_is_rejected_before_sanitization_can_drop_or_clip_it(self):
         for changes in (

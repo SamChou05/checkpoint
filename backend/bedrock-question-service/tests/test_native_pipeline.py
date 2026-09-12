@@ -112,7 +112,7 @@ class NativePipelineTests(unittest.TestCase):
         def respond(request):
             data = task_data(request, "question_solution_json")
             item = data["items"][0]
-            self.assertEqual(set(data), {"items", "sourceDocuments"})
+            self.assertEqual(set(data), {"items", "sourceDocuments", "goal", "skillMap"})
             self.assertEqual(set(item), {"index", "prompt", "choices", "topic"})
             self.assertNotIn("expectedAnswer", json.dumps(data))
             self.assertNotIn(question["explanation"], json.dumps(data))
@@ -138,7 +138,7 @@ class NativePipelineTests(unittest.TestCase):
         self.assertEqual(response["statusCode"], 200)
         question = json.loads(response["body"])["questions"][0]
         self.assertEqual(question["verificationVersion"], 1)
-        self.assertEqual(question["verificationPolicyRevision"], 6)
+        self.assertEqual(question["verificationPolicyRevision"], 8)
         self.assertEqual(question["expectedAnswer"], self.question["expectedAnswer"])
         self.assertCountEqual(question["choices"], self.question["choices"])
         self.assertEqual(question["choiceExplanations"], {
@@ -242,7 +242,7 @@ class NativePipelineTests(unittest.TestCase):
         with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "2", "BEDROCK_FALLBACK_MODEL_ID": FALLBACK}):
             result = generation._generate_sanitized_questions(request, client, budget, metrics)
         self.assertEqual([question["prompt"] for question in result], [self.question["prompt"]])
-        self.assertEqual(result[0]["verificationPolicyRevision"], 6)
+        self.assertEqual(result[0]["verificationPolicyRevision"], 8)
         self.assertEqual([call["modelId"] for call in client.calls], [MODEL] * 4)
         self.assertEqual(len(client.steps), 1)
         self.assertEqual(budget.calls, 4)
@@ -353,7 +353,7 @@ class NativePipelineTests(unittest.TestCase):
             result = generation._generate_sanitized_questions(self.request, client, generation.ProviderCallBudget(3))
         self.assertEqual(result[0]["explanation"].encode(), question["explanation"].encode())
         self.assertEqual(result[0]["choiceExplanations"], {})
-        self.assertEqual(result[0]["verificationPolicyRevision"], 7)
+        self.assertEqual(result[0]["verificationPolicyRevision"], 9)
         self.assertEqual(result[0]["verificationVersion"], 1)
 
     def test_authored_native_audit_cannot_approve_uncertain_or_issue_bearing_teaching(self):

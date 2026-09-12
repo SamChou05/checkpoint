@@ -37,7 +37,7 @@ class SourceTruncationTests(BackendTestCase):
             user = call["messages"][0]["content"][0]["text"]
             supplied = json.loads(user.split(f"<{tag}>\n", 1)[1].split(f"\n</{tag}>", 1)[0])
             if tag == "question_solution_json":
-                self.assertEqual(set(supplied), {"items", "sourceDocuments"})
+                self.assertEqual(set(supplied), {"items", "sourceDocuments", "goal", "skillMap"})
             self.assertEqual(supplied["sourceDocuments"], documents)
 
     def test_shared_swift_encoded_wire_survives_normalization_and_solver_context(self):

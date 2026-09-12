@@ -7,6 +7,7 @@ from typing import Any, Callable, Literal
 
 from complete_question_solution import (
     CompleteSolutionFormatError,
+    SolverContext,
     build_solver_prompt,
     rejection_reason as complete_solution_rejection_reason,
     validate_batch,
@@ -31,6 +32,8 @@ from verification_policy import (
     LEGACY_VERIFICATION_POLICY_REVISION,
     SOURCE_SUPPORTED_VERIFICATION_POLICY_REVISION,
     SOURCE_SUPPORTED_AUTHORED_VERIFICATION_POLICY_REVISION,
+    SUBJECT_REFERENCE_VERIFICATION_POLICY_REVISION,
+    SUBJECT_REFERENCE_AUTHORED_VERIFICATION_POLICY_REVISION,
     VERIFICATION_VERSION,
 )
 
@@ -205,7 +208,7 @@ def verify_questions(
     *,
     solve: Callable[[str, str], str] | None = None,
     solver_contract: Literal["stem_only", "complete_choices"] = "stem_only",
-    solver_context: Literal["reference", "displayed", "source"] = "reference",
+    solver_context: SolverContext = "reference",
     feedback_contract: Literal["reviewer_written", "authored_solution"] = "reviewer_written",
     preserve_reviewed_text: bool = False,
 ) -> list[dict[str, Any]]:
@@ -220,11 +223,12 @@ def verify_questions(
     if feedback_contract not in ("reviewer_written", "authored_solution"):
         raise ValueError("Unknown teaching-feedback contract.")
     complete_choices = solver_contract == "complete_choices"
-    if solver_context not in ("reference", "displayed", "source"):
+    if solver_context not in ("reference", "displayed", "source", "subject"):
         raise ValueError("Unknown independent-solver context contract.")
     displayed_only = solver_context == "displayed"
     source_supported = solver_context == "source"
-    if (displayed_only or source_supported) and not complete_choices:
+    subject_references = solver_context == "subject"
+    if solver_context != "reference" and not complete_choices:
         raise ValueError("Item-context solving requires complete choices.")
     authored_solution = feedback_contract == "authored_solution"
     if authored_solution and not complete_choices:
@@ -280,7 +284,7 @@ def verify_questions(
         if complete_choices:
             try:
                 solution_system, solution_prompt = build_solver_prompt(
-                    items, request, displayed_only=displayed_only, source_supported=source_supported,
+                    items, request, context=solver_context,
                 )
             except CompleteSolutionFormatError:
                 record_quality(request_metrics, "review", "invalid_solution", len(items))
@@ -477,7 +481,12 @@ def verify_questions(
         if solve is not None:
             # Each path owns its revision. A legacy solver must never acquire
             # the current complete-choice policy by a constant/version bump.
-            if source_supported:
+            if subject_references:
+                verified_question["verificationPolicyRevision"] = (
+                    SUBJECT_REFERENCE_AUTHORED_VERIFICATION_POLICY_REVISION
+                    if authored_solution else SUBJECT_REFERENCE_VERIFICATION_POLICY_REVISION
+                )
+            elif source_supported:
                 verified_question["verificationPolicyRevision"] = (
                     SOURCE_SUPPORTED_AUTHORED_VERIFICATION_POLICY_REVISION
                     if authored_solution else SOURCE_SUPPORTED_VERIFICATION_POLICY_REVISION

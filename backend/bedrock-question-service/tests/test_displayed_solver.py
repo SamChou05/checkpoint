@@ -33,7 +33,7 @@ class DisplayedSolverTests(unittest.TestCase):
                 "skillID": "hidden-skill", "objectiveID": "hidden-objective"}
         item["prompt"] = 'Read the literal lines:\n  x = "a  b"\n  print(x)'
         original = copy.deepcopy(item)
-        _, text = build_solver_prompt([item], self.request, displayed_only=True)
+        _, text = build_solver_prompt([item], self.request, context="displayed")
         data = json.loads(text.split("\n", 1)[1].rsplit("\n", 1)[0])
         self.assertEqual(data, {"items": [{k: item[k] for k in ("index", "prompt", "choices", "topic")}]})
         self.assertNotIn("Hidden", text)
@@ -43,21 +43,21 @@ class DisplayedSolverTests(unittest.TestCase):
         self.assertIn("Hidden reference", historical)
         self.assertIn("Hidden objective premise", historical)
 
-    def test_runtime_sources_reach_all_stages_but_intent_cannot_supply_solver_premises(self):
+    def test_runtime_preserves_subject_references_but_hides_authored_item_metadata(self):
         client = FakeBedrockClient.returning_questions(self.raw)
         result = _generate_sanitized_questions(self.request, client, ProviderCallBudget(3))
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["verificationPolicyRevision"], 6)
+        self.assertEqual(result[0]["verificationPolicyRevision"], 8)
         def prompt(call):
             return call["messages"][0]["content"][0]["text"]
         self.assertIn("Hidden reference", prompt(client.calls[0]))
         self.assertIn("Hidden reference", prompt(client.review_calls[0]))
         solver_data = json.loads(prompt(client.solution_calls[0]).split("\n", 1)[1].rsplit("\n", 1)[0])
-        self.assertEqual(set(solver_data), {"items", "sourceDocuments"})
+        self.assertEqual(set(solver_data), {"items", "sourceDocuments", "goal", "skillMap"})
         self.assertEqual(set(solver_data["items"][0]), {"index", "prompt", "choices", "topic"})
         self.assertEqual(solver_data["sourceDocuments"], self.request["sourceDocuments"])
-        self.assertNotIn("Hidden title", prompt(client.solution_calls[0]))
-        self.assertNotIn("Hidden intended", prompt(client.solution_calls[0]))
+        self.assertEqual(solver_data["goal"], self.request["goal"])
+        self.assertEqual(solver_data["skillMap"], self.request.get("skillMap"))
 
     def test_historical_displayed_contract_rejects_source_recall(self):
         question = {**self.raw, "prompt": "A Luma player earns 4 blue tokens. How many points are earned?"}
@@ -81,26 +81,26 @@ class DisplayedSolverTests(unittest.TestCase):
                                   lambda *_: json.dumps({"reviews": [self.verdict()]}),
                                   solve=solve, solver_contract="complete_choices")
         self.assertEqual(result[0]["verificationPolicyRevision"], 2)
-        self.assertFalse(meets_verification_policy(result[0], 6))
-        for old in [0, 1, 2, 3, 4, 5]:
-            self.assertFalse(meets_verification_policy({"verificationVersion": 1, "verificationPolicyRevision": old}, 6))
+        self.assertFalse(meets_verification_policy(result[0], 8))
+        for old in range(8):
+            self.assertFalse(meets_verification_policy({"verificationVersion": 1, "verificationPolicyRevision": old}, 8))
 
     def test_displayed_context_requires_the_complete_choice_contract(self):
-        for kwargs in [{"solver_context": "other"}, {"solver_context": "displayed"}, {"solver_context": "source"}]:
+        for kwargs in [{"solver_context": "other"}, {"solver_context": "displayed"}, {"solver_context": "source"}, {"solver_context": "subject"}]:
             with self.assertRaises(ValueError):
                 verify_questions([self.raw], self.request, Mock(), **kwargs)
 
     def test_source_context_keeps_learned_facts_and_excludes_hidden_intent(self):
         item = {**self.raw, "index": 0, "objective": "Assume all tokens blue",
                 "skillID": "blue-only", "objectiveID": "hidden-answer"}
-        system, prompt = build_solver_prompt([item], self.request, source_supported=True)
+        system, prompt = build_solver_prompt([item], self.request, context="source")
         self.assertEqual(system, SOURCE_SOLUTION_SYSTEM_PROMPT)
         data = json.loads(prompt.split("\n", 1)[1].rsplit("\n", 1)[0])
         self.assertEqual(data["sourceDocuments"], self.request["sourceDocuments"])
         self.assertEqual(data["items"], [{k: item[k] for k in ("index", "prompt", "choices", "topic")}])
         self.assertEqual(set(data), {"items", "sourceDocuments"})
         with self.assertRaises(CompleteSolutionFormatError):
-            build_solver_prompt([item], self.request, source_supported=True, displayed_only=True)
+            build_solver_prompt([item], self.request, context="unknown")
 
     def test_source_facts_do_not_override_a_solver_declared_missing_case(self):
         question = {**self.raw, "prompt": "Four tokens of unspecified color are earned. How many points?"}

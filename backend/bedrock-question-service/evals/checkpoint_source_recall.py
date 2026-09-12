@@ -31,7 +31,7 @@ SOURCE_SOLUTION_SYSTEM_PROMPT = solution.COMPLETE_SOLUTION_SYSTEM_PROMPT.replace
 
 
 def build_source_prompt(items, request, **_):
-    _, prompt = solution.build_solver_prompt(items, request, displayed_only=True)
+    _, prompt = solution.build_solver_prompt(items, request, context="displayed")
     data = json.loads(prompt.split('\n', 1)[1].rsplit('\n', 1)[0])
     data['sourceDocuments'] = solution._subject_context(
         {'sourceDocuments': request.get('sourceDocuments', [])})['sourceDocuments']

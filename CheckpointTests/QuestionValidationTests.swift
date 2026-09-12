@@ -1477,7 +1477,7 @@ final class VerificationPolicyFreshnessTests: XCTestCase {
     func testWireAndPersistencePreserveExplicitPolicyWithoutDefaultingLegacy() throws {
         let goal = makeGoal()
         let oldQuestion = historicalQuestion(goal: goal)
-        for revision in [-1, 0, 1, 2, 3, 4, 5, 6, 7] {
+        for revision in [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9] {
             var question = oldQuestion
             question.verificationPolicyRevision = revision
             let encoded = try JSONEncoder().encode(question)
@@ -1508,7 +1508,7 @@ final class VerificationPolicyFreshnessTests: XCTestCase {
         let goal = makeGoal()
         var request = makeRequest(goal: goal)
         request.requiresVerifiedQuestions = true
-        for (version, revision, accepted) in [(1, -1, false), (1, 0, false), (1, 1, false), (1, 2, false), (1, 3, false), (1, 4, false), (1, 5, false), (1, 6, true), (1, 7, true), (0, 6, false), (2, 6, false)] {
+        for (version, revision, accepted) in [(1, -1, false), (1, 0, false), (1, 1, false), (1, 2, false), (1, 3, false), (1, 4, false), (1, 5, false), (1, 6, false), (1, 7, false), (1, 8, true), (1, 9, true), (0, 8, false), (2, 8, false)] {
             let question = makeQuestion(goal: goal, index: 1, verificationVersion: version, verificationPolicyRevision: revision)
             XCTAssertEqual(!QuestionBatchSanitizer.sanitize([question], for: request).isEmpty, accepted,
                            "wire=\(version), policy=\(revision)")

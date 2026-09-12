@@ -1,5 +1,7 @@
 # Source-supported solving and corrected recall assessment
 
+> **Completion correction:** policy 6/7 also lost learned facts supplied in goal/skill prose. It is superseded by [subject-reference policy 8/9](QUESTION_SUBJECT_REFERENCE_POLICY_20260912.md). The final three-call control brings this phase to 48 calls; the 45-call counts below describe the earlier milestone.
+
 This replaces the displayed-only proposal in PR #9. Checkpoint supports uploaded
 study materials and private subjects. Recalling a learned fact does not require
 printing that answer in the stem. The prior four source-hidden controls measured

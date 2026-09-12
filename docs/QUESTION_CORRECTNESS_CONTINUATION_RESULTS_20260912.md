@@ -1,5 +1,7 @@
 # Corrected findings and fresh qualification
 
+> **Completion correction:** policy 6/7 also lost learned facts supplied in goal/skill prose. It is superseded by [subject-reference policy 8/9](QUESTION_SUBJECT_REFERENCE_POLICY_20260912.md). The final three-call control brings this phase to 48 calls; the 45-call counts below describe the earlier milestone.
+
 The continuation corrects two audit conclusions and makes two general changes:
 
 - **Retain learned study facts.** The earlier displayed-only proposal rejected valid recall from uploaded material. Its claim of four proven false accepts is withdrawn. Production solving now retains sources, excludes hidden goal/objective intent, and distinguishes source rules from missing case data. Author instructions recognize learned recall. Revisions 6/7 replace the proposed 4/5 without relabeling history.

@@ -69,4 +69,4 @@ class ReusableAnswerTests(unittest.TestCase):
             self.assertEqual(budget.calls, 3)
             self.assertEqual(len(client.solution_calls), 1)
             self.assertEqual(len(client.review_calls), 1)
-            self.assertTrue(all(q["verificationPolicyRevision"] == 6 for q in result))
+            self.assertTrue(all(q["verificationPolicyRevision"] == 8 for q in result))
