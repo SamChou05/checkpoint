@@ -1,0 +1,36 @@
+[
+  {
+    "id": "fresh_fraction_rates",
+    "payload": {
+      "goal": {"title": "Solve multistep fraction and rate problems", "currentLevel": "intermediate", "contentTopics": ["Fractional quantities and rates with interacting constraints"], "questionDirective": "Give two different practical problems requiring multiple reasoning steps. State every quantity and unit needed; use exact answers."},
+      "targetCount": 2,
+      "minimumDifficulty": 4
+    }
+  },
+  {
+    "id": "fresh_python_aliasing",
+    "payload": {
+      "goal": {"title": "Understand Python list mutation and slicing", "currentLevel": "intermediate", "contentTopics": ["List aliasing versus shallow slice copies"], "questionDirective": "Practice predicting short Python 3 snippets: distinguish an alias from a slice copy. Show literal executable code with all initial values and preserve line breaks."},
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "fresh_conditionals",
+    "payload": {
+      "goal": {"title": "Distinguish unreal present and past conditions in English", "currentLevel": "intermediate", "contentTopics": ["Present counterfactual versus past counterfactual meaning"], "questionDirective": "Use brief situations to test which conditional sentence expresses the intended time and counterfactual meaning. Make the situation matter, with one defensible choice."},
+      "sourceDocuments": [{"name": "Study notes on counterfactual time", "text": "For this exercise use standard edited English. To express a counterfactual present state: if + simple past (were for be), followed by would + base verb. Example: If I were taller, I would reach the shelf. To express a counterfactual past event: if + past perfect, followed by would have + past participle. Example: If I had left earlier, I would have caught the train. Mixed conditionals connect a past condition with a present result and are grammatical when the situation calls for that combination. Do not treat every mixed conditional as an error."}],
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "fresh_private_archive",
+    "payload": {
+      "goal": {"title": "Learn the fictional Bracken archive handbook", "currentLevel": "beginner", "contentTopics": ["Archive rooms and staff responsibilities"], "questionDirective": "Help me remember the handbook: ask one question about room names and one about who handles a collection. Do not repeat the tested fact in the question."},
+      "sourceDocuments": [{"name": "Bracken archive handbook", "text": "This handbook defines a fictional archive. The Cedar room holds maps, the Birch room holds letters, the Elm room holds photographs, and the Ash room holds recordings. Ada manages maps, Beno manages letters, Cleo manages photographs, and Davi manages recordings. These responsibilities are exclusive for this exercise."}],
+      "targetCount": 2,
+      "minimumDifficulty": 1
+    }
+  }
+]
