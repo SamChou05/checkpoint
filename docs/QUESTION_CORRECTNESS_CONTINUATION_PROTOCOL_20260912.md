@@ -58,3 +58,13 @@ support, distractor quality, useful output, calls and latency. Label corrected
 findings and uncertain interpretations explicitly. Preserve revisions for checks
 actually performed and document backend-before-client release ordering if the
 production policy changes again.
+
+## Deployment correction
+
+A fresh read-only configuration check found the deployed API's `SKILL_MAP_MODEL_ID`
+is Kimi K2.5, although its question author is Nova Lite. The earlier deployment
+snapshot omitted that field. The Nova map call remains a real local inference
+with explicitly selected settings; it was not a test of the deployed skill-map
+configuration. API/worker package hashes and modification timestamps are unchanged.
+The [new configuration record](evidence/correctness-continuation-20260912/deployment-recheck.json)
+includes the previously omitted field. Do not silently relabel the old trace.

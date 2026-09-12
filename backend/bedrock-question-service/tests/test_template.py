@@ -55,6 +55,14 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             self.deploy_script,
         )
 
+    def test_verification_transport_override_is_wired_without_changing_author_default(self):
+        parameter = _indented_block(self.template, "BedrockVerificationStructuredOutputMode")
+        self.assertIn("Default: inherit", parameter)
+        self.assertIn("AllowedValues: [inherit, legacy, native]", parameter)
+        self.assertEqual(self.template.count("BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE: !Ref BedrockVerificationStructuredOutputMode"), 2)
+        self.assertIn("BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE || 'inherit'", self.deploy_workflow)
+        self.assertIn('"BedrockVerificationStructuredOutputMode=${BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE:-inherit}"', self.deploy_script)
+
     @classmethod
     def setUpClass(cls):
         cls.template = TEMPLATE.read_text(encoding="utf-8")

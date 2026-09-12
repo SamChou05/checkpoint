@@ -211,6 +211,15 @@ def _generate_sanitized_questions(
     request_metrics: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     feedback_contract = _feedback_contract()
+    review_contract: Contract = (
+        "authored_solution_reviewer_v1" if feedback_contract == "authored_solution"
+        else "default_reviewer_v1"
+    )
+    # Resolve verification transport before spending an author call. It may
+    # differ from the author (for example, Nova legacy with Sonnet native).
+    native_review = output_mode(review_contract) == "native"
+    if native_review:
+        ensure_supported_model(_verification_model_id())
     target_count = request["targetCount"]
     questions: list[dict[str, Any]] = []
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
@@ -259,11 +268,7 @@ def _generate_sanitized_questions(
                     user_prompt=prompt,
                     call_budget=call_budget,
                     request_metrics=request_metrics,
-                    contract=(
-                        "authored_solution_reviewer_v1"
-                        if feedback_contract == "authored_solution"
-                        else "default_reviewer_v1"
-                    ),
+                    contract=review_contract,
                 ),
                 request_metrics=request_metrics,
                 solve=lambda system, prompt: _generate_with_bedrock(
@@ -279,7 +284,7 @@ def _generate_sanitized_questions(
                 solver_contract="complete_choices",
                 solver_context="displayed",
                 feedback_contract=feedback_contract,
-                preserve_reviewed_text=output_mode() == "native",
+                preserve_reviewed_text=native_review,
             )
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its
@@ -367,7 +372,7 @@ def _generate_with_bedrock(
     resolved_system_prompt = system_prompt or _system_prompt()
     if legacy_transport and contract is not None:
         raise ServiceConfigurationError("Legacy transport cannot select a native stage contract.")
-    mode = "legacy" if legacy_transport else output_mode()
+    mode = "legacy" if legacy_transport else output_mode(contract)
     if mode == "native":
         if contract is None:
             raise ServiceConfigurationError(

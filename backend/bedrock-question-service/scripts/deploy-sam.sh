@@ -15,6 +15,7 @@ parameters=(
   "BedrockFallbackModelArn=$BEDROCK_FALLBACK_MODEL_ARN"
   "BedrockReasoningEffort=$BEDROCK_REASONING_EFFORT"
   "BedrockStructuredOutputMode=${BEDROCK_STRUCTURED_OUTPUT_MODE:-legacy}"
+  "BedrockVerificationStructuredOutputMode=${BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE:-inherit}"
   "BedrockGuardrailIdentifier=$BEDROCK_GUARDRAIL_IDENTIFIER"
   "BedrockGuardrailVersion=$BEDROCK_GUARDRAIL_VERSION"
   "BedrockGuardrailArn=$BEDROCK_GUARDRAIL_ARN"
