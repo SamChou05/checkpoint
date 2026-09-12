@@ -1,0 +1,118 @@
+{
+  "native_sql_0": {
+    "setup": "CREATE TABLE A(id,x); INSERT INTO A VALUES(1,5),(2,3),(3,7); CREATE TABLE B(a_id,y); INSERT INTO B VALUES(1,10),(1,20),(2,5);",
+    "query": "SELECT * FROM A LEFT JOIN B ON A.id=B.a_id AND B.y>15 WHERE A.x>0",
+    "rows": [
+      [
+        1,
+        5,
+        1,
+        20
+      ],
+      [
+        2,
+        3,
+        null,
+        null
+      ],
+      [
+        3,
+        7,
+        null,
+        null
+      ]
+    ],
+    "row_count": 3
+  },
+  "native_sql_1": {
+    "setup": "CREATE TABLE A(id,x); INSERT INTO A VALUES(1,10),(2,5),(3,8); CREATE TABLE B(a_id,y); INSERT INTO B VALUES(1,15),(2,8),(3,11);",
+    "query": "SELECT * FROM A LEFT JOIN B ON A.id=B.a_id AND B.y<12 WHERE B.y IS NOT NULL",
+    "rows": [
+      [
+        2,
+        5,
+        2,
+        8
+      ],
+      [
+        3,
+        8,
+        3,
+        11
+      ]
+    ],
+    "row_count": 2
+  },
+  "legacy_sql_0": {
+    "setup": "CREATE TABLE A(id,val); INSERT INTO A VALUES(1,'x'),(2,'y'),(2,'y'); CREATE TABLE B(id,val); INSERT INTO B VALUES(2,'z');",
+    "query": "SELECT COUNT(*) FROM A LEFT JOIN B ON A.id=B.id WHERE B.val='z'",
+    "rows": [
+      [
+        2
+      ]
+    ],
+    "row_count": 1
+  },
+  "legacy_sql_1": {
+    "setup": "CREATE TABLE A(id,val); INSERT INTO A VALUES(1,'a'),(2,'b'); CREATE TABLE B(id,val); INSERT INTO B VALUES(2,'x'),(2,'y');",
+    "query": "SELECT COUNT(*) FROM A LEFT JOIN B ON A.id=B.id AND B.val='x'",
+    "rows": [
+      [
+        2
+      ]
+    ],
+    "row_count": 1
+  },
+  "absolute_quadratic_roots": {
+    "0": [
+      1.0,
+      3.0
+    ],
+    "1": [
+      0.5857864376269049,
+      2.0,
+      3.414213562373095
+    ],
+    "3": [
+      0.0,
+      4.0
+    ],
+    "4": [
+      -0.2360679774997898,
+      4.23606797749979
+    ]
+  },
+  "rational_domain": {
+    "derivative": "(x-2)*(x+4)/(x+1)^2",
+    "domain": "x > -1 and x != 2",
+    "one_root_parameter_values": [],
+    "two_roots_for": "all a > 0",
+    "author_a9_roots": [
+      -0.3738635424337602,
+      13.37386354243376
+    ]
+  },
+  "radical_parameter": {
+    "substitution": "t=sqrt(x)>0",
+    "quadratic": "t^2+a*t+1=0",
+    "two_positive_distinct_roots": "a<-2",
+    "number_of_parameter_values": "infinitely many"
+  },
+  "feedback_counterexamples": {
+    "displayed_control_distractor_2": 2,
+    "all_native_sql0_B_matches_plus_unmatched_A_rows": 4
+  },
+  "references": [
+    "https://www.gml.noaa.gov/grad/solcalc/solareqns.PDF",
+    "https://spaceplace.nasa.gov/seasons/en/",
+    "https://dictionary.cambridge.org/grammar/british-grammar/a-and-the"
+  ],
+  "illustrative_solar_calculation": {
+    "model": "NOAA fractional-year approximation; 2026 nonleap year, latitude -34, longitude 18.4, UTC+2, zenith90.833; illustrative, not an exact observational prediction",
+    "june21_minutes_after_midnight": 471.2184555265916,
+    "december21_minutes_after_midnight": 331.6852735867086,
+    "earliest_day_of_year": 340,
+    "earliest_minutes_after_midnight": 328.4922616906349,
+    "counterexample": "The earliest civil sunrise is before December21 even though the solstice has nearly maximum daylight."
+  }
+}

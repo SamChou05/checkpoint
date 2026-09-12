@@ -1,0 +1,175 @@
+{
+  "method": "Manual root-assistant assessment of all sixteen fresh drafts and every solver/reviewer output, including filtered items. These are not blinded expert labels or learner-difficulty measurements. The prototype used displayed fields without the final item-independence instruction. Final recheck used all drafts from the first-executed arm in each pair; native transport and final boundary, fixed author, no regeneration.",
+  "items": [
+    {
+      "id": "fresh_math_legacy:q0",
+      "trace": "fresh-paired/fresh_math_legacy.json",
+      "prompt": "For which values of parameter a does the equation √(x+2) + √(x+5) = a have exactly two distinct real solutions?",
+      "authored_key": "supported",
+      "authored_teaching": "supported",
+      "distractors": "plausible",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "The radical sum is strictly increasing on x≥-2, with range [√3,∞); exactly two roots are impossible. The legacy solver computes this correctly but emits prose outside JSON. Final native recheck solves it correctly, then reviewer rates it 3 against requested minimum 4, so it is excluded for difficulty rather than incorrectness."
+    },
+    {
+      "id": "fresh_math_legacy:q1",
+      "trace": "fresh-paired/fresh_math_legacy.json",
+      "prompt": "The equation |x² - 4x + 3| = a has exactly three distinct real solutions. What is the value of a?",
+      "authored_key": "supported",
+      "authored_teaching": "supported",
+      "distractors": "plausible",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "|x²-4x+3|=1 has roots 2-√2, 2, 2+√2. Other offered nonnegative levels have two roots. Legacy solver is correct but envelope-invalid. Final native recheck returns supported key, main explanation and all choice feedback at difficulty 4."
+    },
+    {
+      "id": "fresh_math_native:q0",
+      "trace": "fresh-paired/fresh_math_native.json",
+      "prompt": "For the equation x + a√x + 1 = 0 with x > 0, let a be a real parameter. For how many distinct values of a does the equation have exactly two distinct real solutions?",
+      "authored_key": "incorrect_no_offered_answer",
+      "authored_teaching": "incorrect",
+      "distractors": "invalid",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "Let t=√x>0. t²+at+1 has two distinct positive roots iff a<-2: infinitely many parameter values, absent from choices. Author key 2 confuses the number of roots with parameter values despite deriving a<-2. Solver also derives infinitely many, then supports 1 as least wrong while its reason admits no match. Its oversized reason causes whole-batch structural exclusion; that is not semantic detection."
+    },
+    {
+      "id": "fresh_math_native:q1",
+      "trace": "fresh-paired/fresh_math_native.json",
+      "prompt": "Consider (x-2)²/(x+1) = a with domain x ≥ -1, x ≠ 2. For how many real values of a does the equation have exactly one distinct real solution?",
+      "authored_key": "incorrect",
+      "authored_teaching": "incorrect",
+      "distractors": "plausible",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "For x>-1, x≠2, f=(x-2)²/(x+1) is positive, decreases from infinity to 0 on (-1,2), then increases to infinity on (2,∞). Every a>0 has two roots; no a has one, so key 0, not 1. Author invents crossing x=-1 at a=9 and calls x>2 excluded. Solver forgets the explicit x≠2 exclusion and supports a=0. Also x=-1 is undefined despite the stated domain wording. Whole batch is format-rejected due the first item, hiding this semantic failure."
+    },
+    {
+      "id": "fresh_sql_legacy:q0",
+      "trace": "fresh-paired/fresh_sql_legacy.json",
+      "prompt": "Table A has rows (1, 'x'), (2, 'y'), (2, 'y'). Table B has rows (2, 'z'). Consider: SELECT COUNT(*) FROM A LEFT JOIN B ON A.id=B.id WHERE B.val='z'. How many rows result?",
+      "authored_key": "ambiguous",
+      "authored_teaching": "conditional",
+      "distractors": "ambiguous",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "Executing SELECT COUNT(*) returns one result row containing 2. The wording asks how many rows result, so 1 is the literal query cardinality and 2 is the intended joined-row count. Author and solver silently answer the latter. The table column names are implicit rather than explicitly declared. Solver counts the join correctly but emits prose outside JSON."
+    },
+    {
+      "id": "fresh_sql_legacy:q1",
+      "trace": "fresh-paired/fresh_sql_legacy.json",
+      "prompt": "Table A: (1, 'a'), (2, 'b'). Table B: (2, 'x'), (2, 'y'). Query: SELECT COUNT(*) FROM A LEFT JOIN B ON A.id=B.id AND B.val='x'. How many rows?",
+      "authored_key": "ambiguous",
+      "authored_teaching": "conditional",
+      "distractors": "ambiguous",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "The joined relation contains two rows; SELECT COUNT(*) returns one result row containing 2. The stem asks how many rows, so 1 and the intended count 2 differ. Author and solver explain the join correctly but never address the output-row/count distinction. Solver response has an invalid envelope."
+    },
+    {
+      "id": "fresh_sql_native:q0",
+      "trace": "fresh-paired/fresh_sql_native.json",
+      "prompt": "Table A: (id=1, x=5), (id=2, x=3), (id=3, x=7). Table B: (a_id=1, y=10), (a_id=1, y=20), (a_id=2, y=5). Query: SELECT * FROM A LEFT JOIN B ON A.id=B.a_id AND B.y>15 WHERE A.x>0. How many rows result?",
+      "authored_key": "supported",
+      "authored_teaching": "incorrect",
+      "distractors": "plausible",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "SELECT * returns three rows: id1 matches y20 only; id2 and id3 are NULL-extended, and all A.x are positive. Author key 3 is right, but its main invents matches and incorrectly says WHERE A.x>0 removes a NULL-extended row. Prototype solver initially invents an extra row, self-corrects to 3, and exceeds the 600-character reason limit, losing the whole batch. Final recheck returns correct key and main but falsely says distractor 5 would require all B rows to match: all matches would give four rows including the unmatched A row, not five."
+    },
+    {
+      "id": "fresh_sql_native:q1",
+      "trace": "fresh-paired/fresh_sql_native.json",
+      "prompt": "Table A: (id=1, x=10), (id=2, x=5), (id=3, x=8). Table B: (a_id=1, y=15), (a_id=2, y=8), (a_id=3, y=11). Query: SELECT * FROM A LEFT JOIN B ON A.id=B.a_id AND B.y<12 WHERE B.y IS NOT NULL. How many rows result?",
+      "authored_key": "incorrect",
+      "authored_teaching": "supported",
+      "distractors": "plausible",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "SELECT * returns two rows (id2/y8 and id3/y11). Author explanation computes 2 but key is 4. Prototype solver repairs the calculation but the batch is lost to an oversized reason in its sibling. Final recheck correctly disagrees with the key and excludes this item before review."
+    },
+    {
+      "id": "fresh_language_legacy:q0",
+      "trace": "fresh-paired/fresh_language_legacy.json",
+      "prompt": "A museum curator writes: 'The painting was stolen in 1990. A painting has been recovered, but experts doubt it is the original.' Why does the shift from 'the' to 'a' matter here?",
+      "authored_key": "supported",
+      "authored_teaching": "supported",
+      "distractors": "plausible",
+      "returned_in_prototype": true,
+      "earliest_defect_and_later_behavior": "The recovered painting has not been established as the original; the article shift accords with explicit expert doubt. Both prototype and final recheck return a defensible key and supported teaching. Distractors concern multiple thefts, memory, or proven forgery, none entailed by the passage."
+    },
+    {
+      "id": "fresh_language_legacy:q1",
+      "trace": "fresh-paired/fresh_language_legacy.json",
+      "prompt": "A biologist notes: 'I studied a whale in the Pacific. The whale had unusual markings.' Later, a colleague asks, 'Did you study the whale that beached near Monterey?' Why might the biologist's 'the whale' create confusion?",
+      "authored_key": "qualified_possible_reading",
+      "authored_teaching": "unsupported",
+      "distractors": "weak",
+      "returned_in_prototype": true,
+      "earliest_defect_and_later_behavior": "The stem asks why confusion might arise, so different intended referents are a plausible explanation. It does not establish two different whales: the Pacific study animal could be the Monterey whale and the colleague is asking whether it is. Author, solver and reviewer convert that possibility into asserted fact; final feedback also calls both phrases anaphoric although the colleague uses a descriptive reference. Both prototype and final recheck return the item. Do not count as fully supported teaching or definite proof of two distinct referents."
+    },
+    {
+      "id": "fresh_language_native:q0",
+      "trace": "fresh-paired/fresh_language_native.json",
+      "prompt": "A colleague says: 'I admire the scientist who works hard.' What does this statement most likely convey?",
+      "authored_key": "ambiguous",
+      "authored_teaching": "overgeneralized",
+      "distractors": "weak",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "The specific scientist is a plausible most-likely reading, but a generic reading of the scientist who works hard is also available. Author/solver/reviewer teach a categorical exclusion of generic the rather than qualifying context. Reviewer scores difficulty 2 against requested 3; excluded for ease, not semantic detection."
+    },
+    {
+      "id": "fresh_language_native:q1",
+      "trace": "fresh-paired/fresh_language_native.json",
+      "prompt": "In an email, a manager writes: 'We should hire that candidate with relevant experience.' What does this determiner choice indicate?",
+      "authored_key": "overstated",
+      "authored_teaching": "overstated",
+      "distractors": "weak",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "That singles out a contextually identifiable candidate, but already discussed is stronger than necessary: deictic identification is possible. Author/solver/reviewer assume prior discussion. Opposite-experience and experience-optional distractors are weak. Reviewer scores 2 against floor 3; excluded for difficulty."
+    },
+    {
+      "id": "fresh_facts_legacy:q0",
+      "trace": "fresh-paired/fresh_facts_legacy.json",
+      "prompt": "On the June solstice, a traveler notes that sunrise in Oslo (59°N) occurs at 3:54 AM local time. On the same date, a colleague in Cape Town (34°S) records sunrise. Which statement about Cape Town's sunrise time is best supported?",
+      "authored_key": "supported_for_actual_place_with_time_caveat",
+      "authored_teaching": "unsupported_generalization",
+      "distractors": "mixed",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "Cape Town does have later civil sunrise in June than December and after 06:00, but latitude/date alone do not establish civil clock time. Author generalizes shortest daylight to latest sunrise; solver/reviewer silently replace local time with local solar time. Reviewer additionally calls the December solstice the earliest sunrise of the year, which does not generally follow because of the equation of time. Reviewer envelope failure prevents return; no semantic credit."
+    },
+    {
+      "id": "fresh_facts_legacy:q1",
+      "trace": "fresh-paired/fresh_facts_legacy.json",
+      "prompt": "A student compares two locations at 40° latitude: one in the Northern Hemisphere and one in the Southern Hemisphere. On which pair of dates will both locations experience approximately equal daylight hours?",
+      "authored_key": "supported_standard_midlatitude_approximation",
+      "authored_teaching": "supported_with_scope_caveat",
+      "distractors": "plausible",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "At equal ±40° latitudes the equinoxes give approximately equal daylight at the two locations. Solstices give opposite day lengths. Key is correct in the usual simultaneous-date reading. Generalizing approximately 12 hours to every latitude in feedback is overly broad near poles, but the stated two locations are midlatitude. Final reviewer emits prose outside JSON; neither reaches learner."
+    },
+    {
+      "id": "fresh_facts_native:q0",
+      "trace": "fresh-paired/fresh_facts_native.json",
+      "prompt": "At the December solstice, compare daylight hours in London (51°N) and Buenos Aires (35°S).",
+      "authored_key": "incorrect",
+      "authored_teaching": "self_corrected_key_not_updated",
+      "distractors": "weak",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "At December solstice Buenos Aires has more daylight than London. Author keys London while its explanation explicitly corrects itself to Buenos Aires. Both prototype and final solver compute the correct comparison and reject by answer disagreement; no reviewer call for this item."
+    },
+    {
+      "id": "fresh_facts_native:q1",
+      "trace": "fresh-paired/fresh_facts_native.json",
+      "prompt": "Which location and date combination produces the longest daylight of the year?",
+      "authored_key": "ambiguous",
+      "authored_teaching": "incomplete",
+      "distractors": "ambiguous",
+      "returned_in_prototype": false,
+      "earliest_defect_and_later_behavior": "Tokyo in June and Sydney in December each have their local annual maximum near a solstice, so the local-maximum interpretation admits two choices. If asking the globally longest of these days, Tokyo is farther from the equator and normally longer; the stem does not distinguish the readings or specify year for exact solstice dates. Both solvers notice the two local maxima but label Sydney refuted and Tokyo uniquely supported while their reasons admit uncertainty. Key disagreement blocks return; this is not reliable ambiguity diagnosis."
+    }
+  ],
+  "final_recheck": {
+    "requested_slots": 8,
+    "returned": 4,
+    "confidently_supported_keys": 3,
+    "qualified_possible_key": 1,
+    "fully_supported_key_and_teaching": 2,
+    "provider_calls": 7,
+    "seconds": 53.183,
+    "limitations": "The SQL return has false distractor teaching; the whale return asserts unestablished distinct referents. Difficulty rejection of the valid radical-sum item is not semantic detection. Transport and context differ from some prototype arms, so the recheck is qualification, not an isolated causal estimate."
+  }
+}

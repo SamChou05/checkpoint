@@ -1,0 +1,274 @@
+{
+  "group": "fresh_recheck",
+  "jobs": [
+    [
+      "fresh_math_legacy_recheck_native",
+      {
+        "goal": {
+          "title": "Analyze real equations with parameters",
+          "learningTarget": "Analyze real equations with parameters",
+          "contentTopics": [
+            "Count distinct real solutions while retaining domain restrictions"
+          ],
+          "currentLevel": "advanced"
+        },
+        "sourceDocuments": [],
+        "targetCount": 2,
+        "minimumDifficulty": 4
+      },
+      [
+        {
+          "prompt": "For which values of parameter a does the equation √(x+2) + √(x+5) = a have exactly two distinct real solutions?",
+          "explanation": "The left side f(x)=√(x+2)+√(x+5) has domain x≥-2. It's strictly increasing (derivative positive), so f is one-to-one. Range is [f(-2),∞) = [√3,∞). For any a in the range, exactly one solution exists. Thus exactly two distinct solutions never occur.",
+          "expectedAnswer": "No such values of a exist",
+          "choices": [
+            "a > √3",
+            "a ≥ √3",
+            "No such values of a exist",
+            "a = √3"
+          ],
+          "topic": "Count distinct real solutions while retaining domain restrictions",
+          "skillID": "parametric_equations",
+          "objectiveID": "domain_restrictions",
+          "objective": "Count distinct real solutions while retaining domain restrictions",
+          "difficulty": 4,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "The equation |x² - 4x + 3| = a has exactly three distinct real solutions. What is the value of a?",
+          "explanation": "Let g(x)=x²-4x+3=(x-1)(x-3). Vertex at x=2 gives g(2)=-1. The V-shaped absolute value reflects negative portion upward, creating a local maximum at x=2 with value 1. For horizontal line y=a: 0 solutions when a<0; 2 solutions when a=0 or a>1; 4 solutions when 0<a<1; exactly 3 solutions when a=1 (touches at vertex and intersects twice on outer branches).",
+          "expectedAnswer": "1",
+          "choices": [
+            "0",
+            "1",
+            "3",
+            "4"
+          ],
+          "topic": "Count distinct real solutions while retaining domain restrictions",
+          "skillID": "parametric_equations",
+          "objectiveID": "domain_restrictions",
+          "objective": "Count distinct real solutions while retaining domain restrictions",
+          "difficulty": 4,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "fresh_sql_native_recheck_native",
+      {
+        "goal": {
+          "title": "Trace SQLite outer joins and filters",
+          "learningTarget": "Trace SQLite outer joins and filters",
+          "contentTopics": [
+            "Compare predicates in ON versus WHERE with duplicate rows"
+          ],
+          "currentLevel": "intermediate"
+        },
+        "sourceDocuments": [
+          {
+            "name": "Synthetic reference notes",
+            "text": "SQLite LEFT JOIN retains unmatched left rows by extending the right columns with NULL. ON determines matches. WHERE filters the joined result and does not retain unknown comparisons. COUNT(*) counts rows; COUNT(expression) counts non-NULL values. All tables needed by a question must be shown.",
+            "truncated": false
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      },
+      [
+        {
+          "choices": [
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "difficulty": 3,
+          "expectedAnswer": "3",
+          "explanation": "ON keeps all left rows; the ON filter only affects which right rows match. Row 1 matches both B rows (2 rows). Row 2 matches one B row (1 row). Row 3 matches no B row but is retained with NULLs (1 row). Total: 4 rows before WHERE. WHERE x>0 removes the NULL row, leaving 3 rows.",
+          "format": "Multiple Choice",
+          "objective": "Compare predicates in ON versus WHERE with duplicate rows",
+          "objectiveID": "ON-vs-WHERE-duplicates",
+          "prompt": "Table A: (id=1, x=5), (id=2, x=3), (id=3, x=7). Table B: (a_id=1, y=10), (a_id=1, y=20), (a_id=2, y=5). Query: SELECT * FROM A LEFT JOIN B ON A.id=B.a_id AND B.y>15 WHERE A.x>0. How many rows result?",
+          "skillID": "ON-vs-WHERE-duplicates",
+          "topic": "Compare predicates in ON versus WHERE with duplicate rows"
+        },
+        {
+          "choices": [
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "difficulty": 3,
+          "expectedAnswer": "4",
+          "explanation": "ON filters matches: only B.y<12 qualifies, so A.id=2 matches one B row, A.id=3 matches one B row. A.id=1 matches no B row but is retained with NULLs. This yields 3 rows. WHERE B.y IS NOT NULL removes the NULL row, leaving 2 rows.",
+          "format": "Multiple Choice",
+          "objective": "Compare predicates in ON versus WHERE with duplicate rows",
+          "objectiveID": "ON-vs-WHERE-duplicates",
+          "prompt": "Table A: (id=1, x=10), (id=2, x=5), (id=3, x=8). Table B: (a_id=1, y=15), (a_id=2, y=8), (a_id=3, y=11). Query: SELECT * FROM A LEFT JOIN B ON A.id=B.a_id AND B.y<12 WHERE B.y IS NOT NULL. How many rows result?",
+          "skillID": "ON-vs-WHERE-duplicates",
+          "topic": "Compare predicates in ON versus WHERE with duplicate rows"
+        }
+      ]
+    ],
+    [
+      "fresh_language_legacy_recheck_native",
+      {
+        "goal": {
+          "title": "Preserve English reference and intended meaning",
+          "learningTarget": "Preserve English reference and intended meaning",
+          "contentTopics": [
+            "Use determiners to distinguish a particular referent from a general statement"
+          ],
+          "currentLevel": "intermediate"
+        },
+        "sourceDocuments": [],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      },
+      [
+        {
+          "prompt": "A museum curator writes: 'The painting was stolen in 1990. A painting has been recovered, but experts doubt it is the original.' Why does the shift from 'the' to 'a' matter here?",
+          "explanation": "'The painting' refers to one specific, previously introduced artwork (the stolen original). 'A painting' introduces an indefinite, unidentifiable object—suggesting the recovered item may not match that specific referent. The determiner shift signals uncertainty about identity, not merely that any painting exists.",
+          "expectedAnswer": "It signals that the recovered object may not be the same specific artwork previously mentioned.",
+          "choices": [
+            "It signals that the recovered object may not be the same specific artwork previously mentioned.",
+            "It indicates the curator believes multiple paintings were stolen in 1990.",
+            "It shows the curator has forgotten which painting was originally discussed.",
+            "It proves the recovered painting is definitely a forgery, not the original."
+          ],
+          "topic": "Use determiners to distinguish a particular referent from a general statement",
+          "skillID": "determiners-reference",
+          "objectiveID": "distinguish-particular-general",
+          "objective": "Use determiners to distinguish a particular referent from a general statement",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A biologist notes: 'I studied a whale in the Pacific. The whale had unusual markings.' Later, a colleague asks, 'Did you study the whale that beached near Monterey?' Why might the biologist's 'the whale' create confusion?",
+          "explanation": "The biologist used 'the' to refer back to their own specific research subject (the 'a whale' they introduced). The colleague's 'the whale' presumes a different, already-known referent from news reports. Both speakers used 'the' correctly for their own contexts, but each assumed a different particular referent, creating mismatch.",
+          "expectedAnswer": "Each speaker used 'the' to refer to a different specific whale they each had in mind.",
+          "choices": [
+            "Each speaker used 'the' to refer to a different specific whale they each had in mind.",
+            "The biologist incorrectly used 'the' when 'a' was required throughout.",
+            "The colleague mistakenly believes 'the' always means the most famous whale.",
+            "The markings made the whale too indefinite for 'the' to apply."
+          ],
+          "topic": "Use determiners to distinguish a particular referent from a general statement",
+          "skillID": "determiners-reference",
+          "objectiveID": "distinguish-particular-general",
+          "objective": "Use determiners to distinguish a particular referent from a general statement",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "fresh_facts_native_recheck_native",
+      {
+        "goal": {
+          "title": "Infer daylight and seasons from stated locations and dates",
+          "learningTarget": "Infer daylight and seasons from stated locations and dates",
+          "contentTopics": [
+            "June and December solstices and opposite hemispheres"
+          ],
+          "currentLevel": "intermediate"
+        },
+        "sourceDocuments": [
+          {
+            "name": "Synthetic reference notes",
+            "text": "At the June solstice the Northern Hemisphere is tilted most toward the Sun, and the Southern Hemisphere away; the relation reverses in December. The June solstice gives the longest daylight of the year at ordinary northern midlatitudes and the shortest at southern midlatitudes. Seasons arise primarily from axial tilt, not Earth-Sun distance.",
+            "truncated": false
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      },
+      [
+        {
+          "choices": [
+            "Buenos Aires has longer daylight than London",
+            "London has longer daylight than Buenos Aires",
+            "Both have equal daylight",
+            "Buenos Aires has 24-hour daylight"
+          ],
+          "difficulty": 3,
+          "expectedAnswer": "London has longer daylight than Buenos Aires",
+          "explanation": "At the December solstice, the Southern Hemisphere tilts toward the Sun, so southern midlatitudes (Buenos Aires) receive more daylight than northern midlatitudes (London). Wait—correction: December solstice means Southern Hemisphere summer, so Buenos Aires has longer daylight. Re-examining: the correct answer is Buenos Aires has longer daylight than London.",
+          "format": "Multiple Choice",
+          "objective": "Compare daylight duration across hemispheres at solstices",
+          "objectiveID": "solstice-hemisphere-comparison",
+          "prompt": "At the December solstice, compare daylight hours in London (51°N) and Buenos Aires (35°S).",
+          "skillID": "june-december-solstices",
+          "topic": "June and December solstices and opposite hemispheres"
+        },
+        {
+          "choices": [
+            "June 21 in Sydney",
+            "June 21 in Tokyo",
+            "December 21 in Sydney",
+            "December 21 in Tokyo"
+          ],
+          "difficulty": 3,
+          "expectedAnswer": "December 21 in Sydney",
+          "explanation": "The December solstice brings summer to the Southern Hemisphere, so Sydney (34°S) experiences its longest daylight then. Tokyo (36°N) would have its longest daylight at the June solstice, not December.",
+          "format": "Multiple Choice",
+          "objective": "Identify location-season combinations for maximum daylight",
+          "objectiveID": "max-daylight-identification",
+          "prompt": "Which location and date combination produces the longest daylight of the year?",
+          "skillID": "june-december-solstices",
+          "topic": "June and December solstices and opposite hemispheres"
+        }
+      ]
+    ]
+  ],
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "GENERATION_ATTEMPTS": "3",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": ""
+  },
+  "max_provider_calls": 8,
+  "source_revision": "d4ca9cefaf6c1605cb8014406af74b4b17a2b7fa",
+  "source_sha256": {
+    "question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "native_output_contracts.py": "d43c0e223be0eb80a1ace46cb3373eff22a967a5970510a4f7b6aa8890802037",
+    "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "question_verification.py": "e558abdeb570b1120179b755e46520483f3c6285d4aaaf1ccf1cd745fc721fad",
+    "question_generation.py": "217a4e448cec57884c530a5199f7d1b4a53ee6ece210c83dba88dda7d0e796be",
+    "service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "question_quality.py": "10e13f5f6dc466e5970812b2041f15a3c6ebdb57834771c0da448bc2fd42c270",
+    "question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "complete_question_solution.py": "2548949557aa05dcb5e72155ec8a1bb883cfab2d3907bf14b499f735b0eb93d5",
+    "verification_policy.py": "8ce244adb4c32d710843e060017b13828e36bf9a68275be9d272431d0cef1dbb",
+    "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+    "smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "generation_diagnostics.py": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227"
+  }
+}
