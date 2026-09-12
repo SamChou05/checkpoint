@@ -1,5 +1,7 @@
 # Solve the question the learner can see
 
+> **Qualification corrected:** source-based recall was missing from the acceptance controls. This policy is under reevaluation and should not be released on the basis of the original four-pair result. See the [correction](QUESTION_CORRECTNESS_CONTINUATION_PROTOCOL_20260912.md).
+
 Production generation now checks answerability using only each item's displayed
 `topic`, `prompt`, and exact `choices`. Goal directives, source documents, the
 skill map and objective metadata remain available to authoring and final review;

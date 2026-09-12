@@ -1,5 +1,7 @@
 # Question-generation correctness: root causes, fixes and limits
 
+> **Correction in progress:** the source controls below did not distinguish valid recall from uploaded study material from genuinely missing case premises. The claim of four demonstrated false acceptances is withdrawn. See the [continuation protocol and correction](QUESTION_CORRECTNESS_CONTINUATION_PROTOCOL_20260912.md). Original traces and historical counts are preserved.
+
 Two general defects are fixed on `codex/question-correctness-audit-20260912`:
 required stimulus is preserved, and production answerability checks use each
 learner-visible question rather than hidden reference material. Matched controls
