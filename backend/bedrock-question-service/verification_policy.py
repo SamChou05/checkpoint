@@ -10,6 +10,10 @@ default generation contract or required claim minimum.
 Revision 4 solves only the topic, stem and choices displayed to the learner;
 hidden goal/source/objective content cannot supply a missing task premise.
 Revision 5 combines that boundary with the opt-in authored-teaching audit.
+Revisions 4/5 were superseded because they reject valid source-based recall.
+Revision 6 retains learned source facts, excludes goal/objective intent from
+solving, and distinguishes reference rules from missing case data. Revision 7
+adds the opt-in authored-teaching audit. Model judgments remain fallible.
 """
 
 from typing import Any
@@ -21,7 +25,9 @@ COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION = 2
 AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION = 3
 DISPLAYED_QUESTION_VERIFICATION_POLICY_REVISION = 4
 DISPLAYED_AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION = 5
-VERIFICATION_POLICY_REVISION = DISPLAYED_QUESTION_VERIFICATION_POLICY_REVISION
+SOURCE_SUPPORTED_VERIFICATION_POLICY_REVISION = 6
+SOURCE_SUPPORTED_AUTHORED_VERIFICATION_POLICY_REVISION = 7
+VERIFICATION_POLICY_REVISION = SOURCE_SUPPORTED_VERIFICATION_POLICY_REVISION
 
 
 def meets_verification_policy(question: dict[str, Any], minimum: int) -> bool:

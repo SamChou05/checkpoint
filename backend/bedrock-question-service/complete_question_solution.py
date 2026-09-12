@@ -61,8 +61,7 @@ choice text. Each reason must be nonempty and at most 600 characters. The
 application counts supported choices itself; do not force a preferred answer.
 """.strip()
 
-# The production solver is an answerability check of one displayed task at a
-# time. Reference-context prompts remain available for historical experiments.
+# Historical displayed-only contract: retained for reproducible comparisons.
 DISPLAYED_SOLUTION_SYSTEM_PROMPT = COMPLETE_SOLUTION_SYSTEM_PROMPT.replace(
     "Use the goal to establish scope,\nthe supplied sources or fictional rules when relevant, and established subject\nknowledge.",
     "Assess each item as a separate question using only that item's topic, stem, "
@@ -70,6 +69,18 @@ DISPLAYED_SOLUTION_SYSTEM_PROMPT = COMPLETE_SOLUTION_SYSTEM_PROMPT.replace(
     "another item in the batch or infer an omitted rule from an intended lesson. "
     "Any task-specific source or fictional rule needed to answer must appear "
     "within that item's displayed content.",
+)
+
+# Source rules can be learned knowledge; missing case data must remain missing.
+SOURCE_SOLUTION_SYSTEM_PROMPT = COMPLETE_SOLUTION_SYSTEM_PROMPT.replace(
+    'Use the goal to establish scope,\nthe supplied sources or fictional rules when relevant, and established subject\nknowledge.',
+    "Use established subject knowledge and supplied study-source facts as evidence "
+    "about their named subject. A recall question may test a source fact without "
+    "repeating that fact in its stem. Distinguish general reference rules from "
+    "example-specific data: do not transplant an example's conditions into an "
+    "unspecified case. The item must establish the case-specific facts needed "
+    "to select an answer. Assess each item independently; do not borrow case "
+    "facts from another item or infer an omitted condition from a lesson's intent.",
 )
 
 RejectionReason = Literal[
@@ -187,7 +198,8 @@ def _items_by_index(items: Any) -> dict[int, dict[str, Any]]:
 
 
 def build_solver_prompt(
-    items: list[dict[str, Any]], request: dict[str, Any], *, displayed_only: bool = False
+    items: list[dict[str, Any]], request: dict[str, Any], *,
+    displayed_only: bool = False, source_supported: bool = False
 ) -> tuple[str, str]:
     """Build answer-blind input from indexed items; never normalize subject text.
 
@@ -196,11 +208,16 @@ def build_solver_prompt(
     itself contain answers; it remains untrusted subject content, not scrubbed.
     """
     by_index = _items_by_index(items)
-    # Source notes, goal directives and objective descriptions are not shown
-    # on the attempt screen. They may establish facts for authoring/review,
-    # but cannot supply a missing premise to the learner's answerability check.
-    # Retain reference-context mode for explicitly historical experiments.
-    payload = {} if displayed_only else _subject_context(request)
+    if displayed_only and source_supported:
+        raise CompleteSolutionFormatError("Choose only one solver context contract.")
+    item_context_only = displayed_only or source_supported
+    # Author intent cannot supply omitted conditions. Sources may establish
+    # learned definitions and facts, without sharing goal or objective prose.
+    payload = {} if item_context_only else _subject_context(request)
+    if source_supported:
+        payload["sourceDocuments"] = _subject_context(
+            {"sourceDocuments": request.get("sourceDocuments", [])}
+        )["sourceDocuments"]
     payload["items"] = []
     for index in range(len(items)):
         original = by_index[index]
@@ -208,19 +225,21 @@ def build_solver_prompt(
         if not isinstance(prompt, str) or not prompt.strip():
             raise CompleteSolutionFormatError("Missing question prompt.")
         item = {"index": index, "prompt": prompt, "choices": list(original["choices"])}
-        for field in (("topic",) if displayed_only else ("skillID", "objectiveID", "topic")):
+        for field in (("topic",) if item_context_only else ("skillID", "objectiveID", "topic")):
             if field in original:
                 value = original[field]
                 if value is not None and type(value) is not str:
                     raise CompleteSolutionFormatError(f"Invalid item field: {field}.")
                 item[field] = value
-        if not displayed_only and "objective" in original:
+        if not item_context_only and "objective" in original:
             if type(original["objective"]) is not str:
                 raise CompleteSolutionFormatError("Invalid item field: objective.")
             item["objective"] = original["objective"]
         payload["items"].append(item)
     return (
-        DISPLAYED_SOLUTION_SYSTEM_PROMPT if displayed_only else COMPLETE_SOLUTION_SYSTEM_PROMPT,
+        SOURCE_SOLUTION_SYSTEM_PROMPT if source_supported else (
+            DISPLAYED_SOLUTION_SYSTEM_PROMPT if displayed_only else COMPLETE_SOLUTION_SYSTEM_PROMPT
+        ),
         "<question_solution_json>\n"
         + json.dumps(payload, ensure_ascii=False, allow_nan=False)
         + "\n</question_solution_json>",

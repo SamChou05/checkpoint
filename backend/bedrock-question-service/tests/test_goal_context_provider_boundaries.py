@@ -95,7 +95,7 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
         text = request["messages"][0]["content"][0]["text"]
         data = json.loads(text.split(f"<{tag}>\n", 1)[1].split(f"\n</{tag}>", 1)[0])
         if tag == "question_solution_json":
-            self.assertEqual(set(data), {"items"})
+            self.assertEqual(set(data), {"items", "sourceDocuments"})
             for item in data["items"]:
                 self.assertEqual(set(item), {"index", "prompt", "choices", "topic"})
         else:

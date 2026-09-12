@@ -79,7 +79,7 @@ class ProviderDeadlineTests(BackendTestCase):
                 self.assertEqual(response["statusCode"], 200)
                 question = json.loads(response["body"])["questions"][0]
                 self.assertEqual(question["verificationVersion"], 1)
-                self.assertEqual(question["verificationPolicyRevision"], 4)
+                self.assertEqual(question["verificationPolicyRevision"], 6)
                 self.assertEqual(
                     (
                         len(shared.calls),

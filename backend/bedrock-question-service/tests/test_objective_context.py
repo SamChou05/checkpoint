@@ -146,7 +146,8 @@ class ObjectiveContextTests(unittest.TestCase):
                                     test.assertEqual("independentSolutions" in data, not authored)
                                 data = payload(text, tag)
                                 if tag == "question_solution_json":
-                                    test.assertEqual(set(data), {"items"})
+                                    test.assertEqual(set(data), {"items", "sourceDocuments"})
+                                    test.assertEqual(data["sourceDocuments"], sources)
                                     test.assertEqual(set(data["items"][0]), {"index", "prompt", "choices", "topic"})
                                 else:
                                     test.assertEqual(data["sourceDocuments"], sources)

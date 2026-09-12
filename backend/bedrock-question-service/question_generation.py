@@ -282,7 +282,7 @@ def _generate_sanitized_questions(
                     contract="complete_choice_solver_v1",
                 ),
                 solver_contract="complete_choices",
-                solver_context="displayed",
+                solver_context="source",
                 feedback_contract=feedback_contract,
                 preserve_reviewed_text=native_review,
             )
@@ -880,7 +880,9 @@ Return only one JSON object:
 Exactly four distinct choices; expectedAnswer exactly equals one of them.
 Make choices parallel, mutually exclusive, and similar in specificity. No answer
 letters, all/none-of-the-above options, duplicate JSON keys, or options in the stem.
-Each stem must be self-contained and understandable without opening another file.
+Each stem must identify the task and include the case-specific data needed to
+answer it. It may test learned definitions or facts from supplied study material
+without repeating the answer. Do not assume an unstated case from a source example.
 Use plain text, including plain-text equations/code when relevant. When syntax
 or layout carries meaning, preserve literal content and necessary line breaks
 and indentation. Do not flatten compound statements in ways that change syntax
@@ -1106,7 +1108,7 @@ def _source_grounding_text(request: dict[str, Any]) -> str:
 
     return (
         f"Ground questions in the {len(documents)} source document(s) listed in the request JSON. "
-        "Use their text as the primary content scope and keep every question self-contained."
+        "Use their text as learned reference facts; state necessary case data in each question."
     )
 
 

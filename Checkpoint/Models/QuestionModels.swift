@@ -55,10 +55,10 @@ enum AIProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
 }
 
 enum QuestionVerificationPolicy {
-    // Revision 4 solves the displayed topic, stem and choices without hidden
-    // goal/source premises, then reviews against the original request context.
+    // Revision 6 retains learned source facts while excluding hidden lesson
+    // intent from solving, then reviews against the original request context.
     // It records the checks performed, not a guarantee of factual accuracy.
-    static let currentRevision = 4
+    static let currentRevision = 6
 
     /// Fresh practice requires the server's current acceptance policy. The
     /// separate wire version still controls how historical content is graded.
