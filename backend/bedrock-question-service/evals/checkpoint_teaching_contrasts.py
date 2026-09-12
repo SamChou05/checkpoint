@@ -56,6 +56,18 @@ def jobs():
     return result
 
 
+def replay_review(job, raw):
+    """Validate a saved review against its saved solutions, with no inference."""
+    data = json.loads(job['prompt'].split('\n', 1)[1].rsplit('\n', 1)[0])
+    metrics = {}
+    accepted = verification.verify_questions(
+        copy.deepcopy(job['questions']), job['request'], lambda *_: raw,
+        solve=lambda *_: json.dumps({'solutions': data['independentSolutions']}),
+        request_metrics=metrics, solver_contract='complete_choices', preserve_reviewed_text=True)
+    return {'accepted': accepted, 'metrics': metrics,
+            'scope': 'Offline replay of recorded solver and reviewer outputs; no new independent inference or current-policy provenance.'}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-dir', required=True, type=Path)
@@ -86,9 +98,9 @@ def main():
                         user_prompt=job['prompt'], system_prompt=plan['systems'][arm],
                         contract='default_reviewer_v1', call_budget=generation.ProviderCallBudget(1))
                     trace['adapted_response'] = json.loads(raw)
-                    trace['accepted_by_review_contract'] = verification.verify_questions(
-                        copy.deepcopy(job['questions']), job['request'], lambda *_: raw,
-                        request_metrics=trace['metrics'], solver_contract='complete_choices', preserve_reviewed_text=True)
+                    replay = replay_review(job, raw)
+                    trace['accepted_by_review_contract'] = replay['accepted']
+                    trace['metrics'] = replay['metrics']
                 except Exception as error:
                     trace['error_type'] = type(error).__name__
             save()

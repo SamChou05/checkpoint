@@ -1,0 +1,503 @@
+{
+  "correction": "Original live traces are unchanged. Their zero accepted_by_review_contract counts were a harness bug: complete-choice replay omitted solve. This sidecar supplies the exact saved independentSolutions. No provider call was repeated.",
+  "results": {
+    "review_0_contrast.json": {
+      "accepted": [
+        {
+          "index": 0,
+          "prompt": "What is the value of (-4) × (-2)?",
+          "choices": [
+            "8",
+            "-8",
+            "-6",
+            "6"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Signed arithmetic with parentheses and fractions",
+          "expectedAnswer": "8",
+          "explanation": "The rule for signed multiplication states that two negatives yield a positive product. (-4)×(-2) = +8.",
+          "difficulty": 1,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "8": "Negative × negative = positive; (-4)×(-2) = +8.",
+            "-8": "A product of two negative numbers is positive, not negative, so -8 is wrong.",
+            "-6": "-6 is neither the product nor any standard result of combining -4 and -2 by multiplication.",
+            "6": "The correct product is 8, not 6; 6 has no basis from -4 × -2."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "index": 1,
+          "prompt": "In the expression 12 ÷ (3 - 5), which operation is performed first?",
+          "choices": [
+            "The addition",
+            "The subtraction inside the parentheses",
+            "The division",
+            "The multiplication"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Signed arithmetic with parentheses and fractions",
+          "expectedAnswer": "The subtraction inside the parentheses",
+          "explanation": "Order of operations (PEMDAS/BODMAS) mandates that expressions inside parentheses are evaluated first, so 3-5 is computed before the division by 12.",
+          "difficulty": 1,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "The addition": "There is no addition operation anywhere in the expression 12÷(3-5).",
+            "The subtraction inside the parentheses": "PEMDAS/BODMAS requires evaluating parentheses first; 3-5 is computed before the division.",
+            "The division": "Division is performed only after the parenthetical expression (3-5) has been evaluated.",
+            "The multiplication": "There is no multiplication operation anywhere in the expression 12÷(3-5)."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "metrics": {
+        "QuestionQuality": {
+          "review": {
+            "accepted": 2
+          }
+        }
+      },
+      "scope": "Offline replay of recorded solver and reviewer outputs; no new independent inference or current-policy provenance."
+    },
+    "review_0_current.json": {
+      "accepted": [
+        {
+          "index": 0,
+          "prompt": "What is the value of (-4) × (-2)?",
+          "choices": [
+            "8",
+            "-8",
+            "-6",
+            "6"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Signed arithmetic with parentheses and fractions",
+          "expectedAnswer": "8",
+          "explanation": "The rule for signed multiplication states that two negatives produce a positive product. Only 8 satisfies (−4)×(−2).",
+          "difficulty": 1,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "8": "Negative × negative = positive; (−4)×(−2) = +8.",
+            "-8": "Multiplying two negatives yields a positive, not a negative result.",
+            "-6": "−6 is neither the product nor any standard result of −4 and −2.",
+            "6": "The correct product is 8, not 6; the sign is right but the magnitude is wrong."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "index": 1,
+          "prompt": "In the expression 12 ÷ (3 - 5), which operation is performed first?",
+          "choices": [
+            "The addition",
+            "The subtraction inside the parentheses",
+            "The division",
+            "The multiplication"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Signed arithmetic with parentheses and fractions",
+          "expectedAnswer": "The subtraction inside the parentheses",
+          "explanation": "Order of operations requires parentheses to be evaluated before any other operation, so 3−5 is computed first.",
+          "difficulty": 1,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "The addition": "There is no addition operation anywhere in the expression.",
+            "The subtraction inside the parentheses": "PEMDAS/BODMAS requires evaluating parentheses first; 3−5 is computed before the division.",
+            "The division": "Division is performed only after the parenthetical expression 3−5 has been evaluated.",
+            "The multiplication": "There is no multiplication operation anywhere in the expression."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "metrics": {
+        "QuestionQuality": {
+          "review": {
+            "accepted": 2
+          }
+        }
+      },
+      "scope": "Offline replay of recorded solver and reviewer outputs; no new independent inference or current-policy provenance."
+    },
+    "review_1_contrast.json": {
+      "accepted": [
+        {
+          "index": 0,
+          "prompt": "In a game each blue token scores 3 points. A player earns 5 blue tokens. How many points are earned?",
+          "choices": [
+            "5",
+            "8",
+            "0",
+            "15"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "math",
+          "expectedAnswer": "15",
+          "explanation": "Applying the stated rule (3 points per blue token) to 5 tokens gives 5 × 3 = 15.",
+          "difficulty": 2,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "5": "This equals the number of tokens, not the points; 5 tokens × 3 points each = 15.",
+            "8": "This is 5 + 3, adding instead of multiplying; 5 tokens × 3 points each = 15.",
+            "0": "The player earns tokens and therefore scores points; 5 × 3 = 15, not 0.",
+            "15": "5 tokens × 3 points each = 15, directly applying the stated scoring rule."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "index": 1,
+          "prompt": "A language defines x @ y as 2*x + y. What does 5 @ 3 evaluate to?",
+          "choices": [
+            "15",
+            "2",
+            "13",
+            "8"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "programming",
+          "expectedAnswer": "13",
+          "explanation": "The stem defines x @ y = 2*x + y; substituting x=5, y=3 gives 2*5 + 3 = 13.",
+          "difficulty": 2,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "15": "This would be 5 × 3, treating @ as multiplication rather than 2*x + y.",
+            "2": "This ignores both x and y values; 2*5 + 3 = 13, not 2.",
+            "13": "Applying x @ y = 2*x + y: 2*5 + 3 = 10 + 3 = 13, which is correct.",
+            "8": "This would be 5 + 3, ignoring the coefficient 2; the correct result is 2*5 + 3 = 13."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "index": 2,
+          "prompt": "In Zali, 'pali' means 'forest'. Which English word translates 'pali'?",
+          "choices": [
+            "river",
+            "hill",
+            "cloud",
+            "forest"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "language",
+          "expectedAnswer": "forest",
+          "explanation": "The stem explicitly states 'pali' means 'forest'; the source document's 'naro' = 'river' is a distractor.",
+          "difficulty": 1,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "river": "The source document gives 'naro' as 'river'; the stem states 'pali' means 'forest'.",
+            "hill": "No stated rule maps 'pali' to 'hill'; the stem explicitly defines 'pali' as 'forest'.",
+            "cloud": "No stated rule maps 'pali' to 'cloud'; the stem explicitly defines 'pali' as 'forest'.",
+            "forest": "The stem directly states that in Zali, 'pali' means 'forest'."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "index": 3,
+          "prompt": "The fictional Fern museum opens only on Friday. On which day does it open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Sunday",
+            "Friday"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "factual",
+          "expectedAnswer": "Friday",
+          "explanation": "The stem states the Fern museum opens only on Friday; the source document's Tuesday (Vale museum) is a distractor.",
+          "difficulty": 1,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Tuesday": "Tuesday is when the Vale museum opens per the source document, not the Fern museum stated in the stem.",
+            "Monday": "No rule in the stem supports Monday; the stem states the Fern museum opens only on Friday.",
+            "Sunday": "No rule in the stem supports Sunday; the stem states the Fern museum opens only on Friday.",
+            "Friday": "The stem explicitly states the fictional Fern museum opens only on Friday."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "metrics": {
+        "QuestionQuality": {
+          "review": {
+            "accepted": 4
+          }
+        }
+      },
+      "scope": "Offline replay of recorded solver and reviewer outputs; no new independent inference or current-policy provenance."
+    },
+    "review_1_current.json": {
+      "accepted": [
+        {
+          "index": 0,
+          "prompt": "In a game each blue token scores 3 points. A player earns 5 blue tokens. How many points are earned?",
+          "choices": [
+            "5",
+            "8",
+            "0",
+            "15"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "math",
+          "expectedAnswer": "15",
+          "explanation": "Applying the rule that each blue token scores 3 points, 5 tokens × 3 = 15. The other choices reflect common arithmetic errors.",
+          "difficulty": 2,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "5": "This equals the number of tokens, not the points; each token must be multiplied by 3.",
+            "8": "This is 5+3, confusing addition for multiplication of tokens by point value.",
+            "0": "Earning tokens with a positive point value cannot yield zero points.",
+            "15": "5 tokens × 3 points each = 15, directly applying the stated scoring rule."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "index": 1,
+          "prompt": "A language defines x @ y as 2*x + y. What does 5 @ 3 evaluate to?",
+          "choices": [
+            "15",
+            "2",
+            "13",
+            "8"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "programming",
+          "expectedAnswer": "13",
+          "explanation": "The operator is defined as x@y = 2*x+y, so 5@3 = 2×5+3 = 13. Distractors arise from misapplying multiplication or plain addition.",
+          "difficulty": 2,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "15": "This is 3×5, reversing the operator definition by multiplying instead of using 2*x+y.",
+            "2": "This ignores both operands and matches neither a sum nor a product of the inputs.",
+            "13": "Applying x@y = 2*x+y: 2×5+3 = 10+3 = 13, correctly following the defined operator.",
+            "8": "This is 5+3, ignoring the coefficient of 2 applied to x."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "index": 2,
+          "prompt": "In Zali, 'pali' means 'forest'. Which English word translates 'pali'?",
+          "choices": [
+            "river",
+            "hill",
+            "cloud",
+            "forest"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "language",
+          "expectedAnswer": "forest",
+          "explanation": "The stem directly states 'pali' means 'forest'; the answer requires only reading and recalling that single stated definition.",
+          "difficulty": 1,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "river": "'River' translates 'naro' per the source rules, not 'pali' as stated in the stem.",
+            "hill": "No rule in the stem or sources maps 'pali' to 'hill'.",
+            "cloud": "No rule in the stem or sources maps 'pali' to 'cloud'.",
+            "forest": "The stem explicitly states that in Zali 'pali' means 'forest', making this the direct translation."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        },
+        {
+          "index": 3,
+          "prompt": "The fictional Fern museum opens only on Friday. On which day does it open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Sunday",
+            "Friday"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "factual",
+          "expectedAnswer": "Friday",
+          "explanation": "The stem directly states the Fern museum opens only on Friday; the answer requires only reading that single stated fact.",
+          "difficulty": 1,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Tuesday": "Tuesday is when the Vale museum opens per the source rules, not the Fern museum described in the stem.",
+            "Monday": "No rule in the stem or sources associates the Fern museum with Monday.",
+            "Sunday": "No rule in the stem or sources associates the Fern museum with Sunday.",
+            "Friday": "The stem explicitly states the fictional Fern museum opens only on Friday."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "metrics": {
+        "QuestionQuality": {
+          "review": {
+            "accepted": 4
+          }
+        }
+      },
+      "scope": "Offline replay of recorded solver and reviewer outputs; no new independent inference or current-policy provenance."
+    },
+    "review_2_contrast.json": {
+      "accepted": [
+        {
+          "index": 0,
+          "prompt": "Table A: (id=1, x=5), (id=2, x=3), (id=3, x=7). Table B: (a_id=1, y=10), (a_id=1, y=20), (a_id=2, y=5). Query: SELECT * FROM A LEFT JOIN B ON A.id=B.a_id AND B.y>15 WHERE A.x>0. How many rows result?",
+          "choices": [
+            "4",
+            "5",
+            "3",
+            "2"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Compare predicates in ON versus WHERE with dupli",
+          "expectedAnswer": "3",
+          "explanation": "The ON predicate B.y>15 restricts which B rows participate before unmatched left rows are added, so id=1 yields one row (y=20), while id=2 and id=3 each yield a NULL-padded row. WHERE A.x>0 retains all three.",
+          "difficulty": 4,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "4": "The ON clause filters B rows before the join, so id=1 matches only y=20 (one row), not both B rows; the total is 3, not 4.",
+            "5": "Five would require all three B rows to match plus unmatched rows; the ON condition B.y>15 eliminates y=10 and y=5, leaving only 3 joined rows.",
+            "3": "id=1 matches only y=20 (one row); id=2 and id=3 find no B match and each gets a NULL-extended row; all three pass WHERE A.x>0, giving exactly 3 rows.",
+            "2": "Two would require one left row to be eliminated; WHERE A.x>0 keeps all three rows since x=5, 3, and 7 are all positive."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "metrics": {
+        "QuestionQuality": {
+          "review": {
+            "accepted": 1
+          }
+        }
+      },
+      "scope": "Offline replay of recorded solver and reviewer outputs; no new independent inference or current-policy provenance."
+    },
+    "review_2_current.json": {
+      "accepted": [
+        {
+          "index": 0,
+          "prompt": "Table A: (id=1, x=5), (id=2, x=3), (id=3, x=7). Table B: (a_id=1, y=10), (a_id=1, y=20), (a_id=2, y=5). Query: SELECT * FROM A LEFT JOIN B ON A.id=B.a_id AND B.y>15 WHERE A.x>0. How many rows result?",
+          "choices": [
+            "4",
+            "5",
+            "3",
+            "2"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "Compare predicates in ON versus WHERE with dupli",
+          "expectedAnswer": "3",
+          "explanation": "The ON clause restricts which B rows participate before NULL-extension, so id=1 yields one row (y=20 only), while id=2 and id=3 each yield a NULL-extended row. WHERE then filters the 3-row result, keeping all because every x>0.",
+          "difficulty": 4,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "4": "The ON clause filters B rows before the join, so id=1 matches only y=20 (one row), not both B rows; the result has 3 rows, not 4.",
+            "5": "5 would require all B rows to match; the ON condition B.y>15 excludes y=10 and y=5, leaving only 3 joined rows.",
+            "3": "id=1 matches only y=20, id=2 and id=3 produce NULL-extended rows; all three pass WHERE A.x>0, giving exactly 3 rows.",
+            "2": "No row is eliminated by WHERE A.x>0 because all x values (5, 3, 7) are positive, so the count stays at 3, not 2."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "metrics": {
+        "QuestionQuality": {
+          "review": {
+            "accepted": 1
+          }
+        }
+      },
+      "scope": "Offline replay of recorded solver and reviewer outputs; no new independent inference or current-policy provenance."
+    },
+    "review_3_contrast.json": {
+      "accepted": [
+        {
+          "index": 0,
+          "prompt": "On the June solstice, a traveler notes that sunrise in Oslo (59°N) occurs at 3:54 AM local time. On the same date, a colleague in Cape Town (34°S) records sunrise. Which statement about Cape Town's sunrise time is best supported?",
+          "choices": [
+            "Sunrise occurs around 6:00 AM, as tilt effects cancel at this latitude.",
+            "Sunrise timing cannot be determined without knowing Cape Town's longitude.",
+            "Sunrise occurs later than 6:00 AM and later than on the December solstice.",
+            "Sunrise occurs earlier than 3:54 AM, matching Oslo's early sunrise."
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "June and December solstices and opposite hemisph",
+          "expectedAnswer": "Sunrise occurs later than 6:00 AM and later than on the December solstice.",
+          "explanation": "On the June solstice the Southern Hemisphere is tilted away from the Sun, so 34°S is in mid-winter with its latest sunrises of the year. The December solstice reverses this, giving Cape Town its earliest sunrises.",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "Sunrise occurs around 6:00 AM, as tilt effects cancel at this latitude.": "At 34°S on the June solstice the Southern Hemisphere is tilted away from the Sun, producing winter conditions; tilt effects do not cancel at this latitude.",
+            "Sunrise timing cannot be determined without knowing Cape Town's longitude.": "Longitude shifts clock time within a time zone but the question concerns local solar time; the late-sunrise pattern follows directly from latitude and date.",
+            "Sunrise occurs later than 6:00 AM and later than on the December solstice.": "June solstice is mid-winter at 34°S, giving the year's shortest days and latest sunrises; the December solstice is summer there, so sunrise is earlier on that date.",
+            "Sunrise occurs earlier than 3:54 AM, matching Oslo's early sunrise.": "Oslo's 3:54 AM sunrise reflects near-maximum summer daylight at 59°N; Cape Town is in winter on the June solstice and has a late, not early, sunrise."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "metrics": {
+        "QuestionQuality": {
+          "review": {
+            "accepted": 1,
+            "difficulty_floor": 1
+          }
+        }
+      },
+      "scope": "Offline replay of recorded solver and reviewer outputs; no new independent inference or current-policy provenance."
+    },
+    "review_3_current.json": {
+      "accepted": [
+        {
+          "index": 1,
+          "prompt": "A student compares two locations at 40° latitude: one in the Northern Hemisphere and one in the Southern Hemisphere. On which pair of dates will both locations experience approximately equal daylight hours?",
+          "choices": [
+            "June solstice and March equinox",
+            "December solstice and September equinox",
+            "March equinox and September equinox",
+            "June solstice and December solstice"
+          ],
+          "skillID": null,
+          "objectiveID": null,
+          "topic": "June and December solstices and opposite hemisph",
+          "expectedAnswer": "March equinox and September equinox",
+          "explanation": "At the equinoxes Earth's axial tilt is perpendicular to the Sun, giving ~12 h daylight at all latitudes; only the equinox pair satisfies equal daylight on both dates for both hemispheres.",
+          "difficulty": 3,
+          "format": "Multiple Choice",
+          "choiceExplanations": {
+            "June solstice and March equinox": "On the June solstice 40°N and 40°S have very unequal daylight (~15 h vs ~9 h), so the pair fails the 'both dates' requirement.",
+            "December solstice and September equinox": "On the December solstice the two hemispheres again have unequal daylight, so only one of the two dates satisfies the condition.",
+            "March equinox and September equinox": "At every equinox all latitudes receive approximately 12 h of daylight, so both 40°N and 40°S have equal daylight on both dates.",
+            "June solstice and December solstice": "Each solstice gives one hemisphere long days and the other short days, so daylight is unequal on both dates even though the hemispheres swap roles."
+          },
+          "verificationVersion": 1,
+          "verificationPolicyRevision": 2
+        }
+      ],
+      "metrics": {
+        "QuestionQuality": {
+          "review": {
+            "rejected_by_model": 1,
+            "accepted": 1
+          }
+        }
+      },
+      "scope": "Offline replay of recorded solver and reviewer outputs; no new independent inference or current-policy provenance."
+    }
+  }
+}
