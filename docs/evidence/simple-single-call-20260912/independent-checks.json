@@ -1,0 +1,112 @@
+{
+  "scope": "Offline calculations and execution after reading the exact synthetic code. No model calls.",
+  "calculations": {
+    "nova_three_dilutions_percent": "256/25",
+    "nova_volume_after_equal_replacement_ml": 1000,
+    "kimi_acid_liters_after_second_replacement": "105/4",
+    "kimi_final_acid_percent": "175/4",
+    "kimi_first_removal_liters": "16",
+    "kimi_alcohol_final_percent_from_stated_30_percent": "44",
+    "fresh_repair_price_tax_on_total": "351",
+    "fresh_repair_price_tax_only_on_part": "1721/5",
+    "fresh_four_month_gym_total": "2127/10"
+  },
+  "python": [
+    {
+      "case": "final_python_closures_worker_kimi",
+      "index": 0,
+      "extraction": "Exact code following the question label and blank line.",
+      "code": "def make_multipliers():\n    return [lambda x: x * i for i in range(3)]\n\nmults = make_multipliers()\nprint([m(2) for m in mults])",
+      "stdout": "[4, 4, 4]\n",
+      "authored_key": "[4, 4, 4]"
+    },
+    {
+      "case": "final_python_closures_worker_kimi",
+      "index": 1,
+      "extraction": "Exact code following the question label and blank line.",
+      "code": "def make_multipliers():\n    return [lambda x, i=i: x * i for i in range(3)]\n\nmults = make_multipliers()\nprint([m(2) for m in mults])",
+      "stdout": "[0, 2, 4]\n",
+      "authored_key": "[0, 2, 4]"
+    },
+    {
+      "case": "final_python_closures_api_nova",
+      "index": 0,
+      "extraction": "Exact fenced Python body.",
+      "code": "def outer(x):\n    def inner():\n        return x\n    return inner\n\nf = outer(5)\nx = 10\ng = outer(x)\nprint(f())\nprint(g())",
+      "stdout": "5\n10\n",
+      "authored_key": "5, 10"
+    },
+    {
+      "case": "final_python_closures_api_nova",
+      "index": 1,
+      "extraction": "Exact fenced Python body.",
+      "code": "def make_multiplier(n):\n    return lambda i: i * n\n\nmultipliers = [make_multiplier(i) for i in range(3)]\nprint(multipliers[0](2))\nprint(multipliers[1](2))\nprint(multipliers[2](2))",
+      "stdout": "0\n2\n4\n",
+      "authored_key": "0, 2, 4"
+    },
+    {
+      "case": "simple_fresh_python_dicts_worker_kimi",
+      "index": 0,
+      "snippet": "A",
+      "extraction": "Exact span between the prose label and sentence-boundary period; labels and terminal prose punctuation are not executed.",
+      "code": "d={}; x=d.get('k',[]); x.append(1); print(d)",
+      "stdout": "{}\n"
+    },
+    {
+      "case": "simple_fresh_python_dicts_worker_kimi",
+      "index": 0,
+      "snippet": "B",
+      "extraction": "Exact span between the prose label and sentence-boundary period; labels and terminal prose punctuation are not executed.",
+      "code": "d={}; x=d.setdefault('k',[]); x.append(1); print(d)",
+      "stdout": "{'k': [1]}\n"
+    },
+    {
+      "case": "simple_fresh_python_dicts_worker_kimi",
+      "index": 1,
+      "snippet": "A",
+      "extraction": "Exact span between the prose label and sentence-boundary period; labels and terminal prose punctuation are not executed.",
+      "code": "d={'k':[0]}; x=d.get('k',[]); x.append(1); print(d)",
+      "stdout": "{'k': [0, 1]}\n"
+    },
+    {
+      "case": "simple_fresh_python_dicts_worker_kimi",
+      "index": 1,
+      "snippet": "B",
+      "extraction": "Exact span between the prose label and sentence-boundary period; labels and terminal prose punctuation are not executed.",
+      "code": "d={'k':[0]}; x=d.setdefault('k',[]); x.append(1); print(d)",
+      "stdout": "{'k': [0, 1]}\n"
+    }
+  ],
+  "transit": {
+    "Harbor_to_Ridge_days": [
+      "Monday",
+      "Friday"
+    ],
+    "Market_to_Park_days": [
+      "Friday"
+    ],
+    "Harbor_to_Park_Wednesday": false,
+    "Ridge_to_Harbor_without_changing_lines": false,
+    "arrival_times_provided": false
+  },
+  "reserve": {
+    "otter_area": "Lake",
+    "Lake_keeper": "Niko",
+    "Paz_area": "Meadow",
+    "Meadow_animals": "deer"
+  },
+  "references": [
+    {
+      "url": "https://dictionary.cambridge.org/grammar/british-grammar/relative-clauses-defining-and-non-defining",
+      "scope": "Both restrictive that and which are allowed. Commas express supplementary information."
+    },
+    {
+      "url": "https://docs.python.org/3/faq/programming.html#why-do-lambdas-defined-in-a-loop-with-different-values-all-return-the-same-result",
+      "scope": "Closure lookup versus defaults; actual code results are separately executed."
+    },
+    {
+      "url": "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2/modals-deductions-about-past?page=1",
+      "scope": "Must have, might have, and cannot have express differing epistemic stances; these definitions alone do not establish whether a particular story supports a stance."
+    }
+  ]
+}

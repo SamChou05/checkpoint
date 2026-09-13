@@ -1,0 +1,580 @@
+{
+  "rows": [
+    {
+      "case": "final_mixture_replacement_api_nova",
+      "group": "same_requests",
+      "index": 0,
+      "prompt": "A 500 mL solution of 20% alcohol is reduced by removing 100 mL, replacing it with water. This is repeated twice more. What is the final alcohol concentration?",
+      "key": "15.85%",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": false,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "4 intended",
+      "assessment": "Author: under normal equal-volume uniform replacement the answer is 10.24%, absent from the choices. Uniform mixing and replacement volume are not explicit despite the request. Explanation reverses dilution, invents extra removals and eventually asserts 100%=15.85%. Oversized main is a separate format rejection.",
+      "distractors": "Parallel numeric distractors but no correct one.",
+      "lengths": {
+        "prompt": 158,
+        "main": 624,
+        "choices": [
+          6,
+          6,
+          6,
+          3
+        ]
+      }
+    },
+    {
+      "case": "final_mixture_replacement_api_nova",
+      "group": "same_requests",
+      "index": 1,
+      "prompt": "A 1000 mL solution of 30% salt is reduced by removing 200 mL, replacing it with water. This is repeated three times. What volume of solution remains?",
+      "key": "640 mL",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": false,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "Below 4 / incomplete",
+      "assessment": "Author: if removed liquid is replaced with equal water, volume remains 1000 mL; otherwise replacement amount is unstated. 640 mL follows neither interpretation. Explanation invents extra removals and ignores replacement. Oversized main also fails admission.",
+      "distractors": "Every offered volume relies on losing volume despite replacement.",
+      "lengths": {
+        "prompt": 149,
+        "main": 550,
+        "choices": [
+          6,
+          6,
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "case": "final_mixture_replacement_worker_kimi",
+      "group": "same_requests",
+      "index": 0,
+      "prompt": "A 60-liter tank contains 30% acid solution. 10 liters are removed and replaced with water, then 15 liters of the new mixture are removed and replaced with pure acid. What is the final acid concentration?",
+      "key": "35%",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": true,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "4 intended",
+      "assessment": "Author: the calculation reaches 26.25 L acid in 60 L, which is 43.75%, not keyed 35%. No correct choice. This bad item passes deterministic admission; no model check follows. Uniform mixing is implicit rather than expressly stated.",
+      "distractors": "Parallel numbers, all wrong.",
+      "lengths": {
+        "prompt": 203,
+        "main": 254,
+        "choices": [
+          5,
+          3,
+          5,
+          3
+        ]
+      }
+    },
+    {
+      "case": "final_mixture_replacement_worker_kimi",
+      "group": "same_requests",
+      "index": 1,
+      "prompt": "A 40-liter container holds 50% alcohol. Some amount is removed and replaced with water to get 30% alcohol. Then 8 liters of this mixture are removed and replaced with pure alcohol, giving 42% alcohol. How many liters were removed in the first step?",
+      "key": "16 liters",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": false,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "4 intended",
+      "assessment": "Author: 30% after first replacement gives x=16 L, but second replacement yields 44%, contradicting the stated 42%. Explanation notices the contradiction and appeals to the intended key instead of fixing the stem. Oversized main fails admission.",
+      "distractors": "No option satisfies both concentration constraints.",
+      "lengths": {
+        "prompt": 248,
+        "main": 697,
+        "choices": [
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "case": "final_python_closures_worker_kimi",
+      "group": "same_requests",
+      "index": 0,
+      "prompt": "What prints?\n\ndef make_multipliers():\n    return [lambda x: x * i for i in range(3)]\n\nmults = make_multipliers()\nprint([m(2) for m in mults])",
+      "key": "[4, 4, 4]",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": true,
+      "compatible": true,
+      "supported_key_and_main_after_admission": true,
+      "difficulty": "3 supported",
+      "assessment": "Execution gives [4, 4, 4]. Lambdas share the comprehension i cell, whose final value is 2; the explanation is supported.",
+      "distractors": "[0,2,4] is a strong early-binding alternative; zero and unit-factor outputs are simpler mistakes.",
+      "lengths": {
+        "prompt": 141,
+        "main": 157,
+        "choices": [
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "case": "final_python_closures_worker_kimi",
+      "group": "same_requests",
+      "index": 1,
+      "prompt": "What prints?\n\ndef make_multipliers():\n    return [lambda x, i=i: x * i for i in range(3)]\n\nmults = make_multipliers()\nprint([m(2) for m in mults])",
+      "key": "[0, 2, 4]",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": true,
+      "compatible": true,
+      "supported_key_and_main_after_admission": true,
+      "difficulty": "3 supported",
+      "assessment": "Execution gives [0, 2, 4]. Defaults bind 0,1,2 when each lambda is defined; applying x=2 gives the displayed result. Explanation and exact code survive admission.",
+      "distractors": "Contrast with shared closure is strong; the other constant outputs are less targeted.",
+      "lengths": {
+        "prompt": 146,
+        "main": 161,
+        "choices": [
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "case": "final_python_closures_api_nova",
+      "group": "same_requests",
+      "index": 0,
+      "prompt": "What will be the output of the following Python code snippet?\n\n```python\ndef outer(x):\n    def inner():\n        return x\n    return inner\n\nf = outer(5)\nx = 10\ng = outer(x)\nprint(f())\nprint(g())\n```",
+      "key": "5, 10",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": false,
+      "compatible": true,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "3 intended",
+      "assessment": "Key gives the correct value sequence 5 then 10, but commas are not literal line breaks. Main falsely says g() returns 5 and conflates separate outer calls. Format is omitted by the model and supplied by existing normalization; core code is intact.",
+      "distractors": "Four value sequences are relevant, but output notation should match the actual lines.",
+      "lengths": {
+        "prompt": 197,
+        "main": 326,
+        "choices": [
+          5,
+          4,
+          6,
+          5
+        ]
+      }
+    },
+    {
+      "case": "final_python_closures_api_nova",
+      "group": "same_requests",
+      "index": 1,
+      "prompt": "What will be the output of the following Python code snippet?\n\n```python\ndef make_multiplier(n):\n    return lambda i: i * n\n\nmultipliers = [make_multiplier(i) for i in range(3)]\nprint(multipliers[0](2))\nprint(multipliers[1](2))\nprint(multipliers[2](2))\n```",
+      "key": "0, 2, 4",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": false,
+      "compatible": true,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "3 intended",
+      "assessment": "Key gives the correct value sequence 0,2,4, with the same comma/newline qualification. Main incorrectly says lambdas capture comprehension i: each factory call binds its own n, while lambda i is the call parameter 2. Correct values do not support that teaching.",
+      "distractors": "Distinct numeric sequences; the factory-versus-loop distinction is useful.",
+      "lengths": {
+        "prompt": 256,
+        "main": 335,
+        "choices": [
+          7,
+          7,
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "case": "final_relative_clauses_api_nova",
+      "group": "same_requests",
+      "index": 0,
+      "prompt": "Which sentence correctly identifies the subset of books needing repair?",
+      "key": "The books that are damaged need repair.",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": true,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "2, below request",
+      "assessment": "Author offers both restrictive that and restrictive which as correct. Main falsely claims commas occur in the other alternatives. Admission does not detect this semantic ambiguity.",
+      "distractors": "Two correct, semantically equivalent choices.",
+      "lengths": {
+        "prompt": 71,
+        "main": 224,
+        "choices": [
+          39,
+          42,
+          41,
+          40
+        ]
+      }
+    },
+    {
+      "case": "final_relative_clauses_api_nova",
+      "group": "same_requests",
+      "index": 1,
+      "prompt": "Which sentence adds supplementary information about the books?",
+      "key": "The books, which are damaged, need repair.",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": false,
+      "compatible": true,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "2, below request",
+      "assessment": "Raw main correctly discusses the originally second sentence. Existing choice normalization moves the key to the first position while preserving main wording, so its reference to the second sentence now points at a different choice. Any later shuffle is also unsafe. The question copies the source example and misses level 3.",
+      "distractors": "Two redundant restrictive alternatives. Positional explanation is fragile.",
+      "lengths": {
+        "prompt": 62,
+        "main": 233,
+        "choices": [
+          39,
+          42,
+          41,
+          40
+        ]
+      }
+    },
+    {
+      "case": "final_relative_clauses_worker_kimi",
+      "group": "same_requests",
+      "index": 0,
+      "prompt": "A museum curator writes: 'The paintings which were donated last year will be displayed first.' The director replies with a different version. Which sentence shows the curator meant only some paintings (the donated subset) will be displayed first?",
+      "key": "The paintings that were donated last year will be displayed first.",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": true,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "3 intended",
+      "assessment": "Both unpunctuated which and that express the subset. Main acknowledges this but keys only that. It also refers to A/C despite unlettered, reordered choices.",
+      "distractors": "Two defensible correct choices and unstable feedback references.",
+      "lengths": {
+        "prompt": 246,
+        "main": 286,
+        "choices": [
+          69,
+          67,
+          67,
+          66
+        ]
+      }
+    },
+    {
+      "case": "final_relative_clauses_worker_kimi",
+      "group": "same_requests",
+      "index": 1,
+      "prompt": "A biologist studying three tagged wolves writes: 'The wolves who are wearing GPS collars are the alpha pair and their offspring.' A colleague suggests: 'The wolves, who are wearing GPS collars, are the alpha pair and their offspring.' What does the colleague's version imply about the wolves?",
+      "key": "All three wolves wear collars, and this adds extra detail.",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": true,
+      "compatible": true,
+      "supported_key_and_main_after_admission": true,
+      "difficulty": "3 supported",
+      "assessment": "Within the already identified three-wolf group, supplementary collar information applies to all three. Main supports the keyed interpretation. The alpha-pair alternative omits the offspring, so it is not an accurate description of the whole trio; its partially overlapping identification language weakens distractor clarity.",
+      "distractors": "One distractor partly overlaps the non-identification concept; this is a quality reservation, not counted as a second fully supported answer.",
+      "lengths": {
+        "prompt": 292,
+        "main": 294,
+        "choices": [
+          48,
+          58,
+          66,
+          54
+        ]
+      }
+    },
+    {
+      "case": "final_private_transit_worker_kimi",
+      "group": "same_requests",
+      "index": 0,
+      "prompt": "A passenger wants to travel from Harbor to Ridge. Which day can they make this trip?",
+      "key": "Monday and Friday",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": true,
+      "compatible": true,
+      "supported_key_and_main_after_admission": true,
+      "difficulty": "2 supported",
+      "assessment": "Copper then Silver connects Harbor to Ridge on Monday and Friday. The only-options are false as complete day sets; the singular wording Which day is mildly awkward for a two-day answer. Key and main are supported.",
+      "distractors": "Parallel day-set choices; plural wording would be clearer.",
+      "lengths": {
+        "prompt": 84,
+        "main": 181,
+        "choices": [
+          11,
+          14,
+          11,
+          17
+        ]
+      }
+    },
+    {
+      "case": "final_private_transit_worker_kimi",
+      "group": "same_requests",
+      "index": 1,
+      "prompt": "On which day can a passenger travel from Market to Park?",
+      "key": "Wednesday",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": false,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "2 intended",
+      "assessment": "Market to Park needs Silver and Gold on Friday. The keyed Wednesday is wrong; the main repeatedly calculates Friday then insists on a designated Wednesday answer. Main exceeds the bound and is rejected structurally.",
+      "distractors": "Day choices are relevant but keyed incorrectly.",
+      "lengths": {
+        "prompt": 56,
+        "main": 1187,
+        "choices": [
+          6,
+          9,
+          6,
+          20
+        ]
+      }
+    },
+    {
+      "case": "final_private_transit_api_nova",
+      "group": "same_requests",
+      "index": 0,
+      "prompt": "Starting at Harbor, what is the earliest possible arrival time at Park on a Wednesday?",
+      "key": "10:00 AM",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": false,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "2 intended",
+      "assessment": "Author invents 08:00/10:00 times and a Gold Market–Park link. No departure/travel times are supplied and Wednesday lacks Silver. Missing mapped IDs cause admission failure separately from the substantive errors.",
+      "distractors": "All arrival times are invented.",
+      "lengths": {
+        "prompt": 86,
+        "main": 314,
+        "choices": [
+          8,
+          8,
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "case": "final_private_transit_api_nova",
+      "group": "same_requests",
+      "index": 1,
+      "prompt": "On which days can a passenger travel directly from Ridge to Harbor without changing lines?",
+      "key": "Monday and Friday",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": false,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "2 intended",
+      "assessment": "Ridge to Harbor always requires Silver then Copper and a transfer, contradicting without changing lines. No offered day set supplies a no-transfer route. Missing mapped IDs cause admission failure.",
+      "distractors": "All choices assume an impossible direct line.",
+      "lengths": {
+        "prompt": 90,
+        "main": 313,
+        "choices": [
+          17,
+          20,
+          20,
+          11
+        ]
+      }
+    },
+    {
+      "case": "simple_fresh_price_changes_worker_kimi",
+      "group": "fresh",
+      "index": 0,
+      "prompt": "A repair service charges $85 plus 8% tax on the total. For a $240 part replacement, what is the final price?",
+      "key": "$344.80",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": false,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "3 intended",
+      "assessment": "Tax on total means (240+85)*1.08 = 351, absent from choices. The main computes 351 correctly, then changes tax scope to justify 344.80. Oversized main fails admission.",
+      "distractors": "A plausible operation-order distractor is wrongly promoted to the key.",
+      "lengths": {
+        "prompt": 108,
+        "main": 780,
+        "choices": [
+          7,
+          7,
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "case": "simple_fresh_price_changes_worker_kimi",
+      "group": "fresh",
+      "index": 1,
+      "prompt": "A gym membership costs $45 monthly with a one-time $30 activation fee. If prices rise 6% after 3 months, what is the total paid for the first 4 months?",
+      "key": "$220.20",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": false,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "3 intended",
+      "assessment": "30 + 3*45 + 45*1.06 = 212.70, absent from choices. Main repeatedly gets this result before selecting 220.20 on presumed intent. Oversized main fails admission.",
+      "distractors": "No correct amount; lengthy rationalization does not fix it.",
+      "lengths": {
+        "prompt": 151,
+        "main": 3424,
+        "choices": [
+          7,
+          7,
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "case": "simple_fresh_python_dicts_worker_kimi",
+      "group": "fresh",
+      "index": 0,
+      "prompt": "Snippet A: d={}; x=d.get('k',[]); x.append(1); print(d). Snippet B: d={}; x=d.setdefault('k',[]); x.append(1); print(d). What do they print?",
+      "key": "A prints {} and B prints {'k': [1]}",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": true,
+      "compatible": true,
+      "supported_key_and_main_after_admission": true,
+      "difficulty": "3 supported",
+      "assessment": "Exact code spans execute as {} for A and {k:[1]} for B. get does not insert; setdefault inserts and shares the appended list. The prose labels and terminal sentence periods are outside the executed spans.",
+      "distractors": "All four pairings express relevant insertion/sharing hypotheses; inline layout is denser than separate code blocks.",
+      "lengths": {
+        "prompt": 140,
+        "main": 183,
+        "choices": [
+          13,
+          35,
+          21,
+          35
+        ]
+      }
+    },
+    {
+      "case": "simple_fresh_python_dicts_worker_kimi",
+      "group": "fresh",
+      "index": 1,
+      "prompt": "Snippet A: d={'k':[0]}; x=d.get('k',[]); x.append(1); print(d). Snippet B: d={'k':[0]}; x=d.setdefault('k',[]); x.append(1); print(d). What do they print?",
+      "key": "Both print {'k': [0, 1]}",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": true,
+      "compatible": true,
+      "supported_key_and_main_after_admission": true,
+      "difficulty": "3 supported",
+      "assessment": "Both exact code spans print {k:[0,1]}. The existing list is returned and mutated in each case. The unused [] defaults are still evaluated; ignored is understood as not returned/stored, not a claim of lazy evaluation.",
+      "distractors": "Different pairings plausibly test sharing versus copying.",
+      "lengths": {
+        "prompt": 154,
+        "main": 195,
+        "choices": [
+          24,
+          46,
+          21,
+          46
+        ]
+      }
+    },
+    {
+      "case": "simple_fresh_english_modals_worker_kimi",
+      "group": "fresh",
+      "index": 0,
+      "prompt": "Situation 1: The detective finds fingerprints at the crime scene that match only one suspect. Situation 2: The detective notices a window was left unlocked, which could explain entry. Which sentence expresses strong positive deduction vs. mere possibility?",
+      "key": "The suspect must have entered through the window.",
+      "key_supported": false,
+      "main_supported_after_choice_normalization": false,
+      "compatible": true,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "Below clear 3 / ambiguous",
+      "assessment": "The stem mixes two situations and asks strong deduction vs possibility without specifying which to answer. Must have marks a strong deduction linguistically, but fingerprints do not establish entry through a window. The main wrongly ties the window claim to fingerprint evidence.",
+      "distractors": "Modal alternatives are parallel; case-to-claim support is missing.",
+      "lengths": {
+        "prompt": 256,
+        "main": 276,
+        "choices": [
+          49,
+          50,
+          51,
+          51
+        ]
+      }
+    },
+    {
+      "case": "simple_fresh_english_modals_worker_kimi",
+      "group": "fresh",
+      "index": 1,
+      "prompt": "Situation 1: Sarah's car is parked outside with frost on the windshield, though she lives 500 miles away and never drives there. Situation 2: Her neighbor mentions Sarah once talked about visiting someday. Which sentence expresses strong negative deduction vs. unsupported possibility?",
+      "key": "Sarah cannot have driven here last night.",
+      "key_supported": null,
+      "main_supported_after_choice_normalization": null,
+      "compatible": true,
+      "supported_key_and_main_after_admission": false,
+      "difficulty": "Uncertain",
+      "assessment": "Cannot have expresses the requested strong negative stance. If never drives there is read as a stipulated absolute, the key is defensible; if it is an ordinary habit, distance and habit do not establish that conclusion, especially with her car present. The two-situation vs task remains unclear. Record as qualified, not a clearly false key or a clean pass.",
+      "distractors": "Distinct modal meanings; awkward evidence and ambiguous task prevent a robust scenario question.",
+      "lengths": {
+        "prompt": 285,
+        "main": 240,
+        "choices": [
+          40,
+          41,
+          39,
+          41
+        ]
+      }
+    },
+    {
+      "case": "simple_fresh_alder_reserve_worker_kimi",
+      "group": "fresh",
+      "index": 0,
+      "prompt": "A visitor reports seeing an otter near water. Which keeper should they contact about this sighting?",
+      "key": "Niko",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": true,
+      "compatible": true,
+      "supported_key_and_main_after_admission": true,
+      "difficulty": "2 supported",
+      "assessment": "The stipulated handbook maps otter→Lake→Niko. Contacting the keeper follows the ordinary responsibility reading of manages. No tested fact was deleted or restated in the stem.",
+      "distractors": "Four named keepers are parallel and exclusive.",
+      "lengths": {
+        "prompt": 99,
+        "main": 117,
+        "choices": [
+          5,
+          4,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "case": "simple_fresh_alder_reserve_worker_kimi",
+      "group": "fresh",
+      "index": 1,
+      "prompt": "Paz needs to check on an animal's health but forgot which species is in their assigned area. What animal should Paz examine?",
+      "key": "Deer",
+      "key_supported": true,
+      "main_supported_after_choice_normalization": true,
+      "compatible": true,
+      "supported_key_and_main_after_admission": true,
+      "difficulty": "2 supported",
+      "assessment": "The stipulated handbook maps Paz→Meadow→deer. Main gives the complete two-step relation. The forgetful-keeper scenario is contrived, but the answer is clear.",
+      "distractors": "Four animal types are parallel and exclusive.",
+      "lengths": {
+        "prompt": 124,
+        "main": 94,
+        "choices": [
+          5,
+          6,
+          7,
+          4
+        ]
+      }
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+> Follow-up requested after this audit: [one-call simplification trial](QUESTION_SIMPLE_SINGLE_CALL_RESULTS_20260912.md), with 12 separately bounded calls. The 172-call accounting below belongs to the preceding audit.
+
 # Question correctness: supported improvements and remaining failures
 
 The audit supports three general changes: preserve the complete question stimulus,
