@@ -1,0 +1,382 @@
+{
+  "group": "native",
+  "jobs": [
+    [
+      "math_probability_legacy",
+      {
+        "goal": {
+          "title": "Apply conditional probability to screening tests",
+          "learningTarget": "Apply conditional probability to screening tests",
+          "currentLevel": "intermediate",
+          "contentTopics": [
+            "Base rates and conditional probability"
+          ],
+          "focusAreas": "Base rates and conditional probability"
+        },
+        "sourceDocuments": [
+          {
+            "name": "Synthetic study notes",
+            "text": "For a synthetic screening model, sensitivity is P(positive|condition), specificity is P(negative|no condition), and prevalence is P(condition). All rates concern the same population. Use whole-number hypothetical populations where helpful. A change in sample size alone does not alter a conditional probability. No medical advice or real test claims.",
+            "truncated": false
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      },
+      [
+        {
+          "prompt": "A screening test for a condition has sensitivity 90% and specificity 95%. In a population where prevalence is 2%, what is the probability that a person who tests positive actually has the condition?",
+          "explanation": "Using a hypothetical population of 10,000: 200 have the condition (2%), of whom 180 test positive (90% sensitivity). Of 9,800 without the condition, 490 test positive (5% false positive rate). Total positive tests = 670. P(condition|positive) = 180/670 ≈ 26.9%.",
+          "expectedAnswer": "Approximately 27%",
+          "choices": [
+            "Approximately 90%",
+            "Approximately 87%",
+            "Approximately 27%",
+            "Approximately 2%"
+          ],
+          "topic": "Base rates and conditional probability",
+          "skillID": "Base rates and conditional probability",
+          "objectiveID": "",
+          "objective": "Apply conditional probability to screening tests",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A disease affects 1 in 500 people. A test for this disease has 99% sensitivity and 99% specificity. If a randomly selected person tests positive, which statement about the probability they actually have the disease is correct?",
+          "explanation": "In 500,000 people: 1,000 have the disease, 999 test positive (99% sensitivity). Of 499,000 without disease, 4,990 test positive (1% false positive). Total positives = 5,989. P(disease|positive) = 999/5,989 ≈ 16.7%. Despite high test accuracy, low prevalence makes false positives outnumber true positives.",
+          "expectedAnswer": "It is below 20% due to the low prevalence",
+          "choices": [
+            "It exceeds 90% due to the high test accuracy",
+            "It is approximately 50%",
+            "It is below 20% due to the low prevalence",
+            "It equals the test's sensitivity of 99%"
+          ],
+          "topic": "Base rates and conditional probability",
+          "skillID": "Base rates and conditional probability",
+          "objectiveID": "",
+          "objective": "Apply conditional probability to screening tests",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "math_probability_native",
+      {
+        "goal": {
+          "title": "Apply conditional probability to screening tests",
+          "learningTarget": "Apply conditional probability to screening tests",
+          "currentLevel": "intermediate",
+          "contentTopics": [
+            "Base rates and conditional probability"
+          ],
+          "focusAreas": "Base rates and conditional probability"
+        },
+        "sourceDocuments": [
+          {
+            "name": "Synthetic study notes",
+            "text": "For a synthetic screening model, sensitivity is P(positive|condition), specificity is P(negative|no condition), and prevalence is P(condition). All rates concern the same population. Use whole-number hypothetical populations where helpful. A change in sample size alone does not alter a conditional probability. No medical advice or real test claims.",
+            "truncated": false
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      },
+      [
+        {
+          "prompt": "A screening test for a condition has sensitivity 90% and specificity 95%. In a population where prevalence is 2%, what is the probability that a person who tests positive actually has the condition?",
+          "explanation": "Using a hypothetical population of 10,000: 200 have the condition (2%), of whom 180 test positive (90% sensitivity). Of 9,800 without the condition, 490 test positive (5% false positive rate). Total positive tests = 670. P(condition|positive) = 180/670 ≈ 26.9%.",
+          "expectedAnswer": "Approximately 27%",
+          "choices": [
+            "Approximately 90%",
+            "Approximately 87%",
+            "Approximately 27%",
+            "Approximately 2%"
+          ],
+          "topic": "Base rates and conditional probability",
+          "skillID": "Base rates and conditional probability",
+          "objectiveID": "",
+          "objective": "Apply conditional probability to screening tests",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A disease affects 1 in 500 people. A test for this disease has 99% sensitivity and 99% specificity. If a randomly selected person tests positive, which statement about the probability they actually have the disease is correct?",
+          "explanation": "In 500,000 people: 1,000 have the disease, 999 test positive (99% sensitivity). Of 499,000 without disease, 4,990 test positive (1% false positive). Total positives = 5,989. P(disease|positive) = 999/5,989 ≈ 16.7%. Despite high test accuracy, low prevalence makes false positives outnumber true positives.",
+          "expectedAnswer": "It is below 20% due to the low prevalence",
+          "choices": [
+            "It exceeds 90% due to the high test accuracy",
+            "It is approximately 50%",
+            "It is below 20% due to the low prevalence",
+            "It equals the test's sensitivity of 99%"
+          ],
+          "topic": "Base rates and conditional probability",
+          "skillID": "Base rates and conditional probability",
+          "objectiveID": "",
+          "objective": "Apply conditional probability to screening tests",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "code_sql_native",
+      {
+        "goal": {
+          "title": "Trace SQLite queries with duplicates and NULL",
+          "learningTarget": "Trace SQLite queries with duplicates and NULL",
+          "currentLevel": "intermediate",
+          "contentTopics": [
+            "LEFT JOIN, WHERE, COUNT and NULL"
+          ],
+          "focusAreas": "LEFT JOIN, WHERE, COUNT and NULL"
+        },
+        "sourceDocuments": [
+          {
+            "name": "Synthetic study notes",
+            "text": "Use SQLite semantics. COUNT(*) counts rows; COUNT(expression) counts non-NULL expression values. A LEFT JOIN emits a NULL-extended row for each unmatched left row. WHERE filters after the join; an equality comparison involving NULL is unknown and is not retained by WHERE. Show all needed table rows in each question.",
+            "truncated": false
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      },
+      [
+        {
+          "prompt": "Table A: id (1, 2, 2, 3). Table B: a_id (2, 2, 4), val ('x','y','z'). Query: SELECT COUNT(*), COUNT(B.val) FROM A LEFT JOIN B ON A.id = B.a_id WHERE B.val = 'x'. What does it return?",
+          "explanation": "LEFT JOIN produces: (1,NULL,NULL), (2,2,'x'), (2,2,'x'), (2,2,'y'), (2,2,'y'), (3,NULL,NULL). WHERE B.val='x' keeps only rows where that equality is true; NULL comparisons fail, so only the two (2,2,'x') rows remain. COUNT(*) counts these 2 rows. COUNT(B.val) counts non-NULL B.val values, which is 2.",
+          "expectedAnswer": "2, 2",
+          "choices": [
+            "2, 2",
+            "4, 2",
+            "6, 2",
+            "2, 0"
+          ],
+          "topic": "LEFT JOIN, WHERE, COUNT and NULL",
+          "skillID": "LEFT JOIN, WHERE, COUNT and NULL",
+          "objectiveID": "",
+          "objective": "Trace SQLite queries with duplicates and NULL",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Table R: k (1, 1, 2). Table S: k (1, NULL, 3), data ('a','b','c'). Query: SELECT COUNT(*), COUNT(S.data) FROM R LEFT JOIN S ON R.k = S.k WHERE S.k IS NOT NULL. What is the result?",
+          "explanation": "LEFT JOIN matches: R.k=1 joins to S.k=1 twice (2 rows), R.k=1 has no match for S.k=NULL (equality with NULL is unknown, so no join), R.k=2 has no match (NULL-extended row). Before WHERE: 3 rows. WHERE S.k IS NOT NULL removes the NULL-extended row for R.k=2, leaving 2 rows. COUNT(*)=2. Both remaining rows have S.data='a' and 'a', so COUNT(S.data)=2.",
+          "expectedAnswer": "2, 2",
+          "choices": [
+            "3, 3",
+            "2, 2",
+            "2, 3",
+            "3, 2"
+          ],
+          "topic": "LEFT JOIN, WHERE, COUNT and NULL",
+          "skillID": "LEFT JOIN, WHERE, COUNT and NULL",
+          "objectiveID": "",
+          "objective": "Trace SQLite queries with duplicates and NULL",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "code_sql_legacy",
+      {
+        "goal": {
+          "title": "Trace SQLite queries with duplicates and NULL",
+          "learningTarget": "Trace SQLite queries with duplicates and NULL",
+          "currentLevel": "intermediate",
+          "contentTopics": [
+            "LEFT JOIN, WHERE, COUNT and NULL"
+          ],
+          "focusAreas": "LEFT JOIN, WHERE, COUNT and NULL"
+        },
+        "sourceDocuments": [
+          {
+            "name": "Synthetic study notes",
+            "text": "Use SQLite semantics. COUNT(*) counts rows; COUNT(expression) counts non-NULL expression values. A LEFT JOIN emits a NULL-extended row for each unmatched left row. WHERE filters after the join; an equality comparison involving NULL is unknown and is not retained by WHERE. Show all needed table rows in each question.",
+            "truncated": false
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      },
+      [
+        {
+          "prompt": "Table A: id (1, 2, 2, 3). Table B: a_id (2, 2, 4), val ('x','y','z'). Query: SELECT COUNT(*), COUNT(B.val) FROM A LEFT JOIN B ON A.id = B.a_id WHERE B.val = 'x'. What does it return?",
+          "explanation": "LEFT JOIN produces: (1,NULL,NULL), (2,2,'x'), (2,2,'x'), (2,2,'y'), (2,2,'y'), (3,NULL,NULL). WHERE B.val='x' keeps only rows where that equality is true; NULL comparisons fail, so only the two (2,2,'x') rows remain. COUNT(*) counts these 2 rows. COUNT(B.val) counts non-NULL B.val values, which is 2.",
+          "expectedAnswer": "2, 2",
+          "choices": [
+            "2, 2",
+            "4, 2",
+            "6, 2",
+            "2, 0"
+          ],
+          "topic": "LEFT JOIN, WHERE, COUNT and NULL",
+          "skillID": "LEFT JOIN, WHERE, COUNT and NULL",
+          "objectiveID": "",
+          "objective": "Trace SQLite queries with duplicates and NULL",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Table R: k (1, 1, 2). Table S: k (1, NULL, 3), data ('a','b','c'). Query: SELECT COUNT(*), COUNT(S.data) FROM R LEFT JOIN S ON R.k = S.k WHERE S.k IS NOT NULL. What is the result?",
+          "explanation": "LEFT JOIN matches: R.k=1 joins to S.k=1 twice (2 rows), R.k=1 has no match for S.k=NULL (equality with NULL is unknown, so no join), R.k=2 has no match (NULL-extended row). Before WHERE: 3 rows. WHERE S.k IS NOT NULL removes the NULL-extended row for R.k=2, leaving 2 rows. COUNT(*)=2. Both remaining rows have S.data='a' and 'a', so COUNT(S.data)=2.",
+          "expectedAnswer": "2, 2",
+          "choices": [
+            "3, 3",
+            "2, 2",
+            "2, 3",
+            "3, 2"
+          ],
+          "topic": "LEFT JOIN, WHERE, COUNT and NULL",
+          "skillID": "LEFT JOIN, WHERE, COUNT and NULL",
+          "objectiveID": "",
+          "objective": "Trace SQLite queries with duplicates and NULL",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "language_articles_legacy",
+      {
+        "goal": {
+          "title": "Choose English articles while preserving meaning",
+          "learningTarget": "Choose English articles while preserving meaning",
+          "currentLevel": "intermediate",
+          "contentTopics": [
+            "Generic reference versus specific reference"
+          ],
+          "focusAreas": "Generic reference versus specific reference"
+        },
+        "sourceDocuments": [
+          {
+            "name": "Synthetic study notes",
+            "text": "English count singular nouns usually need a determiner. Generic plural and mass nouns may use no article: Tigers are mammals; Water is essential. The can signal contextually identifiable specific referents. A mass noun can become countable for a serving or type. Interpret the whole context; grammatical alternatives can differ in meaning.",
+            "truncated": false
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      },
+      [
+        {
+          "prompt": "A travel blog states: \"We sampled cheese at the market.\" Later, the author writes: \"_____ cheese from that region is made with raw milk.\" Which article best preserves the intended meaning?",
+          "explanation": "The context shifts from specific cheese sampled at a market to a general statement about cheese from the entire region. Zero article signals generic reference to a mass noun category, while \"the\" would wrongly imply only that specific cheese, and \"a\" is ungrammatical with the mass noun here.",
+          "expectedAnswer": "Zero article (no article)",
+          "choices": [
+            "The",
+            "A",
+            "Zero article (no article)",
+            "An"
+          ],
+          "topic": "Generic reference versus specific reference",
+          "skillID": "generic-specific-reference",
+          "objectiveID": "distinguish-generic-specific-mass-nouns",
+          "objective": "Distinguish generic from specific reference with mass nouns in context",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A biologist writes: \"I observed a tiger in the sanctuary. _____ tiger is endangered across its range.\" Which article fits the second sentence to preserve coherent meaning?",
+          "explanation": "The first sentence introduces a specific tiger with \"a,\" but the second sentence makes a general claim about the species. \"The\" here signals generic reference to the class (the species as a whole), a distinct use from specific reference. \"A\" would wrongly suggest another individual; zero article is ungrammatical with singular count nouns.",
+          "expectedAnswer": "The",
+          "choices": [
+            "A",
+            "The",
+            "Zero article (no article)",
+            "An"
+          ],
+          "topic": "Generic reference versus specific reference",
+          "skillID": "generic-specific-reference",
+          "objectiveID": "distinguish-generic-specific-count-nouns",
+          "objective": "Distinguish generic from specific reference with singular count nouns in context",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "language_articles_native",
+      {
+        "goal": {
+          "title": "Choose English articles while preserving meaning",
+          "learningTarget": "Choose English articles while preserving meaning",
+          "currentLevel": "intermediate",
+          "contentTopics": [
+            "Generic reference versus specific reference"
+          ],
+          "focusAreas": "Generic reference versus specific reference"
+        },
+        "sourceDocuments": [
+          {
+            "name": "Synthetic study notes",
+            "text": "English count singular nouns usually need a determiner. Generic plural and mass nouns may use no article: Tigers are mammals; Water is essential. The can signal contextually identifiable specific referents. A mass noun can become countable for a serving or type. Interpret the whole context; grammatical alternatives can differ in meaning.",
+            "truncated": false
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      },
+      [
+        {
+          "prompt": "A travel blog states: \"We sampled cheese at the market.\" Later, the author writes: \"_____ cheese from that region is made with raw milk.\" Which article best preserves the intended meaning?",
+          "explanation": "The context shifts from specific cheese sampled at a market to a general statement about cheese from the entire region. Zero article signals generic reference to a mass noun category, while \"the\" would wrongly imply only that specific cheese, and \"a\" is ungrammatical with the mass noun here.",
+          "expectedAnswer": "Zero article (no article)",
+          "choices": [
+            "The",
+            "A",
+            "Zero article (no article)",
+            "An"
+          ],
+          "topic": "Generic reference versus specific reference",
+          "skillID": "generic-specific-reference",
+          "objectiveID": "distinguish-generic-specific-mass-nouns",
+          "objective": "Distinguish generic from specific reference with mass nouns in context",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A biologist writes: \"I observed a tiger in the sanctuary. _____ tiger is endangered across its range.\" Which article fits the second sentence to preserve coherent meaning?",
+          "explanation": "The first sentence introduces a specific tiger with \"a,\" but the second sentence makes a general claim about the species. \"The\" here signals generic reference to the class (the species as a whole), a distinct use from specific reference. \"A\" would wrongly suggest another individual; zero article is ungrammatical with singular count nouns.",
+          "expectedAnswer": "The",
+          "choices": [
+            "A",
+            "The",
+            "Zero article (no article)",
+            "An"
+          ],
+          "topic": "Generic reference versus specific reference",
+          "skillID": "generic-specific-reference",
+          "objectiveID": "distinguish-generic-specific-count-nouns",
+          "objective": "Distinguish generic from specific reference with singular count nouns in context",
+          "difficulty": 3,
+          "format": "Multiple Choice"
+        }
+      ]
+    ]
+  ],
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "GENERATION_ATTEMPTS": "3",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": ""
+  },
+  "max_provider_calls": 12
+}

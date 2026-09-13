@@ -1,0 +1,352 @@
+{
+  "group": "context",
+  "jobs": [
+    [
+      "reference_native",
+      {
+        "goal": {
+          "title": "Interpret synthetic rules and passages",
+          "contentTopics": [
+            "Rules and passages"
+          ]
+        },
+        "minimumDifficulty": 1,
+        "targetCount": 8,
+        "sourceDocuments": [
+          {
+            "name": "math rules",
+            "text": "In the fictional Luma game, a blue token scores 3 points.",
+            "truncated": false
+          },
+          {
+            "name": "programming rules",
+            "text": "The fictional Rho language defines x @ y as 2*x + y.",
+            "truncated": false
+          },
+          {
+            "name": "language rules",
+            "text": "The fictional Zali word 'naro' means 'river'.",
+            "truncated": false
+          },
+          {
+            "name": "factual rules",
+            "text": "The fictional Vale museum opens only on Tuesday.",
+            "truncated": false
+          }
+        ]
+      },
+      [
+        {
+          "prompt": "A Luma player earns 4 blue tokens. How many points does the player earn?",
+          "choices": [
+            "12",
+            "4",
+            "7",
+            "0"
+          ],
+          "expectedAnswer": "12",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "In a game each blue token scores 3 points. A player earns 5 blue tokens. How many points are earned?",
+          "choices": [
+            "15",
+            "5",
+            "8",
+            "0"
+          ],
+          "expectedAnswer": "15",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "What does the expression 4 @ 3 evaluate to in Rho?",
+          "choices": [
+            "11",
+            "7",
+            "12",
+            "1"
+          ],
+          "expectedAnswer": "11",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A language defines x @ y as 2*x + y. What does 5 @ 3 evaluate to?",
+          "choices": [
+            "13",
+            "8",
+            "15",
+            "2"
+          ],
+          "expectedAnswer": "13",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Which English word translates the Zali word 'naro'?",
+          "choices": [
+            "river",
+            "hill",
+            "forest",
+            "cloud"
+          ],
+          "expectedAnswer": "river",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "In Zali, 'pali' means 'forest'. Which English word translates 'pali'?",
+          "choices": [
+            "river",
+            "hill",
+            "forest",
+            "cloud"
+          ],
+          "expectedAnswer": "forest",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "On which day of the week does the Vale museum open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Friday",
+            "Sunday"
+          ],
+          "expectedAnswer": "Tuesday",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "The fictional Fern museum opens only on Friday. On which day does it open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Friday",
+            "Sunday"
+          ],
+          "expectedAnswer": "Friday",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "displayed_native",
+      {
+        "goal": {
+          "title": "Interpret synthetic rules and passages",
+          "contentTopics": [
+            "Rules and passages"
+          ]
+        },
+        "minimumDifficulty": 1,
+        "targetCount": 8,
+        "sourceDocuments": [
+          {
+            "name": "math rules",
+            "text": "In the fictional Luma game, a blue token scores 3 points.",
+            "truncated": false
+          },
+          {
+            "name": "programming rules",
+            "text": "The fictional Rho language defines x @ y as 2*x + y.",
+            "truncated": false
+          },
+          {
+            "name": "language rules",
+            "text": "The fictional Zali word 'naro' means 'river'.",
+            "truncated": false
+          },
+          {
+            "name": "factual rules",
+            "text": "The fictional Vale museum opens only on Tuesday.",
+            "truncated": false
+          }
+        ]
+      },
+      [
+        {
+          "prompt": "A Luma player earns 4 blue tokens. How many points does the player earn?",
+          "choices": [
+            "12",
+            "4",
+            "7",
+            "0"
+          ],
+          "expectedAnswer": "12",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "In a game each blue token scores 3 points. A player earns 5 blue tokens. How many points are earned?",
+          "choices": [
+            "15",
+            "5",
+            "8",
+            "0"
+          ],
+          "expectedAnswer": "15",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "What does the expression 4 @ 3 evaluate to in Rho?",
+          "choices": [
+            "11",
+            "7",
+            "12",
+            "1"
+          ],
+          "expectedAnswer": "11",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "A language defines x @ y as 2*x + y. What does 5 @ 3 evaluate to?",
+          "choices": [
+            "13",
+            "8",
+            "15",
+            "2"
+          ],
+          "expectedAnswer": "13",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Which English word translates the Zali word 'naro'?",
+          "choices": [
+            "river",
+            "hill",
+            "forest",
+            "cloud"
+          ],
+          "expectedAnswer": "river",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "In Zali, 'pali' means 'forest'. Which English word translates 'pali'?",
+          "choices": [
+            "river",
+            "hill",
+            "forest",
+            "cloud"
+          ],
+          "expectedAnswer": "forest",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "On which day of the week does the Vale museum open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Friday",
+            "Sunday"
+          ],
+          "expectedAnswer": "Tuesday",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "The fictional Fern museum opens only on Friday. On which day does it open?",
+          "choices": [
+            "Tuesday",
+            "Monday",
+            "Friday",
+            "Sunday"
+          ],
+          "expectedAnswer": "Friday",
+          "explanation": "The result follows from the stated facts and the requested operation.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        }
+      ]
+    ]
+  ],
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "GENERATION_ATTEMPTS": "3",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": ""
+  },
+  "max_provider_calls": 4,
+  "source_revision": "d4ca9cefaf6c1605cb8014406af74b4b17a2b7fa",
+  "source_sha256": {
+    "question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "native_output_contracts.py": "d43c0e223be0eb80a1ace46cb3373eff22a967a5970510a4f7b6aa8890802037",
+    "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "question_verification.py": "e558abdeb570b1120179b755e46520483f3c6285d4aaaf1ccf1cd745fc721fad",
+    "question_generation.py": "217a4e448cec57884c530a5199f7d1b4a53ee6ece210c83dba88dda7d0e796be",
+    "service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "question_quality.py": "10e13f5f6dc466e5970812b2041f15a3c6ebdb57834771c0da448bc2fd42c270",
+    "question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "complete_question_solution.py": "2548949557aa05dcb5e72155ec8a1bb883cfab2d3907bf14b499f735b0eb93d5",
+    "verification_policy.py": "8ce244adb4c32d710843e060017b13828e36bf9a68275be9d272431d0cef1dbb",
+    "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+    "smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "generation_diagnostics.py": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227"
+  }
+}

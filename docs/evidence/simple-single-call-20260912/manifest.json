@@ -1,0 +1,74 @@
+{
+  "calls": 12,
+  "maximum_calls": 12,
+  "files": [
+    {
+      "path": "assessment.json",
+      "sha256": "b0db72dab74c7bdb5e98d14bfc4e9c2797f7af215f881ce79eaa8a7b9d5682ec"
+    },
+    {
+      "path": "boundary-checks.json",
+      "sha256": "60f4727281a81d90c9e602e4012ce2db572ceed9c2e44d1361b3d01b0676e54c"
+    },
+    {
+      "path": "final_mixture_replacement_api_nova.json",
+      "sha256": "f9472c8f7fd82d4195fb4e16879aec28f50ae698534e1db93b8cf9e2492a35cb"
+    },
+    {
+      "path": "final_mixture_replacement_worker_kimi.json",
+      "sha256": "daded08ba4b099a9419be07a7dd351726aa6616a7a71494c307d25d5c9eff07b"
+    },
+    {
+      "path": "final_private_transit_api_nova.json",
+      "sha256": "6660ecbc1f0938d79f87a0fc2550868a76770214afb38c36d8fba4c29d0dc2d6"
+    },
+    {
+      "path": "final_private_transit_worker_kimi.json",
+      "sha256": "540222d89cf368cad620f32e8f9272db1d0b86be2257eeb6a7428423717ddfbe"
+    },
+    {
+      "path": "final_python_closures_api_nova.json",
+      "sha256": "f82857ef1df48151c768a45effb24fc523a8be05965343dff2016434c7846081"
+    },
+    {
+      "path": "final_python_closures_worker_kimi.json",
+      "sha256": "0922f21e49f8b05956433342b38d7b17d809d7e630837e932995179547a44f4b"
+    },
+    {
+      "path": "final_relative_clauses_api_nova.json",
+      "sha256": "97202e2f1f31d42e647c6b30b74a4438d0aa6f7dd57161db2b60310109cfa635"
+    },
+    {
+      "path": "final_relative_clauses_worker_kimi.json",
+      "sha256": "606b35d8011c4119eccd036112d25f313fca09d49ad5dd6bd2f3a0776e823eba"
+    },
+    {
+      "path": "independent-checks.json",
+      "sha256": "034062593f905531fcac6055b67355039d3d1123ebff917ba9f964af4c578f3f"
+    },
+    {
+      "path": "plan.json",
+      "sha256": "1738c0e488cc5f25ff852d25670ee2014d0c49c5752aa98ccef20aefaa09f182"
+    },
+    {
+      "path": "simple_fresh_alder_reserve_worker_kimi.json",
+      "sha256": "1e15a1c6c2032e22a6332e65d6d99926aa1cfc1713a3afb7f9b2c70c26a6c7e8"
+    },
+    {
+      "path": "simple_fresh_english_modals_worker_kimi.json",
+      "sha256": "979fdb2495cac6b4150570f70666fd45dbe5d9f5109687eddb26b2f7ede0f12b"
+    },
+    {
+      "path": "simple_fresh_price_changes_worker_kimi.json",
+      "sha256": "64600f53298e17a4dc833f5292602bc318420a42a4f61661ca52971b47a32957"
+    },
+    {
+      "path": "simple_fresh_python_dicts_worker_kimi.json",
+      "sha256": "8f8bcaee5083ebd78de53fc418824301b17b5eef3585bc94fb649688e5211d8c"
+    },
+    {
+      "path": "summary.json",
+      "sha256": "ecaf5e2581fe3b4f0b974afd98f4db40f5f9e509c06eb56d9177b4124a832983"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Complete-choice solver gate, policy revision 2
 
+> Historical policy-2 rollout record. The current displayed-item policy and release order are documented in [the September 12 update](QUESTION_DISPLAYED_CONTEXT_POLICY_20260912.md).
+
 September 8, 2026. Generation now explicitly requests an independent judgment for
 every offered choice. The solver sees the complete question and relevant subject
 context, with the author's key, feedback, difficulty label and answer history

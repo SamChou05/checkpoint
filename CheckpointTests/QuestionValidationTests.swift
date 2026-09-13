@@ -4,6 +4,33 @@ import XCTest
 // MARK: - Question validation
 
 final class QuestionValidationTests: XCTestCase {
+    func testReviewedMatchingChoicesPreserveCompleteStimulusThroughDisplayAndGrading() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        let path = root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/stimulus_preservation_contract.json")
+        let originals = try QuestionContentJSONDecoder.decode([GeneratedQuestionPayload].self, from: Data(contentsOf: path))
+        let goal = makeGoal()
+        let request = makeRequest(goal: goal, targetCount: 1, minimumDifficulty: 1)
+        for original in originals {
+            var question = original.makeQuestion(goalID: goal.id, sourcePrompt: "reviewed synthetic fixture")
+            question.verificationVersion = 1
+            question.verificationPolicyRevision = QuestionVerificationPolicy.currentRevision
+            // Every rotation must preserve the ordered stimulus independently
+            // of answer-button order, including literal A/B/C/D stimulus labels.
+            for offset in 0..<4 {
+                question.choices = Array(original.choices.dropFirst(offset) + original.choices.prefix(offset))
+                let admitted = QuestionBatchSanitizer.sanitize([question], for: request)
+                let retained = try XCTUnwrap(admitted.first)
+                let restored = try QuestionContentJSONDecoder.decode(CheckpointQuestion.self, from: JSONEncoder().encode(retained))
+                XCTAssertEqual(restored.prompt, original.prompt)
+                XCTAssertEqual(restored.expectedAnswer, original.expectedAnswer)
+                for choice in restored.choices {
+                    XCTAssertEqual(AnswerGrader.evaluate(answer: choice, question: restored).result,
+                                   choice == original.expectedAnswer ? .correct : .incorrect)
+                }
+            }
+        }
+    }
+
     private struct ReusableAnswerQuestion: Decodable {
         var prompt: String
         var expectedAnswer: String
@@ -1450,7 +1477,7 @@ final class VerificationPolicyFreshnessTests: XCTestCase {
     func testWireAndPersistencePreserveExplicitPolicyWithoutDefaultingLegacy() throws {
         let goal = makeGoal()
         let oldQuestion = historicalQuestion(goal: goal)
-        for revision in [-1, 0, 1, 2] {
+        for revision in [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9] {
             var question = oldQuestion
             question.verificationPolicyRevision = revision
             let encoded = try JSONEncoder().encode(question)
@@ -1481,7 +1508,7 @@ final class VerificationPolicyFreshnessTests: XCTestCase {
         let goal = makeGoal()
         var request = makeRequest(goal: goal)
         request.requiresVerifiedQuestions = true
-        for (version, revision, accepted) in [(1, -1, false), (1, 0, false), (1, 1, false), (1, 2, true), (1, 3, true), (0, 2, false), (2, 2, false)] {
+        for (version, revision, accepted) in [(1, -1, false), (1, 0, false), (1, 1, false), (1, 2, false), (1, 3, false), (1, 4, false), (1, 5, false), (1, 6, false), (1, 7, false), (1, 8, true), (1, 9, true), (0, 8, false), (2, 8, false)] {
             let question = makeQuestion(goal: goal, index: 1, verificationVersion: version, verificationPolicyRevision: revision)
             XCTAssertEqual(!QuestionBatchSanitizer.sanitize([question], for: request).isEmpty, accepted,
                            "wire=\(version), policy=\(revision)")
@@ -1651,6 +1678,9 @@ final class ReviewedStemPreservationTests: XCTestCase {
         explicitOptions.prompt += "\n" + reviewed.choices.enumerated().map { index, choice in
             ["A", "B", "C", "D"][index] + ". " + choice
         }.joined(separator: "\n")
+        let intact = try XCTUnwrap(QuestionBatchSanitizer.sanitize([explicitOptions], for: makeRequest(goal: goal)).first)
+        XCTAssertEqual(Data(intact.prompt.utf8), Data(explicitOptions.prompt.utf8))
+        explicitOptions.prompt += "\nE. An unmatched additional answer"
         XCTAssertTrue(QuestionBatchSanitizer.sanitize([explicitOptions], for: makeRequest(goal: goal)).isEmpty)
     }
 

@@ -1,0 +1,153 @@
+{
+  "scope": "Provider captures and explicit assessment/correction sidecars; original 45-call manifest retained. Hashes do not certify factual correctness.",
+  "actual_calls": {
+    "source-recall": 16,
+    "teaching-contrasts": 8,
+    "fresh": 21,
+    "goal-reference": 3
+  },
+  "total_actual_calls": 48,
+  "maximum_new_calls": 48,
+  "files": [
+    {
+      "path": "deployment-recheck.json",
+      "sha256": "52dc67bef04219d72e9514bf1a89c769896ce332eae84ae650286a32e3ea4f67"
+    },
+    {
+      "path": "fresh/fresh_conditionals_api_nova.json",
+      "sha256": "5460f0f8f378ef0560d795a4d95ffb57806cb7b6ba9f0513a418610ec337f92f"
+    },
+    {
+      "path": "fresh/fresh_conditionals_worker_kimi.json",
+      "sha256": "e508d0bd8237d0f3106e46d5a619596fe4779315973d43eff3d95aa9d185030d"
+    },
+    {
+      "path": "fresh/fresh_fraction_rates_api_nova.json",
+      "sha256": "324142ccbb7fe8a5037ea3659836344bf06983472b09111824ba611b9ee968db"
+    },
+    {
+      "path": "fresh/fresh_fraction_rates_worker_kimi.json",
+      "sha256": "67c788a9dbdd60870871f7ac90ad4fdfafd48400df351bc9120f773f54a065cd"
+    },
+    {
+      "path": "fresh/fresh_private_archive_api_nova.json",
+      "sha256": "193edb7d320913b9fd9b6bf85da65d437c15cad1bcef07df4283243b82e0ced8"
+    },
+    {
+      "path": "fresh/fresh_private_archive_worker_kimi.json",
+      "sha256": "4b91774ac4fc8b7ae018314578aa02e8b8ec40c1837c90b5839d00b81a6ecaf8"
+    },
+    {
+      "path": "fresh/fresh_python_aliasing_api_nova.json",
+      "sha256": "7f5a29d4ef1f4fa9bc4cbc2cec9f8312a472706278d430ddae2f4daf320aa183"
+    },
+    {
+      "path": "fresh/fresh_python_aliasing_worker_kimi.json",
+      "sha256": "1b158cced0b00c1b7d461aec24e421272114dbd71f581a8001523ae9b8d004f2"
+    },
+    {
+      "path": "fresh/plan.json",
+      "sha256": "cf0dce5da0cd5ebe0a8a73eb293a05f328762328ca32e213a77024b32ab9cf01"
+    },
+    {
+      "path": "fresh-assessment.json",
+      "sha256": "3da572ee8fe6134393271b60b305ca93cb960c2bf4c7bc7f6452517ec1bf0a37"
+    },
+    {
+      "path": "goal-reference/assessment.json",
+      "sha256": "63662386f3ba831a9506d90cda408d3212ee48ae85c23991f8ab9db448f53f3b"
+    },
+    {
+      "path": "goal-reference/plan.json",
+      "sha256": "2f81adc287337aa638be9771995ddd36fa6c53cc13fbd96bf789c1eafa587b64"
+    },
+    {
+      "path": "goal-reference/trace.json",
+      "sha256": "a6a76f8039ef9704d58e4b2d8b2e1974a8fc471c2eaaba2f5d1e003be3eec97d"
+    },
+    {
+      "path": "independent-checks.json",
+      "sha256": "e29bdcf96a71c84b87a2c659c4d3c9e1a516ce7d387589639bed0a67173c6db4"
+    },
+    {
+      "path": "manifest-45-call-milestone.json",
+      "sha256": "6012ba697893a15c08ef4924cb63297f8496a106da0ea16f5b0c7b48056f1acb"
+    },
+    {
+      "path": "source-recall/luma_math_displayed.json",
+      "sha256": "ed7d9b436003fe26239721faea154f1a7533cf786aac3f599a13622c6c49afc4"
+    },
+    {
+      "path": "source-recall/luma_math_source.json",
+      "sha256": "58424a490fe253a85093754e244e377d47deab13273543cf69addd8a0c91b435"
+    },
+    {
+      "path": "source-recall/lumen_facts_displayed.json",
+      "sha256": "103d287472e8519b4d078af8c8341bbbc4f1afcc8d48cd8b727edbd9b90b9929"
+    },
+    {
+      "path": "source-recall/lumen_facts_source.json",
+      "sha256": "89559ce7febe4fb5b9dcc9211f2e045a8217c027b7198876b553d915ad164c30"
+    },
+    {
+      "path": "source-recall/plan.json",
+      "sha256": "ac70f1f1464a9b766187eec658e4789a0ff2fa8108edf72be51278fc37260d4f"
+    },
+    {
+      "path": "source-recall/rho_programming_displayed.json",
+      "sha256": "1ecd52046a709f5b45f931879ce2becc4e9f7f16222809706f84ff22ed782d92"
+    },
+    {
+      "path": "source-recall/rho_programming_source.json",
+      "sha256": "b900b8efdf915756e2e2571c12082ff9ac28f758eaf67343fb5f1b26339b85ef"
+    },
+    {
+      "path": "source-recall/zali_language_displayed.json",
+      "sha256": "35b127f62ab9058565206918325f7e625686f6848798d7ce55f0a46e41795820"
+    },
+    {
+      "path": "source-recall/zali_language_source.json",
+      "sha256": "6da2ba6527f3841c0f880d51489733775d195328939180ddfea3f96b47aafdd8"
+    },
+    {
+      "path": "teaching-contrasts/corrected-replay.json",
+      "sha256": "ef25083470a9507ca413e8f5202a6225c0ae433a403a1f83c6fe7f0ae9039321"
+    },
+    {
+      "path": "teaching-contrasts/plan.json",
+      "sha256": "3f73644219600d18a6545b8927eb6b64c523cc23a41c9048a756c54afc2c20ef"
+    },
+    {
+      "path": "teaching-contrasts/review_0_contrast.json",
+      "sha256": "8f7e08364262b7e5cdaf98d347c93864a6488bc1f6df8e6665003470440f6baf"
+    },
+    {
+      "path": "teaching-contrasts/review_0_current.json",
+      "sha256": "7ebb0c329f98a8374ff206d0a8580197d375132115b2d7e868d08faabc6d785c"
+    },
+    {
+      "path": "teaching-contrasts/review_1_contrast.json",
+      "sha256": "ff57130120ae9b9894614fb93e8d0dd3305d62732be39900bcb7fbdb7feb7b3c"
+    },
+    {
+      "path": "teaching-contrasts/review_1_current.json",
+      "sha256": "90ef2f879d051e16e4e6d3e44dc283a8e7b048a19937f0819aa3ccad4b85e677"
+    },
+    {
+      "path": "teaching-contrasts/review_2_contrast.json",
+      "sha256": "7bf3ebe51fe1650dd7276a63533f610cb6ef886fbd809ecf7c936123d5fcd44f"
+    },
+    {
+      "path": "teaching-contrasts/review_2_current.json",
+      "sha256": "78923a336c21f7721e3473db7e48b6be24f39b95f3a2b17acabcc2c458c20e25"
+    },
+    {
+      "path": "teaching-contrasts/review_3_contrast.json",
+      "sha256": "e0638ca3132f86bed9a8364d5b2d2ddc91be3c69dfe91bb9018ceea093b3aa7e"
+    },
+    {
+      "path": "teaching-contrasts/review_3_current.json",
+      "sha256": "9d898295aac22f2d0ab882f0416b5a32a8e2227e4ad5d9ca0f4b8c7b3307961d"
+    }
+  ]
+}

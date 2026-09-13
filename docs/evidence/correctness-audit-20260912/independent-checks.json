@@ -1,0 +1,239 @@
+{
+  "arithmetic": {
+    "minus3_plus5": 2,
+    "minus4_times_minus2": 8,
+    "minus4_plus_minus2": -6,
+    "finding": "The second solver and reviewer falsely deny that -6 is the sum of -4 and -2."
+  },
+  "probability": {
+    "first_ppv": 0.26865671641791045,
+    "second_true_positives": 990.0,
+    "second_ppv": 0.16555183946488294,
+    "retry_ppv_A": 0.3090909090909091,
+    "retry_ppv_B": 0.68,
+    "retry_condition_given_negative": 0.0025974025974025974
+  },
+  "python": {
+    "len_A_space_B": 3,
+    "first_list_item": 10
+  },
+  "sqlite": {
+    "c1q0": {
+      "query": "SELECT COUNT(*), COUNT(B.val) FROM A LEFT JOIN B ON A.id = B.a_id WHERE B.val = 'x'",
+      "answer": [
+        [
+          2,
+          2
+        ]
+      ],
+      "join_rows": [
+        [
+          1,
+          null,
+          null
+        ],
+        [
+          2,
+          2,
+          "x"
+        ],
+        [
+          2,
+          2,
+          "y"
+        ],
+        [
+          2,
+          2,
+          "x"
+        ],
+        [
+          2,
+          2,
+          "y"
+        ],
+        [
+          3,
+          null,
+          null
+        ]
+      ]
+    },
+    "c1q1": {
+      "query": "SELECT COUNT(*), COUNT(S.data) FROM R LEFT JOIN S ON R.k = S.k WHERE S.k IS NOT NULL",
+      "answer": [
+        [
+          2,
+          2
+        ]
+      ],
+      "join_rows": [
+        [
+          1,
+          1,
+          "a"
+        ],
+        [
+          1,
+          1,
+          "a"
+        ],
+        [
+          2,
+          null,
+          null
+        ]
+      ]
+    },
+    "c3q0": {
+      "query": "SELECT COUNT(*), COUNT(Y.score) FROM X LEFT JOIN Y ON X.id = Y.x_id WHERE Y.score > 15",
+      "answer": [
+        [
+          1,
+          1
+        ]
+      ],
+      "join_rows": [
+        [
+          5,
+          5,
+          10
+        ],
+        [
+          5,
+          5,
+          10
+        ],
+        [
+          7,
+          7,
+          30
+        ]
+      ]
+    },
+    "c3q1": {
+      "query": "SELECT COUNT(*), COUNT(Q.amt) FROM P LEFT JOIN Q ON P.key = Q.p_key WHERE Q.p_key = 'a'",
+      "answer": [
+        [
+          4,
+          4
+        ]
+      ],
+      "join_rows": [
+        [
+          "a",
+          "a",
+          100
+        ],
+        [
+          "a",
+          "a",
+          200
+        ],
+        [
+          "a",
+          "a",
+          100
+        ],
+        [
+          "a",
+          "a",
+          200
+        ],
+        [
+          "b",
+          null,
+          null
+        ]
+      ]
+    }
+  },
+  "algebra": {
+    "quartic_a1_solutions": [
+      0,
+      -1.4142135623730951,
+      1.4142135623730951
+    ],
+    "radical_counterexamples": [
+      {
+        "a": -3,
+        "squared_candidate": -2.1666666666666665,
+        "satisfies_original": false
+      },
+      {
+        "a": -2,
+        "squared_candidate": -2.0,
+        "satisfies_original": true
+      },
+      {
+        "a": -1,
+        "squared_candidate": -2.5,
+        "satisfies_original": true
+      },
+      {
+        "a": -0.5,
+        "squared_candidate": -4.25,
+        "satisfies_original": true
+      },
+      {
+        "a": 0,
+        "squared_candidate": null,
+        "satisfies_original": false
+      },
+      {
+        "a": 1,
+        "squared_candidate": 2.5,
+        "satisfies_original": false
+      },
+      {
+        "a": 2,
+        "squared_candidate": 2.0,
+        "satisfies_original": true
+      },
+      {
+        "a": 3,
+        "squared_candidate": 2.1666666666666665,
+        "satisfies_original": true
+      }
+    ],
+    "absolute_value_counterexample": {
+      "a": 0.5,
+      "solutions": [
+        3.2807764064044154,
+        2.7807764064044154
+      ]
+    },
+    "radical_exact_parameter_set": "[-2,0) union [2,infinity)",
+    "absolute_equation_proof": "Put y=x-2. For a>0, y>0, and |y-1/y|=a has exactly one root on each side of 1. a<0 follows by reflection; a=0 gives y=+-1. Always two distinct real roots; never four."
+  },
+  "complexity": {
+    "rank_bucket_lower_bound": "With n items in k=n^(2/3) nonempty equal-value classes, sum c_i(c_i-1)/2 >= (n^2/k-n)/2 = Omega(n^(4/3)), contradicting Theta(n) duplicate pairs. Distinct-value ranks identify equality; a bucket cannot contain unequal values as the author claims.",
+    "multiset_intersection_example": {
+      "A": [
+        1,
+        1,
+        2
+      ],
+      "B": [
+        1,
+        1,
+        1
+      ],
+      "intersection": [
+        1,
+        1
+      ]
+    },
+    "bst_distinct_count": "m <= n; the asserted m=n^omega(1) regime is impossible."
+  },
+  "ecology": {
+    "c1q0_missing_condition": "Equal intake shares do not determine production attribution without equal conversion efficiencies. 100 kJ total production can be split 50/50 or 40/60, giving transfer 12.5% or 10% from 400 kJ zooplankton. Both preserve equal intake by choosing different conversion efficiencies.",
+    "c1q1_production_ratios": [
+      0.15,
+      0.06666666666666667
+    ],
+    "c3q1_production_already_known": 600.0,
+    "c3q1_definition": "The supplied source defines transfer efficiency as predator production attributable to prey divided by TOTAL prey production. The stem already gives herbivore production=600 kJ; the author changes the denominator to consumption and invents an information gap."
+  },
+  "assessment_scope": "Scoped calculations and executable queries; not an automatic arbitrary-subject verifier. The artifact keys refer to baseline case/call/item positions."
+}

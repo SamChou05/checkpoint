@@ -1,0 +1,132 @@
+{
+  "cases": [
+    {
+      "id": "fresh_fraction_rates",
+      "payload": {
+        "goal": {
+          "title": "Solve multistep fraction and rate problems",
+          "currentLevel": "intermediate",
+          "contentTopics": [
+            "Fractional quantities and rates with interacting constraints"
+          ],
+          "questionDirective": "Give two different practical problems requiring multiple reasoning steps. State every quantity and unit needed; use exact answers."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 4
+      }
+    },
+    {
+      "id": "fresh_python_aliasing",
+      "payload": {
+        "goal": {
+          "title": "Understand Python list mutation and slicing",
+          "currentLevel": "intermediate",
+          "contentTopics": [
+            "List aliasing versus shallow slice copies"
+          ],
+          "questionDirective": "Practice predicting short Python 3 snippets: distinguish an alias from a slice copy. Show literal executable code with all initial values and preserve line breaks."
+        },
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      }
+    },
+    {
+      "id": "fresh_conditionals",
+      "payload": {
+        "goal": {
+          "title": "Distinguish unreal present and past conditions in English",
+          "currentLevel": "intermediate",
+          "contentTopics": [
+            "Present counterfactual versus past counterfactual meaning"
+          ],
+          "questionDirective": "Use brief situations to test which conditional sentence expresses the intended time and counterfactual meaning. Make the situation matter, with one defensible choice."
+        },
+        "sourceDocuments": [
+          {
+            "name": "Study notes on counterfactual time",
+            "text": "For this exercise use standard edited English. To express a counterfactual present state: if + simple past (were for be), followed by would + base verb. Example: If I were taller, I would reach the shelf. To express a counterfactual past event: if + past perfect, followed by would have + past participle. Example: If I had left earlier, I would have caught the train. Mixed conditionals connect a past condition with a present result and are grammatical when the situation calls for that combination. Do not treat every mixed conditional as an error."
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 3
+      }
+    },
+    {
+      "id": "fresh_private_archive",
+      "payload": {
+        "goal": {
+          "title": "Learn the fictional Bracken archive handbook",
+          "currentLevel": "beginner",
+          "contentTopics": [
+            "Archive rooms and staff responsibilities"
+          ],
+          "questionDirective": "Help me remember the handbook: ask one question about room names and one about who handles a collection. Do not repeat the tested fact in the question."
+        },
+        "sourceDocuments": [
+          {
+            "name": "Bracken archive handbook",
+            "text": "This handbook defines a fictional archive. The Cedar room holds maps, the Birch room holds letters, the Elm room holds photographs, and the Ash room holds recordings. Ada manages maps, Beno manages letters, Cleo manages photographs, and Davi manages recordings. These responsibilities are exclusive for this exercise."
+          }
+        ],
+        "targetCount": 2,
+        "minimumDifficulty": 1
+      }
+    }
+  ],
+  "authors": {
+    "api_nova": "amazon.nova-lite-v1:0",
+    "worker_kimi": "moonshotai.kimi-k2.5"
+  },
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+    "GENERATION_ATTEMPTS": "1",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE": "native"
+  },
+  "maximum_calls": 24,
+  "scope": "Four fixed fresh requests, each with API Nova and worker Kimi author. Same final policy and native Sonnet verification; no deployment, queue/HTTP latency claim, bank writes, or runtime semantic override. At most three actual calls per job; no retries after transport failure.",
+  "revision": "b90b56484cc727692e7b799bf61fbc8980663566",
+  "source_sha256": {
+    "question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "native_output_contracts.py": "57a729e580a420dc3333313ec1d1a7535e8230ac9d04a9cb5c09419d5439ec5a",
+    "question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "question_verification.py": "d2edf5c3905f85cd6069ca5a7e24739a33dd11991f7fda2721deae4bbd00cd12",
+    "question_generation.py": "d23e64c40513acd0d1a9bc4b4fa96d9ad8636d3a5041c4fd7a0f915bb5774078",
+    "service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "question_quality.py": "10e13f5f6dc466e5970812b2041f15a3c6ebdb57834771c0da448bc2fd42c270",
+    "question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "complete_question_solution.py": "e4d57ba2f358a1e6c5b4141ce7316577d3ccac1ac4a3d3c47c8c32cb5f5382d0",
+    "verification_policy.py": "ded76070acd5b099daf5510afcb437962840dbdce0e4978615d8c3a7c4050239",
+    "execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+    "smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "generation_diagnostics.py": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227"
+  },
+  "fixture_sha256": "c33b3c4e67f60d2e5e0f3ea7af7566b6918a7c09dab17aa0ead98d4cf58952fc"
+}

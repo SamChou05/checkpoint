@@ -1,0 +1,338 @@
+{
+  "base_revision": "7d9cc6a",
+  "stack": "testflight",
+  "functions": [
+    {
+      "logical_id": "CheckpointQuestionFunction",
+      "last_modified": "2026-09-11T15:35:34.000+0000",
+      "code_sha256": "YaJGqVgADEWGbtv6j1b96SYBmt8pAkcWaiYzgngMW/Y=",
+      "runtime": "python3.12",
+      "timeout": 30,
+      "settings": {
+        "BEDROCK_MODEL_ID": "amazon.nova-lite-v1:0",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_THINKING_MAX_TOKENS": "16000",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "GENERATION_ATTEMPTS": "3",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "6"
+      },
+      "modules": {
+        "question_bank_inventory.py": {
+          "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+          "matches_main": true
+        },
+        "question_teaching.py": {
+          "sha256": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+          "matches_main": true
+        },
+        "native_output_contracts.py": {
+          "sha256": "d43c0e223be0eb80a1ace46cb3373eff22a967a5970510a4f7b6aa8890802037",
+          "matches_main": true
+        },
+        "question_difficulty.py": {
+          "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+          "matches_main": true
+        },
+        "question_bank_common.py": {
+          "sha256": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+          "matches_main": true
+        },
+        "question_rule_construction.py": {
+          "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+          "matches_main": true
+        },
+        "question_verification.py": {
+          "sha256": "e6a84253ba4154305e74ad44158f070cf0eb96c8aa8623667a2896ffe6811e7a",
+          "matches_main": true
+        },
+        "question_generation.py": {
+          "sha256": "d8394f1958057248cd878e5db5768021da6fa26b9554be6d23e64fdc780ce0a6",
+          "matches_main": true
+        },
+        "service_errors.py": {
+          "sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+          "matches_main": true
+        },
+        "question_bank.py": {
+          "sha256": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+          "matches_main": true
+        },
+        "question_bank_store.py": {
+          "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+          "matches_main": true
+        },
+        "question_quality.py": {
+          "sha256": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+          "matches_main": true
+        },
+        "question_bank_worker.py": {
+          "sha256": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+          "matches_main": true
+        },
+        "source_acquisition.py": {
+          "sha256": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+          "matches_main": true
+        },
+        "web_source_search.py": {
+          "sha256": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+          "matches_main": true
+        },
+        "complete_question_solution.py": {
+          "sha256": "50733a57d85156e25fe3a494363273312c2f918ffcd7bf446645fdbfaf91203e",
+          "matches_main": true
+        },
+        "verification_policy.py": {
+          "sha256": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+          "matches_main": true
+        },
+        "execution_evidence.py": {
+          "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+          "matches_main": true
+        },
+        "lambda_function.py": {
+          "sha256": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+          "matches_main": true
+        },
+        "skill_maps.py": {
+          "sha256": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+          "matches_main": true
+        },
+        "request_contract.py": {
+          "sha256": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+          "matches_main": true
+        },
+        "smoke_test_backend.py": {
+          "sha256": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+          "matches_main": true
+        },
+        "generation_diagnostics.py": {
+          "sha256": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227",
+          "matches_main": true
+        }
+      }
+    },
+    {
+      "logical_id": "QuestionBankOutboxFunction",
+      "last_modified": "2026-09-11T15:35:28.000+0000",
+      "code_sha256": "Lw0K3NiJ9iZ06dhUVHzNaHTxqquG9wur4vL/c0Vseiw=",
+      "runtime": "python3.12",
+      "timeout": 30,
+      "settings": {},
+      "modules": {
+        "question_bank_inventory.py": {
+          "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+          "matches_main": true
+        },
+        "question_teaching.py": {
+          "sha256": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+          "matches_main": true
+        },
+        "native_output_contracts.py": {
+          "sha256": "d43c0e223be0eb80a1ace46cb3373eff22a967a5970510a4f7b6aa8890802037",
+          "matches_main": true
+        },
+        "question_difficulty.py": {
+          "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+          "matches_main": true
+        },
+        "question_bank_common.py": {
+          "sha256": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+          "matches_main": true
+        },
+        "question_rule_construction.py": {
+          "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+          "matches_main": true
+        },
+        "question_verification.py": {
+          "sha256": "e6a84253ba4154305e74ad44158f070cf0eb96c8aa8623667a2896ffe6811e7a",
+          "matches_main": true
+        },
+        "question_generation.py": {
+          "sha256": "d8394f1958057248cd878e5db5768021da6fa26b9554be6d23e64fdc780ce0a6",
+          "matches_main": true
+        },
+        "service_errors.py": {
+          "sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+          "matches_main": true
+        },
+        "question_bank.py": {
+          "sha256": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+          "matches_main": true
+        },
+        "question_bank_store.py": {
+          "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+          "matches_main": true
+        },
+        "question_quality.py": {
+          "sha256": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+          "matches_main": true
+        },
+        "question_bank_worker.py": {
+          "sha256": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+          "matches_main": true
+        },
+        "source_acquisition.py": {
+          "sha256": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+          "matches_main": true
+        },
+        "web_source_search.py": {
+          "sha256": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+          "matches_main": true
+        },
+        "complete_question_solution.py": {
+          "sha256": "50733a57d85156e25fe3a494363273312c2f918ffcd7bf446645fdbfaf91203e",
+          "matches_main": true
+        },
+        "verification_policy.py": {
+          "sha256": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+          "matches_main": true
+        },
+        "execution_evidence.py": {
+          "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+          "matches_main": true
+        },
+        "lambda_function.py": {
+          "sha256": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+          "matches_main": true
+        },
+        "skill_maps.py": {
+          "sha256": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+          "matches_main": true
+        },
+        "request_contract.py": {
+          "sha256": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+          "matches_main": true
+        },
+        "smoke_test_backend.py": {
+          "sha256": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+          "matches_main": true
+        },
+        "generation_diagnostics.py": {
+          "sha256": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227",
+          "matches_main": true
+        }
+      }
+    },
+    {
+      "logical_id": "QuestionBankWorkerFunction",
+      "last_modified": "2026-09-11T15:35:34.000+0000",
+      "code_sha256": "Hh0yKkR0RJy9t5K78eZTk6e05diWNWPV86fJSve7Hyo=",
+      "runtime": "python3.12",
+      "timeout": 240,
+      "settings": {
+        "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+        "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_THINKING_MAX_TOKENS": "16000",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_CLAUDE_EFFORT": "high",
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "GENERATION_ATTEMPTS": "3",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5"
+      },
+      "modules": {
+        "question_bank_inventory.py": {
+          "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+          "matches_main": true
+        },
+        "question_teaching.py": {
+          "sha256": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+          "matches_main": true
+        },
+        "native_output_contracts.py": {
+          "sha256": "d43c0e223be0eb80a1ace46cb3373eff22a967a5970510a4f7b6aa8890802037",
+          "matches_main": true
+        },
+        "question_difficulty.py": {
+          "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+          "matches_main": true
+        },
+        "question_bank_common.py": {
+          "sha256": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+          "matches_main": true
+        },
+        "question_rule_construction.py": {
+          "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+          "matches_main": true
+        },
+        "question_verification.py": {
+          "sha256": "e6a84253ba4154305e74ad44158f070cf0eb96c8aa8623667a2896ffe6811e7a",
+          "matches_main": true
+        },
+        "question_generation.py": {
+          "sha256": "d8394f1958057248cd878e5db5768021da6fa26b9554be6d23e64fdc780ce0a6",
+          "matches_main": true
+        },
+        "service_errors.py": {
+          "sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+          "matches_main": true
+        },
+        "question_bank.py": {
+          "sha256": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+          "matches_main": true
+        },
+        "question_bank_store.py": {
+          "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+          "matches_main": true
+        },
+        "question_quality.py": {
+          "sha256": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+          "matches_main": true
+        },
+        "question_bank_worker.py": {
+          "sha256": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+          "matches_main": true
+        },
+        "source_acquisition.py": {
+          "sha256": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+          "matches_main": true
+        },
+        "web_source_search.py": {
+          "sha256": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+          "matches_main": true
+        },
+        "complete_question_solution.py": {
+          "sha256": "50733a57d85156e25fe3a494363273312c2f918ffcd7bf446645fdbfaf91203e",
+          "matches_main": true
+        },
+        "verification_policy.py": {
+          "sha256": "1a48d41c40168bf81bfac854c930ce4a3f5baa256c01b0dad7a56eac67a9011a",
+          "matches_main": true
+        },
+        "execution_evidence.py": {
+          "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+          "matches_main": true
+        },
+        "lambda_function.py": {
+          "sha256": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+          "matches_main": true
+        },
+        "skill_maps.py": {
+          "sha256": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+          "matches_main": true
+        },
+        "request_contract.py": {
+          "sha256": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+          "matches_main": true
+        },
+        "smoke_test_backend.py": {
+          "sha256": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+          "matches_main": true
+        },
+        "generation_diagnostics.py": {
+          "sha256": "0c8410dfaee760942947180a762c549b3b8a1f89161844719f6a1f6fa2ce9227",
+          "matches_main": true
+        }
+      }
+    }
+  ]
+}

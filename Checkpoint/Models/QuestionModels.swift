@@ -55,9 +55,10 @@ enum AIProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
 }
 
 enum QuestionVerificationPolicy {
-    // Revision 2 requires complete-choice solver judgments and final review.
+    // Revision 8 retains learned facts in all subject references, while
+    // omitting authored item tags and feedback from independent solving.
     // It records the checks performed, not a guarantee of factual accuracy.
-    static let currentRevision = 2
+    static let currentRevision = 8
 
     /// Fresh practice requires the server's current acceptance policy. The
     /// separate wire version still controls how historical content is graded.

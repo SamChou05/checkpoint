@@ -1,0 +1,114 @@
+[
+  {
+    "prompt": "A program prints the following lines in order. Which line is printed second?\nred\ngreen\nblue\nyellow",
+    "choices": [
+      "red",
+      "green",
+      "blue",
+      "yellow"
+    ],
+    "expectedAnswer": "green",
+    "explanation": "The requested position is explicitly shown in the supplied sequence.",
+    "topic": "programming",
+    "difficulty": 1,
+    "format": "Multiple Choice"
+  },
+  {
+    "prompt": "A program prints the following lines in order. Which line is printed second?\nA. red\nB. green\nC. blue\nD. yellow",
+    "choices": [
+      "red",
+      "green",
+      "blue",
+      "yellow"
+    ],
+    "expectedAnswer": "green",
+    "explanation": "The requested position is explicitly shown in the supplied sequence.",
+    "topic": "programming",
+    "difficulty": 1,
+    "format": "Multiple Choice"
+  },
+  {
+    "prompt": "The measurements below are in time order. What was the second measurement?\n12 cm\n8 cm\n15 cm\n11 cm",
+    "choices": [
+      "12 cm",
+      "8 cm",
+      "15 cm",
+      "11 cm"
+    ],
+    "expectedAnswer": "8 cm",
+    "explanation": "The requested position is explicitly shown in the supplied sequence.",
+    "topic": "math",
+    "difficulty": 1,
+    "format": "Multiple Choice"
+  },
+  {
+    "prompt": "The measurements below are in time order. What was the second measurement?\nA. 12 cm\nB. 8 cm\nC. 15 cm\nD. 11 cm",
+    "choices": [
+      "12 cm",
+      "8 cm",
+      "15 cm",
+      "11 cm"
+    ],
+    "expectedAnswer": "8 cm",
+    "explanation": "The requested position is explicitly shown in the supplied sequence.",
+    "topic": "math",
+    "difficulty": 1,
+    "format": "Multiple Choice"
+  },
+  {
+    "prompt": "Read the following four-line poem. Which word begins its third line?\nRain\nFalls\nSoftly\nTonight",
+    "choices": [
+      "Rain",
+      "Falls",
+      "Softly",
+      "Tonight"
+    ],
+    "expectedAnswer": "Softly",
+    "explanation": "The requested position is explicitly shown in the supplied sequence.",
+    "topic": "language",
+    "difficulty": 1,
+    "format": "Multiple Choice"
+  },
+  {
+    "prompt": "Read the following four-line poem. Which word begins its third line?\nA. Rain\nB. Falls\nC. Softly\nD. Tonight",
+    "choices": [
+      "Rain",
+      "Falls",
+      "Softly",
+      "Tonight"
+    ],
+    "expectedAnswer": "Softly",
+    "explanation": "The requested position is explicitly shown in the supplied sequence.",
+    "topic": "language",
+    "difficulty": 1,
+    "format": "Multiple Choice"
+  },
+  {
+    "prompt": "The stops below are in travel order. Which city was visited last?\nOslo\nRome\nLima\nTokyo",
+    "choices": [
+      "Oslo",
+      "Rome",
+      "Lima",
+      "Tokyo"
+    ],
+    "expectedAnswer": "Tokyo",
+    "explanation": "The requested position is explicitly shown in the supplied sequence.",
+    "topic": "factual",
+    "difficulty": 1,
+    "format": "Multiple Choice"
+  },
+  {
+    "prompt": "The stops below are in travel order. Which city was visited last?\nA. Oslo\nB. Rome\nC. Lima\nD. Tokyo",
+    "choices": [
+      "Oslo",
+      "Rome",
+      "Lima",
+      "Tokyo"
+    ],
+    "expectedAnswer": "Tokyo",
+    "explanation": "The requested position is explicitly shown in the supplied sequence.",
+    "topic": "factual",
+    "difficulty": 1,
+    "format": "Multiple Choice"
+  }
+]

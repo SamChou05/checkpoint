@@ -96,7 +96,7 @@ class ObjectiveContextTests(unittest.TestCase):
                                (boto3.session.Session, "client")):
             self.enterContext(patch.object(target, method, side_effect=AssertionError("No network or SDK clients")))
 
-    def test_objectives_and_source_content_reach_actual_provider_transports(self):
+    def test_request_references_reach_all_stages_but_solver_omits_authored_item_tags(self):
         sources = [
             {"name": "Logic outline with substantive rules",
              "text": 'All red tokens are round.\nLiteral example: "red  token".', "truncated": False},
@@ -145,10 +145,16 @@ class ObjectiveContextTests(unittest.TestCase):
                                     response = reviews(data["items"], answers, authored=authored, native=mode == "native")
                                     test.assertEqual("independentSolutions" in data, not authored)
                                 data = payload(text, tag)
-                                test.assertEqual(data["sourceDocuments"], sources)
+                                if tag == "question_solution_json":
+                                    test.assertEqual(set(data), {"items", "sourceDocuments", "goal", "skillMap"})
+                                    test.assertEqual(data["sourceDocuments"], sources)
+                                    test.assertEqual(set(data["items"][0]), {"index", "prompt", "choices", "topic"})
+                                else:
+                                    test.assertEqual(data["sourceDocuments"], sources)
                                 if tag != "generation_request_json":
                                     item = data["items"][0]
-                                    for field in ("objective", "objectiveID", "skillID", "topic"):
+                                    fields = ("topic",) if tag == "question_solution_json" else ("objective", "objectiveID", "skillID", "topic")
+                                    for field in fields:
                                         test.assertEqual(item[field], candidate[field])
                                     for hidden in ("expectedAnswer", "difficulty", "choiceExplanations", "verificationVersion"):
                                         test.assertNotIn(hidden, item)

@@ -1,0 +1,82 @@
+{
+  "method": "Read all actual requests and 64 declared choice judgments, plus all final main/choice teaching. Facts are stipulated synthetic rules; arithmetic and named-subject comparisons are independent of model approval. No live retry.",
+  "items": [
+    {
+      "index": 0,
+      "prompt": "In Luma, how many points is one blue token worth?",
+      "expected_kind": "valid_learned_recall",
+      "source_only_rejection": "solver_uncertain",
+      "candidate_rejection": null,
+      "assessment": "Blue token is explicitly worth 3. Source-only loses the goal fact; retained references support it and final teaching is sound."
+    },
+    {
+      "index": 1,
+      "prompt": "In Luma, a player earns 4 tokens. What is the score?",
+      "expected_kind": "missing_case",
+      "source_only_rejection": "solver_uncertain",
+      "candidate_rejection": "solver_zero_supported",
+      "assessment": "Four red tokens give 8 and four blue give 12, so the stem has no unique total. Both arms block it. Candidate reason for 10 includes a 9-point example, and its maximum-12 claim assumes the named token types are exhaustive; neither is needed for the correct missing-case veto."
+    },
+    {
+      "index": 2,
+      "prompt": "What is the first valid element index of an array in Rho?",
+      "expected_kind": "valid_learned_recall",
+      "source_only_rejection": "solver_uncertain",
+      "candidate_rejection": null,
+      "assessment": "Rho first index is explicitly 1. Source-only loses that fact; retained references and final teaching are correct."
+    },
+    {
+      "index": 3,
+      "prompt": "A Rho array contains [7, 12, 19]. What value is returned by reading an indexed entry?",
+      "expected_kind": "missing_case",
+      "source_only_rejection": "solver_uncertain",
+      "candidate_rejection": "solver_uncertain",
+      "assessment": "Array index is not supplied; indices 1 and 2 already give different values. Both arms block it. A claim about every possible out-of-bounds behavior is unnecessary and not established by these notes."
+    },
+    {
+      "index": 4,
+      "prompt": "Which English noun translates the Zali noun 'naro'?",
+      "expected_kind": "valid_learned_recall",
+      "source_only_rejection": "solver_uncertain",
+      "candidate_rejection": null,
+      "assessment": "The complete noun list defines naro=river. The stem specifies noun use, so this is unambiguous. References recover it and final teaching is sound."
+    },
+    {
+      "index": 5,
+      "prompt": "The word 'naro' appears in a Zali sentence. What does it mean in English?",
+      "expected_kind": "missing_case",
+      "source_only_rejection": "solver_uncertain",
+      "candidate_rejection": "solver_uncertain",
+      "assessment": "Unspecified grammatical role permits noun river or verb flows; no unique translation. Both arms block it."
+    },
+    {
+      "index": 6,
+      "prompt": "According to the Lumen handbook, on which weekday does the Vale museum open?",
+      "expected_kind": "valid_learned_recall",
+      "source_only_rejection": "solver_uncertain",
+      "candidate_rejection": "solver_multiple_supported",
+      "assessment": "Vale opens only Tuesday. Candidate solver wrongly supports Friday using the different Fern museum fact; it therefore rejects a valid item as multiple-supported. The exact error is a subject mismatch; batch contamination is a hypothesis, not proved by this comparison."
+    },
+    {
+      "index": 7,
+      "prompt": "A visit is planned to one of the two museums in the Lumen handbook. On which weekday is it open?",
+      "expected_kind": "missing_case",
+      "source_only_rejection": "solver_uncertain",
+      "candidate_rejection": "solver_uncertain",
+      "assessment": "The visited museum is unidentified; Vale gives Tuesday and Fern Friday. Both arms correctly block a unique day."
+    }
+  ],
+  "counts": {
+    "calls": 3,
+    "source_only_valid_recalls_eligible": 0,
+    "candidate_valid_recalls_eligible": 3,
+    "valid_recall_total": 4,
+    "missing_case_blocked_each_arm": 4,
+    "candidate_supported_final_returns": 3
+  },
+  "latency_seconds_by_call": [
+    10.961,
+    12.894,
+    5.731
+  ]
+}

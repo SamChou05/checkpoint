@@ -1,0 +1,118 @@
+{
+  "case_id": "reference_native",
+  "original_request": {
+    "goal": {
+      "title": "Interpret synthetic rules and passages",
+      "contentTopics": [
+        "Rules and passages"
+      ]
+    },
+    "minimumDifficulty": 1,
+    "targetCount": 8,
+    "sourceDocuments": [
+      {
+        "name": "math rules",
+        "text": "In the fictional Luma game, a blue token scores 3 points.",
+        "truncated": false
+      },
+      {
+        "name": "programming rules",
+        "text": "The fictional Rho language defines x @ y as 2*x + y.",
+        "truncated": false
+      },
+      {
+        "name": "language rules",
+        "text": "The fictional Zali word 'naro' means 'river'.",
+        "truncated": false
+      },
+      {
+        "name": "factual rules",
+        "text": "The fictional Vale museum opens only on Tuesday.",
+        "truncated": false
+      }
+    ]
+  },
+  "calls": [],
+  "stages": [],
+  "final": [],
+  "metrics": {
+    "ProviderCalls": 0,
+    "BedrockInputTokens": 0,
+    "BedrockOutputTokens": 0
+  },
+  "normalized_request": {
+    "goal": {
+      "title": "Interpret synthetic rules and passages",
+      "category": "",
+      "focusAreas": "",
+      "currentLevel": "",
+      "learningTarget": "Interpret synthetic rules and passages",
+      "contentTopics": [
+        "Rules and passages"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "competencies": [],
+    "existingPrompts": [],
+    "existingQuestionCoverage": [],
+    "reportedPrompts": [],
+    "blockedStemFingerprints": [],
+    "stemFingerprintVersion": 1,
+    "sourceDocuments": [
+      {
+        "name": "math rules",
+        "text": "In the fictional Luma game, a blue token scores 3 points.",
+        "truncated": false
+      },
+      {
+        "name": "programming rules",
+        "text": "The fictional Rho language defines x @ y as 2*x + y.",
+        "truncated": false
+      },
+      {
+        "name": "language rules",
+        "text": "The fictional Zali word 'naro' means 'river'.",
+        "truncated": false
+      },
+      {
+        "name": "factual rules",
+        "text": "The fictional Vale museum opens only on Tuesday.",
+        "truncated": false
+      }
+    ],
+    "targetCount": 8,
+    "minimumDifficulty": 1,
+    "requiresFullObjectiveCoverage": false,
+    "difficultyGuidance": "Recognize or recall a fact or concept.",
+    "adaptiveSkillPlans": []
+  },
+  "error_type": "ProviderCallBudgetExceededError",
+  "elapsed_seconds": 0.001,
+  "budget_calls": 0,
+  "final_content_ids": [],
+  "fixed_author_control": true,
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "GENERATION_ATTEMPTS": "1",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": ""
+  }
+}

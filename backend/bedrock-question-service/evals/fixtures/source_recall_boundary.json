@@ -1,0 +1,362 @@
+[
+  {
+    "id": "luma_math",
+    "payload": {
+      "goal": {
+        "title": "Study luma_math from the supplied reference",
+        "contentTopics": [
+          "Reference knowledge and application"
+        ]
+      },
+      "sourceDocuments": [
+        {
+          "name": "luma_math study reference",
+          "text": "Luma is a fictional game. Each blue token scores 3 points and each red token scores 2 points. A score is the sum of token values.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 4,
+      "minimumDifficulty": 1
+    },
+    "items": [
+      {
+        "question": {
+          "prompt": "In Luma, how many points is one blue token worth?",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "expectedAnswer": "3",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_source_recall"
+      },
+      {
+        "question": {
+          "prompt": "In Luma, a player earns 4 blue tokens and 1 red token. What is the score?",
+          "choices": [
+            "12",
+            "14",
+            "15",
+            "18"
+          ],
+          "expectedAnswer": "14",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_source_application"
+      },
+      {
+        "question": {
+          "prompt": "In Luma, a player earns 4 tokens. What is the score?",
+          "choices": [
+            "8",
+            "10",
+            "12",
+            "14"
+          ],
+          "expectedAnswer": "12",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "invalid_missing_case"
+      },
+      {
+        "question": {
+          "prompt": "In a separate game, each amber token scores 7 points. What do 2 amber tokens score?",
+          "choices": [
+            "7",
+            "9",
+            "14",
+            "21"
+          ],
+          "expectedAnswer": "14",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_stated_control"
+      }
+    ]
+  },
+  {
+    "id": "rho_programming",
+    "payload": {
+      "goal": {
+        "title": "Study rho_programming from the supplied reference",
+        "contentTopics": [
+          "Reference knowledge and application"
+        ]
+      },
+      "sourceDocuments": [
+        {
+          "name": "rho_programming study reference",
+          "text": "The fictional Rho language defines x @ y as 2*x+y for integer operands. Rho arrays use 1 as the first valid element index; indexes increase by one.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 4,
+      "minimumDifficulty": 1
+    },
+    "items": [
+      {
+        "question": {
+          "prompt": "What is the first valid element index of an array in Rho?",
+          "choices": [
+            "0",
+            "1",
+            "2",
+            "-1"
+          ],
+          "expectedAnswer": "1",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_source_recall"
+      },
+      {
+        "question": {
+          "prompt": "In Rho, what does 4 @ 3 evaluate to?",
+          "choices": [
+            "7",
+            "11",
+            "12",
+            "1"
+          ],
+          "expectedAnswer": "11",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_source_application"
+      },
+      {
+        "question": {
+          "prompt": "A Rho array contains [7, 12, 19]. What value is returned by reading an indexed entry?",
+          "choices": [
+            "7",
+            "12",
+            "19",
+            "0"
+          ],
+          "expectedAnswer": "7",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "invalid_missing_case"
+      },
+      {
+        "question": {
+          "prompt": "A separate language defines x @ y as x-y. What does 5 @ 3 evaluate to?",
+          "choices": [
+            "2",
+            "8",
+            "15",
+            "13"
+          ],
+          "expectedAnswer": "2",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_stated_control"
+      }
+    ]
+  },
+  {
+    "id": "zali_language",
+    "payload": {
+      "goal": {
+        "title": "Study zali_language from the supplied reference",
+        "contentTopics": [
+          "Reference knowledge and application"
+        ]
+      },
+      "sourceDocuments": [
+        {
+          "name": "zali_language study reference",
+          "text": "The fictional Zali language has this complete noun list: naro = river; pali = forest; lumi = hill. The verb naro means flows. A word's noun or verb use determines which translation applies.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 4,
+      "minimumDifficulty": 1
+    },
+    "items": [
+      {
+        "question": {
+          "prompt": "Which English noun translates the Zali noun 'naro'?",
+          "choices": [
+            "river",
+            "forest",
+            "hill",
+            "cloud"
+          ],
+          "expectedAnswer": "river",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_source_recall"
+      },
+      {
+        "question": {
+          "prompt": "Which Zali noun means 'forest'?",
+          "choices": [
+            "naro",
+            "pali",
+            "lumi",
+            "vena"
+          ],
+          "expectedAnswer": "pali",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_source_recall"
+      },
+      {
+        "question": {
+          "prompt": "The word 'naro' appears in a Zali sentence. What does it mean in English?",
+          "choices": [
+            "river",
+            "flows",
+            "hill",
+            "forest"
+          ],
+          "expectedAnswer": "river",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "invalid_missing_case"
+      },
+      {
+        "question": {
+          "prompt": "In a separate passage, the invented word 'sena' means 'cloud'. Which English word translates 'sena'?",
+          "choices": [
+            "river",
+            "forest",
+            "hill",
+            "cloud"
+          ],
+          "expectedAnswer": "cloud",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_stated_control"
+      }
+    ]
+  },
+  {
+    "id": "lumen_facts",
+    "payload": {
+      "goal": {
+        "title": "Study lumen_facts from the supplied reference",
+        "contentTopics": [
+          "Reference knowledge and application"
+        ]
+      },
+      "sourceDocuments": [
+        {
+          "name": "lumen_facts study reference",
+          "text": "The private Lumen archive handbook states that the Vale museum opens only on Tuesday and the Fern museum opens only on Friday. Mira is the only conservator responsible for paper; Nora handles metal and Eli handles glass.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 4,
+      "minimumDifficulty": 1
+    },
+    "items": [
+      {
+        "question": {
+          "prompt": "According to the Lumen handbook, on which weekday does the Vale museum open?",
+          "choices": [
+            "Tuesday",
+            "Friday",
+            "Sunday",
+            "Monday"
+          ],
+          "expectedAnswer": "Tuesday",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_source_recall"
+      },
+      {
+        "question": {
+          "prompt": "According to the Lumen handbook, who is responsible for conserving paper?",
+          "choices": [
+            "Mira",
+            "Nora",
+            "Eli",
+            "Tom"
+          ],
+          "expectedAnswer": "Mira",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_source_recall"
+      },
+      {
+        "question": {
+          "prompt": "A visit is planned to one of the two museums in the Lumen handbook. On which weekday is it open?",
+          "choices": [
+            "Tuesday",
+            "Friday",
+            "Sunday",
+            "Monday"
+          ],
+          "expectedAnswer": "Tuesday",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "invalid_missing_case"
+      },
+      {
+        "question": {
+          "prompt": "The fictional Sora museum opens only on Sunday. On which weekday does it open?",
+          "choices": [
+            "Tuesday",
+            "Friday",
+            "Sunday",
+            "Monday"
+          ],
+          "expectedAnswer": "Sunday",
+          "explanation": "The answer follows from the applicable stated rule or reference fact.",
+          "topic": "Reference knowledge and application",
+          "difficulty": 2,
+          "format": "Multiple Choice"
+        },
+        "assessment_kind": "valid_stated_control"
+      }
+    ]
+  }
+]

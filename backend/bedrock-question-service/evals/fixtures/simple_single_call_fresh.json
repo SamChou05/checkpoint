@@ -1,0 +1,74 @@
+[
+  {
+    "id": "simple_fresh_price_changes",
+    "payload": {
+      "goal": {
+        "title": "Calculate prices with sequential changes",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "Percent changes and fixed charges"
+        ],
+        "questionDirective": "Give two different practical price problems combining a percentage change with a fixed charge. State the order and every amount explicitly. Ask for an exact final price or original price."
+      },
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "simple_fresh_python_dicts",
+    "payload": {
+      "goal": {
+        "title": "Predict Python dictionary updates",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "get versus setdefault with lists"
+        ],
+        "questionDirective": "Give two different short executable Python 3 snippets using dictionary get or setdefault with mutable lists. Include all initialization and print calls. Test the resulting dictionary after a retrieved list changes."
+      },
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "simple_fresh_english_modals",
+    "payload": {
+      "goal": {
+        "title": "Interpret deductions about past events in English",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "Past modal deductions"
+        ],
+        "questionDirective": "Give two short situations and ask which sentence expresses the stated level of certainty about a past event. Make time and certainty matter; do not ask merely which sentence is grammatical."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Study notes",
+          "text": "For these practice questions, must have + past participle expresses a strong positive deduction about a past event. Might have + past participle expresses a possibility, without a strong conclusion. Cannot have + past participle expresses a strong negative deduction about a past event. Should have + past participle can express criticism or regret about an action that would have been preferable. These expressions describe the speaker’s judgment; they are not mathematical proof that the event did or did not happen."
+        }
+      ],
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "simple_fresh_alder_reserve",
+    "payload": {
+      "goal": {
+        "title": "Learn the fictional Alder reserve handbook",
+        "currentLevel": "beginner",
+        "contentTopics": [
+          "Animal areas and keepers"
+        ],
+        "questionDirective": "Ask two questions that combine an animal’s area with that area’s keeper. Test recall and application of the handbook without restating the tested facts."
+      },
+      "sourceDocuments": [
+        {
+          "name": "Alder reserve handbook",
+          "text": "This fictional reserve has exactly four animal areas. Grove houses only foxes; Lake houses only otters; Cliff houses only falcons; Meadow houses only deer. Marta alone manages Grove, Niko alone manages Lake, Ola alone manages Cliff, and Paz alone manages Meadow. Each animal type occurs in its named area only."
+        }
+      ],
+      "targetCount": 2,
+      "minimumDifficulty": 2
+    }
+  }
+]

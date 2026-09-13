@@ -5,7 +5,8 @@ import json
 from pathlib import Path
 import unittest
 
-from lambda_test_support import _request_payload
+from lambda_test_support import FakeBedrockClient, _request_payload
+from question_generation import ProviderCallBudget, _generate_sanitized_questions
 from question_quality import (
     _prompt_contains_embedded_options,
     _prompt_without_trailing_choice_echo,
@@ -23,6 +24,25 @@ REVIEWED_STEM = json.loads(
 
 
 class EmbeddedOptionsTests(unittest.TestCase):
+    def test_matching_choices_cannot_erase_stimulus_in_any_domain(self):
+        cases = json.loads((Path(__file__).parent / "fixtures/stimulus_preservation_contract.json").read_text())
+        for raw in cases:
+            with self.subTest(prompt=raw["prompt"]):
+                request = _normalize_request({"goal": {"title": "Read literal sequences",
+                                                      "contentTopics": [raw["topic"]]},
+                                              "targetCount": 1, "minimumDifficulty": 1})
+                admitted = _sanitize_questions([raw], request)
+                self.assertEqual(len(admitted), 1)
+                self.assertEqual(admitted[0]["prompt"], raw["prompt"])
+                client = FakeBedrockClient.returning_questions(raw)
+                verified = _generate_sanitized_questions(request, client, ProviderCallBudget(3))
+                self.assertEqual(len(verified), 1)
+                self.assertEqual(verified[0]["prompt"], raw["prompt"])
+                self.assertEqual(verified[0]["expectedAnswer"], raw["expectedAnswer"])
+                for call in client.solution_calls + client.review_calls:
+                    data = json.loads(call["messages"][0]["content"][0]["text"].split("\n", 1)[1].rsplit("\n", 1)[0])
+                    self.assertEqual(data["items"][0]["prompt"], raw["prompt"])
+
     def test_reordered_reviewed_choices_do_not_make_the_stimulus_disposable(self):
         # Synthetic integrity contract shared with the iOS admission test. The
         # fixed model replies isolate transport behavior, not model accuracy.
@@ -94,7 +114,7 @@ class EmbeddedOptionsTests(unittest.TestCase):
             question = {**FIXTURES["valid_questions"][0], "prompt": prompt}
             self.assertEqual(_sanitize_questions([question], request), [])
 
-    def test_exact_choice_echoes_are_removed_without_erasing_call_parentheses(self):
+    def test_exact_choice_echoes_remain_part_of_the_reviewed_stimulus(self):
         question = FIXTURES["valid_questions"][0]
         for labeled in (False, True):
             echo = "\n".join(
@@ -111,4 +131,4 @@ class EmbeddedOptionsTests(unittest.TestCase):
             request = _normalize_request(_request_payload(target_count=1))
             accepted = _sanitize_questions([echoed], request)
             self.assertEqual(len(accepted), 1)
-            self.assertEqual(accepted[0]["prompt"], question["prompt"])
+            self.assertEqual(accepted[0]["prompt"], echoed["prompt"])

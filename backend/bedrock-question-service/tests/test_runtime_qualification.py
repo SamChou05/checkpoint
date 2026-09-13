@@ -129,9 +129,12 @@ class RuntimeQualificationTests(unittest.TestCase):
         self.assertEqual([q["prompt"] for q in fixed["questions"]], [
             self.packet["fixed"]["cases"][i]["question"]["prompt"] for i in (0, 4)
         ])
-        for question in fixed["questions"] + fresh["questions"]:
-            self.assertEqual(question["verificationVersion"], 1)
-            self.assertEqual(question["verificationPolicyRevision"], 2)
+        # Fixed historical replay uses reference context; fresh runtime now
+        # records complete subject-reference solving. Never relabel the old capture.
+        for questions, revision in ((fixed["questions"], 2), (fresh["questions"], 8)):
+            for question in questions:
+                self.assertEqual(question["verificationVersion"], 1)
+                self.assertEqual(question["verificationPolicyRevision"], revision)
         review_items = payload(report["calls"][1]["request"], "question_review_json")["items"]
         self.assertEqual([i["index"] for i in review_items], [0, 1])
         self.assertEqual([i["prompt"] for i in review_items], [q["prompt"] for q in fixed["questions"]])
@@ -637,7 +640,7 @@ class FreshAuthoredSolutionTests(unittest.TestCase):
             value = {"questions": self.questions[operation]}
         elif call["role"] == "solver":
             data = payload(request, "question_solution_json")
-            self.assertEqual(data["sourceDocuments"], self.plan["operations"][operation]["request"]["sourceDocuments"])
+            self.assertEqual(set(data), {"items", "sourceDocuments", "goal", "skillMap"})
             for item in data["items"]:
                 self.assertFalse(set(item) & {"explanation", "expectedAnswer", "difficulty"})
             value = {"solutions": [{
@@ -688,7 +691,7 @@ class FreshAuthoredSolutionTests(unittest.TestCase):
             for original, returned in zip(raw_authored, operation["questions"], strict=True):
                 self.assertEqual(original["explanation"].encode(), returned["explanation"].encode())
                 self.assertEqual(returned["choiceExplanations"], {})
-                self.assertEqual(returned["verificationPolicyRevision"], 3)
+                self.assertEqual(returned["verificationPolicyRevision"], 9)
         tampered = copy.deepcopy(report)
         tampered["operations"][2]["questions"][0]["explanation"] += " replacement"
         with self.assertRaises(ValueError):
@@ -824,7 +827,7 @@ class AuthoredAuthorComparisonTests(unittest.TestCase):
             for original, returned in zip(self.questions[index], result["questions"], strict=True):
                 self.assertEqual(original["explanation"].encode(), returned["explanation"].encode())
                 self.assertEqual(returned["choiceExplanations"], {})
-                self.assertEqual(returned["verificationPolicyRevision"], 3)
+                self.assertEqual(returned["verificationPolicyRevision"], 9)
 
     def test_fixed_origin_profiles_and_model_roles_reject_drift_before_dispatch(self):
         with self.assertRaises(ValueError):
@@ -920,7 +923,7 @@ class FocusedApplicationComparisonTests(unittest.TestCase):
             self.assertEqual(report["calls"][index * 3]["request"], job["first_request"])
             for original, returned in zip(self.questions[index], result["questions"], strict=True):
                 self.assertEqual(original["explanation"].encode(), returned["explanation"].encode())
-                self.assertEqual(returned["verificationPolicyRevision"], 3)
+                self.assertEqual(returned["verificationPolicyRevision"], 9)
                 self.assertEqual(returned["choiceExplanations"], {})
 
     def test_identical_systems_non_system_changes_and_modified_origin_fail_closed(self):

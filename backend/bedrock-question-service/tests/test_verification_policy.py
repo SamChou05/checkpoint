@@ -138,7 +138,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
             self.request, client, ProviderCallBudget(3)
         )
         self.assertEqual(len(accepted), 1)
-        self.assertEqual(accepted[0]["verificationPolicyRevision"], 2)
+        self.assertEqual(accepted[0]["verificationPolicyRevision"], 8)
         self.assertEqual(len(client.calls), 1)
         self.assertEqual(len(client.solution_calls), 1)
         self.assertEqual(len(client.review_calls), 1)
@@ -271,7 +271,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
         self.assertEqual(raised.exception.code, "claim_conflict")
 
     def test_minimum_policy_is_strict_integer_and_known_request_bound(self):
-        for invalid in (True, False, "1", 1.0, -1, 3, None, [], {}):
+        for invalid in (True, False, "1", 1.0, -1, 9, None, [], {}):
             with self.subTest(invalid=invalid):
                 bank_id, dynamo, _, _ = self.bank(revision=1)
                 with mock.patch.object(

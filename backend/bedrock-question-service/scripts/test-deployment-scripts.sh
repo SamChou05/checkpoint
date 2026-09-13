@@ -96,8 +96,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 55 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 55"
+[[ "${#sam_arguments[@]}" -eq 56 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 56"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -120,7 +120,7 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
-for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy; do
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy BedrockVerificationStructuredOutputMode=native; do
   [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
 done
 for argument in "${sam_arguments[@]:11}"; do
@@ -134,6 +134,20 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
 mapfile -d '' -t sam_arguments < "$sam_capture"
 [[ " ${sam_arguments[*]} " == *" BedrockStructuredOutputMode=native "* ]] || \
   fail "explicit native output mode was not forwarded"
+
+# Verification transport is independent of author compatibility.
+for verification_mode in inherit legacy native; do
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" BEDROCK_STRUCTURED_OUTPUT_MODE=legacy \
+    "BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE=$verification_mode" \
+    "$script_dir/deploy-sam.sh"
+  mapfile -d '' -t sam_arguments < "$sam_capture"
+  [[ "${#sam_arguments[@]}" -eq 56 ]] || fail "verifier override changed the argument count"
+  [[ " ${sam_arguments[*]} " == *" BedrockVerificationStructuredOutputMode=$verification_mode "* ]] || \
+    fail "verification mode $verification_mode was not forwarded"
+  [[ " ${sam_arguments[*]} " == *" BedrockStructuredOutputMode=legacy "* ]] || \
+    fail "verification override changed author output mode"
+done
 
 printf '%s\n' \
   '#!/usr/bin/env bash' \

@@ -1,0 +1,172 @@
+[
+  {
+    "id": "final_mixture_replacement_api_nova",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "invalid_content": 2
+      }
+    }
+  },
+  {
+    "id": "final_mixture_replacement_worker_kimi",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "accepted": 1,
+        "invalid_content": 1
+      }
+    }
+  },
+  {
+    "id": "final_python_closures_worker_kimi",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "accepted": 2
+      }
+    }
+  },
+  {
+    "id": "final_python_closures_api_nova",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "accepted": 2
+      }
+    }
+  },
+  {
+    "id": "final_relative_clauses_api_nova",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "accepted": 2
+      }
+    }
+  },
+  {
+    "id": "final_relative_clauses_worker_kimi",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "accepted": 2
+      }
+    }
+  },
+  {
+    "id": "final_private_transit_worker_kimi",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "accepted": 1,
+        "invalid_content": 1
+      }
+    }
+  },
+  {
+    "id": "final_private_transit_api_nova",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "invalid_skill": 2
+      }
+    }
+  },
+  {
+    "id": "simple_fresh_price_changes_worker_kimi",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "invalid_content": 2
+      }
+    }
+  },
+  {
+    "id": "simple_fresh_python_dicts_worker_kimi",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "accepted": 2
+      }
+    }
+  },
+  {
+    "id": "simple_fresh_english_modals_worker_kimi",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "accepted": 2
+      }
+    }
+  },
+  {
+    "id": "simple_fresh_alder_reserve_worker_kimi",
+    "exact_frozen_prompt": true,
+    "references_preserved": true,
+    "single_call": true,
+    "no_verification_stamp": true,
+    "raw_response_complete": true,
+    "content_preserved_except_choice_order_and_metadata": true,
+    "quality": {
+      "sanitize": {
+        "accepted": 2
+      }
+    }
+  }
+]

@@ -1,0 +1,134 @@
+{
+  "group": "algebra",
+  "jobs": [
+    [
+      "math_algebra_legacy",
+      {
+        "goal": {
+          "title": "Reason about real equations with parameters",
+          "learningTarget": "Reason about real equations with parameters",
+          "currentLevel": "advanced",
+          "contentTopics": [
+            "Parameter values, domains and number of real solutions"
+          ],
+          "focusAreas": "Parameter values, domains and number of real solutions"
+        },
+        "sourceDocuments": [],
+        "targetCount": 2,
+        "minimumDifficulty": 4
+      },
+      [
+        {
+          "prompt": "For which values of the real parameter a does the equation x⁴ − 2ax² + a² − 1 = 0 have exactly three distinct real solutions?",
+          "explanation": "Substitute t = x² (t ≥ 0) to get t² − 2at + (a² − 1) = 0, which factors as (t − a)² = 1, so t = a ± 1. For exactly three distinct real x, we need: one t-value giving two opposite x-values (t > 0), and the other t-value giving exactly x = 0 (t = 0). Thus one of a ± 1 equals 0, and the other is positive. If a + 1 = 0, then a = −1 and a − 1 = −2 < 0 (invalid). If a − 1 = 0, then a = 1 and a + 1 = 2 > 0, giving t = 0 and t = 2, hence x = 0, ±√2: exactly three solutions. So a = 1.",
+          "expectedAnswer": "a = 1",
+          "choices": [
+            "a = −1",
+            "a = 0",
+            "a = 1",
+            "a = 2"
+          ],
+          "topic": "Parameter values, domains and number of real solutions",
+          "skillID": "1",
+          "objectiveID": "1",
+          "objective": "Determine parameter values yielding exactly three distinct real solutions",
+          "difficulty": 4,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Consider the equation √(x² − 4) = a − x where a is a real parameter. For which values of a does this equation have exactly one real solution?",
+          "explanation": "Domain requires x² ≥ 4, so x ≤ −2 or x ≥ 2. Squaring: x² − 4 = (a − x)² gives x² − 4 = a² − 2ax + x², so 2ax = a² + 4, thus x = (a² + 4)/(2a) for a ≠ 0. Check: x must satisfy x ≤ −2 or x ≥ 2 and x ≤ a (since √(x²−4) ≥ 0 requires a − x ≥ 0). For a > 0: x = (a²+4)/(2a) = a/2 + 2/a ≥ 2 by AM-GM, with equality at a = 2. Also x ≤ a becomes a/2 + 2/a ≤ a, i.e., 2/a ≤ a/2, so a² ≥ 4, meaning a ≥ 2. At a = 2, x = 2 satisfies both conditions. For a > 2, x > 2 and x < a, giving valid solutions. But we need exactly one solution: when a = 2, x = 2 is the unique boundary case. For a < 0: x = (a²+4)/(2a) < 0, and we need x ≤ −2. This gives (a²+4)/(2a) ≤ −2, so a²+4 ≥ −4a (since a < 0), thus a² + 4a + 4 ≥ 0, i.e., (a+2)² ≥ 0, always true. Also need x ≤ a: (a²+4)/(2a) ≤ a gives a²+4 ≥ 2a² (since a < 0), so 4 ≥ a², meaning −2 ≤ a < 0. At a = −2, x = −2. Checking a = −2: √(4−4) = 0 = −2−(−2) = 0 ✓. For −2 < a < 0, x < −2 and x > a (since a < 0 and x < −2), so x ≤ a fails. Thus exactly one solution occurs at a = −2 and a = 2.",
+          "expectedAnswer": "a = −2 or a = 2",
+          "choices": [
+            "a = −2 or a = 2",
+            "−2 ≤ a ≤ 2",
+            "a ≥ 2",
+            "a ≤ −2 or a ≥ 2"
+          ],
+          "topic": "Parameter values, domains and number of real solutions",
+          "skillID": "1",
+          "objectiveID": "2",
+          "objective": "Determine parameter values yielding exactly one real solution with domain constraints",
+          "difficulty": 4,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "math_algebra_native",
+      {
+        "goal": {
+          "title": "Reason about real equations with parameters",
+          "learningTarget": "Reason about real equations with parameters",
+          "currentLevel": "advanced",
+          "contentTopics": [
+            "Parameter values, domains and number of real solutions"
+          ],
+          "focusAreas": "Parameter values, domains and number of real solutions"
+        },
+        "sourceDocuments": [],
+        "targetCount": 2,
+        "minimumDifficulty": 4
+      },
+      [
+        {
+          "prompt": "For which values of the real parameter a does the equation x⁴ − 2ax² + a² − 1 = 0 have exactly three distinct real solutions?",
+          "explanation": "Substitute t = x² (t ≥ 0) to get t² − 2at + (a² − 1) = 0, which factors as (t − a)² = 1, so t = a ± 1. For exactly three distinct real x, we need: one t-value giving two opposite x-values (t > 0), and the other t-value giving exactly x = 0 (t = 0). Thus one of a ± 1 equals 0, and the other is positive. If a + 1 = 0, then a = −1 and a − 1 = −2 < 0 (invalid). If a − 1 = 0, then a = 1 and a + 1 = 2 > 0, giving t = 0 and t = 2, hence x = 0, ±√2: exactly three solutions. So a = 1.",
+          "expectedAnswer": "a = 1",
+          "choices": [
+            "a = −1",
+            "a = 0",
+            "a = 1",
+            "a = 2"
+          ],
+          "topic": "Parameter values, domains and number of real solutions",
+          "skillID": "1",
+          "objectiveID": "1",
+          "objective": "Determine parameter values yielding exactly three distinct real solutions",
+          "difficulty": 4,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Consider the equation √(x² − 4) = a − x where a is a real parameter. For which values of a does this equation have exactly one real solution?",
+          "explanation": "Domain requires x² ≥ 4, so x ≤ −2 or x ≥ 2. Squaring: x² − 4 = (a − x)² gives x² − 4 = a² − 2ax + x², so 2ax = a² + 4, thus x = (a² + 4)/(2a) for a ≠ 0. Check: x must satisfy x ≤ −2 or x ≥ 2 and x ≤ a (since √(x²−4) ≥ 0 requires a − x ≥ 0). For a > 0: x = (a²+4)/(2a) = a/2 + 2/a ≥ 2 by AM-GM, with equality at a = 2. Also x ≤ a becomes a/2 + 2/a ≤ a, i.e., 2/a ≤ a/2, so a² ≥ 4, meaning a ≥ 2. At a = 2, x = 2 satisfies both conditions. For a > 2, x > 2 and x < a, giving valid solutions. But we need exactly one solution: when a = 2, x = 2 is the unique boundary case. For a < 0: x = (a²+4)/(2a) < 0, and we need x ≤ −2. This gives (a²+4)/(2a) ≤ −2, so a²+4 ≥ −4a (since a < 0), thus a² + 4a + 4 ≥ 0, i.e., (a+2)² ≥ 0, always true. Also need x ≤ a: (a²+4)/(2a) ≤ a gives a²+4 ≥ 2a² (since a < 0), so 4 ≥ a², meaning −2 ≤ a < 0. At a = −2, x = −2. Checking a = −2: √(4−4) = 0 = −2−(−2) = 0 ✓. For −2 < a < 0, x < −2 and x > a (since a < 0 and x < −2), so x ≤ a fails. Thus exactly one solution occurs at a = −2 and a = 2.",
+          "expectedAnswer": "a = −2 or a = 2",
+          "choices": [
+            "a = −2 or a = 2",
+            "−2 ≤ a ≤ 2",
+            "a ≥ 2",
+            "a ≤ −2 or a ≥ 2"
+          ],
+          "topic": "Parameter values, domains and number of real solutions",
+          "skillID": "1",
+          "objectiveID": "2",
+          "objective": "Determine parameter values yielding exactly one real solution with domain constraints",
+          "difficulty": 4,
+          "format": "Multiple Choice"
+        }
+      ]
+    ]
+  ],
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "GENERATION_ATTEMPTS": "3",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": ""
+  },
+  "max_provider_calls": 4
+}

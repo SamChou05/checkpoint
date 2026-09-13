@@ -94,12 +94,25 @@ _SCHEMAS: dict[Contract, dict[str, Any]] = {
 }
 
 
-def output_mode() -> str:
+_VERIFICATION_CONTRACTS = frozenset({
+    "complete_choice_solver_v1", "default_reviewer_v1", "authored_solution_reviewer_v1",
+})
+
+
+def output_mode(contract: Contract | None = None) -> str:
     mode = os.getenv("BEDROCK_STRUCTURED_OUTPUT_MODE", "legacy").strip().lower()
     if mode not in {"legacy", "native"}:
         raise ServiceConfigurationError(
             "BEDROCK_STRUCTURED_OUTPUT_MODE must be legacy or native."
         )
+    if contract in _VERIFICATION_CONTRACTS:
+        override = os.getenv("BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE", "inherit").strip().lower()
+        if override not in {"", "inherit", "legacy", "native"}:
+            raise ServiceConfigurationError(
+                "BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE must be inherit, legacy or native."
+            )
+        if override in {"legacy", "native"}:
+            return override
     return mode
 
 

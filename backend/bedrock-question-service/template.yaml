@@ -30,6 +30,11 @@ Parameters:
     Default: legacy
     AllowedValues: [legacy, native]
     Description: Provider JSON transport. Keep legacy until every configured model is qualified.
+  BedrockVerificationStructuredOutputMode:
+    Type: String
+    Default: native
+    AllowedValues: [inherit, legacy, native]
+    Description: Solver/reviewer transport override, independent of author and skill-map compatibility.
   BedrockReasoningEffort:
     Type: String
     Default: ""
@@ -341,6 +346,7 @@ Resources:
           BEDROCK_VERIFICATION_MODEL_ID: !Ref BedrockVerificationModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_STRUCTURED_OUTPUT_MODE: !Ref BedrockStructuredOutputMode
+          BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE: !Ref BedrockVerificationStructuredOutputMode
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
           BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens
@@ -464,6 +470,7 @@ Resources:
           BEDROCK_VERIFICATION_MODEL_ID: !Ref BedrockVerificationModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_STRUCTURED_OUTPUT_MODE: !Ref BedrockStructuredOutputMode
+          BEDROCK_VERIFICATION_STRUCTURED_OUTPUT_MODE: !Ref BedrockVerificationStructuredOutputMode
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
           BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens

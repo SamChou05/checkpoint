@@ -208,9 +208,13 @@ def _sanitize_questions(
                     record_quality(request_metrics, "sanitize", "objective_quota")
                     continue
 
-        raw_prompt = _prompt_without_trailing_choice_echo(
-            raw_question.get("prompt"),
-            raw_question.get("choices"),
+        # Matching choices do not prove that trailing lines are redundant:
+        # a poem, output trace or ordered measurement list may be the stimulus.
+        # Bind verification and display to the complete authored subject text.
+        supplied_prompt = raw_question.get("prompt")
+        raw_prompt = (
+            _clean_subject_text(supplied_prompt)
+            if isinstance(supplied_prompt, str) else ""
         )
         if len(raw_prompt) > MAX_PROVIDER_PROMPT_CHARS:
             record_quality(request_metrics, "sanitize", "prompt_length")
@@ -256,7 +260,9 @@ def _sanitize_questions(
             or not expected_answer
             or not explanation
             or _looks_like_study_strategy(prompt, request["goal"])
-            or _prompt_contains_embedded_options(prompt)
+            or _prompt_contains_embedded_options(
+                _prompt_without_trailing_choice_echo(prompt, raw_question.get("choices"))
+            )
             or _prompt_contains_latex_markup(prompt)
         ):
             record_quality(request_metrics, "sanitize", "invalid_content")
@@ -689,7 +695,11 @@ def _looks_like_answer_label(value: str) -> bool:
 
 
 def _prompt_without_trailing_choice_echo(prompt: Any, raw_choices: Any) -> str:
-    """Remove only a redundant final copy of choices; retain the stem's layout."""
+    """Inspection view for the embedded-options detector, never question content.
+
+    Equal trailing text may be necessary stimulus rather than an answer echo.
+    The complete prompt must survive author admission, review and display.
+    """
     if not isinstance(prompt, str):
         return ""
     cleaned_prompt = _clean_subject_text(prompt)

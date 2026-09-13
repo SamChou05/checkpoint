@@ -1,0 +1,254 @@
+[
+  {
+    "id": "math_arithmetic",
+    "domain": "math",
+    "payload": {
+      "goal": {
+        "title": "Practice signed arithmetic and order of operations",
+        "learningTarget": "Practice signed arithmetic and order of operations",
+        "currentLevel": "beginner",
+        "contentTopics": [
+          "Signed arithmetic with parentheses and fractions"
+        ],
+        "focusAreas": "Signed arithmetic with parentheses and fractions"
+      },
+      "sourceDocuments": [],
+      "targetCount": 2,
+      "minimumDifficulty": 1
+    }
+  },
+  {
+    "id": "math_probability",
+    "domain": "math",
+    "payload": {
+      "goal": {
+        "title": "Apply conditional probability to screening tests",
+        "learningTarget": "Apply conditional probability to screening tests",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "Base rates and conditional probability"
+        ],
+        "focusAreas": "Base rates and conditional probability"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Synthetic study notes",
+          "text": "For a synthetic screening model, sensitivity is P(positive|condition), specificity is P(negative|no condition), and prevalence is P(condition). All rates concern the same population. Use whole-number hypothetical populations where helpful. A change in sample size alone does not alter a conditional probability. No medical advice or real test claims.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "math_algebra",
+    "domain": "math",
+    "payload": {
+      "goal": {
+        "title": "Reason about real equations with parameters",
+        "learningTarget": "Reason about real equations with parameters",
+        "currentLevel": "advanced",
+        "contentTopics": [
+          "Parameter values, domains and number of real solutions"
+        ],
+        "focusAreas": "Parameter values, domains and number of real solutions"
+      },
+      "sourceDocuments": [],
+      "targetCount": 2,
+      "minimumDifficulty": 4
+    }
+  },
+  {
+    "id": "code_python",
+    "domain": "programming",
+    "payload": {
+      "goal": {
+        "title": "Read literal Python 3 code accurately",
+        "learningTarget": "Read literal Python 3 code accurately",
+        "currentLevel": "beginner",
+        "contentTopics": [
+          "String length, case, whitespace and list indexing"
+        ],
+        "focusAreas": "String length, case, whitespace and list indexing"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Synthetic study notes",
+          "text": "Python 3 strings retain spaces and case. len counts Unicode code points, not visible glyphs. List indexes start at zero. A slice excludes its stop index. Preserve literal spaces and indentation when quoting code.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 2,
+      "minimumDifficulty": 1
+    }
+  },
+  {
+    "id": "code_sql",
+    "domain": "programming",
+    "payload": {
+      "goal": {
+        "title": "Trace SQLite queries with duplicates and NULL",
+        "learningTarget": "Trace SQLite queries with duplicates and NULL",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "LEFT JOIN, WHERE, COUNT and NULL"
+        ],
+        "focusAreas": "LEFT JOIN, WHERE, COUNT and NULL"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Synthetic study notes",
+          "text": "Use SQLite semantics. COUNT(*) counts rows; COUNT(expression) counts non-NULL expression values. A LEFT JOIN emits a NULL-extended row for each unmatched left row. WHERE filters after the join; an equality comparison involving NULL is unknown and is not retained by WHERE. Show all needed table rows in each question.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "code_complexity",
+    "domain": "programming",
+    "payload": {
+      "goal": {
+        "title": "Analyze algorithmic guarantees precisely",
+        "learningTarget": "Analyze algorithmic guarantees precisely",
+        "currentLevel": "expert",
+        "contentTopics": [
+          "Worst-case time, output size and duplicate data"
+        ],
+        "focusAreas": "Worst-case time, output size and duplicate data"
+      },
+      "sourceDocuments": [],
+      "targetCount": 2,
+      "minimumDifficulty": 5
+    }
+  },
+  {
+    "id": "language_grammar",
+    "domain": "language",
+    "payload": {
+      "goal": {
+        "title": "Identify English words in context",
+        "learningTarget": "Identify English words in context",
+        "currentLevel": "beginner",
+        "contentTopics": [
+          "Nouns, verbs, adjectives and adverbs in sentences"
+        ],
+        "focusAreas": "Nouns, verbs, adjectives and adverbs in sentences"
+      },
+      "sourceDocuments": [],
+      "targetCount": 2,
+      "minimumDifficulty": 1
+    }
+  },
+  {
+    "id": "language_articles",
+    "domain": "language",
+    "payload": {
+      "goal": {
+        "title": "Choose English articles while preserving meaning",
+        "learningTarget": "Choose English articles while preserving meaning",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "Generic reference versus specific reference"
+        ],
+        "focusAreas": "Generic reference versus specific reference"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Synthetic study notes",
+          "text": "English count singular nouns usually need a determiner. Generic plural and mass nouns may use no article: Tigers are mammals; Water is essential. The can signal contextually identifiable specific referents. A mass noun can become countable for a serving or type. Interpret the whole context; grammatical alternatives can differ in meaning.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "language_spanish",
+    "domain": "language",
+    "payload": {
+      "goal": {
+        "title": "Interpret Spanish tense and mood in context",
+        "learningTarget": "Interpret Spanish tense and mood in context",
+        "currentLevel": "advanced",
+        "contentTopics": [
+          "Indicative, subjunctive, time reference and speaker commitment"
+        ],
+        "focusAreas": "Indicative, subjunctive, time reference and speaker commitment"
+      },
+      "sourceDocuments": [],
+      "targetCount": 2,
+      "minimumDifficulty": 4
+    }
+  },
+  {
+    "id": "facts_astronomy",
+    "domain": "factual",
+    "payload": {
+      "goal": {
+        "title": "Understand the causes of seasons on Earth",
+        "learningTarget": "Understand the causes of seasons on Earth",
+        "currentLevel": "beginner",
+        "contentTopics": [
+          "Axial tilt, sunlight angle and hemispheres"
+        ],
+        "focusAreas": "Axial tilt, sunlight angle and hemispheres"
+      },
+      "sourceDocuments": [],
+      "targetCount": 2,
+      "minimumDifficulty": 1
+    }
+  },
+  {
+    "id": "facts_history",
+    "domain": "factual",
+    "payload": {
+      "goal": {
+        "title": "Distinguish adoption, signing and chronology in American independence",
+        "learningTarget": "Distinguish adoption, signing and chronology in American independence",
+        "currentLevel": "intermediate",
+        "contentTopics": [
+          "Events in 1776 and what dated records establish"
+        ],
+        "focusAreas": "Events in 1776 and what dated records establish"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Synthetic study notes",
+          "text": "Synthetic summary of historical chronology: The Continental Congress voted for independence on July 2, 1776, adopted the Declaration text on July 4, and most delegates signed the engrossed parchment on August 2. Additional signatures were added later. Adoption of text and signature dates are different events. Ask only about these events or inferences from this chronology.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 2,
+      "minimumDifficulty": 3
+    }
+  },
+  {
+    "id": "facts_ecology",
+    "domain": "factual",
+    "payload": {
+      "goal": {
+        "title": "Reason about food-web energy and measurement",
+        "learningTarget": "Reason about food-web energy and measurement",
+        "currentLevel": "advanced",
+        "contentTopics": [
+          "Production versus standing biomass and transfer efficiency"
+        ],
+        "focusAreas": "Production versus standing biomass and transfer efficiency"
+      },
+      "sourceDocuments": [
+        {
+          "name": "Synthetic study notes",
+          "text": "In this simplified annual food web, energy production is measured in kJ per year, and standing biomass in g at one instant. Transfer efficiency from a prey to a consumer is consumer production attributable to that prey divided by prey production, with both over the same interval. Diet shares describe fractions of consumer intake, not fractions of prey production eaten. Standing biomass alone does not determine annual production.",
+          "truncated": false
+        }
+      ],
+      "targetCount": 2,
+      "minimumDifficulty": 4
+    }
+  }
+]

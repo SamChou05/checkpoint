@@ -1,0 +1,204 @@
+{
+  "group": "stimulus",
+  "jobs": [
+    [
+      "current",
+      {
+        "goal": {
+          "title": "Read literal sequences",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Read literal sequences",
+          "contentTopics": [
+            "programming"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 4,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      [
+        {
+          "prompt": "A program prints the following lines in order. Which line is printed second?\nred\ngreen\nblue\nyellow",
+          "choices": [
+            "red",
+            "green",
+            "blue",
+            "yellow"
+          ],
+          "expectedAnswer": "green",
+          "explanation": "The requested position is explicitly shown in the supplied sequence.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "The measurements below are in time order. What was the second measurement?\n12 cm\n8 cm\n15 cm\n11 cm",
+          "choices": [
+            "12 cm",
+            "8 cm",
+            "15 cm",
+            "11 cm"
+          ],
+          "expectedAnswer": "8 cm",
+          "explanation": "The requested position is explicitly shown in the supplied sequence.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Read the following four-line poem. Which word begins its third line?\nRain\nFalls\nSoftly\nTonight",
+          "choices": [
+            "Rain",
+            "Falls",
+            "Softly",
+            "Tonight"
+          ],
+          "expectedAnswer": "Softly",
+          "explanation": "The requested position is explicitly shown in the supplied sequence.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "The stops below are in travel order. Which city was visited last?\nOslo\nRome\nLima\nTokyo",
+          "choices": [
+            "Oslo",
+            "Rome",
+            "Lima",
+            "Tokyo"
+          ],
+          "expectedAnswer": "Tokyo",
+          "explanation": "The requested position is explicitly shown in the supplied sequence.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        }
+      ]
+    ],
+    [
+      "preserve",
+      {
+        "goal": {
+          "title": "Read literal sequences",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Read literal sequences",
+          "contentTopics": [
+            "programming"
+          ],
+          "questionDirective": "",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 4,
+        "minimumDifficulty": 1,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Recognize or recall a fact or concept.",
+        "adaptiveSkillPlans": []
+      },
+      [
+        {
+          "prompt": "A program prints the following lines in order. Which line is printed second?\nred\ngreen\nblue\nyellow",
+          "choices": [
+            "red",
+            "green",
+            "blue",
+            "yellow"
+          ],
+          "expectedAnswer": "green",
+          "explanation": "The requested position is explicitly shown in the supplied sequence.",
+          "topic": "programming",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "The measurements below are in time order. What was the second measurement?\n12 cm\n8 cm\n15 cm\n11 cm",
+          "choices": [
+            "12 cm",
+            "8 cm",
+            "15 cm",
+            "11 cm"
+          ],
+          "expectedAnswer": "8 cm",
+          "explanation": "The requested position is explicitly shown in the supplied sequence.",
+          "topic": "math",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "Read the following four-line poem. Which word begins its third line?\nRain\nFalls\nSoftly\nTonight",
+          "choices": [
+            "Rain",
+            "Falls",
+            "Softly",
+            "Tonight"
+          ],
+          "expectedAnswer": "Softly",
+          "explanation": "The requested position is explicitly shown in the supplied sequence.",
+          "topic": "language",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        },
+        {
+          "prompt": "The stops below are in travel order. Which city was visited last?\nOslo\nRome\nLima\nTokyo",
+          "choices": [
+            "Oslo",
+            "Rome",
+            "Lima",
+            "Tokyo"
+          ],
+          "expectedAnswer": "Tokyo",
+          "explanation": "The requested position is explicitly shown in the supplied sequence.",
+          "topic": "factual",
+          "difficulty": 1,
+          "format": "Multiple Choice"
+        }
+      ]
+    ]
+  ],
+  "settings": {
+    "AWS_REGION": "us-east-1",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "GENERATION_ATTEMPTS": "3",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": ""
+  },
+  "max_provider_calls": 4
+}

@@ -7,6 +7,17 @@ legacy/unknown; reading or claiming inventory must never assign a new revision.
 Revision 3 additionally identifies the opt-in authored worked-explanation audit;
 the final reviewer cannot replace learner-facing teaching. It is not yet the
 default generation contract or required claim minimum.
+Revision 4 solves only the topic, stem and choices displayed to the learner;
+hidden goal/source/objective content cannot supply a missing task premise.
+Revision 5 combines that boundary with the opt-in authored-teaching audit.
+Revisions 4/5 were superseded because they reject valid source-based recall.
+Revision 6 retains learned source facts, excludes goal/objective intent from
+solving, and distinguishes reference rules from missing case data. Revision 7
+adds the opt-in authored-teaching audit. Revisions 6/7 were superseded because
+learned material can also be supplied in goal/skill prose. Revision 8 retains all
+normalized subject references, while omitting authored item tags and feedback
+from solving and requiring case-specific facts. Revision 9 adds the existing
+opt-in authored-teaching audit. Model judgments remain fallible.
 """
 
 from typing import Any
@@ -16,7 +27,13 @@ VERIFICATION_VERSION = 1
 LEGACY_VERIFICATION_POLICY_REVISION = 1
 COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION = 2
 AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION = 3
-VERIFICATION_POLICY_REVISION = COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION
+DISPLAYED_QUESTION_VERIFICATION_POLICY_REVISION = 4
+DISPLAYED_AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION = 5
+SOURCE_SUPPORTED_VERIFICATION_POLICY_REVISION = 6
+SOURCE_SUPPORTED_AUTHORED_VERIFICATION_POLICY_REVISION = 7
+SUBJECT_REFERENCE_VERIFICATION_POLICY_REVISION = 8
+SUBJECT_REFERENCE_AUTHORED_VERIFICATION_POLICY_REVISION = 9
+VERIFICATION_POLICY_REVISION = SUBJECT_REFERENCE_VERIFICATION_POLICY_REVISION
 
 
 def meets_verification_policy(question: dict[str, Any], minimum: int) -> bool:

@@ -21,7 +21,7 @@ FIXTURE = Path(__file__).parent / "fixtures/source_truncation_contract.json"
 
 
 class SourceTruncationTests(BackendTestCase):
-    def test_wire_sources_reach_actual_author_solver_and_reviewer_callbacks(self):
+    def test_wire_sources_reach_author_solver_and_reviewer(self):
         documents = [case["expected_wire"] for case in json.loads(FIXTURE.read_text())["cases"]]
         payload = _request_payload(target_count=1)
         payload["sourceDocuments"] = documents
@@ -36,6 +36,8 @@ class SourceTruncationTests(BackendTestCase):
                           (client.review_calls[0], "question_review_json")):
             user = call["messages"][0]["content"][0]["text"]
             supplied = json.loads(user.split(f"<{tag}>\n", 1)[1].split(f"\n</{tag}>", 1)[0])
+            if tag == "question_solution_json":
+                self.assertEqual(set(supplied), {"items", "sourceDocuments", "goal", "skillMap"})
             self.assertEqual(supplied["sourceDocuments"], documents)
 
     def test_shared_swift_encoded_wire_survives_normalization_and_solver_context(self):

@@ -1,0 +1,47 @@
+{
+  "scope": "One clear main explanation. Same-request comparison is historical, not concurrent randomized A/B; per-choice feedback is intentionally omitted. These counts include qualitative judgments and do not certify production reliability.",
+  "groups": {
+    "same_requests": {
+      "calls": 8,
+      "requested": 16,
+      "raw": 16,
+      "compatible": 10,
+      "supported_key_and_main_after_admission": 4,
+      "qualified": 0,
+      "seconds": 31.59,
+      "input_tokens": 3542,
+      "output_tokens": 3914
+    },
+    "fresh": {
+      "calls": 4,
+      "requested": 8,
+      "raw": 8,
+      "compatible": 6,
+      "supported_key_and_main_after_admission": 4,
+      "qualified": 1,
+      "seconds": 40.405,
+      "input_tokens": 1495,
+      "output_tokens": 2903
+    }
+  },
+  "historical_full_pipeline": {
+    "calls": 22,
+    "requested": 16,
+    "returned": 5,
+    "seconds": 138.578,
+    "input_tokens": 42957,
+    "output_tokens": 10858,
+    "supported_key_and_main": 5,
+    "supported_full_choice_feedback": 3
+  },
+  "old_author_system_words": 975,
+  "simple_author_system_words": 144,
+  "total_actual_calls": 12,
+  "maximum_calls": 12,
+  "new_drafts": 24,
+  "code_hashes_match": true,
+  "no_runtime_integration": true,
+  "bare_json_responses": 4,
+  "sole_json_fence_responses": 8,
+  "whole_response_parse_failures": 0
+}

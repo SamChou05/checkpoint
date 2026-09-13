@@ -1,0 +1,388 @@
+{
+  "total_calls": 102,
+  "maximum_authorized_plan_calls": 124,
+  "diagnostic_calls": 16,
+  "intervention_and_validation_calls": 35,
+  "baseline_calls": 51,
+  "scope": "All actual inference including failures and the one Nova Lite skill-map call. No live retries beyond recorded cases, no learner bank writes. Fixed-author results are repeated controls, not unique new drafts. Latencies are serial local runtime measurements, not deployed queue-to-screen latency.",
+  "traces": [
+    {
+      "trace": "algebra-matched/math_algebra_legacy.json",
+      "calls": 1,
+      "returned": 0,
+      "elapsed_seconds": 20.337,
+      "input_tokens": 997,
+      "output_tokens": 1731,
+      "error_type": null
+    },
+    {
+      "trace": "algebra-matched/math_algebra_native.json",
+      "calls": 2,
+      "returned": 1,
+      "elapsed_seconds": 15.264,
+      "input_tokens": 3435,
+      "output_tokens": 1209,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/code_complexity.json",
+      "calls": 3,
+      "returned": 0,
+      "elapsed_seconds": 26.542,
+      "input_tokens": 5283,
+      "output_tokens": 2984,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/code_python.json",
+      "calls": 3,
+      "returned": 2,
+      "elapsed_seconds": 23.29,
+      "input_tokens": 4511,
+      "output_tokens": 875,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/code_sql.json",
+      "calls": 4,
+      "returned": 0,
+      "elapsed_seconds": 36.794,
+      "input_tokens": 6147,
+      "output_tokens": 3331,
+      "error_type": "ProviderCallBudgetExceededError"
+    },
+    {
+      "trace": "baseline/facts_astronomy.json",
+      "calls": 6,
+      "returned": 2,
+      "elapsed_seconds": 23.145,
+      "input_tokens": 8576,
+      "output_tokens": 1812,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/facts_ecology.json",
+      "calls": 3,
+      "returned": 0,
+      "elapsed_seconds": 22.747,
+      "input_tokens": 5574,
+      "output_tokens": 2275,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/facts_history.json",
+      "calls": 6,
+      "returned": 1,
+      "elapsed_seconds": 48.511,
+      "input_tokens": 9955,
+      "output_tokens": 3272,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/language_articles.json",
+      "calls": 5,
+      "returned": 2,
+      "elapsed_seconds": 38.06,
+      "input_tokens": 7955,
+      "output_tokens": 2414,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/language_grammar.json",
+      "calls": 3,
+      "returned": 2,
+      "elapsed_seconds": 11.287,
+      "input_tokens": 4297,
+      "output_tokens": 862,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/language_spanish.json",
+      "calls": 4,
+      "returned": 0,
+      "elapsed_seconds": 33.49,
+      "input_tokens": 6331,
+      "output_tokens": 3138,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/math_algebra.json",
+      "calls": 4,
+      "returned": 0,
+      "elapsed_seconds": 54.383,
+      "input_tokens": 5582,
+      "output_tokens": 5262,
+      "error_type": "ProviderCallBudgetExceededError"
+    },
+    {
+      "trace": "baseline/math_arithmetic.json",
+      "calls": 6,
+      "returned": 1,
+      "elapsed_seconds": 22.184,
+      "input_tokens": 8555,
+      "output_tokens": 1762,
+      "error_type": null
+    },
+    {
+      "trace": "baseline/math_probability.json",
+      "calls": 4,
+      "returned": 0,
+      "elapsed_seconds": 37.576,
+      "input_tokens": 5994,
+      "output_tokens": 2828,
+      "error_type": "ProviderCallBudgetExceededError"
+    },
+    {
+      "trace": "context-final/displayed_native.json",
+      "calls": 2,
+      "returned": 4,
+      "elapsed_seconds": 19.652,
+      "input_tokens": 4155,
+      "output_tokens": 1826,
+      "error_type": null
+    },
+    {
+      "trace": "context-final/reference_native.json",
+      "calls": 2,
+      "returned": 8,
+      "elapsed_seconds": 24.529,
+      "input_tokens": 5328,
+      "output_tokens": 2550,
+      "error_type": null
+    },
+    {
+      "trace": "context-preflight/displayed_native.json",
+      "calls": 0,
+      "returned": 0,
+      "elapsed_seconds": 0.0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "error_type": "ProviderCallBudgetExceededError"
+    },
+    {
+      "trace": "context-preflight/reference_native.json",
+      "calls": 0,
+      "returned": 0,
+      "elapsed_seconds": 0.001,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "error_type": "ProviderCallBudgetExceededError"
+    },
+    {
+      "trace": "displayed-matched/displayed_solver_full_reference.json",
+      "calls": 2,
+      "returned": 0,
+      "elapsed_seconds": 25.219,
+      "input_tokens": 3452,
+      "output_tokens": 2110,
+      "error_type": null
+    },
+    {
+      "trace": "final-recheck/fresh_facts_native_recheck_native.json",
+      "calls": 1,
+      "returned": 0,
+      "elapsed_seconds": 9.437,
+      "input_tokens": 1256,
+      "output_tokens": 685,
+      "error_type": null
+    },
+    {
+      "trace": "final-recheck/fresh_language_legacy_recheck_native.json",
+      "calls": 2,
+      "returned": 2,
+      "elapsed_seconds": 16.47,
+      "input_tokens": 3984,
+      "output_tokens": 1221,
+      "error_type": null
+    },
+    {
+      "trace": "final-recheck/fresh_math_legacy_recheck_native.json",
+      "calls": 2,
+      "returned": 1,
+      "elapsed_seconds": 13.595,
+      "input_tokens": 3696,
+      "output_tokens": 1135,
+      "error_type": null
+    },
+    {
+      "trace": "final-recheck/fresh_sql_native_recheck_native.json",
+      "calls": 2,
+      "returned": 1,
+      "elapsed_seconds": 13.681,
+      "input_tokens": 3569,
+      "output_tokens": 923,
+      "error_type": null
+    },
+    {
+      "trace": "fresh-paired/fresh_facts_legacy.json",
+      "calls": 3,
+      "returned": 0,
+      "elapsed_seconds": 32.507,
+      "input_tokens": 5063,
+      "output_tokens": 2292,
+      "error_type": null
+    },
+    {
+      "trace": "fresh-paired/fresh_facts_native.json",
+      "calls": 2,
+      "returned": 0,
+      "elapsed_seconds": 14.431,
+      "input_tokens": 3093,
+      "output_tokens": 1073,
+      "error_type": null
+    },
+    {
+      "trace": "fresh-paired/fresh_language_legacy.json",
+      "calls": 3,
+      "returned": 2,
+      "elapsed_seconds": 22.291,
+      "input_tokens": 4742,
+      "output_tokens": 1772,
+      "error_type": null
+    },
+    {
+      "trace": "fresh-paired/fresh_language_native.json",
+      "calls": 3,
+      "returned": 0,
+      "elapsed_seconds": 15.664,
+      "input_tokens": 5373,
+      "output_tokens": 1377,
+      "error_type": null
+    },
+    {
+      "trace": "fresh-paired/fresh_math_legacy.json",
+      "calls": 2,
+      "returned": 0,
+      "elapsed_seconds": 18.332,
+      "input_tokens": 2527,
+      "output_tokens": 1807,
+      "error_type": null
+    },
+    {
+      "trace": "fresh-paired/fresh_math_native.json",
+      "calls": 2,
+      "returned": 0,
+      "elapsed_seconds": 18.195,
+      "input_tokens": 2960,
+      "output_tokens": 1481,
+      "error_type": null
+    },
+    {
+      "trace": "fresh-paired/fresh_sql_legacy.json",
+      "calls": 2,
+      "returned": 0,
+      "elapsed_seconds": 15.947,
+      "input_tokens": 2700,
+      "output_tokens": 1400,
+      "error_type": null
+    },
+    {
+      "trace": "fresh-paired/fresh_sql_native.json",
+      "calls": 2,
+      "returned": 0,
+      "elapsed_seconds": 16.892,
+      "input_tokens": 3187,
+      "output_tokens": 1398,
+      "error_type": null
+    },
+    {
+      "trace": "goal-source-path/inference.json",
+      "calls": 1,
+      "returned": 0,
+      "elapsed_seconds": 2.014,
+      "input_tokens": 615,
+      "output_tokens": 400,
+      "error_type": null
+    },
+    {
+      "trace": "native-matched/code_sql_legacy.json",
+      "calls": 1,
+      "returned": 0,
+      "elapsed_seconds": 10.649,
+      "input_tokens": 1136,
+      "output_tokens": 1070,
+      "error_type": null
+    },
+    {
+      "trace": "native-matched/code_sql_native.json",
+      "calls": 2,
+      "returned": 2,
+      "elapsed_seconds": 17.491,
+      "input_tokens": 4375,
+      "output_tokens": 1407,
+      "error_type": null
+    },
+    {
+      "trace": "native-matched/language_articles_legacy.json",
+      "calls": 1,
+      "returned": 0,
+      "elapsed_seconds": 10.543,
+      "input_tokens": 1029,
+      "output_tokens": 576,
+      "error_type": null
+    },
+    {
+      "trace": "native-matched/language_articles_native.json",
+      "calls": 1,
+      "returned": 0,
+      "elapsed_seconds": 8.77,
+      "input_tokens": 1425,
+      "output_tokens": 522,
+      "error_type": null
+    },
+    {
+      "trace": "native-matched/math_probability_legacy.json",
+      "calls": 1,
+      "returned": 0,
+      "elapsed_seconds": 10.321,
+      "input_tokens": 1083,
+      "output_tokens": 1071,
+      "error_type": null
+    },
+    {
+      "trace": "native-matched/math_probability_native.json",
+      "calls": 2,
+      "returned": 2,
+      "elapsed_seconds": 19.753,
+      "input_tokens": 4098,
+      "output_tokens": 1205,
+      "error_type": null
+    },
+    {
+      "trace": "source-matched/full.json",
+      "calls": 2,
+      "returned": 8,
+      "elapsed_seconds": 17.826,
+      "input_tokens": 4362,
+      "output_tokens": 2013,
+      "error_type": null
+    },
+    {
+      "trace": "source-matched/visible_only.json",
+      "calls": 2,
+      "returned": 4,
+      "elapsed_seconds": 18.649,
+      "input_tokens": 3279,
+      "output_tokens": 1770,
+      "error_type": null
+    },
+    {
+      "trace": "stimulus-matched/current.json",
+      "calls": 1,
+      "returned": 0,
+      "elapsed_seconds": 8.627,
+      "input_tokens": 984,
+      "output_tokens": 696,
+      "error_type": null
+    },
+    {
+      "trace": "stimulus-matched/preserve.json",
+      "calls": 2,
+      "returned": 4,
+      "elapsed_seconds": 10.337,
+      "input_tokens": 3030,
+      "output_tokens": 1046,
+      "error_type": null
+    }
+  ]
+}

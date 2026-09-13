@@ -79,7 +79,7 @@ class QuestionOutputContractTests(unittest.TestCase):
         self.assertEqual(len(client.calls), 2)
         self.assertEqual(len(client.solution_calls), 1)
         self.assertEqual(len(client.review_calls), 1)
-        self.assertEqual(accepted[0]["verificationPolicyRevision"], 2)
+        self.assertEqual(accepted[0]["verificationPolicyRevision"], 8)
 
     def test_malformed_author_top_up_preserves_prior_verified_question(self):
         request = _normalize_request(_request_payload(target_count=2))
