@@ -107,6 +107,32 @@ def learner(question):
     return {key: copy.deepcopy(question[key]) for key in LEARNER_FIELDS}
 
 
+def decoded_credential_echo(response, secrets):
+    """Inspect the runtime's exact text concatenation without retaining it.
+
+    Preserve duplicate JSON members during this scan so a later member cannot
+    hide an earlier decoded string. Parsing failure grants no format approval;
+    the unchanged native adapter handles malformed output as an ordinary failure.
+    """
+    content = response.get("output", {}).get("message", {}).get("content", [])
+    text = "\n".join(block["text"] for block in content
+                     if isinstance(block, dict) and isinstance(block.get("text"), str)).strip()
+    if len(text.encode("utf-8")) > safe.VISIBLE_RESPONSE_MAX_BYTES:
+        raise safe.CaptureBoundaryError("Visible runtime text exceeds capture allowance.")
+    try:
+        decoded = json.loads(text, object_pairs_hook=list)
+    except (ValueError, RecursionError):
+        return False
+    pending = [decoded]
+    while pending:
+        value = pending.pop()
+        if isinstance(value, str) and any(secret and secret in value for secret in secrets):
+            return True
+        if isinstance(value, (list, tuple)):
+            pending.extend(value)
+    return False
+
+
 def build_plan():
     require(file_hash(HELPER) == IMPORTED_HELPER_HASH, "Capture helper changed after import.")
     require(Path(runtime.__file__).resolve().parent == SERVICE, "Wrong candidate runtime imported.")
@@ -344,6 +370,7 @@ def run_job(job, capture, path, client_factory, pin_check, *, secrets=(), clock=
                 retained, omitted = safe.safe_response(response, secrets)
                 visible = json.dumps(retained, ensure_ascii=False)
                 guard(not any(secret and secret in visible for secret in secrets), "Credential echo in visible output.")
+                guard(not decoded_credential_echo(response, secrets), "Credential echo in decoded native output.")
                 call.update(response=retained, reasoning_blocks_omitted=omitted)
                 return response
             except Exception as error:

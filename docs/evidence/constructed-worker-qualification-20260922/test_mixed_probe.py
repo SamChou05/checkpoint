@@ -522,6 +522,48 @@ class MixedProbeTests(unittest.TestCase):
         self.assertNotIn("response", self.capture["calls"][0])
         self.assertEqual(self.capture["jobs"][0]["passes"], [])
 
+    def test_unicode_escaped_credential_stops_before_native_decode_or_capture(self):
+        secret = "SYNTHETIC_UNICODE_EXPORTED_CREDENTIAL"
+        escaped = "".join("\\u%04x" % ord(char) for char in secret)
+        def modify(index, request, payload, response):
+            payload["questions"][0]["task"]["nodes"][0]["value"] = secret
+            encoded = json.dumps(payload).replace(secret, escaped)
+            self.assertNotIn(secret, encoded)
+            # Split at an existing legal JSON whitespace boundary; the runtime
+            # joins visible blocks with a newline before strict native parsing.
+            cut = encoded.index(' "')
+            response["output"]["message"]["content"] = [{"text": encoded[:cut]}, {"text": encoded[cut:]}]
+            return response
+        network = FakeNetwork(modify)
+        with patch.object(probe.native, "adapt_native_response", wraps=probe.native.adapt_native_response) as adapt:
+            self.run_fake(network, secrets=(secret,))
+            adapt.assert_not_called()
+        self.assertEqual(len(network.calls), 1)
+        self.assertTrue(self.capture.get("global_stop"))
+        self.assertNotIn(secret, self.path.read_text())
+        self.assertNotIn(escaped, self.path.read_text())
+        self.assertNotIn("response", self.capture["calls"][0])
+        self.assertEqual(self.capture["jobs"][0]["passes"], [])
+
+    def test_decoded_echo_scan_does_not_turn_malformed_json_into_setup_failure(self):
+        def modify(index, request, payload, response):
+            if index == 0:
+                response["output"]["message"]["content"] = [{"text": '{"questions":['}]
+            return response
+        network = self.run_fake(FakeNetwork(modify), secrets=("SYNTHETIC_CREDENTIAL",))
+        self.assertEqual(len(network.calls), 7)
+        self.assertEqual(self.capture["jobs"][0]["status"], "failed")
+        self.assertEqual(self.capture["summary"]["returned_questions"], 10)
+        self.assertFalse(self.capture.get("global_stop"))
+        self.assertIn("response", self.capture["calls"][0])
+
+    def test_decoded_echo_scan_checks_duplicate_members_without_approving_json(self):
+        secret = "SYNTHETIC_DUPLICATE_MEMBER_CREDENTIAL"
+        escaped = "".join("\\u%04x" % ord(char) for char in secret)
+        response = {"output": {"message": {"content": [
+            {"text": '{"member":"' + escaped + '","member":"other"}'}]}}}
+        self.assertTrue(probe.decoded_credential_echo(response, (secret,)))
+
     def test_external_capture_change_is_not_overwritten_or_followed_by_dispatch(self):
         def modify(index, request, payload, response):
             self.path.write_text("external capture modification")

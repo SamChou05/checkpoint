@@ -78,8 +78,12 @@ The harness preserves its reviewed capture boundaries: pre-import runtime/helper
 hashes; source checks before/after dispatch and completion; durable reservations
 and request capture before Converse; exact model/transport guards; exclusive
 execution; external capture-change detection; bounded safe errors and visible
-response filtering; omitted reasoning/signatures; a credential-echo check before
-retaining visible text or adapting it. Missing usage is unknown, not zero.
+response filtering; omitted reasoning/signatures; raw and decoded-JSON
+credential-echo checks before retaining visible text or adapting it. The latter
+uses the runtime's exact newline-joined text, including Unicode escape decoding,
+and scans duplicate members without allowing one to hide another. Malformed JSON
+remains an ordinary native model failure; scanning does not approve or repair it.
+Missing usage is unknown, not zero.
 
 Provenance uses current-pass sanitizer bindings and actual retained verifier
 objects. Compiled sidecars bind the raw task's ordinal to the full constructed
