@@ -10,7 +10,7 @@ against the stored key. Each boundary needs its own invariant.
 
 | Finding | Evidence | Fix on main |
 | --- | --- | --- |
-| Native structured output support existed, but the inspected TestFlight API and worker were using legacy prompt-only JSON. | [Recorded deployment configuration](evidence/question-reliability-release-20260922/deployment-before.json). | Worker transport can be selected independently, incompatible model configurations fail before deployment, and native authoring uses four required slots plus a key enum. Rollout remains separate. |
+| Native structured output support existed, but the inspected TestFlight API and worker were using legacy prompt-only JSON. | [Recorded deployment configuration](evidence/reviewer-release-20260922/DEPLOYMENT.md). | Worker transport can be selected independently, incompatible model configurations fail before deployment, and native authoring uses four required slots plus a key enum. Rollout remains separate. |
 | Alphabetical schema serialization asked the author to emit choices before the stem and its key before the stem. | [Controlled ordering comparison](evidence/native-author-order-20260922/REPORT.md): three plainly wrong keys in the sorted arm; none plainly wrong and one ambiguous item in the ordered arm. | Versioned author v3 places the stem first and explanation before the key. Exact key text is derived from the selected choice slot. Historical schema bytes remain unchanged. |
 | Native review arrays could contain phantom indexes while satisfying JSON Schema. | [Count-bound trial](evidence/reviewer-identity-20260922/RESULTS.md): 2/2 calls returned all ten required identities, while semantic checks still failed. | Native reviewer v3 requires one object key per trusted survivor; missing or extra identities cannot be admitted. |
 | An array could describe six pair comparisons but could not enforce their identities. The model emitted seven rows including a self-pair. | [Stopped ordering trial](evidence/choice-quality-release-20260922/ORDER_RESULTS.md). | Four judgment slots and six closed pair slots, with exact endpoints supplied by code and strict decoding. Slot mapping does not depend on the key. |
@@ -53,7 +53,7 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,140
+The tested structural changes are on main. Backend verification passes 1,141
 tests. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter
@@ -73,9 +73,31 @@ The count-bound reviewer fix subsequently resolved the reproduced identity gap i
 two live calls and is now on main. Semantic quality remains a separate gate:
 [switching to Opus](evidence/verifier-model-comparison-20260922/RESULTS.md) and
 [rewriting the refutation instructions](evidence/reviewer-refutation-20260922/RESULTS.md)
-both failed their frozen criteria and were not promoted. The next candidate audits
-the complete frozen learner response after all feedback has been written; it is
-not yet a production stage or a qualified release.
+both failed their frozen criteria and were not promoted.
+
+A separate read-only final auditor addresses a specific remaining gap: the last
+reviewer currently writes new main and per-choice explanations after the
+answer-blind solver has finished. Those newly written claims receive no later
+semantic check. The candidate freezes all five teaching fields and permits only
+accept/reject decisions; it cannot repair or replace learner content. The existing
+optional authored-solution path already audits an unchanged author main
+explanation, but returns no per-choice feedback.
+
+The [initial final-auditor comparison](evidence/final-content-audit-20260922/RESULTS.md)
+stopped after four of six calls when the disabled configuration returned an
+overlong, contradictory reason. A separately frozen [Sonnet adaptive trial](evidence/final-content-audit-20260922/ADAPTIVE_ONLY_RESULTS.md)
+completed all eighteen controls but matched only seventeen dispositions. A
+[modelId-only Opus 4.6 trial](evidence/final-content-audit-20260922/OPUS46_RESULTS.md)
+repeated that failure: both models accepted the same ambiguous grammar item and
+endorsed an overgeneralized punctuation rule. Native identities and unchanged
+selected content were correct even for that defective admission. Increasing model
+capability alone did not fix this observed judging error.
+
+All three final-auditor trials remain failed evidence; none changed production
+routing or defaults. A generic counterexample-checking prompt is being evaluated
+with new independently authored controls as well as the unchanged older cases.
+The fourth-stage code and budget tests remain isolated preparation. No final
+auditor or complete release configuration is qualified yet.
 
 A fresh [read-only deployment inspection](evidence/reviewer-release-20260922/DEPLOYMENT.md)
 at 06:18 UTC on September 22 confirmed that both API and worker still use the
