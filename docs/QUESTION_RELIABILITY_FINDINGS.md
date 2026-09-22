@@ -55,8 +55,8 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,222
-tests after mixed-route integration. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
+The tested structural changes are on main. Backend verification passes 1,235
+tests after native immutable-main integration. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter
 deadline independent of a background-worker reasoning rollout.
@@ -193,6 +193,27 @@ values and that None occurs only through an implicit function return. This is
 new evidence of the unchecked-final-feedback gap, separate from the deterministic
 numerical guarantee. Defaults remain unchanged and the mode remains unqualified
 for rollout.
+
+The existing optional `authored_solution` mode now retains complete-pair checking
+under native transport instead of silently taking the older solver path. Native
+solver v5 and a new count-bound immutable-main audit preserve the exact main
+explanation and return an empty optional choice-feedback map. The app already
+falls back to that main explanation and highlights by the explicit key. This
+removes a writer of twenty additional learner claims per five-question batch;
+it does not guarantee the truth of the authored main or the model's judgments.
+The final audit also receives the correct surviving skill/objective and keyless
+history context, and rejects display-position references that would break after
+choice shuffling.
+
+This opt-in path earns policy 7; legacy authored mode stays 3, ordinary native
+reviewer-written mode stays 4, and compiled mode stays 6. Global default remains
+4 and client minimum remains 2. Policy minimums indicate freshness, not cumulative
+optional capabilities. All 91 historical native contracts/prompts remain byte-
+identical. The source passes 1,235 backend tests, independent filtering/provenance
+review, SAM build and 393 packaged SDK configuration checks across three artifacts.
+Native immutable-main provider acceptance and fresh worker quality remain to be
+tested; prior failed authored-main experiments are not reclassified as passing.
+
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
 confirmed that signed Mantle metadata requests work with the existing AWS
