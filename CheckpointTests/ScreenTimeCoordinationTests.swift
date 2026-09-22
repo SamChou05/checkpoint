@@ -103,7 +103,11 @@ final class ScreenTimeCoordinationTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
-    func testSharedSelectionDataFallsBackToAppGroupFileForExtensions() {
+    func testSharedSelectionDataFallsBackToAppGroupFileForExtensions() throws {
+        try XCTSkipUnless(
+            SharedAppGroup.isAvailable,
+            "Requires an entitled App Group file container."
+        )
         let data = Data("encoded protected app selection".utf8)
 
         SharedAppGroup.publishScreenTimeSelectionData(data)
@@ -115,7 +119,11 @@ final class ScreenTimeCoordinationTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
-    func testCanonicalProtectionSnapshotWinsOverDivergentLegacySelection() {
+    func testCanonicalProtectionSnapshotWinsOverDivergentLegacySelection() throws {
+        try XCTSkipUnless(
+            SharedAppGroup.isAvailable,
+            "Requires an entitled App Group file container."
+        )
         let currentSelection = Data("current protected app selection".utf8)
         let staleSelection = Data("stale protected app selection".utf8)
 

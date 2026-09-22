@@ -52,7 +52,7 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
-    func testSubmitAnswerSnapshotsCanonicalTopicAndVisibleMultipleChoiceAnswer() throws {
+    func testSubmitAnswerSnapshotsCanonicalTopicAndExplicitKeyDespiteConflictingExplanation() throws {
         let canonicalSkill = SkillMapTopic(
             name: "Argument analysis",
             aliases: ["argument flaws"],
@@ -70,9 +70,9 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
             index: 1,
             topic: "argument flaws",
             prompt: "Which persisted answer should the review trust?",
-            expectedAnswer: "The tempting but wrong answer",
+            expectedAnswer: "The explicitly keyed answer",
             choices: [
-                "The tempting but wrong answer",
+                "The explicitly keyed answer",
                 "The answer supported by the argument",
                 "An unrelated answer",
                 "A too-broad answer"
@@ -88,7 +88,7 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
 
         store.submitAnswer(
             question: question,
-            answer: "The tempting but wrong answer",
+            answer: "The answer supported by the argument",
             result: .incorrect,
             grantsUnlock: false
         )
@@ -96,7 +96,7 @@ final class CheckpointSessionTests: CheckpointWorkflowTestCase {
         let snapshot = try XCTUnwrap(store.attempts.first?.reviewSnapshot)
         XCTAssertEqual(snapshot.topic, canonicalSkill.name)
         XCTAssertEqual(snapshot.format, .multipleChoice)
-        XCTAssertEqual(snapshot.referenceAnswer, "The answer supported by the argument")
+        XCTAssertEqual(snapshot.referenceAnswer, question.expectedAnswer)
         XCTAssertEqual(snapshot.explanation, explanation)
     }
 
