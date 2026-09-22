@@ -1,0 +1,308 @@
+{
+  "scope": "Independent read-only product integration audit; no source edits, provider calls, deployment, or full UI interaction test.",
+  "tested_source_commit": "c38f19ababd24aa68a0fd46d0b4fdfe30a07be4c",
+  "report_source_commit": "3472f5fc9d3fce414ea502f1e7f6fff499920c3f",
+  "source_equivalence": {
+    "scopes": [
+      "Checkpoint",
+      "CheckpointTests",
+      "backend/bedrock-question-service"
+    ],
+    "git_diff_names": [],
+    "statement": "Current3472f5f differs only in evidence; relevant app/test/backend source bytes match testedc38f19a."
+  },
+  "source_file_sha256": {
+    "Checkpoint/Models/AnswerGrader.swift": "91c0e764a6625ef6604a768ad543f0657f8812f1793b83451867106c676b0d27",
+    "Checkpoint/Models/QuestionModels.swift": "3d8bc257f442dd768da0b1dcc7faaff7ab64e3b98a9004ad6d89b97016f5c006",
+    "Checkpoint/Services/BackendQuestionEngine.swift": "154bf3211cf7d0c3f1f37d1d66c65cab3ddbad1e4064512769f0ec2c206c9424",
+    "Checkpoint/Services/BackendQuestionBankClient.swift": "ac53e871663149bbb2861232c380ae3d4c213d0796ee9deb77e614e97e768e77",
+    "Checkpoint/Services/BackendPayloads.swift": "3b48e873cae9bcd87c44d0eb02b87c8229a3827a12a4ef38c34275874bffb133",
+    "Checkpoint/Services/QuestionBatchSanitizer.swift": "0a48d1e392a94f9a675a0b7f3068ab0cbbd4787d85ecc19878c16d978fc1a7de",
+    "Checkpoint/App/CheckpointStore.swift": "9cbe227633ae0e010308bf3df9e9e5891c3bad5d6a199f4aa70bcfda1f175e0b",
+    "Checkpoint/App/CheckpointQuestionSelector.swift": "41174cf1ec40d65c380cca12fcf047b55ebdd7d9f4716ac94b82a3a92521b8a2",
+    "Checkpoint/App/AppSnapshotPersistence.swift": "b3e012607d7601cb533ba0450149f0efedbb518e8c8532b871a3aafc9341fd2b",
+    "Checkpoint/App/SkillMapReconciler.swift": "6ee54121788bafcca63edf16af6de957cd3ac142824bde5fe030cef7ec82565c",
+    "Checkpoint/Views/CheckpointAttemptView.swift": "9c8580f27e8b21705bb8a5b66d4a0c42ac02b94b496ce0600c4894db6f5ea973",
+    "Checkpoint/Views/HistoryView.swift": "adbcb8aa1e5d3335cfe9cd9b3bf680d8389420fa08bae6e2f537c3a1f7f37dd0",
+    "CheckpointTests/AnswerHighlightingReliabilityTests.swift": "79c41490992616b7ab642aa46d458fd87f32c774df14fa1f5b7fd44701528925",
+    "CheckpointTests/QuestionValidationTests.swift": "7a1c15794a5822b34a58b8a9607300327a9d091f5f7d578d8574931e89551fbc",
+    "CheckpointTests/CheckpointSessionTests.swift": "ef07e1c9b4ccc497635ada5061969b6da6227f7268947530531d77ee173b2383",
+    "CheckpointTests/QuestionBankAsyncFlowTests.swift": "b04e591892b5a434f90a17b8032e54d412e40b275d501869426f5fd7a242e2c4",
+    "backend/bedrock-question-service/tests/test_compiled_quantitative_roundtrip.py": "957010889a59a85a83a05152ee824e1c5129899b20bc2e7b2af017b74e60b5bf",
+    "backend/bedrock-question-service/tests/fixtures/compiled_quantitative_roundtrip.json": "a86792ab14014fbadc9827e1624db86184c5ba91e514a0af7ada20175b5df114",
+    "backend/bedrock-question-service/quantitative_task_compiler.py": "ecae417be2196030a555ec21a2d304245c94036603cd3c63a7efea319814f7fa",
+    "backend/bedrock-question-service/question_bank.py": "96cd56b56c16738c76582f2c64506466835bdda2406bf318ca26026b3dae4549",
+    "backend/bedrock-question-service/question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "backend/bedrock-question-service/question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "backend/bedrock-question-service/tests/question_bank_test_support.py": "649872e776fa58c1c98235f65e8cd43a1bd909cc7b218c1a686e118d77006562"
+  },
+  "finding": "No reproducible explicit-key loss or incorrect key-based highlight for admitted valid payloads was found.",
+  "trace": [
+    {
+      "file": "Checkpoint/Services/BackendQuestionBankClient.swift",
+      "line": 188,
+      "claim": "Claim responses use QuestionContentJSONDecoder, then makeQuestion without answer inference."
+    },
+    {
+      "file": "Checkpoint/Services/BackendPayloads.swift",
+      "line": 489,
+      "claim": "Decode preserves explicit answer; omitted choiceExplanations becomes empty dictionary. makeQuestion copies learner fields."
+    },
+    {
+      "file": "Checkpoint/Services/QuestionBatchSanitizer.swift",
+      "line": 48,
+      "claim": "Verified admission requires four unique choices and key membership, shuffles only choices, preserves reviewed main/feedback."
+    },
+    {
+      "file": "Checkpoint/App/CheckpointStore.swift",
+      "line": 6394,
+      "claim": "Claimed rows are sanitized, metadata-canonicalized and appended; canonicalization changes only skill/topic/objective metadata."
+    },
+    {
+      "file": "Checkpoint/App/AppSnapshotPersistence.swift",
+      "line": 293,
+      "claim": "Snapshots use the same content decoder, retaining key and teaching fields."
+    },
+    {
+      "file": "Checkpoint/Models/AnswerGrader.swift",
+      "line": 164,
+      "claim": "Verified multiple-choice grading uses explicit offered key identity; explanation cannot overwrite it."
+    },
+    {
+      "file": "Checkpoint/Views/CheckpointAttemptView.swift",
+      "line": 2371,
+      "claim": "After submission, choiceState marks the keyed choice correct through AnswerGrader; wrong selected choice is incorrect."
+    },
+    {
+      "file": "Checkpoint/Views/CheckpointAttemptView.swift",
+      "line": 2595,
+      "claim": "Correct state maps to checkmark/teal and Correct answer accessibility value (inspected source, not pixel-tested here)."
+    },
+    {
+      "file": "Checkpoint/Models/QuestionModels.swift",
+      "line": 193,
+      "claim": "Missing/empty choice-specific feedback falls back to exact stored main explanation."
+    },
+    {
+      "file": "Checkpoint/App/CheckpointStore.swift",
+      "line": 5843,
+      "claim": "Submission snapshots the same reference answer and selected-choice/main explanation."
+    },
+    {
+      "file": "Checkpoint/Views/HistoryView.swift",
+      "line": 1878,
+      "claim": "Persisted review snapshot is authoritative; historic rows without snapshots fall back to retained question."
+    }
+  ],
+  "ios_runs": [
+    {
+      "argv": [
+        "xcodebuild",
+        "test",
+        "-project",
+        "Checkpoint.xcodeproj",
+        "-scheme",
+        "Checkpoint",
+        "-destination",
+        "platform=iOS Simulator,id=61E221DF-0600-492B-9EFA-B7AFE55F60A0",
+        "-derivedDataPath",
+        "/tmp/checkpoint-answer-highlighting-current-derived",
+        "-resultBundlePath",
+        "/tmp/checkpoint-product-highlight-c38f19a.xcresult",
+        "-parallel-testing-enabled",
+        "NO",
+        "CODE_SIGNING_ALLOWED=NO",
+        "-only-testing:CheckpointTests/AnswerHighlightingReliabilityTests",
+        "-only-testing:CheckpointTests/QuestionValidationTests/testValidPartialReviewedFeedbackRemainsSupportedWithoutBackfill",
+        "-only-testing:CheckpointTests/QuestionValidationTests/testVerificationAndChoiceFeedbackSurviveWireAndPersistenceWhileLegacyIsUnverified",
+        "-only-testing:CheckpointTests/QuestionValidationTests/testReviewedFeedbackSurvivesWireAdmissionPersistenceAndDisplayExactly",
+        "-only-testing:CheckpointTests/QuestionValidationTests/testVerifiedAnswerUsesTheSameBoundaryWhitespaceIdentityAsSanitization",
+        "-only-testing:CheckpointTests/QuestionValidationTests/testUnofferedCanonicalVariantCannotBecomeTheExpectedAnswerOrFeedbackKey",
+        "-only-testing:CheckpointTests/QuestionValidationTests/testUnrepresentableChoicesAndCollidingFeedbackPropertiesFailClosed",
+        "-only-testing:CheckpointTests/QuestionBankAsyncFlowTests/testClaimPayloadRequiresCurrentPolicyOnlyForVerifiedRequests",
+        "-only-testing:CheckpointTests/QuestionBankAsyncFlowTests/testCachedSessionIsServedWithoutAnyQuestionBankNetworkCall",
+        "-only-testing:CheckpointTests/CheckpointSessionTests/testSubmittedAnswerRetainsSpecificTeachingFeedbackAfterRelaunch",
+        "-only-testing:CheckpointTests/CheckpointSessionTests/testSubmitAnswerSnapshotsCanonicalTopicAndExplicitKeyDespiteConflictingExplanation",
+        "-only-testing:CheckpointTests/CheckpointSessionTests/testSubmitAnswerSnapshotsReferenceOnlyForNonCorrectResults"
+      ],
+      "cwd": "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint",
+      "stdout_stderr_log": "/tmp/checkpoint-product-highlight-c38f19a.log",
+      "log_sha256": "cb03e2e18961dc914160b53240d7869cb59f36b4b01760a4409338688fe9e063",
+      "xcresult": "/tmp/checkpoint-product-highlight-c38f19a.xcresult",
+      "xcresult_summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "61E221DF-0600-492B-9EFA-B7AFE55F60A0",
+              "deviceName": "Checkpoint Question Integrity QA",
+              "modelName": "iPhone 17 Pro",
+              "osBuildNumber": "23E254a",
+              "osVersion": "26.4.1",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 19,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "Checkpoint \u00b7 Built with macOS 26.6.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1790086577.942,
+        "passedTests": 19,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1790086529.975,
+        "statistics": [],
+        "testFailures": [],
+        "title": "Test - Checkpoint",
+        "topInsights": [
+          {
+            "category": "Longest Test Runs",
+            "impact": "38% of duration",
+            "text": "1 longest test run with outlier durations exceeding 0.11s (three standard deviations)"
+          }
+        ],
+        "totalTestCount": 19
+      },
+      "passed_test_identifiers": [
+        "CheckpointTests.AnswerHighlightingReliabilityTests testAnExactLegacyKeyOutranksEvenAnAffirmativeContradictoryExplanation",
+        "CheckpointTests.AnswerHighlightingReliabilityTests testCompiledQuantitativePayloadsKeepAllTeachingAndOneHighlightAcrossEveryOrder",
+        "CheckpointTests.AnswerHighlightingReliabilityTests testDuplicateVisibleChoicesAreRejectedInsteadOfHighlightingTwoAnswers",
+        "CheckpointTests.AnswerHighlightingReliabilityTests testExplanationCannotInventAKeyForMalformedLegacyContent",
+        "CheckpointTests.AnswerHighlightingReliabilityTests testLegacyChoiceLabelSurvivesShuffleWithoutExplanationChangingIt",
+        "CheckpointTests.AnswerHighlightingReliabilityTests testLegacyExplanationCannotTurnAnExplicitlyWrongChoiceIntoTheAnswer",
+        "CheckpointTests.AnswerHighlightingReliabilityTests testSanitizerDoesNotRewriteAKeyBecauseTheExplanationRejectsADistractor",
+        "CheckpointTests.AnswerHighlightingReliabilityTests testTerminalAndHistoryReviewUseTheSameAnswerAfterPersistence",
+        "CheckpointTests.AnswerHighlightingReliabilityTests testVerifiedAnswerNeverChangesWhenExplanationDiscussesDistractors",
+        "CheckpointTests.AnswerHighlightingReliabilityTests testVerifiedWirePersistenceAndReviewKeepOneAnswerAcrossAllChoiceOrders",
+        "CheckpointTests.CheckpointSessionTests testSubmitAnswerSnapshotsCanonicalTopicAndExplicitKeyDespiteConflictingExplanation",
+        "CheckpointTests.CheckpointSessionTests testSubmitAnswerSnapshotsReferenceOnlyForNonCorrectResults",
+        "CheckpointTests.CheckpointSessionTests testSubmittedAnswerRetainsSpecificTeachingFeedbackAfterRelaunch",
+        "CheckpointTests.QuestionBankAsyncFlowTests testCachedSessionIsServedWithoutAnyQuestionBankNetworkCall",
+        "CheckpointTests.QuestionBankAsyncFlowTests testClaimPayloadRequiresCurrentPolicyOnlyForVerifiedRequests",
+        "CheckpointTests.QuestionValidationTests testUnofferedCanonicalVariantCannotBecomeTheExpectedAnswerOrFeedbackKey",
+        "CheckpointTests.QuestionValidationTests testUnrepresentableChoicesAndCollidingFeedbackPropertiesFailClosed",
+        "CheckpointTests.QuestionValidationTests testVerificationAndChoiceFeedbackSurviveWireAndPersistenceWhileLegacyIsUnverified",
+        "CheckpointTests.QuestionValidationTests testVerifiedAnswerUsesTheSameBoundaryWhitespaceIdentityAsSanitization"
+      ]
+    },
+    {
+      "argv": [
+        "xcodebuild",
+        "test-without-building",
+        "-project",
+        "Checkpoint.xcodeproj",
+        "-scheme",
+        "Checkpoint",
+        "-destination",
+        "platform=iOS Simulator,id=61E221DF-0600-492B-9EFA-B7AFE55F60A0",
+        "-derivedDataPath",
+        "/tmp/checkpoint-answer-highlighting-current-derived",
+        "-resultBundlePath",
+        "/tmp/checkpoint-product-empty-feedback-c38f19a.xcresult",
+        "-parallel-testing-enabled",
+        "NO",
+        "CODE_SIGNING_ALLOWED=NO",
+        "-only-testing:CheckpointTests/ReviewedFeedbackPreservationTests/testValidPartialReviewedFeedbackRemainsSupportedWithoutBackfill",
+        "-only-testing:CheckpointTests/ReviewedFeedbackPreservationTests/testReviewedFeedbackSurvivesWireAdmissionPersistenceAndDisplayExactly"
+      ],
+      "cwd": "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint",
+      "stdout_stderr_log": "/tmp/checkpoint-product-empty-feedback-c38f19a.log",
+      "log_sha256": "d206ab176ad1178c04e2fce59006ab8620a9c91e13129221175d3942e3e1426a",
+      "xcresult": "/tmp/checkpoint-product-empty-feedback-c38f19a.xcresult",
+      "xcresult_summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "61E221DF-0600-492B-9EFA-B7AFE55F60A0",
+              "deviceName": "Checkpoint Question Integrity QA",
+              "modelName": "iPhone 17 Pro",
+              "osBuildNumber": "23E254a",
+              "osVersion": "26.4.1",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 2,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "Checkpoint \u00b7 Built with macOS 26.6.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1790086641.201,
+        "passedTests": 2,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1790086626.354,
+        "statistics": [],
+        "testFailures": [],
+        "title": "Test - Checkpoint",
+        "topInsights": [],
+        "totalTestCount": 2
+      },
+      "passed_test_identifiers": [
+        "CheckpointTests.ReviewedFeedbackPreservationTests testReviewedFeedbackSurvivesWireAdmissionPersistenceAndDisplayExactly",
+        "CheckpointTests.ReviewedFeedbackPreservationTests testValidPartialReviewedFeedbackRemainsSupportedWithoutBackfill"
+      ]
+    }
+  ],
+  "corrected_selector_note": "Initial command requested two feedback methods under QuestionValidationTests; they actually belong to ReviewedFeedbackPreservationTests and were not selected. The correction used test-without-building on the same built source. Actual counts are19+2distinct tests, not21+2.",
+  "python_run": {
+    "argv": [
+      "/tmp/checkpoint-reliability-20260921-venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_compiled_quantitative_roundtrip.py",
+      "-v"
+    ],
+    "cwd": "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/backend/bedrock-question-service",
+    "passed": 2,
+    "failed": 0,
+    "elapsed_seconds": 0.003,
+    "tests": [
+      "test_shared_client_fixtures_are_exact_current_compiler_outputs",
+      "test_bank_write_claim_and_idempotent_replay_preserve_all_five_fields"
+    ],
+    "evidence_basis": "Captured tool output from the completed invocation; no persistent shell log was created for this two-test run. Test source/fixture/runtime hashes pinned above."
+  },
+  "totals": {
+    "ios_passed": 21,
+    "ios_failed": 0,
+    "ios_skipped": 0,
+    "python_passed": 2,
+    "python_failed": 0
+  },
+  "permutation_coverage": {
+    "verified_fixtures": 4,
+    "display_orders_each": 24,
+    "verified_orders": 96,
+    "compiled_fixtures": 3,
+    "compiled_orders": 72,
+    "note": "Both selected tests also exercise the actual random admission shuffle before deterministically persisting every display order. Additional legacy label permutation coverage is not included in96+72."
+  },
+  "empty_feedback_evidence": "Selected testValidPartialReviewedFeedbackRemainsSupportedWithoutBackfill covers map sizes0,1,4; selected byte-preservation test and inspected fallback/UI/snapshot code establish delivery. No model-specific policy7 end-to-end UI tap/screenshot test was run.",
+  "limitations": [
+    "These are XCTest grading, wire/admission/persistence and presentation-model checks plus a Python fake-Dynamo/queue roundtrip. They are not live AWS, real device, pixel/screenshot, VoiceOver interaction or full UI automation qualification.",
+    "Existing helper tests compose transport and rendering boundaries; they do not constitute one real HTTP-bank-to-tapped-UI integration run.",
+    "Compiler fixture metadata is explicitly trusted synthetic transport metadata; downstream roundtrip tests do not prove generation provenance or semantic model correctness.",
+    "QuestionVerificationPolicy.currentRevision remains2. Selector excludes unverified/stale rows, but verified policy2+ inventory can retain previously accepted semantic errors. Correct-key highlighting follows that stored key; this is an existing semantic/freshness limitation, not a new client runtime regression.",
+    "No history mutation, inventory purge, policy-floor change or corrective source edit was performed."
+  ]
+}
