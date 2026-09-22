@@ -1,0 +1,59 @@
+{
+  "capture_sha256": "97346a80f751e14afd53d1cf0f6c6f5296e5f85f6be62f7e663ab0e1070d1337",
+  "plan_sha256": "643385c0b5b1091b763bb6fc74b78487a2396802f0aa4bbc1d539729a53045d4",
+  "reviewer": "root",
+  "review_blinding": "Not blind: root reviewed gold before dispatch and all visible reasons after completion. Native private reasoning was omitted by capture helper.",
+  "structural_replay": [
+    {
+      "call_index": 0,
+      "arm": "baseline",
+      "request_and_assessment_reproduced": true,
+      "all_40_labels_correct": true,
+      "visible_choice_and_pair_reasons_read": 40,
+      "material_decisive_reasoning_error": false
+    },
+    {
+      "call_index": 1,
+      "arm": "candidate",
+      "request_and_assessment_reproduced": true,
+      "all_40_labels_correct": true,
+      "visible_choice_and_pair_reasons_read": 40,
+      "material_decisive_reasoning_error": false
+    },
+    {
+      "call_index": 2,
+      "arm": "candidate",
+      "request_and_assessment_reproduced": true,
+      "all_40_labels_correct": true,
+      "visible_choice_and_pair_reasons_read": 40,
+      "material_decisive_reasoning_error": false
+    },
+    {
+      "call_index": 3,
+      "arm": "baseline",
+      "request_and_assessment_reproduced": true,
+      "all_40_labels_correct": true,
+      "visible_choice_and_pair_reasons_read": 40,
+      "material_decisive_reasoning_error": false
+    }
+  ],
+  "labels": {
+    "baseline": {
+      "eligibility": "8/8",
+      "choices": "32/32",
+      "pairs": "48/48"
+    },
+    "candidate": {
+      "eligibility": "8/8",
+      "choices": "32/32",
+      "pairs": "48/48"
+    }
+  },
+  "private_wording_caveats": [
+    "The baseline first-truthy explanation omits the all-falsy fallback as a general rule, but gives the correct result and decisive rule for this expression.",
+    "The candidate calls continuing past the falsy first operand short-circuiting past it; that is imprecise terminology, while its stated returned type and value are correct.",
+    "The candidate says or returns an operand value, not a boolean in a refutation of False for this expression; this must not be generalized to boolean-valued operands. These private reasons are not learner teaching."
+  ],
+  "decision": "Both arms pass the frozen control labels and material reason review. No comparative accuracy gain observed; retain existing solver prompt and preserve candidate only as inactive diagnostic evidence.",
+  "limits": "One call per arm per batch on eight familiar matched controls. No repeated-run rate estimate, full-worker qualification or semantic determinism claim."
+}

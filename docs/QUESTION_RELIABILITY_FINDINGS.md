@@ -291,3 +291,6 @@ in each package match `7d9cc6a`; this does not identify every file in the deploy
 repository. Activating the already-main structural fixes requires deploying the
 new code/template and selecting native transport for the worker while keeping
 the Nova Lite API in legacy mode. No deployment has occurred.
+
+
+The [programming result comparison](evidence/programming-result-pair-diagnostic-20260922/RESULT.md) completed all four planned native solver calls. Both baseline and a one-paragraph programming clarification got 8/8 eligibility decisions, 32/32 choice judgments and 48/48 pair judgments correct, retaining five good controls and excluding three defective controls per arm. Root and an independent reviewer checked all 160 visible reasons and preserved minor wording qualifications. There was no observed comparative accuracy gain, so the candidate paragraph stays inactive and the runtime solver prompt is unchanged. The earlier `0`/`False` veto remains evidence of intermittent model error; this small matched comparison neither erases it nor measures its rate.

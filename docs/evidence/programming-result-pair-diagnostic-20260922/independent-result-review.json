@@ -1,0 +1,1908 @@
+{
+  "review_kind": "Independent reading of all160 visible reasons and all16 item records, with separate no-network exact-runtime replay",
+  "source_bindings": {
+    "plan.json": "643385c0b5b1091b763bb6fc74b78487a2396802f0aa4bbc1d539729a53045d4",
+    "capture.json": "97346a80f751e14afd53d1cf0f6c6f5296e5f85f6be62f7e663ab0e1070d1337",
+    "controls-draft.json": "2e0d6006cf7ab5371301609ff7bf0a9b029718880fc780c4292c564ce4a9626f",
+    "independent-gold-review.json": "5bc0599ec1eccc64a49adbb1e55c9085faf83027fb129df80d416e2ba686cc8a",
+    "pair_probe.py": "92f963e9944e116fafc0e6139b7899071c35b8d39f122b617d32f34192ac05a5"
+  },
+  "source_pins_rechecked": 36,
+  "calls_attempted": 4,
+  "calls_native_and_local_valid": 4,
+  "failed_items": 0,
+  "unattempted_items": 0,
+  "per_arm": {
+    "baseline": {
+      "items": 8,
+      "eligibility_correct": 8,
+      "choice_labels_correct": 32,
+      "pair_labels_correct": 48,
+      "eligible_retained": 5,
+      "defective_excluded": 3
+    },
+    "candidate": {
+      "items": 8,
+      "eligibility_correct": 8,
+      "choice_labels_correct": 32,
+      "pair_labels_correct": 48,
+      "eligible_retained": 5,
+      "defective_excluded": 3
+    }
+  },
+  "visible_choice_reasons": 64,
+  "visible_pair_reasons": 96,
+  "reason_status_counts": {
+    "grounded": 155,
+    "supported_in_this_context_with_generalization_limit": 4,
+    "minor_terminology_error_correct_decision": 1
+  },
+  "material_reason_error_affecting_decision_found": false,
+  "minor_wording_errors": 1,
+  "reason_perfection_claim": false,
+  "exact_requests_match_frozen_plan": true,
+  "paired_requests_differ_only_by_approved_insertion": true,
+  "exact_raw_reasons_match_local_decoded_records": true,
+  "content_or_gold_changed": false,
+  "provider_reasoning_inspected": false,
+  "provider_calls_by_reviewer": 0,
+  "conclusion": "Both arms match every frozen label. The familiar failure did not recur in baseline; this trial shows no observed candidate gain and supports keeping the baseline runtime prompt. Small reused/matched controls, adaptive randomness and cache/order effects prevent a population or latency claim. No worker/rollout qualification.",
+  "rows": [
+    {
+      "call": 0,
+      "arm": "baseline",
+      "case_id": "captured_or_result",
+      "input_index": 0,
+      "prompt": "What does the expression 0 or 'hello' evaluate to in Python 3?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "2e65309a333970bdf09457751221509fe5fb1ef0004168b412fde7a1a12fa743",
+          "characters": 176,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "True"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "19b96afb5ab82d259c62adee36d31e01a95c8cf24ab7a439de03129477c34be8",
+          "characters": 155,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "3905b90be0a7b3800ed2757b9bcf8a67d988e2d8416e5df036878528bc3a2346",
+          "characters": 176,
+          "status": "supported_in_this_context_with_generalization_limit",
+          "assessment": "The local evaluated operand/result is correct. The first-falsy/first-truthy or non-Boolean phrase is not a complete universal rule: and/or may return the last operand, including a Boolean. Treat it as local explanation here, consistently with prior reviews; do not promote it to general teaching.",
+          "exact_choice": "'hello'"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "590d47843fbf30df8132cc73ff98b7542e04959ac913b0f82ad896536ac86697",
+          "characters": 129,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "False"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "090d410a3916f7c74730c6d530bf5145985a1225fc204344369ecdca5b256c47",
+          "characters": 142,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "True",
+          "rightChoice": "0"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "89a18114c20b1f4acc979377f7a6864f443bb70e808be85655bf29b94bb806b6",
+          "characters": 86,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "True",
+          "rightChoice": "'hello'"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "8ee989bab6ec9d9f460f6615fb6f8abb837454bcf700615e842a6b0f8583c8c0",
+          "characters": 91,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "True",
+          "rightChoice": "False"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "55fd895270244669c5451a9c7cd387c30ef73326c169102b96a12c8bb3399907",
+          "characters": 93,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "'hello'"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "afb0b8fe0c4a439fca0253e5644dc6ef510f34885e24ed720109e750ee34ae65",
+          "characters": 170,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "False"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "64179a9151c689f9cf91f9a0c612d093353bbe5acb815c7da4e4ab161b48aa81",
+          "characters": 97,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'hello'",
+          "rightChoice": "False"
+        }
+      ]
+    },
+    {
+      "call": 0,
+      "arm": "baseline",
+      "case_id": "and_result",
+      "input_index": 1,
+      "prompt": "What does the expression 0 and 'ready' evaluate to in Python 3?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "4911b546f6281de4bf0c38c52406d0b79b6c5286caf524c85a4ebc61380afc9b",
+          "characters": 162,
+          "status": "supported_in_this_context_with_generalization_limit",
+          "assessment": "The local evaluated operand/result is correct. The first-falsy/first-truthy or non-Boolean phrase is not a complete universal rule: and/or may return the last operand, including a Boolean. Treat it as local explanation here, consistently with prior reviews; do not promote it to general teaching.",
+          "exact_choice": "0"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "ac7347f25b545350c9ffca63f9f647486857e8d8b3ea4ef8375e83bdff35bd6f",
+          "characters": 143,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "False"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "de98ca45239ff06e467e727c6aefd086f50945f4bd96d9c7a0cd3c257369eda2",
+          "characters": 98,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "'0'"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "224c816f8a5f0714c22c13a4af8c05bf0eefae62a19dd9dbfebc5be20fa6603e",
+          "characters": 98,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "None"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "6bc5f7dfd6efa05d1eb0e255277346575bb75ca40e545e7788934a968fd1b969",
+          "characters": 158,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "False"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "8215f31c73d86826e776484cb902f30ecd1efb8f350fad78006f3a214c171e04",
+          "characters": 80,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "'0'"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "57eeccc5055c764f734d154b4c3e7d3400dee99bb5c5981f413fabd9ec977b6d",
+          "characters": 77,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "None"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "93063a3b3f0067c96ff9ce5be477bdd7aa3ea0e06a7d3cb802525b478fe26e59",
+          "characters": 90,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "False",
+          "rightChoice": "'0'"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "2daed5fa35f1436b05e899ad1c7dde6dccd29407498c032b90eaefc11bcadcd1",
+          "characters": 82,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "False",
+          "rightChoice": "None"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "905a3819441a9aae9d852b409e3f1d87b037f7a13f1f71bbe7824b2baed7a6a4",
+          "characters": 87,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'0'",
+          "rightChoice": "None"
+        }
+      ]
+    },
+    {
+      "call": 0,
+      "arm": "baseline",
+      "case_id": "python_numeric_aliases",
+      "input_index": 2,
+      "prompt": "What does the expression 3 - 1 evaluate to in Python 3?",
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "2ff5f2e76a97467d44b68b1e1d8a4643c079de46c08ca4d994c49a5fa61fb975",
+          "characters": 51,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "3"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "30a3fbeddf6d355b4cc5f82c02fac6c901e39cdd65458a25542e581e5fc55290",
+          "characters": 54,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "2"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "00f819ef36bd21d49f7ddabc0e47305806ab88353fd4a1d86d8b4b3b5adc54c1",
+          "characters": 62,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0x0"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "47f4aefdaf2db50f042ebaed62a2058fa172a154bdc328c37d13cb116bd4fe92",
+          "characters": 17,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "5df8dac69cd83c601807c69e8a7436d3dc680ec09483b88c34f221559e5603fa",
+          "characters": 73,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "3",
+          "rightChoice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "d58a99b3202895420e9df87648ac746c411a63f6658322b9e2737dd7a7a4ed42",
+          "characters": 75,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "3",
+          "rightChoice": "0x0"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "19b2d44a7cbe3d1ba971bbd3aeacbe5255578020f2a0fedc46db3b241da7cdde",
+          "characters": 73,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "3",
+          "rightChoice": "0"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "ba63f383a69aeaf5dbd8cd5caf38cb49da34d7771a759d3ca13266ab17ac401a",
+          "characters": 75,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "0x0"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "d1b2ee612af93033155f78603ad24fa1bc1c7a424edf8ac1c910cc779af8f925",
+          "characters": 73,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "0"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "b2f97a889a956f23bc234f62bcecb8e17c2f231d5c5d4c465d6963ad3b81e081",
+          "characters": 221,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0x0",
+          "rightChoice": "0"
+        }
+      ]
+    },
+    {
+      "call": 0,
+      "arm": "baseline",
+      "case_id": "string_result",
+      "input_index": 3,
+      "prompt": "What exact string does str(2) return in Python 3?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "8378aa8778145c9dbda76eaab1f5b34a3b697e3829c225714e5c8d88ec18a7aa",
+          "characters": 96,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "'3'"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "e996bd63d7256e645bfc8ec425d87a1117600fd7aba44e89b2e0306ab542cafc",
+          "characters": 108,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "'two'"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "3f6a172abf5a742a819c1f150ff02e7a2ab7d03daf790998d3d82e54430f0e2e",
+          "characters": 106,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "'2'"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "531703358d0c7ad68e2f09f5ceb333c06f2965a55c067e3abd473f586df00a65",
+          "characters": 95,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "eb4f239544c31497e4d7335e727e5b01db91ab8a93eef12d67b56924354c1d63",
+          "characters": 86,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'3'",
+          "rightChoice": "'two'"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "486c53a790ed936c24ad4119e04a116e34d9e71ab1a3f34ff4194fec966084db",
+          "characters": 82,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'3'",
+          "rightChoice": "'2'"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "ac1f9d22ef46829f4c2f75bdda829478491436ed6d7fbe7ea8b8fb903dd7f614",
+          "characters": 82,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'3'",
+          "rightChoice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "da9228880e2d6502ca635200cb02957d81b12f63773a9a32b8ef7f0ec6b63da9",
+          "characters": 86,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'two'",
+          "rightChoice": "'2'"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "78f83981692b9c6198d86203cd6ffde9e17bd0c6523ad184cb247e5ab1ce2841",
+          "characters": 86,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'two'",
+          "rightChoice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "d2101ce0f017c7842f4bc556a921bb4f335c07832fa77279cc5aac5cdbee2d02",
+          "characters": 183,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'2'",
+          "rightChoice": "2"
+        }
+      ]
+    },
+    {
+      "call": 1,
+      "arm": "candidate",
+      "case_id": "captured_or_result",
+      "input_index": 0,
+      "prompt": "What does the expression 0 or 'hello' evaluate to in Python 3?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "13a0194b97d6e9937e918d759c73bdb9c622f1ecec3808d53982bf2d74be90a4",
+          "characters": 153,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "True"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "e00b3dfe3e35d9157e4b81ea575d27a8369d037c55528c25ff8a1d53b09531c1",
+          "characters": 102,
+          "status": "minor_terminology_error_correct_decision",
+          "assessment": "'short-circuits past 0' misuses short-circuit terminology: the falsy left operand is evaluated, then the right operand is evaluated. The reason still identifies the correct returned string and correctly refutes integer 0. This private wording does not change the learner content or label.",
+          "exact_choice": "0"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "7210ce578870a76922e10ebb610a6f248020a9191db6caa75c463cb4972da182",
+          "characters": 126,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "'hello'"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "4e282f7bbe3f0204e147afae53d9aa1aad08e19ceabe50e8e1945a1e4b5746f8",
+          "characters": 92,
+          "status": "supported_in_this_context_with_generalization_limit",
+          "assessment": "The local evaluated operand/result is correct. The first-falsy/first-truthy or non-Boolean phrase is not a complete universal rule: and/or may return the last operand, including a Boolean. Treat it as local explanation here, consistently with prior reviews; do not promote it to general teaching.",
+          "exact_choice": "False"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "0fe8400345b1fafaae568c2d6f91ebf0bc3bcbae52838f5238d8af727afd30a5",
+          "characters": 106,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "True",
+          "rightChoice": "0"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "4fe737b83440a002b5a0bf6c4f73bd99ac6c52f25d53f8d64fae832a9d9f23f7",
+          "characters": 63,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "True",
+          "rightChoice": "'hello'"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "d710439a9d471b9a9f94bf86dd5f0b3fcde6a10d9fc5c50361c510c906e99eca",
+          "characters": 85,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "True",
+          "rightChoice": "False"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "0e358e7f6d3c7a02314e60878f439c2c65dd6b8279d4b3c6789b3be3d143c6f1",
+          "characters": 54,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "'hello'"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "246acb1a63dcc53a714f2ddf991a0cda9d5027f0390d3856c5ad07e351af4995",
+          "characters": 141,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "False"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "fb8c557bdcc2b4ac92db569b08328f9cd3d475ca0d5b6b8477768d7477966e06",
+          "characters": 80,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'hello'",
+          "rightChoice": "False"
+        }
+      ]
+    },
+    {
+      "call": 1,
+      "arm": "candidate",
+      "case_id": "and_result",
+      "input_index": 1,
+      "prompt": "What does the expression 0 and 'ready' evaluate to in Python 3?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "aadac9cf66f490c5eca987070fa4473bc9ffd85d8dfbd5f8da3bba377e0280a2",
+          "characters": 119,
+          "status": "supported_in_this_context_with_generalization_limit",
+          "assessment": "The local evaluated operand/result is correct. The first-falsy/first-truthy or non-Boolean phrase is not a complete universal rule: and/or may return the last operand, including a Boolean. Treat it as local explanation here, consistently with prior reviews; do not promote it to general teaching.",
+          "exact_choice": "0"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "52129e6471dba4876fcfc56f570d3b83910bb233d4400bf326184d726945f2b6",
+          "characters": 158,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "False"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "72bb866f27768117ef029ea0a88ebd7811ea03bfcd440979050415da901e6b70",
+          "characters": 87,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "'0'"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "3c9149c0d4de9f60030a660b31e64f19981677f85d1131bf99a1788dc82e195c",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "None"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "7cd29fb32dabc9ea4651dec2a70b51be28c7cf6f6dd4e65683e93f8c7b1b6efd",
+          "characters": 126,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "False"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "75820ea5ea3d345fb379755b1c270a3010adbb905b835fc5ade79e80fc120ef8",
+          "characters": 66,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "'0'"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "7ffb45e689ba4e2ba04b0dd71b2a11e71d6c1c29ea26e9f5549b899e1ff8e94d",
+          "characters": 57,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0",
+          "rightChoice": "None"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "f50c7f14a9ed4936dbee02652564769cf711cbe00337d43571c9e5b88621e561",
+          "characters": 55,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "False",
+          "rightChoice": "'0'"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "3fb3fcf2a4e46bf0a12e731b3b63748aca81a40c2b4a776e012209865f35fe30",
+          "characters": 61,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "False",
+          "rightChoice": "None"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "bbd7cc113a9db5a1de851f4b3eb58d633a599e370539c8dd408b6383e74247a9",
+          "characters": 58,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'0'",
+          "rightChoice": "None"
+        }
+      ]
+    },
+    {
+      "call": 1,
+      "arm": "candidate",
+      "case_id": "python_numeric_aliases",
+      "input_index": 2,
+      "prompt": "What does the expression 3 - 1 evaluate to in Python 3?",
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "51b7939257d61e9de4f4d91ac04829652d7f3432c665939a281332d3ceeda0b7",
+          "characters": 67,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "3"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "7ba9445d605281c1507e9559a55397d3089a3e8dc89fd29632f9f7a40a8f825e",
+          "characters": 56,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "2"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "feac02c8bc943aef8133ecd3eb117f2c1d5ac22073910fb33a7c003bd49aab49",
+          "characters": 83,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0x0"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "7e2ae5885e1ef268a1dcf0966535f66fb60d97acadff2ec31de055d2a319bfba",
+          "characters": 48,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "38ea5fd646cd74da9fc683dcaab7acf269ec02859015d1ade324b64354450156",
+          "characters": 67,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "3",
+          "rightChoice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "79845a41654c8b5470334385c4017471912b30debd18d0914f60f7bf235118c9",
+          "characters": 41,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "3",
+          "rightChoice": "0x0"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "e4f362389dc382c83136b3851f757e8ae476759a084f724db50051a507cb3486",
+          "characters": 37,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "3",
+          "rightChoice": "0"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "f69c52474846d1db1b9e6d23cbb4d3e02f94d35658ebb47c5af9b4b4ec8bde88",
+          "characters": 44,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "0x0"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "3f1fa6073ba5578556dd5cedb98e9a06c66b69f91411743517017523a38f226b",
+          "characters": 60,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "0"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "a7618a917a2a21e278b8263c24df1cfdfc9891368ffe9198272194cc38520fce",
+          "characters": 99,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0x0",
+          "rightChoice": "0"
+        }
+      ]
+    },
+    {
+      "call": 1,
+      "arm": "candidate",
+      "case_id": "string_result",
+      "input_index": 3,
+      "prompt": "What exact string does str(2) return in Python 3?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "c1fae7a90a97c5deae350149eea8b10a71b571880525fde62b3cf8e7010d7e9a",
+          "characters": 50,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "'3'"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "bccff0c44e4c189a60b4eec071a205997b0a1fcca368ca71a41b2043838a847c",
+          "characters": 92,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "'two'"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "ba4a821fda1418aa9819e37a1cedc2a8ff9d152f0ca11eea5352812ddf506741",
+          "characters": 99,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "'2'"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "f8601dda5e560e2b4b4beeeb7f519b807c3b578bec21a5f7f5d31c9acebeee9b",
+          "characters": 155,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "efe11b8c809af73685a22403b818a0b9bafca9979cbe5433eda4097be005b59b",
+          "characters": 83,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'3'",
+          "rightChoice": "'two'"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "b1357785bb9f7a03f6e4d6c461fc5668a1245534d54f9a5c6433867992b59251",
+          "characters": 65,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'3'",
+          "rightChoice": "'2'"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "3298ca529caed1755da1ddccfd1b36affa1c27b8a9ea6c90c962661e24ad02c7",
+          "characters": 60,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'3'",
+          "rightChoice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "aa91f1d1a5536f1c18ce203170c959b49a8849041beb2e7e308a40c327e16671",
+          "characters": 66,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'two'",
+          "rightChoice": "'2'"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "fe0c13da7831fb48daf7d398e0d80e39c9eb6dac6c3b19f366c378666ff11fb3",
+          "characters": 51,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'two'",
+          "rightChoice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "7365ecbb430f90e5604e82f13f6ea9a17efbc424e876cc6e61ce56b07fec36cc",
+          "characters": 150,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "'2'",
+          "rightChoice": "2"
+        }
+      ]
+    },
+    {
+      "call": 2,
+      "arm": "candidate",
+      "case_id": "numeric_word_duplicate",
+      "input_index": 0,
+      "prompt": "What is the numerical value of 2 + 2?",
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "315fd0ca0195855b38b5bed8ab4d52a3d5a2c5bb97f3f8ce5a658e5b31b7896d",
+          "characters": 87,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "two"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "4bd7d2a96e8af79d7e59c83175ed41ae0c71ab5d5a8de2a074b2e25cecd56374",
+          "characters": 77,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "2"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "a09eef42e16746d319b3a1a6c720c90ceafea5d9dfa07244d61ab8d8cb43411d",
+          "characters": 49,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "4"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "14870702f0cf0f51eeed82ae5f0cdb341c8654dbc7bde836912d9c3b6fe578f7",
+          "characters": 53,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "71baec3afb2ccb3a1ad665b50f63bbb2ae09a501a332ac42b102944b2fdea11a",
+          "characters": 171,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "two",
+          "rightChoice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "72819dc4378b4f8d51a26f40fc5e69c8ddf3a4d765c68693c6cc95f039992a91",
+          "characters": 73,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "two",
+          "rightChoice": "4"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "fae63f0f718371b7c5c8c00d4effa06dc2c9b240da1c0d12aa14fb0bb033ebc8",
+          "characters": 73,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "two",
+          "rightChoice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "63f9f844a04243741f6fa9aa0dfd2b5238310fa434976187ea835230cf48794f",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "4"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "13d13438c6b323efa592a5bc6ae01c333a8223c3360fb9b39e9c14de599408dc",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "d99d96e4ea9a010b47936e73903031516ebfddcb80b461d726bd492abe5c2f45",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "4",
+          "rightChoice": "3"
+        }
+      ]
+    },
+    {
+      "call": 2,
+      "arm": "candidate",
+      "case_id": "fraction_decimal_duplicate",
+      "input_index": 1,
+      "prompt": "Which numerical value equals one half?",
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "5717baa2176717864d2f0d9a13cd10a3535ced8ce7c351520b0b7397acc902c3",
+          "characters": 59,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.25"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "6d23dd86587f802249768466474b3bf11b188efa443531c956e3918653ef082d",
+          "characters": 56,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.75"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "c0e006e7b8395a4646a155f150b71bede9fbdf7fedb1ff40ae45e7b28811c748",
+          "characters": 31,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.5"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "74d0ce0a9161e3aa3e966970f4390f8f4ac022d57a4c040b8b3ff650ff0a62fe",
+          "characters": 45,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "1/2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "3e4ceea5ea3b97a867acc8ee66c2ff4ea6f57555c773985bd158d678751f7455",
+          "characters": 79,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.25",
+          "rightChoice": "0.75"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "ea0eb74ba9d59ca1fc2e4cf62200e66ed6728cfe0fc73855d6aecc5fc6680bc2",
+          "characters": 77,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.25",
+          "rightChoice": "0.5"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "3a7f6e1541aa28b1bdd69a16b853ce0e18e6c72ab8c8f391aab670019df7e6df",
+          "characters": 77,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.25",
+          "rightChoice": "1/2"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "d18fb43e98da0d19305d69bf6aa287190fa6b4daeebb68a75848da4c322ab41d",
+          "characters": 77,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.75",
+          "rightChoice": "0.5"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "06c3000ff679072dafe0d4b138613c5f2f80e85f111899407a0288a8ae4031f9",
+          "characters": 77,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.75",
+          "rightChoice": "1/2"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "624d3483a6dbcc08c735f6285690e8a3b2526cd9ac83d665bb3a938ef93f9e6c",
+          "characters": 158,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.5",
+          "rightChoice": "1/2"
+        }
+      ]
+    },
+    {
+      "call": 2,
+      "arm": "candidate",
+      "case_id": "decimal_form_task",
+      "input_index": 2,
+      "prompt": "Which option writes one half in decimal notation?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "1c8e523a81537f393e3c274566f623bee25516db5b6d7ee733d0ec96a42e5f8d",
+          "characters": 81,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.5"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "2e4f3b60dbc5cff86876f3f9351cd3bbc395fd4db00f995bff52655753f6d549",
+          "characters": 116,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "1/2"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "c05815c6ada2544c7b942dabf0401dad92bb4bb5fac1aea39836e1d8b5e8b081",
+          "characters": 80,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.75"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "2f670aaee79f0f440dcf6a1df68826a90a4a2c5b8f56cdbb7e770f3810c1547b",
+          "characters": 80,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.25"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "a15b78349945763f7557dc6ec617242b2d6f8cc42385b96b6c9b41bc2bdafbe8",
+          "characters": 165,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.5",
+          "rightChoice": "1/2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "697a78c782024dc265c28023dbd5192225a1cd5eec13671f5f0d36893dbe486c",
+          "characters": 125,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.5",
+          "rightChoice": "0.75"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "350735e85e16baa65b13e2d6dec3a3bd194f51d1cbb6ea246e38e9186bc1528b",
+          "characters": 79,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.5",
+          "rightChoice": "0.25"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "5df44094d99c2f2e43528cfde0f454fb0057dad6032a58ddde75f3632224045e",
+          "characters": 104,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "1/2",
+          "rightChoice": "0.75"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "3db63287d46c04a2202287933ba6829d4523f1aa5f2cf4cd1bc024d828cac871",
+          "characters": 104,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "1/2",
+          "rightChoice": "0.25"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "c5f74662f37096f692044aad4d5d74a7bc23a5565a1e67973c17028a5436b350",
+          "characters": 96,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.75",
+          "rightChoice": "0.25"
+        }
+      ]
+    },
+    {
+      "call": 2,
+      "arm": "candidate",
+      "case_id": "numeric_distinct",
+      "input_index": 3,
+      "prompt": "What is the numerical value of 2 + 2?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "833efa7459b8fdaf903d5d2678b5b26feee02ac85ffdc0be5138e4ea2e85d512",
+          "characters": 53,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "2"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "b878eabc761a5d81113d19b9020440b1f428d7bf7b72d08a0e0c8b40c8a0ec24",
+          "characters": 40,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "4"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "952b8efff2fa0350f291926cfc7c70fdec614d9a8edc07953133b84424cb0304",
+          "characters": 53,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "5"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "14870702f0cf0f51eeed82ae5f0cdb341c8654dbc7bde836912d9c3b6fe578f7",
+          "characters": 53,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "63f9f844a04243741f6fa9aa0dfd2b5238310fa434976187ea835230cf48794f",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "4"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "40eea05dfb56ecc057d3bf2474e998766356cf217b846305eec9f04bc283c88f",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "5"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "13d13438c6b323efa592a5bc6ae01c333a8223c3360fb9b39e9c14de599408dc",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "ad4c2f11b337b5c7cc70884d6c0811710932a871f54c080dc507dcbd374a8536",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "4",
+          "rightChoice": "5"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "d99d96e4ea9a010b47936e73903031516ebfddcb80b461d726bd492abe5c2f45",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "4",
+          "rightChoice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "92f73871ce3a8b3db0b47efff81f746597271fd7f1d59ea1f91cb648e3fbf5ce",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "5",
+          "rightChoice": "3"
+        }
+      ]
+    },
+    {
+      "call": 3,
+      "arm": "baseline",
+      "case_id": "numeric_word_duplicate",
+      "input_index": 0,
+      "prompt": "What is the numerical value of 2 + 2?",
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "7554beb1d2082fb60e189d0060cdb7a8348ddaff724a8512386fe3338c4c522d",
+          "characters": 94,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "two"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "6b9487d9e76fd6337ee6aefae0a3fe7e6b8304f4ca6032ed3b50a79ce06c0f18",
+          "characters": 92,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "2"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "f77fccd19f4c901670873f3b581d212c24be17758150c48f4fc76becfd38435d",
+          "characters": 59,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "4"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "228e9b1e5966625e056ba0979d211b5d2b483bd32ac80a79103b8df07db0aea4",
+          "characters": 92,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "2ed2b433db3875032e906950012e80865af7aa4991480e59d1a19bcc5c9bc538",
+          "characters": 150,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "two",
+          "rightChoice": "2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "c2ca506719e2ef765a12952a85375cbdc8d6ab5fb4bdee52aae1c0b62cd09f11",
+          "characters": 78,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "two",
+          "rightChoice": "4"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "3b5467886ff0b2b22ba84cfa6c279decf8974545fbff1dcc417502c2189595d4",
+          "characters": 78,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "two",
+          "rightChoice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "0b70530724e006e30c98efb7884c82e653a8fc571581d25a846a12bf7c591fa6",
+          "characters": 76,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "4"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "7534b421257c93c360aabe1206062b11446543727c7fe493bd96b7567e65b643",
+          "characters": 76,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "a8b4eecfd06fae615a51193aed9eef56dc16c6733bf5edc2b6161a2f5016dc0c",
+          "characters": 76,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "4",
+          "rightChoice": "3"
+        }
+      ]
+    },
+    {
+      "call": 3,
+      "arm": "baseline",
+      "case_id": "fraction_decimal_duplicate",
+      "input_index": 1,
+      "prompt": "Which numerical value equals one half?",
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "06e54f968e6a550e138b9ac03da14dcf2b07b2e2f1fe8018861cef925288f235",
+          "characters": 46,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.25"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "86fc468e408b1b7350c5f278434d9392cb5e7de5e6475ef0cf35391b08deb23f",
+          "characters": 46,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.75"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "f3a0945d1c0e0318d59ef96642e85fbd5d02816bc1278c64cbd86f003b54f2d5",
+          "characters": 42,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.5"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "198143a3c78f02dad3b5df2bc549c901ad0c6fe8a0f61f9cd5865787ed98f4f2",
+          "characters": 85,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "1/2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "9b9658a10640b86e02ab2254a68f689d53067d79fc11ebe8728f1fc3325c46fc",
+          "characters": 66,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.25",
+          "rightChoice": "0.75"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "7964778c4863274979dc7ebd2d6a9ad066f21bc1abbcdb7403d496ce3b0aafb8",
+          "characters": 37,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.25",
+          "rightChoice": "0.5"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "339b295fd54efa30f71b69922e819096be952fe2b7e3d078e52fbd74eb631d42",
+          "characters": 37,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.25",
+          "rightChoice": "1/2"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "f8f8bd5772247667487cf17cc53f570dd24e017ca323687056661b91f894dd61",
+          "characters": 37,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.75",
+          "rightChoice": "0.5"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "1da22f38a4d080d205442e7aa8aa45bcc1a0813e475f4c3e832fc0c7f21f47d3",
+          "characters": 37,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.75",
+          "rightChoice": "1/2"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "fb786ecbb781cf81b43b3096d65846cfcdec402b295973b02098b3cef970dc72",
+          "characters": 122,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.5",
+          "rightChoice": "1/2"
+        }
+      ]
+    },
+    {
+      "call": 3,
+      "arm": "baseline",
+      "case_id": "decimal_form_task",
+      "input_index": 2,
+      "prompt": "Which option writes one half in decimal notation?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "55f4c9c1df2785c0a8a2773c69bc410cda16ca4c57f320ed4a2f31fa1b40430f",
+          "characters": 77,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.5"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "6b8d164a74be612c9cf67a927a7e62eed0ed9917f833cf8a912a9d255db83072",
+          "characters": 119,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "1/2"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "550bb128a24dce9a3baecde63c59f0543a8b22aa9429d86a1b415c579c1c2d4e",
+          "characters": 56,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.75"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "7dfa4a8fbbe9faa8431a905fe2fe4f0891d94482c0d56cdeee162a1a4398836e",
+          "characters": 56,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "0.25"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "4d947156c955901867861d5e73e7e77be3644b78f594d1880136fef930d1be06",
+          "characters": 160,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.5",
+          "rightChoice": "1/2"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "cc2e2c8264fbafe4b0b83f7710d00cf1d229eb42ba565a927b01066145162fa5",
+          "characters": 102,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.5",
+          "rightChoice": "0.75"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "ac87c80ac02a111e4c7102444c3a92f25b56f2a497e0fc1ccb229e1e4f172c91",
+          "characters": 99,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.5",
+          "rightChoice": "0.25"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "a42fc2988910e5ec40e630c013f6677320c41f50b4119f1a60d62e79eab27268",
+          "characters": 106,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "1/2",
+          "rightChoice": "0.75"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "8ae3de8af5aa8e55c5ab50853bf9a37f80ba4deaff9d7d1a834cf65ac4e65212",
+          "characters": 100,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "1/2",
+          "rightChoice": "0.25"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "be4e76c2a285bc65dc0ba7a02b9d60eb3c24afc1c399defbe91d624ac1cdc967",
+          "characters": 99,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "0.75",
+          "rightChoice": "0.25"
+        }
+      ]
+    },
+    {
+      "call": 3,
+      "arm": "baseline",
+      "case_id": "numeric_distinct",
+      "input_index": 3,
+      "prompt": "What is the numerical value of 2 + 2?",
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_agrees": true,
+      "all_choice_labels_correct": true,
+      "all_pair_labels_correct": true,
+      "reasons": [
+        {
+          "kind": "choice",
+          "slot": "a",
+          "reason_sha256": "890cd988cd68e86a741ff2f2753702ba790032bdcbd1a399480e6335fc08c7a6",
+          "characters": 55,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "2"
+        },
+        {
+          "kind": "choice",
+          "slot": "b",
+          "reason_sha256": "f73299c0c33acc1d6fbf93ce0359e30f4afa18ce56188b11fa97d9063a3ccd4a",
+          "characters": 30,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "4"
+        },
+        {
+          "kind": "choice",
+          "slot": "c",
+          "reason_sha256": "3ce14dedf52e1ffd7db6b7031e29581796730539f6d36870542c497927658219",
+          "characters": 55,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "5"
+        },
+        {
+          "kind": "choice",
+          "slot": "d",
+          "reason_sha256": "0d1173264d6d554457200265de09cecbff0ba38d958aded99d130f178a0ef8ef",
+          "characters": 55,
+          "status": "grounded",
+          "assessment": "The stated fact/calculation supports the judgment for this exact stem.",
+          "exact_choice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "ab",
+          "reason_sha256": "d1f5541822acffb59455a3c1726fab371e95a7eb834d013c2ad191b9c8e6cfa7",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "4"
+        },
+        {
+          "kind": "pair",
+          "slot": "ac",
+          "reason_sha256": "bb0810d867f1ad3a60e4df61cb6804b608cce25f362f590a638b587e98f57506",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "5"
+        },
+        {
+          "kind": "pair",
+          "slot": "ad",
+          "reason_sha256": "d67045436da652be152b4c9d5f137399444d9eeb759312128a06eeefab7f212f",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "2",
+          "rightChoice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "bc",
+          "reason_sha256": "1b5f2ce3f822b26fb036bfbf876ea23ddb1e08edf48e8dec456a15ce20c2461f",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "4",
+          "rightChoice": "5"
+        },
+        {
+          "kind": "pair",
+          "slot": "bd",
+          "reason_sha256": "09b08e4d061cc2867551f693b5aa45854e09216d749690be8dc73e53c2f8d4ec",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "4",
+          "rightChoice": "3"
+        },
+        {
+          "kind": "pair",
+          "slot": "cd",
+          "reason_sha256": "bec5719d724af3258beb3730aca3360941ae5922ac178415bc720798a3ac7a27",
+          "characters": 71,
+          "status": "grounded",
+          "assessment": "The stated distinction/calculation addresses these exact endpoints and supports the declared judgment.",
+          "exact_choice": null,
+          "leftChoice": "5",
+          "rightChoice": "3"
+        }
+      ]
+    }
+  ]
+}
