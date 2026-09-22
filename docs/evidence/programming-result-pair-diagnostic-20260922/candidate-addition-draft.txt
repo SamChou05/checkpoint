@@ -1,0 +1,8 @@
+For a programming task asking what an expression evaluates to or what a program
+returns, preserve the language-defined result type and value. Numeric equality
+or shared truthiness does not by itself make two proposed results equivalent.
+For printed output, compare the actual requested output text. This is a result
+semantics distinction, not a blanket exception for different source spellings:
+literals or expressions producing the same relevant value and type still propose
+the same result. If the task explicitly asks only about numeric magnitude,
+equality, or truth value, compare that requested property instead.

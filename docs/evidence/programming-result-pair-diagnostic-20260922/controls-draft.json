@@ -1,0 +1,669 @@
+{
+  "status": "DRAFT ONLY; not independently gold-reviewed, frozen, approved for dispatch, or run",
+  "source_files": [
+    {
+      "path": "docs/evidence/immutable-main-mixed-qualification-20260922/capture.json",
+      "sha256": "8107bf285c2125c89e0ddb654b0ada756a6a943d05cb6d22c0c7ce5cc9465523"
+    }
+  ],
+  "scope": {
+    "goal": {
+      "title": "Python 3 results and elementary numerical representations"
+    },
+    "skillMap": null,
+    "sources": []
+  },
+  "scope_note": "Prospective common scope, not a replay of the historical Python request. Original failed capture is unchanged. No extra factual premises are supplied.",
+  "cases": [
+    {
+      "id": "captured_or_result",
+      "batch": 0,
+      "question": {
+        "prompt": "What does the expression 0 or 'hello' evaluate to in Python 3?",
+        "choices": [
+          "True",
+          "'hello'",
+          "0",
+          "False"
+        ],
+        "expectedAnswer": "'hello'"
+      },
+      "provenance": "familiar unchanged captured stem/choices/key",
+      "gold": {
+        "supported_choices": [
+          "'hello'"
+        ],
+        "choices": [
+          {
+            "choice": "True",
+            "judgment": "refuted",
+            "proof": "The operator returns the right string operand, not a Boolean."
+          },
+          {
+            "choice": "'hello'",
+            "judgment": "supported",
+            "proof": "The left integer is false-valued, so the right string operand is returned."
+          },
+          {
+            "choice": "0",
+            "judgment": "refuted",
+            "proof": "The false-valued left operand does not satisfy the or short-circuit condition."
+          },
+          {
+            "choice": "False",
+            "judgment": "refuted",
+            "proof": "The returned operand is the string, not Boolean False."
+          }
+        ],
+        "choicePairs": [
+          {
+            "leftChoice": "True",
+            "rightChoice": "'hello'",
+            "relation": "distinct",
+            "proof": "Boolean True versus string containing hello: different content for this task."
+          },
+          {
+            "leftChoice": "True",
+            "rightChoice": "0",
+            "relation": "distinct",
+            "proof": "Boolean True versus integer zero: different content for this task."
+          },
+          {
+            "leftChoice": "True",
+            "rightChoice": "False",
+            "relation": "distinct",
+            "proof": "Boolean True versus Boolean False: different content for this task."
+          },
+          {
+            "leftChoice": "'hello'",
+            "rightChoice": "0",
+            "relation": "distinct",
+            "proof": "string containing hello versus integer zero: different content for this task."
+          },
+          {
+            "leftChoice": "'hello'",
+            "rightChoice": "False",
+            "relation": "distinct",
+            "proof": "string containing hello versus Boolean False: different content for this task."
+          },
+          {
+            "leftChoice": "0",
+            "rightChoice": "False",
+            "relation": "distinct",
+            "proof": "integer zero versus Boolean False: different content for this task."
+          }
+        ],
+        "eligible": true
+      },
+      "source_pointer": "capture.jobs[1].passes[0].prepared[3]"
+    },
+    {
+      "id": "and_result",
+      "batch": 0,
+      "question": {
+        "prompt": "What does the expression 0 and 'ready' evaluate to in Python 3?",
+        "choices": [
+          "0",
+          "False",
+          "'0'",
+          "None"
+        ],
+        "expectedAnswer": "0"
+      },
+      "provenance": "new matched programming result",
+      "gold": {
+        "supported_choices": [
+          "0"
+        ],
+        "choices": [
+          {
+            "choice": "0",
+            "judgment": "supported",
+            "proof": "and returns its false-valued left operand, the integer zero."
+          },
+          {
+            "choice": "False",
+            "judgment": "refuted",
+            "proof": "The returned integer is not a Boolean result, although it compares equal to False."
+          },
+          {
+            "choice": "'0'",
+            "judgment": "refuted",
+            "proof": "The returned operand is an integer, not a one-character string."
+          },
+          {
+            "choice": "None",
+            "judgment": "refuted",
+            "proof": "Neither operand is None, and and returns an operand."
+          }
+        ],
+        "choicePairs": [
+          {
+            "leftChoice": "0",
+            "rightChoice": "False",
+            "relation": "distinct",
+            "proof": "integer zero versus Boolean False: different content for this task."
+          },
+          {
+            "leftChoice": "0",
+            "rightChoice": "'0'",
+            "relation": "distinct",
+            "proof": "integer zero versus one-character string 0: different content for this task."
+          },
+          {
+            "leftChoice": "0",
+            "rightChoice": "None",
+            "relation": "distinct",
+            "proof": "integer zero versus None singleton: different content for this task."
+          },
+          {
+            "leftChoice": "False",
+            "rightChoice": "'0'",
+            "relation": "distinct",
+            "proof": "Boolean False versus one-character string 0: different content for this task."
+          },
+          {
+            "leftChoice": "False",
+            "rightChoice": "None",
+            "relation": "distinct",
+            "proof": "Boolean False versus None singleton: different content for this task."
+          },
+          {
+            "leftChoice": "'0'",
+            "rightChoice": "None",
+            "relation": "distinct",
+            "proof": "one-character string 0 versus None singleton: different content for this task."
+          }
+        ],
+        "eligible": true
+      }
+    },
+    {
+      "id": "python_numeric_aliases",
+      "batch": 0,
+      "question": {
+        "prompt": "What does the expression 3 - 1 evaluate to in Python 3?",
+        "choices": [
+          "2",
+          "0",
+          "0x0",
+          "3"
+        ],
+        "expectedAnswer": "2"
+      },
+      "provenance": "new programming alias countercontrol",
+      "gold": {
+        "supported_choices": [
+          "2"
+        ],
+        "choices": [
+          {
+            "choice": "2",
+            "judgment": "supported",
+            "proof": "Integer subtraction gives integer two."
+          },
+          {
+            "choice": "0",
+            "judgment": "refuted",
+            "proof": "Integer zero does not equal the subtraction result two."
+          },
+          {
+            "choice": "0x0",
+            "judgment": "refuted",
+            "proof": "0x0 denotes integer zero, which is not the result two."
+          },
+          {
+            "choice": "3",
+            "judgment": "refuted",
+            "proof": "Integer three is not the subtraction result two."
+          }
+        ],
+        "choicePairs": [
+          {
+            "leftChoice": "2",
+            "rightChoice": "0",
+            "relation": "distinct",
+            "proof": "integer two versus integer zero: different content for this task."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "0x0",
+            "relation": "distinct",
+            "proof": "integer two versus integer zero (hexadecimal literal): different content for this task."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "proof": "integer two versus integer three: different content for this task."
+          },
+          {
+            "leftChoice": "0",
+            "rightChoice": "0x0",
+            "relation": "equivalent",
+            "proof": "Both propose integer zero."
+          },
+          {
+            "leftChoice": "0",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "proof": "integer zero versus integer three: different content for this task."
+          },
+          {
+            "leftChoice": "0x0",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "proof": "integer zero (hexadecimal literal) versus integer three: different content for this task."
+          }
+        ],
+        "eligible": false
+      }
+    },
+    {
+      "id": "string_result",
+      "batch": 0,
+      "question": {
+        "prompt": "What exact string does str(2) return in Python 3?",
+        "choices": [
+          "'2'",
+          "'two'",
+          "2",
+          "'3'"
+        ],
+        "expectedAnswer": "'2'"
+      },
+      "provenance": "new matched programming result",
+      "gold": {
+        "supported_choices": [
+          "'2'"
+        ],
+        "choices": [
+          {
+            "choice": "'2'",
+            "judgment": "supported",
+            "proof": "str converts integer two to the one-character string 2."
+          },
+          {
+            "choice": "'two'",
+            "judgment": "refuted",
+            "proof": "str uses the digit representation, not the English number word."
+          },
+          {
+            "choice": "2",
+            "judgment": "refuted",
+            "proof": "The return value is a string, not the input integer."
+          },
+          {
+            "choice": "'3'",
+            "judgment": "refuted",
+            "proof": "The supplied integer is two, not three."
+          }
+        ],
+        "choicePairs": [
+          {
+            "leftChoice": "'2'",
+            "rightChoice": "'two'",
+            "relation": "distinct",
+            "proof": "one-character string 2 versus three-character string two: different content for this task."
+          },
+          {
+            "leftChoice": "'2'",
+            "rightChoice": "2",
+            "relation": "distinct",
+            "proof": "one-character string 2 versus integer two: different content for this task."
+          },
+          {
+            "leftChoice": "'2'",
+            "rightChoice": "'3'",
+            "relation": "distinct",
+            "proof": "one-character string 2 versus one-character string 3: different content for this task."
+          },
+          {
+            "leftChoice": "'two'",
+            "rightChoice": "2",
+            "relation": "distinct",
+            "proof": "three-character string two versus integer two: different content for this task."
+          },
+          {
+            "leftChoice": "'two'",
+            "rightChoice": "'3'",
+            "relation": "distinct",
+            "proof": "three-character string two versus one-character string 3: different content for this task."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "'3'",
+            "relation": "distinct",
+            "proof": "integer two versus one-character string 3: different content for this task."
+          }
+        ],
+        "eligible": true
+      }
+    },
+    {
+      "id": "numeric_word_duplicate",
+      "batch": 1,
+      "question": {
+        "prompt": "What is the numerical value of 2 + 2?",
+        "choices": [
+          "4",
+          "2",
+          "two",
+          "3"
+        ],
+        "expectedAnswer": "4"
+      },
+      "provenance": "new matched numeric duplicate control",
+      "gold": {
+        "supported_choices": [
+          "4"
+        ],
+        "choices": [
+          {
+            "choice": "4",
+            "judgment": "supported",
+            "proof": "Two plus two is four."
+          },
+          {
+            "choice": "2",
+            "judgment": "refuted",
+            "proof": "Two is not four."
+          },
+          {
+            "choice": "two",
+            "judgment": "refuted",
+            "proof": "The word two denotes two, not four."
+          },
+          {
+            "choice": "3",
+            "judgment": "refuted",
+            "proof": "Three is not four."
+          }
+        ],
+        "choicePairs": [
+          {
+            "leftChoice": "4",
+            "rightChoice": "2",
+            "relation": "distinct",
+            "proof": "number four versus number two: different content for this task."
+          },
+          {
+            "leftChoice": "4",
+            "rightChoice": "two",
+            "relation": "distinct",
+            "proof": "number four versus number two spelled as a word: different content for this task."
+          },
+          {
+            "leftChoice": "4",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "proof": "number four versus number three: different content for this task."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "two",
+            "relation": "equivalent",
+            "proof": "Both propose number two."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "proof": "number two versus number three: different content for this task."
+          },
+          {
+            "leftChoice": "two",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "proof": "number two spelled as a word versus number three: different content for this task."
+          }
+        ],
+        "eligible": false
+      }
+    },
+    {
+      "id": "fraction_decimal_duplicate",
+      "batch": 1,
+      "question": {
+        "prompt": "Which numerical value equals one half?",
+        "choices": [
+          "1/2",
+          "0.5",
+          "0.25",
+          "0.75"
+        ],
+        "expectedAnswer": "1/2"
+      },
+      "provenance": "new matched numeric duplicate control",
+      "gold": {
+        "supported_choices": [
+          "1/2",
+          "0.5"
+        ],
+        "choices": [
+          {
+            "choice": "1/2",
+            "judgment": "supported",
+            "proof": "The fraction is exactly one half."
+          },
+          {
+            "choice": "0.5",
+            "judgment": "supported",
+            "proof": "0.5 is exactly one half."
+          },
+          {
+            "choice": "0.25",
+            "judgment": "refuted",
+            "proof": "0.25 is one quarter, not one half."
+          },
+          {
+            "choice": "0.75",
+            "judgment": "refuted",
+            "proof": "0.75 is three quarters, not one half."
+          }
+        ],
+        "choicePairs": [
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "0.5",
+            "relation": "equivalent",
+            "proof": "Both propose number one half."
+          },
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "0.25",
+            "relation": "distinct",
+            "proof": "number one half versus number one quarter: different content for this task."
+          },
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "0.75",
+            "relation": "distinct",
+            "proof": "number one half versus number three quarters: different content for this task."
+          },
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "0.25",
+            "relation": "distinct",
+            "proof": "number one half in decimal form versus number one quarter: different content for this task."
+          },
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "0.75",
+            "relation": "distinct",
+            "proof": "number one half in decimal form versus number three quarters: different content for this task."
+          },
+          {
+            "leftChoice": "0.25",
+            "rightChoice": "0.75",
+            "relation": "distinct",
+            "proof": "number one quarter versus number three quarters: different content for this task."
+          }
+        ],
+        "eligible": false
+      }
+    },
+    {
+      "id": "decimal_form_task",
+      "batch": 1,
+      "question": {
+        "prompt": "Which option writes one half in decimal notation?",
+        "choices": [
+          "1/2",
+          "0.5",
+          "0.25",
+          "0.75"
+        ],
+        "expectedAnswer": "0.5"
+      },
+      "provenance": "new literal-task counterpart to fraction_decimal_duplicate",
+      "gold": {
+        "supported_choices": [
+          "0.5"
+        ],
+        "choices": [
+          {
+            "choice": "1/2",
+            "judgment": "refuted",
+            "proof": "The value is one half, but the written option uses fraction rather than decimal notation."
+          },
+          {
+            "choice": "0.5",
+            "judgment": "supported",
+            "proof": "The option is both decimal notation and the value one half."
+          },
+          {
+            "choice": "0.25",
+            "judgment": "refuted",
+            "proof": "The decimal denotes one quarter, not one half."
+          },
+          {
+            "choice": "0.75",
+            "judgment": "refuted",
+            "proof": "The decimal denotes three quarters, not one half."
+          }
+        ],
+        "choicePairs": [
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "0.5",
+            "relation": "distinct",
+            "proof": "fraction notation for one half versus decimal notation for one half: different content for this task."
+          },
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "0.25",
+            "relation": "distinct",
+            "proof": "fraction notation for one half versus decimal notation for one quarter: different content for this task."
+          },
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "0.75",
+            "relation": "distinct",
+            "proof": "fraction notation for one half versus decimal notation for three quarters: different content for this task."
+          },
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "0.25",
+            "relation": "distinct",
+            "proof": "decimal notation for one half versus decimal notation for one quarter: different content for this task."
+          },
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "0.75",
+            "relation": "distinct",
+            "proof": "decimal notation for one half versus decimal notation for three quarters: different content for this task."
+          },
+          {
+            "leftChoice": "0.25",
+            "rightChoice": "0.75",
+            "relation": "distinct",
+            "proof": "decimal notation for one quarter versus decimal notation for three quarters: different content for this task."
+          }
+        ],
+        "eligible": true
+      }
+    },
+    {
+      "id": "numeric_distinct",
+      "batch": 1,
+      "question": {
+        "prompt": "What is the numerical value of 2 + 2?",
+        "choices": [
+          "4",
+          "2",
+          "5",
+          "3"
+        ],
+        "expectedAnswer": "4"
+      },
+      "provenance": "new distinct counterpart to numeric_word_duplicate",
+      "gold": {
+        "supported_choices": [
+          "4"
+        ],
+        "choices": [
+          {
+            "choice": "4",
+            "judgment": "supported",
+            "proof": "Two plus two is four."
+          },
+          {
+            "choice": "2",
+            "judgment": "refuted",
+            "proof": "Two is not four."
+          },
+          {
+            "choice": "5",
+            "judgment": "refuted",
+            "proof": "Five is not four."
+          },
+          {
+            "choice": "3",
+            "judgment": "refuted",
+            "proof": "Three is not four."
+          }
+        ],
+        "choicePairs": [
+          {
+            "leftChoice": "4",
+            "rightChoice": "2",
+            "relation": "distinct",
+            "proof": "number four versus number two: different content for this task."
+          },
+          {
+            "leftChoice": "4",
+            "rightChoice": "5",
+            "relation": "distinct",
+            "proof": "number four versus number five: different content for this task."
+          },
+          {
+            "leftChoice": "4",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "proof": "number four versus number three: different content for this task."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "5",
+            "relation": "distinct",
+            "proof": "number two versus number five: different content for this task."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "proof": "number two versus number three: different content for this task."
+          },
+          {
+            "leftChoice": "5",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "proof": "number five versus number three: different content for this task."
+          }
+        ],
+        "eligible": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "status": "Offline checks of these fixed fixtures only; no general interpreter/compiler or model judgments",
+  "python": "3.12.11",
+  "fixed_results": {
+    "captured_or_result": {
+      "type": "str",
+      "repr": "'hello'"
+    },
+    "and_result": {
+      "type": "int",
+      "repr": "0"
+    },
+    "python_numeric_aliases": {
+      "type": "int",
+      "repr": "2"
+    },
+    "string_result": {
+      "type": "str",
+      "repr": "'2'"
+    }
+  },
+  "alias_checks": {
+    "zero_equals_false": true,
+    "zero_and_false_exact_types_differ": true,
+    "hex_zero_same_type_and_value": true,
+    "half_exact_decimal_equality": true,
+    "two_plus_two": 4
+  },
+  "gold_replay": [
+    {
+      "id": "captured_or_result",
+      "expected_eligible": true,
+      "actual_gate_reason_with_synthetic_gold": null
+    },
+    {
+      "id": "and_result",
+      "expected_eligible": true,
+      "actual_gate_reason_with_synthetic_gold": null
+    },
+    {
+      "id": "python_numeric_aliases",
+      "expected_eligible": false,
+      "actual_gate_reason_with_synthetic_gold": "solver_equivalent_choices"
+    },
+    {
+      "id": "string_result",
+      "expected_eligible": true,
+      "actual_gate_reason_with_synthetic_gold": null
+    },
+    {
+      "id": "numeric_word_duplicate",
+      "expected_eligible": false,
+      "actual_gate_reason_with_synthetic_gold": "solver_equivalent_choices"
+    },
+    {
+      "id": "fraction_decimal_duplicate",
+      "expected_eligible": false,
+      "actual_gate_reason_with_synthetic_gold": "solver_multiple_supported"
+    },
+    {
+      "id": "decimal_form_task",
+      "expected_eligible": true,
+      "actual_gate_reason_with_synthetic_gold": null
+    },
+    {
+      "id": "numeric_distinct",
+      "expected_eligible": true,
+      "actual_gate_reason_with_synthetic_gold": null
+    }
+  ]
+}

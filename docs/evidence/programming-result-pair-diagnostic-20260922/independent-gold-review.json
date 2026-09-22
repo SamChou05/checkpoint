@@ -1,0 +1,527 @@
+{
+  "reviewer": "choice_semantics",
+  "approved": true,
+  "reviewed_packet": "controls-draft.json",
+  "reviewed_packet_sha256": "2e0d6006cf7ab5371301609ff7bf0a9b029718880fc780c4292c564ce4a9626f",
+  "status": "complete prospective gold review; no provider dispatch",
+  "method": {
+    "read_order": "Projected stems and choices were independently solved before opening the explicit gold. Prior task messages disclosed some expected distinctions and labels.",
+    "fully_blinded": false,
+    "fixed_oracle": "Inspected fixed Python expressions and ast.literal_eval of the four Python cases; exact type plus value comparison. Fraction comparisons for numerical quantity tasks; written form is additionally relevant only for the explicit decimal-notation task. No provider-generated code or arbitrary eval/exec.",
+    "coverage": "Every offered choice and exactly all six unordered pairs per case were checked against independently derived descriptors. All accompanying gold proofs were manually read."
+  },
+  "summary": {
+    "cases": 8,
+    "choice_labels_matching": 32,
+    "choice_labels_total": 32,
+    "pair_labels_matching": 48,
+    "pair_labels_total": 48,
+    "eligible": 5,
+    "defective": 3,
+    "supported_choice_rows": 9,
+    "equivalent_pairs": 3,
+    "distinct_pairs": 45
+  },
+  "cases": [
+    {
+      "id": "captured_or_result",
+      "eligible": true,
+      "supported_choices": [
+        "'hello'"
+      ],
+      "choice_labels": [
+        [
+          "True",
+          "refuted"
+        ],
+        [
+          "'hello'",
+          "supported"
+        ],
+        [
+          "0",
+          "refuted"
+        ],
+        [
+          "False",
+          "refuted"
+        ]
+      ],
+      "choicePairs": [
+        {
+          "leftChoice": "True",
+          "rightChoice": "'hello'",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "True",
+          "rightChoice": "0",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "True",
+          "rightChoice": "False",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "'hello'",
+          "rightChoice": "0",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "'hello'",
+          "rightChoice": "False",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0",
+          "rightChoice": "False",
+          "relation": "distinct"
+        }
+      ],
+      "proof": "or returns the right string operand because integer zero is false-valued. Integer zero and Boolean False remain distinct exact result types despite numeric equality.",
+      "premises_sufficient": true,
+      "material_ambiguity": false,
+      "circularity": false
+    },
+    {
+      "id": "and_result",
+      "eligible": true,
+      "supported_choices": [
+        "0"
+      ],
+      "choice_labels": [
+        [
+          "0",
+          "supported"
+        ],
+        [
+          "False",
+          "refuted"
+        ],
+        [
+          "'0'",
+          "refuted"
+        ],
+        [
+          "None",
+          "refuted"
+        ]
+      ],
+      "choicePairs": [
+        {
+          "leftChoice": "0",
+          "rightChoice": "False",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0",
+          "rightChoice": "'0'",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0",
+          "rightChoice": "None",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "False",
+          "rightChoice": "'0'",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "False",
+          "rightChoice": "None",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "'0'",
+          "rightChoice": "None",
+          "relation": "distinct"
+        }
+      ],
+      "proof": "and returns the false-valued left operand, integer zero. This is distinct from Boolean False, the string '0', and None.",
+      "premises_sufficient": true,
+      "material_ambiguity": false,
+      "circularity": false
+    },
+    {
+      "id": "python_numeric_aliases",
+      "eligible": false,
+      "supported_choices": [
+        "2"
+      ],
+      "choice_labels": [
+        [
+          "2",
+          "supported"
+        ],
+        [
+          "0",
+          "refuted"
+        ],
+        [
+          "0x0",
+          "refuted"
+        ],
+        [
+          "3",
+          "refuted"
+        ]
+      ],
+      "choicePairs": [
+        {
+          "leftChoice": "2",
+          "rightChoice": "0",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "0x0",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "3",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0",
+          "rightChoice": "0x0",
+          "relation": "equivalent"
+        },
+        {
+          "leftChoice": "0",
+          "rightChoice": "3",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0x0",
+          "rightChoice": "3",
+          "relation": "distinct"
+        }
+      ],
+      "proof": "3-1 returns integer two. Both wrong alternatives 0 and 0x0 denote the same integer zero, so the question fails option diversity despite a unique correct answer.",
+      "premises_sufficient": true,
+      "material_ambiguity": false,
+      "circularity": false
+    },
+    {
+      "id": "string_result",
+      "eligible": true,
+      "supported_choices": [
+        "'2'"
+      ],
+      "choice_labels": [
+        [
+          "'2'",
+          "supported"
+        ],
+        [
+          "'two'",
+          "refuted"
+        ],
+        [
+          "2",
+          "refuted"
+        ],
+        [
+          "'3'",
+          "refuted"
+        ]
+      ],
+      "choicePairs": [
+        {
+          "leftChoice": "'2'",
+          "rightChoice": "'two'",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "'2'",
+          "rightChoice": "2",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "'2'",
+          "rightChoice": "'3'",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "'two'",
+          "rightChoice": "2",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "'two'",
+          "rightChoice": "'3'",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "'3'",
+          "relation": "distinct"
+        }
+      ],
+      "proof": "str(2) returns the one-character string '2'. The integer 2 and strings 'two'/'3' are distinct proposed results.",
+      "premises_sufficient": true,
+      "material_ambiguity": false,
+      "circularity": false
+    },
+    {
+      "id": "numeric_word_duplicate",
+      "eligible": false,
+      "supported_choices": [
+        "4"
+      ],
+      "choice_labels": [
+        [
+          "4",
+          "supported"
+        ],
+        [
+          "2",
+          "refuted"
+        ],
+        [
+          "two",
+          "refuted"
+        ],
+        [
+          "3",
+          "refuted"
+        ]
+      ],
+      "choicePairs": [
+        {
+          "leftChoice": "4",
+          "rightChoice": "2",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "4",
+          "rightChoice": "two",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "4",
+          "rightChoice": "3",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "two",
+          "relation": "equivalent"
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "3",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "two",
+          "rightChoice": "3",
+          "relation": "distinct"
+        }
+      ],
+      "proof": "2 + 2 equals 4. Wrong alternatives 2 and the unquoted number word two denote the same quantity, so the choices are not meaningfully diverse.",
+      "premises_sufficient": true,
+      "material_ambiguity": false,
+      "circularity": false
+    },
+    {
+      "id": "fraction_decimal_duplicate",
+      "eligible": false,
+      "supported_choices": [
+        "1/2",
+        "0.5"
+      ],
+      "choice_labels": [
+        [
+          "1/2",
+          "supported"
+        ],
+        [
+          "0.5",
+          "supported"
+        ],
+        [
+          "0.25",
+          "refuted"
+        ],
+        [
+          "0.75",
+          "refuted"
+        ]
+      ],
+      "choicePairs": [
+        {
+          "leftChoice": "1/2",
+          "rightChoice": "0.5",
+          "relation": "equivalent"
+        },
+        {
+          "leftChoice": "1/2",
+          "rightChoice": "0.25",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "1/2",
+          "rightChoice": "0.75",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0.5",
+          "rightChoice": "0.25",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0.5",
+          "rightChoice": "0.75",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0.25",
+          "rightChoice": "0.75",
+          "relation": "distinct"
+        }
+      ],
+      "proof": "Both 1/2 and 0.5 denote the requested numerical value one half. They are equivalent and both supported; quarter and three quarters are distinct wrong values.",
+      "premises_sufficient": true,
+      "material_ambiguity": false,
+      "circularity": false
+    },
+    {
+      "id": "decimal_form_task",
+      "eligible": true,
+      "supported_choices": [
+        "0.5"
+      ],
+      "choice_labels": [
+        [
+          "1/2",
+          "refuted"
+        ],
+        [
+          "0.5",
+          "supported"
+        ],
+        [
+          "0.25",
+          "refuted"
+        ],
+        [
+          "0.75",
+          "refuted"
+        ]
+      ],
+      "choicePairs": [
+        {
+          "leftChoice": "1/2",
+          "rightChoice": "0.5",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "1/2",
+          "rightChoice": "0.25",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "1/2",
+          "rightChoice": "0.75",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0.5",
+          "rightChoice": "0.25",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0.5",
+          "rightChoice": "0.75",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "0.25",
+          "rightChoice": "0.75",
+          "relation": "distinct"
+        }
+      ],
+      "proof": "The task explicitly requests decimal notation. 0.5 uniquely satisfies both form and value; 1/2 has the right value but the wrong requested written form. All six proposed task-relative answers are distinct.",
+      "premises_sufficient": true,
+      "material_ambiguity": false,
+      "circularity": false
+    },
+    {
+      "id": "numeric_distinct",
+      "eligible": true,
+      "supported_choices": [
+        "4"
+      ],
+      "choice_labels": [
+        [
+          "4",
+          "supported"
+        ],
+        [
+          "2",
+          "refuted"
+        ],
+        [
+          "5",
+          "refuted"
+        ],
+        [
+          "3",
+          "refuted"
+        ]
+      ],
+      "choicePairs": [
+        {
+          "leftChoice": "4",
+          "rightChoice": "2",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "4",
+          "rightChoice": "5",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "4",
+          "rightChoice": "3",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "5",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "3",
+          "relation": "distinct"
+        },
+        {
+          "leftChoice": "5",
+          "rightChoice": "3",
+          "relation": "distinct"
+        }
+      ],
+      "proof": "2 + 2 equals 4, and the wrong quantities 2, 5, 3 are mutually distinct.",
+      "premises_sufficient": true,
+      "material_ambiguity": false,
+      "circularity": false
+    }
+  ],
+  "concrete_flaws": [],
+  "limits": [
+    "This is a small targeted diagnostic containing a familiar captured case and newly drafted matched controls, not an independent sample of production questions.",
+    "Shared stems and notation variants can influence cross-item judgments; the review does not establish a model causal effect or generalization rate.",
+    "The review approves literal task/choice gold, not provider structure, reasoning quality, difficulty or whole-worker yield.",
+    "No controls, candidate prompt, runtime, prior evidence or provider state changed."
+  ],
+  "references": [
+    "https://docs.python.org/3/reference/expressions.html",
+    "https://docs.python.org/3/library/stdtypes.html#boolean-operations-and-or-not"
+  ]
+}
