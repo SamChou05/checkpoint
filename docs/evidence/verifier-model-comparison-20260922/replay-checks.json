@@ -1,0 +1,13 @@
+{
+  "plan_sha256": "97e0c4882d6706d0f9725b61921ed727d5df5cc5557eb37b2714e181b11da28d",
+  "capture_sha256": "7885bcfc1d09ea40dccbde4ccdb1ffe17c0305b3706b26407aae34284e71e93c",
+  "network_calls": 0,
+  "sources_match_frozen_plan": true,
+  "exact_plan_rebuilt": true,
+  "exact_requests_and_assessments_replayed": 4,
+  "model_id_only_paired_request_delta": true,
+  "three_second_connect_75_second_read_sdk_one_attempt": true,
+  "native_and_exact_local_coverage_valid_responses": 4,
+  "original_gold_packet_unchanged": true,
+  "scope": "Deterministic application assessment replay; no new evidence of semantic correctness."
+}

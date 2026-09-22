@@ -1,0 +1,284 @@
+{
+  "plan_sha256": "97e0c4882d6706d0f9725b61921ed727d5df5cc5557eb37b2714e181b11da28d",
+  "capture_sha256": "7885bcfc1d09ea40dccbde4ccdb1ffe17c0305b3706b26407aae34284e71e93c",
+  "status": "complete_pending_manual_audit",
+  "planned_calls": 4,
+  "actual_calls": 4,
+  "planned_item_assessments": 12,
+  "arms": {
+    "sonnet": {
+      "planned_calls": 2,
+      "attempted_calls": 2,
+      "planned_items": 6,
+      "structurally_assessed_items": 6,
+      "matching_dispositions": 4,
+      "bad_items_correctly_rejected_of_2": 0,
+      "valid_items_retained_of_4": 4,
+      "valid_items_with_exact_key_of_4": 4,
+      "valid_controls_meeting_separate_difficulty2_floor_of_4": 3,
+      "positive_local_validation_pass": 6,
+      "provider_errors": [],
+      "validation_errors": [],
+      "stop_reasons": [
+        "end_turn",
+        "end_turn"
+      ],
+      "elapsed_seconds": 18.425,
+      "maximum_call_seconds": 9.898,
+      "reported_usage": {
+        "inputTokens": 5170,
+        "outputTokens": 1443,
+        "totalTokens": 6613,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "usage_unknown_calls": 0
+    },
+    "opus": {
+      "planned_calls": 2,
+      "attempted_calls": 2,
+      "planned_items": 6,
+      "structurally_assessed_items": 6,
+      "matching_dispositions": 4,
+      "bad_items_correctly_rejected_of_2": 0,
+      "valid_items_retained_of_4": 4,
+      "valid_items_with_exact_key_of_4": 4,
+      "valid_controls_meeting_separate_difficulty2_floor_of_4": 3,
+      "positive_local_validation_pass": 6,
+      "provider_errors": [],
+      "validation_errors": [],
+      "stop_reasons": [
+        "end_turn",
+        "end_turn"
+      ],
+      "elapsed_seconds": 22.58,
+      "maximum_call_seconds": 12.741,
+      "reported_usage": {
+        "inputTokens": 5170,
+        "outputTokens": 1323,
+        "totalTokens": 6493,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "usage_unknown_calls": 0
+    }
+  },
+  "paired": {
+    "bus_multiple_supported": {
+      "sonnet": {
+        "case_id": "bus_multiple_supported",
+        "valid": true,
+        "gold_eligible": false,
+        "matching_disposition": false,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": false,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 3,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      },
+      "opus": {
+        "case_id": "bus_multiple_supported",
+        "valid": true,
+        "gold_eligible": false,
+        "matching_disposition": false,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": false,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 2,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      }
+    },
+    "semicolon_multiple_defensible": {
+      "sonnet": {
+        "case_id": "semicolon_multiple_defensible",
+        "valid": true,
+        "gold_eligible": false,
+        "matching_disposition": false,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": false,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 2,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      },
+      "opus": {
+        "case_id": "semicolon_multiple_defensible",
+        "valid": true,
+        "gold_eligible": false,
+        "matching_disposition": false,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": false,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 2,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      }
+    },
+    "fuel_unique_control": {
+      "sonnet": {
+        "case_id": "fuel_unique_control",
+        "valid": true,
+        "gold_eligible": true,
+        "matching_disposition": true,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": true,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 1,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      },
+      "opus": {
+        "case_id": "fuel_unique_control",
+        "valid": true,
+        "gold_eligible": true,
+        "matching_disposition": true,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": true,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 1,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      }
+    },
+    "paint_feedback": {
+      "sonnet": {
+        "case_id": "paint_feedback",
+        "valid": true,
+        "gold_eligible": true,
+        "matching_disposition": true,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": true,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 2,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      },
+      "opus": {
+        "case_id": "paint_feedback",
+        "valid": true,
+        "gold_eligible": true,
+        "matching_disposition": true,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": true,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 2,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      }
+    },
+    "population_feedback": {
+      "sonnet": {
+        "case_id": "population_feedback",
+        "valid": true,
+        "gold_eligible": true,
+        "matching_disposition": true,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": true,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 2,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      },
+      "opus": {
+        "case_id": "population_feedback",
+        "valid": true,
+        "gold_eligible": true,
+        "matching_disposition": true,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": true,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 2,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      }
+    },
+    "weighted_grade_control": {
+      "sonnet": {
+        "case_id": "weighted_grade_control",
+        "valid": true,
+        "gold_eligible": true,
+        "matching_disposition": true,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": true,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 2,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      },
+      "opus": {
+        "case_id": "weighted_grade_control",
+        "valid": true,
+        "gold_eligible": true,
+        "matching_disposition": true,
+        "semantic_feedback_audit": "pending",
+        "exact_gold_key": true,
+        "exact_feedback_coverage": true,
+        "feedback_within_bounds": true,
+        "answer_display_references": false,
+        "difficulty": 2,
+        "difficulty_type_and_range": true,
+        "local_positive_validation_pass": true
+      }
+    }
+  },
+  "manual_audit": "Completed independently for all12 reviews and60 explanation strings; see independent-output-audit.json.",
+  "formal_qualification": "failed for both models",
+  "limitation": "Six reused diagnostic cases in two3-item batches per model; no new solver/author calls or worker yield measurement. No general quality, determinism, diversity or latency distribution claim.",
+  "independent_output_audit_sha256": "444e98325b7bf462cb6cc25d9415ee1d60e457c0d01689120a5628e384ef84a2",
+  "independent_content_summary": {
+    "sonnet": {
+      "items": 6,
+      "matching_dispositions": 4,
+      "known_bad_correctly_rejected": 0,
+      "known_bad_total": 2,
+      "valid_controls_retained_with_exact_key": 4,
+      "valid_controls_total": 4,
+      "full_content_pass": 1,
+      "full_content_fail": 4,
+      "full_content_uncertain_counted_as_failure": 1,
+      "explanation_strings_audited": 30,
+      "all_six_content_and_decision_criteria_pass": false,
+      "operational_calls_pass": 2,
+      "qualification": false
+    },
+    "opus": {
+      "items": 6,
+      "matching_dispositions": 4,
+      "known_bad_correctly_rejected": 0,
+      "known_bad_total": 2,
+      "valid_controls_retained_with_exact_key": 4,
+      "valid_controls_total": 4,
+      "full_content_pass": 2,
+      "full_content_fail": 4,
+      "full_content_uncertain_counted_as_failure": 0,
+      "explanation_strings_audited": 30,
+      "all_six_content_and_decision_criteria_pass": false,
+      "operational_calls_pass": 2,
+      "qualification": false
+    }
+  }
+}

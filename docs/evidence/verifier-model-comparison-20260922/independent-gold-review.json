@@ -1,0 +1,86 @@
+{
+  "approved": true,
+  "reviewed_packet_sha256": "bc56208f602220feb86a262a53ac6c6125fce8a5dc8ef0866780a63258492aed",
+  "reviewer": "answer_highlighting independent subagent",
+  "review_type": "Prospective gold and historical-input fidelity review; no provider calls",
+  "required_pre_freeze_corrections": [],
+  "provenance_checks": {
+    "source_capture_sha256s_verified": true,
+    "all_six_historical_item_objects_exact": true,
+    "all_six_historical_solution_objects_exact": true,
+    "method": "Compare each case to its indexed historical default_reviewer_v1 request; no reconstruction from later reviewer feedback. The planned batch-local index change is not applied in this gold review."
+  },
+  "cases": [
+    {
+      "case_id": "bus_multiple_supported",
+      "gold_approved": true,
+      "decision": "reject",
+      "independent_reason": "Both 25 and 26 rides satisfy the strict inequality 2.50*n > 60. The conventional minimum interpretation would select 25, but minimum is absent from the unchanged stem. The question therefore fails a unique-answer guarantee under the prospective no-silent-repair criterion.",
+      "arithmetic": {
+        "25_rides_cost": "62.50",
+        "26_rides_cost": "65.00",
+        "24_rides_cost": "60.00",
+        "23_rides_cost": "57.50"
+      },
+      "historical_solver_issue": "The 26-rides refutation silently substitutes a threshold/minimum task for the written task.",
+      "interpretive_limit": "This is an underspecified-question control, not a claim that readers never pragmatically infer minimum."
+    },
+    {
+      "case_id": "semicolon_multiple_defensible",
+      "gold_approved": true,
+      "decision": "reject",
+      "independent_reason": "The offered semicolon-before-however construction is valid. A comma-delimited however may instead attach to the preceding independent clause, followed by a semicolon before the second independent clause. The stem does not prohibit that attachment or specify a house style. Thus the presumed unique answer is not securely established.",
+      "primary_source": {
+        "title": "Bruce Aune, Punctuation and Syntax",
+        "url": "https://cse.buffalo.edu/~rapaport/Papers/Papers.by.Others/aune01-punctuation.pdf",
+        "location": "Printed page 5, rule R2 and the example attaching however to the first clause.",
+        "supports": "The conjunctive adverb may attach to either independent clause; the clauses remain separated by a semicolon."
+      },
+      "historical_solver_issue": "The absolute statement that however requires a preceding semicolon and a following comma excludes a documented valid attachment.",
+      "interpretive_limit": "The fourth semicolon-and choice is unnecessary to the rejection proof; no definitive assessment of that extra style-sensitive option is required to establish this gold disposition."
+    },
+    {
+      "case_id": "fuel_unique_control",
+      "gold_approved": true,
+      "decision": "retain",
+      "answer": "30 mpg",
+      "independent_reason": "240 miles divided by 8 gallons is exactly 30 miles/gallon. All four numeric rates are different and the other three are wrong for the stated trip.",
+      "feedback_checks": "1920 is the numerical product 240*8, not the quotient requested. A diagnosis for 28 or 32 must not invent a calculation."
+    },
+    {
+      "case_id": "paint_feedback",
+      "gold_approved": true,
+      "decision": "retain_with_sound_feedback",
+      "answer": "10 liters",
+      "independent_reason": "15 liters blue corresponds to five groups of 3 liters blue, so white is five groups of 2 liters, or 10 liters. All offered quantities are different.",
+      "feedback_checks": "15:9 reduces to 5:3, not 3:3 or 1:1. 15:6 is 5:2; 15:22.5 is 2:3. The 22.5 calculation reverses the required factor.",
+      "historical_solver_issue": "The 9-liter refutation has the right false judgment but an arithmetically false equal-parts explanation. Sound final teaching must not copy it."
+    },
+    {
+      "case_id": "population_feedback",
+      "gold_approved": true,
+      "decision": "retain_with_sound_feedback",
+      "answer": "15%",
+      "independent_reason": "The total increase is 12000 divided by the original population 80000, which is 15%. The stem asks for total increase rather than an annualized rate. All numeric percentages are distinct.",
+      "feedback_checks": "12000/92000 is about 13.043%, and 12000/12000 is 100%; neither is 17.4%. 12000/69000 is about 17.391%, but 69000 is not supplied by the problem. A hypothetical mistaken base must not be presented as a fact or as the necessary cause of choosing 17.4%."
+    },
+    {
+      "case_id": "weighted_grade_control",
+      "gold_approved": true,
+      "decision": "retain",
+      "answer": "78.4",
+      "independent_reason": "0.30*84+0.70*76 = 25.2+53.2 = 78.4. All offered numbers are distinct. 80.0 uses equal weights, 82.4 uses 80/20 weights, and 79.2 uses 40/60 weights; none matches the stated 30/70 weights.",
+      "feedback_checks": "Reversing the stated weights gives 81.6, not 82.4. A claim that 79.2 follows from no standard weighting is overbroad. Historical solver choice-letter references are not stable identities and should not enter final feedback."
+    }
+  ],
+  "packet_scope_limits": [
+    "These six reused diagnostic items are not unseen holdouts, and they were selected because earlier outcomes were informative.",
+    "The four valid controls are numeric application questions. This packet does not qualify general grammar coverage, duplicate-choice detection, authorship quality, or fresh full-pipeline yield.",
+    "The two rejection controls test nonunique or materially underspecified questions. A negative output with correct identity establishes matching disposition only; it does not expose a defect-specific rationale.",
+    "Historical solver errors and stale position labels remain intentional input challenges, not gold statements. Passing requires sound independently audited final explanations and all choice feedback.",
+    "The full qualification threshold is prospective all-six content/decision checks plus operational checks. Correct keys alone cannot constitute a pass.",
+    "This review approves the packet labels and counterexamples. It does not certify modelId-only isolation in a runner or request plan not yet frozen."
+  ],
+  "no_changes_to_old_evidence": true,
+  "no_provider_calls": true
+}
