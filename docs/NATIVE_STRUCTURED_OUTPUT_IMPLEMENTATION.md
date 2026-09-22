@@ -31,7 +31,8 @@ solver and reviewer families, including the opt-in immutable-main audit:
 | `default_reviewer_v1` | Retained explicit native contract and legacy routing identity: verdict, exact answer, assessed difficulty, main explanation and provider-only choiceFeedback rows. |
 | `default_reviewer_v2` | Inactive experiment with separate accepted/rejected union branches; failed valid-control retention. |
 | `authored_solution_reviewer_v1` | Retained legacy authored-teaching audit; cannot replace the author's teaching. |
-| `authored_solution_reviewer_v2_n{count}` | Opt-in native authored-solution audit after the v5 pair solver: required dense count-bound review map with shared row references, key/support/difficulty/issues verdicts and no replacement teaching. Assigns policy 7 only after both gates pass; live qualification is pending. |
+| `authored_solution_reviewer_v2_n{count}` | Retained historical count-bound immutable-main contract with free issue strings. |
+| `authored_solution_reviewer_v3_n{count}` | Current opt-in immutable-main audit: six required Boolean issue flags and bounded difficulty replace free issue strings. Reviews every dense surviving prose or compiled row, cannot replace teaching, and retains all existing vetoes. Prose earns 7 after v5 solving; exact privately proved compiler rows skip solving and earn 8 after this audit. |
 | `default_reviewer_v3_n{count}` | Current native final review: required object keys bind every dense post-solver item, including rejections. Trusted count is 1–40; no model-written index. Feedback fields and admission checks remain v1-compatible. |
 
 Historical schema bytes remain stable. V3 serialization deliberately preserves
@@ -58,7 +59,10 @@ model-authored text. All map keys and inner rows must validate before any index
 is restored. This transport version adds no provider stage or verification-policy
 revision on the reviewer-written path and leaves legacy routing unchanged. The
 separate opt-in native authored-solution integration now uses this solver and the
-new v2 immutable-main audit; its retained v1 schemas/prompts remain byte-identical.
+current v3 immutable-main audit; its retained historical schemas/prompts remain
+byte-identical. In native mixed authored-solution mode, compiler-proved rows are
+excluded from solver input and included in final review. Only prose contributes
+to the solver count; the audit count includes all actual survivors.
 
 V5 shares the solution, choice-judgment and pair-relation schemas through internal
 `$defs`/`$ref` references. Local validation still uses the expanded schema. For
@@ -83,7 +87,9 @@ remains unchanged evidence; it does not authorize switching production to v2.
 Public response shape and wire verification version remain 1. Legacy
 complete-choice verification earns policy 2, legacy authored teaching earns 3,
 and the complete native slot/pair path followed by successful reviewer-written
-feedback earns 4. The compiled quantitative route earns 6; native authored
+feedback earns 4. Reviewer-written compiled content retains 6; compiler-proved
+content that skips model solving and passes the immutable-main audit earns 8.
+Native authored
 main teaching earns 7 only after the complete pair/count gate and immutable-main
 audit. Revision minimums are freshness thresholds, not cumulative capabilities: a
 revision-7 question satisfies minimum 6 without claiming compiler provenance.

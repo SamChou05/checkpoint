@@ -192,6 +192,14 @@ class SynchronousSmokeTests(unittest.TestCase):
         self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=7)], arguments=("--minimum-policy-revision", "6"))[0], 0)
         self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=4)])[0], 0)
 
+    def test_compiled_proof_policy_is_explicit_and_defaults_stay_four(self):
+        args = ("--minimum-policy-revision", "8")
+        self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=8)], arguments=args)[0], 0)
+        for older in (4, 6, 7):
+            self.assertNotEqual(self.run_smoke([self.question(verificationPolicyRevision=older)], arguments=args)[0], 0)
+        self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=8)], arguments=("--minimum-policy-revision", "7"))[0], 0)
+        self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=4)])[0], 0)
+
     def test_invalid_cli_policy_fails_without_request_or_configuration_access(self):
         for value in ("0", "-1", "true", str(MAX_SUPPORTED_VERIFICATION_POLICY_REVISION + 1)):
             with (

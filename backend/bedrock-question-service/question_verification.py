@@ -26,6 +26,7 @@ from service_errors import ProviderError
 from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
 from verification_policy import (
     COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION,
+    COMPILED_PROOF_VERIFICATION_POLICY_REVISION,
     AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION,
     AUTHORED_PAIR_VERIFICATION_POLICY_REVISION,
     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION,
@@ -299,26 +300,37 @@ def verify_questions(
         for entry in history
     ] if authored_solution else history
     data["items"] = items
-    if solve is not None:
+    # Only a private, freshly revalidated compiler sidecar establishes the
+    # complete bounded mathematical task. The immutable-main route can use
+    # that proof instead of asking a model to repeat arithmetic/pair judgments.
+    # Prose and the historical reviewer-written compiled route keep their solver.
+    compiled_proof_indexes = {
+        index for index, provenance in enumerate(trusted_compiled)
+        if authored_solution and choice_slots and provenance is not None
+    }
+    solver_original_indexes = [index for index in range(len(items)) if index not in compiled_proof_indexes]
+    solver_items = [{**items[original_index], "index": index}
+                    for index, original_index in enumerate(solver_original_indexes)]
+    if solve is not None and solver_items:
         if complete_choices:
             try:
                 solution_system, solution_prompt = build_solver_prompt(
-                    items, request, audit_choice_pairs=audit_choice_pairs,
+                    solver_items, request, audit_choice_pairs=audit_choice_pairs,
                     choice_slots=choice_slots,
                 )
             except CompleteSolutionFormatError:
-                record_quality(request_metrics, "review", "invalid_solution", len(items))
+                record_quality(request_metrics, "review", "invalid_solution", len(solver_items))
                 return []
             # This cardinality comes from the validated, dense solver input,
             # before any solver judgments filter it. Never use targetCount or
             # recover identity from learner text or a model-authored response.
             solution_raw = (
-                solve_with_count(solution_system, solution_prompt, len(items))
+                solve_with_count(solution_system, solution_prompt, len(solver_items))
                 if solve_with_count is not None else solve(solution_system, solution_prompt)
             )
             try:
                 solutions = validate_batch(
-                    solution_raw, items, audit_choice_pairs=audit_choice_pairs,
+                    solution_raw, solver_items, audit_choice_pairs=audit_choice_pairs,
                     choice_slots=choice_slots,
                 )
             except CompleteSolutionFormatError:
@@ -341,11 +353,15 @@ def verify_questions(
             )
             solutions = _validated_solutions(solution_raw, len(items))
         if solutions is None:
-            record_quality(request_metrics, "review", "invalid_solution", len(items))
-            return []
+            record_quality(request_metrics, "review", "invalid_solution", len(solver_items))
+            if not compiled_proof_indexes:
+                return []
+            # No malformed model row receives credit. Independently proved
+            # compiler rows still require the same final audit below.
+            solutions = []
         supported = []
         for solution in solutions:
-            question = questions[solution["index"]]
+            question = questions[solver_original_indexes[solution["index"]]]
             reason = (
                 complete_solution_rejection_reason(
                     solution, question, audit_choice_pairs=audit_choice_pairs,
@@ -355,11 +371,13 @@ def verify_questions(
                 supported.append(solution)
             else:
                 record_quality(request_metrics, "review", reason)
-        if not supported:
+        if not supported and not compiled_proof_indexes:
             return []
-        # Keep the original indexes until both independently created payloads
-        # have been reconciled. Unsupported items cannot be rescued by options.
-        supported_indexes = {item["index"] for item in supported}
+        # Map dense prose solver identities back before any final filtering.
+        # Compiler rows never receive synthetic model judgments or reasons.
+        supported_indexes = compiled_proof_indexes | {
+            solver_original_indexes[item["index"]] for item in supported
+        }
         questions = [
             question
             for index, question in enumerate(questions)
@@ -368,11 +386,11 @@ def verify_questions(
         trusted_compiled = [provenance for index, provenance in enumerate(trusted_compiled)
                             if index in supported_indexes]
         data["items"] = [item for item in items if item["index"] in supported_indexes]
-        for new_index, (item, solution) in enumerate(
-            zip(data["items"], supported, strict=True)
-        ):
+        review_indexes = {original_index: index for index, original_index in enumerate(sorted(supported_indexes))}
+        for new_index, item in enumerate(data["items"]):
             item["index"] = new_index
-            solution["index"] = new_index
+        for solution in supported:
+            solution["index"] = review_indexes[solver_original_indexes[solution["index"]]]
         solutions = supported
         if not authored_solution:
             # Pair judgments decide eligibility locally. Keep the final review's
@@ -541,7 +559,10 @@ def verify_questions(
             # The reviewer may veto or rate this item but its new prose cannot
             # overwrite any of the compiler-derived learner fields.
             verified_question.update(compiled_content)
-            verified_question["verificationPolicyRevision"] = COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION
+            verified_question["verificationPolicyRevision"] = (
+                COMPILED_PROOF_VERIFICATION_POLICY_REVISION if authored_solution
+                else COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION
+            )
         accepted.append(verified_question)
         record_quality(request_metrics, "review", "accepted")
     return accepted

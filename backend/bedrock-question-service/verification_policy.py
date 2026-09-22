@@ -18,8 +18,14 @@ bounded compiler data. Mathematical guarantees apply only to that closed subset;
 scope, difficulty, novelty and distractor usefulness remain model assessments.
 Revision 7 identifies native complete-pair, count-bound solving followed by an
 immutable authored-main audit. It returns no choice-specific teaching. It does
-not imply compiled provenance from revision 6; require exact revision 6 for that
-mode. Policy minimums are freshness thresholds, not cumulative capabilities.
+not imply compiled provenance from revision 6; require an explicit compiled
+revision rather than a numeric minimum for that capability.
+Revision 8 identifies revalidated compiler-owned five-field content followed by
+an immutable-main final audit for teaching, scope, difficulty, novelty and
+distractor quality. Code proves the bounded mathematical key and distinctness;
+no model correctness/pair solver runs for those rows. Prose retains revision 7
+and its unchanged blind solver. Revision 6 keeps its historical model-solver
+promise. Policy minimums are freshness thresholds, not cumulative capabilities.
 """
 
 from typing import Any
@@ -33,7 +39,8 @@ DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION = 4
 VERIFICATION_POLICY_REVISION = DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION
 COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION = 6
 AUTHORED_PAIR_VERIFICATION_POLICY_REVISION = 7
-MAX_SUPPORTED_VERIFICATION_POLICY_REVISION = AUTHORED_PAIR_VERIFICATION_POLICY_REVISION
+COMPILED_PROOF_VERIFICATION_POLICY_REVISION = 8
+MAX_SUPPORTED_VERIFICATION_POLICY_REVISION = COMPILED_PROOF_VERIFICATION_POLICY_REVISION
 
 
 def meets_verification_policy(question: dict[str, Any], minimum: int) -> bool:

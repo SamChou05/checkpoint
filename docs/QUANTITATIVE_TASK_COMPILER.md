@@ -82,7 +82,7 @@ are shown in dependency order; different calculations that happen to produce the
 same value are never merged. The complete main must still fit **420 characters**.
 Longer valid expressions fail with `learner_text_limit`: no clipped proof,
 omitted operation or answer-only fallback is emitted. This can lower yield for
-large or deeply nested expressions. It does not loosen the independent solver
+large or deeply nested expressions. It does not loosen the prose solver
 or audit, and does not establish a difficulty or pedagogical-sufficiency guarantee
 for every accepted expression. Historical specs, captures and stored learner
 content are not rewritten.
@@ -163,11 +163,16 @@ source rows through sanitization, duplicate removal, immutable freezing, solver 
 review reindexing. No prompt, content digest, normalized answer or model identity
 is used to join provenance. The sanitizer checks all five fields against a fresh
 compilation and preserves exact choice order, main and per-choice feedback.
-The existing answer-blind fixed-slot solver still vetoes incorrect/duplicate
-choices; the reviewer still vetoes, agrees with the exact key and assesses
-requested difficulty, scope and novelty. These stages may falsely reject sound
-compiled questions. In reviewer-written mode, generated reviewer feedback is
+In reviewer-written mode, the existing answer-blind fixed-slot solver still
+vetoes incorrect/duplicate choices, and generated reviewer feedback is
 structurally checked but discarded for compiled rows. In authored-solution mode,
+only exact privately revalidated compiler rows skip model correctness/pair
+solving: the compiler already establishes the complete bounded mathematical
+task, one offered key and four distinct values. Prose retains its unchanged
+answer-blind solver. Every surviving row still receives final review for exact
+key agreement, requested difficulty, scope, novelty and distractor usefulness.
+That review remains fallible and can falsely reject sound compiled content.
+In authored-solution mode,
 the count-bound immutable-main audit receives the exact compiled or authored
 main explanation, without keys, solver judgments or choice feedback. It cannot
 produce replacement teaching. All four compiler-derived choice explanations
@@ -175,15 +180,18 @@ remain protected by exact local recompilation.
 
 Immediately before release, the same trusted specification is recompiled and
 all five learner fields must still match. Those exact compiler fields replace
-any intermediate content; only this route assigns policy revision **6**. This
-guarantee is exact compiler-owned content plus the existing independent gates,
-not the unused model-written feedback. Ordinary native rows receive revision 4
+any intermediate content. Reviewer-written mode retains policy revision **6**
+and its historical model-solver promise. Authored-solution mode assigns the new
+policy revision **8** only after local compiler proof and the unchanged immutable
+main audit pass. Revision 8 does not claim that a model repeated the arithmetic
+or pair comparisons; compiler-owned feedback remains exact. Ordinary native rows receive revision 4
 with reviewer-written feedback, or revision 7 with an unchanged authored main
-and empty choice feedback. Maximum explicitly requestable policy is 7, while
+and empty choice feedback. Maximum explicitly requestable policy is 8, while
 the current server default remains 4 and the client minimum remains 2.
-Stored legacy inventory is never promoted or relabeled. Revision 6 identifies
-this bounded mathematical guarantee plus existing model gates; it does not
-certify that a generated item teaches a requested nonmathematical objective.
+Stored legacy inventory is never promoted or relabeled. Revisions are freshness
+thresholds, not cumulative capabilities: use the explicit compiled revisions
+(6 or 8), not a numeric minimum, when identifying that provenance. Neither
+revision certifies that the item teaches a requested nonmathematical objective.
 
 Only a real private `CompiledCandidate` whose freshly generated five fields
 match may carry nonempty choice feedback through immutable freezing. Prose
@@ -192,9 +200,19 @@ question and its sidecar are filtered together; a rejected row cannot lend its
 provenance to a following prose row. Ordinary main text is preserved rather than
 normalized or clipped. The final audit can veto either type but cannot rewrite it.
 
-One complete pass still has exactly three provider stages: mixed author, existing
-v5 solver, and the selected count-bound reviewer or immutable-main audit. The worker still has six calls total and its existing
-deadline. No new model, reviewer stage, fallback permission, quota or global
+A reviewer-written pass still has three provider stages. An authored-solution
+pass uses mixed author, v5 solver for prose only, and the count-bound final audit
+for all survivors. An all-compiled pass needs two calls; a mixed pass needs three.
+Zero survivors skip the final audit. Counts come from the actual dense input of
+each stage, and private source sidecars stay aligned across both filters. A
+malformed returned prose solver batch cannot credit prose; independently proved
+compiled rows still need final review. Provider/native-adapter errors retain
+their existing failure and partial-return behavior. Before starting any author
+pass, the unchanged preflight requires three calls remaining because the next
+variant mix is unknown. Thus a two-call compiled pass plus a three-call prose
+top-up uses five calls and cannot start a further pass with one call remaining.
+The worker still has six calls total and its existing deadline. No new model,
+reviewer stage, fallback permission, quota or global
 quality floor is introduced. Unsupported subjects use the prose variant; typed
 spec failures do not authorize reuse of an invalid task's content as prose.
 

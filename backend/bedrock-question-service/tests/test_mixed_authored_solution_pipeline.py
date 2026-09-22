@@ -12,7 +12,7 @@ from lambda_test_support import _raw_question, _request_payload
 from quantitative_authoring import CompiledCandidate, LEARNER_FIELDS, MIXED_AUTHOR_CONTRACT, prepare_mixed_rows
 from question_quality import _sanitize_questions
 from question_teaching import AuthoredTeachingFormatError, freeze_authored_question
-from service_errors import DurableProviderCallBudgetExceededError, ProviderError, ServiceConfigurationError
+from service_errors import DurableProviderCallBudgetExceededError, ProviderCallBudgetExceededError, ProviderError, ServiceConfigurationError
 from request_contract import _normalize_request
 from test_mixed_quantitative_pipeline import prose_row
 from test_native_pipeline import MODEL, ScriptedNativeClient, authored_issue_flags, solver_map, solver_record, task_data
@@ -40,9 +40,11 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
         return _normalize_request(raw)
 
     def client(self, rows, *, solver_count=None, solver_reject=(), review_change=None, pair_change=None):
-        prepared, _, _ = prepare_mixed_rows({"questions": rows})
+        prepared, compiled, _ = prepare_mixed_rows({"questions": rows})
         by_prompt = {item["prompt"]: item for item in prepared if item}
-        solver_count = solver_count if solver_count is not None else len(by_prompt)
+        compiled_prompts = {value.content()["prompt"] for value in compiled.values()}
+        solver_count = solver_count if solver_count is not None else len(set(by_prompt) - compiled_prompts)
+        audit_count = len(compiled_prompts) + (0 if pair_change else solver_count - len(solver_reject))
 
         def solve(request):
             data = task_data(request, "question_solution_json")
@@ -77,11 +79,12 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
                 reviews[str(item["index"])] = record
             return {"reviews": reviews}
 
-        return ScriptedNativeClient(
-            (MIXED_AUTHOR_CONTRACT, {"questions": rows}),
-            (f"complete_choice_solver_v5_n{solver_count}", solve),
-            (f"authored_solution_reviewer_v3_n{solver_count - len(solver_reject)}", audit),
-        )
+        steps = [(MIXED_AUTHOR_CONTRACT, {"questions": rows})]
+        if solver_count:
+            steps.append((f"complete_choice_solver_v5_n{solver_count}", solve))
+        if audit_count:
+            steps.append((f"authored_solution_reviewer_v3_n{audit_count}", audit))
+        return ScriptedNativeClient(*steps)
 
     def run_pipeline(self, rows, **kwargs):
         client = self.client(rows, **kwargs)
@@ -99,13 +102,28 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
         self.assertEqual(reserve.call_count, budget.calls)
         return result, client, budget
 
+    def test_five_compiled_items_use_author_and_audit_only_but_preflight_remains_conservative(self):
+        rows = [quantitative_row(exact_task(str(n), tuple(str(v) for v in (2*n, 2*n+1, 2*n+2, 2*n+3))))
+                for n in range(2, 7)]
+        result, client, budget = self.run_pipeline(rows)
+        self.assertEqual((len(result), len(client.calls), budget.calls), (5, 2, 2))
+        self.assertEqual([learner(q) for q in result], [CompiledCandidate.from_task(row["task"]).content() for row in rows])
+        self.assertTrue(all(q["verificationPolicyRevision"] == 8 for q in result))
+        reserve, client = Mock(), Mock()
+        # Before the author runs, its variant mix is unknown and may need three stages.
+        with self.assertRaises(ProviderCallBudgetExceededError):
+            generation._generate_sanitized_questions(
+                self.request(5), client, generation.ProviderCallBudget(2, reserve_call=reserve))
+        reserve.assert_not_called()
+        client.converse.assert_not_called()
+
     def test_compiled_five_fields_and_prose_main_remain_exact_after_three_stages(self):
         rows = [quantitative_row(), prose_row(self.prose)]
         before = copy.deepcopy(rows)
         result, _, budget = self.run_pipeline(rows)
         self.assertEqual(rows, before)
         self.assertEqual(learner(result[0]), CompiledCandidate.from_task(rows[0]["task"]).content())
-        self.assertEqual(result[0]["verificationPolicyRevision"], 6)
+        self.assertEqual(result[0]["verificationPolicyRevision"], 8)
         self.assertEqual(result[1]["explanation"].encode(), self.prose["explanation"].encode())
         self.assertEqual(result[1]["choiceExplanations"], {})
         self.assertEqual(result[1]["verificationPolicyRevision"], 7)
@@ -115,7 +133,7 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
 
     def test_interleaved_invalid_duplicate_freeze_and_solver_drops_keep_source_sidecars(self):
         first = quantitative_row()
-        rejected = quantitative_row(exact_task("3", ("4", "5", "6", "7")))
+        rejected = prose_row({**self.prose, "prompt": "This prose candidate is rejected by the independent solver."})
         last = quantitative_row(exact_task("4", ("5", "6", "7", "8")))
         oversized = {**self.prose, "prompt": "An oversized explanation must be rejected before solver input.", "explanation": "x" * 421}
         ordinal = {**self.prose, "prompt": "A shuffled display position must be rejected before solver input.",
@@ -126,12 +144,12 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
         def veto(record, item):
             if item["prompt"] == vetoed["prompt"]:
                 record["valid"] = False
-        result, client, budget = self.run_pipeline(rows, solver_count=5, solver_reject=(2,), review_change=veto)
+        result, client, budget = self.run_pipeline(rows, solver_count=3, solver_reject=(1,), review_change=veto)
         self.assertEqual([q["prompt"] for q in result], [CompiledCandidate.from_task(first["task"]).content()["prompt"],
                                                        self.prose["prompt"], CompiledCandidate.from_task(last["task"]).content()["prompt"]])
         for output, original in ((result[0], first), (result[2], last)):
             self.assertEqual(learner(output), CompiledCandidate.from_task(original["task"]).content())
-            self.assertEqual(output["verificationPolicyRevision"], 6)
+            self.assertEqual(output["verificationPolicyRevision"], 8)
         self.assertEqual(result[1]["verificationPolicyRevision"], 7)
         self.assertEqual(result[1]["choiceExplanations"], {})
         self.assertEqual(len(task_data(client.calls[2], "question_review_json")["items"]), 4)
@@ -193,7 +211,7 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
                 with self.subTest(quantitative=quantitative, change=change):
                     result, _, budget = self.run_pipeline([row], review_change=veto)
                     self.assertEqual(result, [])
-                    self.assertEqual(budget.calls, 3)
+                    self.assertEqual(budget.calls, 2 if quantitative else 3)
                     if "issueFlags" in change:
                         self.assertEqual(self.last_metrics["QuestionQuality"]["review"]["reported_issues"], 1)
             def replace_feedback(record, _item):
@@ -207,33 +225,35 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
                 row = quantitative_row() if quantitative else prose_row(self.prose)
                 with self.subTest(flags=flags, quantitative=quantitative), self.assertRaises(ProviderError):
                     self.run_pipeline([row], review_change=lambda record, _item: record.update(issueFlags=flags))
-                self.assertEqual(self.last_metrics["ProviderCalls"], 3)
+                self.assertEqual(self.last_metrics["ProviderCalls"], 2 if quantitative else 3)
                 self.assertEqual(self.last_metrics["QuestionQuality"]["provider"]["native_contract_invalid"], 1)
                 self.assertEqual(self.last_metrics["ProviderObservations"][-1]["structuredOutput"]["name"],
                                  "authored_solution_reviewer_v3_n1")
 
-    def test_every_pair_veto_stops_both_variants_before_audit(self):
+    def test_every_prose_pair_veto_preserves_only_independently_proved_compiled_rows(self):
         for relation in ("equivalent", "uncertain"):
             for pair in ("ab", "ac", "ad", "bc", "bd", "cd"):
                 with self.subTest(relation=relation, pair=pair):
                     result, client, budget = self.run_pipeline(
                         [quantitative_row(), prose_row(self.prose)],
                         pair_change=lambda record: record["choicePairs"][pair].update(relation=relation))
-                    self.assertEqual(result, [])
-                    self.assertEqual((len(client.calls), budget.calls), (2, 2))
+                    self.assertEqual(len(result), 1)
+                    self.assertEqual(result[0]["verificationPolicyRevision"], 8)
+                    self.assertEqual(learner(result[0]), CompiledCandidate.from_task(exact_task()).content())
+                    self.assertEqual((len(client.calls), budget.calls), (3, 3))
 
-    def test_partial_topup_preserves_each_mode_and_consumes_exactly_six_reservations(self):
+    def test_partial_topup_preserves_each_mode_and_conservative_three_call_preflight(self):
         client = self.client([quantitative_row()])
         client.steps.extend(self.client([prose_row(self.prose)]).steps)
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
         with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "5"}):
             result = generation._generate_sanitized_questions(self.request(3), client, budget)
-        self.assertEqual([q["verificationPolicyRevision"] for q in result], [6, 7])
+        self.assertEqual([q["verificationPolicyRevision"] for q in result], [8, 7])
         self.assertEqual(learner(result[0]), CompiledCandidate.from_task(exact_task()).content())
         self.assertEqual(result[1]["explanation"], self.prose["explanation"])
-        self.assertEqual((len(client.calls), budget.calls, reserve.call_count), (6, 6, 6))
-        topup = task_data(client.calls[3], "generation_request_json")
+        self.assertEqual((len(client.calls), budget.calls, reserve.call_count), (5, 5, 5))
+        topup = task_data(client.calls[2], "generation_request_json")
         self.assertEqual(topup["targetCount"], 2)
         self.assertIn(result[0]["prompt"], topup["existingPrompts"])
 
@@ -245,23 +265,23 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
             result = generation._generate_sanitized_questions(self.request(2), client, budget)
         self.assertEqual(len(result), 1)
         self.assertEqual(learner(result[0]), CompiledCandidate.from_task(exact_task()).content())
-        self.assertEqual(budget.calls, 4)
+        self.assertEqual(budget.calls, 3)
         client = self.client([quantitative_row()])
-        reserve = Mock(side_effect=[None, None, None, DurableProviderCallBudgetExceededError("synthetic durable refusal")])
+        reserve = Mock(side_effect=[None, None, DurableProviderCallBudgetExceededError("synthetic durable refusal")])
         with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "2"}), self.assertRaises(DurableProviderCallBudgetExceededError):
             generation._generate_sanitized_questions(self.request(2), client, generation.ProviderCallBudget(6, reserve_call=reserve))
-        self.assertEqual((len(client.calls), reserve.call_count), (3, 4))
+        self.assertEqual((len(client.calls), reserve.call_count), (2, 3))
 
     def test_deadline_expiring_after_first_pass_retains_partial_without_new_reservation(self):
         client = self.client([quantitative_row()])
         context = Mock()
-        context.get_remaining_time_in_millis.side_effect = lambda: 240_000 if len(client.calls) < 3 else 0
+        context.get_remaining_time_in_millis.side_effect = lambda: 240_000 if len(client.calls) < 2 else 0
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, context=context, reserve_call=reserve)
         with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "2"}):
             result = generation._generate_sanitized_questions(self.request(2), client, budget)
         self.assertEqual(learner(result[0]), CompiledCandidate.from_task(exact_task()).content())
-        self.assertEqual((len(client.calls), budget.calls, reserve.call_count), (3, 3, 3))
+        self.assertEqual((len(client.calls), budget.calls, reserve.call_count), (2, 2, 2))
 
     def test_all_invalid_candidates_stop_after_author_without_minting_approval(self):
         oversized = {**self.prose, "explanation": "x" * 421}

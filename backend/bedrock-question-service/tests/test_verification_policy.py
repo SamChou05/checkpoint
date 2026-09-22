@@ -272,7 +272,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
         self.assertEqual(raised.exception.code, "claim_conflict")
 
     def test_explicit_minimum_six_is_freshness_not_compiled_capability(self):
-        for revision in (4, 6, 7):
+        for revision in (4, 6, 7, 8):
             with self.subTest(revision=revision):
                 bank_id, dynamo, item, question = self.bank(revision=revision)
                 original_json = item["questionJSON"]["S"]
@@ -284,7 +284,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
                 self.assertEqual(item["questionJSON"]["S"], original_json)
 
     def test_native_authored_minimum_seven_preserves_only_eligible_claims_and_replay(self):
-        for revision in (3, 4, 6, 7):
+        for revision in (3, 4, 6, 7, 8):
             with self.subTest(revision=revision):
                 bank_id, dynamo, item, question = self.bank(revision=revision)
                 before = item["questionJSON"]["S"]
@@ -292,7 +292,19 @@ class VerificationPolicyTests(QuestionBankTestCase):
                     first = self.claim(bank_id, dynamo, minimum=7)
                     replay = self.claim(bank_id, dynamo, minimum=7)
                 self.assertEqual(first, replay)
-                self.assertEqual(first["questions"], [question] if revision == 7 else [])
+                self.assertEqual(first["questions"], [question] if revision >= 7 else [])
+                self.assertEqual(item["questionJSON"]["S"], before)
+
+    def test_compiled_proof_minimum_eight_preserves_claim_content_and_replay(self):
+        for revision in (4, 6, 7, 8):
+            with self.subTest(revision=revision):
+                bank_id, dynamo, item, question = self.bank(revision=revision)
+                before = item["questionJSON"]["S"]
+                with mock.patch.object(question_bank, "_ensure_refill"):
+                    first = self.claim(bank_id, dynamo, minimum=8)
+                    replay = self.claim(bank_id, dynamo, minimum=8)
+                self.assertEqual(first, replay)
+                self.assertEqual(first["questions"], [question] if revision == 8 else [])
                 self.assertEqual(item["questionJSON"]["S"], before)
 
     def test_minimum_policy_is_strict_integer_and_known_request_bound(self):
