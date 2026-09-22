@@ -1,0 +1,12 @@
+{
+  "capture_sha256": "8107bf285c2125c89e0ddb654b0ada756a6a943d05cb6d22c0c7ce5cc9465523",
+  "blinded_review_sha256": "49c017691b58509d2416fb427b21f2176f966744351220567a9bbcf1a291f60b",
+  "planned_questions": 15,
+  "returned": 4,
+  "unique_correct_keys": 4,
+  "supported_in_item_context_mains": 4,
+  "qualified": false,
+  "failure": "Yield4/15, no quantitative or mixed return; frozen primary criteria not met.",
+  "python_0_teaching_caveat": "The supplied closed Boolean subexpressions can be simplified to the stated result. Actual short-circuit execution returns the left True without evaluating the right subtree; the explanation should make that distinction clearer. Its parse and each stated subexpression value are correct; root does not treat this as an explicit execution-trace claim.",
+  "verification": "Independent fixed Python expressions evaluated directly, exact result type and literal key checked; no arbitrary model-generated code executed."
+}

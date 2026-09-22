@@ -1,0 +1,151 @@
+{
+  "reviewer": "choice_semantics",
+  "status": "locked_blinded_determinations_before_unblinding",
+  "blind_items_sha256": "c2e0fcf7600fdd98be2ca3fdde6f314da30c08b828e635f319f4e6d8c69e939a",
+  "capture_sha256_from_blind_packet_only": "8107bf285c2125c89e0ddb654b0ada756a6a943d05cb6d22c0c7ce5cc9465523",
+  "read_boundary": {
+    "read_only_blind_items": true,
+    "capture_opened": false,
+    "author_key_or_main_seen": false,
+    "model_judgments_seen": false,
+    "provider_calls": 0
+  },
+  "summary": {
+    "original_requested_slots": 15,
+    "returned_items_available_for_review": 4,
+    "reviewed_returned_items": 4,
+    "not_returned_slots": 11,
+    "task_choice_pass": 4,
+    "uncertain_or_failed_returned_tasks": 0,
+    "pairs_checked": 24,
+    "teaching_pending": 4,
+    "full_content_or_pipeline_qualification": "not_assessed_at_blind_stage"
+  },
+  "scope_and_novelty": "The four returned Python items cover Boolean evaluation, negative indexing, a conditional expression and slicing. They are distinct within this batch. The supplied history arrays are empty; no cross-trial novelty claim is made. No quantitative or mixed items were supplied for blind review.",
+  "primary_sources": [
+    "https://docs.python.org/3/reference/expressions.html",
+    "https://docs.python.org/3/library/stdtypes.html"
+  ],
+  "items": [
+    {
+      "id": "python:0",
+      "blind_item_sha256": "d3ff98505d52efba1a090c510ab0d12848199f279182a9c5269afca0efeef900",
+      "supported_answers": [
+        "True"
+      ],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "premises_sufficient": true,
+      "proof": "and has higher precedence than or, so the expression groups as True or (False and False). The initial True makes or return True immediately. No integer coercion or None result is involved.",
+      "local_check": {
+        "value_repr": "True",
+        "type": "bool",
+        "python": "3.12.11",
+        "method": "Inspected equivalent literal expression; no provider text eval/exec."
+      },
+      "equivalent_choice_pairs": [],
+      "pairs_checked": 6,
+      "pair_distinctness": "All six pairs are distinct in exact Python evaluation context.",
+      "distractor_plausibility": {
+        "status": "adequate_with_weaker_alternatives",
+        "reason": "False is a plausible precedence or evaluation error.0 andNone are weaker beginner result/type confusions. False and0 compare equal numerically but are distinguishable exact Python objects/results; they are not merged as equivalent answer meanings in this evaluation task."
+      },
+      "scope_fit": true,
+      "scope_reason": "Concrete Python3 operator, indexing, conditional or slicing semantics; no invented source or assignment is needed.",
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of a familiar rule to given data, matching the requested minimum2.",
+      "task_choice_verdict": "pass",
+      "key_or_teaching_or_model_review_seen": false
+    },
+    {
+      "id": "python:1",
+      "blind_item_sha256": "73aece636fe200ade27b2ecb078245104a3e1f0b6e87623e9ffa94938f78a379",
+      "supported_answers": [
+        "40"
+      ],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "premises_sufficient": true,
+      "proof": "A negative index counts from the end: -1 identifies50 and -2 identifies40. The complete five-element list is supplied.",
+      "local_check": {
+        "value_repr": "40",
+        "type": "int",
+        "python": "3.12.11",
+        "method": "Inspected equivalent literal expression; no provider text eval/exec."
+      },
+      "equivalent_choice_pairs": [],
+      "pairs_checked": 6,
+      "pair_distinctness": "All six pairs are distinct in exact Python evaluation context.",
+      "distractor_plausibility": {
+        "status": "adequate",
+        "reason": "50 is the last element,20 can result from mishandling the negative index, and30 is another offset. All are concrete distinct indexing outcomes."
+      },
+      "scope_fit": true,
+      "scope_reason": "Concrete Python3 operator, indexing, conditional or slicing semantics; no invented source or assignment is needed.",
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of a familiar rule to given data, matching the requested minimum2.",
+      "task_choice_verdict": "pass",
+      "key_or_teaching_or_model_review_seen": false
+    },
+    {
+      "id": "python:2",
+      "blind_item_sha256": "2efa6c26428a982ae11651a891f45f49dc5c56357a5e7dad411f6ee2c1c76c49",
+      "supported_answers": [
+        "\"odd\""
+      ],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "premises_sufficient": true,
+      "proof": "The first line binds x to3. Then3%2 is1, so x%2==0 is False and the final conditional expression selects the string odd. The question asks the expression value, not script stdout.",
+      "local_check": {
+        "value_repr": "'odd'",
+        "type": "str",
+        "python": "3.12.11",
+        "method": "Inspected equivalent literal expression; no provider text eval/exec."
+      },
+      "equivalent_choice_pairs": [],
+      "pairs_checked": 6,
+      "pair_distinctness": "All six pairs are distinct in exact Python evaluation context.",
+      "distractor_plausibility": {
+        "status": "adequate_with_weaker_alternatives",
+        "reason": "The other string is the wrong branch. True and0 are weaker confusions between a conditional result and a condition/arithmetic result; they are distinct from each other and the strings. No factual claim is made about a particular learner error history."
+      },
+      "scope_fit": true,
+      "scope_reason": "Concrete Python3 operator, indexing, conditional or slicing semantics; no invented source or assignment is needed.",
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of a familiar rule to given data, matching the requested minimum2.",
+      "task_choice_verdict": "pass",
+      "key_or_teaching_or_model_review_seen": false
+    },
+    {
+      "id": "python:3",
+      "blind_item_sha256": "3599090ed7f8afcff715f58b2297e0fed72fd2081810ced2ee8eebffc066e90c",
+      "supported_answers": [
+        "['b', 'c']"
+      ],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "premises_sufficient": true,
+      "proof": "The slice starts at index1 and stops before index3, selecting b and c. The result is the two-element list shown by that exact offered choice.",
+      "local_check": {
+        "value_repr": "['b', 'c']",
+        "type": "list",
+        "python": "3.12.11",
+        "method": "Inspected equivalent literal expression; no provider text eval/exec."
+      },
+      "equivalent_choice_pairs": [],
+      "pairs_checked": 6,
+      "pair_distinctness": "All six pairs are distinct in exact Python evaluation context.",
+      "distractor_plausibility": {
+        "status": "adequate",
+        "reason": "The other three lists test a wrong start, inclusive stop, or one-based interpretation. They are meaningfully distinct sequence results."
+      },
+      "scope_fit": true,
+      "scope_reason": "Concrete Python3 operator, indexing, conditional or slicing semantics; no invented source or assignment is needed.",
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of a familiar rule to given data, matching the requested minimum2.",
+      "task_choice_verdict": "pass",
+      "key_or_teaching_or_model_review_seen": false
+    }
+  ]
+}

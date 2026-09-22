@@ -1,0 +1,384 @@
+{
+  "reviewer": "choice_semantics",
+  "status": "complete",
+  "method": "Locked answer-only review before unblinding; exact source/key/main and shuffle checks after unblinding. No provider calls. No output/gold repair. Private raw rejection claims are distinguished from released learner fields.",
+  "bindings": {
+    "plan.json": "db7f3d506a6f76954b54102fa215beba266be0602030e23cd39fa6cfe44d6a13",
+    "capture.json": "8107bf285c2125c89e0ddb654b0ada756a6a943d05cb6d22c0c7ce5cc9465523",
+    "blind-items.json": "c2e0fcf7600fdd98be2ca3fdde6f314da30c08b828e635f319f4e6d8c69e939a",
+    "blind-review.json": "1002fd57192c16f2f80be333c2ae1be71502627976695ec3b94be962878567ab",
+    "blind-review.md": "4d93ae6b782cdb0fca4092be6ed416891b53ed5855718fb50e990ac8f94185be"
+  },
+  "source_plan_check": "Actual frozen harness check_plan passed without network using its injected request recorder.",
+  "summary": {
+    "requested": 15,
+    "returned": 4,
+    "not_returned": 11,
+    "returned_supported": 4,
+    "returned_defective": 0,
+    "returned_uncertain": 0,
+    "all_returned_keys_and_mains_supported": true,
+    "choice_pairs_assessed": 24,
+    "shuffle_permutations_checked": 96,
+    "qualified": false,
+    "qualification_failure": "4/15 is below14/15; quantitative and mixed each return0/5 below4/job; required compiled and English yields are zero.",
+    "raw_authored_rows": 15,
+    "raw_compiled_rows": 10,
+    "raw_prose_rows": 5,
+    "observed_provider_calls": 10,
+    "maximum_provider_calls": 18,
+    "successful_native_responses": 7,
+    "provider_timeouts": 3,
+    "reported_usage": {
+      "input_tokens": 29146,
+      "output_tokens": 32260,
+      "calls_without_reported_usage": 3,
+      "missing_usage_is_not_zero": true
+    }
+  },
+  "items": [
+    {
+      "id": "python:0",
+      "source": [
+        "python",
+        0,
+        0
+      ],
+      "supported_answer": "True",
+      "unique_key": true,
+      "distinct_pair_count": 6,
+      "main_verdict": "supported_in_item_context",
+      "main_review": "The grouping is True or (False and False), whose value is True. Python actually stops after the first True. The main gives correct compositional simplification of a closed expression; its word “then” should not be treated as a precise execution trace. No claim about evaluated side effects is supplied.",
+      "main_sha256": "74db5c50e47a5cc7eac85e9ffcd287484309e59307d70415f0ece9ae1f5dbc09",
+      "learner_payload_sha256": "97920a94d88645ce2cd744e4f8209c1c6ee51b2a85a362a328ba6cbe796e9163",
+      "main_exact_raw_author_bytes": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_contract": "Intentionally empty on immutable authored-main prose path.",
+      "lengths": {
+        "prompt": 84,
+        "choices": [
+          4,
+          5,
+          4,
+          1
+        ],
+        "main": 176
+      },
+      "shuffle_safe": true,
+      "permutations_checked": 24,
+      "scope_fit": true,
+      "independent_difficulty": 2,
+      "reviewed_difficulty": 3,
+      "difficulty_admitted": true,
+      "novelty": "Distinct tested behavior from other returned questions; empty supplied history prevents broader novelty claims.",
+      "overall": "pass"
+    },
+    {
+      "id": "python:1",
+      "source": [
+        "python",
+        0,
+        1
+      ],
+      "supported_answer": "40",
+      "unique_key": true,
+      "distinct_pair_count": 6,
+      "main_verdict": "supported_in_item_context",
+      "main_review": "Index -1 is 50 and index -2 is 40. The main states this exact derivation. “Second-to-last” refers to the supplied list, not answer positions.",
+      "main_sha256": "53be8dd899e1cd6d8f8aac5abcea04cc77a8e8ca4b6d0946730414c5f0fbf6d2",
+      "learner_payload_sha256": "415fd03a110516a8034669fb6cb9a880291f43e0dc085f53ec30f36169dcb8f3",
+      "main_exact_raw_author_bytes": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_contract": "Intentionally empty on immutable authored-main prose path.",
+      "lengths": {
+        "prompt": 66,
+        "choices": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "main": 147
+      },
+      "shuffle_safe": true,
+      "permutations_checked": 24,
+      "scope_fit": true,
+      "independent_difficulty": 2,
+      "reviewed_difficulty": 2,
+      "difficulty_admitted": true,
+      "novelty": "Distinct tested behavior from other returned questions; empty supplied history prevents broader novelty claims.",
+      "overall": "pass"
+    },
+    {
+      "id": "python:2",
+      "source": [
+        "python",
+        0,
+        2
+      ],
+      "supported_answer": "\"odd\"",
+      "unique_key": true,
+      "distinct_pair_count": 6,
+      "main_verdict": "supported_in_item_context",
+      "main_review": "With x=3, x%2=1; the test is false and the conditional returns the string \"odd\". Every step in the main is supported.",
+      "main_sha256": "a6be40ea03dbcc43022b0b12087206f7aba2ba37f0085398957b9b2799d2132e",
+      "learner_payload_sha256": "a58cfb5ffcf2fead0db7ae2951032f44e125c96dd87a6cc84f88c91e2af1d96a",
+      "main_exact_raw_author_bytes": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_contract": "Intentionally empty on immutable authored-main prose path.",
+      "lengths": {
+        "prompt": 90,
+        "choices": [
+          5,
+          4,
+          6,
+          1
+        ],
+        "main": 136
+      },
+      "shuffle_safe": true,
+      "permutations_checked": 24,
+      "scope_fit": true,
+      "independent_difficulty": 2,
+      "reviewed_difficulty": 2,
+      "difficulty_admitted": true,
+      "novelty": "Distinct tested behavior from other returned questions; empty supplied history prevents broader novelty claims.",
+      "overall": "pass"
+    },
+    {
+      "id": "python:3",
+      "source": [
+        "python",
+        0,
+        4
+      ],
+      "supported_answer": "['b', 'c']",
+      "unique_key": true,
+      "distinct_pair_count": 6,
+      "main_verdict": "supported_in_item_context",
+      "main_review": "The unit-step slice includes indices 1 and 2 and excludes 3, yielding ['b', 'c']. The main and exact key agree; letters in quotes are data, not option labels.",
+      "main_sha256": "b2ba42ba54ad58929f6e04068c30983fc89d5e9c6260b19dc970e77ea2549d41",
+      "learner_payload_sha256": "eb312885e2acc688c8fd20d9d1c0a70ee7674f4723f4e15872256f595c58063f",
+      "main_exact_raw_author_bytes": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_contract": "Intentionally empty on immutable authored-main prose path.",
+      "lengths": {
+        "prompt": 73,
+        "choices": [
+          10,
+          15,
+          15,
+          10
+        ],
+        "main": 160
+      },
+      "shuffle_safe": true,
+      "permutations_checked": 24,
+      "scope_fit": true,
+      "independent_difficulty": 2,
+      "reviewed_difficulty": 2,
+      "difficulty_admitted": true,
+      "novelty": "Distinct tested behavior from other returned questions; empty supplied history prevents broader novelty claims.",
+      "overall": "pass"
+    }
+  ],
+  "raw_rejections": {
+    "quantitative_first_pass": {
+      "all_five_math_keys_supported": true,
+      "raw_model_pedagogical_vetoes": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "pedagogical_assessment": "The four exact-value mains state results without operation steps. Requests for common-denominator, multiplication/reduction and reciprocal steps are reasonable pedagogical concerns; their concrete proposed calculations are correct. They do not establish that the existing mains contain false arithmetic.",
+      "positive_condition_row": 3,
+      "positive_condition_row_raw_issues": [
+        "",
+        " ",
+        " "
+      ],
+      "actual_local_outcome": "Entire five-row review batch rejected; malformed blank issues on row3 prevent partial item credit.",
+      "strict_replay_error": "Malformed immutable teaching review.",
+      "returned": 0
+    },
+    "quantitative_top_up": {
+      "raw_compiler_valid": 5,
+      "independent_exact_results": [
+        "31/24",
+        "3/2",
+        "11/10",
+        "6",
+        "12"
+      ],
+      "semantic_note": "The explicit maximum condition has several satisfying offered values but only12 is maximum; this is well specified.",
+      "solver_outcome": "Read timeout; no solver or auditor conclusions available.",
+      "returned": 0
+    },
+    "python_solver_veto": {
+      "source": [
+        "python",
+        0,
+        3
+      ],
+      "stem": "What does the expression 0 or 'hello' evaluate to in Python 3?",
+      "supported_answer": "'hello'",
+      "raw_equivalent_pair": [
+        "0",
+        "False"
+      ],
+      "independent_judgment": "False rejection: numeric equality0==False does not make exact returned int0 and boolFalse the same result/type in this Python evaluation task. This is consistent with the locked returned-item treatment of0/False.",
+      "raw_choice_judgments": "All four assessments have the correct unique supported result.",
+      "gate": "solver_equivalent_choices"
+    },
+    "missing_outputs": [
+      "quantitative top-up solver",
+      "Python top-up author",
+      "mixed initial author"
+    ]
+  },
+  "budgets": {
+    "jobs": [
+      {
+        "id": "quantitative",
+        "calls": 5,
+        "elapsed_seconds": 234.209511,
+        "within_240_seconds": true,
+        "returned": 0
+      },
+      {
+        "id": "python",
+        "calls": 4,
+        "elapsed_seconds": 226.354971,
+        "within_240_seconds": true,
+        "returned": 4
+      },
+      {
+        "id": "mixed",
+        "calls": 1,
+        "elapsed_seconds": 100.260749,
+        "within_240_seconds": true,
+        "returned": 0
+      }
+    ],
+    "calls": [
+      {
+        "ordinal": 0,
+        "job": "quantitative",
+        "stage": "question_author_mixed_v1",
+        "seconds": 59.759128,
+        "read_timeout": 100.0,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 239936,
+        "has_response": true
+      },
+      {
+        "ordinal": 1,
+        "job": "quantitative",
+        "stage": "complete_choice_solver_v5_n5",
+        "seconds": 28.039611,
+        "read_timeout": 100.0,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 180124,
+        "has_response": true
+      },
+      {
+        "ordinal": 2,
+        "job": "quantitative",
+        "stage": "authored_solution_reviewer_v2_n5",
+        "seconds": 88.259415,
+        "read_timeout": 100.0,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 152039,
+        "has_response": true
+      },
+      {
+        "ordinal": 3,
+        "job": "quantitative",
+        "stage": "question_author_mixed_v1",
+        "seconds": 55.611472,
+        "read_timeout": 57.74,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 63724,
+        "has_response": true
+      },
+      {
+        "ordinal": 4,
+        "job": "quantitative",
+        "stage": "complete_choice_solver_v5_n5",
+        "seconds": 2.23866,
+        "read_timeout": 2.075,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 8060,
+        "has_response": false
+      },
+      {
+        "ordinal": 5,
+        "job": "python",
+        "stage": "question_author_mixed_v1",
+        "seconds": 36.444036,
+        "read_timeout": 100.0,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 239973,
+        "has_response": true
+      },
+      {
+        "ordinal": 6,
+        "job": "python",
+        "stage": "complete_choice_solver_v5_n5",
+        "seconds": 48.795183,
+        "read_timeout": 100.0,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 203479,
+        "has_response": true
+      },
+      {
+        "ordinal": 7,
+        "job": "python",
+        "stage": "authored_solution_reviewer_v2_n4",
+        "seconds": 40.752214,
+        "read_timeout": 100.0,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 154649,
+        "has_response": true
+      },
+      {
+        "ordinal": 8,
+        "job": "python",
+        "stage": "question_author_mixed_v1",
+        "seconds": 100.16298,
+        "read_timeout": 100.0,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 113842,
+        "has_response": false
+      },
+      {
+        "ordinal": 9,
+        "job": "mixed",
+        "stage": "question_author_mixed_v1",
+        "seconds": 100.190097,
+        "read_timeout": 100.0,
+        "connect_timeout": 3.0,
+        "sdk_attempts": 1,
+        "remaining_before_ms": 239963,
+        "has_response": false
+      }
+    ],
+    "interpretation": "All3jobs finish within240s and call caps. Three independent attempts time out; the quantitative top-up solver receives only2.075s after the actual remaining-time guard. Missing usage is unavailable, notzero.",
+    "reasoning": "Only visible text and omission counts inspected; no hidden reasoning content retained."
+  },
+  "primary_sources": [
+    "https://docs.python.org/3/reference/expressions.html",
+    "https://docs.python.org/3/library/stdtypes.html"
+  ],
+  "limits": "Fresh three-job pipeline observation, not broad semantic reliability proof. Four sound returned questions do not rescue failed15-slot yield. No causal attribution between author reasoning, model, immutable prose or timeout setting is possible from this combined trial."
+}

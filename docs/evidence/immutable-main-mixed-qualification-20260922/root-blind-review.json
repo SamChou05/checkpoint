@@ -1,0 +1,42 @@
+{
+  "worksheet_sha256": "c2e0fcf7600fdd98be2ca3fdde6f314da30c08b828e635f319f4e6d8c69e939a",
+  "locked_before_reading_capture_keys_or_teaching": true,
+  "planned": 15,
+  "returned_reviewed": 4,
+  "all_fit_python_scope": true,
+  "all_choices_distinct_and_plausible_in_exact_task": true,
+  "items": [
+    {
+      "id": "python:0",
+      "answer": "B",
+      "answer_text": "True",
+      "unique": true,
+      "difficulty": 2,
+      "assessment": "The left operand True short-circuits or and is returned. Distinguishing Boolean literals from numeric 0 is relevant to an exact Python result; False and 0 are not the same representation/type."
+    },
+    {
+      "id": "python:1",
+      "answer": "B",
+      "answer_text": "40",
+      "unique": true,
+      "difficulty": 2,
+      "assessment": "Negative index -2 selects the second-last list element. Distinct offered list values."
+    },
+    {
+      "id": "python:2",
+      "answer": "B",
+      "answer_text": "\"odd\"",
+      "unique": true,
+      "difficulty": 2,
+      "assessment": "With x bound to 3, remainder 1 makes the condition false and selects the else string. The preceding assignment establishes the expression context."
+    },
+    {
+      "id": "python:3",
+      "answer": "A",
+      "answer_text": "['b', 'c']",
+      "unique": true,
+      "difficulty": 2,
+      "assessment": "Slice starts at index1 and excludes index3; every offered list differs."
+    }
+  ]
+}

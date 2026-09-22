@@ -1,0 +1,141 @@
+{
+  "capture_sha256": "8107bf285c2125c89e0ddb654b0ada756a6a943d05cb6d22c0c7ce5cc9465523",
+  "plan_sha256": "db7f3d506a6f76954b54102fa215beba266be0602030e23cd39fa6cfe44d6a13",
+  "source_and_plan_pins": "valid",
+  "native_responses": [
+    {
+      "call_index": 0,
+      "stage": "question_author_mixed_v1",
+      "native_schema": "valid",
+      "local_contract": "not_applicable"
+    },
+    {
+      "call_index": 1,
+      "stage": "complete_choice_solver_v5_n5",
+      "native_schema": "valid",
+      "local_contract": "valid"
+    },
+    {
+      "call_index": 2,
+      "stage": "authored_solution_reviewer_v2_n5",
+      "native_schema": "valid",
+      "local_contract": "invalid_nonblank_issue_constraint"
+    },
+    {
+      "call_index": 3,
+      "stage": "question_author_mixed_v1",
+      "native_schema": "valid",
+      "local_contract": "not_applicable"
+    },
+    {
+      "call_index": 5,
+      "stage": "question_author_mixed_v1",
+      "native_schema": "valid",
+      "local_contract": "not_applicable"
+    },
+    {
+      "call_index": 6,
+      "stage": "complete_choice_solver_v5_n5",
+      "native_schema": "valid",
+      "local_contract": "valid"
+    },
+    {
+      "call_index": 7,
+      "stage": "authored_solution_reviewer_v2_n4",
+      "native_schema": "valid",
+      "local_contract": "valid"
+    }
+  ],
+  "provider_failures": [
+    {
+      "call_index": 4,
+      "job": "quantitative",
+      "stage": "complete_choice_solver_v5_n5",
+      "type": "ReadTimeoutError",
+      "elapsed_seconds": 2.23866,
+      "read_timeout": 2.075
+    },
+    {
+      "call_index": 8,
+      "job": "python",
+      "stage": "question_author_mixed_v1",
+      "type": "ReadTimeoutError",
+      "elapsed_seconds": 100.16298,
+      "read_timeout": 100.0
+    },
+    {
+      "call_index": 9,
+      "job": "mixed",
+      "stage": "question_author_mixed_v1",
+      "type": "ReadTimeoutError",
+      "elapsed_seconds": 100.190097,
+      "read_timeout": 100.0
+    }
+  ],
+  "calls": 10,
+  "reservations": 10,
+  "jobs": [
+    {
+      "id": "quantitative",
+      "calls": 5,
+      "seconds": 234.209511,
+      "returned": 0
+    },
+    {
+      "id": "python",
+      "calls": 4,
+      "seconds": 226.354971,
+      "returned": 4
+    },
+    {
+      "id": "mixed",
+      "calls": 1,
+      "seconds": 100.260749,
+      "returned": 0
+    }
+  ],
+  "planned_questions": 15,
+  "passes_rederived": 3,
+  "raw_compiled_specs_recomputed": 10,
+  "actual_solver_audit_replays": 2,
+  "returned_compiled_exact": 0,
+  "returned_prose_exact_empty_feedback_policy7": 4,
+  "capture_unchanged": true,
+  "provider_calls_by_reviewer": 0,
+  "claim_limit": "Structural/provenance assessment only. No independent semantic approval. Native schema validity does not imply local-contract or model semantic acceptance.",
+  "actual_generation_dispatches_replayed_exactly": 10,
+  "full_runtime_results_reproduced": true,
+  "replay_timing_note": "Offline replay used captured visible responses/errors to compare all exact dynamic request bodies and final results; real deadlines were checked separately from captured transport/accounting.",
+  "audit_blank_issue_failure": {
+    "call_index": 2,
+    "row_index": 3,
+    "issue_character_lengths": [
+      0,
+      1,
+      1
+    ],
+    "native_constraint": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "local_constraints": "At most 8 issues; each nonblank and at most 600 characters.",
+    "other_row_declarations": "Four rows declared unsupported teaching because the main lacked worked derivation; this report does not independently adjudicate those declarations."
+  },
+  "qualification_yield": {
+    "returned": 4,
+    "planned": 15,
+    "required": 14,
+    "minimum_per_job": 4,
+    "compiled_returned": 0,
+    "required_compiled": 6,
+    "passed": false
+  },
+  "reported_usage": {
+    "input_tokens": 29146,
+    "output_tokens": 32260,
+    "calls_without_reported_usage": 3,
+    "missing_usage": "unknown"
+  }
+}

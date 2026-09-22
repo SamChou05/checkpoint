@@ -56,8 +56,8 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,255
-tests after combined compiler/immutable-main integration and the parenthesized-label fix. All 26 runtime modules match each of three SAM artifacts, with 393 packaged SDK configuration checks. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
+The tested structural changes are on main. Backend verification passes 1,257
+tests after combined compiler/immutable-main integration, the parenthesized-label fix and independent worker/skill-map deployment settings. All 26 runtime modules match each of three SAM artifacts, with 393 packaged SDK configuration checks. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter
 deadline independent of a background-worker reasoning rollout.
@@ -212,8 +212,8 @@ reviewer-written mode stays 4, and compiled mode stays 6. Global default remains
 optional capabilities. All 91 historical native contracts/prompts remain byte-
 identical. The source passes 1,235 backend tests, independent filtering/provenance
 review, SAM build and 393 packaged SDK configuration checks across three artifacts.
-Native immutable-main provider acceptance and fresh worker quality remain to be
-tested; prior failed authored-main experiments are not reclassified as passing.
+Subsequent native immutable-main provider acceptance and fresh worker quality are
+recorded below; prior failed experiments are not reclassified as passing.
 
 The two opt-in routes now compose: `mixed_quantitative` authoring can use
 `authored_solution` review. Code-derived numerical questions retain all five
@@ -233,7 +233,28 @@ either reading: its alternatives allow a defensible second interpretation, and
 its explanation refers to display slot `(b)`. The label fix closes that observed
 shuffle gap; it does not resolve arbitrary linguistic ambiguity. This author-only
 result does not measure actual solver/auditor rejection, worker yield or deployed
-behavior. The combined actual-runtime qualification remains a separate experiment.
+behavior. The [combined actual-runtime trial](evidence/immutable-main-mixed-qualification-20260922/RESULT.md)
+then failed: all three jobs ran, but only 4/15 questions returned. Seven of ten
+calls produced valid native structure; three timed out. The first numerical audit
+returned blank issue strings that passed its provider schema but failed local
+validation, discarding the whole batch. Four other audit rows requested worked
+derivation instead of the compiler's correct but terse result statements. The
+remaining numerical budget could not complete its top-up; Python retained four
+items after a top-up timeout; mixed authoring timed out. All four released mains
+remained exactly authored, with empty feedback and policy 7. Ten raw numerical
+specifications recompiled exactly, but none was released. This configuration
+remains unqualified; format, teaching quality and latency require separate fixes.
+The fifth Python draft also exposed a false pair veto: the solver treated `0`
+and `False` as interchangeable for an exact Python result because they compare
+numerically equal, despite their distinct result types. Enforcing fixed pair
+identities does not make the model's equivalence classification correct.
+
+The deployment workflow now exposes the worker-only feedback contract, defaulting
+to `reviewer_written`. Optional independent skill-map model/resource settings also
+let a worker model change preserve the API's existing skill-map model and IAM
+resources. Empty overrides retain historical inheritance. These configuration
+fixes passed the deployment-script suite and SAM validation; they do not enable
+the failed configuration or authorize deployment.
 
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
