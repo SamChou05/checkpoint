@@ -1,0 +1,801 @@
+{
+  "status": "unfrozen draft; no provider calls authorized",
+  "source_commit": "61db5a5a226009bba848706ad01a78c939f2459b",
+  "source_root": "/Users/samchou/.codex/worktrees/worked-flags-audit-source/Checkpoint",
+  "source_files": [
+    {
+      "path": "docs/evidence/immutable-main-mixed-qualification-20260922/capture.json",
+      "sha256": "8107bf285c2125c89e0ddb654b0ada756a6a943d05cb6d22c0c7ce5cc9465523"
+    },
+    {
+      "path": "/Users/samchou/.codex/worktrees/worked-flags-audit-source/Checkpoint/backend/bedrock-question-service/quantitative_task_compiler.py",
+      "sha256": "ecae417be2196030a555ec21a2d304245c94036603cd3c63a7efea319814f7fa"
+    }
+  ],
+  "request": {
+    "goal": {
+      "title": "Exact rational arithmetic and bounded conditions",
+      "category": "",
+      "focusAreas": "",
+      "currentLevel": "",
+      "learningTarget": "Exact rational arithmetic and bounded conditions",
+      "contentTopics": [
+        "Fraction and decimal arithmetic",
+        "Explicit minimum and maximum conditions"
+      ],
+      "questionDirective": "Evaluate exact expressions using addition, subtraction, multiplication and division, or solve an explicitly stated bounded integer condition. Vary the operations. Preserve the distinction between any satisfying value and an explicitly requested minimum or maximum. Use complete numerical tasks without stories or unstated physical assumptions. Aim for difficulty 2 or 3.",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "competencies": [],
+    "existingPrompts": [],
+    "existingQuestionCoverage": [],
+    "reportedPrompts": [],
+    "blockedStemFingerprints": [],
+    "stemFingerprintVersion": 1,
+    "sourceDocuments": [],
+    "targetCount": 5,
+    "minimumDifficulty": 2,
+    "requiresFullObjectiveCoverage": false,
+    "difficultyGuidance": "Apply one familiar rule directly.",
+    "adaptiveSkillPlans": []
+  },
+  "contract": "authored_solution_reviewer_v3_n5",
+  "cases": [
+    {
+      "id": "sound:0",
+      "batch": 0,
+      "original_source": [
+        "quantitative",
+        0,
+        0
+      ],
+      "original_spec": {
+        "choices": [
+          "7/12",
+          "1/2",
+          "2/3",
+          "5/12"
+        ],
+        "expression": {
+          "left": {
+            "value": "3/4"
+          },
+          "op": "sub",
+          "right": {
+            "value": "1/6"
+          }
+        },
+        "kind": "exact_value",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let q be a unitless number, defined by q = ((3/4) - (1/6)). What is its exact value?",
+        "choices": [
+          "7/12",
+          "1/2",
+          "2/3",
+          "5/12"
+        ],
+        "expectedAnswer": "7/12",
+        "explanation": "Common denominator 12: (3/4) - (1/6) = (9/12) - (2/12) = 7/12. The answer is 7/12.",
+        "choiceExplanations": {
+          "7/12": "The expression evaluates exactly to 7/12; 7/12 is the requested value.",
+          "1/2": "The expression evaluates exactly to 7/12, not 1/2. 1/2 is not the requested value.",
+          "2/3": "The expression evaluates exactly to 7/12, not 2/3. 2/3 is not the requested value.",
+          "5/12": "The expression evaluates exactly to 7/12, not 5/12. 5/12 is not the requested value."
+        }
+      },
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = ((3/4) - (1/6)). What is its exact value?",
+        "choices": [
+          "7/12",
+          "1/2",
+          "2/3",
+          "5/12"
+        ],
+        "expectedAnswer": "7/12",
+        "explanation": "Common denominator 12: (3/4) - (1/6) = (9/12) - (2/12) = 7/12. The answer is 7/12.",
+        "topic": "Fraction and decimal arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": null,
+      "gold": {
+        "main_support": "supported",
+        "expected_valid": true,
+        "unique_answer": "7/12",
+        "expected_explanation_flag": false,
+        "main_proof": "Every printed arithmetic equality was checked by exact rational calculation; the explicit minimum uses exhaustive domain enumeration.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Exact new compiler learner fields are recorded separately. The audit-only question view omits all four choice-feedback fields just as the real main-only audit does."
+    },
+    {
+      "id": "sound:1",
+      "batch": 0,
+      "original_source": [
+        "quantitative",
+        0,
+        1
+      ],
+      "original_spec": {
+        "choices": [
+          "4/3",
+          "3/2",
+          "6/7",
+          "2"
+        ],
+        "expression": {
+          "left": {
+            "value": "2/3"
+          },
+          "op": "mul",
+          "right": {
+            "value": "9/4"
+          }
+        },
+        "kind": "exact_value",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let q be a unitless number, defined by q = ((2/3) * (9/4)). What is its exact value?",
+        "choices": [
+          "4/3",
+          "3/2",
+          "6/7",
+          "2"
+        ],
+        "expectedAnswer": "3/2",
+        "explanation": "Multiply numerators and denominators: (2/3) * (9/4) = 18/12 = 3/2. The answer is 3/2.",
+        "choiceExplanations": {
+          "4/3": "The expression evaluates exactly to 3/2, not 4/3. 4/3 is not the requested value.",
+          "3/2": "The expression evaluates exactly to 3/2; 3/2 is the requested value.",
+          "6/7": "The expression evaluates exactly to 3/2, not 6/7. 6/7 is not the requested value.",
+          "2": "The expression evaluates exactly to 3/2, not 2. 2 is not the requested value."
+        }
+      },
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = ((2/3) * (9/4)). What is its exact value?",
+        "choices": [
+          "4/3",
+          "3/2",
+          "6/7",
+          "2"
+        ],
+        "expectedAnswer": "3/2",
+        "explanation": "Multiply numerators and denominators: (2/3) * (9/4) = 18/12 = 3/2. The answer is 3/2.",
+        "topic": "Fraction and decimal arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": null,
+      "gold": {
+        "main_support": "supported",
+        "expected_valid": true,
+        "unique_answer": "3/2",
+        "expected_explanation_flag": false,
+        "main_proof": "Every printed arithmetic equality was checked by exact rational calculation; the explicit minimum uses exhaustive domain enumeration.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Exact new compiler learner fields are recorded separately. The audit-only question view omits all four choice-feedback fields just as the real main-only audit does."
+    },
+    {
+      "id": "sound:2",
+      "batch": 0,
+      "original_source": [
+        "quantitative",
+        0,
+        2
+      ],
+      "original_spec": {
+        "choices": [
+          "2.25",
+          "1.81",
+          "2.45",
+          "2.35"
+        ],
+        "expression": {
+          "left": {
+            "value": "1.75"
+          },
+          "op": "add",
+          "right": {
+            "value": "0.6"
+          }
+        },
+        "kind": "exact_value",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let q be a unitless number, defined by q = ((7/4) + (3/5)). What is its exact value?",
+        "choices": [
+          "9/4",
+          "181/100",
+          "49/20",
+          "47/20"
+        ],
+        "expectedAnswer": "47/20",
+        "explanation": "Common denominator 20: (7/4) + (3/5) = (35/20) + (12/20) = 47/20. The answer is 47/20.",
+        "choiceExplanations": {
+          "9/4": "The expression evaluates exactly to 47/20, not 9/4. 9/4 is not the requested value.",
+          "181/100": "The expression evaluates exactly to 47/20, not 181/100. 181/100 is not the requested value.",
+          "49/20": "The expression evaluates exactly to 47/20, not 49/20. 49/20 is not the requested value.",
+          "47/20": "The expression evaluates exactly to 47/20; 47/20 is the requested value."
+        }
+      },
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = ((7/4) + (3/5)). What is its exact value?",
+        "choices": [
+          "9/4",
+          "181/100",
+          "49/20",
+          "47/20"
+        ],
+        "expectedAnswer": "47/20",
+        "explanation": "Common denominator 20: (7/4) + (3/5) = (35/20) + (12/20) = 47/20. The answer is 47/20.",
+        "topic": "Fraction and decimal arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": null,
+      "gold": {
+        "main_support": "supported",
+        "expected_valid": true,
+        "unique_answer": "47/20",
+        "expected_explanation_flag": false,
+        "main_proof": "Every printed arithmetic equality was checked by exact rational calculation; the explicit minimum uses exhaustive domain enumeration.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Exact new compiler learner fields are recorded separately. The audit-only question view omits all four choice-feedback fields just as the real main-only audit does."
+    },
+    {
+      "id": "sound:3",
+      "batch": 0,
+      "original_source": [
+        "quantitative",
+        0,
+        3
+      ],
+      "original_spec": {
+        "choices": [
+          "11",
+          "13",
+          "14",
+          "15"
+        ],
+        "condition": {
+          "left": {
+            "left": {
+              "value": "3"
+            },
+            "op": "mul",
+            "right": {
+              "variable": "x"
+            }
+          },
+          "relation": "gt",
+          "right": {
+            "value": "40"
+          }
+        },
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 1,
+          "upper": 20
+        },
+        "kind": "scalar_condition",
+        "selection": "minimum",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: (3 * x) > 40. What is the minimum x in this domain satisfying the condition?",
+        "choices": [
+          "11",
+          "13",
+          "14",
+          "15"
+        ],
+        "expectedAnswer": "14",
+        "explanation": "At x = 14, 42 > 40 is true. 14 is the minimum value satisfying the condition in this domain. Every smaller value in the stated domain fails the condition.",
+        "choiceExplanations": {
+          "11": "At x = 11, 33 > 40 is false. This value does not satisfy the condition.",
+          "13": "At x = 13, 39 > 40 is false. This value does not satisfy the condition.",
+          "14": "At x = 14, 42 > 40 is true. This is the minimum value satisfying the condition in this domain.",
+          "15": "At x = 15, 45 > 40 is true. The question asks for the minimum; that value is 14."
+        }
+      },
+      "question": {
+        "prompt": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: (3 * x) > 40. What is the minimum x in this domain satisfying the condition?",
+        "choices": [
+          "11",
+          "13",
+          "14",
+          "15"
+        ],
+        "expectedAnswer": "14",
+        "explanation": "At x = 14, 42 > 40 is true. 14 is the minimum value satisfying the condition in this domain. Every smaller value in the stated domain fails the condition.",
+        "topic": "Explicit minimum and maximum conditions",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": null,
+      "gold": {
+        "main_support": "supported",
+        "expected_valid": true,
+        "unique_answer": "14",
+        "expected_explanation_flag": false,
+        "main_proof": "Every printed arithmetic equality was checked by exact rational calculation; the explicit minimum uses exhaustive domain enumeration.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Exact new compiler learner fields are recorded separately. The audit-only question view omits all four choice-feedback fields just as the real main-only audit does."
+    },
+    {
+      "id": "sound:4",
+      "batch": 0,
+      "original_source": [
+        "quantitative",
+        0,
+        4
+      ],
+      "original_spec": {
+        "choices": [
+          "25/54",
+          "5/3",
+          "2/3",
+          "3/2"
+        ],
+        "expression": {
+          "left": {
+            "value": "5/6"
+          },
+          "op": "div",
+          "right": {
+            "value": "5/9"
+          }
+        },
+        "kind": "exact_value",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let q be a unitless number, defined by q = ((5/6) / (5/9)). What is its exact value?",
+        "choices": [
+          "25/54",
+          "5/3",
+          "2/3",
+          "3/2"
+        ],
+        "expectedAnswer": "3/2",
+        "explanation": "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (9/5) = 45/30 = 3/2. The answer is 3/2.",
+        "choiceExplanations": {
+          "25/54": "The expression evaluates exactly to 3/2, not 25/54. 25/54 is not the requested value.",
+          "5/3": "The expression evaluates exactly to 3/2, not 5/3. 5/3 is not the requested value.",
+          "2/3": "The expression evaluates exactly to 3/2, not 2/3. 2/3 is not the requested value.",
+          "3/2": "The expression evaluates exactly to 3/2; 3/2 is the requested value."
+        }
+      },
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = ((5/6) / (5/9)). What is its exact value?",
+        "choices": [
+          "25/54",
+          "5/3",
+          "2/3",
+          "3/2"
+        ],
+        "expectedAnswer": "3/2",
+        "explanation": "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (9/5) = 45/30 = 3/2. The answer is 3/2.",
+        "topic": "Fraction and decimal arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": null,
+      "gold": {
+        "main_support": "supported",
+        "expected_valid": true,
+        "unique_answer": "3/2",
+        "expected_explanation_flag": false,
+        "main_proof": "Every printed arithmetic equality was checked by exact rational calculation; the explicit minimum uses exhaustive domain enumeration.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Exact new compiler learner fields are recorded separately. The audit-only question view omits all four choice-feedback fields just as the real main-only audit does."
+    },
+    {
+      "id": "false_main:0",
+      "batch": 1,
+      "original_source": [
+        "quantitative",
+        0,
+        0
+      ],
+      "original_spec": {
+        "choices": [
+          "7/12",
+          "1/2",
+          "2/3",
+          "5/12"
+        ],
+        "expression": {
+          "left": {
+            "value": "3/4"
+          },
+          "op": "sub",
+          "right": {
+            "value": "1/6"
+          }
+        },
+        "kind": "exact_value",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let q be a unitless number, defined by q = ((3/4) - (1/6)). What is its exact value?",
+        "choices": [
+          "7/12",
+          "1/2",
+          "2/3",
+          "5/12"
+        ],
+        "expectedAnswer": "7/12",
+        "explanation": "Common denominator 12: (3/4) - (1/6) = (9/12) - (2/12) = 7/12. The answer is 7/12.",
+        "choiceExplanations": {
+          "7/12": "The expression evaluates exactly to 7/12; 7/12 is the requested value.",
+          "1/2": "The expression evaluates exactly to 7/12, not 1/2. 1/2 is not the requested value.",
+          "2/3": "The expression evaluates exactly to 7/12, not 2/3. 2/3 is not the requested value.",
+          "5/12": "The expression evaluates exactly to 7/12, not 5/12. 5/12 is not the requested value."
+        }
+      },
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = ((3/4) - (1/6)). What is its exact value?",
+        "choices": [
+          "7/12",
+          "1/2",
+          "2/3",
+          "5/12"
+        ],
+        "expectedAnswer": "7/12",
+        "explanation": "Common denominator 12: (3/4) - (1/6) = (9/12) - (2/12) = 8/12. The answer is 7/12.",
+        "topic": "Fraction and decimal arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": {
+        "field": "explanation",
+        "before": " = 7/12.",
+        "after": " = 8/12.",
+        "count": 1
+      },
+      "gold": {
+        "main_support": "unsupported",
+        "expected_valid": false,
+        "unique_answer": "7/12",
+        "expected_explanation_flag": true,
+        "main_proof": "The converted numerators are 9 and 2, so subtraction gives 7/12, not 8/12.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Evaluator-authored bad main. This is an auditor control, never an approved compiled item; no private compiler provenance or release stamp is created."
+    },
+    {
+      "id": "false_main:1",
+      "batch": 1,
+      "original_source": [
+        "quantitative",
+        0,
+        1
+      ],
+      "original_spec": {
+        "choices": [
+          "4/3",
+          "3/2",
+          "6/7",
+          "2"
+        ],
+        "expression": {
+          "left": {
+            "value": "2/3"
+          },
+          "op": "mul",
+          "right": {
+            "value": "9/4"
+          }
+        },
+        "kind": "exact_value",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let q be a unitless number, defined by q = ((2/3) * (9/4)). What is its exact value?",
+        "choices": [
+          "4/3",
+          "3/2",
+          "6/7",
+          "2"
+        ],
+        "expectedAnswer": "3/2",
+        "explanation": "Multiply numerators and denominators: (2/3) * (9/4) = 18/12 = 3/2. The answer is 3/2.",
+        "choiceExplanations": {
+          "4/3": "The expression evaluates exactly to 3/2, not 4/3. 4/3 is not the requested value.",
+          "3/2": "The expression evaluates exactly to 3/2; 3/2 is the requested value.",
+          "6/7": "The expression evaluates exactly to 3/2, not 6/7. 6/7 is not the requested value.",
+          "2": "The expression evaluates exactly to 3/2, not 2. 2 is not the requested value."
+        }
+      },
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = ((2/3) * (9/4)). What is its exact value?",
+        "choices": [
+          "4/3",
+          "3/2",
+          "6/7",
+          "2"
+        ],
+        "expectedAnswer": "3/2",
+        "explanation": "Multiply numerators and denominators: (2/3) * (9/4) = 18/10 = 3/2. The answer is 3/2.",
+        "topic": "Fraction and decimal arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": {
+        "field": "explanation",
+        "before": " = 18/12 = ",
+        "after": " = 18/10 = ",
+        "count": 1
+      },
+      "gold": {
+        "main_support": "unsupported",
+        "expected_valid": false,
+        "unique_answer": "3/2",
+        "expected_explanation_flag": true,
+        "main_proof": "The denominator product is 3*4=12, not 10; 18/10=9/5 is not 3/2.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Evaluator-authored bad main. This is an auditor control, never an approved compiled item; no private compiler provenance or release stamp is created."
+    },
+    {
+      "id": "false_main:2",
+      "batch": 1,
+      "original_source": [
+        "quantitative",
+        0,
+        2
+      ],
+      "original_spec": {
+        "choices": [
+          "2.25",
+          "1.81",
+          "2.45",
+          "2.35"
+        ],
+        "expression": {
+          "left": {
+            "value": "1.75"
+          },
+          "op": "add",
+          "right": {
+            "value": "0.6"
+          }
+        },
+        "kind": "exact_value",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let q be a unitless number, defined by q = ((7/4) + (3/5)). What is its exact value?",
+        "choices": [
+          "9/4",
+          "181/100",
+          "49/20",
+          "47/20"
+        ],
+        "expectedAnswer": "47/20",
+        "explanation": "Common denominator 20: (7/4) + (3/5) = (35/20) + (12/20) = 47/20. The answer is 47/20.",
+        "choiceExplanations": {
+          "9/4": "The expression evaluates exactly to 47/20, not 9/4. 9/4 is not the requested value.",
+          "181/100": "The expression evaluates exactly to 47/20, not 181/100. 181/100 is not the requested value.",
+          "49/20": "The expression evaluates exactly to 47/20, not 49/20. 49/20 is not the requested value.",
+          "47/20": "The expression evaluates exactly to 47/20; 47/20 is the requested value."
+        }
+      },
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = ((7/4) + (3/5)). What is its exact value?",
+        "choices": [
+          "9/4",
+          "181/100",
+          "49/20",
+          "47/20"
+        ],
+        "expectedAnswer": "47/20",
+        "explanation": "Common denominator 20: (7/4) + (3/5) = (34/20) + (12/20) = 47/20. The answer is 47/20.",
+        "topic": "Fraction and decimal arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": {
+        "field": "explanation",
+        "before": "(35/20) +",
+        "after": "(34/20) +",
+        "count": 1
+      },
+      "gold": {
+        "main_support": "unsupported",
+        "expected_valid": false,
+        "unique_answer": "47/20",
+        "expected_explanation_flag": true,
+        "main_proof": "7/4=35/20, not 34/20; 34/20+12/20=46/20, not 47/20.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Evaluator-authored bad main. This is an auditor control, never an approved compiled item; no private compiler provenance or release stamp is created."
+    },
+    {
+      "id": "false_main:3",
+      "batch": 1,
+      "original_source": [
+        "quantitative",
+        0,
+        3
+      ],
+      "original_spec": {
+        "choices": [
+          "11",
+          "13",
+          "14",
+          "15"
+        ],
+        "condition": {
+          "left": {
+            "left": {
+              "value": "3"
+            },
+            "op": "mul",
+            "right": {
+              "variable": "x"
+            }
+          },
+          "relation": "gt",
+          "right": {
+            "value": "40"
+          }
+        },
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 1,
+          "upper": 20
+        },
+        "kind": "scalar_condition",
+        "selection": "minimum",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: (3 * x) > 40. What is the minimum x in this domain satisfying the condition?",
+        "choices": [
+          "11",
+          "13",
+          "14",
+          "15"
+        ],
+        "expectedAnswer": "14",
+        "explanation": "At x = 14, 42 > 40 is true. 14 is the minimum value satisfying the condition in this domain. Every smaller value in the stated domain fails the condition.",
+        "choiceExplanations": {
+          "11": "At x = 11, 33 > 40 is false. This value does not satisfy the condition.",
+          "13": "At x = 13, 39 > 40 is false. This value does not satisfy the condition.",
+          "14": "At x = 14, 42 > 40 is true. This is the minimum value satisfying the condition in this domain.",
+          "15": "At x = 15, 45 > 40 is true. The question asks for the minimum; that value is 14."
+        }
+      },
+      "question": {
+        "prompt": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: (3 * x) > 40. What is the minimum x in this domain satisfying the condition?",
+        "choices": [
+          "11",
+          "13",
+          "14",
+          "15"
+        ],
+        "expectedAnswer": "14",
+        "explanation": "At x = 14, 42 > 40 is true. 14 is the minimum value satisfying the condition in this domain. Every larger value in the stated domain fails the condition.",
+        "topic": "Explicit minimum and maximum conditions",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": {
+        "field": "explanation",
+        "before": "Every smaller value",
+        "after": "Every larger value",
+        "count": 1
+      },
+      "gold": {
+        "main_support": "unsupported",
+        "expected_valid": false,
+        "unique_answer": "14",
+        "expected_explanation_flag": true,
+        "main_proof": "The larger permitted integer 15 satisfies 3*15=45>40. Thus not every larger domain value fails. The minimum remains 14.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Evaluator-authored bad main. This is an auditor control, never an approved compiled item; no private compiler provenance or release stamp is created."
+    },
+    {
+      "id": "false_main:4",
+      "batch": 1,
+      "original_source": [
+        "quantitative",
+        0,
+        4
+      ],
+      "original_spec": {
+        "choices": [
+          "25/54",
+          "5/3",
+          "2/3",
+          "3/2"
+        ],
+        "expression": {
+          "left": {
+            "value": "5/6"
+          },
+          "op": "div",
+          "right": {
+            "value": "5/9"
+          }
+        },
+        "kind": "exact_value",
+        "unit": "unitless"
+      },
+      "recompiled_learner": {
+        "prompt": "Let q be a unitless number, defined by q = ((5/6) / (5/9)). What is its exact value?",
+        "choices": [
+          "25/54",
+          "5/3",
+          "2/3",
+          "3/2"
+        ],
+        "expectedAnswer": "3/2",
+        "explanation": "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (9/5) = 45/30 = 3/2. The answer is 3/2.",
+        "choiceExplanations": {
+          "25/54": "The expression evaluates exactly to 3/2, not 25/54. 25/54 is not the requested value.",
+          "5/3": "The expression evaluates exactly to 3/2, not 5/3. 5/3 is not the requested value.",
+          "2/3": "The expression evaluates exactly to 3/2, not 2/3. 2/3 is not the requested value.",
+          "3/2": "The expression evaluates exactly to 3/2; 3/2 is the requested value."
+        }
+      },
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = ((5/6) / (5/9)). What is its exact value?",
+        "choices": [
+          "25/54",
+          "5/3",
+          "2/3",
+          "3/2"
+        ],
+        "expectedAnswer": "3/2",
+        "explanation": "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (5/9) = 45/30 = 3/2. The answer is 3/2.",
+        "topic": "Fraction and decimal arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {}
+      },
+      "controlled_mutation": {
+        "field": "explanation",
+        "before": " * (9/5) = ",
+        "after": " * (5/9) = ",
+        "count": 1
+      },
+      "gold": {
+        "main_support": "unsupported",
+        "expected_valid": false,
+        "unique_answer": "3/2",
+        "expected_explanation_flag": true,
+        "main_proof": "The reciprocal of 5/9 is 9/5, not 5/9. Multiplication by 5/9 gives 25/54 rather than 3/2.",
+        "minimum_difficulty_for_positive_admission": 2
+      },
+      "provenance_note": "Evaluator-authored bad main. This is an auditor control, never an approved compiled item; no private compiler provenance or release stamp is created."
+    }
+  ],
+  "claim_limits": [
+    "Five familiar initial numerical specs, not fresh generations.",
+    "Worked renderer and native issueFlags contract both changed from failed historical capture; no isolated causal attribution.",
+    "False copies differ only in one material main-explanation claim; correct stems, choices and exact keys remain unchanged.",
+    "This stage-only diagnostic never creates a compiled approval or releases learner content."
+  ]
+}

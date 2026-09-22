@@ -1,0 +1,89 @@
+{
+  "reviewer": "root",
+  "control_sha256": "3463294975e19e8f1f71a562a77a4f79c57bbea712418ce6eba569a39b97795f",
+  "method": "Direct independently written Fraction arithmetic, enumeration of all 20 bounded integers, and paired payload comparison; no provider calls or compiler oracle used. Root read gold and source before review, so not blind.",
+  "approved": true,
+  "cases": [
+    {
+      "source_index": 0,
+      "answer": "7/12",
+      "sound_main": "Common denominator 12: (3/4) - (1/6) = (9/12) - (2/12) = 7/12. The answer is 7/12.",
+      "false_main": "Common denominator 12: (3/4) - (1/6) = (9/12) - (2/12) = 8/12. The answer is 7/12.",
+      "proof": {
+        "true": "9/12 - 2/12 = 7/12",
+        "false": "9/12 - 2/12 = 8/12",
+        "counterexample": "7/12"
+      },
+      "sound_main_supported": true,
+      "corrupt_main_supported": false,
+      "scope_and_minimum_difficulty_2": true,
+      "tasks_choices_keys_unchanged": true,
+      "exactly_one_main_span_changed": true
+    },
+    {
+      "source_index": 1,
+      "answer": "3/2",
+      "sound_main": "Multiply numerators and denominators: (2/3) * (9/4) = 18/12 = 3/2. The answer is 3/2.",
+      "false_main": "Multiply numerators and denominators: (2/3) * (9/4) = 18/10 = 3/2. The answer is 3/2.",
+      "proof": {
+        "true": "(2/3) * (9/4) = 18/12 = 3/2",
+        "false": "18/10 = 3/2",
+        "counterexample": "9/5"
+      },
+      "sound_main_supported": true,
+      "corrupt_main_supported": false,
+      "scope_and_minimum_difficulty_2": true,
+      "tasks_choices_keys_unchanged": true,
+      "exactly_one_main_span_changed": true
+    },
+    {
+      "source_index": 2,
+      "answer": "47/20",
+      "sound_main": "Common denominator 20: (7/4) + (3/5) = (35/20) + (12/20) = 47/20. The answer is 47/20.",
+      "false_main": "Common denominator 20: (7/4) + (3/5) = (34/20) + (12/20) = 47/20. The answer is 47/20.",
+      "proof": {
+        "true": "7/4 = 35/20",
+        "false": "7/4 = 34/20",
+        "counterexample": "1/20 nonzero difference"
+      },
+      "sound_main_supported": true,
+      "corrupt_main_supported": false,
+      "scope_and_minimum_difficulty_2": true,
+      "tasks_choices_keys_unchanged": true,
+      "exactly_one_main_span_changed": true
+    },
+    {
+      "source_index": 3,
+      "answer": "14",
+      "sound_main": "At x = 14, 42 > 40 is true. 14 is the minimum value satisfying the condition in this domain. Every smaller value in the stated domain fails the condition.",
+      "false_main": "At x = 14, 42 > 40 is true. 14 is the minimum value satisfying the condition in this domain. Every larger value in the stated domain fails the condition.",
+      "proof": {
+        "true": "Every smaller allowed integer fails 3*x > 40",
+        "false": "Every larger allowed integer fails 3*x > 40",
+        "counterexample": "x=15 is in [1,20], greater than 14, and 3*15=45 > 40"
+      },
+      "sound_main_supported": true,
+      "corrupt_main_supported": false,
+      "scope_and_minimum_difficulty_2": true,
+      "tasks_choices_keys_unchanged": true,
+      "exactly_one_main_span_changed": true
+    },
+    {
+      "source_index": 4,
+      "answer": "3/2",
+      "sound_main": "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (9/5) = 45/30 = 3/2. The answer is 3/2.",
+      "false_main": "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (5/9) = 45/30 = 3/2. The answer is 3/2.",
+      "proof": {
+        "true": "(5/6) / (5/9) = (5/6) * (9/5) = 3/2",
+        "false": "(5/6) * (5/9) = 3/2",
+        "counterexample": "25/54"
+      },
+      "sound_main_supported": true,
+      "corrupt_main_supported": false,
+      "scope_and_minimum_difficulty_2": true,
+      "tasks_choices_keys_unchanged": true,
+      "exactly_one_main_span_changed": true
+    }
+  ],
+  "limits": "Ten familiar component controls, not full-worker quality or generalization evidence."
+}
