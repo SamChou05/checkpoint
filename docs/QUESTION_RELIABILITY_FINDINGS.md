@@ -55,8 +55,8 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,185
-tests. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
+The tested structural changes are on main. Backend verification passes 1,222
+tests after mixed-route integration. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter
 deadline independent of a background-worker reasoning rollout.
@@ -163,11 +163,24 @@ rational evaluation derives the key and all five teaching fields. It rejects
 numerically equivalent choices, no offered answer and multiple offered answers,
 including both roots of an unrestricted equation. A visibly nonnegative domain
 or minimum task is a different explicit specification, never an inferred repair
-to existing prose. The compiler remains inactive: no production route imports it,
-and it does not establish distractor plausibility, goal fit, difficulty, grammar
-or general factual accuracy. Its 34 test groups include 3,780 independent oracle
-cases. Final integration passes 1,185 backend tests and SAM build; all 24 source
-modules match each of three artifacts, with 270 offline packaged SDK checks.
+to existing prose. Main now contains an opt-in mixed route: the author may emit
+a bounded numerical specification or an ordinary prose question. Trusted server
+provenance follows compiled items through filtering and reindexing; the final
+release recompiles their original specifications and preserves every teaching
+field exactly. Reviewer-written text cannot replace compiled teaching. Existing
+model vetoes and topic/difficulty gates still apply. Only this complete compiled
+route earns policy 6; ordinary native questions retain policy 4, and the client
+minimum remains 2. No defaults or deployed configuration changed.
+
+This bounded guarantee does not establish distractor plausibility, goal fit,
+difficulty, grammar or general factual accuracy. The compiler tests include
+3,780 independent oracle cases. Integrated verification passes 1,222 backend
+tests; all 25 runtime source modules match each of three SAM artifacts, with
+273 offline packaged SDK configuration checks. Shared compiler fixtures also
+survive bank serialization, claim/replay, iOS decoding, all 24 choice orders,
+grading and feedback display. A separate fresh mixed-route trial must establish
+live grammar support, useful yield and independently sound returned content
+before this mode can be considered for rollout.
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
 confirmed that signed Mantle metadata requests work with the existing AWS
