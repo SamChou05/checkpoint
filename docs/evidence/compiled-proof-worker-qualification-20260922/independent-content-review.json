@@ -1,0 +1,326 @@
+{
+  "reviewer": "schema_reuse_review",
+  "reviewed_at_utc": "2026-09-22T13:33:24.786251+00:00",
+  "capture_sha256": "7d458b0f433018df5fa20c7d47c49f7c143c63f7201340a644df6ca31d37b0d3",
+  "blind_review_sha256": "0d3318f5ef391067abdcedb84a1cbac2a359c448c5142a28a52100443297389f",
+  "blind_boundary_preserved": true,
+  "method": "Blind review was written and its SHA sent to root before reading capture answers or teaching. This second review covers every returned main and all supplied choice feedback, without provider calls, model adjudication, capture edits, or changing the locked answers. Root owns separate compiler/source provenance recomputation.",
+  "planned_denominator": 15,
+  "returned_denominator": 10,
+  "summary": {
+    "independently_supported_items": 8,
+    "defective_or_underdetermined_items": 2,
+    "unique_keys_matching_blind_answers": 8,
+    "keys_matching_likely_intent_but_no_unique_literal_task": 2,
+    "compiled_items_observed": 3,
+    "prose_items_observed": 7,
+    "supplied_choice_feedback_statements": 12,
+    "supported_supplied_choice_feedback_statements": 12,
+    "empty_prose_feedback_maps": 7,
+    "qualification_passes": false
+  },
+  "prospective_criteria": {
+    "returned_total_of_15": 14,
+    "minimum_per_job": 4,
+    "compiled_total": 6,
+    "quantitative_job_compiled": 4,
+    "mixed_job_compiled": 2,
+    "mixed_job_english_prose": 1,
+    "all_returned_content_independently_sound": true,
+    "compiled_fields_exactly_original": true,
+    "prose_main_exactly_authored": true,
+    "prose_feedback_must_be_empty": true,
+    "all_jobs_in_denominator": true,
+    "scope_and_difficulty_required": true
+  },
+  "criteria_assessment": {
+    "yield": {
+      "passes": false,
+      "observed_total": 10,
+      "required_total": 14,
+      "per_job_observed": {
+        "quantitative": 2,
+        "python": 5,
+        "mixed": 3
+      },
+      "minimum_per_job": 4
+    },
+    "compiled_count": {
+      "passes": false,
+      "observed_total": 3,
+      "required_total": 6,
+      "quantitative_observed": 2,
+      "quantitative_required": 4,
+      "mixed_observed": 1,
+      "mixed_required": 2
+    },
+    "all_returned_content_sound": {
+      "passes": false,
+      "failed_items": [
+        "mixed:1",
+        "mixed:2"
+      ],
+      "reason": "Neither English sentence supplies a self-contained task; mixed:2 additionally requires an unstated tense constraint to exclude other grammatically valid offered replacements."
+    },
+    "deadlines": {
+      "passes_as_recorded": true,
+      "elapsed_seconds": {
+        "quantitative": 166.077081,
+        "python": 68.278195,
+        "mixed": 137.222157
+      }
+    },
+    "provenance": "Not independently recomputed in this content review; handled separately by root."
+  },
+  "items": [
+    {
+      "id": "quantitative:0",
+      "returned_key": "5/48",
+      "matches_blind_unique_answer": true,
+      "matches_blind_likely_intended_answer": null,
+      "stem_verdict_unchanged": "supported",
+      "main_explanation": {
+        "judgment": "supported",
+        "basis": "3/4 - 2/3 = 9/12 - 8/12 = 1/12; (1/12)/(4/5) = (1/12)*(5/4) = 5/48."
+      },
+      "choice_feedback_mode": "all_four_supplied",
+      "choice_feedback": [
+        {
+          "choice": "5/48",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        },
+        {
+          "choice": "15/16",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        },
+        {
+          "choice": "16/15",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        },
+        {
+          "choice": "48/5",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        }
+      ],
+      "policy_revision_observed": 8,
+      "difficulty_label_observed": 2,
+      "independent_difficulty": 3,
+      "overall_item_judgment": "supported",
+      "scope_assignment_fit": true
+    },
+    {
+      "id": "quantitative:1",
+      "returned_key": "39/16",
+      "matches_blind_unique_answer": true,
+      "matches_blind_likely_intended_answer": null,
+      "stem_verdict_unchanged": "supported",
+      "main_explanation": {
+        "judgment": "supported",
+        "basis": "(7/8)/(2/5) = (7/8)*(5/2) = 35/16; 35/16 + 1/4 = 39/16."
+      },
+      "choice_feedback_mode": "all_four_supplied",
+      "choice_feedback": [
+        {
+          "choice": "39/16",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        },
+        {
+          "choice": "35/32",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        },
+        {
+          "choice": "47/40",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        },
+        {
+          "choice": "51/32",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        }
+      ],
+      "policy_revision_observed": 8,
+      "difficulty_label_observed": 3,
+      "independent_difficulty": 3,
+      "overall_item_judgment": "supported",
+      "scope_assignment_fit": true
+    },
+    {
+      "id": "python:0",
+      "returned_key": "'b'",
+      "matches_blind_unique_answer": true,
+      "matches_blind_likely_intended_answer": null,
+      "stem_verdict_unchanged": "supported",
+      "main_explanation": {
+        "judgment": "supported",
+        "basis": "True is a bool and an integer index equal to 1; zero-based list index 1 contains the string b."
+      },
+      "choice_feedback_mode": "empty_allowed_prose_fallback",
+      "choice_feedback": [],
+      "policy_revision_observed": 7,
+      "difficulty_label_observed": 2,
+      "independent_difficulty": 2,
+      "overall_item_judgment": "supported",
+      "scope_assignment_fit": true
+    },
+    {
+      "id": "python:1",
+      "returned_key": "False",
+      "matches_blind_unique_answer": true,
+      "matches_blind_likely_intended_answer": null,
+      "stem_verdict_unchanged": "supported",
+      "main_explanation": {
+        "judgment": "supported",
+        "basis": "The comparison chain requires both 3 < 5 and 5 < 2. The second comparison is false, so the bool result is False."
+      },
+      "choice_feedback_mode": "empty_allowed_prose_fallback",
+      "choice_feedback": [],
+      "policy_revision_observed": 7,
+      "difficulty_label_observed": 2,
+      "independent_difficulty": 2,
+      "overall_item_judgment": "supported",
+      "scope_assignment_fit": true
+    },
+    {
+      "id": "python:2",
+      "returned_key": "[1, 2]",
+      "matches_blind_unique_answer": true,
+      "matches_blind_likely_intended_answer": null,
+      "stem_verdict_unchanged": "supported",
+      "main_explanation": {
+        "judgment": "supported",
+        "basis": "The general rule includes the all-falsy final-operand case. The empty first list causes this expression to return the second list. The statement that the returned list is truthy is correct and does not assert that the expression returns a bool."
+      },
+      "choice_feedback_mode": "empty_allowed_prose_fallback",
+      "choice_feedback": [],
+      "policy_revision_observed": 7,
+      "difficulty_label_observed": 2,
+      "independent_difficulty": 2,
+      "overall_item_judgment": "supported",
+      "scope_assignment_fit": true
+    },
+    {
+      "id": "python:3",
+      "returned_key": "10",
+      "matches_blind_unique_answer": true,
+      "matches_blind_likely_intended_answer": null,
+      "stem_verdict_unchanged": "supported",
+      "main_explanation": {
+        "judgment": "supported",
+        "basis": "Starting at x = 5, the condition x > 3 is true, so x becomes 5 * 2 = 10; the else branch does not execute."
+      },
+      "choice_feedback_mode": "empty_allowed_prose_fallback",
+      "choice_feedback": [],
+      "policy_revision_observed": 7,
+      "difficulty_label_observed": 2,
+      "independent_difficulty": 2,
+      "overall_item_judgment": "supported",
+      "scope_assignment_fit": true
+    },
+    {
+      "id": "python:4",
+      "returned_key": "1",
+      "matches_blind_unique_answer": true,
+      "matches_blind_likely_intended_answer": null,
+      "stem_verdict_unchanged": "supported",
+      "main_explanation": {
+        "judgment": "supported",
+        "basis": "Index -1 selects the final element of the three-element list, which is the integer 1."
+      },
+      "choice_feedback_mode": "empty_allowed_prose_fallback",
+      "choice_feedback": [],
+      "policy_revision_observed": 7,
+      "difficulty_label_observed": 2,
+      "independent_difficulty": 2,
+      "overall_item_judgment": "supported",
+      "scope_assignment_fit": true
+    },
+    {
+      "id": "mixed:0",
+      "returned_key": "-10/3",
+      "matches_blind_unique_answer": true,
+      "matches_blind_likely_intended_answer": null,
+      "stem_verdict_unchanged": "supported",
+      "main_explanation": {
+        "judgment": "supported",
+        "basis": "(-5/2) * 4 = -10; dividing by 3 gives exactly -10/3. -333/100 is a rounded decimal value, not an equal rational."
+      },
+      "choice_feedback_mode": "all_four_supplied",
+      "choice_feedback": [
+        {
+          "choice": "-10/3",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        },
+        {
+          "choice": "-333/100",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        },
+        {
+          "choice": "-10",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        },
+        {
+          "choice": "3/2",
+          "judgment": "supported",
+          "basis": "The exact independent evaluation in the blind lock equals the named result; the alternative is numerically distinct and therefore is not the requested exact value."
+        }
+      ],
+      "policy_revision_observed": 8,
+      "difficulty_label_observed": 2,
+      "independent_difficulty": 2,
+      "overall_item_judgment": "supported",
+      "scope_assignment_fit": true
+    },
+    {
+      "id": "mixed:1",
+      "returned_key": "its findings",
+      "matches_blind_unique_answer": null,
+      "matches_blind_likely_intended_answer": true,
+      "stem_verdict_unchanged": "defective",
+      "main_explanation": {
+        "judgment": "supported conditional explanation; incomplete as justification of a unique answer",
+        "basis": "Its can correctly refer to singular collective team treated as a unit. This does not supply the missing editing instruction or rule out a researchers antecedent for their. The mathematical/Python standard of evaluating the literal supplied task is applied consistently: no task or referent restriction is inferred to rescue this item."
+      },
+      "choice_feedback_mode": "empty_allowed_prose_fallback",
+      "choice_feedback": [],
+      "policy_revision_observed": 7,
+      "difficulty_label_observed": 2,
+      "independent_difficulty": null,
+      "overall_item_judgment": "fails_self_contained_unique_task",
+      "scope_assignment_fit": true
+    },
+    {
+      "id": "mixed:2",
+      "returned_key": "were satisfied",
+      "matches_blind_unique_answer": null,
+      "matches_blind_likely_intended_answer": true,
+      "stem_verdict_unchanged": "defective",
+      "main_explanation": {
+        "judgment": "underqualified necessity claim",
+        "basis": "Nearer-subject plural agreement supports were when retaining the original simple-past tense. Agreement alone does not require were rather than have been or are being. The missing task and tense restriction independently prevent a unique answer. This is an incomplete justification, not a claim that were is itself ungrammatical."
+      },
+      "choice_feedback_mode": "empty_allowed_prose_fallback",
+      "choice_feedback": [],
+      "policy_revision_observed": 7,
+      "difficulty_label_observed": 3,
+      "independent_difficulty": null,
+      "overall_item_judgment": "fails_self_contained_unique_task",
+      "scope_assignment_fit": true
+    }
+  ],
+  "limits": [
+    "Choice plausibility is a human judgment of the supplied options; no empirical distractor-selection evidence is available.",
+    "The first arithmetic item is reasonably classified at difficulty 2 or 3; the blind review chose 3, while the returned label is 2. Both meet the predeclared floor.",
+    "Private model reasons and rejected attempts were not used to decide learner-content correctness.",
+    "No earlier trial result or semantic criterion was rewritten."
+  ]
+}

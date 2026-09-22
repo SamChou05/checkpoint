@@ -1,0 +1,207 @@
+{
+  "reviewer": "schema_reuse_review",
+  "review_kind": "independent blind stem-and-choice assessment",
+  "locked_at_utc": "2026-09-22T13:31:42.823007+00:00",
+  "capture_sha256_declared_by_projection": "7d458b0f433018df5fa20c7d47c49f7c143c63f7201340a644df6ca31d37b0d3",
+  "blind_items_sha256": "0dfafe667dedba2ac7e0b55c7e99f88c2d946ea73bbff5e39044b9c7440a3624",
+  "blind_boundary": "Only AGENTS.md, PLAN.md, and blind-items.json were opened. capture.json, expected answers, learner teaching, provenance, and model judgments were not opened before this lock. Arithmetic was independently checked using fractions.Fraction and the five supplied Python cases using local Python. No model or provider calls.",
+  "planned_denominator": 15,
+  "returned_denominator": 10,
+  "summary": {
+    "supported_determinate_stems": 8,
+    "defective_or_underdetermined_stems": 2,
+    "difficulty_2_or_3_supported": 8,
+    "unassessable_difficulty_due_to_missing_task": 2
+  },
+  "items": [
+    {
+      "id": "quantitative:0",
+      "blind_choice": "C",
+      "answer_text": "5/48",
+      "proof": "3/4 - 2/3 = 9/12 - 8/12 = 1/12; (1/12)/(4/5) = (1/12)*(5/4) = 5/48.",
+      "unique_correct_answer": true,
+      "equivalent_choices": [],
+      "sufficient_premises": true,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": 3,
+      "difficulty_meets_minimum_2": true,
+      "choice_plausibility": {
+        "judgment": "supported",
+        "note": "Fraction alternatives are distinct; reciprocal and omitted-operand results are plausible novice confusions."
+      },
+      "stem_status": "supported",
+      "uncertainties": []
+    },
+    {
+      "id": "quantitative:1",
+      "blind_choice": "B",
+      "answer_text": "39/16",
+      "proof": "(7/8)/(2/5) = (7/8)*(5/2) = 35/16; 35/16 + 1/4 = 39/16.",
+      "unique_correct_answer": true,
+      "equivalent_choices": [],
+      "sufficient_premises": true,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": 3,
+      "difficulty_meets_minimum_2": true,
+      "choice_plausibility": {
+        "judgment": "supported",
+        "note": "All fractions are distinct and plausible competing fraction-calculation results, though their particular error derivations are not supplied."
+      },
+      "stem_status": "supported",
+      "uncertainties": []
+    },
+    {
+      "id": "python:0",
+      "blind_choice": "B",
+      "answer_text": "'b'",
+      "proof": "True is a bool and an integer index equal to 1; zero-based list index 1 contains the string b.",
+      "unique_correct_answer": true,
+      "equivalent_choices": [],
+      "sufficient_premises": true,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": 2,
+      "difficulty_meets_minimum_2": true,
+      "choice_plausibility": {
+        "judgment": "supported",
+        "note": "IndexError, the first element, and returning the index itself are distinct plausible mistakes."
+      },
+      "stem_status": "supported",
+      "uncertainties": []
+    },
+    {
+      "id": "python:1",
+      "blind_choice": "B",
+      "answer_text": "False",
+      "proof": "The comparison chain requires both 3 < 5 and 5 < 2. The second comparison is false, so the bool result is False.",
+      "unique_correct_answer": true,
+      "equivalent_choices": [],
+      "sufficient_premises": true,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": 2,
+      "difficulty_meets_minimum_2": true,
+      "choice_plausibility": {
+        "judgment": "supported",
+        "note": "Choices distinguish bool result, the last literal, and a syntax misunderstanding; True and False are distinct."
+      },
+      "stem_status": "supported",
+      "uncertainties": []
+    },
+    {
+      "id": "python:2",
+      "blind_choice": "B",
+      "answer_text": "[1, 2]",
+      "proof": "An empty list is false in a Boolean context. For this two-operand or expression, Python returns the second operand, the nonempty list [1, 2].",
+      "unique_correct_answer": true,
+      "equivalent_choices": [],
+      "sufficient_premises": true,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": 2,
+      "difficulty_meets_minimum_2": true,
+      "choice_plausibility": {
+        "judgment": "supported",
+        "note": "Boolean coercion and selecting the first operand are plausible errors. False and [] differ as values/types, as do True and [1, 2]."
+      },
+      "stem_status": "supported",
+      "uncertainties": []
+    },
+    {
+      "id": "python:3",
+      "blind_choice": "A",
+      "answer_text": "10",
+      "proof": "Starting at x = 5, the condition x > 3 is true, so x becomes 5 * 2 = 10; the else branch does not execute.",
+      "unique_correct_answer": true,
+      "equivalent_choices": [],
+      "sufficient_premises": true,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": 2,
+      "difficulty_meets_minimum_2": true,
+      "choice_plausibility": {
+        "judgment": "supported",
+        "note": "6 follows the wrong branch, 5 ignores the assignment, and 3 confuses the comparison threshold with the result."
+      },
+      "stem_status": "supported",
+      "uncertainties": []
+    },
+    {
+      "id": "python:4",
+      "blind_choice": "A",
+      "answer_text": "1",
+      "proof": "Index -1 selects the final element of the three-element list, which is the integer 1.",
+      "unique_correct_answer": true,
+      "equivalent_choices": [],
+      "sufficient_premises": true,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": 2,
+      "difficulty_meets_minimum_2": true,
+      "choice_plausibility": {
+        "judgment": "supported",
+        "note": "The first element, middle element, and invalid-negative-index misconception are distinct plausible alternatives."
+      },
+      "stem_status": "supported",
+      "uncertainties": []
+    },
+    {
+      "id": "mixed:0",
+      "blind_choice": "C",
+      "answer_text": "-10/3",
+      "proof": "(-5/2) * 4 = -10; dividing by 3 gives exactly -10/3. -333/100 is a rounded decimal value, not an equal rational.",
+      "unique_correct_answer": true,
+      "equivalent_choices": [],
+      "sufficient_premises": true,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": 2,
+      "difficulty_meets_minimum_2": true,
+      "choice_plausibility": {
+        "judgment": "supported",
+        "note": "Omitting the final division, sign/reciprocal confusion, and rounding an exact answer are plausible errors."
+      },
+      "stem_status": "supported",
+      "uncertainties": []
+    },
+    {
+      "id": "mixed:1",
+      "blind_choice": null,
+      "answer_text": null,
+      "likely_intended_choice": "B",
+      "likely_intended_text": "its findings",
+      "proof": "The supplied text is already a complete sentence and contains no question, blank, marked target, or replacement instruction. If asked to preserve a singular-team reference in standard written American English, its findings is defensible. Their findings could instead refer to the plural researchers already mentioned. The literal stem never specifies the antecedent or asks for either interpretation.",
+      "unique_correct_answer": false,
+      "equivalent_choices": [],
+      "sufficient_premises": false,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": null,
+      "difficulty_meets_minimum_2": null,
+      "choice_plausibility": {
+        "judgment": "uncertain",
+        "note": "Pronoun/reference alternatives are on topic, but no stated task makes their validity assessable as a unique choice."
+      },
+      "stem_status": "defective",
+      "uncertainties": [
+        "The intended operation and tested referent are unstated. Difficulty cannot be assigned to a uniquely specified task."
+      ]
+    },
+    {
+      "id": "mixed:2",
+      "blind_choice": null,
+      "answer_text": null,
+      "likely_intended_choice": "A",
+      "likely_intended_text": "were satisfied",
+      "proof": "The stem is a sentence without a question or marked editing target. Under an inferred instruction to fix agreement while preserving simple past tense, were satisfied is the intended replacement because employees is the nearer coordinated subject. However, have been satisfied and are being satisfied also agree with employees and form grammatical sentences, with different tenses/aspects. No instruction says to retain the original tense.",
+      "unique_correct_answer": false,
+      "equivalent_choices": [],
+      "sufficient_premises": false,
+      "scope_assignment_fit": true,
+      "difficulty_assessed": null,
+      "difficulty_meets_minimum_2": null,
+      "choice_plausibility": {
+        "judgment": "defective",
+        "note": "A, C and D are grammatically valid replacements under a generic agreement-correction interpretation; a tense-preservation requirement would be needed to single out A."
+      },
+      "stem_status": "defective",
+      "uncertainties": [
+        "The intended edit and tense constraint are unstated. The possible replacements are not semantically equivalent, but the prompt does not identify which meaning to select."
+      ]
+    }
+  ],
+  "limits": "Blind labels are the rotated projection labels, not raw author slots. Choice plausibility is a bounded human judgment, not a demonstrated causal model of novice errors. No unstated grammar-editing instruction or tense constraint was supplied."
+}

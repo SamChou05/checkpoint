@@ -1,0 +1,172 @@
+{
+  "capture_sha256": "7d458b0f433018df5fa20c7d47c49f7c143c63f7201340a644df6ca31d37b0d3",
+  "locked_blind_sha256": "72158bf87bf7754b2882161e9912b281ca1340861f65f7eceadfe9f4629f7ac8",
+  "planned": 15,
+  "returned": 10,
+  "sound_returned": 8,
+  "qualification": "failed",
+  "rows": [
+    {
+      "id": "quantitative:0",
+      "stored_key": "5/48",
+      "blind_key_matches": true,
+      "learner_teaching_assessment": "All main and four choice explanations are exact and supported.",
+      "released_content_pass": true,
+      "difficulty_agreement": false,
+      "provider_difficulty": 2,
+      "root_blind_difficulty": 3,
+      "compiler_fields_reproduced": true,
+      "display_orders_checked": 24
+    },
+    {
+      "id": "quantitative:1",
+      "stored_key": "39/16",
+      "blind_key_matches": true,
+      "learner_teaching_assessment": "All main and four choice explanations are exact and supported.",
+      "released_content_pass": true,
+      "difficulty_agreement": true,
+      "provider_difficulty": 3,
+      "root_blind_difficulty": 3,
+      "compiler_fields_reproduced": true,
+      "display_orders_checked": 24
+    },
+    {
+      "id": "python:0",
+      "stored_key": "'b'",
+      "blind_key_matches": true,
+      "learner_teaching_assessment": "Main explanation is correct for this concrete Python expression; empty per-choice feedback is the intended main fallback.",
+      "released_content_pass": true,
+      "difficulty_agreement": true,
+      "provider_difficulty": 2,
+      "root_blind_difficulty": 2,
+      "compiler_fields_reproduced": false,
+      "display_orders_checked": 24
+    },
+    {
+      "id": "python:1",
+      "stored_key": "False",
+      "blind_key_matches": true,
+      "learner_teaching_assessment": "Main explanation is correct for this concrete Python expression; empty per-choice feedback is the intended main fallback.",
+      "released_content_pass": true,
+      "difficulty_agreement": true,
+      "provider_difficulty": 2,
+      "root_blind_difficulty": 2,
+      "compiler_fields_reproduced": false,
+      "display_orders_checked": 24
+    },
+    {
+      "id": "python:2",
+      "stored_key": "[1, 2]",
+      "blind_key_matches": true,
+      "learner_teaching_assessment": "Main explanation is correct for this concrete Python expression; empty per-choice feedback is the intended main fallback.",
+      "released_content_pass": true,
+      "difficulty_agreement": true,
+      "provider_difficulty": 2,
+      "root_blind_difficulty": 2,
+      "compiler_fields_reproduced": false,
+      "display_orders_checked": 24
+    },
+    {
+      "id": "python:3",
+      "stored_key": "10",
+      "blind_key_matches": true,
+      "learner_teaching_assessment": "Main explanation is correct for this concrete Python expression; empty per-choice feedback is the intended main fallback.",
+      "released_content_pass": true,
+      "difficulty_agreement": true,
+      "provider_difficulty": 2,
+      "root_blind_difficulty": 2,
+      "compiler_fields_reproduced": false,
+      "display_orders_checked": 24
+    },
+    {
+      "id": "python:4",
+      "stored_key": "1",
+      "blind_key_matches": true,
+      "learner_teaching_assessment": "Main explanation is correct for this concrete Python expression; empty per-choice feedback is the intended main fallback.",
+      "released_content_pass": true,
+      "difficulty_agreement": true,
+      "provider_difficulty": 2,
+      "root_blind_difficulty": 2,
+      "compiler_fields_reproduced": false,
+      "display_orders_checked": 24
+    },
+    {
+      "id": "mixed:0",
+      "stored_key": "-10/3",
+      "blind_key_matches": true,
+      "learner_teaching_assessment": "All main and four choice explanations are exact and supported.",
+      "released_content_pass": true,
+      "difficulty_agreement": false,
+      "provider_difficulty": 2,
+      "root_blind_difficulty": 3,
+      "compiler_fields_reproduced": true,
+      "display_orders_checked": 24
+    },
+    {
+      "id": "mixed:1",
+      "stored_key": "its findings",
+      "blind_key_matches": null,
+      "learner_teaching_assessment": "Main explanation assumes the unstated task/antecedent or tense needed to make the selected choice uniquely required. It does not cure the incomplete stem.",
+      "released_content_pass": false,
+      "difficulty_agreement": false,
+      "provider_difficulty": 2,
+      "root_blind_difficulty": null,
+      "compiler_fields_reproduced": false,
+      "display_orders_checked": 24
+    },
+    {
+      "id": "mixed:2",
+      "stored_key": "were satisfied",
+      "blind_key_matches": null,
+      "learner_teaching_assessment": "Main explanation assumes the unstated task/antecedent or tense needed to make the selected choice uniquely required. It does not cure the incomplete stem.",
+      "released_content_pass": false,
+      "difficulty_agreement": false,
+      "provider_difficulty": 3,
+      "root_blind_difficulty": null,
+      "compiler_fields_reproduced": false,
+      "display_orders_checked": 24
+    }
+  ],
+  "display_permutations": 240,
+  "display_test_limit": "Offline exact text identity permutations; not a new Swift simulator execution or a proof that an ambiguous stored key is correct.",
+  "compiled_final_fields_reproduced": 3,
+  "scalar_audit_rejection": {
+    "source": [
+      "quantitative",
+      0,
+      3
+    ],
+    "true_key": "6",
+    "full_domain_satisfying": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "main_claims_supported": true,
+    "audit_verdict": "valid:false, explanationSupport:uncertain, explanation flag true",
+    "conclusion": "The supplied main is brief but its witness, minimum and smaller-value claims are mathematically true. The visible audit gives no rationale, so its motivation is unknown; no hidden reasoning was retained or inferred."
+  },
+  "private_solver_review": {
+    "visible_reason_count": 70,
+    "python": {
+      "decisions": "All20 choice judgments and30 pair judgments match the solved concrete tasks.",
+      "wording_caveats": [
+        "Call6 solution2 choiceb: or returns an operand value, not a boolean is valid for this list-valued expression but should not be read as a universal ban on Boolean operands/results.",
+        "Call6 solution3 pairbd/cd: 3 appears nowhere in the computation is imprecise because 3 is present in the condition, although it is not the resulting x. These reasons remain private."
+      ]
+    },
+    "english": {
+      "decisions": "Both sentence-only items were admitted under inferred tasks. Pair distinctness alone does not establish a unique answer.",
+      "material_errors": [
+        "Call9 solution0 choicesa/b and pairab assume team must be the antecedent; researchers is another visible possible antecedent.",
+        "Call9 solution1 choicea invents a requirement to preserve simple past.",
+        "Call9 solution1 choicec says are being satisfied also fails agreement with plural employees; it is a plural verb phrase, so that asserted agreement defect is false."
+      ]
+    }
+  },
+  "overall_conclusion": "Three correct compiled items and five correct Python items have supported learner teaching. The two English items fail the frozen explicit-task and unique-answer requirements. All native calls completed, but neither structure nor agreeing model checks secured English semantic validity. The candidate fails the original15-item yield and compiled quotas as well as released-content requirements."
+}

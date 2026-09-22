@@ -1,0 +1,839 @@
+{
+  "snapshot_sha256": "8ebfa9507d782b908ca08039008e1d77a5d27353c5fdb2bff7660917afadd554",
+  "scope": "Only compile-rejected quantitative rows; accepted/released learner content not inspected. Reachable arithmetic of malformed graphs is diagnostic only; no spec repaired or released.",
+  "author_rows": 13,
+  "compiled_count": 3,
+  "sanitizer_dropped_compiled": 0,
+  "records": [
+    {
+      "source": [
+        "quantitative",
+        0,
+        0
+      ],
+      "kind": "exact_value",
+      "choices": [
+        "1/2",
+        "3/4",
+        "5/6",
+        "7/12"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [],
+      "runtime_error": {
+        "class": "QuantitativeTaskError",
+        "code": "no_answer",
+        "message": "no_answer"
+      },
+      "exact_result": "23/24",
+      "offered_supported_values": [],
+      "task": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "3/4"
+          },
+          {
+            "kind": "literal",
+            "value": "2/5"
+          },
+          {
+            "kind": "literal",
+            "value": "5/6"
+          },
+          {
+            "kind": "binary",
+            "op": "add",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 3,
+            "right": 2
+          }
+        ],
+        "root": 4,
+        "choices": {
+          "a": "1/2",
+          "b": "3/4",
+          "c": "5/6",
+          "d": "7/12"
+        }
+      },
+      "task_sha256": "a47b804041e2dbd51dc8a74223b284958ec320d29f0c09377548ff5aa6ae87c2"
+    },
+    {
+      "source": [
+        "quantitative",
+        0,
+        1
+      ],
+      "kind": "exact_value",
+      "choices": [
+        "0.5",
+        "0.6",
+        "0.8",
+        "1.0"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [],
+      "runtime_error": {
+        "class": "QuantitativeTaskError",
+        "code": "no_answer",
+        "message": "no_answer"
+      },
+      "exact_result": "5/4",
+      "offered_supported_values": [],
+      "task": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "0.75"
+          },
+          {
+            "kind": "literal",
+            "value": "1.25"
+          },
+          {
+            "kind": "literal",
+            "value": "0.4"
+          },
+          {
+            "kind": "binary",
+            "op": "sub",
+            "left": 1,
+            "right": 0
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 3,
+            "right": 2
+          }
+        ],
+        "root": 4,
+        "choices": {
+          "a": "0.5",
+          "b": "0.6",
+          "c": "0.8",
+          "d": "1.0"
+        }
+      },
+      "task_sha256": "39f59b24010d02d7ff260400de4e30372fd789b6cc76e5ed3067ccf3c9e9b928"
+    },
+    {
+      "source": [
+        "quantitative",
+        0,
+        2
+      ],
+      "kind": "scalar_condition",
+      "choices": [
+        "2",
+        "4",
+        "6",
+        "8"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [
+        2
+      ],
+      "runtime_error": {
+        "class": "QuantitativeAuthoringError",
+        "code": null,
+        "message": "Unreachable author nodes."
+      },
+      "selection": "any_satisfying",
+      "integer_domain": [
+        1,
+        10
+      ],
+      "all_satisfying_domain_values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "selected_domain_values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "offered_supported_values": [
+        "2",
+        "4",
+        "6",
+        "8"
+      ],
+      "task": {
+        "kind": "scalar_condition",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "variable"
+          },
+          {
+            "kind": "literal",
+            "value": "3"
+          },
+          {
+            "kind": "literal",
+            "value": "15"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "literal",
+            "value": "50"
+          },
+          {
+            "kind": "binary",
+            "op": "add",
+            "left": 3,
+            "right": 4
+          }
+        ],
+        "condition": {
+          "left": 3,
+          "relation": "le",
+          "right": 5
+        },
+        "selection": "any_satisfying",
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 1,
+          "upper": 10
+        },
+        "choices": {
+          "a": "2",
+          "b": "4",
+          "c": "6",
+          "d": "8"
+        }
+      },
+      "task_sha256": "530180101fd99eb92b49802d45a828996310f9792c0449a931e2722212c9d348"
+    },
+    {
+      "source": [
+        "quantitative",
+        1,
+        0
+      ],
+      "kind": "exact_value",
+      "choices": [
+        "-5/24",
+        "5/24",
+        "-1/6",
+        "1/6"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [],
+      "runtime_error": {
+        "class": "QuantitativeTaskError",
+        "code": "no_answer",
+        "message": "no_answer"
+      },
+      "exact_result": "-1/8",
+      "offered_supported_values": [],
+      "task": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "2/3"
+          },
+          {
+            "kind": "literal",
+            "value": "5/6"
+          },
+          {
+            "kind": "literal",
+            "value": "3/4"
+          },
+          {
+            "kind": "binary",
+            "op": "sub",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 3,
+            "right": 2
+          }
+        ],
+        "root": 4,
+        "choices": {
+          "a": "-5/24",
+          "b": "5/24",
+          "c": "-1/6",
+          "d": "1/6"
+        }
+      },
+      "task_sha256": "3d85aff0883b80cd0180544e8ff7c8bf9c0ea892a119dff0db63fb7a956c9654"
+    },
+    {
+      "source": [
+        "quantitative",
+        1,
+        1
+      ],
+      "kind": "scalar_condition",
+      "choices": [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [],
+      "runtime_error": {
+        "class": "QuantitativeTaskError",
+        "code": "no_answer",
+        "message": "no_answer"
+      },
+      "selection": "minimum",
+      "integer_domain": [
+        1,
+        20
+      ],
+      "all_satisfying_domain_values": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "selected_domain_values": [
+        1
+      ],
+      "offered_supported_values": [],
+      "task": {
+        "kind": "scalar_condition",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "variable"
+          },
+          {
+            "kind": "literal",
+            "value": "4"
+          },
+          {
+            "kind": "literal",
+            "value": "3"
+          },
+          {
+            "kind": "literal",
+            "value": "15"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "binary",
+            "op": "add",
+            "left": 4,
+            "right": 2
+          },
+          {
+            "kind": "binary",
+            "op": "sub",
+            "left": 5,
+            "right": 3
+          }
+        ],
+        "condition": {
+          "left": 6,
+          "relation": "le",
+          "right": 0
+        },
+        "selection": "minimum",
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 1,
+          "upper": 20
+        },
+        "choices": {
+          "a": "3",
+          "b": "4",
+          "c": "5",
+          "d": "6"
+        }
+      },
+      "task_sha256": "efea0e3fa2d9771897375fb449145e0b5b3cbc8e1356acb529c92e5781dea69c"
+    },
+    {
+      "source": [
+        "quantitative",
+        1,
+        2
+      ],
+      "kind": "exact_value",
+      "choices": [
+        "55/24",
+        "23/12",
+        "55/12",
+        "12/55"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [],
+      "runtime_error": {
+        "class": "QuantitativeTaskError",
+        "code": "no_answer",
+        "message": "no_answer"
+      },
+      "exact_result": "17/4",
+      "offered_supported_values": [],
+      "task": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "7/8"
+          },
+          {
+            "kind": "literal",
+            "value": "2/5"
+          },
+          {
+            "kind": "literal",
+            "value": "3/10"
+          },
+          {
+            "kind": "binary",
+            "op": "add",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 3,
+            "right": 2
+          }
+        ],
+        "root": 4,
+        "choices": {
+          "a": "55/24",
+          "b": "23/12",
+          "c": "55/12",
+          "d": "12/55"
+        }
+      },
+      "task_sha256": "b229642d7616c2729201e2b1fc2ddd3068aeaf407ad6c2daf0fe2a63cce30dc4"
+    },
+    {
+      "source": [
+        "quantitative",
+        1,
+        3
+      ],
+      "kind": "scalar_condition",
+      "choices": [
+        "-2",
+        "-1",
+        "0",
+        "1"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [],
+      "runtime_error": {
+        "class": "QuantitativeTaskError",
+        "code": "no_answer",
+        "message": "no_answer"
+      },
+      "selection": "maximum",
+      "integer_domain": [
+        -10,
+        10
+      ],
+      "all_satisfying_domain_values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "selected_domain_values": [
+        10
+      ],
+      "offered_supported_values": [],
+      "task": {
+        "kind": "scalar_condition",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "variable"
+          },
+          {
+            "kind": "literal",
+            "value": "5"
+          },
+          {
+            "kind": "literal",
+            "value": "12"
+          },
+          {
+            "kind": "literal",
+            "value": "8"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "binary",
+            "op": "sub",
+            "left": 4,
+            "right": 2
+          },
+          {
+            "kind": "binary",
+            "op": "add",
+            "left": 5,
+            "right": 3
+          }
+        ],
+        "condition": {
+          "left": 6,
+          "relation": "ge",
+          "right": 0
+        },
+        "selection": "maximum",
+        "domain": {
+          "kind": "integer_interval",
+          "lower": -10,
+          "upper": 10
+        },
+        "choices": {
+          "a": "-2",
+          "b": "-1",
+          "c": "0",
+          "d": "1"
+        }
+      },
+      "task_sha256": "93f29bbbcbd81d8ad85a28c52e745d9089538d4b439a08237c7019ba34389cba"
+    },
+    {
+      "source": [
+        "quantitative",
+        2,
+        0
+      ],
+      "kind": "exact_value",
+      "choices": [
+        "5/12",
+        "11/12",
+        "1/2",
+        "7/12"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [],
+      "runtime_error": {
+        "class": "QuantitativeTaskError",
+        "code": "no_answer",
+        "message": "no_answer"
+      },
+      "exact_result": "-7/36",
+      "offered_supported_values": [],
+      "task": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "2/3"
+          },
+          {
+            "kind": "literal",
+            "value": "5/6"
+          },
+          {
+            "kind": "literal",
+            "value": "3/4"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "binary",
+            "op": "sub",
+            "left": 3,
+            "right": 2
+          }
+        ],
+        "root": 4,
+        "choices": {
+          "a": "5/12",
+          "b": "11/12",
+          "c": "1/2",
+          "d": "7/12"
+        }
+      },
+      "task_sha256": "74cfdd9dacbe107d4d2d7eb1a47ffcb150fa4161cd5352991baf06509138e70f"
+    },
+    {
+      "source": [
+        "quantitative",
+        2,
+        1
+      ],
+      "kind": "scalar_condition",
+      "choices": [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [
+        2
+      ],
+      "runtime_error": {
+        "class": "QuantitativeAuthoringError",
+        "code": null,
+        "message": "Unreachable author nodes."
+      },
+      "selection": "minimum",
+      "integer_domain": [
+        1,
+        20
+      ],
+      "all_satisfying_domain_values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "selected_domain_values": [
+        1
+      ],
+      "offered_supported_values": [],
+      "task": {
+        "kind": "scalar_condition",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "variable"
+          },
+          {
+            "kind": "literal",
+            "value": "4"
+          },
+          {
+            "kind": "literal",
+            "value": "15"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "literal",
+            "value": "3"
+          },
+          {
+            "kind": "binary",
+            "op": "add",
+            "left": 3,
+            "right": 4
+          },
+          {
+            "kind": "literal",
+            "value": "50"
+          },
+          {
+            "kind": "binary",
+            "op": "sub",
+            "left": 5,
+            "right": 6
+          }
+        ],
+        "condition": {
+          "left": 7,
+          "relation": "le",
+          "right": 0
+        },
+        "selection": "minimum",
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 1,
+          "upper": 20
+        },
+        "choices": {
+          "a": "3",
+          "b": "4",
+          "c": "5",
+          "d": "6"
+        }
+      },
+      "task_sha256": "6e1bb29e4f5d66c0cc56281f363ab3b9fe99c66a7a898da5e4a6b6a18100014e"
+    },
+    {
+      "source": [
+        "quantitative",
+        2,
+        3
+      ],
+      "kind": "scalar_condition",
+      "choices": [
+        "15",
+        "16",
+        "17",
+        "18"
+      ],
+      "distinct_rational_choice_count": 4,
+      "unreachable_node_positions": [
+        2
+      ],
+      "runtime_error": {
+        "class": "QuantitativeAuthoringError",
+        "code": null,
+        "message": "Unreachable author nodes."
+      },
+      "selection": "maximum",
+      "integer_domain": [
+        5,
+        25
+      ],
+      "all_satisfying_domain_values": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "selected_domain_values": [
+        25
+      ],
+      "offered_supported_values": [],
+      "task": {
+        "kind": "scalar_condition",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "variable"
+          },
+          {
+            "kind": "literal",
+            "value": "6"
+          },
+          {
+            "kind": "literal",
+            "value": "8"
+          },
+          {
+            "kind": "binary",
+            "op": "add",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "literal",
+            "value": "5"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 3,
+            "right": 4
+          },
+          {
+            "kind": "literal",
+            "value": "100"
+          },
+          {
+            "kind": "binary",
+            "op": "sub",
+            "left": 5,
+            "right": 6
+          }
+        ],
+        "condition": {
+          "left": 7,
+          "relation": "ge",
+          "right": 0
+        },
+        "selection": "maximum",
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 5,
+          "upper": 25
+        },
+        "choices": {
+          "a": "15",
+          "b": "16",
+          "c": "17",
+          "d": "18"
+        }
+      },
+      "task_sha256": "919d1c2f947a9e2e807626cc428025e242b706e8ba9c441a1a6ec8e2e991190e"
+    }
+  ],
+  "provenance": {
+    "analysis_originally_performed_while_live_trial_running": true,
+    "snapshot_sha256": "8ebfa9507d782b908ca08039008e1d77a5d27353c5fdb2bff7660917afadd554",
+    "snapshot_local_path_at_review": "/tmp/checkpoint-compiled-worker-numerical-failures-snapshot-20260922.json",
+    "final_capture_sha256": "7d458b0f433018df5fa20c7d47c49f7c143c63f7201340a644df6ca31d37b0d3",
+    "plan_sha256": "703c0bb57e2c51b5226f537e592add1746c0462c259cd315b14ee341b0ae2ad4",
+    "rejected_source_payloads_and_compile_sanitizer_records_exactly_equal_final_capture": true,
+    "source_commit": "6959a265a222e6e1c9234f139a667f55c2dda4de",
+    "scope": "Only the 13 quantitative-job raw attempts and their 10 compile-rejected rows. No accepted/returned item was inspected for the original diagnosis.",
+    "durability": "Each rejected task is embedded below and equals its final capture source. The temporary partial snapshot is not required to reproduce these proofs."
+  }
+}

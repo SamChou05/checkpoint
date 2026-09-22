@@ -1,0 +1,261 @@
+{
+  "capture_sha256": "7d458b0f433018df5fa20c7d47c49f7c143c63f7201340a644df6ca31d37b0d3",
+  "planned_questions": 15,
+  "returned_questions": 10,
+  "projection": "Returned stem and four choices only; rotation is derived solely from item ID. Keys, teaching, difficulty labels, provenance and model judgments are hidden.",
+  "instructions": "Independently solve each item and assess uniqueness, distinct/plausible alternatives, sufficient premises, scope/assignment fit and difficulty. Lock judgments before opening the capture or explanations. Keep uncertainty explicit.",
+  "jobs": [
+    {
+      "id": "quantitative",
+      "request": {
+        "goal": {
+          "title": "Exact rational arithmetic and bounded conditions",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Exact rational arithmetic and bounded conditions",
+          "contentTopics": [
+            "Fraction and decimal arithmetic",
+            "Explicit minimum and maximum conditions"
+          ],
+          "questionDirective": "Evaluate exact expressions using addition, subtraction, multiplication and division, or solve an explicitly stated bounded integer condition. Vary the operations. Preserve the distinction between any satisfying value and an explicitly requested minimum or maximum. Use complete numerical tasks without stories or unstated physical assumptions. Aim for difficulty 2 or 3.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      },
+      "returned": 2,
+      "within_deadline": true
+    },
+    {
+      "id": "python",
+      "request": {
+        "goal": {
+          "title": "Python 3 expressions",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Python 3 expressions",
+          "contentTopics": [
+            "Boolean expressions",
+            "List indexing",
+            "Conditionals"
+          ],
+          "questionDirective": "Use complete short Python 3 expressions or correctly indented code, with explicit values. Preserve case and literal syntax. Vary the expressions and test application of Python semantics at difficulty 2 or 3. The subject is Python behavior, not arithmetic alone.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      },
+      "returned": 5,
+      "within_deadline": true
+    },
+    {
+      "id": "mixed",
+      "request": {
+        "goal": {
+          "title": "Arithmetic and English application practice",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Arithmetic and English application practice",
+          "contentTopics": [
+            "Exact arithmetic",
+            "Standard written English"
+          ],
+          "questionDirective": "Cover both assigned skills with self-contained application questions at difficulty 2 or 3. Arithmetic questions use complete exact expressions or explicitly bounded integer conditions. English questions supply complete sentences in standard written American English and make the tested agreement or pronoun-reference distinction explicit.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "skillMap": {
+          "version": 1,
+          "skills": [
+            {
+              "id": "11111111-1111-4111-8111-111111111111",
+              "name": "Exact arithmetic",
+              "objectives": [
+                {
+                  "id": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+                  "name": "Evaluate an exact rational expression or explicit bounded condition"
+                }
+              ]
+            },
+            {
+              "id": "22222222-2222-4222-8222-222222222222",
+              "name": "Standard written English",
+              "objectives": [
+                {
+                  "id": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+                  "name": "Apply subject-verb agreement or unambiguous pronoun reference"
+                }
+              ]
+            }
+          ]
+        },
+        "desiredSkillAllocation": {},
+        "requestedSkillAllocation": {
+          "11111111-1111-4111-8111-111111111111": 3,
+          "22222222-2222-4222-8222-222222222222": 2
+        },
+        "adaptiveSkillPlans": []
+      },
+      "returned": 3,
+      "within_deadline": true
+    }
+  ],
+  "items": [
+    {
+      "id": "quantitative:0",
+      "prompt": "Let q be a unitless number, defined by q = (((3/4) - (2/3)) / (4/5)). What is its exact value?",
+      "choices": {
+        "A": "16/15",
+        "B": "48/5",
+        "C": "5/48",
+        "D": "15/16"
+      },
+      "skillID": null,
+      "objectiveID": null
+    },
+    {
+      "id": "quantitative:1",
+      "prompt": "Let q be a unitless number, defined by q = (((7/8) / (2/5)) + (1/4)). What is its exact value?",
+      "choices": {
+        "A": "51/32",
+        "B": "39/16",
+        "C": "35/32",
+        "D": "47/40"
+      },
+      "skillID": null,
+      "objectiveID": null
+    },
+    {
+      "id": "python:0",
+      "prompt": "What is the value of the expression `['a', 'b', 'c', 'd'][True]` in Python 3?",
+      "choices": {
+        "A": "IndexError",
+        "B": "'b'",
+        "C": "'a'",
+        "D": "True"
+      },
+      "skillID": null,
+      "objectiveID": null
+    },
+    {
+      "id": "python:1",
+      "prompt": "What does the expression `3 < 5 < 2` evaluate to in Python 3?",
+      "choices": {
+        "A": "2",
+        "B": "False",
+        "C": "True",
+        "D": "SyntaxError"
+      },
+      "skillID": null,
+      "objectiveID": null
+    },
+    {
+      "id": "python:2",
+      "prompt": "What is the result of `[] or [1, 2]` in Python 3?",
+      "choices": {
+        "A": "False",
+        "B": "[1, 2]",
+        "C": "[]",
+        "D": "True"
+      },
+      "skillID": null,
+      "objectiveID": null
+    },
+    {
+      "id": "python:3",
+      "prompt": "What is the value of `x` after executing:\n```\nx = 5\nif x > 3:\n    x = x * 2\nelse:\n    x = x + 1\n```",
+      "choices": {
+        "A": "10",
+        "B": "6",
+        "C": "5",
+        "D": "3"
+      },
+      "skillID": null,
+      "objectiveID": null
+    },
+    {
+      "id": "python:4",
+      "prompt": "What is the value of `[-1, 0, 1][-1]` in Python 3?",
+      "choices": {
+        "A": "1",
+        "B": "-1",
+        "C": "0",
+        "D": "IndexError"
+      },
+      "skillID": null,
+      "objectiveID": null
+    },
+    {
+      "id": "mixed:0",
+      "prompt": "Let q be a unitless number, defined by q = (((-5/2) * 4) / 3). What is its exact value?",
+      "choices": {
+        "A": "-10",
+        "B": "3/2",
+        "C": "-10/3",
+        "D": "-333/100"
+      },
+      "skillID": "11111111-1111-4111-8111-111111111111",
+      "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA"
+    },
+    {
+      "id": "mixed:1",
+      "prompt": "The team of researchers, despite their initial optimism, announced that its findings would require additional verification before publication.",
+      "choices": {
+        "A": "the findings of them",
+        "B": "its findings",
+        "C": "their findings",
+        "D": "his or her findings"
+      },
+      "skillID": "22222222-2222-4222-8222-222222222222",
+      "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB"
+    },
+    {
+      "id": "mixed:2",
+      "prompt": "Neither the manager nor the employees was satisfied with the proposed schedule change.",
+      "choices": {
+        "A": "were satisfied",
+        "B": "was satisfied",
+        "C": "have been satisfied",
+        "D": "are being satisfied"
+      },
+      "skillID": "22222222-2222-4222-8222-222222222222",
+      "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB"
+    }
+  ]
+}
