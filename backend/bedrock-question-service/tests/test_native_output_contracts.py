@@ -129,8 +129,8 @@ class NativeOutputContractTests(unittest.TestCase):
             "index": 0, "valid": False, "answer": "A", "difficulty": 3,
             "explanation": "no", "choiceFeedback": [],
         }]})
-        with self.assertRaises(ProviderError):
-            adapt_native_response(raw, "default_reviewer_v1")
+        adapted = json.loads(adapt_native_response(raw, "default_reviewer_v1"))
+        self.assertEqual(adapted, {"reviews": [{"index": 0, "valid": False}]})
 
     def test_native_refusal_is_not_parsed_or_retried_unconstrained(self):
         client = Client({"questions": []}, stop_reason="content_filtered")
@@ -235,7 +235,7 @@ class NativeOutputContractTests(unittest.TestCase):
         rejected = {"reviews": [{"index": 0, "valid": False, "answer": "", "difficulty": 3,
                                  "explanation": "", "choiceFeedback": []}]}
         adapted = json.loads(adapt_native_response(json.dumps(rejected), "default_reviewer_v1"))
-        self.assertEqual(adapted["reviews"][0]["choiceExplanations"], {})
+        self.assertEqual(adapted["reviews"][0], {"index": 0, "valid": False})
         for support in ("supported", "unsupported", "uncertain"):
             payload = {"reviews": [{"index": 0, "valid": False, "answer": "", "difficulty": 3,
                                     "explanationSupport": support, "issues": ["The evidence is insufficient."]}]}

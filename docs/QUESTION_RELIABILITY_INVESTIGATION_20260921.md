@@ -2,6 +2,14 @@
 
 Investigation: September 21–22, 2026. Baseline: `7d9cc6a` (current `origin/main` when the investigation began). Three agents independently traced provider contracts, choice semantics, and iOS answer transport/grading. The original local checkout was 28 commits behind and contained unfinished work; all fixes and current-source experiments use an isolated checkout.
 
+## Follow-up after the initial investigation
+
+PR #10 landed the verified client fix, worker rollout control, tests, and evidence on `main` at `5245e96`. The findings below preserve what the original experiments observed; frozen captures are not rewritten as adapters evolve.
+
+A subsequent fix addresses the native v1 batch failure directly. After strict JSON and schema validation, a Boolean `valid:false` row is adapted to only its original `index` and negative verdict. Unused answer/feedback fields on an already rejected item no longer invalidate valid sibling reviews. Rejected items remain rejected; downstream index coverage and all positive-review checks remain enforced. This avoids changing the model's schema to the unsuccessful v2 candidate. The captured third native response now provides a deterministic regression case for this adaptation, without rerunning or relabeling that historical provider call.
+
+Replaying that exact failed response through the updated adapter and real admission code now retains its three valid controls and rejects all five invalid controls. The updated backend passes all **1,072 tests**, Ruff, compilation, and whitespace checks. No extra provider call was needed to prove this deterministic improvement.
+
 ## Findings established by code, replay, and current deployment inspection
 
 1. **Native structured output exists but is switched off in TestFlight.** Read-only inspection downloaded the API and worker packages, checked their ZIP digests, and compared seven runtime modules against current main. All fourteen module comparisons match. Both functions were updated September 11 and both still set `BEDROCK_STRUCTURED_OUTPUT_MODE=legacy`. The current worker uses Kimi K2.5 as author and Sonnet 4.6 as solver/reviewer, disabled thinking, 6,000 output tokens, five-question chunks, and six provider calls per job. The synchronous API author is Nova Lite. Native capability is separate from application-side JSON validation; ordinary requests still only ask the model for JSON. [Sanitized deployment snapshot](evidence/question-reliability-20260921/deployed-snapshot.json).

@@ -67,9 +67,12 @@ class NativeReviewerV2Tests(unittest.TestCase):
         payload = {"reviews": [CAPTURED_NEGATIVE]}
         Draft202012Validator(schema("default_reviewer_v1")).validate(payload)
         self.assertFalse(Draft202012Validator(schema("default_reviewer_v2")).is_valid(payload))
-        for contract in ("default_reviewer_v1", "default_reviewer_v2"):
-            with self.subTest(contract=contract), self.assertRaises(ProviderError):
-                adapt_native_response(json.dumps(payload), contract)
+        self.assertEqual(
+            json.loads(adapt_native_response(json.dumps(payload), "default_reviewer_v1")),
+            {"reviews": [{"index": 2, "valid": False}]},
+        )
+        with self.assertRaises(ProviderError):
+            adapt_native_response(json.dumps(payload), "default_reviewer_v2")
 
     def test_minimal_negative_and_mixed_batch_preserve_only_approved_feedback(self):
         explanation = "  Exact explanation.\r\n    Preserve indentation and cafe\u0301.  "
@@ -140,7 +143,7 @@ class NativeReviewerV2Tests(unittest.TestCase):
                 {}, client, "us.anthropic.claude-sonnet-4-6", user_prompt="task", system_prompt="rules",
                 contract="default_reviewer_v1",
             )
-        self.assertEqual(json.loads(adapted)["reviews"][0]["choiceExplanations"], {})
+        self.assertEqual(json.loads(adapted)["reviews"][0], {"index": 0, "valid": False})
         self.assertEqual(client.calls[0]["outputConfig"], native_output_config("default_reviewer_v1"))
         with self.assertRaises(ProviderError):
             adapt_native_response(json.dumps({"reviews": [self.rejected]}), "default_reviewer_v1")

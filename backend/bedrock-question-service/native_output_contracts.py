@@ -187,9 +187,14 @@ def adapt_native_response(raw: str, contract: Contract) -> str:
         raise ProviderError("Native reviewer returned an invalid envelope.")
     adapted = copy.deepcopy(payload)
     for review in adapted["reviews"]:
-        if contract == "default_reviewer_v2" and review["valid"] is False:
-            # The closed rejection branch has already rejected any answer or
-            # feedback. Preserve only its index and false verdict for admission.
+        if review["valid"] is False:
+            # Full JSON/schema validation has already checked this row. A typed
+            # false verdict irrevocably rejects the item, so discard its unused
+            # v1 feedback instead of failing otherwise valid sibling reviews.
+            # Keep the exact index for downstream coverage/correlation checks.
+            index = review["index"]
+            review.clear()
+            review.update(index=index, valid=False)
             continue
         expected = {"index", "valid", "answer", "difficulty", "explanation", "choiceFeedback"}
         if type(review) is not dict or set(review) != expected or type(review["valid"]) is not bool:
@@ -205,8 +210,6 @@ def adapt_native_response(raw: str, contract: Contract) -> str:
             if type(choice) is not str or type(explanation) is not str or choice in feedback:
                 raise ProviderError("Native reviewer feedback has invalid or duplicate choices.")
             feedback[choice] = explanation
-        if review["valid"] is not True and (review["answer"] != "" or review["explanation"] != "" or rows):
-            raise ProviderError("Native rejected review contains learner feedback or an answer.")
         review["choiceExplanations"] = feedback
     return json.dumps(adapted, ensure_ascii=False, allow_nan=False)
 

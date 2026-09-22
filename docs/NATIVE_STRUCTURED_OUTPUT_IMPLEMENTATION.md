@@ -10,7 +10,10 @@ change. Native formatting does not establish factual accuracy or unique answers.
 remains in `legacy` mode. A six-call synthetic worker smoke passed its three
 current stage contracts. A separate mixed-control reviewer trial exposed a v1
 schema/application mismatch: a rejected item could retain an answer and feedback
-under the schema, while the adapter rejects those fields. Experimental
+under the schema, while the original adapter rejected those fields. The current
+v1 adapter validates the full schema and then keeps only the original index and
+Boolean false verdict for such a row. This preserves its rejection without
+discarding valid sibling reviews; accepted-row checks are unchanged. Experimental
 `default_reviewer_v2` represents accepted and rejected records as separate closed
 `anyOf` branches. Its two live calls were schema-valid but rejected all eight
 controls each time, including all three valid questions. **V2 is not qualified
@@ -29,7 +32,7 @@ skill-map retries. Native mode uses six closed, versioned, static schemas:
 | `skill_map_inference_v1` | Skill and objective names. The server validates 3–6 skills and 2–5 objectives and assigns IDs. |
 | `skill_map_evolution_v1` | `advance` changes with predecessor and successor names/objectives. The server enforces predecessor coverage and constructs IDs, replacements, and the new map version. |
 | `complete_choice_solver_v1` | Exact indexed choices with `supported`, `refuted`, or `uncertain` judgments. Zero/multiple supported answers remain representable and are rejected by application policy. |
-| `default_reviewer_v1` | Indexed verdict, answer, assessed difficulty, explanation, and provider-only `choiceFeedback` rows. Rejections use `valid:false`, `answer:""`, `explanation:""`, and `choiceFeedback:[]`; an integer difficulty remains required. |
+| `default_reviewer_v1` | Indexed verdict, answer, assessed difficulty, explanation, and provider-only `choiceFeedback` rows. The prompt requests empty answer/feedback on rejection; all fields still require schema-valid types. Any typed `valid:false` row adapts to only its original index and negative verdict. |
 | `authored_solution_reviewer_v1` | Indexed verdict, answer, assessed difficulty, explanation support, and issues. False, empty-answer, unsupported, uncertain, and issue-bearing results remain expressible. This unrelated mode remains opt-in. |
 
 The separately retained experimental `default_reviewer_v2` has two closed item
@@ -37,8 +40,9 @@ branches: accepted reviews require the same feedback fields with `valid:true`;
 rejections permit only `index` and `valid:false`. Strict local union validation
 rejects missing/unknown fields, non-boolean discriminators and unmatched
 branches before adaptation. The adapter preserves minimal rejections and exact
-accepted feedback. V1's schema, prompt, adaptation, production routing and legacy
-diagnostic identity remain unchanged. Explicit v2 calls report transport version
+accepted feedback. V1's schema, prompt, production routing and legacy diagnostic
+identity remain unchanged; its negative adaptation follows the safe handling
+described above. Explicit v2 calls report transport version
 2; they do not change the public verification policy revision.
 
 Schemas contain no request-specific goals, choices, IDs, answers, or counts.
@@ -46,9 +50,11 @@ Stable serialization produces deterministic hashes and fresh request wrappers.
 Native responses undergo strict JSON and schema validation before adaptation;
 duplicate keys, nonfinite numbers, unknown/missing fields, incorrect types,
 invalid enums, refusal, and incomplete output fail admission. The default
-reviewer adapter rejects duplicate or malformed feedback rows before constructing
-`choiceExplanations`; downstream review requires exactly the offered choices and
-indexes. Choice bytes and feedback text are preserved by the adapter.
+reviewer adapter rejects duplicate or malformed accepted feedback rows before
+constructing `choiceExplanations`; downstream review requires exactly the offered
+choices and indexes. Accepted choice bytes and feedback text are preserved by
+the adapter. Schema-valid feedback on rejected rows is discarded and cannot
+become learner content.
 
 Independent complete-choice solving and final review retain their separate
 visibility and rejection rules. The optional authored-solution reviewer cannot
