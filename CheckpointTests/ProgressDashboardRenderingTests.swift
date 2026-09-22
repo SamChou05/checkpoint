@@ -2690,11 +2690,19 @@ final class ProgressDashboardRenderingTests: XCTestCase {
                 goalID: goal.id,
                 prompt: "Practice \(topic.name.lowercased()) with example \(index + 1).",
                 expectedAnswer: "A focused response that makes the reasoning explicit.",
+                choices: [
+                    "A focused response that makes the reasoning explicit.",
+                    "A claim with no supporting evidence.",
+                    "A repetition of the question without an answer.",
+                    "An unrelated example that avoids the argument."
+                ],
                 explanation: "Connect the claim, evidence, and time constraint.",
+                verificationVersion: 1,
+                verificationPolicyRevision: QuestionVerificationPolicy.currentRevision,
                 topic: topic.name,
                 skillID: topic.id,
                 difficulty: 3,
-                format: .shortAnswer,
+                format: .multipleChoice,
                 sourcePrompt: topic.name
             )
         }

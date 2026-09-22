@@ -19,7 +19,7 @@ struct CheckpointQuestionSelector {
         activeQuestionDifficulty: Int,
         maximumExactQuestionAskCount: Int,
         adaptiveDifficultyBySkillID: [SkillMapTopic.ID: Int] = [:],
-        requiresVerifiedQuestions: Bool = false
+        requiresVerifiedQuestions: Bool = true
     ) {
         self.questions = questions
         self.goalProfiles = goalProfiles

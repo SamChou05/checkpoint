@@ -1,6 +1,265 @@
 import XCTest
 @testable import Checkpoint
 
+final class CachedQuestionSafetyTests: CheckpointWorkflowTestCase {
+    @MainActor
+    private func makeStore(engine: any QuestionGenerating) -> CheckpointStore {
+        CheckpointStore(
+            questionEngine: HybridQuestionEngine(
+                backendEngine: engine,
+                appleFoundationEngine: ThrowingQuestionEngine(provider: .appleFoundation)
+            ),
+            defaults: defaults
+        )
+    }
+
+    private func obsoleteQuestions(for goal: Goal) -> [CheckpointQuestion] {
+        (1...5).map { index in
+            makeQuestion(
+                goal: goal, index: index,
+                expectedAnswer: "Previously stored key \(index)",
+                verificationVersion: index <= 2 ? 1 : 0,
+                verificationPolicyRevision: index <= 2 ? max(0, QuestionVerificationPolicy.currentRevision - index) : 0
+            )
+        }
+    }
+
+    @MainActor
+    func testPersistedLegacyAndStaleKeysRemainStoredButCannotEnterStarterPractice() throws {
+        let engine = TargetCountQuestionEngine(provider: .backend)
+        let goal = makeInterviewGoal(title: "Practice arrays")
+        let original = obsoleteQuestions(for: goal)
+        let seeded = makeStore(engine: engine)
+        seeded.goal = goal
+        seeded.goalProfiles = [goal]
+        seeded.questions = original
+        seeded.updateBackendEndpoint("")
+
+        let restored = makeStore(engine: engine)
+
+        XCTAssertEqual(restored.questions, original)
+        XCTAssertEqual(restored.membershipTier, .starter)
+        XCTAssertEqual(restored.usableQuestionCount, 0)
+        XCTAssertEqual(restored.readyQuestionCount, 0)
+        XCTAssertFalse(restored.hasReadyCheckpointSet)
+        XCTAssertNil(restored.nextQuestion())
+        XCTAssertNil(restored.startPreviewCheckpointSession())
+        XCTAssertNil(restored.startManualCheckpointSession())
+        XCTAssertTrue(engine.receivedRequests.isEmpty)
+    }
+
+    @MainActor
+    func testMembershipDowngradeDoesNotReopenObsoleteInventory() {
+        let goal = makeInterviewGoal(title: "Practice arrays")
+        let store = makeStore(engine: ThrowingQuestionEngine(provider: .backend))
+        let obsolete = obsoleteQuestions(for: goal)
+        let current = (6...10).map { makeQuestion(goal: goal, index: $0) }
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = obsolete + current
+        store.membershipTier = .member
+        XCTAssertEqual(Set(store.nextQuestions(limit: 5).map(\.id)), Set(current.map(\.id)))
+
+        store.reconcileMembershipEntitlement(isUnlocked: false)
+
+        XCTAssertEqual(store.membershipTier, .starter)
+        XCTAssertEqual(Set(store.nextQuestions(limit: 5).map(\.id)), Set(current.map(\.id)))
+        XCTAssertEqual(store.questions, obsolete + current)
+    }
+
+    @MainActor
+    func testQuarantinePreservesHistoricalAttemptSnapshotAndStoredKey() throws {
+        let goal = makeInterviewGoal(title: "Practice arrays")
+        let original = obsoleteQuestions(for: goal)
+        var attempt = makeAttempt(goal: goal, questionID: original[0].id,
+                                  result: .incorrect, createdAt: Date(timeIntervalSince1970: 1_800_000_000))
+        attempt.questionDifficulty = original[0].difficulty
+        attempt.questionVerificationVersion = 0
+        attempt.reviewSnapshot = CheckpointAttemptReviewSnapshot(
+            topic: "Historical topic", format: .multipleChoice,
+            referenceAnswer: "Historical displayed answer", explanation: "Historical feedback remains verbatim."
+        )
+        let store = makeStore(engine: ThrowingQuestionEngine(provider: .backend))
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = original
+        store.attempts = [attempt]
+        store.updateBackendEndpoint("")
+
+        let restored = makeStore(engine: ThrowingQuestionEngine(provider: .backend))
+
+        XCTAssertEqual(restored.questions, original)
+        XCTAssertEqual(restored.attempts, [attempt])
+        XCTAssertNil(restored.nextQuestion())
+        XCTAssertEqual(restored.attempts.first?.reviewSnapshot, attempt.reviewSnapshot)
+    }
+
+    @MainActor
+    func testUnusedStarterInventoryIsReplacedWithCurrentVerifiedQuestionsWithoutRetiringHistory() async throws {
+        let engine = TargetCountQuestionEngine(provider: .backend)
+        let goal = makeGoal()
+        let store = makeStore(engine: engine)
+        let original = obsoleteQuestions(for: goal)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = original
+
+        let refreshed = await store.refreshQuestionBatchIfNeeded()
+
+        XCTAssertTrue(refreshed)
+        XCTAssertTrue(store.hasReadyCheckpointSet)
+        XCTAssertTrue(engine.receivedRequests.allSatisfy(\.requiresVerifiedQuestions))
+        XCTAssertFalse(engine.receivedRequests.isEmpty)
+        XCTAssertEqual(engine.receivedRequests.first?.targetCount, store.unlockPolicy.questionsPerSession)
+        XCTAssertEqual(store.questions.filter { original.map(\.id).contains($0.id) }, original)
+        XCTAssertTrue(store.nextQuestions(limit: 5).allSatisfy(QuestionVerificationPolicy.meetsCurrentRequirement))
+        XCTAssertTrue(store.attempts.isEmpty)
+        XCTAssertNil(store.pendingMembershipFeature)
+        XCTAssertEqual(store.questionRefreshesUsed, 0)
+        let repeatRefresh = await store.refreshQuestionBatchIfNeeded()
+        XCTAssertFalse(repeatRefresh, "Ready replacement inventory must not open another Free generation cycle.")
+        let restored = makeStore(engine: ThrowingQuestionEngine(provider: .backend))
+        XCTAssertEqual(restored.questions.filter { original.map(\.id).contains($0.id) }, original,
+                       "Later skill-map migration must not rewrite or retire quarantined content.")
+        XCTAssertTrue(restored.hasReadyCheckpointSet)
+    }
+
+    @MainActor
+    func testStarterSafetyReplacementRejectsUnverifiedProviderOutput() async {
+        let goal = makeGoal()
+        let original = obsoleteQuestions(for: goal)
+        let offered = (101...105).map { makeQuestion(goal: goal, index: $0, verificationVersion: 0) }
+        let store = makeStore(engine: StaticQuestionEngine(provider: .backend, questions: offered))
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = original
+
+        let refreshed = await store.refreshQuestionBatchIfNeeded()
+
+        XCTAssertFalse(refreshed)
+        XCTAssertEqual(store.questions, original)
+        XCTAssertFalse(store.hasReadyCheckpointSet)
+        XCTAssertEqual(store.lastQuestionGenerationFailure, .qualityRejected)
+    }
+
+    @MainActor
+    func testStarterDurableClaimsRequireCurrentPolicyAndPreserveQuarantinedQuestions() async {
+        let goal = makeGoal()
+        let original = obsoleteQuestions(for: goal)
+        let current = (101...105).map { makeQuestion(goal: goal, index: $0) }
+        let client = ScriptedQuestionBankClient(
+            preparation: QuestionBankPreparationReceipt(
+                bankID: "starter-safety", status: .ready, readyCount: 5, targetCount: 5
+            ),
+            defaultClaim: QuestionBankClaimReceipt(
+                questions: current, status: .empty, readyCount: 0, targetCount: 5
+            )
+        )
+        let store = CheckpointStore(
+            questionBankClient: client, defaults: defaults,
+            questionBankPollingDelaysNanoseconds: [60_000_000_000]
+        )
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = original
+        store.updateBackendEndpoint("https://api.example.com/prod/v1/questions")
+
+        let refreshed = await store.refreshQuestionBatchIfNeeded()
+
+        XCTAssertTrue(refreshed)
+        XCTAssertTrue(store.hasReadyCheckpointSet)
+        XCTAssertEqual(client.ensureRequests.first?.requiresVerifiedQuestions, true)
+        XCTAssertEqual(client.claimRequests.first?.requiresVerifiedQuestions, true)
+        XCTAssertEqual(store.questions.filter { original.map(\.id).contains($0.id) }, original)
+        XCTAssertEqual(Set(store.nextQuestions(limit: 5).map(\.id)), Set(current.map(\.id)))
+    }
+
+    @MainActor
+    func testLegacyLocalBankDoesNotEraseConsumedAllowanceOnRelaunch() async {
+        let engine = TargetCountQuestionEngine(provider: .backend)
+        let goal = makeInterviewGoal(title: "Practice arrays")
+        var original = obsoleteQuestions(for: goal)
+        original[0].timesAsked = 1
+        let seeded = makeStore(engine: engine)
+        seeded.goal = goal
+        seeded.goalProfiles = [goal]
+        seeded.questions = original
+        seeded.lastQuestionProvider = .localTemplates
+        seeded.updateBackendEndpoint("")
+
+        let restored = makeStore(engine: engine)
+        await restored.retryInitialQuestionGeneration()
+
+        XCTAssertEqual(restored.questions, original)
+        XCTAssertTrue(engine.receivedRequests.isEmpty)
+        XCTAssertEqual(restored.pendingMembershipFeature, .freshQuestionGeneration)
+        XCTAssertNil(restored.nextQuestion())
+    }
+
+    @MainActor
+    func testRetiredStarterInventoryStillConsumesAllowanceWithoutRetainedAttempts() async {
+        let engine = TargetCountQuestionEngine(provider: .backend)
+        let goal = makeInterviewGoal(title: "Practice arrays")
+        let store = makeStore(engine: engine)
+        var original = obsoleteQuestions(for: goal)
+        original[0].status = .retired
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = original
+
+        let refreshed = await store.refreshQuestionBatchIfNeeded()
+
+        XCTAssertFalse(refreshed)
+        XCTAssertTrue(engine.receivedRequests.isEmpty)
+        XCTAssertEqual(Dictionary(uniqueKeysWithValues: store.questions.map { ($0.id, $0) }),
+                       Dictionary(uniqueKeysWithValues: original.map { ($0.id, $0) }))
+        XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
+    }
+
+    @MainActor
+    func testConsumedStarterAllowanceCannotBeResetByQuarantineOrExplicitRetry() async {
+        let engine = TargetCountQuestionEngine(provider: .backend)
+        let goal = makeInterviewGoal(title: "Practice arrays")
+        let store = makeStore(engine: engine)
+        let original = obsoleteQuestions(for: goal)
+        let attempt = makeAttempt(goal: goal, questionID: original[0].id, result: .incorrect, createdAt: Date())
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = original
+        store.attempts = [attempt]
+
+        let refreshed = await store.refreshQuestionBatchIfNeeded()
+        await store.retryInitialQuestionGeneration()
+
+        XCTAssertFalse(refreshed)
+        XCTAssertTrue(engine.receivedRequests.isEmpty)
+        XCTAssertEqual(store.questions, original)
+        XCTAssertEqual(store.attempts, [attempt])
+        XCTAssertEqual(store.pendingMembershipFeature, .freshQuestionGeneration)
+    }
+
+    @MainActor
+    func testUnfinishedStarterRunDoesNotAllowSafetyReplacementWhileActive() async {
+        let engine = TargetCountQuestionEngine(provider: .backend)
+        let goal = makeInterviewGoal(title: "Practice arrays")
+        let store = makeStore(engine: engine)
+        let original = obsoleteQuestions(for: goal)
+        store.goal = goal
+        store.goalProfiles = [goal]
+        store.questions = original
+        let session = CheckpointSession(questions: original, requiredCorrectAnswers: 4)
+        store.activeCheckpointRun = ActiveCheckpointRun(session: session)
+
+        let refreshed = await store.refreshQuestionBatchIfNeeded()
+        await store.retryInitialQuestionGeneration()
+
+        XCTAssertFalse(refreshed)
+        XCTAssertTrue(engine.receivedRequests.isEmpty)
+        XCTAssertEqual(store.activeCheckpointRun?.sessionID, session.id)
+        XCTAssertTrue(store.attempts.isEmpty, "Starting without an answer does not itself spend the existing allowance.")
+    }
+}
+
 final class QuestionRefillTests: CheckpointWorkflowTestCase {
     // MARK: - Refill, Study Assist, and difficulty
 

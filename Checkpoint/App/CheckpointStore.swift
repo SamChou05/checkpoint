@@ -245,7 +245,7 @@ final class CheckpointStore {
                 permitsPersistenceWrites && hasReadyCheckpointSet
             )
         }
-        removeLegacyLocalQuestionBankIfNeeded()
+        prepareLegacyLocalQuestionReplacementIfNeeded()
         resumeSkillMapEvolutionIfNeeded()
         resumeQuestionBankMaintenanceIfNeeded()
     }
@@ -1894,13 +1894,17 @@ final class CheckpointStore {
         return true
     }
 
-    private func removeLegacyLocalQuestionBankIfNeeded() {
+    private func prepareLegacyLocalQuestionReplacementIfNeeded() {
         guard let goal,
               hasLegacyLocalQuestionBank(for: goal) else {
             return
         }
 
-        clearQuestionBank(for: goal.id)
+        // Old inventory remains available to history but cannot enter practice.
+        // Replacing it must not erase evidence that the Free allowance was used.
+        guard !applyStarterGenerationLimitIfNeeded(
+            starterPracticeWasConsumed: hasConsumedStarterPractice
+        ) else { return }
         questionBatchState = .generating
         isQuestionBankTopOffInProgress = false
         questionBankTopOffStartedAt = nil
@@ -2580,7 +2584,8 @@ final class CheckpointStore {
 
     private func generateInitialQuestionBatch(
         for newGoal: Goal,
-        requiredActiveGoalID: Goal.ID? = nil
+        requiredActiveGoalID: Goal.ID? = nil,
+        preservingExistingQuestions: Bool = false
     ) async {
         let lifecycleID = dataLifecycleID
         guard requiredActiveGoalID == nil
@@ -2589,6 +2594,11 @@ final class CheckpointStore {
         }
         guard goalProfiles.contains(where: { $0.id == newGoal.id }) || goal?.id == newGoal.id else { return }
         guard !backgroundGenerationGoalIDs.contains(newGoal.id) else { return }
+        // A safety replacement appends new accepted inventory. It never rewrites
+        // old keys, retires unanswered questions, or changes historical attempts.
+        let preservesExistingQuestions = preservingExistingQuestions || questions.contains {
+            $0.goalID == newGoal.id && !QuestionVerificationPolicy.meetsCurrentRequirement($0)
+        }
         backgroundGenerationGoalIDs.insert(newGoal.id)
         defer { backgroundGenerationGoalIDs.remove(newGoal.id) }
 
@@ -2640,7 +2650,8 @@ final class CheckpointStore {
                 }
                 await generateInitialQuestionBatch(
                     for: latestGoal,
-                    requiredActiveGoalID: requiredActiveGoalID
+                    requiredActiveGoalID: requiredActiveGoalID,
+                    preservingExistingQuestions: preservesExistingQuestions
                 )
                 return
             }
@@ -2704,7 +2715,8 @@ final class CheckpointStore {
             }
             await generateInitialQuestionBatch(
                 for: resolvedGoal,
-                requiredActiveGoalID: requiredActiveGoalID
+                requiredActiveGoalID: requiredActiveGoalID,
+                preservingExistingQuestions: preservesExistingQuestions
             )
             return
         }
@@ -2721,7 +2733,7 @@ final class CheckpointStore {
             let existingCompetencies = competencies.filter {
                 ($0.goalID ?? resolvedGoal.id) == resolvedGoal.id
             }
-            for index in questions.indices where questions[index].goalID == newGoal.id {
+            for index in questions.indices where !preservesExistingQuestions && questions[index].goalID == newGoal.id {
                 questions[index].status = .retired
                 questions[index].nextReviewAt = nil
             }
@@ -2830,6 +2842,10 @@ final class CheckpointStore {
 
     func retryInitialQuestionGeneration() async {
         guard let goal else { return }
+        guard activeCheckpointRun == nil,
+              !applyStarterGenerationLimitIfNeeded(
+                  starterPracticeWasConsumed: hasConsumedStarterPractice
+              ) else { return }
         // A blocked bank cycle is terminal for automatic work, but this explicit
         // action is the user's opt-in to start a fresh server cycle.
         invalidateQuestionBankSynchronization(for: goal.id)
@@ -3310,6 +3326,20 @@ final class CheckpointStore {
         guard needsCoreRefill || shouldRefreshProactively else { return false }
 
         guard isMember else {
+            if !hasConsumedStarterPractice,
+               activeCheckpointRun == nil,
+               activeQuestions.contains(where: { !QuestionVerificationPolicy.meetsCurrentRequirement($0) }) {
+                await generateInitialQuestionBatch(
+                    for: goal,
+                    requiredActiveGoalID: requiredActiveGoalID,
+                    preservingExistingQuestions: true
+                )
+                guard hasQuestionGenerationMutationAuthority(
+                    lifecycleID: lifecycleID,
+                    requiredActiveGoalID: requiredActiveGoalID
+                ), self.goal?.id == goal.id else { return false }
+                return hasReadyCheckpointSet
+            }
             if hasConsumedStarterPractice {
                 checkpointNotice = starterQuestionLimitMessage
                 lastAIErrorMessage = starterQuestionLimitMessage
@@ -3387,7 +3417,7 @@ final class CheckpointStore {
             adaptiveDifficultyBySkillID: Dictionary(uniqueKeysWithValues:
                 targetGoal.map { adaptiveSkillPlans(for: $0).map { ($0.skillID, $0.targetDifficulty) } } ?? []
             ),
-            requiresVerifiedQuestions: isMember
+            requiresVerifiedQuestions: true
         )
     }
 
@@ -5745,6 +5775,9 @@ final class CheckpointStore {
         guard let skillMap = targetGoal.derivedSkillMap else { return }
 
         for index in questions.indices where questions[index].goalID == targetGoal.id {
+            // Quarantined inventory is historical evidence, not content to
+            // rewrite or retire while preparing its replacement.
+            guard QuestionVerificationPolicy.meetsCurrentRequirement(questions[index]) else { continue }
             guard let skill = SkillMapReconciler.skillMapTopic(
                 matching: questions[index],
                 in: skillMap
@@ -6841,7 +6874,7 @@ final class CheckpointStore {
                 competencies: generationCompetencies
             ),
             adaptiveSkillPlans: adaptiveSkillPlans(for: goal),
-            requiresVerifiedQuestions: isMember,
+            requiresVerifiedQuestions: true,
             backendEndpoint: resolvedBackendEndpoint,
             backendAuthorizationToken: resolvedBackendAuthorizationToken
         )

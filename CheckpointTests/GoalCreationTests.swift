@@ -597,12 +597,15 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
     }
 
     @MainActor
-    func testConfiguredBackendRegeneratesCachedLocalTemplateBankOnLaunch() async throws {
+    func testConfiguredBackendReplacesCachedLocalTemplateBankWithoutDeletingHistoryOnLaunch() async throws {
         let goal = makeGoal()
         let seededStore = CheckpointStore(defaults: defaults)
         seededStore.goal = goal
         seededStore.goalProfiles = [goal]
-        seededStore.questions = (1...5).map { makeQuestion(goal: goal, index: $0) }
+        let original = (1...5).map {
+            makeQuestion(goal: goal, index: $0, verificationVersion: 0, verificationPolicyRevision: 0)
+        }
+        seededStore.questions = original
         seededStore.lastQuestionProvider = .localTemplates
         seededStore.updateAIProviderPreference(.localTemplates)
         seededStore.updateBackendEndpoint("https://example.com/ai")
@@ -619,13 +622,16 @@ final class GoalCreationTests: CheckpointWorkflowTestCase {
             defaults: defaults
         )
 
-        XCTAssertTrue(relaunchedStore.activeQuestions.isEmpty)
+        XCTAssertEqual(relaunchedStore.activeQuestions, original)
+        XCTAssertEqual(relaunchedStore.usableQuestionCount, 0)
         XCTAssertEqual(relaunchedStore.questionBatchState, .generating)
 
         try? await Task.sleep(nanoseconds: 300_000_000)
 
         XCTAssertEqual(backendEngine.receivedRequests.first?.targetCount, 5)
-        XCTAssertEqual(relaunchedStore.activeQuestions.count, ProductLimits.starterQuestionBankTargetCount)
+        XCTAssertEqual(relaunchedStore.activeQuestions.count, original.count + ProductLimits.starterQuestionBankTargetCount)
+        XCTAssertEqual(relaunchedStore.usableQuestionCount, ProductLimits.starterQuestionBankTargetCount)
+        XCTAssertEqual(relaunchedStore.questions.filter { original.map(\.id).contains($0.id) }, original)
         XCTAssertEqual(relaunchedStore.lastQuestionProvider, .backend)
     }
 
