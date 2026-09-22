@@ -5,6 +5,8 @@ improvements are on `main`. The deployment defaults remain global `legacy` and
 worker `inherit`; the current iOS minimum remains policy 2. Native worker rollout
 and a client minimum of 4 are separate pending work. No deployment was performed
 for these changes. Native formatting enforces structure, not factual correctness.
+See the [investigation findings](QUESTION_RELIABILITY_FINDINGS.md) for the application
+bugs, controlled model comparisons and answer-highlighting evidence.
 
 ## Runtime contracts and compatibility
 

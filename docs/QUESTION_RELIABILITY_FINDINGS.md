@@ -1,0 +1,66 @@
+# Why Checkpoint produced unreliable quizzes
+
+This investigation found application defects as well as model errors. Asking a
+capable model for a quiz in chat does not exercise the same path: Checkpoint
+serializes a constrained response, runs an independent solver and a feedback
+writer, adapts their responses, persists questions, shuffles choices and grades
+against the stored key. Each boundary needs its own invariant.
+
+## Findings and verified fixes
+
+| Finding | Evidence | Fix on main |
+| --- | --- | --- |
+| Native structured output support existed, but the inspected TestFlight API and worker were using legacy prompt-only JSON. | [Recorded deployment configuration](evidence/question-reliability-release-20260922/deployment-before.json). | Worker transport can be selected independently, incompatible model configurations fail before deployment, and native authoring uses four required slots plus a key enum. Rollout remains separate. |
+| Alphabetical schema serialization asked the author to emit choices before the stem and its key before the stem. | [Controlled ordering comparison](evidence/native-author-order-20260922/REPORT.md): three plainly wrong keys in the sorted arm; none plainly wrong and one ambiguous item in the ordered arm. | Versioned author v3 places the stem first and explanation before the key. Exact key text is derived from the selected choice slot. Historical schema bytes remain unchanged. |
+| An array could describe six pair comparisons but could not enforce their identities. The model emitted seven rows including a self-pair. | [Stopped ordering trial](evidence/choice-quality-release-20260922/ORDER_RESULTS.md). | Four judgment slots and six closed pair slots, with exact endpoints supplied by code and strict decoding. Slot mapping does not depend on the key. |
+| Different strings can propose the same answer; checking which choice is correct does not check whether two wrong choices duplicate one another. | [Twenty reviewed controls](evidence/choice-quality-release-20260922/INDEPENDENT_GOLD_REVIEW.md) include equivalent values, unit conversions, paraphrases and representation-sensitive tasks. | Pair judgments are a separate admission condition. Declared equivalence or uncertainty vetoes an item, in addition to exact agreement on one supported answer. |
+| Legacy client code inferred correctness from prose. The substring `correct` also occurs in `incorrect`, so distractor feedback could overwrite the explicit answer key. | [Highlighting reproduction and permutation tests](evidence/answer-highlighting-20260921.md). | The explicit structured key is authoritative. Explanation text cannot replace it. Text-based grading preserves the key across all 24 display orders. |
+| Old inventory and position-dependent feedback could outlive the assumptions used when generated. | [Cached inventory audit](evidence/question-reliability-release-20260922/CACHED_INVENTORY.md); the fresh English capture contained “Only the first choice” despite app shuffling. | All practice tiers require the current verification policy. Old history is preserved. Final review rejects display-position references, while retaining quoted subject literals and ordinary numeric values. |
+
+These changes make structure, key membership, exact identity and admission rules
+deterministic. They do not make a model's factual statements deterministic or
+universally correct. Schema-valid output can still describe an ambiguous question
+or attach a convincing false explanation to the right answer.
+
+## Model experiments
+
+The default Sonnet checker had thinking disabled. With fixed pair endpoints and
+disabled thinking, it correctly retained ten valid controls and excluded ten bad
+controls, yet mislabeled four of 120 individual comparisons. Its reasons sometimes
+discussed a different pair from the one being labeled. We preserved that strict
+failure rather than crediting eligibility alone.
+
+The [adaptive/high candidate](evidence/choice-quality-release-20260922/ADAPTIVE_RESULTS.md)
+matched all 80 correctness labels and all 120 pair labels on the same twenty
+controls. It used the same prompt, inputs, schema and model; adaptive mode also
+changed sampling and the shared reasoning/output allowance as required by the
+runtime. This was a descriptive comparison with an earlier run, not a paired
+causal estimate. It took about twice as long: 23.680–49.392 seconds per call.
+Three minor inaccurate explanatory embellishments remained in the private solver
+reasons, so this is not evidence that every word of its reasoning was true.
+
+The first fresh full pipeline returned 29 of 30 requested questions, but
+[independent audits](evidence/question-reliability-release-20260922/STRUCTURAL_MILESTONE.md)
+found false feedback and an English question with more than one defensible answer.
+A correct answer key alone is therefore insufficient for release qualification.
+
+The reviewer sometimes copied an erroneous solver explanation. We tested simply
+removing the solver data in a [four-call comparison](evidence/question-reliability-release-20260922/REVIEWER_ANCHORING_RESULTS.md).
+That treatment still invented false feedback and rejected a valid item: it failed
+and remains inactive. More stages, or hiding an input without evidence, do not
+automatically improve quality.
+
+## Current release boundary
+
+The tested structural changes are on main. Backend verification passes 1,133
+tests. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
+answer-key/shuffle coverage includes four answer types across all 24 orders.
+The worker-only Claude-thinking override keeps the synchronous API's shorter
+deadline independent of a background-worker reasoning rollout.
+
+At this checkpoint, global transport remains legacy, worker transport and thinking
+inherit their global settings, and the current client minimum remains policy 2.
+Only the complete native pair-audited path followed by successful final review
+earns policy 4. Neither stored questions nor historical answers are relabeled.
+A fresh six-domain adaptive pipeline qualification is underway under the existing
+240-second worker deadline and six-call budget. No deployment has occurred.
