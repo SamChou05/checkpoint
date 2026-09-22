@@ -1,0 +1,76 @@
+{
+  "reviewer": "choice_semantics, independent of answer_highlighting control design",
+  "approved": true,
+  "reviewed_packet_sha256": "5ba726f57b54ab43493c4bde6bd18a9d29200defaa57bb03b86599cefcfd1dd4",
+  "candidate_prompt_hidden_from_designer": true,
+  "cases": [
+    {
+      "case_id": "necessary_ticket_inference",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 0,
+      "unique_supported_key_when_accepted": true
+    },
+    {
+      "case_id": "even_integer_converse_error",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 0,
+      "unique_supported_key_when_accepted": true
+    },
+    {
+      "case_id": "rectangle_perimeter_complete",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 0,
+      "unique_supported_key_when_accepted": true
+    },
+    {
+      "case_id": "triangle_missing_perimeter",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 0,
+      "unique_supported_key_when_accepted": true
+    },
+    {
+      "case_id": "text_identifier_leading_zero",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 0,
+      "unique_supported_key_when_accepted": true
+    },
+    {
+      "case_id": "editor_duplicate_discard_actions",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 1,
+      "unique_supported_key_when_accepted": true
+    }
+  ],
+  "manual_findings": [
+    "Ticket possession is necessary for compliant entry; acquisition channel,price and whether every holder attended do not follow. The four propositions are distinct despite possible co-occurrence.",
+    "Even means divisible by2. n=2 refutes necessity of divisibility by4;n=4 refutes necessity of divisibility by6;n=-2 refutes positivity. The wrong displayed4-divisibility key must be rejected, not rewritten to the different supported offered answer.",
+    "Rectangle perimeter2*(9+4)=26cm;9*4=36 is the area coefficient in square centimeters,13 counts only adjacent sides,18 omits both short sides. Feedback distinguishes these correctly.",
+    "With triangle sides5and7, the third side t must satisfy2<t<12. t=6,8,10 yield different feasible nondegenerate triangles; none is established as the actual length.12 is degenerate. No18cm perimeter is given, so the key and several feedback strings invent a premise. Rejection should not confuse feasible alternatives with established exact lengths.",
+    "Under exact text matching, leading zeros and character order define different IDs. Only042 matches042;024 swaps the final2characters,42 drops the zero,and420 changes order.",
+    "The supplied editor definitions equate the discard option with restoring saved text while removing unsaved edits. These two wrong alternatives propose the same action; true feedback and a unique Save key do not cure the diversity defect. Rename is a distinct action.",
+    "All30 main/per-choice fields, exact text bounds/key membership/feedback coverage,and all36 pair identities were checked. Three sound cases are different situations,not repaired counterparts of the three defective cases."
+  ],
+  "limitations": [
+    "These six cases are prospectively designed controls,not random production samples.",
+    "The necessary-condition and representation examples remain deliberately self-contained; no broad-domain accuracy claim follows.",
+    "Input/gold approval alone authorizes no provider dispatch or production release."
+  ]
+}

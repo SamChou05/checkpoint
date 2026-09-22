@@ -1,0 +1,1131 @@
+{
+  "status": "draft_pending_independent_and_parent_review_not_frozen",
+  "name": "Six independent holdouts for a prospective counterexample-auditor revision",
+  "design_owner": "answer_highlighting subagent",
+  "candidate_prompt_seen_by_designer": false,
+  "counts": {
+    "learner_items": 6,
+    "sound": 3,
+    "defective": 3,
+    "paired_repair_cases": 0,
+    "families": 3,
+    "main_and_choice_explanation_fields": 30,
+    "pairwise_meaning_judgments": 36
+  },
+  "batch_design": "All six cases belong to batch3. They use separate situations rather than sound/defective repaired pairs,so there is no counterpart whose changed wording reveals the disposition.",
+  "provider_input_boundary": "Only learner_item under an opaque slot may be sent. Never send case_id,family_id,variant,gold,counterexamples,provenance,or these instructions. The auditor may judge the unchanged item but may not repair it.",
+  "source_files": {},
+  "preserved_existing_gold_sha256": {
+    "docs/evidence/final-content-audit-20260922/controls-gold-draft.json": "a974723f3f75eb274066f2ee7b5585b646106b6cffc9b4d425caf1a8dab79648",
+    "docs/evidence/final-content-audit-20260922/supplemental-controls-draft.json": "0c1f821364c4241049d2828c84f531d80e8a53deda4ee11d07d1400bdb17743d"
+  },
+  "ground_truth_method": "All necessary premises appear in each learner stem;evaluate necessary/sufficient inference by concrete countermodels,geometry by exact arithmetic and strict triangle inequalities,and answer identity using the explicit operational/text rules. No time-sensitive external claim or fallible provider judgment is needed.",
+  "mechanical_checks": {
+    "all6_within_existing_bounds": true,
+    "all6_exactly_four_choices_and_feedback_entries": true,
+    "all_keys_are_exact_offered_text": true,
+    "all30_teaching_fields_have_claim_audits": true,
+    "all36_pairs_have_explicit_relations": true,
+    "exact_arithmetic_and_countermodel_checks_pass": true,
+    "prior_gold_modified": false,
+    "provider_calls": 0
+  },
+  "no_calls_authorized_by_this_packet": true,
+  "cases": [
+    {
+      "case_id": "necessary_ticket_inference",
+      "family_id": "necessary_vs_sufficient",
+      "pair_id": null,
+      "independent_control": true,
+      "variant": "sound",
+      "batch": 3,
+      "learner_item": {
+        "prompt": "A museum rule allows a person to enter only if they hold a valid ticket. Lina entered while this rule was followed. Which statement must be true?",
+        "choices": [
+          "Lina held a valid ticket when she entered.",
+          "Lina bought her ticket online.",
+          "Lina paid nothing for her ticket.",
+          "Every person with a valid ticket entered the museum."
+        ],
+        "expectedAnswer": "Lina held a valid ticket when she entered.",
+        "explanation": "A valid ticket is necessary for entry under the stated rule. Since Lina entered in compliance with the rule, she held a valid ticket.",
+        "choiceExplanations": {
+          "Lina held a valid ticket when she entered.": "Entry under this rule implies possession of a valid ticket.",
+          "Lina bought her ticket online.": "The rule says nothing about where or how a ticket was obtained.",
+          "Lina paid nothing for her ticket.": "The rule gives no information about the ticket price.",
+          "Every person with a valid ticket entered the museum.": "A ticket is necessary for entry; the rule does not say every ticket holder actually enters."
+        }
+      },
+      "provenance": {
+        "kind": "new_evaluator_authored_independent_control",
+        "provider_generated": false,
+        "candidate_prompt_seen_by_designer": false,
+        "not_a_paired_repair": true,
+        "ground_truth": "Explicit supplied rules plus direct arithmetic or concrete counterexamples; no hidden provider judgments or generated answer labels used as evidence."
+      },
+      "paired_repairs": [],
+      "gold": {
+        "required_gate_decision": "accept",
+        "decision_reason": "The necessary-condition inference is valid,while purchase method,price,and universal attendance are not established.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": true,
+        "supported_choices": [
+          "Lina held a valid ticket when she entered."
+        ],
+        "choice_assessments": [
+          {
+            "choice": "Lina held a valid ticket when she entered.",
+            "supported_as_answer": true,
+            "reason": "Compliant entry implies a valid ticket."
+          },
+          {
+            "choice": "Lina bought her ticket online.",
+            "supported_as_answer": false,
+            "reason": "Online purchase is not specified."
+          },
+          {
+            "choice": "Lina paid nothing for her ticket.",
+            "supported_as_answer": false,
+            "reason": "Zero price is not specified."
+          },
+          {
+            "choice": "Every person with a valid ticket entered the museum.",
+            "supported_as_answer": false,
+            "reason": "The rule imposes a necessary condition but does not assert universal attendance."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "Lina held a valid ticket when she entered.",
+            "rightChoice": "Lina bought her ticket online.",
+            "relation": "distinct",
+            "reason": "Ticket validity at entry and online acquisition are different claims."
+          },
+          {
+            "leftChoice": "Lina held a valid ticket when she entered.",
+            "rightChoice": "Lina paid nothing for her ticket.",
+            "relation": "distinct",
+            "reason": "Ticket validity at entry and zero price are different claims."
+          },
+          {
+            "leftChoice": "Lina held a valid ticket when she entered.",
+            "rightChoice": "Every person with a valid ticket entered the museum.",
+            "relation": "distinct",
+            "reason": "A fact about Lina’s valid ticket is not a universal attendance claim."
+          },
+          {
+            "leftChoice": "Lina bought her ticket online.",
+            "rightChoice": "Lina paid nothing for her ticket.",
+            "relation": "distinct",
+            "reason": "Online acquisition and zero price are independent transaction properties."
+          },
+          {
+            "leftChoice": "Lina bought her ticket online.",
+            "rightChoice": "Every person with a valid ticket entered the museum.",
+            "relation": "distinct",
+            "reason": "Lina’s purchase method is distinct from whether all ticket holders entered."
+          },
+          {
+            "leftChoice": "Lina paid nothing for her ticket.",
+            "rightChoice": "Every person with a valid ticket entered the museum.",
+            "relation": "distinct",
+            "reason": "Lina’s ticket price is distinct from whether all ticket holders entered."
+          }
+        ],
+        "all_choices_semantically_distinct_for_task": true,
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "31bf69ed3e1320090d342106976b3a5616b217c771d5d694d139d46da3864bc0",
+            "claims": [
+              {
+                "claim": "A valid ticket is necessary for entry.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              },
+              {
+                "claim": "Lina’s compliant entry therefore implies she held a valid ticket.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['Lina held a valid ticket when she entered.']",
+            "text_sha256": "2b606987f999915cc4faaee32efc102a92e53645f45ca836c50308c0c34ec353",
+            "claims": [
+              {
+                "claim": "Entry implies a valid ticket under the supplied rule.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['Lina bought her ticket online.']",
+            "text_sha256": "6e7b19160ea6133ac160e725eadefe75d0fd7388da1fa8305f361081fe2f0fec",
+            "claims": [
+              {
+                "claim": "The ticket-acquisition method is not supplied.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['Lina paid nothing for her ticket.']",
+            "text_sha256": "b46d1e8f28c8188bbe1c4ccffcacba721d5c065fef7dfff7b4bd131bb921fc10",
+            "claims": [
+              {
+                "claim": "The ticket price is not supplied.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['Every person with a valid ticket entered the museum.']",
+            "text_sha256": "ee254bde9b6f5fb43d34dea37c2311b714e8d31a3afae463524e096f8ddb7d82",
+            "claims": [
+              {
+                "claim": "Necessary possession does not entail that all ticket holders entered.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": true,
+        "counterexamples_or_calculations": [
+          "Lina could obtain a paid ticket in person and enter;that preserves all facts but refutes any guarantee of online purchase or zero price.",
+          "A second person may hold a valid ticket and stay home;the entry rule still holds,so universal attendance is not entailed."
+        ],
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only with exactly one supported choice matching the key,task-relevant distinct options,and fully sound teaching. Missing conditions,wrong keys,equivalent proposed answers,or materially false/unsupported feedback require rejection."
+      }
+    },
+    {
+      "case_id": "even_integer_converse_error",
+      "family_id": "necessary_vs_sufficient",
+      "pair_id": null,
+      "independent_control": true,
+      "variant": "defective",
+      "batch": 3,
+      "learner_item": {
+        "prompt": "For an integer n, being divisible by 4 implies being even. It is known only that n is even. Which statement must be true?",
+        "choices": [
+          "n is divisible by 4.",
+          "n is divisible by 2.",
+          "n is divisible by 6.",
+          "n is greater than 0."
+        ],
+        "expectedAnswer": "n is divisible by 4.",
+        "explanation": "The implication can be reversed: because n is even, n must be divisible by 4.",
+        "choiceExplanations": {
+          "n is divisible by 4.": "Evenness guarantees divisibility by 4 under the stated implication.",
+          "n is divisible by 2.": "This describes evenness, but the stated rule also guarantees the stronger claim of divisibility by 4.",
+          "n is divisible by 6.": "The even integer 4 is not divisible by 6, so this need not be true.",
+          "n is greater than 0.": "Even integers can be negative; n = -2 is a counterexample."
+        }
+      },
+      "provenance": {
+        "kind": "new_evaluator_authored_independent_control",
+        "provider_generated": false,
+        "candidate_prompt_seen_by_designer": false,
+        "not_a_paired_repair": true,
+        "ground_truth": "Explicit supplied rules plus direct arithmetic or concrete counterexamples; no hidden provider judgments or generated answer labels used as evidence."
+      },
+      "paired_repairs": [],
+      "gold": {
+        "required_gate_decision": "reject",
+        "decision_reason": "The key and teaching assert an invalid converse;the different offered statement that n is divisible by2 is uniquely warranted.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": false,
+        "exactly_one_supported_choice": true,
+        "supported_choices": [
+          "n is divisible by 2."
+        ],
+        "choice_assessments": [
+          {
+            "choice": "n is divisible by 4.",
+            "supported_as_answer": false,
+            "reason": "n=2 is even but not divisible by4."
+          },
+          {
+            "choice": "n is divisible by 2.",
+            "supported_as_answer": true,
+            "reason": "An integer is even exactly when it is divisible by2."
+          },
+          {
+            "choice": "n is divisible by 6.",
+            "supported_as_answer": false,
+            "reason": "n=4 is even but not divisible by6."
+          },
+          {
+            "choice": "n is greater than 0.",
+            "supported_as_answer": false,
+            "reason": "n=-2 is even but not positive."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "n is divisible by 4.",
+            "rightChoice": "n is divisible by 2.",
+            "relation": "distinct",
+            "reason": "These predicates differ even within the stated even-integer domain:at n=-10,the first isFalseand the second isTrue."
+          },
+          {
+            "leftChoice": "n is divisible by 4.",
+            "rightChoice": "n is divisible by 6.",
+            "relation": "distinct",
+            "reason": "These predicates differ even within the stated even-integer domain:at n=-8,the first isTrueand the second isFalse."
+          },
+          {
+            "leftChoice": "n is divisible by 4.",
+            "rightChoice": "n is greater than 0.",
+            "relation": "distinct",
+            "reason": "These predicates differ even within the stated even-integer domain:at n=-12,the first isTrueand the second isFalse."
+          },
+          {
+            "leftChoice": "n is divisible by 2.",
+            "rightChoice": "n is divisible by 6.",
+            "relation": "distinct",
+            "reason": "These predicates differ even within the stated even-integer domain:at n=-10,the first isTrueand the second isFalse."
+          },
+          {
+            "leftChoice": "n is divisible by 2.",
+            "rightChoice": "n is greater than 0.",
+            "relation": "distinct",
+            "reason": "These predicates differ even within the stated even-integer domain:at n=-12,the first isTrueand the second isFalse."
+          },
+          {
+            "leftChoice": "n is divisible by 6.",
+            "rightChoice": "n is greater than 0.",
+            "relation": "distinct",
+            "reason": "These predicates differ even within the stated even-integer domain:at n=-12,the first isTrueand the second isFalse."
+          }
+        ],
+        "all_choices_semantically_distinct_for_task": true,
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "fd6d1b53f692c42bed7b1ca5785e4be223b62ce4af924d643b71a33c6991a843",
+            "claims": [
+              {
+                "claim": "The supplied implication can be reversed.",
+                "assessment": "false_or_unjustified",
+                "reason": "Divisibility by4 is sufficient for evenness,but evenness is not sufficient for divisibility by4;n=2 is a counterexample."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['n is divisible by 4.']",
+            "text_sha256": "20f86a4ee6c854e41851dd91b195fd5fe4535cabdd5077112c86cfc7d12ebbd0",
+            "claims": [
+              {
+                "claim": "Evenness guarantees divisibility by4.",
+                "assessment": "false_or_unjustified",
+                "reason": "n=2 satisfies the premise but not the conclusion."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['n is divisible by 2.']",
+            "text_sha256": "d5125c82b5d6169b7b76747acf304f3f6679a32559e5c218d93ba5cafe4eac83",
+            "claims": [
+              {
+                "claim": "Divisibility by2 describes evenness.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              },
+              {
+                "claim": "The rule guarantees the stronger divisibility-by4 conclusion from evenness.",
+                "assessment": "false_or_unjustified",
+                "reason": "That is the invalid converse;the actual supported listed statement is divisibility by2."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['n is divisible by 6.']",
+            "text_sha256": "863222773a0b3ec80ca2fb9df8f00f7955b0711cdceb99e23b23d9226c1411c4",
+            "claims": [
+              {
+                "claim": "4 is even and not divisible by6.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['n is greater than 0.']",
+            "text_sha256": "4973afe5e43874cd0c7095eb8e2e317c3af949eaeb5ea23a5e99145ab9cdf310",
+            "claims": [
+              {
+                "claim": "-2 is an even negative integer.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": false,
+        "counterexamples_or_calculations": [
+          "Take n=2:it satisfies the only known condition,while2 is not divisible by4.",
+          "Take n=4 to refute guaranteed divisibility by6,and n=-2 to refute positivity.",
+          "All permissible n are even,so all are divisible by2 by the definition of even integer."
+        ],
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only with exactly one supported choice matching the key,task-relevant distinct options,and fully sound teaching. Missing conditions,wrong keys,equivalent proposed answers,or materially false/unsupported feedback require rejection."
+      }
+    },
+    {
+      "case_id": "rectangle_perimeter_complete",
+      "family_id": "literal_task_conditions",
+      "pair_id": null,
+      "independent_control": true,
+      "variant": "sound",
+      "batch": 3,
+      "learner_item": {
+        "prompt": "A rectangle is 9 cm long and 4 cm wide. What is its perimeter?",
+        "choices": [
+          "26 cm",
+          "36 cm",
+          "13 cm",
+          "18 cm"
+        ],
+        "expectedAnswer": "26 cm",
+        "explanation": "A rectangle has two sides of each length, so its perimeter is 2 × 9 + 2 × 4 = 26 cm.",
+        "choiceExplanations": {
+          "26 cm": "9 + 4 + 9 + 4 = 26 cm includes all four sides.",
+          "36 cm": "36 is the product 9 × 4, used for the area in square centimeters rather than the perimeter.",
+          "13 cm": "9 + 4 = 13 cm counts only one length and one width, not all four sides.",
+          "18 cm": "2 × 9 = 18 cm counts the two long sides but omits the two 4 cm sides."
+        }
+      },
+      "provenance": {
+        "kind": "new_evaluator_authored_independent_control",
+        "provider_generated": false,
+        "candidate_prompt_seen_by_designer": false,
+        "not_a_paired_repair": true,
+        "ground_truth": "Explicit supplied rules plus direct arithmetic or concrete counterexamples; no hidden provider judgments or generated answer labels used as evidence."
+      },
+      "paired_repairs": [],
+      "gold": {
+        "required_gate_decision": "accept",
+        "decision_reason": "The supplied rectangle dimensions determine a unique perimeter,and every distractor explanation describes its actual arithmetic mismatch.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": true,
+        "supported_choices": [
+          "26 cm"
+        ],
+        "choice_assessments": [
+          {
+            "choice": "26 cm",
+            "supported_as_answer": true,
+            "reason": "The four-side sum is26."
+          },
+          {
+            "choice": "36 cm",
+            "supported_as_answer": false,
+            "reason": "36 is not the perimeter."
+          },
+          {
+            "choice": "13 cm",
+            "supported_as_answer": false,
+            "reason": "13 is only half the perimeter."
+          },
+          {
+            "choice": "18 cm",
+            "supported_as_answer": false,
+            "reason": "18 omits both widths."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "26 cm",
+            "rightChoice": "36 cm",
+            "relation": "distinct",
+            "reason": "26 cmand36 cmare different lengths in the same unit."
+          },
+          {
+            "leftChoice": "26 cm",
+            "rightChoice": "13 cm",
+            "relation": "distinct",
+            "reason": "26 cmand13 cmare different lengths in the same unit."
+          },
+          {
+            "leftChoice": "26 cm",
+            "rightChoice": "18 cm",
+            "relation": "distinct",
+            "reason": "26 cmand18 cmare different lengths in the same unit."
+          },
+          {
+            "leftChoice": "36 cm",
+            "rightChoice": "13 cm",
+            "relation": "distinct",
+            "reason": "36 cmand13 cmare different lengths in the same unit."
+          },
+          {
+            "leftChoice": "36 cm",
+            "rightChoice": "18 cm",
+            "relation": "distinct",
+            "reason": "36 cmand18 cmare different lengths in the same unit."
+          },
+          {
+            "leftChoice": "13 cm",
+            "rightChoice": "18 cm",
+            "relation": "distinct",
+            "reason": "13 cmand18 cmare different lengths in the same unit."
+          }
+        ],
+        "all_choices_semantically_distinct_for_task": true,
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "62dfcfcc69e54a0e02e9074ae37bb7ba1ffdfa25af7077dd01dc40b45250fa7c",
+            "claims": [
+              {
+                "claim": "A rectangle has two sides of length9 and two of length4.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              },
+              {
+                "claim": "2*9+2*4=26 cm.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['26 cm']",
+            "text_sha256": "3d6b50662a007cc1f058ce706b58b8c167d20ba84306f2f7d779178d05f371aa",
+            "claims": [
+              {
+                "claim": "9+4+9+4=26.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['36 cm']",
+            "text_sha256": "aa3e4b500b9affafa4112af4a9323511fb353ac032ffc70c12e290a45da00303",
+            "claims": [
+              {
+                "claim": "9*4=36 is the numerical area calculation,whose unit is square centimeters.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['13 cm']",
+            "text_sha256": "9d9a58c9f10a3e84b58b6433d371065d577cbde7874fbebf8393a28defeb2637",
+            "claims": [
+              {
+                "claim": "9+4=13 counts only two adjacent sides.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['18 cm']",
+            "text_sha256": "271b4aa03767c4cd0f37119c2dfe62da66e4b3ca387dcc61bfbfb0c53322cdae",
+            "claims": [
+              {
+                "claim": "2*9=18 omits2*4=8 cm.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": true,
+        "counterexamples_or_calculations": [
+          "2*(9+4)=26.",
+          "9*4=36;9+4=13;2*9=18. These are three distinct incorrect proposed perimeters."
+        ],
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only with exactly one supported choice matching the key,task-relevant distinct options,and fully sound teaching. Missing conditions,wrong keys,equivalent proposed answers,or materially false/unsupported feedback require rejection."
+      }
+    },
+    {
+      "case_id": "triangle_missing_perimeter",
+      "family_id": "literal_task_conditions",
+      "pair_id": null,
+      "independent_control": true,
+      "variant": "defective",
+      "batch": 3,
+      "learner_item": {
+        "prompt": "A nondegenerate triangle has two side lengths of 5 cm and 7 cm. What is the length of its third side?",
+        "choices": [
+          "6 cm",
+          "8 cm",
+          "10 cm",
+          "12 cm"
+        ],
+        "expectedAnswer": "6 cm",
+        "explanation": "The two given sides imply a perimeter of 18 cm, so the third side is 18 − 5 − 7 = 6 cm.",
+        "choiceExplanations": {
+          "6 cm": "5 + 7 + 6 = 18 cm, so 6 cm is the determined third side.",
+          "8 cm": "8 cm would make the perimeter 20 cm rather than the required 18 cm.",
+          "10 cm": "10 cm would make the perimeter 22 cm rather than the required 18 cm.",
+          "12 cm": "12 cm equals 5 + 7, so these lengths form a degenerate triangle rather than the required nondegenerate triangle."
+        }
+      },
+      "provenance": {
+        "kind": "new_evaluator_authored_independent_control",
+        "provider_generated": false,
+        "candidate_prompt_seen_by_designer": false,
+        "not_a_paired_repair": true,
+        "ground_truth": "Explicit supplied rules plus direct arithmetic or concrete counterexamples; no hidden provider judgments or generated answer labels used as evidence."
+      },
+      "paired_repairs": [],
+      "gold": {
+        "required_gate_decision": "reject",
+        "decision_reason": "No offered exact length is established as the actual third side;the key and feedback invent a missing perimeter. Feasible values are not uniquely determined values.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": false,
+        "exactly_one_supported_choice": false,
+        "supported_choices": [],
+        "choice_assessments": [
+          {
+            "choice": "6 cm",
+            "supported_as_answer": false,
+            "reason": "6 is feasible,but not determined by two sides alone."
+          },
+          {
+            "choice": "8 cm",
+            "supported_as_answer": false,
+            "reason": "8 is feasible,but not determined by two sides alone."
+          },
+          {
+            "choice": "10 cm",
+            "supported_as_answer": false,
+            "reason": "10 is feasible,but not determined by two sides alone."
+          },
+          {
+            "choice": "12 cm",
+            "supported_as_answer": false,
+            "reason": "12 violates the strict triangle inequality for a nondegenerate triangle."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "6 cm",
+            "rightChoice": "8 cm",
+            "relation": "distinct",
+            "reason": "6 cmand8 cmare different proposed lengths for the same side."
+          },
+          {
+            "leftChoice": "6 cm",
+            "rightChoice": "10 cm",
+            "relation": "distinct",
+            "reason": "6 cmand10 cmare different proposed lengths for the same side."
+          },
+          {
+            "leftChoice": "6 cm",
+            "rightChoice": "12 cm",
+            "relation": "distinct",
+            "reason": "6 cmand12 cmare different proposed lengths for the same side."
+          },
+          {
+            "leftChoice": "8 cm",
+            "rightChoice": "10 cm",
+            "relation": "distinct",
+            "reason": "8 cmand10 cmare different proposed lengths for the same side."
+          },
+          {
+            "leftChoice": "8 cm",
+            "rightChoice": "12 cm",
+            "relation": "distinct",
+            "reason": "8 cmand12 cmare different proposed lengths for the same side."
+          },
+          {
+            "leftChoice": "10 cm",
+            "rightChoice": "12 cm",
+            "relation": "distinct",
+            "reason": "10 cmand12 cmare different proposed lengths for the same side."
+          }
+        ],
+        "all_choices_semantically_distinct_for_task": true,
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "e61c67b3fee9708f0efc94d202fd92d26bebbb66d8b4508c682e79ac2e5525a8",
+            "claims": [
+              {
+                "claim": "Two sides5 and7 imply a perimeter18.",
+                "assessment": "false_or_unjustified",
+                "reason": "No perimeter or included angle is given;third sides6,8,and10 are all feasible."
+              },
+              {
+                "claim": "If the perimeter were18,18-5-7 would equal6;the needed premise is absent.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['6 cm']",
+            "text_sha256": "d1005d5ead7a546b50f0d4d8d571cbfa215a928924e453f7c50d480d09249271",
+            "claims": [
+              {
+                "claim": "5+7+6=18.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              },
+              {
+                "claim": "This makes6 the determined third side.",
+                "assessment": "false_or_unjustified",
+                "reason": "Other nondegenerate triangles satisfy the same two given lengths."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['8 cm']",
+            "text_sha256": "4c91a6b0390cfe324dc36b19f3d89f8e75eb16cb60835c5ab1d428881879c8b2",
+            "claims": [
+              {
+                "claim": "5+7+8=20.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              },
+              {
+                "claim": "The required perimeter is18.",
+                "assessment": "false_or_unjustified",
+                "reason": "The stem gives no perimeter."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['10 cm']",
+            "text_sha256": "91f797ca66985d5ee4f0e086c4f3ab15043235bb7a4b368032de3643d3e13c6f",
+            "claims": [
+              {
+                "claim": "5+7+10=22.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              },
+              {
+                "claim": "The required perimeter is18.",
+                "assessment": "false_or_unjustified",
+                "reason": "The stem gives no perimeter."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['12 cm']",
+            "text_sha256": "837dc9bdd135ead8ccea69d407123122e4c14a314e068a4290a878cd72c90a53",
+            "claims": [
+              {
+                "claim": "12=5+7 is the degenerate boundary and cannot form a nondegenerate triangle with the given sides.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": false,
+        "counterexamples_or_calculations": [
+          "A triangle with sides5,7,6 satisfies all three strict triangle inequalities.",
+          "A triangle with sides5,7,10 also satisfies all three strict triangle inequalities. These two permitted cases have different third sides.",
+          "The permissible third-side interval is2<c<12. The offered6,8,10 lie inside it;12 is the degenerate boundary."
+        ],
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only with exactly one supported choice matching the key,task-relevant distinct options,and fully sound teaching. Missing conditions,wrong keys,equivalent proposed answers,or materially false/unsupported feedback require rejection."
+      }
+    },
+    {
+      "case_id": "text_identifier_leading_zero",
+      "family_id": "contextual_answer_meaning",
+      "pair_id": null,
+      "independent_control": true,
+      "variant": "sound",
+      "batch": 3,
+      "learner_item": {
+        "prompt": "An employee ID is matched as exact text, including leading zeros. The stored ID is 042. Which listed ID matches it exactly?",
+        "choices": [
+          "042",
+          "42",
+          "024",
+          "420"
+        ],
+        "expectedAnswer": "042",
+        "explanation": "Exact text matching requires the same characters in the same order, so only 042 matches the stored ID.",
+        "choiceExplanations": {
+          "042": "042 has exactly the same three characters in the same order as the stored ID.",
+          "42": "42 omits the leading zero, which matters under the exact-text rule.",
+          "024": "024 reverses the last two characters of 042, so it is a different ID.",
+          "420": "420 has a different character order from 042 and therefore does not match."
+        }
+      },
+      "provenance": {
+        "kind": "new_evaluator_authored_independent_control",
+        "provider_generated": false,
+        "candidate_prompt_seen_by_designer": false,
+        "not_a_paired_repair": true,
+        "ground_truth": "Explicit supplied rules plus direct arithmetic or concrete counterexamples; no hidden provider judgments or generated answer labels used as evidence."
+      },
+      "paired_repairs": [],
+      "gold": {
+        "required_gate_decision": "accept",
+        "decision_reason": "The explicit text-identity rule makes all four identifiers distinct as proposed answers,and042 is uniquely correct.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": true,
+        "supported_choices": [
+          "042"
+        ],
+        "choice_assessments": [
+          {
+            "choice": "042",
+            "supported_as_answer": true,
+            "reason": "The exact three-character sequence matches."
+          },
+          {
+            "choice": "42",
+            "supported_as_answer": false,
+            "reason": "It omits the required leading zero."
+          },
+          {
+            "choice": "024",
+            "supported_as_answer": false,
+            "reason": "It swaps the final two characters."
+          },
+          {
+            "choice": "420",
+            "supported_as_answer": false,
+            "reason": "It has a different order."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "042",
+            "rightChoice": "42",
+            "relation": "distinct",
+            "reason": "042 and42 are different identifiers because leading zeros explicitly matter;numeric equivalence does not define identity here."
+          },
+          {
+            "leftChoice": "042",
+            "rightChoice": "024",
+            "relation": "distinct",
+            "reason": "042 and024 differ in the final two character positions."
+          },
+          {
+            "leftChoice": "042",
+            "rightChoice": "420",
+            "relation": "distinct",
+            "reason": "042 and420 have different character orders."
+          },
+          {
+            "leftChoice": "42",
+            "rightChoice": "024",
+            "relation": "distinct",
+            "reason": "42 and024 have different lengths and sequences."
+          },
+          {
+            "leftChoice": "42",
+            "rightChoice": "420",
+            "relation": "distinct",
+            "reason": "42 and420 have different lengths and sequences."
+          },
+          {
+            "leftChoice": "024",
+            "rightChoice": "420",
+            "relation": "distinct",
+            "reason": "024 and420 have different three-character sequences."
+          }
+        ],
+        "all_choices_semantically_distinct_for_task": true,
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "84cfafed5da0e95f55a10587dc8199e3087b7dc19812b46b233ad87deeb05abf",
+            "claims": [
+              {
+                "claim": "Exact text matching requires identical ordered characters.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              },
+              {
+                "claim": "Only042 matches the stored042.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['042']",
+            "text_sha256": "26e03e391693492a7ef713df98ddfd277160e1b41b88ddcec2144eeaabfb0619",
+            "claims": [
+              {
+                "claim": "042 has the same three ordered characters.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['42']",
+            "text_sha256": "687a49476de6bfd4237e53b6a5f8d435f7a18a695f35f28c6f4519b7fe0f3a85",
+            "claims": [
+              {
+                "claim": "42 lacks the initial0 required by the explicit rule.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['024']",
+            "text_sha256": "1c0ed944a6e345caa012655c38995fc13a10679244fe002e8a2dbdc4b623a85d",
+            "claims": [
+              {
+                "claim": "024 swaps the final4 and2 from042.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['420']",
+            "text_sha256": "ed5627d86001195f9ac41f6fedfc9e438e1b400cc57b6a4138acff0b7bd3b8df",
+            "claims": [
+              {
+                "claim": "420 has a different order from042.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": true,
+        "counterexamples_or_calculations": [
+          "Compare character sequences rather than converting them to integers.",
+          "042 has length3;42 has length2. The other length3 sequences differ in order."
+        ],
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only with exactly one supported choice matching the key,task-relevant distinct options,and fully sound teaching. Missing conditions,wrong keys,equivalent proposed answers,or materially false/unsupported feedback require rejection."
+      }
+    },
+    {
+      "case_id": "editor_duplicate_discard_actions",
+      "family_id": "contextual_answer_meaning",
+      "pair_id": null,
+      "independent_control": true,
+      "variant": "defective",
+      "batch": 3,
+      "learner_item": {
+        "prompt": "An editor has unsaved changes. Save writes current edits to disk. Discard restores the last saved text. Rename changes only the file name. Which action writes the unsaved edits to disk?",
+        "choices": [
+          "Save the current edits.",
+          "Discard all unsaved changes.",
+          "Restore the last saved text and remove the unsaved edits.",
+          "Rename the file."
+        ],
+        "expectedAnswer": "Save the current edits.",
+        "explanation": "The stated Save operation writes the current edits to disk. Discard restores older saved content, and Rename only changes the file name.",
+        "choiceExplanations": {
+          "Save the current edits.": "Save is explicitly defined to write the current edits to disk.",
+          "Discard all unsaved changes.": "Discard restores the last saved content instead of saving the unsaved edits.",
+          "Restore the last saved text and remove the unsaved edits.": "This describes discarding the unsaved changes, not writing them to disk.",
+          "Rename the file.": "Rename changes only the file name, so it does not write the unsaved edits."
+        }
+      },
+      "provenance": {
+        "kind": "new_evaluator_authored_independent_control",
+        "provider_generated": false,
+        "candidate_prompt_seen_by_designer": false,
+        "not_a_paired_repair": true,
+        "ground_truth": "Explicit supplied rules plus direct arithmetic or concrete counterexamples; no hidden provider judgments or generated answer labels used as evidence."
+      },
+      "paired_repairs": [],
+      "gold": {
+        "required_gate_decision": "reject",
+        "decision_reason": "The key is uniquely correct and all teaching claims are true,but two wrong options are contextual paraphrases of the same discard action.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": true,
+        "supported_choices": [
+          "Save the current edits."
+        ],
+        "choice_assessments": [
+          {
+            "choice": "Save the current edits.",
+            "supported_as_answer": true,
+            "reason": "Save has the stated required effect."
+          },
+          {
+            "choice": "Discard all unsaved changes.",
+            "supported_as_answer": false,
+            "reason": "Discard removes the unsaved changes rather than writing them."
+          },
+          {
+            "choice": "Restore the last saved text and remove the unsaved edits.",
+            "supported_as_answer": false,
+            "reason": "This is the same discard action in different words."
+          },
+          {
+            "choice": "Rename the file.",
+            "supported_as_answer": false,
+            "reason": "Rename does not write the edits."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "Save the current edits.",
+            "rightChoice": "Discard all unsaved changes.",
+            "relation": "distinct",
+            "reason": "Saving edits and discarding them are different specified actions."
+          },
+          {
+            "leftChoice": "Save the current edits.",
+            "rightChoice": "Restore the last saved text and remove the unsaved edits.",
+            "relation": "distinct",
+            "reason": "Saving current text differs from restoring older saved text."
+          },
+          {
+            "leftChoice": "Save the current edits.",
+            "rightChoice": "Rename the file.",
+            "relation": "distinct",
+            "reason": "Saving current edits and renaming the file are different actions."
+          },
+          {
+            "leftChoice": "Discard all unsaved changes.",
+            "rightChoice": "Restore the last saved text and remove the unsaved edits.",
+            "relation": "equivalent",
+            "reason": "Under the supplied definitions,discarding all unsaved changes and restoring the last saved text while removing unsaved edits are the same proposed action,not merely two actions with a shared wrongness label."
+          },
+          {
+            "leftChoice": "Discard all unsaved changes.",
+            "rightChoice": "Rename the file.",
+            "relation": "distinct",
+            "reason": "Discard changes the editing content;Rename changes only the file name."
+          },
+          {
+            "leftChoice": "Restore the last saved text and remove the unsaved edits.",
+            "rightChoice": "Rename the file.",
+            "relation": "distinct",
+            "reason": "Restoring saved text and renaming are different specified actions."
+          }
+        ],
+        "all_choices_semantically_distinct_for_task": false,
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "86a41bc4f3317d62f99551f3756b7a02bedbd4a6c1bea5d1945f84e6984258d6",
+            "claims": [
+              {
+                "claim": "Save writes current edits to disk under the given definition.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              },
+              {
+                "claim": "Discard restores previously saved text,and Rename changes only the name.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['Save the current edits.']",
+            "text_sha256": "7398d260504a3104e61d90b0e8a2dd4df4575a1614dee223173fb6eafdde7f07",
+            "claims": [
+              {
+                "claim": "Save has the explicitly specified write behavior.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['Discard all unsaved changes.']",
+            "text_sha256": "d8544b9eca70a2ab47d77b7472154020fe647f89f02a4d18bd2e6ef57068b0d6",
+            "claims": [
+              {
+                "claim": "Discard restores saved content rather than saving unsaved edits.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['Restore the last saved text and remove the unsaved edits.']",
+            "text_sha256": "e52c6702ec9e91e8ea5eda978d53516183dcdda04f888818ce804b6a719fd19d",
+            "claims": [
+              {
+                "claim": "Restoring saved content and removing unsaved edits describes the same discard action.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['Rename the file.']",
+            "text_sha256": "3a690251c2066ce21cb4943cf88d1d33336583ee95240ebd7d83abccfc1c0a04",
+            "claims": [
+              {
+                "claim": "Rename changes only the name,not unsaved text on disk.",
+                "assessment": "true",
+                "reason": "Follows from the explicit rule or exact calculation."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": true,
+        "counterexamples_or_calculations": [
+          "The stem itself defines Discard as restoring the last saved text.",
+          "The longer wrong option explicitly adds removing unsaved edits,which is exactly what discarding them does;it introduces no distinct action or condition."
+        ],
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only with exactly one supported choice matching the key,task-relevant distinct options,and fully sound teaching. Missing conditions,wrong keys,equivalent proposed answers,or materially false/unsupported feedback require rejection."
+      }
+    }
+  ]
+}

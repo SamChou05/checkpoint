@@ -1,0 +1,309 @@
+{
+  "capture_sha256": "36705b403a4f28ff0fa1435d1af2fa45b742e24c9fed6a6766ab65674fb0f74f",
+  "plan_sha256": "7c9fcc97e4259758c85a2b36f0d0d508e71d97040daa41dabb0b10918f0ce315",
+  "provider_calls_in_replay": 0,
+  "all_pinned_original_and_new_sources_inputs_dependencies_unchanged": true,
+  "source_failed_sonnet_capture_sha256": "b9835a4c6198694a8363a11933a350ba891cb2970b86c97d39ac37bb827b9c56",
+  "checks": [
+    {
+      "sequence": 0,
+      "source_sequence": 1,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    },
+    {
+      "sequence": 1,
+      "source_sequence": 2,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    },
+    {
+      "sequence": 2,
+      "source_sequence": 5,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    },
+    {
+      "sequence": 3,
+      "source_sequence": null,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    }
+  ],
+  "status": "complete_pending_manual_audit",
+  "planned_calls": 4,
+  "attempted_calls": 4,
+  "unattempted_calls": 0,
+  "planned_items": 24,
+  "strict_assessed_items": 24,
+  "failed_or_unattempted_items": 0,
+  "exact_dispositions": 22,
+  "sound_accepted_of_12": 12,
+  "defective_rejected_of_12": 10,
+  "all_accepted_content_unchanged": true,
+  "reason_before_verdict_count": 24,
+  "reason_quality_requires_independent_audit": true,
+  "input_tokens_known": 11480,
+  "output_tokens_known": 14070,
+  "usage_unknown_calls": 0,
+  "latency_seconds_sum": 162.751,
+  "latency_seconds_max": 62.153,
+  "reasoning_blocks_omitted": 4,
+  "case_results": [
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "slot": "0",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The key 78.4 is correct (0.30×84+0.70×76=25.2+53.2=78.4). However, the explanation for distractor 82.4 claims it results from reversing the weights (70% quiz, 30% final): 0.70×84+0.30×76=58.8+22.8=81.6, not 82.4. The stated cause is false. Item 4 correctly identifies 82.4 as coming from 0.80×84+0.20×76. This is a material error in a choice explanation.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "ddab3a1601897327f7021beb4eb12398e560d7c5f10175f4a82932280d79e12d"
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "slot": "1",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The key 10 liters is correct. However, the explanation for the 9-liter distractor states '9 liters would imply a 3:3 (1:1) ratio of blue to white.' With 15 liters blue and 9 liters white, blue:white = 15:9 = 5:3, not 1:1. This is a materially false claim about what the distractor represents.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "99b9397bacebdc0d6fed449cbe595b1cf21ee8ad736eb384f807680c9d6d103d"
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "slot": "2",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "Key: white=(2/3)×15=10 liters ✓. Distractor explanations: 9 liters → 15:9=5:3≠3:2 ✓; 6 liters → 15:6=5:2≠3:2 ✓; 22.5=(3/2)×15 inverts ratio ✓. All four options are meaningfully distinct and all feedback is accurate.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "2024e8cd039b70a27b4920bf5072f84937629eba828b805a9be0304195b810ae",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "slot": "3",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "Break-even: 60÷2.50=24 rides (equal cost, not cheaper). At 25 rides: 25×2.50=$62.50>$60, so pass is strictly cheaper for the first time ✓. At 23 rides: 23×2.50=$57.50<$60, per-ride still cheaper ✓. 24 rides ties ✓. 26 rides satisfies the condition but is not the minimum ✓. Stem asks for minimum whole number; all explanations are accurate.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "f4625554acd27e5c40d6e3df774a283c991defa42c3b5c15ef2417c6af7b9902",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "slot": "4",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "Key: 0.30×84+0.70×76=25.2+53.2=78.4 ✓. Distractor 82.4: 0.80×84+0.20×76=67.2+15.2=82.4 ✓. Distractor 79.2: 0.40×84+0.60×76=33.6+45.6=79.2 ✓. Distractor 80.0: simple average (84+76)/2=80 ✓. All calculations and explanations are accurate.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "833b12b19a422a112be6c4c4da8cbaa671f48aa89428f814898ea079989ae27c",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "slot": "5",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The stem asks 'How many rides per month make the pass cheaper' without specifying minimum. The feedback for 26 rides explicitly acknowledges '26 also satisfies the condition.' Under the literal stem, 26 is a valid answer. Because another offered answer satisfies the unchanged stem by the item's own admission, the question has multiple correct options.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "81878d8dc6f9047c20478bbb5827a1bfc74da669079561e09c2b53324915881a"
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "slot": "0",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The stem asks which causal conclusion is 'established' by self-selected groups with unmeasured confounders. No causal conclusion can be established from such data. The key and its explanation assert that the 20-percentage-point difference 'proves that online instruction caused the higher pass rate,' which is the same inferential error as the three distractors. The explanation is materially false; causation cannot be inferred here any more than preparation, tutoring, or exam difficulty can.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "d479051714e340874c20208769f41909a125a64a15cb20f001f9405ed8e70142"
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "slot": "1",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "Key: max(4,7)=7, 7+3=10 ✓. Explanation for 11 s: 4+7=11 (sequential builds, packaging omitted) is a coherent error pattern, and the correction (parallel builds → start at 7, finish at 10) is accurate. Explanation for 14 s: 4+7+3=14 (sequential builds plus packaging) is correct. All four options are distinct and all choice explanations are sound.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "e3db68fe9d9957479f402a7469bacdd191638ee52cec5ba729415476e8875941",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "slot": "2",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The choice explanation for '11 seconds' states 'it is 4+7+3, adding both build times and packaging sequentially,' but 4+7+3=14, not 11. The correct arithmetic for 11 would be 4+7 (sequential builds, no packaging). This is a material calculation error in the distractor feedback; 14 seconds already captures the 4+7+3 scenario, making the 11-second explanation both arithmetically wrong and logically inconsistent with the 14-second explanation.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "44a51f21b04b8183d803cd4ffa30b474bc22d10fb1615adfd087510923000369"
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "slot": "3",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "The observed pass-rate difference 80%−60%=20 percentage points is directly supported by the stated facts and requires no causal inference. The key describes only the observed difference without claiming a cause. The three distractors each assert a causal claim about an unmeasured variable, and their explanations correctly note those variables were unmeasured. All four options are meaningfully distinct and all explanations are sound.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "2743280dc1f34069b3e40ea0c52d60f1f413d617904f8ecb458c66fc5d5117aa",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "slot": "4",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "The stem restricts x to nonnegative reals. Under this constraint, x²=49 has the unique solution x=7. x=−7 squares to 49 but is excluded by the stated nonnegativity condition. The explanation correctly notes both facts. All four choice explanations are arithmetically and logically accurate.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "707852b5b28f205edf6fb83558784e2c33035b92e17171cba9a8873bcf45034c",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "slot": "5",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The stem places no nonnegativity restriction on x; it says only 'a real number x.' Both 7 and −7 satisfy x*x=49 over the reals. The distractor explanation for −7 claims 'the square root of 49 is nonnegative, so −7 cannot be the required value,' but the question asks which value satisfies x*x=49, not what √49 equals. The principal-square-root convention is irrelevant to the equation as written, making the exclusion of −7 unjustified. The stem has two valid satisfying values among the options, so the key is not uniquely supported.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "03cb3d2ec33ed01a1b542dd1d81b92e9c4d92f83f8d5bb129bd45ada877a7faa"
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_defective",
+      "slot": "0",
+      "verdict": "accepted",
+      "gold_verdict": "rejected",
+      "matching_disposition": false,
+      "reason": "2+2=4 is unambiguous. The four choices are meaningfully distinct (correct sum, one addend as a numeral, one addend as a word, off-by-one). All distractor explanations are factually accurate. No alternative satisfies the stem.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "9a6d3ad67bb80670076b25d8796e5927972cd81c0487421d21a785a5e536fa1e",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "supplement_semicolon_defective",
+      "slot": "1",
+      "verdict": "accepted",
+      "gold_verdict": "rejected",
+      "matching_disposition": false,
+      "reason": "The key is the only option with a semicolon before 'however' and a comma after it, satisfying standard conjunctive-adverb punctuation. Choice 3 misplaces the semicolon after 'however'; choice 4 uses a coordinating conjunction, making the semicolon nonstandard for this simple sentence; choice 1 is a comma splice. All distractor explanations are materially accurate.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "266eb655db29ef65e0c823e97f8ad11fa56b4a74f9c38378c42e37e12b0402aa",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_sound",
+      "slot": "2",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "2+2=4 is unambiguous. All four choices are meaningfully distinct (correct sum, one addend, one-more, one-less). All explanations are factually sound.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "98b78749c08b5f43493b49e360b9ce4584aa05cde7466ad5063e252eb8f30acc",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "supplement_decimal_representation_sound",
+      "slot": "3",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "The stem explicitly requires decimal notation with a decimal point and prohibits fraction bars and percent signs. Only 0.5 satisfies all constraints; 1/2 uses a fraction bar, 50% uses a percent sign, 0.05 equals 1/20 not 1/2. All explanations are accurate.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "18e8f38b5d955c7fa71343745bb46e46bda94e4e827e5c346af54d5d30d9fb28",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "supplement_semicolon_sound",
+      "slot": "4",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "The stem explicitly requires a semicolon, 'however' beginning the second clause, and 'however' followed by a comma. Only the key meets all three conditions. Distractor explanations correctly identify the comma splice, misplaced semicolon, and wrong connective. All claims are sound.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "ce977f680e94fd9b1a448e1e55cd841d5376d420d7e6404202ef55d47934d936",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "supplement_decimal_representation_defective",
+      "slot": "5",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The stem asks only 'which option has a value equal to one half' with no format restriction. Both 1/2 and 50% also equal one half, so there are multiple correct answers. The explanations incorrectly invoke a decimal-notation restriction ('the requested decimal notation', 'percent notation is excluded by the stem') that does not appear in the stem. The key is not uniquely supported.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "9b18c49f30302fd80ce00aa0055ae8ce5c24b3b423dca984616062f40a3a5895"
+    },
+    {
+      "case_id": "rectangle_perimeter_complete",
+      "slot": "0",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "Perimeter = 2×9 + 2×4 = 26 cm is correct. All four distractors represent meaningfully different errors (area, half-perimeter, two-side sum, two long sides only). Every choice explanation is arithmetically and conceptually accurate.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "ccf69d0bf618bd74355c7cfaee92a5ed419c563ca0033d2e74de9d28f17b7228",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "triangle_missing_perimeter",
+      "slot": "1",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "Knowing only two sides (5 cm and 7 cm) does not fix the perimeter. The triangle-inequality constraint allows any third side strictly between 2 cm and 12 cm. Choices 6, 8, and 10 all satisfy the inequality (e.g., 5+7>8, 5+8>7, 7+8>5), so all three are valid nondegenerate triangles. Only 12 cm is correctly excluded as degenerate. The explanation fabricates an 18 cm perimeter constraint that is not stated. The question has no unique correct answer among the offered choices.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "cda77b8cbceee01a37b6c4ac5e55c06ae8e0196da46e13445517c8eef6b5aa60"
+    },
+    {
+      "case_id": "necessary_ticket_inference",
+      "slot": "2",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "The rule 'enter only if valid ticket' makes a valid ticket necessary for entry (enter → has ticket). Since Lina entered in compliance, she must have held a valid ticket. The other three choices each correctly lack support from the stated rule. All explanations are logically sound.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "425ce3b969be8bed2b5ee1bd6cb33836a511d0aa785a0bd9dc6365078c7d58c2",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "text_identifier_leading_zero",
+      "slot": "3",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "Exact-text matching is defined in the stem. '042' matches character-for-character. '42' drops the leading zero. '024' swaps the last two characters of '042'. '420' reorders the characters. Every choice explanation is accurate. The four options are meaningfully distinct.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "581b451a18e9220921ebef241bfbae0816ae068021dd3f99baf28b58f4d17c83",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "even_integer_converse_error",
+      "slot": "4",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The stated implication is: divisible by 4 → even. Knowing only that n is even, the implication cannot be reversed (affirming the consequent is invalid). Counterexample: n=2 is even but 2÷4 is not an integer, so n is not divisible by 4. The correct must-be-true statement is 'n is divisible by 2' (evenness by definition). The displayed key 'n is divisible by 4' is wrong, and the explanation's claim that 'the implication can be reversed' is a logical fallacy.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "d58de264a0d0bcf8ffe3f89fa97fcd4f519314612fbe285c1aa479cd93a7c383"
+    },
+    {
+      "case_id": "editor_duplicate_discard_actions",
+      "slot": "5",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "Choices 2 and 3 both describe the same Discard operation: choice 2 names it ('Discard all unsaved changes') and choice 3 describes its effect ('Restore the last saved text and remove the unsaved edits'). Both are equivalent proposed answers to 'which action writes unsaved edits to disk?' and do not represent meaningfully different options. The requirement for four distinct choices is not met.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "cceddf0d71484c414ce0264906105620b0176641df3812e7a572d1d953609c73"
+    }
+  ],
+  "independent_audit_sha256": "46bbe264cb303b31762b33c37c210596fa8b6adb7e8ae23eedcb14dc6baba72b"
+}
