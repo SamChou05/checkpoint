@@ -1,0 +1,29 @@
+{
+  "experiment": "Executable freeze for unchanged reviewer anchoring plan",
+  "created_at": "2026-09-22T05:33:23.604720+00:00",
+  "plan_path": "docs/evidence/question-reliability-release-20260922/reviewer-anchoring-plan.json",
+  "plan_sha256": "57f1579949bd230ae178ae481cd57a3937e3042ade9b049e14311032e1a5e50e",
+  "dispatch_source_sha256": {
+    "docs/evidence/question-reliability-release-20260922/reviewer_anchoring_probe.py": "b243ec9fa63a575b087416eb263dc12ccd86bd88d0028c92727bdf5f213a2b92",
+    "backend/bedrock-question-service/native_output_contracts.py": "fe2d9a79c882708f5848c7eeab23ddb441277022bc63ee5a28eeee0ed3958151",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0"
+  },
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.91",
+    "botocore": "1.43.91"
+  },
+  "source_binding": "This manifest supersedes only the original plan's all-service execution dependency check. Its source hashes remain historical preparation provenance. Exact frozen requests, prospective criteria, order, settings, maximum calls and stop rules are unchanged. No question_verification.py code is imported or executed; its helper may evolve independently.",
+  "validation_scope": "Use the actual frozen default_reviewer_v1 native adapter for JSON/schema/negative adaptation, then frozen experiment-local index coverage, exact key, difficulty, feedback coverage/bounds and original answer-letter predicates. This is a provider-input comparison, not a replay of evolving production orchestration or a new policy stamp. Independently adjudicate semantic and positional-reference correctness across every returned feedback item.",
+  "maximum_provider_calls": 4,
+  "sdk_total_max_attempts": 1,
+  "connect_timeout_seconds": 3,
+  "read_timeout_seconds": 75,
+  "region": "us-east-1",
+  "capture_path": "docs/evidence/question-reliability-release-20260922/reviewer-anchoring-capture.json",
+  "native_contract": {
+    "name": "default_reviewer_v1",
+    "version": "1",
+    "sha256": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe"
+  }
+}
