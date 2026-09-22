@@ -1,0 +1,89 @@
+{
+  "status": "clear_for_parent_freeze_decision_only",
+  "reviewed_at_utc": "2026-09-22T15:03:13.946982+00:00",
+  "draft_digest": "b7561e7577d93247f9a7ec69d4ee0c540c4fc9d67073c4d06951f2009a458fc8",
+  "plan_draft_sha256": "16088c1edc1428755d0d7f1297afd286d0598ee429d16c6ecc4aeffdfae5db34",
+  "preparation_file_hashes": {
+    "PLAN.md": "06aee268e9c78cca18e4d75deddff9a2e0e7df3a26e16e1db7c171d6301a5931",
+    "jobs-draft.json": "c96252f3e3d73cf53893410e02202b1bec3767c4edf28545a2211f82135d19cc",
+    "make_blind_review.py": "d5b41dca100aa26b1f31462b37a61027b46a29ee168b3b59609ba84f9936b8c6",
+    "mixed_probe.py": "1f51780bc3a7f87cc1e11034579b54dd997e4c2092e176953882edbdd408b27a",
+    "plan-draft.json": "16088c1edc1428755d0d7f1297afd286d0598ee429d16c6ecc4aeffdfae5db34",
+    "test_mixed_probe.py": "bd1afd2ef94969937ae93f7c9d5017ae1645784aab9e764e7a978e1cd1630cb3"
+  },
+  "baseline_plan_sha256": "6230622117349a2617e7502def86d625bd70fb401b82c3dd8f59c2a048624dcc",
+  "baseline_capture_sha256": "9402ce571dee1c386aa3489e548b82292408e9b4a984a4807d596a6ca982a707",
+  "source_commit": "77f794efa8cc24f94123cda61532ae7fe30d3e38",
+  "source_checkout_clean_at_review": true,
+  "source_pin_count": 81,
+  "baseline_pins_preserved": 44,
+  "allowed_differences": [
+    "question_generation.py configured read-timeout maximum100.0 to200.0 plus exact two-line deadline comment replacement",
+    "BEDROCK_READ_TIMEOUT_SECONDS100 to200",
+    "plan read_ceiling100 to200",
+    "Source/provenance paths and additional pins identifying this independent trial"
+  ],
+  "unchanged_checks": [
+    "All other26 runtime modules, requirements, native SDK validator and bounded capture helper are byte-identical to the completed Sonnet100 source",
+    "Jobs, initial prompts, all11 selected native count contracts, model IDs, adaptive/high16000/no-sampling settings, endpoint, credentials bounds and semantic criteria",
+    "Actual240-second job deadline, six-call durable budget,18 global reservations/dispatches, SDK1, connect3, no harness retries/resume",
+    "Raw+decoded duplicate-preserving credential scan, reasoning omission, safe response/usage capture, source/request/capture integrity and actual verified-object bindings",
+    "Compiler policy8 five exact fields; prose policy7 exact main and empty feedback; final audit vetoes and blind worksheet projection"
+  ],
+  "offline_verification": {
+    "unittest_command": "/tmp/checkpoint-reliability-20260921-venv/bin/python -m unittest discover -s docs/evidence/constructed-sonnet-long-read-qualification-20260922 -p test_mixed_probe.py -v",
+    "tests": 34,
+    "failures": 0,
+    "errors": 0,
+    "elapsed_seconds": 4.163,
+    "ruff_command": "/tmp/checkpoint-reliability-20260921-venv/bin/ruff check docs/evidence/constructed-sonnet-long-read-qualification-20260922",
+    "ruff": "pass"
+  },
+  "independent_socket_blocked_replays": [
+    {
+      "case": "195-second author then30-second audit",
+      "mechanics": "Imported existing FakeNetwork fixture; actual runtime and all real check_plan rebuilds used. socket.connect/connect_ex/create_connection and credential_session were blocked. Only deterministic fixture clock advanced.",
+      "actual_fake_dispatches": 8,
+      "reservations": 8,
+      "factory_calls": 8,
+      "full_plan_guard_rebuilds": 23,
+      "first_job_elapsed_seconds": 225,
+      "first_author_read_timeout": 200,
+      "next_audit_read_timeout": 38.999,
+      "returned_per_job": [
+        5,
+        5,
+        5
+      ],
+      "planned_denominator": 15,
+      "qualified": false
+    },
+    {
+      "case": "195-second author then7-second audit SDK-construction delay",
+      "mechanics": "Same actual-runtime replay; the real consume deadline check rechecks after the delayed factory. The audit acquires no reservation and makes no Converse call. Later independent jobs continue.",
+      "actual_fake_dispatches": 7,
+      "reservations": 7,
+      "factory_calls": 8,
+      "full_plan_guard_rebuilds": 21,
+      "first_job_elapsed_seconds": 202,
+      "first_job_calls": 1,
+      "first_job_error": "ProviderDeadlineExceededError",
+      "returned_per_job": [
+        0,
+        5,
+        5
+      ],
+      "planned_denominator": 15,
+      "global_stop": false,
+      "qualified": false
+    }
+  ],
+  "blockers": [],
+  "limits": [
+    "Offline transport/guard evidence only. Synthetic model judgments give no semantic credit.",
+    "A200-second ceiling does not guarantee200 seconds for every stage; the actual socket timeout shrinks with the240-second shared deadline.",
+    "The completed Sonnet100 timeout/9-of15 failure remains unchanged. Its missing response cannot establish task quality, grammar-cache state or why it was slow.",
+    "No provider invocation, credentials, AWS access, freeze, commit or source/preparation-file edit was performed by this reviewer."
+  ],
+  "real_provider_calls": 0
+}
