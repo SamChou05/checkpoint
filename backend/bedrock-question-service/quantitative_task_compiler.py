@@ -17,7 +17,7 @@ MAX_EXPRESSION_DEPTH = 6
 MAX_DOMAIN_SIZE = 201
 MAX_DOMAIN_BOUND = 1_000_000
 UNITS = frozenset(("unitless", "m", "cm", "s", "kg", "g", "L", "USD", "rides"))
-RELATIONS = {"lt": "<", "le": "<=", "gt": ">", "ge": ">="}
+RELATIONS = {"lt": "<", "le": "<=", "gt": ">", "ge": ">=", "eq": "=", "ne": "!="}
 OPERATORS = {"add": "+", "sub": "-", "mul": "*", "div": "/"}
 SELECTIONS = frozenset(("any_satisfying", "minimum", "maximum"))
 _NUMBER = re.compile(r"-?[0-9]+(?:/[0-9]+|\.[0-9]+)?\Z", re.ASCII)
@@ -121,7 +121,11 @@ def _holds(left, relation, right):
         return left <= right
     if relation == "gt":
         return left > right
-    return left >= right
+    if relation == "ge":
+        return left >= right
+    if relation == "eq":
+        return left == right
+    return left != right
 
 
 def _quantity(value, unit):

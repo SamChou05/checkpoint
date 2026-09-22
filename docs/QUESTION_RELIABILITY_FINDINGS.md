@@ -55,7 +55,7 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,151
+The tested structural changes are on main. Backend verification passes 1,185
 tests. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter
@@ -155,6 +155,19 @@ The high-effort fresh-worker draft stayed unfrozen and unrun because this exact
 verifier configuration failed admission qualification. No fresh generation or
 worker-yield result is claimed, and no timeout extension or later measurement
 rescues these failures. Model agreement still does not prove truth.
+
+A separate [deterministic quantitative compiler](QUANTITATIVE_TASK_COMPILER.md)
+now implements a bounded mathematical subset. Code renders the whole task from
+validated expressions, units, domain and explicit selection operation; exact
+rational evaluation derives the key and all five teaching fields. It rejects
+numerically equivalent choices, no offered answer and multiple offered answers,
+including both roots of an unrestricted equation. A visibly nonnegative domain
+or minimum task is a different explicit specification, never an inferred repair
+to existing prose. The compiler remains inactive: no production route imports it,
+and it does not establish distractor plausibility, goal fit, difficulty, grammar
+or general factual accuracy. Its 34 test groups include 3,780 independent oracle
+cases. Final integration passes 1,185 backend tests and SAM build; all 24 source
+modules match each of three artifacts, with 270 offline packaged SDK checks.
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
 confirmed that signed Mantle metadata requests work with the existing AWS

@@ -30,7 +30,9 @@ Two task shapes are supported:
 
 Expressions are closed trees of bounded exact number strings, `x` (conditions
 only), and binary `add`, `sub`, `mul`, `div`. Comparisons are `lt`, `le`, `gt`,
-`ge`. Selection is `any_satisfying`, `minimum`, or `maximum`; the domain is the
+`ge`, `eq`, `ne`, rendered as `<`, `<=`, `>`, `>=`, `=`, `!=`, respectively.
+Equality and inequality are exact rational comparisons, without tolerances.
+Selection is `any_satisfying`, `minimum`, or `maximum`; the domain is the
 explicit inclusive integer interval or `{"kind":"offered"}`. Minimum/maximum
 are taken over the **whole stated domain**, not silently over the offered subset.
 `any_satisfying` asks which offered value satisfies the condition; it accepts only
@@ -41,6 +43,12 @@ Changing only its selection to `any_satisfying` rejects it because both 25 and 2
 satisfy the strict comparison. Changing `gt` to `ge` makes the minimum 24. If 25
 is absent, the integer-domain minimum task rejects the choices instead of
 substituting 26. An explicitly offered-domain minimum can legitimately select 26.
+
+Likewise, `x * x = 49` with both 7 and -7 offered in a signed integer domain
+rejects an `any_satisfying` task. An explicitly nonnegative domain makes 7 the
+sole supported option. A signed domain can also support an unambiguous offered
+answer when only one root is listed: this task asks which offered value satisfies
+the equation, not whether the equation has only one root in the entire domain.
 
 All numerical operations use `fractions.Fraction`, never floating point. Input
 decimal/fraction aliases are canonicalized before learner text exists; equivalent
@@ -68,7 +76,7 @@ positive denominator at most 10^9; 96 bits per intermediate rational component;
 320/140/420/280 character limits reject excess without clipping. No `eval`,
 generated code, arbitrary functions, source lookup, I/O, or network is used.
 
-The tests include 2,520 small-domain cases against a separate integer oracle,
+The tests include 3,780 small-domain cases against a separate integer oracle,
 all choice permutations, strict/inclusive and global/offered boundaries, exact
 decimal/fraction arithmetic, equivalent distractors, empty/multiple solutions,
 undefined expressions, oversized/cyclic input, and rendering bounds. Run from

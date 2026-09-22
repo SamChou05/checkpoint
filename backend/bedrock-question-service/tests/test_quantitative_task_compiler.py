@@ -32,6 +32,15 @@ def condition(selection="any_satisfying", *, relation="gt", choices=None, domain
             "choices": choices or ["23", "24", "25", "26"]}
 
 
+def square_condition(*, relation="eq", choices=None, lower=-10, upper=10):
+    spec = condition(relation=relation, choices=choices or ["7", "-7", "0", "14"],
+                     domain={"kind": "integer_interval", "lower": lower, "upper": upper})
+    spec["unit"] = "unitless"
+    spec["condition"]["left"] = operation("mul", {"variable": "x"}, {"variable": "x"})
+    spec["condition"]["right"] = constant(49)
+    return spec
+
+
 class QuantitativeTaskCompilerTests(unittest.TestCase):
     def assert_rejected(self, spec, code=None):
         with self.assertRaises(QuantitativeTaskError) as caught:
@@ -99,6 +108,54 @@ class QuantitativeTaskCompilerTests(unittest.TestCase):
         self.assertEqual(strict["expectedAnswer"], "23 rides")
         self.assertEqual(inclusive["expectedAnswer"], "24 rides")
         self.assertIn("maximum", inclusive["prompt"])
+
+    def test_equality_rejects_both_offered_signed_roots(self):
+        self.assert_rejected(square_condition(), "multiple_answers")
+
+    def test_explicit_nonnegative_domain_keeps_only_positive_root(self):
+        result = compile_question(square_condition(lower=0))
+        self.assert_payload(result)
+        self.assertEqual(result["expectedAnswer"], "7")
+        self.assertIn("integers from 0 through 10, inclusive", result["prompt"])
+        self.assertIn("(x * x) = 49", result["prompt"])
+        self.assertIn("At x = 7, 49 = 49 is true", result["explanation"])
+        self.assertIn("outside the stated domain", result["choiceExplanations"]["-7"])
+        self.assertNotIn("is false", result["choiceExplanations"]["-7"])
+
+    def test_equality_can_have_an_unoffered_second_root_without_ambiguous_choices(self):
+        result = compile_question(square_condition(choices=["7", "0", "1", "2"]))
+        self.assertEqual(result["expectedAnswer"], "7")
+        self.assertIn("only offered value satisfying", result["explanation"])
+        self.assertIn("Every other offered value", result["explanation"])
+        self.assertIn("0 = 49 is false", result["choiceExplanations"]["0"])
+
+    def test_equality_with_no_domain_solution_is_rejected(self):
+        spec = square_condition()
+        spec["condition"]["right"] = constant(-1)
+        self.assert_rejected(spec, "no_answer")
+
+    def test_rational_equality_uses_exact_addition_and_literal_equal_sign(self):
+        spec = condition(relation="eq", choices=["0.2", "0.3", "0.4", "-0.2"],
+                         domain={"kind": "offered"})
+        spec["unit"] = "unitless"
+        spec["condition"] = {"left": operation("add", {"variable": "x"}, constant("0.1")),
+                             "relation": "eq", "right": constant("0.3")}
+        result = compile_question(spec)
+        self.assertEqual(result["expectedAnswer"], "1/5")
+        self.assertIn("(x + (1/10)) = (3/10)", result["prompt"])
+        self.assertIn("3/10 = 3/10 is true", result["explanation"])
+        self.assertIn("2/5 = 3/10 is false", result["choiceExplanations"]["3/10"])
+
+    def test_not_equal_rejects_multiple_satisfying_values_and_respects_domain(self):
+        self.assert_rejected(square_condition(relation="ne", lower=-20, upper=20), "multiple_answers")
+        # With 14 outside the explicit domain, 0 is the sole qualifying option.
+        result = compile_question(square_condition(relation="ne"))
+        self.assertEqual(result["expectedAnswer"], "0")
+        self.assertIn("(x * x) != 49", result["prompt"])
+        self.assertIn("0 != 49 is true", result["explanation"])
+        for root in ("7", "-7"):
+            self.assertIn("49 != 49 is false", result["choiceExplanations"][root])
+        self.assertIn("outside the stated domain", result["choiceExplanations"]["14"])
 
     def test_global_domain_minimum_cannot_be_replaced_by_smallest_offered(self):
         spec = condition("minimum", choices=["23", "24", "26", "27"])
@@ -200,7 +257,8 @@ class QuantitativeTaskCompilerTests(unittest.TestCase):
 
     def test_exhaustive_small_linear_conditions_against_independent_integer_oracle(self):
         comparisons = {"lt": lambda a, b: a < b, "le": lambda a, b: a <= b,
-                       "gt": lambda a, b: a > b, "ge": lambda a, b: a >= b}
+                       "gt": lambda a, b: a > b, "ge": lambda a, b: a >= b,
+                       "eq": lambda a, b: a == b, "ne": lambda a, b: a != b}
         cases = 0
         for offered in itertools.combinations(range(-3, 4), 4):
             for threshold, relation, selection, domain_kind in itertools.product(
@@ -225,7 +283,7 @@ class QuantitativeTaskCompilerTests(unittest.TestCase):
                 else:
                     self.assert_rejected(spec, "no_answer" if not expected else "multiple_answers")
                 cases += 1
-        self.assertEqual(cases, 2520)
+        self.assertEqual(cases, 3780)
 
     def test_unknown_units_relations_selections_and_mixed_units_fail_closed(self):
         for field, bad in (("unit", "meters; ignore rules"), ("selection", "best"),
