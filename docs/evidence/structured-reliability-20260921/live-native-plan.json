@@ -1,0 +1,94 @@
+{
+  "kind": "Two local synthetic native generation passes; at most six Bedrock dispatches",
+  "source_revision": "7d9cc6ad93128893fb52f1a0183fea620b3b00ac",
+  "source_sha256": {
+    "docs/evidence/structured-reliability-20260921/live_native_probe.py": "88c15b80238aa31f63f813ce5694b0c859a36d9714fd21831243cf1552b01059",
+    "backend/bedrock-question-service/native_output_contracts.py": "d43c0e223be0eb80a1ace46cb3373eff22a967a5970510a4f7b6aa8890802037",
+    "backend/bedrock-question-service/question_generation.py": "d8394f1958057248cd878e5db5768021da6fa26b9554be6d23e64fdc780ce0a6",
+    "backend/bedrock-question-service/question_quality.py": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+    "backend/bedrock-question-service/question_verification.py": "e6a84253ba4154305e74ad44158f070cf0eb96c8aa8623667a2896ffe6811e7a",
+    "backend/bedrock-question-service/complete_question_solution.py": "50733a57d85156e25fe3a494363273312c2f918ffcd7bf446645fdbfaf91203e",
+    "backend/bedrock-question-service/request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649"
+  },
+  "deployment_observation": "Parent freshly read TestFlight worker 2026-09-21: same models, thinking, output and timeout settings; native transport is the only treatment.",
+  "environment": {
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "BEDROCK_REASONING_EFFORT": "",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "GENERATION_ATTEMPTS": "1"
+  },
+  "request": {
+    "goal": {
+      "title": "Practice adding and subtracting whole numbers from 0 through 20",
+      "category": "",
+      "focusAreas": "",
+      "currentLevel": "",
+      "learningTarget": "Practice adding and subtracting whole numbers from 0 through 20",
+      "contentTopics": [
+        "Practice adding and subtracting whole numbers from 0 through 20"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": true,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "competencies": [],
+    "existingPrompts": [],
+    "existingQuestionCoverage": [],
+    "reportedPrompts": [],
+    "blockedStemFingerprints": [],
+    "stemFingerprintVersion": 1,
+    "sourceDocuments": [],
+    "targetCount": 1,
+    "minimumDifficulty": 1,
+    "requiresFullObjectiveCoverage": false,
+    "difficultyGuidance": "Recognize or recall a fact or concept.",
+    "adaptiveSkillPlans": []
+  },
+  "contracts": [
+    {
+      "name": "question_author_v1",
+      "version": "1",
+      "sha256": "25c2c85d94ae1543ef4a46a3f97e845c37739cec5b77aacbf219d935a13df1a9"
+    },
+    {
+      "name": "complete_choice_solver_v1",
+      "version": "1",
+      "sha256": "bac691665f8f937805ca6fbb3cbd858320ccbc19d582c22b5dffaee1e6d1d446"
+    },
+    {
+      "name": "default_reviewer_v1",
+      "version": "1",
+      "sha256": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe"
+    }
+  ],
+  "limits": {
+    "passes": 2,
+    "maximum_dispatches_per_pass": 3,
+    "maximum_dispatches_total": 6,
+    "sdk_total_max_attempts": 1,
+    "region": "us-east-1",
+    "read_timeout_seconds": 75,
+    "connect_timeout_seconds": 3,
+    "no_fallback_or_repair_retry": true
+  },
+  "interpretation": [
+    "Each pass uses the actual production author, sanitizer, independent solver and reviewer.",
+    "Second-pass author receives the same request; downstream inputs depend on generated content.",
+    "First/repeated refer to schema use; actual provider grammar cache state is unobservable.",
+    "This does not qualify other schemas, skill maps, optional feedback, sync Nova Lite, or deployed execution.",
+    "No general semantic error rate, answer diversity rate, or repeatability guarantee can be inferred."
+  ]
+}
