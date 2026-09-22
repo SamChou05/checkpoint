@@ -123,6 +123,32 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
                 self.assertEqual(resolve("CheckpointQuestionFunction", parameters), global_mode)
                 self.assertEqual(resolve("QuestionBankWorkerFunction", parameters), expected_worker)
 
+    def test_mixed_author_mode_is_explicit_and_worker_override_keeps_api_independent(self):
+        global_parameter = _indented_block(self.template, "QuestionAuthorMode")
+        worker_parameter = _indented_block(self.template, "QuestionBankWorkerAuthorMode")
+        self.assertIn("Default: prose", global_parameter)
+        self.assertIn("Default: inherit", worker_parameter)
+        self.assertIn("AllowedValues: [prose, mixed_quantitative]", global_parameter)
+        self.assertIn("AllowedValues: [inherit, prose, mixed_quantitative]", worker_parameter)
+        self.assertIn("QUESTION_AUTHOR_MODE: !Ref QuestionAuthorMode",
+                      _indented_block(self.template, "CheckpointQuestionFunction"))
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
+        expression = re.search(r"QUESTION_AUTHOR_MODE: ([^\n]+)", worker).group(1)
+        condition, true_ref, false_ref = re.fullmatch(
+            r"!If \[(\w+), !Ref (\w+), !Ref (\w+)\]", expression).groups()
+        condition_ref, expected = re.search(
+            rf"^  {condition}: !Equals \[!Ref (\w+), (\w+)\]$",
+            self.template, re.MULTILINE).groups()
+        for global_mode in ("prose", "mixed_quantitative"):
+            for worker_mode in ("inherit", "prose", "mixed_quantitative"):
+                parameters = {"QuestionAuthorMode": global_mode, "QuestionBankWorkerAuthorMode": worker_mode}
+                chosen = true_ref if parameters[condition_ref] == expected else false_ref
+                self.assertEqual(parameters[chosen], global_mode if worker_mode == "inherit" else worker_mode)
+        for variable, parameter, default in (("QUESTION_AUTHOR_MODE", "QuestionAuthorMode", "prose"),
+                                             ("QUESTION_BANK_WORKER_AUTHOR_MODE", "QuestionBankWorkerAuthorMode", "inherit")):
+            self.assertIn(f"{variable} || '{default}'", self.deploy_workflow)
+            self.assertIn(f'"{parameter}=${{{variable}:-{default}}}"', self.deploy_script)
+
     @classmethod
     def setUpClass(cls):
         cls.template = TEMPLATE.read_text(encoding="utf-8")

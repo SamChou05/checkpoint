@@ -9,7 +9,7 @@ import unittest
 from unittest import mock
 
 import smoke_test_backend as smoke
-from verification_policy import VERIFICATION_POLICY_REVISION, VERIFICATION_VERSION
+from verification_policy import MAX_SUPPORTED_VERIFICATION_POLICY_REVISION, VERIFICATION_POLICY_REVISION, VERIFICATION_VERSION
 
 
 class SynchronousSmokeTests(unittest.TestCase):
@@ -179,8 +179,14 @@ class SynchronousSmokeTests(unittest.TestCase):
             1,
         )
 
+    def test_explicit_compiled_policy_is_supported_without_changing_default(self):
+        args = ("--minimum-policy-revision", "6")
+        self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=6)], arguments=args)[0], 0)
+        self.assertNotEqual(self.run_smoke([self.question(verificationPolicyRevision=4)], arguments=args)[0], 0)
+        self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=4)])[0], 0)
+
     def test_invalid_cli_policy_fails_without_request_or_configuration_access(self):
-        for value in ("0", "-1", "true", str(VERIFICATION_POLICY_REVISION + 1)):
+        for value in ("0", "-1", "true", str(MAX_SUPPORTED_VERIFICATION_POLICY_REVISION + 1)):
             with (
                 self.subTest(value=value),
                 mock.patch.object(

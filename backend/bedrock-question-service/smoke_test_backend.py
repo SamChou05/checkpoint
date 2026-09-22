@@ -18,6 +18,7 @@ from typing import Any
 import lambda_function
 from evals import checkpoint_question_eval
 from verification_policy import (
+    MAX_SUPPORTED_VERIFICATION_POLICY_REVISION,
     VERIFICATION_POLICY_REVISION,
     VERIFICATION_VERSION,
     meets_verification_policy,
@@ -56,7 +57,7 @@ def main() -> int:
     parser.add_argument(
         "--minimum-policy-revision",
         type=int,
-        choices=range(1, VERIFICATION_POLICY_REVISION + 1),
+        choices=range(1, MAX_SUPPORTED_VERIFICATION_POLICY_REVISION + 1),
         default=VERIFICATION_POLICY_REVISION,
         help=(
             "Minimum returned policy revision (default: current). "

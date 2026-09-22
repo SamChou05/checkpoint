@@ -14,7 +14,7 @@ bugs, controlled model comparisons and answer-highlighting evidence.
 
 Every provider call selects its stage explicitly, including author repair,
 top-ups, configured fallback, API/worker generation and skill-map retries. The
-registry retains ten static, closed, versioned contracts and adds count-bound
+registry contains eleven static, closed, versioned contracts and adds count-bound
 solver and reviewer families:
 
 | Contract | Shape and runtime use |
@@ -22,6 +22,7 @@ solver and reviewer families:
 | `question_author_v1` | Historical choices array and text key. Retained for legacy compatibility and frozen evidence. |
 | `question_author_v2` | Four required choice slots and an enum key; retained sorted serialization for the controlled comparison. |
 | `question_author_v3` | Current native author, including repair/fallback. Fixed slots and enum key, with stem and explanation serialized before the key. Adapter derives exact answer bytes from the selected slot. |
+| `question_author_mixed_v1` | Explicit opt-in mixed author: ordinary v3 prose rows or typed numerical specs with shared, nonrecursive flat-node schema. Local compiler derives all learner fields; provider qualification remains pending. See [bounded subset and provenance](QUANTITATIVE_TASK_COMPILER.md). |
 | `skill_map_inference_v1` | Skill/objective names; server validates counts and assigns IDs. |
 | `skill_map_evolution_v1` | Successor names/objectives; server validates predecessor coverage and constructs map identity/version. |
 | `complete_choice_solver_v1` | Exact indexed choices with supported/refuted/uncertain declarations. Retained for legacy complete-choice and optional authored teaching. |

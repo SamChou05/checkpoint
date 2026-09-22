@@ -12,6 +12,10 @@ slots, all six semantic pair comparisons, and reviewer-written final teaching.
 It builds on revision 2, not the separate authored-teaching mode in revision 3.
 Revisions are freshness thresholds, not a claim that all earlier optional modes
 ran. Model judgments remain fallible even with a strictly enforced shape.
+Revision 6 identifies the opt-in compiled quantitative route: complete-choice
+solver/reviewer vetoes remain, but all five learner fields come from revalidated
+bounded compiler data. Mathematical guarantees apply only to that closed subset;
+scope, difficulty, novelty and distractor usefulness remain model assessments.
 """
 
 from typing import Any
@@ -23,6 +27,8 @@ COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION = 2
 AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION = 3
 DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION = 4
 VERIFICATION_POLICY_REVISION = DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION
+COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION = 6
+MAX_SUPPORTED_VERIFICATION_POLICY_REVISION = COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION
 
 
 def meets_verification_policy(question: dict[str, Any], minimum: int) -> bool:

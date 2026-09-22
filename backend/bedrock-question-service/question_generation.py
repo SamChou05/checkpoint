@@ -54,6 +54,9 @@ from service_errors import (
     ServiceConfigurationError,
 )
 from question_verification import NEGATIVE_ANSWER_GUIDANCE, verify_questions
+from quantitative_authoring import (
+    MIXED_AUTHOR_CONTRACT, QuantitativeAuthoringError, prepare_mixed_rows,
+)
 
 
 DEFAULT_MODEL_ID = "amazon.nova-lite-v1:0"
@@ -146,9 +149,8 @@ def _generate_provider_payload(
     request_metrics: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     errors: list[ProviderError] = []
-    author_contract: Contract = (
-        "question_author_v3" if output_mode() == "native" else "question_author_v1"
-    )
+    author_contract: Contract = (MIXED_AUTHOR_CONTRACT if _author_mode() == "mixed_quantitative" else
+                                "question_author_v3" if output_mode() == "native" else "question_author_v1")
     for model_id in _model_attempts():
         try:
             raw_text = _generate_with_bedrock(
@@ -217,6 +219,7 @@ def _generate_sanitized_questions(
     request_metrics: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     feedback_contract = _feedback_contract()
+    mixed_quantitative = _author_mode() == "mixed_quantitative"
     # Native fixed slots hide the sanitizer's correct-answer-first ordering and
     # make four choice judgments plus six unordered pair judgments explicit.
     choice_slots = output_mode() == "native" and feedback_contract == "reviewer_written"
@@ -253,10 +256,23 @@ def _generate_sanitized_questions(
                 call_budget=call_budget,
                 request_metrics=request_metrics,
             )
-            candidates = _sanitize_questions(
-                provider_payload.get("questions", []), current_request, request_metrics,
-                preserve_authored_explanation=feedback_contract == "authored_solution",
-            )
+            compiled_output = {}
+            if mixed_quantitative:
+                try:
+                    raw_questions, compiled_candidates, failures = prepare_mixed_rows(provider_payload)
+                except QuantitativeAuthoringError as error:
+                    raise ProviderError("Mixed author envelope violated its contract.") from error
+                for reason in failures:
+                    record_quality(request_metrics, "compile", reason)
+                record_quality(request_metrics, "compile", "accepted", len(compiled_candidates))
+                candidates = _sanitize_questions(raw_questions, current_request, request_metrics,
+                                                 compiled_candidates=compiled_candidates,
+                                                 compiled_output=compiled_output)
+            else:
+                candidates = _sanitize_questions(
+                    provider_payload.get("questions", []), current_request, request_metrics,
+                    preserve_authored_explanation=feedback_contract == "authored_solution",
+                )
 
             def review_stage(system: str, prompt: str, count: int | None = None) -> str:
                 return _generate_with_bedrock(
@@ -298,6 +314,7 @@ def _generate_sanitized_questions(
                 preserve_reviewed_text=output_mode() == "native",
                 audit_choice_pairs=choice_slots,
                 choice_slots=choice_slots,
+                **({"compiled_questions": compiled_output} if mixed_quantitative else {}),
             )
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its
@@ -677,6 +694,13 @@ def _feedback_contract() -> str:
         "QUESTION_FEEDBACK_CONTRACT", "reviewer_written",
         {"reviewer_written", "authored_solution"},
     )
+
+
+def _author_mode() -> str:
+    mode = _model_setting("QUESTION_AUTHOR_MODE", "prose", {"prose", "mixed_quantitative"})
+    if mode == "mixed_quantitative" and (output_mode() != "native" or _feedback_contract() != "reviewer_written"):
+        raise ServiceConfigurationError("Mixed quantitative authoring requires native reviewer-written mode.")
+    return mode
 
 
 def _conversation_prompt(user_prompt: str, system_prompt: str | None = None) -> str:

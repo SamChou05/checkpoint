@@ -12,6 +12,7 @@ from complete_question_solution import (
     validate_batch,
 )
 from generation_diagnostics import record_quality
+from quantitative_authoring import QuantitativeAuthoringError, checked_provenance
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _strict_json_object
 from question_teaching import (
@@ -24,6 +25,7 @@ from question_teaching import (
 from service_errors import ProviderError
 from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
 from verification_policy import (
+    COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION,
     AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION,
     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION,
     DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION,
@@ -208,6 +210,7 @@ def verify_questions(
     preserve_reviewed_text: bool = False,
     audit_choice_pairs: bool = False,
     choice_slots: bool = False,
+    compiled_questions=None,
 ) -> list[dict[str, Any]]:
     """Review with an explicit solver contract; legacy remains the eval default.
 
@@ -230,12 +233,26 @@ def verify_questions(
     if authored_solution and not complete_choices:
         raise ValueError("Authored teaching requires the complete-choice solver contract.")
     original_count = len(questions)
-    questions = [
-        question for question in questions if _has_reviewable_choices(question)
-    ]
+    compiled_questions = checked_provenance(compiled_questions, original_count)
+    if compiled_questions and not choice_slots:
+        raise QuantitativeAuthoringError("Compiled release requires the fixed-slot complete verification path.")
+    reviewable = [(question, compiled_questions.get(index)) for index, question in enumerate(questions)
+                  if _has_reviewable_choices(question)]
+    questions = [question for question, _ in reviewable]
     record_quality(
         request_metrics, "review", "invalid_choices", original_count - len(questions)
     )
+    trusted_compiled = []
+    questions = []
+    for question, provenance in reviewable:
+        if provenance is not None:
+            try:
+                provenance.content(question)
+            except (ValueError, TypeError, KeyError):
+                record_quality(request_metrics, "review", "invalid_compiled_content")
+                continue
+        questions.append(question)
+        trusted_compiled.append(provenance)
     if authored_solution:
         frozen = []
         for question in questions:
@@ -244,6 +261,7 @@ def verify_questions(
             except AuthoredTeachingFormatError:
                 record_quality(request_metrics, "review", "invalid_feedback")
         questions = frozen
+        trusted_compiled = [None] * len(questions)
     if not questions:
         return []
     if complete_choices and solve is None:
@@ -342,6 +360,8 @@ def verify_questions(
             for index, question in enumerate(questions)
             if index in supported_indexes
         ]
+        trusted_compiled = [provenance for index, provenance in enumerate(trusted_compiled)
+                            if index in supported_indexes]
         data["items"] = [item for item in items if item["index"] in supported_indexes]
         for new_index, (item, solution) in enumerate(
             zip(data["items"], supported, strict=True)
@@ -478,6 +498,13 @@ def verify_questions(
                 # Choices are shuffled on the phone; feedback must name the concept.
                 record_quality(request_metrics, "review", "answer_labels")
                 continue
+        compiled_content = None
+        if trusted_compiled[index] is not None:
+            try:
+                compiled_content = trusted_compiled[index].content(question)
+            except (ValueError, TypeError, KeyError):
+                record_quality(request_metrics, "review", "invalid_compiled_content")
+                continue
         verified_question = {
             # Caller/author metadata cannot establish policy provenance.
             **{
@@ -504,6 +531,11 @@ def verify_questions(
                     )
                 )
             )
+        if compiled_content is not None:
+            # The reviewer may veto or rate this item but its new prose cannot
+            # overwrite any of the compiler-derived learner fields.
+            verified_question.update(compiled_content)
+            verified_question["verificationPolicyRevision"] = COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION
         accepted.append(verified_question)
         record_quality(request_metrics, "review", "accepted")
     return accepted

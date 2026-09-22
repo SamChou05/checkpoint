@@ -96,8 +96,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 57 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 57"
+[[ "${#sam_arguments[@]}" -eq 59 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 59"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -120,7 +120,7 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
-for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit; do
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit; do
   [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
 done
 for argument in "${sam_arguments[@]:11}"; do
@@ -146,6 +146,29 @@ for global_mode in legacy native; do
   done
 done
 
+for global_author in prose mixed_quantitative; do
+  for worker_author in inherit prose mixed_quantitative; do
+    env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" BEDROCK_STRUCTURED_OUTPUT_MODE=native \
+      "QUESTION_AUTHOR_MODE=$global_author" "QUESTION_BANK_WORKER_AUTHOR_MODE=$worker_author" \
+      "$script_dir/deploy-sam.sh"
+    mapfile -d '' -t sam_arguments < "$sam_capture"
+    [[ " ${sam_arguments[*]} " == *" QuestionAuthorMode=$global_author "* ]] || fail "global author mode not forwarded"
+    [[ " ${sam_arguments[*]} " == *" QuestionBankWorkerAuthorMode=$worker_author "* ]] || fail "worker author mode not forwarded"
+  done
+done
+for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+  for author_variable in QUESTION_AUTHOR_MODE QUESTION_BANK_WORKER_AUTHOR_MODE; do
+    rm -f "$sam_capture"
+    if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" "$author_variable=mixed_quantitative" \
+      "$script_dir/$checked_script" >"$test_directory/author-error" 2>&1; then
+      fail "$checked_script accepted mixed authoring with legacy transport"
+    fi
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for incompatible author mode"
+  done
+done
+
 for global_thinking in disabled adaptive; do
   for worker_thinking in inherit disabled adaptive; do
     env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
@@ -160,7 +183,7 @@ for global_thinking in disabled adaptive; do
   done
 done
 
-for mode_variable in BEDROCK_STRUCTURED_OUTPUT_MODE QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE; do
+for mode_variable in BEDROCK_STRUCTURED_OUTPUT_MODE QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE QUESTION_AUTHOR_MODE QUESTION_BANK_WORKER_AUTHOR_MODE; do
   for checked_script in validate-deployment-config.sh deploy-sam.sh; do
     rm -f "$sam_capture"
     if invalid_mode_output="$(

@@ -3,10 +3,12 @@
 from typing import Any
 
 QUALITY_REASONS = {
+    "compile": {"accepted", "invalid_spec", "no_answer", "multiple_answers", "equivalent_choices"},
     "sanitize": {
         "invalid_envelope",
         "invalid_allocation",
         "invalid_item",
+        "invalid_compiled_content",
         "invalid_skill",
         "skill_quota",
         "objective_quota",
@@ -43,6 +45,7 @@ QUALITY_REASONS = {
         "difficulty_floor",
         "difficulty_target",
         "invalid_feedback",
+        "invalid_compiled_content",
         "invalid_authored_review",
         "unsupported_authored_explanation",
         "uncertain_authored_explanation",

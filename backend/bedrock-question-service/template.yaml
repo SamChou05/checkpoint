@@ -35,6 +35,16 @@ Parameters:
     Default: inherit
     AllowedValues: [inherit, legacy, native]
     Description: Worker-only JSON transport override. Inherit preserves BedrockStructuredOutputMode; qualify worker and verification models before native rollout.
+  QuestionAuthorMode:
+    Type: String
+    Default: prose
+    AllowedValues: [prose, mixed_quantitative]
+    Description: Opt-in mixed author contract. Requires native transport; qualify before enabling.
+  QuestionBankWorkerAuthorMode:
+    Type: String
+    Default: inherit
+    AllowedValues: [inherit, prose, mixed_quantitative]
+    Description: Worker-only author mode. Inherit preserves QuestionAuthorMode.
   BedrockReasoningEffort:
     Type: String
     Default: ""
@@ -256,6 +266,7 @@ Rules:
         AssertDescription: Production requires a complete Bedrock Guardrail configuration plus operations and budget alert emails.
 
 Conditions:
+  WorkerAuthorModeInheritsGlobal: !Equals [!Ref QuestionBankWorkerAuthorMode, inherit]
   WorkerClaudeThinkingInheritsGlobal: !Equals [!Ref QuestionBankWorkerClaudeThinking, inherit]
   WorkerStructuredOutputInheritsGlobal: !Equals [!Ref QuestionBankWorkerStructuredOutputMode, inherit]
   HasGuardrailArn: !Not [!Equals [!Ref BedrockGuardrailArn, ""]]
@@ -353,6 +364,7 @@ Resources:
           BEDROCK_VERIFICATION_MODEL_ID: !Ref BedrockVerificationModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_STRUCTURED_OUTPUT_MODE: !Ref BedrockStructuredOutputMode
+          QUESTION_AUTHOR_MODE: !Ref QuestionAuthorMode
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
           BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens
@@ -476,6 +488,7 @@ Resources:
           BEDROCK_VERIFICATION_MODEL_ID: !Ref BedrockVerificationModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_STRUCTURED_OUTPUT_MODE: !If [WorkerStructuredOutputInheritsGlobal, !Ref BedrockStructuredOutputMode, !Ref QuestionBankWorkerStructuredOutputMode]
+          QUESTION_AUTHOR_MODE: !If [WorkerAuthorModeInheritsGlobal, !Ref QuestionAuthorMode, !Ref QuestionBankWorkerAuthorMode]
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
           BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens

@@ -14,7 +14,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
-from verification_policy import VERIFICATION_POLICY_REVISION, meets_verification_policy
+from verification_policy import MAX_SUPPORTED_VERIFICATION_POLICY_REVISION, meets_verification_policy
 
 from question_bank_common import (
     DEFAULT_BANK_TTL_SECONDS,
@@ -234,11 +234,11 @@ def claim_questions(
     minimum_policy = payload.get("minimumVerificationPolicyRevision", 0)
     if (
         type(minimum_policy) is not int
-        or not 0 <= minimum_policy <= VERIFICATION_POLICY_REVISION
+        or not 0 <= minimum_policy <= MAX_SUPPORTED_VERIFICATION_POLICY_REVISION
     ):
         raise QuestionBankError(
             400,
-            f"minimumVerificationPolicyRevision must be an integer between 0 and {VERIFICATION_POLICY_REVISION}.",
+            f"minimumVerificationPolicyRevision must be an integer between 0 and {MAX_SUPPORTED_VERIFICATION_POLICY_REVISION}.",
             "invalid_request",
         )
     bank_key = _bank_key(owner_digest, bank_id)

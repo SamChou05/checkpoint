@@ -12,12 +12,16 @@ import os
 from typing import Any, Literal
 
 from service_errors import ProviderError, ServiceConfigurationError
+from quantitative_authoring import (
+    MIXED_AUTHOR_CONTRACT, MIXED_AUTHOR_INSTRUCTIONS, mixed_author_schema,
+)
 
 
 Contract = Literal[
     "question_author_v1",
     "question_author_v2",
     "question_author_v3",
+    "question_author_mixed_v1",
     "skill_map_inference_v1",
     "skill_map_evolution_v1",
     "complete_choice_solver_v1",
@@ -192,6 +196,9 @@ _AUTHOR_V3_PROPERTY_ORDER = (
     "prompt", "choices", "explanation", "correctChoice", "topic", "difficulty",
     "format", "skillID", "objectiveID", "objective",
 )
+_SCHEMAS[MIXED_AUTHOR_CONTRACT] = mixed_author_schema(
+    _SCHEMAS["question_author_v3"]["properties"]["questions"]["items"]
+)
 
 
 def output_mode() -> str:
@@ -269,6 +276,12 @@ def native_output_config(contract: NativeContract) -> dict[str, Any]:
             raise ServiceConfigurationError("Author v3 property ordering needs qualification.")
         question["properties"] = {key: properties[key] for key in _AUTHOR_V3_PROPERTY_ORDER}
         schema = json.dumps(ordered, separators=(",", ":"))
+    if contract == MIXED_AUTHOR_CONTRACT:
+        # Reuse the existing ordered prose row; flat nodes have one shared,
+        # nonrecursive definition regardless of expanded expression depth.
+        prose = json.loads(native_output_config("question_author_v3")["textFormat"]["structure"]["jsonSchema"]["schema"])
+        schema = json.dumps(mixed_author_schema(prose["properties"]["questions"]["items"], shared=True),
+                            separators=(",", ":"))
     return {"textFormat": {"type": "json_schema", "structure": {"jsonSchema": {
         "name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract, "schema": schema,
     }}}}
@@ -292,6 +305,22 @@ def ensure_supported_model(model_id: str) -> None:
 
 
 def native_prompt(system_prompt: str, contract: NativeContract) -> str:
+    if contract == MIXED_AUTHOR_CONTRACT:
+        prose_example = json.loads(_SLOT_AUTHOR_EXAMPLE)["questions"][0]
+        example = json.dumps({"questions": [
+            {"kind": "prose", "question": prose_example},
+            {"kind": "quantitative", "task": {
+                "kind": "exact_value", "unit": "unitless",
+                "nodes": [{"kind": "literal", "value": "2"},
+                          {"kind": "binary", "op": "add", "left": 0, "right": 0}],
+                "root": 1, "choices": {"a": "4", "b": "3", "c": "5", "d": "6"}},
+             "topic": "Arithmetic", "difficulty": 2},
+        ]}, separators=(",", ":"))
+        system_prompt = system_prompt.replace(_LEGACY_AUTHOR_EXAMPLE, example).replace(
+            "Exactly four distinct choices; expectedAnswer exactly equals one of them.",
+            "Exactly four distinct choices. Prose rows use correctChoice; quantitative rows have no authored key.",
+        )
+        return system_prompt + "\n\n" + MIXED_AUTHOR_INSTRUCTIONS
     if isinstance(contract, SolverSlotContract):
         keys = ", ".join(json.dumps(str(index)) for index in range(contract.count))
         return native_prompt(system_prompt, "complete_choice_solver_v3") + "\n\n" + (

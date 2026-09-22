@@ -270,8 +270,20 @@ class VerificationPolicyTests(QuestionBankTestCase):
                 self.claim(bank_id, dynamo)
         self.assertEqual(raised.exception.code, "claim_conflict")
 
+    def test_explicit_compiled_minimum_claims_only_already_stamped_inventory(self):
+        for revision in (4, 6):
+            with self.subTest(revision=revision):
+                bank_id, dynamo, item, question = self.bank(revision=revision)
+                original_json = item["questionJSON"]["S"]
+                with mock.patch.object(question_bank, "_ensure_refill"):
+                    first = self.claim(bank_id, dynamo, minimum=6)
+                    second = self.claim(bank_id, dynamo, minimum=6)
+                self.assertEqual(first, second)
+                self.assertEqual(first["questions"], [question] if revision == 6 else [])
+                self.assertEqual(item["questionJSON"]["S"], original_json)
+
     def test_minimum_policy_is_strict_integer_and_known_request_bound(self):
-        for invalid in (True, False, "1", 1.0, -1, 5, None, [], {}):
+        for invalid in (True, False, "1", 1.0, -1, 7, None, [], {}):
             with self.subTest(invalid=invalid):
                 bank_id, dynamo, _, _ = self.bank(revision=1)
                 with mock.patch.object(

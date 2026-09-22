@@ -16,6 +16,23 @@ validate_native_output_models() {
     *) echo "QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE must be inherit, legacy, or native." >&2; return 1 ;;
   esac
 
+  local global_author="${QUESTION_AUTHOR_MODE:-prose}"
+  local worker_author="${QUESTION_BANK_WORKER_AUTHOR_MODE:-inherit}"
+  case "$global_author" in
+    prose|mixed_quantitative) ;;
+    *) echo "QUESTION_AUTHOR_MODE must be prose or mixed_quantitative." >&2; return 1 ;;
+  esac
+  case "$worker_author" in
+    inherit) worker_author="$global_author" ;;
+    prose|mixed_quantitative) ;;
+    *) echo "QUESTION_BANK_WORKER_AUTHOR_MODE must be inherit, prose, or mixed_quantitative." >&2; return 1 ;;
+  esac
+  if [[ "$global_author" == mixed_quantitative && "$global_mode" != native ]] ||
+     [[ "$worker_author" == mixed_quantitative && "$worker_mode" != native ]]; then
+    echo "Mixed quantitative authoring requires native transport for each enabled function." >&2
+    return 1
+  fi
+
   local -a required_models=()
   [[ "$global_mode" != native ]] || required_models+=(BEDROCK_MODEL_ARN)
   [[ "$worker_mode" != native ]] || required_models+=(QUESTION_BANK_WORKER_MODEL_ARN)

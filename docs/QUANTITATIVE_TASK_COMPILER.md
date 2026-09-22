@@ -1,8 +1,10 @@
-# Inactive quantitative task compiler
+# Bounded quantitative compiler and opt-in mixed authoring
 
-`backend/bedrock-question-service/quantitative_task_compiler.py` is a standalone,
-pure prototype. Nothing imports it from generation, routing, or policy code. It
-does not call a provider, stamp approval, change defaults, or deploy anything.
+`backend/bedrock-question-service/quantitative_task_compiler.py` is a pure compiler.
+The separately configurable mixed author route can use it for supported numerical
+tasks while keeping ordinary prose questions for all other subjects. The mode is
+**off by default and not provider-qualified or deployed by this implementation**.
+No client or global verification floor, transport, or model default changes.
 
 `compile_question(spec)` either returns the five learner fields (`prompt`, four
 `choices`, `expectedAnswer`, `explanation`, and four exact-keyed
@@ -65,7 +67,7 @@ or that no such domain values exist. It does not assume the condition is monoton
 
 Units are one shared identifier from `unitless`, `m`, `cm`, `s`, `kg`, `g`, `L`,
 `USD`, `rides`. Expressions operate on numerical measures in that declared unit;
-this prototype does not derive physical equations, mix/convert units, preserve
+this compiler does not derive physical equations, mix/convert units, preserve
 alternative written number formats, or infer dimensions from prose. Fraction
 operands are parenthesized so rendering preserves the exact expression tree.
 
@@ -86,5 +88,80 @@ test_quantitative_task_compiler.py`.
 This guarantees the bounded mathematical task and its generated teaching, subject
 to implementation correctness. It does **not** certify distracting-error
 plausibility, learning-objective fit, novelty, difficulty, or open language,
-causal, scientific, and factual questions. Runtime integration and any wider
-content guarantee remain separate work; the prototype is inactive.
+causal, scientific, and factual questions. Any wider content guarantee remains separate; the ordinary prose path still
+depends on fallible model judgments.
+
+
+## Opt-in route and exact source binding
+
+Set `QUESTION_AUTHOR_MODE=mixed_quantitative` only with native transport and
+`QUESTION_FEEDBACK_CONTRACT=reviewer_written`; incompatible combinations fail
+before dispatch. `prose` remains the default and keeps the existing native-v3 or
+legacy-v1 author contract. SAM exposes `QuestionAuthorMode` (default `prose`)
+and `QuestionBankWorkerAuthorMode` (default `inherit`); the corresponding deploy
+variables are `QUESTION_AUTHOR_MODE` and `QUESTION_BANK_WORKER_AUTHOR_MODE`.
+A worker-only opt-in can leave the synchronous API unchanged. Roll back by
+selecting `prose`, without changing stored questions or policy stamps.
+
+`question_author_mixed_v1` returns a `questions` array of closed variants:
+
+```json
+{"kind":"prose","question":{"prompt":"...","choices":{"a":"...","b":"...","c":"...","d":"..."},"explanation":"...","correctChoice":"a","topic":"...","difficulty":2,"format":"Multiple Choice"}}
+```
+
+```json
+{"kind":"quantitative","task":{"kind":"exact_value","unit":"unitless","nodes":[{"kind":"literal","value":"2"},{"kind":"binary","op":"add","left":0,"right":0}],"root":1,"choices":{"a":"3","b":"4","c":"5","d":"6"}},"topic":"Arithmetic","difficulty":2}
+```
+
+The typed row allows only its task, topic/difficulty and optional skill/objective
+metadata. It accepts no authored key, stem, feedback, approval flag or digest.
+Task-defining fields precede choices in the serialized schema; ordinary prose
+retains the exact author-v3 property order. All historical schema bytes remain
+unchanged. Internal `$defs` share the node, task and prose schemas without recursive
+references or a depth-expanded provider grammar. SDK validation is not live
+provider grammar qualification.
+
+Flat node identity is its array position. Binary operands must reference earlier
+exact integer positions; roots must exist and every node must be reachable.
+Expanded size and depth are checked **before** tree materialization, counting
+shared references again and summing both condition roots. A small DAG cannot
+bypass the compiler's 31-node/depth-6 limits. The adapter then invokes the original
+compiler with all its unchanged rational, domain, output and resource bounds.
+Invalid specs leave rejected source positions; they never become prose or receive
+a repaired key. Other valid rows remain eligible. Ordinary bounded top-up passes
+may author fresh questions within the same existing provider budget.
+
+Only successful local compilation creates a private `CompiledCandidate` with
+immutable specification and learner snapshots. A trusted ordinal sidecar follows
+source rows through sanitization, duplicate removal, solver filtering and dense
+review reindexing. No prompt, content digest, normalized answer or model identity
+is used to join provenance. The sanitizer checks all five fields against a fresh
+compilation and preserves exact choice order, main and per-choice feedback.
+The existing answer-blind fixed-slot solver still vetoes incorrect/duplicate
+choices; the reviewer still vetoes, agrees with the exact key and assesses
+requested difficulty, scope and novelty. These stages may falsely reject sound
+compiled questions. Reviewer feedback remains structurally checked under the
+existing contract but is discarded for compiled rows.
+
+Immediately before release, the same trusted specification is recompiled and
+all five learner fields must still match. Those exact compiler fields replace
+the unused reviewer prose; only this route assigns policy revision **6**.
+Ordinary native rows retain revision 4. Maximum explicitly requestable policy is
+6, while the current server default remains 4 and the client minimum remains 2.
+Stored legacy inventory is never promoted or relabeled. Revision 6 identifies
+this bounded mathematical guarantee plus existing model gates; it does not
+certify that a generated item teaches a requested nonmathematical objective.
+
+One complete pass still has exactly three provider stages: mixed author, existing
+solver, existing reviewer. The worker still has six calls total and its existing
+deadline. No new model, reviewer stage, fallback permission, quota or global
+quality floor is introduced. Unsupported subjects use the prose variant; typed
+spec failures do not authorize reuse of an invalid task's content as prose.
+
+Focused tests exercise graph bounds and flat/tree equivalence, forbidden metadata,
+all five content mutations, duplicate removal followed by solver filtering and
+review reindexing, reviewer veto/key/difficulty checks, forged stamps, mixed
+subjects, failed specs, three-call and six-call behavior, exact claim/replay
+policy thresholds, worker/API configuration isolation and offline SDK request
+shapes. Live native grammar, yield, difficulty/assignment fit and mixed-subject
+quality require separate bounded qualification before rollout.
