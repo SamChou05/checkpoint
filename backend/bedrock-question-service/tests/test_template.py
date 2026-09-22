@@ -149,6 +149,17 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             self.assertIn(f"{variable} || '{default}'", self.deploy_workflow)
             self.assertIn(f'"{parameter}=${{{variable}:-{default}}}"', self.deploy_script)
 
+    def test_worker_feedback_is_explicit_and_leaves_api_default_unchanged(self):
+        parameter = _indented_block(self.template, "QuestionBankWorkerFeedbackContract")
+        self.assertIn("Default: reviewer_written", parameter)
+        self.assertIn("AllowedValues: [reviewer_written, authored_solution]", parameter)
+        self.assertNotIn("QUESTION_FEEDBACK_CONTRACT", _indented_block(self.template, "CheckpointQuestionFunction"))
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
+        self.assertIn("QUESTION_FEEDBACK_CONTRACT: !Ref QuestionBankWorkerFeedbackContract", worker)
+        self.assertEqual(self.template.count("QUESTION_FEEDBACK_CONTRACT:"), 1)
+        self.assertIn("QUESTION_BANK_WORKER_FEEDBACK_CONTRACT || 'reviewer_written'", self.deploy_workflow)
+        self.assertIn('"QuestionBankWorkerFeedbackContract=${QUESTION_BANK_WORKER_FEEDBACK_CONTRACT:-reviewer_written}"', self.deploy_script)
+
     @classmethod
     def setUpClass(cls):
         cls.template = TEMPLATE.read_text(encoding="utf-8")

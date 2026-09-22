@@ -96,8 +96,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 59 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 59"
+[[ "${#sam_arguments[@]}" -eq 60 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 60"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -120,7 +120,7 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
-for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit; do
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerFeedbackContract=reviewer_written; do
   [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
 done
 for argument in "${sam_arguments[@]:11}"; do
@@ -169,6 +169,21 @@ for checked_script in validate-deployment-config.sh deploy-sam.sh; do
   done
 done
 
+for feedback in reviewer_written authored_solution; do
+  for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+    env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" \
+      BEDROCK_STRUCTURED_OUTPUT_MODE=legacy QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native \
+      QUESTION_AUTHOR_MODE=prose QUESTION_BANK_WORKER_AUTHOR_MODE=mixed_quantitative \
+      QUESTION_BANK_WORKER_CLAUDE_THINKING=adaptive \
+      "QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=$feedback" "$script_dir/$checked_script"
+  done
+  mapfile -d '' -t sam_arguments < "$sam_capture"
+  [[ " ${sam_arguments[*]} " == *" QuestionBankWorkerFeedbackContract=$feedback "* ]] || fail "worker feedback not forwarded"
+  [[ " ${sam_arguments[*]} " == *" BedrockStructuredOutputMode=legacy "* ]] || fail "API transport changed"
+  [[ " ${sam_arguments[*]} " == *" QuestionAuthorMode=prose "* ]] || fail "API author mode changed"
+done
+
 for global_thinking in disabled adaptive; do
   for worker_thinking in inherit disabled adaptive; do
     env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
@@ -183,7 +198,7 @@ for global_thinking in disabled adaptive; do
   done
 done
 
-for mode_variable in BEDROCK_STRUCTURED_OUTPUT_MODE QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE QUESTION_AUTHOR_MODE QUESTION_BANK_WORKER_AUTHOR_MODE; do
+for mode_variable in BEDROCK_STRUCTURED_OUTPUT_MODE QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE QUESTION_AUTHOR_MODE QUESTION_BANK_WORKER_AUTHOR_MODE QUESTION_BANK_WORKER_FEEDBACK_CONTRACT; do
   for checked_script in validate-deployment-config.sh deploy-sam.sh; do
     rm -f "$sam_capture"
     if invalid_mode_output="$(

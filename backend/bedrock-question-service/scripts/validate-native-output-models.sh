@@ -16,6 +16,11 @@ validate_native_output_models() {
     *) echo "QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE must be inherit, legacy, or native." >&2; return 1 ;;
   esac
 
+  case "${QUESTION_BANK_WORKER_FEEDBACK_CONTRACT:-reviewer_written}" in
+    reviewer_written|authored_solution) ;;
+    *) echo "QUESTION_BANK_WORKER_FEEDBACK_CONTRACT must be reviewer_written or authored_solution." >&2; return 1 ;;
+  esac
+
   local global_author="${QUESTION_AUTHOR_MODE:-prose}"
   local worker_author="${QUESTION_BANK_WORKER_AUTHOR_MODE:-inherit}"
   case "$global_author" in

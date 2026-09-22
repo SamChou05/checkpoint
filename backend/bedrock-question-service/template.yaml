@@ -45,6 +45,11 @@ Parameters:
     Default: inherit
     AllowedValues: [inherit, prose, mixed_quantitative]
     Description: Worker-only author mode. Inherit preserves QuestionAuthorMode.
+  QuestionBankWorkerFeedbackContract:
+    Type: String
+    Default: reviewer_written
+    AllowedValues: [reviewer_written, authored_solution]
+    Description: Worker-only teaching contract. Authored solution audits immutable main text; qualify the selected route before enabling.
   BedrockReasoningEffort:
     Type: String
     Default: ""
@@ -489,6 +494,7 @@ Resources:
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_STRUCTURED_OUTPUT_MODE: !If [WorkerStructuredOutputInheritsGlobal, !Ref BedrockStructuredOutputMode, !Ref QuestionBankWorkerStructuredOutputMode]
           QUESTION_AUTHOR_MODE: !If [WorkerAuthorModeInheritsGlobal, !Ref QuestionAuthorMode, !Ref QuestionBankWorkerAuthorMode]
+          QUESTION_FEEDBACK_CONTRACT: !Ref QuestionBankWorkerFeedbackContract
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
           BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens
