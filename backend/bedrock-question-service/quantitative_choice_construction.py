@@ -5,8 +5,10 @@ compiler validates all mathematical bounds and renders the final five fields.
 """
 
 import copy
+from fractions import Fraction
 import hashlib
 import json
+from math import gcd
 
 import quantitative_task_compiler as compiler
 
@@ -20,6 +22,8 @@ class QuantitativeConstructionError(ValueError):
 
 
 def _calculation(op, left, right):
+    if left is None or right is None:
+        return None
     try:
         return compiler._calculate(op, left, right)
     except compiler.QuantitativeTaskError:
@@ -28,23 +32,76 @@ def _calculation(op, left, right):
         return None
 
 
-def _mistakes(expression):
-    """Values from exactly one changed operation in this validated subtree.
+def _local_mistakes(op, left, right):
+    """At most six fixed local mechanisms, with fraction procedures first.
 
-At most six local changes per binary node: substitute another arithmetic
-operator, omit that operation and keep either operand, or reverse a subtraction
-or division. Child mistakes propagate through otherwise unchanged ancestors.
+The IES fractions practice guide describes independent numerator/denominator
+operations and misapplied inversion (Recommendation 3). The priorities here
+are pedagogical hypotheses, not measured novice response probabilities:
+https://ies.ed.gov/ncee/wwc/docs/practiceguide/fractions_pg_093010.pdf
+"""
+    fractional = left.denominator != 1 or right.denominator != 1
+    if fractional:
+        a, b = Fraction(left.numerator), Fraction(left.denominator)
+        c, d = Fraction(right.numerator), Fraction(right.denominator)
+        if op in {"add", "sub"}:
+            numerator = _calculation(op, a, c)
+            common = _calculation("mul", b / gcd(left.denominator, right.denominator), d)
+            return [
+                _calculation("div", numerator, _calculation(op, b, d)),
+                _calculation("div", numerator, common),
+                left,  # Stop at the left intermediate result.
+                _calculation("sub" if op == "add" else "add", left, right),
+                right,
+                _calculation("mul", left, right),
+            ]
+        if op == "div":
+            return [
+                _calculation("mul", left, right),  # Invert neither operand.
+                _calculation("div", right, left),  # Invert the dividend only.
+                _calculation("div", Fraction(1), _calculation("mul", left, right)),
+                left, right, _calculation("add", left, right),
+            ]
+        if left.denominator != 1 and right.denominator != 1:
+            numerator = _calculation("mul", a, c)
+            return [
+                _calculation("div", numerator, b),  # Retain only one denominator.
+                _calculation("div", numerator, d),
+                _calculation("div", left, right),
+                left, _calculation("add", left, right), _calculation("sub", left, right),
+            ]
+        fraction, whole = (left, right) if left.denominator != 1 else (right, left)
+        # Zero and signed identity factors do not need a special fraction
+        # procedure; keep their original operation/omission pool.
+        if abs(whole) > 1:
+            numerator, denominator = Fraction(fraction.numerator), Fraction(fraction.denominator)
+            return [
+                _calculation("div", whole, denominator),  # Omit the numerator.
+                _calculation("mul", numerator, whole),  # Omit the denominator.
+                _calculation("div", numerator, _calculation("mul", denominator, whole)),
+                left, right, _calculation("add", left, right),
+            ]
+    proposed = [_calculation(other, left, right)
+                for other in compiler.OPERATORS if other != op]
+    proposed.extend((left, right))
+    if op in {"sub", "div"}:
+        proposed.append(_calculation(op, right, left))
+    return proposed
+
+
+def _mistakes(expression):
+    """Values from exactly one mistaken step in this validated subtree.
+
+At most six local candidates per binary node: fraction-procedure mistakes,
+operator substitutions, omissions or reversal. Child mistakes propagate through
+otherwise unchanged ancestors. No erroneous intermediate becomes a new task.
 The compiler's 31-node tree bound permits at most 90 candidate values.
 """
     if expression[0] == "constant":
         return []
     op, left_tree, right_tree = expression
     left, right = compiler._evaluate(left_tree), compiler._evaluate(right_tree)
-    proposed = [_calculation(other, left, right)
-                for other in compiler.OPERATORS if other != op]
-    proposed.extend((left, right))
-    if op in {"sub", "div"}:
-        proposed.append(_calculation(op, right, left))
+    proposed = _local_mistakes(op, left, right)
     proposed.extend(_calculation(op, value, right) for value in _mistakes(left_tree))
     proposed.extend(_calculation(op, left, value) for value in _mistakes(right_tree))
     # Preserve the fixed mechanism order; aliases consume no pool positions.

@@ -1,8 +1,9 @@
-"""Independent arithmetic/selection oracles for the inactive pure constructor."""
+"""Independent arithmetic/selection oracles for the opt-in pure constructor."""
 
 import copy
 from fractions import Fraction
 import itertools
+from math import lcm
 import unittest
 
 from quantitative_choice_construction import (
@@ -70,6 +71,44 @@ def mutated_trees(tree):
             yield candidate
 
 
+def fraction_procedure_trees(tree):
+    """Independent error oracle: replace one step, keep every ancestor intact.
+
+This includes the fraction-error families without sharing the constructor's
+priority, branch selection or helpers. The ordinary AST mutation oracle above
+also remains available; membership alone does not assert pedagogical quality.
+"""
+    if "op" not in tree:
+        return
+    left, right = evaluate(tree["left"]), evaluate(tree["right"])
+    if left.denominator != 1 or right.denominator != 1:
+        a, b, c, d = left.numerator, left.denominator, right.numerator, right.denominator
+        procedures = []
+        if tree["op"] in {"add", "sub"}:
+            sign = 1 if tree["op"] == "add" else -1
+            procedures += [lambda: Fraction(a + sign * c, b + sign * d),
+                           lambda: Fraction(a + sign * c, lcm(b, d))]
+        elif tree["op"] == "div":
+            procedures += [lambda: 1 / (left * right)]
+        else:
+            procedures += [lambda: Fraction(a * c, b), lambda: Fraction(a * c, d)]
+            for fraction, whole in ((left, right), (right, left)):
+                if whole.denominator == 1:
+                    procedures += [lambda f=fraction, w=whole: w / f.denominator,
+                                   lambda f=fraction, w=whole: f.numerator * w,
+                                   lambda f=fraction, w=whole: f.numerator / (f.denominator * w)]
+        for procedure in procedures:
+            try:
+                yield literal(procedure())
+            except ZeroDivisionError:
+                pass
+    for side in ("left", "right"):
+        for child in fraction_procedure_trees(tree[side]):
+            candidate = copy.deepcopy(tree)
+            candidate[side] = child
+            yield candidate
+
+
 class QuantitativeChoiceConstructionTests(unittest.TestCase):
     def assert_error(self, spec, code):
         with self.assertRaises(QuantitativeConstructionError) as caught:
@@ -87,7 +126,8 @@ class QuantitativeChoiceConstructionTests(unittest.TestCase):
         answer = evaluate(spec["expression"])
         self.assertEqual(numbers.count(answer), 1)
         permitted = set()
-        for mutated in mutated_trees(spec["expression"]):
+        for mutated in itertools.chain(mutated_trees(spec["expression"]),
+                                       fraction_procedure_trees(spec["expression"])):
             try:
                 permitted.add(evaluate(mutated))
             except ZeroDivisionError:
@@ -106,9 +146,9 @@ class QuantitativeChoiceConstructionTests(unittest.TestCase):
                                                   ("-7/3", "0", "4/5", "7"),
                                                   ("-5/2", "3/7", "4")):
             tree = operation(op, literal(left), literal(right))
-            # Zero multiplication/division has too few single-error results.
+            # Some zero cases still have too few permitted single-step errors.
             possible = set()
-            for candidate in mutated_trees(tree):
+            for candidate in itertools.chain(mutated_trees(tree), fraction_procedure_trees(tree)):
                 try:
                     possible.add(evaluate(candidate))
                 except ZeroDivisionError:

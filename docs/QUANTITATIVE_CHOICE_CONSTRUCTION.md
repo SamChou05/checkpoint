@@ -16,14 +16,25 @@ depend on the generated options. Inputs cannot contain a proposed key, choice
 list, learner prose, approval or provenance.
 
 For exact arithmetic, the constructor evaluates the correct result with exact
-fractions. Its finite wrong-value pool makes **one change** in the expression:
-replace one arithmetic operator, omit an operation and keep either operand, or
-reverse the operands of subtraction/division. A change inside a nested expression
-is evaluated through the unchanged ancestors. The 31-node/depth-six compiler
+fractions. Its finite wrong-value pool makes **one mistaken step** in the expression.
+For fractional operands it first tries procedure errors: combining numerators and
+denominators separately, changing denominators without scaling numerators,
+misapplying reciprocal multiplication, or omitting a numerator or denominator.
+The remaining bounded mechanisms include operator substitutions, omitted steps
+and reversed operands. Whole-number operations retain their existing pool.
+A change inside a nested expression is evaluated through unchanged ancestors.
+The 31-node/depth-six compiler
 limit permits at most 15 binary operations and 90 candidates before deduplication.
 Undefined or oversized hypothetical calculations, equivalent values, and the
 actual result are discarded. There is no generic numerical padding. Literal-only
 tasks and degenerate arithmetic often fail for insufficient distractors.
+
+These priorities address the old constructor's tendency to select three root
+operator swaps before any fraction-specific or inner-step mistake. The error
+families are informed by [IES Recommendation 3](https://ies.ed.gov/ncee/wwc/docs/practiceguide/fractions_pg_093010.pdf),
+pages 31–32. The exact ordering and additional omission rules are engineering
+hypotheses, not measured probabilities of learner errors. Final review still
+judges plausibility; a rejected question is never rescued by this heuristic.
 
 For scalar conditions, every integer in the stated domain is evaluated first,
 including points that will not be offered. Undefined arithmetic anywhere rejects
@@ -57,7 +68,7 @@ reviewer still assesses those properties. Insufficient pools, malformed graphs i
 the separate transport adapter, unsuitable topics and overly long proofs must
 remain visible yield failures; none may be silently repaired or padded.
 
-Tests use an independent syntax-mutation/evaluation oracle, signed and nested
+Tests use independent syntax-mutation, fraction-procedure and evaluation oracles, signed and nested
 fractions, all six scalar relations and three selections, exhaustive small-domain
 checks, seven historically observed missing-answer task shapes, exact type and
 size attacks, undefined unoffered domain values, and deterministic deep-copy
