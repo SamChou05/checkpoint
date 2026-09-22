@@ -1,0 +1,22 @@
+{
+  "plan_sha256": "79d4e8cdf39c7378573081e7eacadd086d128d2b98eb97d346c6264c4eb4fdc4",
+  "created_at": "2026-09-22T05:57:01.485315+00:00",
+  "source_sha256": {
+    "docs/evidence/reviewer-identity-20260922/candidate_reviewer_slots.py": "f77a81d04e4930bb8643204eb0e7ce3b10f991d6abbcb8556e9cff698d9baab9",
+    "backend/bedrock-question-service/native_output_contracts.py": "fe2d9a79c882708f5848c7eeab23ddb441277022bc63ee5a28eeee0ed3958151",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "docs/evidence/reviewer-identity-20260922/identity_probe.py": "fc9c786be3af625ce1e46e04c3b3078538c8d23ecc957f5acff5c8c5ecd0dadd"
+  },
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.91",
+    "botocore": "1.43.91"
+  },
+  "maximum_calls": 2,
+  "sdk_total_max_attempts": 1,
+  "read_timeout_seconds": 75,
+  "connect_timeout_seconds": 3,
+  "region": "us-east-1",
+  "first_schema_compilation": "Inside the same75s transport ceiling; no warmup, retry, timeout increase or replacement call.",
+  "scoring": "Separate structural identity feasibility from semantic control judgments. A transport/schema failure is a structural failure; a wrong key, false rejection, bad feedback or ambiguous acceptance is a semantic/admission failure. Neither rewrites the other result. No production promotion."
+}

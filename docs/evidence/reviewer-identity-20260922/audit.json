@@ -1,0 +1,267 @@
+{
+  "experiment": "Closed outer review identities, count5: independent two-call audit",
+  "created_at": "2026-09-22T06:03:09.515946+00:00",
+  "plan_sha256": "79d4e8cdf39c7378573081e7eacadd086d128d2b98eb97d346c6264c4eb4fdc4",
+  "execution_manifest_sha256": "33b5db7ddf5298f0abce47a54a53ed0903656a3eae6270c1fc752460c639c177",
+  "capture_sha256": "e5abb909fc2eddf2dd99af59ba743b16fb8776f24f4fbcde6917767c032df523",
+  "candidate_contract": {
+    "name": "experimental_reviewer_slots_v3_n5",
+    "version": "3-experimental",
+    "count": 5,
+    "sha256": "1f45b0fb8610a504747ae55010e9caea45276d217e631d44e1e8dcc08a384880"
+  },
+  "structural_outcome": {
+    "verdict": "pass",
+    "end_turn_calls": 2,
+    "exact_required_identity_batches": 2,
+    "required_identities": 10,
+    "restored_unique_dense_indexes": 10,
+    "unknown_or_missing_or_duplicate_ids": 0,
+    "exact_positive_text_and_feedback_preserved": 10,
+    "no_row_dropping_or_identity_repairs": true,
+    "previous_same_input_v1_envelopes": "[-1,-1] and[-1,0,1,2,3,4], both locally rejected",
+    "interpretation": "The new closed object expresses coverage that the old schema did not. Two valid provider responses confirm count5 feasibility here; no all-count or general semantic guarantee."
+  },
+  "semantic_outcome": {
+    "verdict": "failed",
+    "unambiguous_valid_controls_retained": "8/8",
+    "predeclared_ambiguity_controls_rejected": "0/2",
+    "returned_author_keys_matched": "10/10; does not establish unique correctness for the two ambiguity controls",
+    "positive_feedback_exact_coverage_and_bounds": "10/10",
+    "definite_feedback_error_items": 1,
+    "additional_unit_wording_uncertainty_items": 1,
+    "complete_content_passes_under_uncertainty_fails_rule": "6/10",
+    "if_unit_wording_is_read_favorably": "7/10; unchanged failed overall semantic outcome",
+    "no_answer_position_references_found": true,
+    "all_difficulty_ratings_in_requested_range": true
+  },
+  "operations": {
+    "calls": 2,
+    "retries_warmups_replacements": 0,
+    "elapsed_seconds": [
+      61.837,
+      48.586
+    ],
+    "read_timeout_seconds": 75,
+    "within_timeout": true,
+    "max_tokens": 16000,
+    "thinking": "adaptive",
+    "effort": "high",
+    "reasoning_blocks_removed": [
+      1,
+      1
+    ],
+    "raw_reasoning_or_signatures_persisted": false,
+    "input_tokens": 9094,
+    "output_tokens": 8996
+  },
+  "items": [
+    {
+      "call_sequence": 0,
+      "item_index": 0,
+      "prompt": "A 2-liter bottle of juice costs $3.20. A 500-milliliter carton costs $0.90. Which is the better unit price?",
+      "expected_valid": true,
+      "returned_valid": true,
+      "validity_agreement": true,
+      "answer": "The 2-liter bottle at $1.60 per liter",
+      "exact_author_key": true,
+      "independent_check": "3.20/2=1.60 per L;0.90/0.5=1.80 per L; bottle is cheaper.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 2,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "pass",
+      "issues": []
+    },
+    {
+      "call_sequence": 0,
+      "item_index": 1,
+      "prompt": "A recipe for 6 servings requires 4 cups of flour. How many cups are needed for 15 servings?",
+      "expected_valid": true,
+      "returned_valid": true,
+      "validity_agreement": true,
+      "answer": "10 cups",
+      "exact_author_key": true,
+      "independent_check": "4×15/6=10 cups.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 2,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "pass",
+      "issues": []
+    },
+    {
+      "call_sequence": 0,
+      "item_index": 2,
+      "prompt": "A store raises the price of a $40 jacket by 15%, then applies a 15% discount to the new price. What is the final price?",
+      "expected_valid": true,
+      "returned_valid": true,
+      "validity_agreement": true,
+      "answer": "$39.10",
+      "exact_author_key": true,
+      "independent_check": "40×1.15×0.85=39.10 dollars.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 3,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "pass",
+      "issues": []
+    },
+    {
+      "call_sequence": 0,
+      "item_index": 3,
+      "prompt": "Paint is mixed in a 3:2 ratio of blue to white. If 12 liters of blue are used, how much white is needed?",
+      "expected_valid": true,
+      "returned_valid": true,
+      "validity_agreement": true,
+      "answer": "8 liters",
+      "exact_author_key": true,
+      "independent_check": "12×2/3=8 liters.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 2,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "pass",
+      "issues": []
+    },
+    {
+      "call_sequence": 0,
+      "item_index": 4,
+      "prompt": "A car's value depreciates 20% in the first year and 10% in the second year. What is the total percent decrease from original value after two years?",
+      "expected_valid": true,
+      "returned_valid": true,
+      "validity_agreement": true,
+      "answer": "28%",
+      "exact_author_key": true,
+      "independent_check": "100×(1−0.8×0.9)=28 percent decrease.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 3,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "pass",
+      "issues": []
+    },
+    {
+      "call_sequence": 1,
+      "item_index": 0,
+      "prompt": "A 12-ounce can of soup costs $1.44. A 20-ounce can costs $2.20. Which size has the lower cost per ounce?",
+      "expected_valid": true,
+      "returned_valid": true,
+      "validity_agreement": true,
+      "answer": "The 20-ounce can",
+      "exact_author_key": true,
+      "independent_check": "1.44/12=0.12;2.20/20=0.11;20-ounce can is cheaper.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 2,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "fail",
+      "issues": [
+        {
+          "category": "feedback_unit_label_uncertainty",
+          "field": "explanation and Cannot be determined feedback",
+          "observed": "Divide each price by its volume to find the unit rate. At $0.11/oz the 20-oz can is cheaper than the 12-oz can at $0.12/oz.",
+          "finding": "The input says ounces, without saying fluid ounces; the feedback calls the amounts volumes. Ordinary ounces can measure mass. The unit-price comparison is correct either way, but the explanation assumes a volume interpretation absent from the stem.",
+          "interpretation": "This is separately recorded wording/unit scope uncertainty, not a wrong key or defective item. Under the frozen uncertainty-fails feedback rule it is not a complete pass."
+        }
+      ]
+    },
+    {
+      "call_sequence": 1,
+      "item_index": 1,
+      "prompt": "A fruit punch mixes orange juice and pineapple juice in a 5:3 ratio. If 9 cups of pineapple juice are used, how many cups of orange juice are needed?",
+      "expected_valid": true,
+      "returned_valid": true,
+      "validity_agreement": true,
+      "answer": "15 cups",
+      "exact_author_key": true,
+      "independent_check": "9×5/3=15 cups.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 2,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "fail",
+      "issues": [
+        {
+          "category": "definite_feedback_error",
+          "field": "choiceExplanations[\"27 cups\"]",
+          "observed": "27=9×3 inverts the ratio, multiplying by the denominator instead of scaling by 5/3.",
+          "finding": "Multiplying9 by3 is not inversion of5/3. The inverse would3/5 and would yield5.4 cups.",
+          "counterexample": "9×5/3=15;9×3/5=5.4;9×3=27. The wrong choice can be refuted without claiming these different operations are the same.",
+          "stage_origin": "The flawed inversion attribution was already present in the supplied solver reason and previous reviewer output; the identity change does not remove it."
+        }
+      ]
+    },
+    {
+      "call_sequence": 1,
+      "item_index": 2,
+      "prompt": "A monthly bus pass costs $60. Individual rides cost $2.50 each. How many rides per month make the pass cheaper than paying per ride?",
+      "expected_valid": false,
+      "returned_valid": true,
+      "validity_agreement": false,
+      "answer": "25 rides",
+      "exact_author_key": true,
+      "independent_check": "60/2.50=24;both25 and26 rides make per-ride cost exceed60.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 3,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "fail",
+      "issues": [
+        {
+          "category": "accepted_predeclared_ambiguous_control",
+          "field": "valid, answer and main/26rides feedback",
+          "observed": "The pass is cheaper at 26 rides, but 25 rides already achieves that; 26 is not the minimum threshold.",
+          "finding": "The unchanged stem does not ask for a minimum. Both25 and26 rides make the pass cheaper; reviewer adds a minimum interpretation to reject26.",
+          "counterexample": "25×2.50=62.50>60;26×2.50=65>60.",
+          "gold_status": "Invalid under the prospectively frozen unchanged-task criterion; intended minimum25 is arithmetically correct."
+        }
+      ]
+    },
+    {
+      "call_sequence": 1,
+      "item_index": 3,
+      "prompt": "A stock priced at $80 increases by 25%, then decreases by 20%. What is the final price?",
+      "expected_valid": true,
+      "returned_valid": true,
+      "validity_agreement": true,
+      "answer": "$80",
+      "exact_author_key": true,
+      "independent_check": "80×1.25×0.80=80 dollars.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 3,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "pass",
+      "issues": []
+    },
+    {
+      "call_sequence": 1,
+      "item_index": 4,
+      "prompt": "Concrete is mixed using 4 parts sand, 2 parts gravel, and 1 part cement. How many total pounds of mixture contain 18 pounds of gravel?",
+      "expected_valid": false,
+      "returned_valid": true,
+      "validity_agreement": false,
+      "answer": "63 pounds",
+      "exact_author_key": true,
+      "independent_check": "If the given parts are mass parts,18×(4+2+1)/2=63 pounds.",
+      "feedback_main_and_all_choices_independently_audited": true,
+      "feedback_coverage_bounds_and_exact_bytes": true,
+      "difficulty": 3,
+      "difficulty_requested_range_met": true,
+      "complete_content_verdict": "fail",
+      "issues": [
+        {
+          "category": "accepted_predeclared_uncertain_control",
+          "field": "valid and main explanation",
+          "observed": "With 7 total parts, gravel's 2 parts equal 18 lb, so 1 part=9 lb and the full mixture is 7×9=63 lb.",
+          "finding": "The recipe gives parts without mass-versus-volume basis, then asks for total pounds.63lb requires mass parts; a volume ratio requires relative densities.",
+          "gold_status": "Predeclared material uncertainty; not a claim that the intended proportional arithmetic is false."
+        }
+      ]
+    }
+  ],
+  "decision": "The evidence supports the outer identity contract as a deterministic structural improvement while maintaining strict local validation. It does not qualify the semantic pipeline or authorize deployment. Preserve the negative-control and feedback failures.",
+  "limitations": "Two reused five-item inputs, one new count5 grammar, adaptive Sonnet only; first request61.837s includes all service latency and is not an isolated grammar-compilation measurement. Other batch counts and independent fresh-generation behavior remain untested.",
+  "evidence_policy": "Original plan, candidate, runner, manifests and raw redacted capture unchanged; this separate audit adds judgments without repairing outputs."
+}
