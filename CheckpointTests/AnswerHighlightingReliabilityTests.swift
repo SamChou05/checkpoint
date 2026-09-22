@@ -96,6 +96,63 @@ final class AnswerHighlightingReliabilityTests: XCTestCase {
         }
     }
 
+    func testCompiledQuantitativePayloadsKeepAllTeachingAndOneHighlightAcrossEveryOrder() throws {
+        // Python recomputes these exact fields with compile_question and carries
+        // them through the real bank writer and claim/replay implementation.
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        let url = root.appendingPathComponent("backend/bedrock-question-service/tests/fixtures/compiled_quantitative_roundtrip.json")
+        let packet = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
+        let metadata = try XCTUnwrap(packet["trustedWireMetadata"] as? [String: Any])
+        let cases = try XCTUnwrap(packet["cases"] as? [[String: Any]])
+        XCTAssertEqual(cases.count, 3)
+        let goal = makeGoal()
+        var request = makeRequest(goal: goal)
+        request.requiresVerifiedQuestions = true
+
+        for fixture in cases {
+            let name = try XCTUnwrap(fixture["id"] as? String)
+            let compiled = try XCTUnwrap(fixture["compiled"] as? [String: Any])
+            let original = try QuestionContentJSONDecoder.decode(
+                GeneratedQuestionPayload.self, from: JSONSerialization.data(withJSONObject: compiled)
+            )
+            let orders = permutations(original.choices)
+            XCTAssertEqual(orders.count, 24, name)
+            for order in orders {
+                // Test metadata is a trusted carrier fixture, not model-supplied
+                // compiler approval. Production provenance is tested separately.
+                var wire = compiled.merging(metadata) { _, metadataValue in metadataValue }
+                wire["choices"] = order
+                let payload = try QuestionContentJSONDecoder.decode(
+                    GeneratedQuestionPayload.self, from: JSONSerialization.data(withJSONObject: wire)
+                )
+                let received = payload.makeQuestion(goalID: goal.id, sourcePrompt: name)
+                assertCompiledLearnerFields(received, equal: original, context: name)
+                XCTAssertEqual(received.choices.map { Data($0.utf8) }, order.map { Data($0.utf8) }, name)
+                var accepted = try XCTUnwrap(QuestionBatchSanitizer.sanitize([received], for: request).first, name)
+                assertCompiledLearnerFields(accepted, equal: original, context: name)
+                XCTAssertEqual(accepted.choices.filter { AnswerGrader.evaluate(answer: $0, question: accepted).result == .correct }, [original.expectedAnswer], name)
+
+                // In addition to the random admission shuffle above, persist
+                // every display order deterministically and test its feedback.
+                accepted.choices = order
+                let restored = try QuestionContentJSONDecoder.decode(
+                    CheckpointQuestion.self, from: JSONEncoder().encode(accepted)
+                )
+                assertCompiledLearnerFields(restored, equal: original, context: name)
+                XCTAssertEqual(restored.choices.map { Data($0.utf8) }, order.map { Data($0.utf8) }, name)
+                XCTAssertEqual(restored.choices.filter { AnswerGrader.evaluate(answer: $0, question: restored).result == .correct }, [original.expectedAnswer], name)
+                for choice in order {
+                    let choiceFeedback = try XCTUnwrap(original.choiceExplanations[choice], name)
+                    XCTAssertEqual(Data(restored.feedbackExplanation(for: choice).utf8), Data((choiceFeedback + "\n\n" + original.explanation).utf8), name)
+                }
+                for result in [AnswerResult.incorrect, .partial, .unclear] {
+                    XCTAssertEqual(CheckpointAnswerReviewPresentation(question: restored, result: result)?.answerText, original.expectedAnswer, name)
+                }
+                XCTAssertNil(CheckpointAnswerReviewPresentation(question: restored, result: .correct), name)
+            }
+        }
+    }
+
     func testTerminalAndHistoryReviewUseTheSameAnswerAfterPersistence() throws {
         let question = question(explanation: "A stack removes the last item added before earlier items.", version: 1)
         let terminal = CheckpointTerminalAnswerReviewPresentation(question: question, answer: distractor, result: .incorrect)
@@ -142,6 +199,20 @@ final class AnswerHighlightingReliabilityTests: XCTestCase {
             goal: makeGoal(), index: 1, topic: "Stacks", prompt: "Which operation describes popping a stack?",
             expectedAnswer: correctChoice, choices: choices, explanation: explanation, verificationVersion: version
         )
+    }
+
+    private func assertCompiledLearnerFields(
+        _ question: CheckpointQuestion, equal original: GeneratedQuestionPayload,
+        context: String, file: StaticString = #filePath, line: UInt = #line
+    ) {
+        XCTAssertEqual(Data(question.prompt.utf8), Data(original.prompt.utf8), context, file: file, line: line)
+        XCTAssertEqual(Data(question.expectedAnswer.utf8), Data(original.expectedAnswer.utf8), context, file: file, line: line)
+        XCTAssertEqual(Data(question.explanation.utf8), Data(original.explanation.utf8), context, file: file, line: line)
+        XCTAssertEqual(Set(question.choices.map { Data($0.utf8) }), Set(original.choices.map { Data($0.utf8) }), context, file: file, line: line)
+        XCTAssertEqual(Set(question.choiceExplanations.keys.map { Data($0.utf8) }), Set(original.choices.map { Data($0.utf8) }), context, file: file, line: line)
+        for (choice, explanation) in original.choiceExplanations {
+            XCTAssertEqual(question.choiceExplanations[choice].map { Data($0.utf8) }, Data(explanation.utf8), context, file: file, line: line)
+        }
     }
 
     private func permutations(_ values: [String]) -> [[String]] {

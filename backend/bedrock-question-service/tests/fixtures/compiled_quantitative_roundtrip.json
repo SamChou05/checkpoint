@@ -1,0 +1,153 @@
+{
+  "purpose": "Shared compiler output for downstream storage, claim, client persistence, and display-order tests. Synthetic trustedWireMetadata exercises the existing verified carrier only; it is not compiler approval or route qualification.",
+  "trustedWireMetadata": {
+    "topic": "Quantitative reasoning",
+    "difficulty": 3,
+    "format": "Multiple Choice",
+    "verificationVersion": 1,
+    "verificationPolicyRevision": 2
+  },
+  "cases": [
+    {
+      "id": "rational_division",
+      "spec": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "expression": {
+          "op": "div",
+          "left": {
+            "value": "1/2"
+          },
+          "right": {
+            "value": "3/4"
+          }
+        },
+        "choices": [
+          "2/3",
+          "1/24",
+          "3/8",
+          "3/2"
+        ]
+      },
+      "compiled": {
+        "prompt": "Let q be a unitless number, defined by q = ((1/2) / (3/4)). What is its exact value?",
+        "choices": [
+          "2/3",
+          "1/24",
+          "3/8",
+          "3/2"
+        ],
+        "expectedAnswer": "2/3",
+        "explanation": "The expression ((1/2) / (3/4)) evaluates exactly to 2/3. The answer is 2/3.",
+        "choiceExplanations": {
+          "2/3": "The expression evaluates exactly to 2/3; 2/3 is the requested value.",
+          "1/24": "The expression evaluates exactly to 2/3, not 1/24. 1/24 is not the requested value.",
+          "3/8": "The expression evaluates exactly to 2/3, not 3/8. 3/8 is not the requested value.",
+          "3/2": "The expression evaluates exactly to 2/3, not 3/2. 3/2 is not the requested value."
+        }
+      }
+    },
+    {
+      "id": "explicit_minimum",
+      "spec": {
+        "kind": "scalar_condition",
+        "unit": "rides",
+        "selection": "minimum",
+        "condition": {
+          "left": {
+            "op": "mul",
+            "left": {
+              "value": "2.50"
+            },
+            "right": {
+              "variable": "x"
+            }
+          },
+          "relation": "gt",
+          "right": {
+            "value": "60"
+          }
+        },
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 0,
+          "upper": 40
+        },
+        "choices": [
+          "23",
+          "24",
+          "25",
+          "26"
+        ]
+      },
+      "compiled": {
+        "prompt": "Let x be a numerical measure in rides. Its domain is integers from 0 through 40, inclusive. Condition: ((5/2) * x) > 60. What is the minimum x in this domain satisfying the condition?",
+        "choices": [
+          "23 rides",
+          "24 rides",
+          "25 rides",
+          "26 rides"
+        ],
+        "expectedAnswer": "25 rides",
+        "explanation": "At x = 25, 125/2 > 60 is true. 25 rides is the minimum value satisfying the condition in this domain. Every smaller value in the stated domain fails the condition.",
+        "choiceExplanations": {
+          "23 rides": "At x = 23, 115/2 > 60 is false. This value does not satisfy the condition.",
+          "24 rides": "At x = 24, 60 > 60 is false. This value does not satisfy the condition.",
+          "25 rides": "At x = 25, 125/2 > 60 is true. This is the minimum value satisfying the condition in this domain.",
+          "26 rides": "At x = 26, 65 > 60 is true. The question asks for the minimum; that value is 25 rides."
+        }
+      }
+    },
+    {
+      "id": "nonnegative_square",
+      "spec": {
+        "kind": "scalar_condition",
+        "unit": "unitless",
+        "selection": "any_satisfying",
+        "condition": {
+          "left": {
+            "op": "mul",
+            "left": {
+              "variable": "x"
+            },
+            "right": {
+              "variable": "x"
+            }
+          },
+          "relation": "eq",
+          "right": {
+            "value": "49"
+          }
+        },
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 0,
+          "upper": 10
+        },
+        "choices": [
+          "7",
+          "-7",
+          "0",
+          "14"
+        ]
+      },
+      "compiled": {
+        "prompt": "Let x be a unitless number. Its domain is integers from 0 through 10, inclusive. Condition: (x * x) = 49. Which offered value of x satisfies the condition?",
+        "choices": [
+          "7",
+          "-7",
+          "0",
+          "14"
+        ],
+        "expectedAnswer": "7",
+        "explanation": "At x = 7, 49 = 49 is true. 7 is the only offered value satisfying the condition. Every other offered value is outside the domain or fails the condition.",
+        "choiceExplanations": {
+          "7": "At x = 7, 49 = 49 is true. This is the only offered value satisfying the condition.",
+          "-7": "-7 is outside the stated domain (integers from 0 through 10, inclusive); it cannot answer this question.",
+          "0": "At x = 0, 0 = 49 is false. This value does not satisfy the condition.",
+          "14": "14 is outside the stated domain (integers from 0 through 10, inclusive); it cannot answer this question."
+        }
+      }
+    }
+  ]
+}
