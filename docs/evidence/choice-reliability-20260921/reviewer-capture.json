@@ -1,0 +1,124 @@
+{
+  "plan_sha256": "6ef7f674d61a5312604d0e76d7bb086e95ab1cf07ff9e7987f45106cdeafb5f5",
+  "started_at": "2026-09-22T03:30:33.496624+00:00",
+  "status": "complete",
+  "calls": [
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "request_sha256": "8f2a4d2e8f9e944f7b2559abe9c98949553259edb57aeacd463774cffc2ab018",
+      "dispatch_attempted": true,
+      "elapsed_seconds": 15.559,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 1146,
+        "outputTokens": 1218,
+        "totalTokens": 2364,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "raw": "I'll analyze each item carefully.\n\n**Item 0:** 2+2=4. One clear correct answer.\n\n**Item 1:** 2+2=4. But 4 is not among the choices. The choices are 4... wait: \"4\", \"5\", \"5.0\", \"6\". Yes, \"4\" is present. One correct answer.\n\n**Item 2:** The stem says \"exactly two.\" The only choice that gives the number two is \"Two.\" \"Three,\" \"The number three,\" and \"Four\" are all wrong. Valid.\n\n**Item 3:** \"One half expressed as a number\" — both \"0.5\" and \"1/2\" are correct representations of one half. Two valid answers → defective.\n\n**Item 4:** The premise states every valid report has BOTH a date AND a signature. Both \"It has a date\" and \"It has a signature\" are individually necessary properties. Two valid answers → defective.\n\n**Item 5:** 2+2=4, which is not among the choices (1, 2, 3, 5). No valid answer → defective.\n\n**Item 6:** Python Boolean true value is `True` (capital T only). \"true\" and \"TRUE\" are not valid Python Boolean literals. \"False\" is the opposite. One correct answer.\n\n**Item 7:** \"n + 1\" adds one to n. The others subtract, multiply by 1 (unchanged), or divide by 1 (unchanged). One correct answer.\n\n```json\n{\"reviews\":[{\"index\":0,\"valid\":true,\"answer\":\"4\",\"difficulty\":1,\"explanation\":\"2+2 equals 4 by basic arithmetic; only one choice matches.\",\"choiceExplanations\":{\"4\":\"Correct sum of 2 and 2.\",\"5\":\"One more than the correct answer.\",\"6\":\"Two more than the correct answer.\",\"7\":\"Three more than the correct answer.\"}},{\"index\":1,\"valid\":true,\"answer\":\"4\",\"difficulty\":1,\"explanation\":\"2+2 equals 4; '5.0' is a numeric distractor equal to 5, not 4.\",\"choiceExplanations\":{\"4\":\"Correct sum of 2 and 2.\",\"5\":\"Incorrect; one more than the true sum.\",\"5.0\":\"Equals 5, not 4; a numeric distractor.\",\"6\":\"Incorrect; two more than the true sum.\"}},{\"index\":2,\"valid\":true,\"answer\":\"Two\",\"difficulty\":1,\"explanation\":\"The stem specifies the number two; only 'Two' names that value.\",\"choiceExplanations\":{\"Two\":\"Names the number two, matching the stem's requirement exactly.\",\"Three\":\"Names the number three, not two.\",\"The number three\":\"Also names three, not two.\",\"Four\":\"Names the number four, not two.\"}},{\"index\":3,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"Both '0.5' and '1/2' are standard representations of one half, giving two correct answers.\",\"choiceExplanations\":{\"0.5\":\"A correct decimal representation of one half.\",\"1/2\":\"A correct fractional representation of one half.\",\"2\":\"The reciprocal of one half, not one half itself.\",\"3\":\"Unrelated to one half.\"}},{\"index\":4,\"valid\":false,\"answer\":\"\",\"difficulty\":2,\"explanation\":\"The premise guarantees both a date and a signature, making two choices independently correct.\",\"choiceExplanations\":{\"It has a date.\":\"Guaranteed by the premise; correct but not uniquely so.\",\"It has a signature.\":\"Also guaranteed by the premise; a second correct answer.\",\"It has a photograph.\":\"Not mentioned in the premise; cannot be inferred.\",\"It has a serial number.\":\"Not mentioned in the premise; cannot be inferred.\"}},{\"index\":5,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"2+2=4, which does not appear among the choices, leaving no correct answer.\",\"choiceExplanations\":{\"1\":\"Incorrect; not the sum of 2 and 2.\",\"2\":\"Incorrect; not the sum of 2 and 2.\",\"3\":\"Incorrect; not the sum of 2 and 2.\",\"5\":\"Incorrect; one more than the true sum.\"}},{\"index\":6,\"valid\":true,\"answer\":\"True\",\"difficulty\":1,\"explanation\":\"Python's Boolean true literal is exactly 'True' (capital T); other casings are not recognized as Boolean literals.\",\"choiceExplanations\":{\"True\":\"The only valid Python Boolean true literal.\",\"true\":\"Not a Python keyword; raises a NameError unless defined elsewhere.\",\"TRUE\":\"Not a Python keyword; raises a NameError unless defined elsewhere.\",\"False\":\"The Python Boolean false literal, the opposite value.\"}},{\"index\":7,\"valid\":true,\"answer\":\"n + 1\",\"difficulty\":1,\"explanation\":\"Adding 1 to n requires the + operator with operand 1; the other expressions subtract, leave unchanged, or divide.\",\"choiceExplanations\":{\"n + 1\":\"Correctly adds one to n.\",\"n - 1\":\"Subtracts one from n instead of adding.\",\"n * 1\":\"Multiplies by one, leaving n unchanged.\",\"n / 1\":\"Divides by one, leaving n unchanged (and possibly changing its type).\"}}]}\n```",
+      "score": {
+        "strict_parse": false,
+        "parse_error_type": "ProviderError",
+        "parse_error": "Provider response was not a complete JSON object.",
+        "current_parser_accepted_case_ids": [],
+        "current_parser_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "invalid_json": 8
+            }
+          }
+        }
+      }
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "request_sha256": "4fed07d96bdf00b64b54a793aff320c852968a6f94b06641c906c62bfbb1221c",
+      "dispatch_attempted": true,
+      "elapsed_seconds": 18.371,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 1274,
+        "outputTokens": 1640,
+        "totalTokens": 2914,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "raw": "I'll analyze each item carefully.\n\n**Item 0:** 2+2=4. One correct answer, clear distractors.\n\n**Item 1:** 2+2=4. But \"5\" and \"5.0\" are both wrong answers representing the same error (off by one, just different notation). This is duplication of wrong options.\n\n**Item 2:** \"Two\" and \"Three\"/\"The number three\" — \"Three\" and \"The number three\" express the same wrong answer. Duplication defect.\n\n**Item 3:** \"0.5\" and \"1/2\" both correctly express one half. Two valid answers.\n\n**Item 4:** Both \"It has a date\" and \"It has a signature\" are both necessarily true per the premise. Two correct answers.\n\n**Item 5:** No correct answer (4 is missing).\n\n**Item 6:** Python Boolean true is `True`. Clear single correct answer.\n\n**Item 7:** n+1 adds one. Clear single correct answer.\n\n```json\n{\"reviews\":[\n  {\"index\":0,\"valid\":true,\"answer\":\"4\",\"difficulty\":1,\"explanation\":\"2+2=4 by basic arithmetic. Exactly one choice matches.\",\"choiceExplanations\":{\"4\":\"Correct sum of 2 and 2.\",\"5\":\"Off by one.\",\"6\":\"Off by two.\",\"7\":\"Off by three.\"}},\n  {\"index\":1,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"\",\"choiceExplanations\":{\"4\":\"\",\"5\":\"\",\"5.0\":\"\",\"6\":\"\"}},\n  {\"index\":2,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"\",\"choiceExplanations\":{\"Two\":\"\",\"Three\":\"\",\"The number three\":\"\",\"Four\":\"\"}},\n  {\"index\":3,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"\",\"choiceExplanations\":{\"0.5\":\"\",\"1/2\":\"\",\"2\":\"\",\"3\":\"\"}},\n  {\"index\":4,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"\",\"choiceExplanations\":{\"It has a date.\":\"\",\"It has a signature.\":\"\",\"It has a photograph.\":\"\",\"It has a serial number.\":\"\"}},\n  {\"index\":5,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"\",\"choiceExplanations\":{\"1\":\"\",\"2\":\"\",\"3\":\"\",\"5\":\"\"}},\n  {\"index\":6,\"valid\":true,\"answer\":\"True\",\"difficulty\":1,\"explanation\":\"Python's Boolean true literal is exactly `True` (capital T only). Case matters in Python identifiers.\",\"choiceExplanations\":{\"True\":\"Correct Python Boolean literal for true.\",\"true\":\"Lowercase; this is not a Python keyword and raises a NameError.\",\"TRUE\":\"All-caps; not a valid Python Boolean literal.\",\"False\":\"The Boolean false literal, not true.\"}},\n  {\"index\":7,\"valid\":true,\"answer\":\"n + 1\",\"difficulty\":1,\"explanation\":\"Adding 1 to n requires the + operator with operand 1. The other operations subtract, leave unchanged, or divide.\",\"choiceExplanations\":{\"n + 1\":\"Correctly adds one to n.\",\"n - 1\",\"Subtracts one from n, not adds.\",\"n * 1\":\"Multiplies by one, leaving n unchanged.\",\"n / 1\":\"Divides by one, leaving n unchanged (and returning a float in Python 3).\"}}\n]}\n```\n\nWait, I need to fix the JSON syntax error in item 7's choiceExplanations.\n\n```json\n{\"reviews\":[{\"index\":0,\"valid\":true,\"answer\":\"4\",\"difficulty\":1,\"explanation\":\"2+2=4 by basic arithmetic. Exactly one choice matches.\",\"choiceExplanations\":{\"4\":\"Correct sum of 2 and 2.\",\"5\":\"Off by one.\",\"6\":\"Off by two.\",\"7\":\"Off by three.\"}},{\"index\":1,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"'5' and '5.0' represent the same incorrect value, duplicating a wrong option.\",\"choiceExplanations\":{\"4\":\"Correct answer but the item is rejected for duplicate distractors.\",\"5\":\"Wrong; also duplicated by 5.0.\",\"5.0\":\"Numerically identical to 5, duplicating that distractor.\",\"6\":\"Wrong distractor.\"}},{\"index\":2,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"'Three' and 'The number three' express the same wrong answer, duplicating a distractor.\",\"choiceExplanations\":{\"Two\":\"Correct answer but item is rejected.\",\"Three\":\"Wrong; duplicated by 'The number three'.\",\"The number three\":\"Same value as 'Three', duplicating that distractor.\",\"Four\":\"Wrong distractor.\"}},{\"index\":3,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"Both '0.5' and '1/2' correctly express one half, giving two valid answers.\",\"choiceExplanations\":{\"0.5\":\"Correctly expresses one half as a decimal.\",\"1/2\":\"Also correctly expresses one half as a fraction.\",\"2\":\"The reciprocal of one half, not one half.\",\"3\":\"Unrelated wrong value.\"}},{\"index\":4,\"valid\":false,\"answer\":\"\",\"difficulty\":2,\"explanation\":\"The premise states every valid report has both a date AND a signature, so both options A and B are necessarily true, yielding two correct answers.\",\"choiceExplanations\":{\"It has a date.\":\"Necessarily true per the premise; one of two correct answers.\",\"It has a signature.\":\"Also necessarily true per the premise; second correct answer.\",\"It has a photograph.\":\"Not stated as required.\",\"It has a serial number.\":\"Not stated as required.\"}},{\"index\":5,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"The correct answer 4 is absent from the choices; no valid answer exists.\",\"choiceExplanations\":{\"1\":\"Incorrect.\",\"2\":\"Incorrect.\",\"3\":\"Incorrect.\",\"5\":\"Incorrect; 2+2=4, not 5.\"}},{\"index\":6,\"valid\":true,\"answer\":\"True\",\"difficulty\":1,\"explanation\":\"Python's Boolean true literal is exactly `True`; Python is case-sensitive, so only this spelling is valid.\",\"choiceExplanations\":{\"True\":\"The correct Python Boolean literal for true.\",\"true\":\"Lowercase; not a Python keyword, raises NameError.\",\"TRUE\":\"All-caps; not a valid Python Boolean literal.\",\"False\":\"The Boolean false literal, opposite of true.\"}},{\"index\":7,\"valid\":true,\"answer\":\"n + 1\",\"difficulty\":1,\"explanation\":\"Only addition with operand 1 increases n by one; the other operators subtract, multiply, or divide.\",\"choiceExplanations\":{\"n + 1\":\"Adds one to n, which is exactly what is asked.\",\"n - 1\":\"Subtracts one from n.\",\"n * 1\":\"Multiplies by one, leaving n unchanged.\",\"n / 1\":\"Divides by one, leaving n unchanged (returns float in Python 3).\"}}]}\n```",
+      "score": {
+        "strict_parse": false,
+        "parse_error_type": "ProviderError",
+        "parse_error": "Provider response was not a complete JSON object.",
+        "current_parser_accepted_case_ids": [],
+        "current_parser_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "invalid_json": 8
+            }
+          }
+        }
+      }
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "request_sha256": "4fed07d96bdf00b64b54a793aff320c852968a6f94b06641c906c62bfbb1221c",
+      "dispatch_attempted": true,
+      "elapsed_seconds": 14.908,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 1274,
+        "outputTokens": 1189,
+        "totalTokens": 2463,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "raw": "I'll analyze each item carefully.\n\n**Item 0:** 2+2=4. One correct answer, clear distractors.\n\n**Item 1:** 2+2=4. But \"5\" and \"5.0\" are numerically equivalent answers — both wrong, but they represent the same proposed answer. Duplicate distractor defect.\n\n**Item 2:** \"Two\" and \"Three\"/\"The number three\" — \"Three\" and \"The number three\" are the same proposed answer (both wrong), but more critically, \"Two\" is the correct answer. Wait — \"Three\" and \"The number three\" are duplicate distractors. Defect.\n\n**Item 3:** \"0.5\" and \"1/2\" are numerically equivalent expressions of one half — both correct. Two valid answers. Defect.\n\n**Item 4:** The stem says every valid report has BOTH a date AND a signature. So both A and B must be true. Two correct answers. Defect.\n\n**Item 5:** 2+2=4, which is not among the choices. Zero valid answers. Defect.\n\n**Item 6:** Python's Boolean true literal is `True` (capital T only). Clear single answer.\n\n**Item 7:** n+1 adds one to n. Clear single answer.\n\n```json\n{\"reviews\":[\n  {\"index\":0,\"valid\":true,\"answer\":\"4\",\"difficulty\":1,\"explanation\":\"2+2=4 by basic arithmetic. The three distractors are distinct wrong integers.\",\"choiceExplanations\":{\"4\":\"Correct sum of 2 and 2.\",\"5\":\"One more than the correct answer.\",\"6\":\"Two more than the correct answer.\",\"7\":\"Three more than the correct answer.\"}},\n  {\"index\":1,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"5 and 5.0 are numerically identical proposed answers, making two distractors duplicates of each other.\",\"choiceExplanations\":{\"4\":\"Correct answer but item is rejected.\",\"5\":\"Numerically identical to 5.0, creating a duplicate distractor.\",\"5.0\":\"Numerically identical to 5, creating a duplicate distractor.\",\"6\":\"Distinct wrong answer.\"}},\n  {\"index\":2,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"'Three' and 'The number three' express the same proposed answer, making two distractors duplicates.\",\"choiceExplanations\":{\"Two\":\"Correct answer but item is rejected.\",\"Three\":\"Same value as 'The number three', a duplicate distractor.\",\"The number three\":\"Same value as 'Three', a duplicate distractor.\",\"Four\":\"Distinct wrong answer.\"}},\n  {\"index\":3,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"0.5 and 1/2 are numerically equal representations of one half, giving two correct answers.\",\"choiceExplanations\":{\"0.5\":\"Correct decimal form of one half — but so is 1/2.\",\"1/2\":\"Correct fractional form of one half — but so is 0.5.\",\"2\":\"The reciprocal of one half, not one half.\",\"3\":\"Unrelated wrong number.\"}},\n  {\"index\":4,\"valid\":false,\"answer\":\"\",\"difficulty\":2,\"explanation\":\"The stem establishes that every valid report has both a date AND a signature, making both A and B necessarily true simultaneously.\",\"choiceExplanations\":{\"It has a date.\":\"Necessarily true per the stem — but so is the signature choice.\",\"It has a signature.\":\"Necessarily true per the stem — but so is the date choice.\",\"It has a photograph.\":\"Not stated as a requirement.\",\"It has a serial number.\":\"Not stated as a requirement.\"}},\n  {\"index\":5,\"valid\":false,\"answer\":\"\",\"difficulty\":1,\"explanation\":\"2+2=4, which does not appear among the choices, leaving zero valid answers.\",\"choiceExplanations\":{\"1\":\"Incorrect.\",\"2\":\"Incorrect.\",\"3\":\"Incorrect.\",\"5\":\"Incorrect; 2+2=4, not 5.\"}},\n  {\"index\":6,\"valid\":true,\"answer\":\"True\",\"difficulty\":1,\"explanation\":\"Python's Boolean true literal is exactly 'True' — case-sensitive, capital T only.\",\"choiceExplanations\":{\"True\":\"The correct Python Boolean literal for true.\",\"true\":\"Lowercase; not a Python keyword — raises NameError unless defined.\",\"TRUE\":\"All-caps; not a Python keyword — raises NameError unless defined.\",\"False\":\"The Python Boolean literal for false, the opposite value.\"}},\n  {\"index\":7,\"valid\":true,\"answer\":\"n + 1\",\"difficulty\":1,\"explanation\":\"Adding 1 to n requires the + operator with operand 1; the other operations do not increase n by 1.\",\"choiceExplanations\":{\"n + 1\":\"Correctly adds one to n.\",\"n - 1\":\"Subtracts one from n.\",\"n * 1\":\"Multiplies n by 1, leaving n unchanged.\",\"n / 1\":\"Divides n by 1, leaving n unchanged (and converts to float in Python 3).\"}}\n]}\n```",
+      "score": {
+        "strict_parse": false,
+        "parse_error_type": "ProviderError",
+        "parse_error": "Provider response was not a complete JSON object.",
+        "current_parser_accepted_case_ids": [],
+        "current_parser_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "invalid_json": 8
+            }
+          }
+        }
+      }
+    },
+    {
+      "call_index": 3,
+      "arm": "current_core",
+      "request_sha256": "8f2a4d2e8f9e944f7b2559abe9c98949553259edb57aeacd463774cffc2ab018",
+      "dispatch_attempted": true,
+      "elapsed_seconds": 16.088,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 1146,
+        "outputTokens": 1555,
+        "totalTokens": 2701,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "raw": "I'll audit each item carefully.\n\n**Item 0**: 2+2=4. One correct answer. ✓\n\n**Item 1**: 2+2=4. But 4 is not among the choices. Choices are 4, 5, 5.0, 6. Wait — \"4\" IS the first choice. Yes, 4 is there. One correct answer. ✓\n\n**Item 2**: \"Exactly two\" — choices are \"Two\", \"Three\", \"The number three\", \"Four\". \"Two\" denotes the number two. One correct answer. ✓\n\n**Item 3**: \"One half expressed as a number\" — both 0.5 and 1/2 equal one half. Two valid answers. Defective.\n\n**Item 4**: \"Every valid report has a date AND a signature.\" Both \"It has a date\" and \"It has a signature\" must be true. Two correct answers. Defective.\n\n**Item 5**: 2+2=4. Not among choices (1,2,3,5). Zero correct answers. Defective.\n\n**Item 6**: Python Boolean true value is `True`. Only one correct answer. ✓\n\n**Item 7**: \"Adds one to n\" — n+1 is the only expression that adds 1. ✓\n\n```json\n{\n  \"reviews\": [\n    {\n      \"index\": 0,\n      \"valid\": true,\n      \"answer\": \"4\",\n      \"difficulty\": 1,\n      \"explanation\": \"Basic arithmetic: 2+2=4. The remaining choices are all greater than 4.\",\n      \"choiceExplanations\": {\n        \"4\": \"Correct sum of 2 and 2.\",\n        \"5\": \"One more than the correct sum.\",\n        \"6\": \"Two more than the correct sum.\",\n        \"7\": \"Three more than the correct sum.\"\n      }\n    },\n    {\n      \"index\": 1,\n      \"valid\": true,\n      \"answer\": \"4\",\n      \"difficulty\": 1,\n      \"explanation\": \"2+2=4. The distractor 5.0 is a float representation of 5, not 4, so it does not introduce ambiguity.\",\n      \"choiceExplanations\": {\n        \"4\": \"Correct integer sum of 2 and 2.\",\n        \"5\": \"Incorrect; one greater than the true sum.\",\n        \"5.0\": \"Incorrect; float form of 5, still not equal to 4.\",\n        \"6\": \"Incorrect; two greater than the true sum.\"\n      }\n    },\n    {\n      \"index\": 2,\n      \"valid\": true,\n      \"answer\": \"Two\",\n      \"difficulty\": 2,\n      \"explanation\": \"The fictional rule specifies exactly the number two; only 'Two' names that number.\",\n      \"choiceExplanations\": {\n        \"Two\": \"Names the number two, satisfying the fictional rule exactly.\",\n        \"Three\": \"Names the number three, not two.\",\n        \"The number three\": \"A verbose label for three, still not two.\",\n        \"Four\": \"Names the number four, not two.\"\n      }\n    },\n    {\n      \"index\": 3,\n      \"valid\": false,\n      \"answer\": \"\",\n      \"difficulty\": 2,\n      \"explanation\": \"Both 0.5 and 1/2 are valid numerical expressions of one half, giving two correct answers.\",\n      \"choiceExplanations\": {\n        \"0.5\": \"Correct decimal representation of one half.\",\n        \"1/2\": \"Correct fractional representation of one half; a second valid answer makes the item defective.\",\n        \"2\": \"The reciprocal of one half, not one half.\",\n        \"3\": \"Unrelated to one half.\"\n      }\n    },\n    {\n      \"index\": 4,\n      \"valid\": false,\n      \"answer\": \"\",\n      \"difficulty\": 2,\n      \"explanation\": \"The premise states every valid report has BOTH a date AND a signature, so both choices A and B are necessarily true, yielding two correct answers.\",\n      \"choiceExplanations\": {\n        \"It has a date.\": \"Directly entailed by the premise; a correct answer.\",\n        \"It has a signature.\": \"Also directly entailed by the premise; a second correct answer makes the item defective.\",\n        \"It has a photograph.\": \"Not mentioned in the premise; cannot be inferred.\",\n        \"It has a serial number.\": \"Not mentioned in the premise; cannot be inferred.\"\n      }\n    },\n    {\n      \"index\": 5,\n      \"valid\": false,\n      \"answer\": \"\",\n      \"difficulty\": 1,\n      \"explanation\": \"2+2=4, but 4 does not appear among the choices, leaving zero correct answers.\",\n      \"choiceExplanations\": {\n        \"1\": \"Incorrect; far below the true sum.\",\n        \"2\": \"Incorrect; equals one addend, not their sum.\",\n        \"3\": \"Incorrect; one less than the true sum.\",\n        \"5\": \"Incorrect; one more than the true sum.\"\n      }\n    },\n    {\n      \"index\": 6,\n      \"valid\": true,\n      \"answer\": \"True\",\n      \"difficulty\": 1,\n      \"explanation\": \"Python is case-sensitive; the Boolean true literal is spelled 'True' with an initial capital.\",\n      \"choiceExplanations\": {\n        \"True\": \"The correct Python Boolean literal for true.\",\n        \"true\": \"Lowercase; raises a NameError in Python unless separately defined.\",\n        \"TRUE\": \"All-caps; also raises a NameError in Python.\",\n        \"False\": \"The Python Boolean literal for false, the opposite value.\"\n      }\n    },\n    {\n      \"index\": 7,\n      \"valid\": true,\n      \"answer\": \"n + 1\",\n      \"difficulty\": 1,\n      \"explanation\": \"Adding one to n is expressed as n+1; the other operations subtract, multiply by, or divide by 1.\",\n      \"choiceExplanations\": {\n        \"n + 1\": \"Correctly adds 1 to n.\",\n        \"n - 1\": \"Subtracts 1 from n, not adds.\",\n        \"n * 1\": \"Multiplies n by 1, leaving n unchanged.\",\n        \"n / 1\": \"Divides n by 1, leaving n unchanged (and returning a float in Python 3).\"\n      }\n    }\n  ]\n}\n```",
+      "score": {
+        "strict_parse": false,
+        "parse_error_type": "ProviderError",
+        "parse_error": "Provider response was not a complete JSON object.",
+        "current_parser_accepted_case_ids": [],
+        "current_parser_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "invalid_json": 8
+            }
+          }
+        }
+      }
+    }
+  ],
+  "completed_at": "2026-09-22T03:31:38.433421+00:00"
+}
