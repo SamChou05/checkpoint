@@ -1,0 +1,54 @@
+{
+  "plan_sha256": "1c31697dd30798519a5dd788a2d485fbc6213ea547e088789bc9958594bf1098",
+  "capture_sha256": "c49e6707e44735c0211083816b13a83321ceedc4a5ebd704a4cdacf4d31206a3",
+  "provider_calls_in_replay": 0,
+  "checks": [
+    {
+      "call_index": 0,
+      "exact_request": true,
+      "provider_or_stop_failure_preserved": true
+    }
+  ],
+  "structurally_qualified_on_two_batches": false,
+  "structural": {
+    "planned_calls": 2,
+    "attempted_calls": 1,
+    "valid_calls": 0,
+    "failed_calls": 1,
+    "unattempted_calls": 1,
+    "identity_denominator": 10,
+    "trusted_identities": 0,
+    "choice_denominator": 40,
+    "choice_slots": 0,
+    "pair_denominator": 60,
+    "pair_slots": 0,
+    "all_exact_bindings_and_decoded_content": true,
+    "all_end_turn_within75s": false,
+    "all_sources_and_requests_unchanged": true
+  },
+  "semantic": {
+    "item_denominator": 10,
+    "scored_items": 0,
+    "all_gold_labels_and_veto_agree": 0,
+    "choice_judgments_correct": 0,
+    "choice_denominator": 40,
+    "pair_relations_correct": 0,
+    "pair_denominator": 60,
+    "eligible_gold_denominator": 4,
+    "eligible_retained": 0,
+    "defective_gold_denominator": 6,
+    "defective_excluded": 0,
+    "uncertain_choices": 0,
+    "uncertain_pairs": 0,
+    "all_reasons_require_independent_audit": true,
+    "these_scores_do_not_change_structural_qualification": true
+  },
+  "input_tokens_known": 0,
+  "output_tokens_known": 0,
+  "unknown_usage_calls": 1,
+  "total_elapsed_seconds": 0.504,
+  "maximum_elapsed_seconds": 0.504,
+  "reasoning_blocks_omitted": 0,
+  "semantic_rows": [],
+  "independent_audit_sha256": "414aadcfb2a4a28a36b340005172556878cb9bebc137e3b5c0283c0748df2293"
+}

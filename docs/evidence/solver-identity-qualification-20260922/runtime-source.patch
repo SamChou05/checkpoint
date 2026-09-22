@@ -1,0 +1,114 @@
+diff --git c/backend/bedrock-question-service/native_output_contracts.py w/backend/bedrock-question-service/native_output_contracts.py
+index a9fda58..3156dd7 100644
+--- c/backend/bedrock-question-service/native_output_contracts.py
++++ w/backend/bedrock-question-service/native_output_contracts.py
+@@ -48 +48,17 @@ class ReviewerSlotContract:
+-NativeContract = Contract | ReviewerSlotContract
++@dataclass(frozen=True)
++class SolverSlotContract:
++    """Bind solver identities to the actual validated, answer-blind batch."""
++
++    count: int
++
++    def __post_init__(self) -> None:
++        if type(self.count) is not int or not 1 <= self.count <= MAX_REVIEW_BATCH_COUNT:
++            raise ServiceConfigurationError("Native solver count must be an integer from 1 through 40.")
++
++    @property
++    def name(self) -> str:
++        return f"complete_choice_solver_v4_n{self.count}"
++
++
++_COUNT_BOUND_CONTRACTS = (ReviewerSlotContract, SolverSlotContract)
++NativeContract = Contract | ReviewerSlotContract | SolverSlotContract
+@@ -186,0 +203,7 @@ def _contract_schema(contract: NativeContract) -> dict[str, Any]:
++    if isinstance(contract, SolverSlotContract):
++        row = copy.deepcopy(_SCHEMAS["complete_choice_solver_v3"]["properties"]["solutions"]["items"])
++        del row["properties"]["index"]
++        row["required"].remove("index")
++        return _object({"solutions": _object({
++            str(index): copy.deepcopy(row) for index in range(contract.count)
++        })})
+@@ -202 +225 @@ def native_output_config(contract: NativeContract) -> dict[str, Any]:
+-    schema = json.dumps(_contract_schema(contract), sort_keys=not isinstance(contract, ReviewerSlotContract),
++    schema = json.dumps(_contract_schema(contract), sort_keys=not isinstance(contract, _COUNT_BOUND_CONTRACTS),
+@@ -221 +244 @@ def native_output_config(contract: NativeContract) -> dict[str, Any]:
+-        "name": contract.name if isinstance(contract, ReviewerSlotContract) else contract, "schema": schema,
++        "name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract, "schema": schema,
+@@ -228,2 +251,3 @@ def contract_metadata(contract: NativeContract) -> dict[str, str]:
+-    return {"name": contract.name if isinstance(contract, ReviewerSlotContract) else contract,
+-            "version": "3" if isinstance(contract, ReviewerSlotContract) else contract.rsplit("_v", 1)[1],
++    return {"name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract,
++            "version": ("4" if isinstance(contract, SolverSlotContract) else "3"
++                        if isinstance(contract, ReviewerSlotContract) else contract.rsplit("_v", 1)[1]),
+@@ -241,0 +266,12 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
++    if isinstance(contract, SolverSlotContract):
++        keys = ", ".join(json.dumps(str(index)) for index in range(contract.count))
++        return native_prompt(system_prompt, "complete_choice_solver_v3") + "\n\n" + (
++            f"NATIVE SOLVER IDENTITY OVERRIDE ({contract.name}): Return solutions as an object, not an array. "
++            f"It must contain exactly these required keys: {keys}. Each key identifies the "
++            "supplied item with that integer index. Return one solution value at every key; "
++            "never add an unknown key or an index field inside a value. This replaces earlier "
++            "output examples and index-field instructions. Keep exactly the existing four "
++            "choices slots and six choicePairs slots, with their unchanged reason, judgment "
++            "and relation fields. Do not alter the choice bindings, omit rejected or uncertain "
++            "items, or infer a preferred answer."
++        )
+@@ -307,0 +344,9 @@ def adapt_native_response(raw: str, contract: NativeContract) -> str:
++    if isinstance(contract, SolverSlotContract):
++        # Only required trusted keys can become indexes. Validate the complete
++        # map before adapting; malformed or unbound records are never salvaged.
++        restored = {"solutions": [
++            {"index": index, **payload["solutions"][str(index)]}
++            for index in range(contract.count)
++        ]}
++        return adapt_native_response(json.dumps(restored, ensure_ascii=False, allow_nan=False),
++                                     "complete_choice_solver_v3")
+diff --git c/backend/bedrock-question-service/question_generation.py w/backend/bedrock-question-service/question_generation.py
+index b9a5d11..12d6c72 100644
+--- c/backend/bedrock-question-service/question_generation.py
++++ w/backend/bedrock-question-service/question_generation.py
+@@ -15,0 +16 @@ from native_output_contracts import (
++    SolverSlotContract,
+@@ -275,7 +276,2 @@ def _generate_sanitized_questions(
+-            generated_questions = verify_questions(
+-                candidates,
+-                current_request,
+-                review_stage,
+-                review_with_count=review_stage if choice_slots else None,
+-                request_metrics=request_metrics,
+-                solve=lambda system, prompt: _generate_with_bedrock(
++            def solve_stage(system: str, prompt: str, count: int | None = None) -> str:
++                return _generate_with_bedrock(
+@@ -289,2 +285,11 @@ def _generate_sanitized_questions(
+-                    contract="complete_choice_solver_v3" if choice_slots else "complete_choice_solver_v1",
+-                ),
++                    contract=SolverSlotContract(count) if count is not None else "complete_choice_solver_v1",
++                )
++
++            generated_questions = verify_questions(
++                candidates,
++                current_request,
++                review_stage,
++                review_with_count=review_stage if choice_slots else None,
++                request_metrics=request_metrics,
++                solve=solve_stage,
++                solve_with_count=solve_stage if choice_slots else None,
+diff --git c/backend/bedrock-question-service/question_verification.py w/backend/bedrock-question-service/question_verification.py
+index ee87927..09e0874 100644
+--- c/backend/bedrock-question-service/question_verification.py
++++ w/backend/bedrock-question-service/question_verification.py
+@@ -203,0 +204 @@ def verify_questions(
++    solve_with_count: Callable[[str, str, int], str] | None = None,
+@@ -226,0 +228,2 @@ def verify_questions(
++    if solve_with_count is not None and (not choice_slots or solve is None):
++        raise ValueError("Count-bound solving requires the existing fixed-choice solver route.")
+@@ -286 +289,7 @@ def verify_questions(
+-            solution_raw = solve(solution_system, solution_prompt)
++            # This cardinality comes from the validated, dense solver input,
++            # before any solver judgments filter it. Never use targetCount or
++            # recover identity from learner text or a model-authored response.
++            solution_raw = (
++                solve_with_count(solution_system, solution_prompt, len(items))
++                if solve_with_count is not None else solve(solution_system, solution_prompt)
++            )

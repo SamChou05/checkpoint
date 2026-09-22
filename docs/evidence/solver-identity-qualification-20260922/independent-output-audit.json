@@ -1,0 +1,299 @@
+{
+  "audit_kind": "Independent frozen-request, provenance, and complete-denominator audit; no provider calls",
+  "plan_sha256": "1c31697dd30798519a5dd788a2d485fbc6213ea547e088789bc9958594bf1098",
+  "capture_sha256": "c49e6707e44735c0211083816b13a83321ceedc4a5ebd704a4cdacf4d31206a3",
+  "source_pin_checks": [
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/complete_question_solution.py",
+      "sha256": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/execution_evidence.py",
+      "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/generation_diagnostics.py",
+      "sha256": "944a3020cb3b173589aee066ac39066564a5c943c972bdcfc0115cdcb2e33f30",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/lambda_function.py",
+      "sha256": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/native_output_contracts.py",
+      "sha256": "76e13f729ddbff43c380d3abbdedd0c8ae16bfcb77d187865f7ab2191d6f2089",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_bank.py",
+      "sha256": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_bank_common.py",
+      "sha256": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_bank_inventory.py",
+      "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_bank_store.py",
+      "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_bank_worker.py",
+      "sha256": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_difficulty.py",
+      "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_generation.py",
+      "sha256": "f4551f11c1ab528820463cd536d6255ec529fe92248655732b35d0b763438d5e",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_quality.py",
+      "sha256": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_rule_construction.py",
+      "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_teaching.py",
+      "sha256": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/question_verification.py",
+      "sha256": "ed6631b0eb2e8d3eb4d3a02ee4d54b9b57c7d178bbcb7f85af4d92451280a86f",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/request_contract.py",
+      "sha256": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/service_errors.py",
+      "sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/skill_maps.py",
+      "sha256": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/smoke_test_backend.py",
+      "sha256": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/source_acquisition.py",
+      "sha256": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/verification_policy.py",
+      "sha256": "a1cac6b519ebcc4f3f9265a86966d90c8e990a34c4892c6ecd7f8d92f5c8345a",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-identity-integration/backend/bedrock-question-service/web_source_search.py",
+      "sha256": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+      "matches": true
+    },
+    {
+      "kind": "new_evidence",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-identity-qualification-20260922/PLAN.md",
+      "sha256": "85ae4ae0ebd3973f54beaa0806f6c950a2d93a3741d3745fb778d71c27c1dd3a",
+      "matches": true
+    },
+    {
+      "kind": "new_evidence",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-identity-qualification-20260922/solver_identity_probe.py",
+      "sha256": "2f451f0b745cf09619b9378c661907c84fe3c6b774d124aa37547a3b5cb211cb",
+      "matches": true
+    },
+    {
+      "kind": "new_evidence",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-identity-qualification-20260922/test_solver_identity_probe.py",
+      "sha256": "14444e93a1862df824a1ecdfbffe6c2124a68141c0bcc5e811f955524e573c52",
+      "matches": true
+    },
+    {
+      "kind": "historical",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/choice-quality-release-20260922/adaptive-plan.json",
+      "sha256": "bb44d41a7f5414b741343c0f3de3f1e80c437062c7c9b83b26684e73297de946",
+      "matches": true
+    },
+    {
+      "kind": "historical",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/choice-quality-release-20260922/adaptive-capture.json",
+      "sha256": "52b04a1adb4aabee1d5958a3a09558af151b50bf6e3e0e283351d4ba2389b3d4",
+      "matches": true
+    },
+    {
+      "kind": "historical",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/choice-quality-release-20260922/controls-draft.json",
+      "sha256": "d6263949701e1486036aa16a09c7348f478d180349a327c08fcd973485d4e305",
+      "matches": true
+    },
+    {
+      "kind": "historical",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/choice-quality-release-20260922/independent-gold-review.json",
+      "sha256": "5a91b852f948b96ca493fbcbc14a0a6f0f4a98dea081bd13ef5010ee1b440cfe",
+      "matches": true
+    }
+  ],
+  "request_checks": [
+    {
+      "call_index": 0,
+      "case_ids": [
+        "tank_irrelevant_color",
+        "meters_to_kilometers",
+        "two_switches_multiple",
+        "python_string_case",
+        "integer_solution_absent"
+      ],
+      "request_sha256": "7e89c7591eda8d3c595d4fbf359d024bbb4a3a281919f0b7b3ff93d0f7438ef8",
+      "historical_request_sha256": "ac9e71d111304c70a9fb76e13e59e2eaf891fc816d0251491b524128eca351ce",
+      "historical_delta_fields": [
+        "system",
+        "outputConfig"
+      ],
+      "semantic_system_prompt_unchanged": true,
+      "user_message_byte_identical": true,
+      "items_and_gold_unchanged": true,
+      "input_keys_and_pair_endpoints_exact": true,
+      "output_row_schema_unchanged_except_index_removed": true
+    },
+    {
+      "call_index": 1,
+      "case_ids": [
+        "dispatch_paraphrase",
+        "club_age_boundary",
+        "red_ball_multiple_forms",
+        "map_scale_distance",
+        "pencil_key_mismatch"
+      ],
+      "request_sha256": "9fc72ed30d120af2a7cf78d0388638db21dd89db302e1c15ef4fc7d7b0dca97d",
+      "historical_request_sha256": "bbf3815ff0701a56927a1ba23233ae59d678835ba8b3500420c1930147258148",
+      "historical_delta_fields": [
+        "system",
+        "outputConfig"
+      ],
+      "semantic_system_prompt_unchanged": true,
+      "user_message_byte_identical": true,
+      "items_and_gold_unchanged": true,
+      "input_keys_and_pair_endpoints_exact": true,
+      "output_row_schema_unchanged_except_index_removed": true
+    }
+  ],
+  "captured_request_exactly_matches_frozen_job": true,
+  "all_10_control_objects_equal_original_reviewed_gold": true,
+  "native_contract": {
+    "name": "complete_choice_solver_v4_n5",
+    "version": "4",
+    "sha256": "ffbff1a1e431ab27e5c33b39c9258a8cdd27e47c287529b674249b63e7890995"
+  },
+  "observed_calls": [
+    {
+      "call_index": 0,
+      "outcome": "provider_failure_before_output",
+      "provider_error_type": "ValidationException",
+      "elapsed_seconds": 0.504,
+      "model_output_observed": false,
+      "usage": null,
+      "usage_status": "unavailable, not zero",
+      "error_detail_limit": "Frozen runner stores the exception type only. This evidence cannot identify the rejected request field or exact provider cause."
+    }
+  ],
+  "denominators": {
+    "calls": {
+      "planned": 2,
+      "attempted": 1,
+      "provider_failed": 1,
+      "unattempted": 1,
+      "structurally_successful": 0
+    },
+    "items": {
+      "planned": 10,
+      "inside_failed_request": 5,
+      "unattempted": 5,
+      "model_records_observed": 0,
+      "semantic_assessed": 0
+    },
+    "choice_labels": {
+      "planned": 40,
+      "not_produced_after_provider_failure": 20,
+      "unattempted": 20,
+      "observed": 0,
+      "assessed": 0
+    },
+    "pair_labels": {
+      "planned": 60,
+      "not_produced_after_provider_failure": 30,
+      "unattempted": 30,
+      "observed": 0,
+      "assessed": 0
+    },
+    "reason_strings": {
+      "planned": 100,
+      "not_produced_after_provider_failure": 50,
+      "unattempted": 50,
+      "observed": 0,
+      "assessed": 0
+    },
+    "eligible_or_admitted_outputs": 0
+  },
+  "runtime_stop_policy_review": {
+    "runner_source_pinned": true,
+    "exactly_one_recorded_dispatch": true,
+    "sdk_total_max_attempts": 1,
+    "no_application_retry_path": true,
+    "stops_and_skips_second_job_after_provider_exception": true,
+    "no_provider_calls_by_auditor": true
+  },
+  "structural_qualification_passed": false,
+  "semantic_result": "Not assessed: no model labels or reasons were returned. Zero assessed is not evidence of model semantic inaccuracy or correctness.",
+  "conclusion": "Failed provider transport qualification; no admission, semantic credit, promotion, or determinism claim. All planned denominators and historical gold remain preserved."
+}
