@@ -1,0 +1,526 @@
+{
+  "phase": "blind lock before raw capture, unblind mapping, authored keys or explanations",
+  "worksheet_sha256": "dba0ac4c80dbb6aac54a330f1c099a023f46251615f746f392a7534495ca444d",
+  "requested_slots": 20,
+  "readable_items": 20,
+  "usable_from_blind_fields": 8,
+  "pairs_assessed": 120,
+  "rows": [
+    {
+      "id": "0c7cb665970968126f1103117c412577ddf975f6e908f7b42dd527af381fda3d",
+      "literal_task_present": true,
+      "task_family": "agreement",
+      "difficulty": 2,
+      "supported_letters": [
+        "B",
+        "D"
+      ],
+      "supported_choice_texts": [
+        "The lists of required materials, including textbooks, lab goggles, and a scientific calculator, are available at the bookstore.",
+        "The list of required materials, including textbooks, lab goggles, and a scientific calculator, is available at the bookstore."
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Both plural lists/are and singular list/is correct the agreement error. The stem permits a revision and does not require preserving the subject number or replacing only the verb. They are different propositions, not equivalent options.",
+      "uncertainty": []
+    },
+    {
+      "id": "0cee55f9c6227916e43da2007acad2941d8bb6499de2a0ef7cc97154eeb1376c",
+      "literal_task_present": true,
+      "task_family": "agreement",
+      "difficulty": 2,
+      "supported_letters": [
+        "B",
+        "D"
+      ],
+      "supported_choice_texts": [
+        "The lists of required materials, including scissors, glue, and colored paper, are on the teacher's desk.",
+        "The list of required materials, including scissors, glue, and colored paper, is on the teacher's desk."
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Both lists/are and list/is agree. No rule in the visible revision task prevents changing the subject number.",
+      "uncertainty": []
+    },
+    {
+      "id": "0dd9d174b3cc308a9368b0e571e35d858f60a134150c2bb3833a6b196243a617",
+      "literal_task_present": true,
+      "task_family": "agreement",
+      "difficulty": 2,
+      "supported_letters": [
+        "A"
+      ],
+      "supported_choice_texts": [
+        "Neither the coach nor the players were satisfied with the referee's decision."
+      ],
+      "one_defensible_answer_established": true,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": true,
+      "proof": "Plural nearer subject players takes were. Has is singular; the coaches/player version has singular nearer player with were; neither/or is not the stated standard correlative form.",
+      "uncertainty": []
+    },
+    {
+      "id": "19e6eeaac7101f1949ccfcb3c24bd5d20d406dc03e3554e88d0eceed773616d1",
+      "literal_task_present": true,
+      "task_family": "reference",
+      "difficulty": 2,
+      "supported_letters": [
+        "C"
+      ],
+      "supported_choice_texts": [
+        "Maya told Priya that Maya's presentation needed more data."
+      ],
+      "one_defensible_answer_established": true,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": true,
+      "proof": "Only the explicit name Maya fixes the owner. Her own can still refer to Maya or Priya; she remains ambiguous. Their can refer to a shared group or to an individual under singular they, so it does not unequivocally identify one owner. No original intended owner needs to be inferred to recognize that the explicit-name revision removes this ambiguity.",
+      "uncertainty": []
+    },
+    {
+      "id": "250450a841421fc829c11ebe48086cfcfbcfce7ef2c3e953acf0e14694eb3b7f",
+      "literal_task_present": true,
+      "task_family": "tense",
+      "difficulty": 2,
+      "supported_letters": [
+        "C"
+      ],
+      "supported_choice_texts": [
+        "finished"
+      ],
+      "one_defensible_answer_established": true,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": true,
+      "proof": "The stem explicitly requires simple past for a completed event: finished. The other choices are present singular, present perfect or future.",
+      "uncertainty": []
+    },
+    {
+      "id": "36f8338da4a6ad82fda276309b533bac44d1eed917a65b3ccef625844a8959e4",
+      "literal_task_present": true,
+      "task_family": "agreement",
+      "difficulty": 2,
+      "supported_letters": [
+        "A"
+      ],
+      "supported_choice_texts": [
+        "is"
+      ],
+      "one_defensible_answer_established": true,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": true,
+      "proof": "The subject head list is singular, so is agrees. Are/were are plural and be is not the finite indicative form in this sentence. Offering the unchanged correct form is consistent with the requested replacement.",
+      "uncertainty": []
+    },
+    {
+      "id": "42d658302e933fb647ef745aa08b4ad424ac950b0b880b064c2dcf5439cbfdae",
+      "literal_task_present": true,
+      "task_family": "agreement",
+      "difficulty": 2,
+      "supported_letters": [
+        "B"
+      ],
+      "supported_choice_texts": [
+        "is"
+      ],
+      "one_defensible_answer_established": true,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": true,
+      "proof": "The singular head list takes is, regardless of the plural materials inside the modifying phrase. The alternatives do not supply the required finite singular form.",
+      "uncertainty": []
+    },
+    {
+      "id": "4477cf357ab217e84258a732686f66ffbf2d9dadc76ba30e2007d112a569f78d",
+      "literal_task_present": true,
+      "task_family": "reference",
+      "difficulty": 2,
+      "supported_letters": [
+        "A",
+        "D"
+      ],
+      "supported_choice_texts": [
+        "Elena",
+        "Maria"
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Both Elena and Maria identify a specific person and remove the ambiguous she. The stem does not state which person must remain the intended referent. Multiple answers exist even without considering the role-noun alternatives.",
+      "uncertainty": []
+    },
+    {
+      "id": "4eeb9997cbd23460292d57c2eb1aa18300a3e1482583bb2088cce48e04d954f4",
+      "literal_task_present": true,
+      "task_family": "agreement",
+      "difficulty": 2,
+      "supported_letters": [
+        "B"
+      ],
+      "supported_choice_texts": [
+        "have"
+      ],
+      "one_defensible_answer_established": true,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": true,
+      "proof": "The nearer subject players is plural, so have decided is the agreeing present-perfect form. Has/is are singular; are having decided is not the corresponding grammatical finite construction.",
+      "uncertainty": []
+    },
+    {
+      "id": "502d64e3ae4fc36decaa11c19cb2d2b56bd13a0d9440055ea8685dc9b9ea7645",
+      "literal_task_present": true,
+      "task_family": "tense",
+      "difficulty": null,
+      "supported_letters": [
+        "B"
+      ],
+      "supported_choice_texts": [
+        "By the time the meeting starts, the committee will have already voted on the proposal."
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Will have already voted is the conventional future-completion correction. However, the unrestricted revision task also changes the time clause in an offered past-framing answer and gives no explicit tense/aspect preservation instruction. The acceptability of the offered simple-past already version in formal written English is uncertain; do not silently enforce a future-perfect-only task.",
+      "uncertainty": [
+        "D: past framing; A/C also change aspect or habitual framing and need interpretation."
+      ]
+    },
+    {
+      "id": "528a697db76503c4ad3b838c9da5c961b11b3cb89a052b9476e1ed0cd18be728",
+      "literal_task_present": true,
+      "task_family": "reference",
+      "difficulty": 2,
+      "supported_letters": [
+        "D"
+      ],
+      "supported_choice_texts": [
+        "Maria told Elena that Maria's presentation needed more data."
+      ],
+      "one_defensible_answer_established": true,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "equivalent",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "The explicit name Maria resolves ownership. Independently, choices B and C differ only by optional complementizer that and express the same ambiguous she/her revision, so two wrong alternatives duplicate one another.",
+      "uncertainty": []
+    },
+    {
+      "id": "70985fb8a69f66abd47dd795f645186abb5f4c06f3cfdd55cd2ea41545541c1a",
+      "literal_task_present": true,
+      "task_family": "tense",
+      "difficulty": null,
+      "supported_letters": [
+        "A"
+      ],
+      "supported_choice_texts": [
+        "had finished"
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Had finished explicitly marks prior completion. Finished with by the time can also receive a completed-before-past-event reading when chronology is clear. The question describes temporal meaning rather than explicitly requesting the past-perfect form; past-perfect versus simple-past necessity remains uncertain. No universal past-perfect-only rule is assumed.",
+      "uncertainty": [
+        "C: finished may also fit the stated completed-before relationship."
+      ]
+    },
+    {
+      "id": "80a85f5ff8570aba7ab4fae9c7a526a99b764ef1d31006bc83b5db7f613144f0",
+      "literal_task_present": true,
+      "task_family": "agreement",
+      "difficulty": 2,
+      "supported_letters": [
+        "B"
+      ],
+      "supported_choice_texts": [
+        "has"
+      ],
+      "one_defensible_answer_established": true,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": true,
+      "proof": "Each is singular; has submitted agrees. Have is plural and were/are submitted does not agree with the singular subject or express the same completed submission.",
+      "uncertainty": []
+    },
+    {
+      "id": "826119e9b65e9db06e58a91e2e5e0d1c34e22233f6b50b38006304e8fe38a990",
+      "literal_task_present": true,
+      "task_family": "tense",
+      "difficulty": null,
+      "supported_letters": [
+        "D"
+      ],
+      "supported_choice_texts": [
+        "By the time the meeting starts, the committee will have already voted on the proposal."
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Will have already voted is the expected future-perfect correction. The stem asks for a revision without specifying completed-future meaning or permitted span. Other offered present/ongoing versions change aspect rather than simply guaranteeing the original completion; uniqueness cannot be established without interpreting an unstated intended revision constraint.",
+      "uncertainty": [
+        "A/C: habitual or ongoing readings versus intended future completion."
+      ]
+    },
+    {
+      "id": "b5775fd1e7ca05174f8e93bde07ce3abbdf92a35fe37b9fe8a7098e0fe7528a6",
+      "literal_task_present": true,
+      "task_family": "reference",
+      "difficulty": 2,
+      "supported_letters": [
+        "B",
+        "D"
+      ],
+      "supported_choice_texts": [
+        "the intern's",
+        "the manager's"
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Both the interns computer and the managers computer make ownership explicit. Nothing in the prompt selects one intended owner.",
+      "uncertainty": []
+    },
+    {
+      "id": "bf03cd5207ad97df05a74c21fe868f4ef9d273b7370309ed33a597b351845773",
+      "literal_task_present": true,
+      "task_family": "reference",
+      "difficulty": 2,
+      "supported_letters": [
+        "A",
+        "C"
+      ],
+      "supported_choice_texts": [
+        "When the manager met with the intern, the former asked several questions about the budget.",
+        "When the manager met with the intern, the manager asked several questions about the budget."
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "equivalent",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Former refers to the first of manager/intern, the manager. A and C therefore identify the same speaker and are equivalent correct revisions. One of them and he himself remain ambiguous.",
+      "uncertainty": []
+    },
+    {
+      "id": "c17c932dde6b8544bb25795d54387784dcb5991a916d15edecb54e8b72e0d37f",
+      "literal_task_present": true,
+      "task_family": "reference",
+      "difficulty": 2,
+      "supported_letters": [
+        "D"
+      ],
+      "supported_choice_texts": [
+        "When the manager spoke to the intern, the manager seemed frustrated."
+      ],
+      "one_defensible_answer_established": true,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": true,
+      "proof": "The explicit manager uniquely identifies who seemed frustrated. The other versions retain ambiguous he and sometimes add another ambiguous pronoun. Different added clauses produce distinct alternative revisions.",
+      "uncertainty": []
+    },
+    {
+      "id": "c5448510f50afc25dbb4e753541ad5fee4d57f0d771476b6d386188764ff8730",
+      "literal_task_present": true,
+      "task_family": "reference",
+      "difficulty": 2,
+      "supported_letters": [
+        "A",
+        "B"
+      ],
+      "supported_choice_texts": [
+        "the coach",
+        "the captain"
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Both the coach and the captain replace they with an explicit person. The task supplies no intended referent; at least those two answers are correct regardless of the other nouns.",
+      "uncertainty": []
+    },
+    {
+      "id": "d1a5f9c17ef0560b3a2ccdae22920567b7a86ec20b650ba8eb41b80e71eebe2a",
+      "literal_task_present": true,
+      "task_family": "agreement",
+      "difficulty": 2,
+      "supported_letters": [
+        "A",
+        "D"
+      ],
+      "supported_choice_texts": [
+        "Neither the coaches nor the player was ready to leave the field after the loss.",
+        "Neither the coach nor the players were ready to leave the field after the loss."
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Both coaches/nor/player/was and coach/nor/players/were follow agreement with the nearer noun. The task does not restrict changing participant number, so both revisions correct agreement.",
+      "uncertainty": []
+    },
+    {
+      "id": "ec883040487e1391ca6f1d4f60cd254517befee80bcf5212790b7a5a9b238dbc",
+      "literal_task_present": true,
+      "task_family": "reference",
+      "difficulty": 2,
+      "supported_letters": [
+        "A",
+        "B"
+      ],
+      "supported_choice_texts": [
+        "the laptop",
+        "the concrete floor"
+      ],
+      "one_defensible_answer_established": false,
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "usable_from_blind_fields": false,
+      "proof": "Both the laptop and the concrete floor are explicit plausible objects that might be undamaged. The stem does not specify which object the pronoun must refer to.",
+      "uncertainty": []
+    }
+  ],
+  "method": "Manual literal-task assessment of each original stem and all offered alternatives. Treatment/call labels remain hidden. A defect may be definite multiple answers/equivalence or separately recorded uncertainty. No implied task is supplied to rescue an item.",
+  "prior_visibility": "Aggregate transport/status/usage only. Another reviewer reported aggregate7 supported, but no item-level results or arm allocation were opened. These judgments were determined independently; root finds8 supported.",
+  "grammar_sources": [
+    {
+      "url": "https://oxico.sk/lg/aj/assets/ukazky/advanced_grammar.pdf",
+      "title": "Cambridge University Press, Martin Hewings, Advanced Grammar in Use, Unit5 (publisher excerpt mirror), page10/PDF13",
+      "use": "The rule allows past simple or perfect in some contexts with clearly established event order; it does not establish that every earlier event requires past perfect. Application to these exact offered sentences remains explicitly uncertain."
+    },
+    {
+      "url": "https://www.oxfordlearnersdictionaries.com/us/definition/english/already",
+      "title": "Oxford Advanced Learners Dictionary: already",
+      "use": "North American simple-past usage with already exists, but the entry qualifies formal written acceptability and recommends past perfect in past context. This supports caution rather than a blanket acceptance of the offered past-framing revision."
+    }
+  ]
+}

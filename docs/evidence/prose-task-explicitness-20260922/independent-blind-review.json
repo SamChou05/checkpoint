@@ -1,0 +1,2005 @@
+{
+  "reviewer": "schema_reuse_review",
+  "review_kind": "independent blinded literal-task and choice assessment",
+  "locked_at_utc": "2026-09-22T14:02:23.299123+00:00",
+  "worksheet_file_sha256": "dba0ac4c80dbb6aac54a330f1c099a023f46251615f746f392a7534495ca444d",
+  "worksheet_declared_capture_digest": "be69731e5a210dc0c3dd6d20808fe4043349094e5037f0a0a8c5ec9014acf3ca",
+  "parent_declared_capture_file_sha256": "332fb1c24d08b32710a2c5ee230991827b876c5e8145104b548e9580c4774bef",
+  "blind_boundary": "Only blind-worksheet.json was opened for this assessment. No capture, unblind mapping, keys, explanations, treatment grouping or root review were opened before this file was written and its hash sent to root. No provider calls or external sources.",
+  "fixed_requested_denominator": 20,
+  "items_assessed": 20,
+  "summary": {
+    "unique_supported_with_distinct_pairs": 7,
+    "other_or_uncertain": 13,
+    "equivalent_pair_items": 2
+  },
+  "interpretation_limits": [
+    "An explicit revision task does not by itself restrict edits to the verb, preserve subject number, fix a pronoun referent, or require a particular tense/aspect. Such restrictions were not inferred.",
+    "Possible additional readings are marked uncertain rather than asserted categorically correct. These are independent language judgments, not an exhaustive grammar parser.",
+    "A pair can be distinct in meaning yet contain two answers satisfying the task; matching validity alone does not make two choices semantically equivalent.",
+    "For the past-sequence items, past perfect is often the canonical instructional answer; possible simple-past or progressive revisions are reported with uncertainty where the literal prompt leaves room. No hidden key was used to resolve that uncertainty."
+  ],
+  "items": [
+    {
+      "id": "0c7cb665970968126f1103117c412577ddf975f6e908f7b42dd527af381fda3d",
+      "raw_stem_sha256": "4c4aa90b88b195cc4e58df73b71045eda6afabe57a1f722e300808168679c09f",
+      "literal_task": "Revise the displayed sentence to correct subject-verb agreement.",
+      "necessary_premises_and_constraints": "No instruction fixes the subject number or limits the edit to the verb. Both plural lists + are and singular list + is agree.",
+      "supported_exact_choice_texts": [
+        "The lists of required materials, including textbooks, lab goggles, and a scientific calculator, are available at the bookstore.",
+        "The list of required materials, including textbooks, lab goggles, and a scientific calculator, is available at the bookstore."
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "The alternatives with singular list + were/have are agreement errors; changing list to lists is an offered grammatical revision, even though it changes number.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "The list of required materials, including textbooks, lab goggles, and a scientific calculator, were available at the bookstore.",
+            "The lists of required materials, including textbooks, lab goggles, and a scientific calculator, are available at the bookstore."
+          ],
+          "relation": "distinct",
+          "proof": "singular list with plural past were; versus plural lists with agreeing are. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "The list of required materials, including textbooks, lab goggles, and a scientific calculator, were available at the bookstore.",
+            "The list of required materials, including textbooks, lab goggles, and a scientific calculator, have been available at the bookstore."
+          ],
+          "relation": "distinct",
+          "proof": "singular list with plural past were; versus singular list with plural have. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "The list of required materials, including textbooks, lab goggles, and a scientific calculator, were available at the bookstore.",
+            "The list of required materials, including textbooks, lab goggles, and a scientific calculator, is available at the bookstore."
+          ],
+          "relation": "distinct",
+          "proof": "singular list with plural past were; versus singular list with agreeing is. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "The lists of required materials, including textbooks, lab goggles, and a scientific calculator, are available at the bookstore.",
+            "The list of required materials, including textbooks, lab goggles, and a scientific calculator, have been available at the bookstore."
+          ],
+          "relation": "distinct",
+          "proof": "plural lists with agreeing are; versus singular list with plural have. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "The lists of required materials, including textbooks, lab goggles, and a scientific calculator, are available at the bookstore.",
+            "The list of required materials, including textbooks, lab goggles, and a scientific calculator, is available at the bookstore."
+          ],
+          "relation": "distinct",
+          "proof": "plural lists with agreeing are; versus singular list with agreeing is. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": true
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "The list of required materials, including textbooks, lab goggles, and a scientific calculator, have been available at the bookstore.",
+            "The list of required materials, including textbooks, lab goggles, and a scientific calculator, is available at the bookstore."
+          ],
+          "relation": "distinct",
+          "proof": "singular list with plural have; versus singular list with agreeing is. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "agreement",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "multiple_supported",
+      "uncertainty": null
+    },
+    {
+      "id": "0cee55f9c6227916e43da2007acad2941d8bb6499de2a0ef7cc97154eeb1376c",
+      "raw_stem_sha256": "261ea2b1ed22bc9a17fbda91dc5c41109458ade71e98763b76e9a06fae77bb25",
+      "literal_task": "Revise the displayed sentence to correct subject-verb agreement.",
+      "necessary_premises_and_constraints": "No instruction requires retaining singular list or changing only are. Both lists + are and list + is satisfy the literal request.",
+      "supported_exact_choice_texts": [
+        "The lists of required materials, including scissors, glue, and colored paper, are on the teacher's desk.",
+        "The list of required materials, including scissors, glue, and colored paper, is on the teacher's desk."
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "The two other choices retain singular list with plural were/have.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "The list of required materials, including scissors, glue, and colored paper, were on the teacher's desk.",
+            "The lists of required materials, including scissors, glue, and colored paper, are on the teacher's desk."
+          ],
+          "relation": "distinct",
+          "proof": "singular list with plural were; versus plural lists with agreeing are. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "The list of required materials, including scissors, glue, and colored paper, were on the teacher's desk.",
+            "The list of required materials, including scissors, glue, and colored paper, have been on the teacher's desk."
+          ],
+          "relation": "distinct",
+          "proof": "singular list with plural were; versus singular list with plural have. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "The list of required materials, including scissors, glue, and colored paper, were on the teacher's desk.",
+            "The list of required materials, including scissors, glue, and colored paper, is on the teacher's desk."
+          ],
+          "relation": "distinct",
+          "proof": "singular list with plural were; versus singular list with agreeing is. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "The lists of required materials, including scissors, glue, and colored paper, are on the teacher's desk.",
+            "The list of required materials, including scissors, glue, and colored paper, have been on the teacher's desk."
+          ],
+          "relation": "distinct",
+          "proof": "plural lists with agreeing are; versus singular list with plural have. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "The lists of required materials, including scissors, glue, and colored paper, are on the teacher's desk.",
+            "The list of required materials, including scissors, glue, and colored paper, is on the teacher's desk."
+          ],
+          "relation": "distinct",
+          "proof": "plural lists with agreeing are; versus singular list with agreeing is. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": true
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "The list of required materials, including scissors, glue, and colored paper, have been on the teacher's desk.",
+            "The list of required materials, including scissors, glue, and colored paper, is on the teacher's desk."
+          ],
+          "relation": "distinct",
+          "proof": "singular list with plural have; versus singular list with agreeing is. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "agreement",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "multiple_supported",
+      "uncertainty": null
+    },
+    {
+      "id": "0dd9d174b3cc308a9368b0e571e35d858f60a134150c2bb3833a6b196243a617",
+      "raw_stem_sha256": "5d30fa480ebb3d28656f9ab546ef15430deab42f41762de3fdb7290e2bc96097",
+      "literal_task": "Correct the agreement error in the supplied neither/nor sentence.",
+      "necessary_premises_and_constraints": "The nearer subject players is plural; the offered grammatical correction uses were.",
+      "supported_exact_choice_texts": [
+        "Neither the coach nor the players were satisfied with the referee's decision."
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "Has been disagrees with players; were disagrees with the nearer singular player in the third option; neither/or breaks the correlating construction.",
+      "unique_supported_answer_confirmed": true,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "Neither the coach nor the players were satisfied with the referee's decision.",
+            "Neither the coach nor the players has been satisfied with the referee's decision."
+          ],
+          "relation": "distinct",
+          "proof": "players agrees with were under neither/nor; versus players disagrees with has been. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "Neither the coach nor the players were satisfied with the referee's decision.",
+            "Neither the coaches nor the player were satisfied with the referee's decision."
+          ],
+          "relation": "distinct",
+          "proof": "players agrees with were under neither/nor; versus singular player disagrees with were. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "Neither the coach nor the players were satisfied with the referee's decision.",
+            "Neither the coach or the players were satisfied with the referee's decision."
+          ],
+          "relation": "distinct",
+          "proof": "players agrees with were under neither/nor; versus neither/or coordination is malformed. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "Neither the coach nor the players has been satisfied with the referee's decision.",
+            "Neither the coaches nor the player were satisfied with the referee's decision."
+          ],
+          "relation": "distinct",
+          "proof": "players disagrees with has been; versus singular player disagrees with were. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "Neither the coach nor the players has been satisfied with the referee's decision.",
+            "Neither the coach or the players were satisfied with the referee's decision."
+          ],
+          "relation": "distinct",
+          "proof": "players disagrees with has been; versus neither/or coordination is malformed. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "Neither the coaches nor the player were satisfied with the referee's decision.",
+            "Neither the coach or the players were satisfied with the referee's decision."
+          ],
+          "relation": "distinct",
+          "proof": "singular player disagrees with were; versus neither/or coordination is malformed. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "agreement",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "supported",
+      "uncertainty": null
+    },
+    {
+      "id": "19e6eeaac7101f1949ccfcb3c24bd5d20d406dc03e3554e88d0eceed773616d1",
+      "raw_stem_sha256": "76cec2651b5703723bf9719b7af98c67a066a013bf596d4001baa1a5a12730dd",
+      "literal_task": "Eliminate the ambiguous pronoun reference in the supplied sentence.",
+      "necessary_premises_and_constraints": "Naming Maya explicitly resolves the presentation owner. Their can also be read as a presentation jointly belonging to the two named people; no intended owner or meaning-preservation restriction is supplied.",
+      "supported_exact_choice_texts": [
+        "Maya told Priya that Maya's presentation needed more data."
+      ],
+      "possible_additional_choice_texts": [
+        "Maya told Priya that their presentation needed more data."
+      ],
+      "proof": "Her own still allows Maya or Priya; she is also unresolved. Maya's is clearly defensible, but I cannot exclude the joint-possession revision under the literal request without an added referent constraint.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "Maya told Priya that her own presentation needed more data.",
+            "Maya told Priya that their presentation needed more data."
+          ],
+          "relation": "distinct",
+          "proof": "her own remains dependent on an unresolved female referent; versus their can indicate joint possession by Maya and Priya or another plural referent. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "Maya told Priya that her own presentation needed more data.",
+            "Maya told Priya that Maya's presentation needed more data."
+          ],
+          "relation": "distinct",
+          "proof": "her own remains dependent on an unresolved female referent; versus explicit Maya ownership. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "Maya told Priya that her own presentation needed more data.",
+            "Maya told Priya that she needed more data."
+          ],
+          "relation": "distinct",
+          "proof": "her own remains dependent on an unresolved female referent; versus she remains unresolved and presentation ownership is removed. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "Maya told Priya that their presentation needed more data.",
+            "Maya told Priya that Maya's presentation needed more data."
+          ],
+          "relation": "distinct",
+          "proof": "their can indicate joint possession by Maya and Priya or another plural referent; versus explicit Maya ownership. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "Maya told Priya that their presentation needed more data.",
+            "Maya told Priya that she needed more data."
+          ],
+          "relation": "distinct",
+          "proof": "their can indicate joint possession by Maya and Priya or another plural referent; versus she remains unresolved and presentation ownership is removed. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "Maya told Priya that Maya's presentation needed more data.",
+            "Maya told Priya that she needed more data."
+          ],
+          "relation": "distinct",
+          "proof": "explicit Maya ownership; versus she remains unresolved and presentation ownership is removed. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "reference",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "uncertain",
+      "uncertainty": "Her own still allows Maya or Priya; she is also unresolved. Maya's is clearly defensible, but I cannot exclude the joint-possession revision under the literal request without an added referent constraint."
+    },
+    {
+      "id": "250450a841421fc829c11ebe48086cfcfbcfce7ef2c3e953acf0e14694eb3b7f",
+      "raw_stem_sha256": "fd9134e64802694246c05a09f6b881d03e788fa418891f8ead24bdafc7b7f088",
+      "literal_task": "Replace finish with the simple-past form for one completed event last week.",
+      "necessary_premises_and_constraints": "The target span, simple past and completed past event are explicit.",
+      "supported_exact_choice_texts": [
+        "finished"
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "Finished is the simple past. Finishes is present, have finished is present perfect, and will finish is future.",
+      "unique_supported_answer_confirmed": true,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "finishes",
+            "have finished"
+          ],
+          "relation": "distinct",
+          "proof": "present singular finishes; versus present perfect have finished. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "finishes",
+            "finished"
+          ],
+          "relation": "distinct",
+          "proof": "present singular finishes; versus simple past finished. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "finishes",
+            "will finish"
+          ],
+          "relation": "distinct",
+          "proof": "present singular finishes; versus future will finish. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "have finished",
+            "finished"
+          ],
+          "relation": "distinct",
+          "proof": "present perfect have finished; versus simple past finished. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "have finished",
+            "will finish"
+          ],
+          "relation": "distinct",
+          "proof": "present perfect have finished; versus future will finish. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "finished",
+            "will finish"
+          ],
+          "relation": "distinct",
+          "proof": "simple past finished; versus future will finish. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "tense",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "supported",
+      "uncertainty": null
+    },
+    {
+      "id": "36f8338da4a6ad82fda276309b533bac44d1eed917a65b3ccef625844a8959e4",
+      "raw_stem_sha256": "08ae560dfc5f417597b2eb34c30660e5800393f29e63dedcb6be7e101cd12198",
+      "literal_task": "Choose the agreeing verb form for the marked is span.",
+      "necessary_premises_and_constraints": "The grammatical head list is singular; including materials does not change its number.",
+      "supported_exact_choice_texts": [
+        "is"
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "Is agrees. Were/are are plural in this declarative setting and bare be is not a finite declarative verb here. Keeping the existing correct word is allowed by the offered replacement task.",
+      "unique_supported_answer_confirmed": true,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "is",
+            "were"
+          ],
+          "relation": "distinct",
+          "proof": "singular present is; versus plural past were. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "is",
+            "be"
+          ],
+          "relation": "distinct",
+          "proof": "singular present is; versus bare nonfinite be. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "is",
+            "are"
+          ],
+          "relation": "distinct",
+          "proof": "singular present is; versus plural present are. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "were",
+            "be"
+          ],
+          "relation": "distinct",
+          "proof": "plural past were; versus bare nonfinite be. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "were",
+            "are"
+          ],
+          "relation": "distinct",
+          "proof": "plural past were; versus plural present are. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "be",
+            "are"
+          ],
+          "relation": "distinct",
+          "proof": "bare nonfinite be; versus plural present are. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "agreement",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "supported",
+      "uncertainty": null
+    },
+    {
+      "id": "42d658302e933fb647ef745aa08b4ad424ac950b0b880b064c2dcf5439cbfdae",
+      "raw_stem_sha256": "7a606b9bec8d9a540d733d0368b8482ec2e286e26be877c8c2f50c440cbe6dfc",
+      "literal_task": "Choose the agreeing verb form for the marked is span.",
+      "necessary_premises_and_constraints": "List is the singular head; materials is inside its of phrase.",
+      "supported_exact_choice_texts": [
+        "is"
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "Is is the sole offered finite form agreeing with list in this declarative sentence.",
+      "unique_supported_answer_confirmed": true,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "are",
+            "is"
+          ],
+          "relation": "distinct",
+          "proof": "plural present are; versus singular present is. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "are",
+            "were"
+          ],
+          "relation": "distinct",
+          "proof": "plural present are; versus plural past were. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "are",
+            "be"
+          ],
+          "relation": "distinct",
+          "proof": "plural present are; versus bare nonfinite be. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "is",
+            "were"
+          ],
+          "relation": "distinct",
+          "proof": "singular present is; versus plural past were. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "is",
+            "be"
+          ],
+          "relation": "distinct",
+          "proof": "singular present is; versus bare nonfinite be. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "were",
+            "be"
+          ],
+          "relation": "distinct",
+          "proof": "plural past were; versus bare nonfinite be. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "agreement",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "supported",
+      "uncertainty": null
+    },
+    {
+      "id": "4477cf357ab217e84258a732686f66ffbf2d9dadc76ba30e2007d112a569f78d",
+      "raw_stem_sha256": "e0c68706936c862359cf277d1ff0e8f61d7ead63a12f300b47ec253e4c2c3129",
+      "literal_task": "Replace she to make its reference unambiguous.",
+      "necessary_premises_and_constraints": "The task does not say who must submit the report. Both Elena and Maria explicitly identify a different possible submitter.",
+      "supported_exact_choice_texts": [
+        "Elena",
+        "Maria"
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "The role descriptions are not identified by the supplied sentence. The two names alone establish nonuniqueness without assuming those roles.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "Elena",
+            "the supervisor"
+          ],
+          "relation": "distinct",
+          "proof": "explicit Elena submitter; versus unspecified supervisor role. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "Elena",
+            "the employee"
+          ],
+          "relation": "distinct",
+          "proof": "explicit Elena submitter; versus unspecified employee role. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "Elena",
+            "Maria"
+          ],
+          "relation": "distinct",
+          "proof": "explicit Elena submitter; versus explicit Maria submitter. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": true
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "the supervisor",
+            "the employee"
+          ],
+          "relation": "distinct",
+          "proof": "unspecified supervisor role; versus unspecified employee role. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "the supervisor",
+            "Maria"
+          ],
+          "relation": "distinct",
+          "proof": "unspecified supervisor role; versus explicit Maria submitter. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "the employee",
+            "Maria"
+          ],
+          "relation": "distinct",
+          "proof": "unspecified employee role; versus explicit Maria submitter. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "reference",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "multiple_supported",
+      "uncertainty": null
+    },
+    {
+      "id": "4eeb9997cbd23460292d57c2eb1aa18300a3e1482583bb2088cce48e04d954f4",
+      "raw_stem_sha256": "e7002b80276638145d0b6ba722315308fed3c73e3646836474e0972a0338361e",
+      "literal_task": "Replace has with an agreeing verb form in the supplied sentence.",
+      "necessary_premises_and_constraints": "Players is the nearer plural subject; the remainder decided requires the perfect auxiliary have.",
+      "supported_exact_choice_texts": [
+        "have"
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "Have decided is grammatical. Has disagrees; are having decided and is having decided do not form the required finite perfect phrase.",
+      "unique_supported_answer_confirmed": true,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "are having",
+            "have"
+          ],
+          "relation": "distinct",
+          "proof": "are having before decided is malformed here; versus plural perfect auxiliary have. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "are having",
+            "has"
+          ],
+          "relation": "distinct",
+          "proof": "are having before decided is malformed here; versus singular auxiliary has. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "are having",
+            "is having"
+          ],
+          "relation": "distinct",
+          "proof": "are having before decided is malformed here; versus is having before decided is malformed here. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "have",
+            "has"
+          ],
+          "relation": "distinct",
+          "proof": "plural perfect auxiliary have; versus singular auxiliary has. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "have",
+            "is having"
+          ],
+          "relation": "distinct",
+          "proof": "plural perfect auxiliary have; versus is having before decided is malformed here. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "has",
+            "is having"
+          ],
+          "relation": "distinct",
+          "proof": "singular auxiliary has; versus is having before decided is malformed here. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "agreement",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "supported",
+      "uncertainty": null
+    },
+    {
+      "id": "502d64e3ae4fc36decaa11c19cb2d2b56bd13a0d9440055ea8685dc9b9ea7645",
+      "raw_stem_sha256": "0d286d908bab6e87c4a752d2fb5b9bc54aba1a6809f4d31ca8440e4118e5b895",
+      "literal_task": "Revise the sentence to correct a tense error.",
+      "necessary_premises_and_constraints": "No future-versus-past frame, completed-versus-in-progress constraint, or permitted edit span is explicit.",
+      "supported_exact_choice_texts": [
+        "By the time the meeting starts, the committee will have already voted on the proposal."
+      ],
+      "possible_additional_choice_texts": [
+        "By the time the meeting starts, the committee is already voting on the proposal.",
+        "By the time the meeting started, the committee already voted on the proposal."
+      ],
+      "proof": "Will have already voted gives the conventional completed-before-future reading. Is already voting can give a grammatical ongoing/habitual reading; the all-past revision is also a possible ordinary American-English sequence reading. Their acceptability as corrections depends on meaning constraints not stated here, so I do not lock a unique answer.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee is already voting on the proposal.",
+            "By the time the meeting starts, the committee will have already voted on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "present progressive ongoing voting at meeting threshold; versus future perfect completed voting before meeting. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee is already voting on the proposal.",
+            "By the time the meeting starts, the committee already votes on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "present progressive ongoing voting at meeting threshold; versus simple present habitual voting. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee is already voting on the proposal.",
+            "By the time the meeting started, the committee already voted on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "present progressive ongoing voting at meeting threshold; versus both clauses shifted to past, without explicit perfect marking. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee will have already voted on the proposal.",
+            "By the time the meeting starts, the committee already votes on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "future perfect completed voting before meeting; versus simple present habitual voting. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee will have already voted on the proposal.",
+            "By the time the meeting started, the committee already voted on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "future perfect completed voting before meeting; versus both clauses shifted to past, without explicit perfect marking. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee already votes on the proposal.",
+            "By the time the meeting started, the committee already voted on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "simple present habitual voting; versus both clauses shifted to past, without explicit perfect marking. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "tense",
+      "independent_difficulty": 3,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "uncertain",
+      "uncertainty": "Will have already voted gives the conventional completed-before-future reading. Is already voting can give a grammatical ongoing/habitual reading; the all-past revision is also a possible ordinary American-English sequence reading. Their acceptability as corrections depends on meaning constraints not stated here, so I do not lock a unique answer."
+    },
+    {
+      "id": "528a697db76503c4ad3b838c9da5c961b11b3cb89a052b9476e1ed0cd18be728",
+      "raw_stem_sha256": "bf402389e15968e6916c4da0f6f369dc69b9743757728e3d5339b6f7a8c7d4b3",
+      "literal_task": "Eliminate ambiguity in the supplied pronoun reference.",
+      "necessary_premises_and_constraints": "Maria's explicitly names the presentation owner. Their may permit a joint-possession reading; intended ownership is unspecified.",
+      "supported_exact_choice_texts": [
+        "Maria told Elena that Maria's presentation needed more data."
+      ],
+      "possible_additional_choice_texts": [
+        "Maria told Elena that their presentation needed more data."
+      ],
+      "proof": "The two she/her choices are semantically equivalent: omitting optional that after told does not change their proposition or resolve the ambiguity. This independently fails the six-distinct-pairs requirement.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "Maria told Elena that their presentation needed more data.",
+            "Maria told Elena she needed more data for her presentation."
+          ],
+          "relation": "distinct",
+          "proof": "their can denote joint possession or another plural referent; versus ambiguous she/her construction without optional that. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "Maria told Elena that their presentation needed more data.",
+            "Maria told Elena that she needed more data for her presentation."
+          ],
+          "relation": "distinct",
+          "proof": "their can denote joint possession or another plural referent; versus same ambiguous she/her construction with optional that. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "Maria told Elena that their presentation needed more data.",
+            "Maria told Elena that Maria's presentation needed more data."
+          ],
+          "relation": "distinct",
+          "proof": "their can denote joint possession or another plural referent; versus explicit Maria ownership. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "Maria told Elena she needed more data for her presentation.",
+            "Maria told Elena that she needed more data for her presentation."
+          ],
+          "relation": "equivalent",
+          "proof": "The optional complementizer that does not change the proposition, referents or unresolved ambiguity.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "Maria told Elena she needed more data for her presentation.",
+            "Maria told Elena that Maria's presentation needed more data."
+          ],
+          "relation": "distinct",
+          "proof": "ambiguous she/her construction without optional that; versus explicit Maria ownership. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "Maria told Elena that she needed more data for her presentation.",
+            "Maria told Elena that Maria's presentation needed more data."
+          ],
+          "relation": "distinct",
+          "proof": "same ambiguous she/her construction with optional that; versus explicit Maria ownership. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": false,
+      "independent_skill": "reference",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "equivalent_choices_and_uncertainty",
+      "uncertainty": "The two she/her choices are semantically equivalent: omitting optional that after told does not change their proposition or resolve the ambiguity. This independently fails the six-distinct-pairs requirement."
+    },
+    {
+      "id": "70985fb8a69f66abd47dd795f645186abb5f4c06f3cfdd55cd2ea41545541c1a",
+      "raw_stem_sha256": "46bfa950253d965ed885a2951842ffdae64ce69fd77751ff14240852f14dd0f9",
+      "literal_task": "Replace will finish to describe completion before another past event.",
+      "necessary_premises_and_constraints": "The completion-before-past relation is explicit, but the task does not expressly require the past-perfect form.",
+      "supported_exact_choice_texts": [
+        "had finished"
+      ],
+      "possible_additional_choice_texts": [
+        "finished"
+      ],
+      "proof": "Had finished is the canonical precise form. Finished can also describe a completed event in a past sequence whose order is supplied by the temporal clause; I am uncertain that it is categorically excluded by standard American usage here. Was finishing describes an ongoing action and has finished uses present perfect.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "had finished",
+            "has finished"
+          ],
+          "relation": "distinct",
+          "proof": "past perfect had finished, explicit anterior completion; versus present perfect has finished. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "had finished",
+            "finished"
+          ],
+          "relation": "distinct",
+          "proof": "past perfect had finished, explicit anterior completion; versus simple past finished with temporal-clause ordering. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "had finished",
+            "was finishing"
+          ],
+          "relation": "distinct",
+          "proof": "past perfect had finished, explicit anterior completion; versus past progressive was finishing, ongoing action. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "has finished",
+            "finished"
+          ],
+          "relation": "distinct",
+          "proof": "present perfect has finished; versus simple past finished with temporal-clause ordering. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "has finished",
+            "was finishing"
+          ],
+          "relation": "distinct",
+          "proof": "present perfect has finished; versus past progressive was finishing, ongoing action. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "finished",
+            "was finishing"
+          ],
+          "relation": "distinct",
+          "proof": "simple past finished with temporal-clause ordering; versus past progressive was finishing, ongoing action. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "tense",
+      "independent_difficulty": 3,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "uncertain",
+      "uncertainty": "Had finished is the canonical precise form. Finished can also describe a completed event in a past sequence whose order is supplied by the temporal clause; I am uncertain that it is categorically excluded by standard American usage here. Was finishing describes an ongoing action and has finished uses present perfect."
+    },
+    {
+      "id": "80a85f5ff8570aba7ab4fae9c7a526a99b764ef1d31006bc83b5db7f613144f0",
+      "raw_stem_sha256": "593ee4bf6bbfea23490fd362b69819c59b11074d2d9760daefdfe4410211384c",
+      "literal_task": "Replace have with an agreeing verb form.",
+      "necessary_premises_and_constraints": "Each is singular despite the plural finalists in the of phrase.",
+      "supported_exact_choice_texts": [
+        "has"
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "Has submitted agrees. Have disagrees; were/are submitted an essay do not fit this active clause.",
+      "unique_supported_answer_confirmed": true,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "were",
+            "has"
+          ],
+          "relation": "distinct",
+          "proof": "were submitted an essay does not fit this clause; versus singular perfect auxiliary has. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "were",
+            "have"
+          ],
+          "relation": "distinct",
+          "proof": "were submitted an essay does not fit this clause; versus plural perfect auxiliary have. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "were",
+            "are"
+          ],
+          "relation": "distinct",
+          "proof": "were submitted an essay does not fit this clause; versus are submitted an essay does not fit this clause. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "has",
+            "have"
+          ],
+          "relation": "distinct",
+          "proof": "singular perfect auxiliary has; versus plural perfect auxiliary have. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "has",
+            "are"
+          ],
+          "relation": "distinct",
+          "proof": "singular perfect auxiliary has; versus are submitted an essay does not fit this clause. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "have",
+            "are"
+          ],
+          "relation": "distinct",
+          "proof": "plural perfect auxiliary have; versus are submitted an essay does not fit this clause. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "agreement",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "supported",
+      "uncertainty": null
+    },
+    {
+      "id": "826119e9b65e9db06e58a91e2e5e0d1c34e22233f6b50b38006304e8fe38a990",
+      "raw_stem_sha256": "0d286d908bab6e87c4a752d2fb5b9bc54aba1a6809f4d31ca8440e4118e5b895",
+      "literal_task": "Revise the sentence to correct a tense error.",
+      "necessary_premises_and_constraints": "A completed-before-future reading is plausible, but the stem does not specify preserving completion or a future timeframe.",
+      "supported_exact_choice_texts": [
+        "By the time the meeting starts, the committee will have already voted on the proposal."
+      ],
+      "possible_additional_choice_texts": [
+        "By the time the meeting starts, the committee is already voting on the proposal."
+      ],
+      "proof": "Will have already voted is the conventional intended reading. Is already voting is also grammatical under an ongoing/habitual reading; ruling it out requires preserving an unstated aspect/time constraint. The choice with started + votes is ordinarily a tense mismatch.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee already votes on the proposal.",
+            "By the time the meeting started, the committee already votes on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "simple present habitual votes; versus past started with present votes. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee already votes on the proposal.",
+            "By the time the meeting starts, the committee is already voting on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "simple present habitual votes; versus present progressive ongoing voting. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee already votes on the proposal.",
+            "By the time the meeting starts, the committee will have already voted on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "simple present habitual votes; versus future perfect anterior completed voting. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "By the time the meeting started, the committee already votes on the proposal.",
+            "By the time the meeting starts, the committee is already voting on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "past started with present votes; versus present progressive ongoing voting. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "By the time the meeting started, the committee already votes on the proposal.",
+            "By the time the meeting starts, the committee will have already voted on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "past started with present votes; versus future perfect anterior completed voting. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "By the time the meeting starts, the committee is already voting on the proposal.",
+            "By the time the meeting starts, the committee will have already voted on the proposal."
+          ],
+          "relation": "distinct",
+          "proof": "present progressive ongoing voting; versus future perfect anterior completed voting. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "tense",
+      "independent_difficulty": 3,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "uncertain",
+      "uncertainty": "Will have already voted is the conventional intended reading. Is already voting is also grammatical under an ongoing/habitual reading; ruling it out requires preserving an unstated aspect/time constraint. The choice with started + votes is ordinarily a tense mismatch."
+    },
+    {
+      "id": "b5775fd1e7ca05174f8e93bde07ce3abbdf92a35fe37b9fe8a7098e0fe7528a6",
+      "raw_stem_sha256": "6a428be2f5c1a147adff3a3270d0a8f36dcfadcf5e609227b7d44c0ae58209c8",
+      "literal_task": "Replace their to make ownership explicit.",
+      "necessary_premises_and_constraints": "No owner is specified; both the intern's and the manager's name a clear owner.",
+      "supported_exact_choice_texts": [
+        "the intern's",
+        "the manager's"
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "His or her remains ambiguous between the people; its has no suitable explicit antecedent here. The two named owners alone make the answer nonunique.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "his or her",
+            "the intern's"
+          ],
+          "relation": "distinct",
+          "proof": "gendered pronoun still unresolved; versus explicit intern ownership. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "his or her",
+            "its"
+          ],
+          "relation": "distinct",
+          "proof": "gendered pronoun still unresolved; versus its lacks a suitable stated antecedent. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "his or her",
+            "the manager's"
+          ],
+          "relation": "distinct",
+          "proof": "gendered pronoun still unresolved; versus explicit manager ownership. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "the intern's",
+            "its"
+          ],
+          "relation": "distinct",
+          "proof": "explicit intern ownership; versus its lacks a suitable stated antecedent. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "the intern's",
+            "the manager's"
+          ],
+          "relation": "distinct",
+          "proof": "explicit intern ownership; versus explicit manager ownership. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": true
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "its",
+            "the manager's"
+          ],
+          "relation": "distinct",
+          "proof": "its lacks a suitable stated antecedent; versus explicit manager ownership. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "reference",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "multiple_supported",
+      "uncertainty": null
+    },
+    {
+      "id": "bf03cd5207ad97df05a74c21fe868f4ef9d273b7370309ed33a597b351845773",
+      "raw_stem_sha256": "bba051aad92114f463a537ef9397dfb0f6e0bccb56a3b2bfe929a12f5c532e92",
+      "literal_task": "Eliminate the ambiguous reference of he.",
+      "necessary_premises_and_constraints": "There are exactly two people in ordered mention: manager then intern. The former denotes the first, the manager.",
+      "supported_exact_choice_texts": [
+        "When the manager met with the intern, the former asked several questions about the budget.",
+        "When the manager met with the intern, the manager asked several questions about the budget."
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "The former and the manager therefore give equivalent explicit references and both satisfy the task. One of them and he himself leave the questioner unresolved.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "When the manager met with the intern, the former asked several questions about the budget.",
+            "When the manager met with the intern, one of them asked several questions about the budget."
+          ],
+          "relation": "distinct",
+          "proof": "the former denotes the manager; versus one of them leaves which person unknown. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "When the manager met with the intern, the former asked several questions about the budget.",
+            "When the manager met with the intern, the manager asked several questions about the budget."
+          ],
+          "relation": "equivalent",
+          "proof": "The former means the first of the two mentioned people, the manager.",
+          "both_definitely_satisfy_literal_task": true
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "When the manager met with the intern, the former asked several questions about the budget.",
+            "When the manager met with the intern, he himself asked several questions about the budget."
+          ],
+          "relation": "distinct",
+          "proof": "the former denotes the manager; versus he himself remains unresolved. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "When the manager met with the intern, one of them asked several questions about the budget.",
+            "When the manager met with the intern, the manager asked several questions about the budget."
+          ],
+          "relation": "distinct",
+          "proof": "one of them leaves which person unknown; versus explicit manager. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "When the manager met with the intern, one of them asked several questions about the budget.",
+            "When the manager met with the intern, he himself asked several questions about the budget."
+          ],
+          "relation": "distinct",
+          "proof": "one of them leaves which person unknown; versus he himself remains unresolved. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "When the manager met with the intern, the manager asked several questions about the budget.",
+            "When the manager met with the intern, he himself asked several questions about the budget."
+          ],
+          "relation": "distinct",
+          "proof": "explicit manager; versus he himself remains unresolved. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": false,
+      "independent_skill": "reference",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "equivalent_supported_choices",
+      "uncertainty": null
+    },
+    {
+      "id": "c17c932dde6b8544bb25795d54387784dcb5991a916d15edecb54e8b72e0d37f",
+      "raw_stem_sha256": "6f592542c739d88e54d3f5fdd7fe7cc4cd27e9b4bef3da6af69c816cbcd3fb19",
+      "literal_task": "Eliminate the ambiguous reference of he.",
+      "necessary_premises_and_constraints": "Only the fourth revision names who seemed frustrated.",
+      "supported_exact_choice_texts": [
+        "When the manager spoke to the intern, the manager seemed frustrated."
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "The other three retain he without identifying manager versus intern; adding him, his work or left does not resolve that reference.",
+      "unique_supported_answer_confirmed": true,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "When the manager spoke to the intern, he seemed frustrated by him.",
+            "When the manager spoke to the intern, he seemed frustrated with his work."
+          ],
+          "relation": "distinct",
+          "proof": "unresolved he with an additional ambiguous him cause; versus unresolved he with ambiguous his work. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "When the manager spoke to the intern, he seemed frustrated by him.",
+            "When the manager spoke to the intern, he seemed frustrated and left."
+          ],
+          "relation": "distinct",
+          "proof": "unresolved he with an additional ambiguous him cause; versus unresolved he plus an added departure. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "When the manager spoke to the intern, he seemed frustrated by him.",
+            "When the manager spoke to the intern, the manager seemed frustrated."
+          ],
+          "relation": "distinct",
+          "proof": "unresolved he with an additional ambiguous him cause; versus explicit manager as frustrated person. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "When the manager spoke to the intern, he seemed frustrated with his work.",
+            "When the manager spoke to the intern, he seemed frustrated and left."
+          ],
+          "relation": "distinct",
+          "proof": "unresolved he with ambiguous his work; versus unresolved he plus an added departure. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "When the manager spoke to the intern, he seemed frustrated with his work.",
+            "When the manager spoke to the intern, the manager seemed frustrated."
+          ],
+          "relation": "distinct",
+          "proof": "unresolved he with ambiguous his work; versus explicit manager as frustrated person. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "When the manager spoke to the intern, he seemed frustrated and left.",
+            "When the manager spoke to the intern, the manager seemed frustrated."
+          ],
+          "relation": "distinct",
+          "proof": "unresolved he plus an added departure; versus explicit manager as frustrated person. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "reference",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "supported",
+      "uncertainty": null
+    },
+    {
+      "id": "c5448510f50afc25dbb4e753541ad5fee4d57f0d771476b6d386188764ff8730",
+      "raw_stem_sha256": "36f6010ebe1cf446172359f9682b13e9ac3c1656683cfa6162144086c556e63c",
+      "literal_task": "Replace they with a noun reference that is unambiguous.",
+      "necessary_premises_and_constraints": "The task does not state who seemed nervous. Both coach and captain directly identify a possible person.",
+      "supported_exact_choice_texts": [
+        "the coach",
+        "the captain"
+      ],
+      "possible_additional_choice_texts": [
+        "the team"
+      ],
+      "proof": "The team could supply another group referent if a team is intended, but that is not needed to prove multiple answers. The game is not normally an experiencer of nervousness.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "the coach",
+            "the captain"
+          ],
+          "relation": "distinct",
+          "proof": "explicit coach; versus explicit captain. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": true
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "the coach",
+            "the game"
+          ],
+          "relation": "distinct",
+          "proof": "explicit coach; versus game as an implausible experiencer. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "the coach",
+            "the team"
+          ],
+          "relation": "distinct",
+          "proof": "explicit coach; versus team as a possible but unstated group referent. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "the captain",
+            "the game"
+          ],
+          "relation": "distinct",
+          "proof": "explicit captain; versus game as an implausible experiencer. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "the captain",
+            "the team"
+          ],
+          "relation": "distinct",
+          "proof": "explicit captain; versus team as a possible but unstated group referent. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "the game",
+            "the team"
+          ],
+          "relation": "distinct",
+          "proof": "game as an implausible experiencer; versus team as a possible but unstated group referent. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "reference",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "multiple_supported",
+      "uncertainty": "The team could supply another group referent if a team is intended, but that is not needed to prove multiple answers. The game is not normally an experiencer of nervousness."
+    },
+    {
+      "id": "d1a5f9c17ef0560b3a2ccdae22920567b7a86ec20b650ba8eb41b80e71eebe2a",
+      "raw_stem_sha256": "a9650a9a4055ee5b5abf33096f453bbe495c615136ae857f35033f67a7798ba1",
+      "literal_task": "Revise the sentence to correct agreement.",
+      "necessary_premises_and_constraints": "No restriction preserves the original singular/plural subjects or confines the edit to was.",
+      "supported_exact_choice_texts": [
+        "Neither the coaches nor the player was ready to leave the field after the loss.",
+        "Neither the coach nor the players were ready to leave the field after the loss."
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "Coaches nor player + was agrees with the nearer singular player. Coach nor players + were agrees with the nearer plural players. Both offered revisions correct agreement while changing different words.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "Neither the coaches nor the player was ready to leave the field after the loss.",
+            "Neither the coach or the players were ready to leave the field after the loss."
+          ],
+          "relation": "distinct",
+          "proof": "changed subjects with nearer singular player and agreeing was; versus malformed neither/or conjunction. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "Neither the coaches nor the player was ready to leave the field after the loss.",
+            "Neither the coach nor the players is ready to leave the field after the loss."
+          ],
+          "relation": "distinct",
+          "proof": "changed subjects with nearer singular player and agreeing was; versus nearer plural players with disagreeing is. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "Neither the coaches nor the player was ready to leave the field after the loss.",
+            "Neither the coach nor the players were ready to leave the field after the loss."
+          ],
+          "relation": "distinct",
+          "proof": "changed subjects with nearer singular player and agreeing was; versus original subjects with nearer plural players and agreeing were. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": true
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "Neither the coach or the players were ready to leave the field after the loss.",
+            "Neither the coach nor the players is ready to leave the field after the loss."
+          ],
+          "relation": "distinct",
+          "proof": "malformed neither/or conjunction; versus nearer plural players with disagreeing is. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "Neither the coach or the players were ready to leave the field after the loss.",
+            "Neither the coach nor the players were ready to leave the field after the loss."
+          ],
+          "relation": "distinct",
+          "proof": "malformed neither/or conjunction; versus original subjects with nearer plural players and agreeing were. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "Neither the coach nor the players is ready to leave the field after the loss.",
+            "Neither the coach nor the players were ready to leave the field after the loss."
+          ],
+          "relation": "distinct",
+          "proof": "nearer plural players with disagreeing is; versus original subjects with nearer plural players and agreeing were. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "agreement",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "multiple_supported",
+      "uncertainty": null
+    },
+    {
+      "id": "ec883040487e1391ca6f1d4f60cd254517befee80bcf5212790b7a5a9b238dbc",
+      "raw_stem_sha256": "21dacdc06418df67fb432b1d32528d2192240917f7028a1a8368398d0358c27f",
+      "literal_task": "Replace it to identify what was not damaged.",
+      "necessary_premises_and_constraints": "Both laptop and concrete floor are explicit possible referents, and the stem does not state which escaped damage.",
+      "supported_exact_choice_texts": [
+        "the laptop",
+        "the concrete floor"
+      ],
+      "possible_additional_choice_texts": [],
+      "proof": "Naming either object removes the ambiguity. Fall is an event, and damage is not a sensible undamaged object in this context.",
+      "unique_supported_answer_confirmed": false,
+      "six_pair_judgments": [
+        {
+          "displayed_choice_positions": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "the laptop",
+            "the concrete floor"
+          ],
+          "relation": "distinct",
+          "proof": "explicit laptop undamaged; versus explicit concrete floor undamaged. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": true
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "the laptop",
+            "the fall"
+          ],
+          "relation": "distinct",
+          "proof": "explicit laptop undamaged; versus fall event treated as damageable object. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            1,
+            4
+          ],
+          "choice_texts": [
+            "the laptop",
+            "the damage"
+          ],
+          "relation": "distinct",
+          "proof": "explicit laptop undamaged; versus damage treated as undamaged object. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "the concrete floor",
+            "the fall"
+          ],
+          "relation": "distinct",
+          "proof": "explicit concrete floor undamaged; versus fall event treated as damageable object. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            2,
+            4
+          ],
+          "choice_texts": [
+            "the concrete floor",
+            "the damage"
+          ],
+          "relation": "distinct",
+          "proof": "explicit concrete floor undamaged; versus damage treated as undamaged object. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        },
+        {
+          "displayed_choice_positions": [
+            3,
+            4
+          ],
+          "choice_texts": [
+            "the fall",
+            "the damage"
+          ],
+          "relation": "distinct",
+          "proof": "fall event treated as damageable object; versus damage treated as undamaged object. These differ in reference, tense, grammatical construction or stated proposition, rather than merely display position.",
+          "both_definitely_satisfy_literal_task": false
+        }
+      ],
+      "six_pairs_distinct": true,
+      "independent_skill": "reference",
+      "independent_difficulty": 2,
+      "difficulty_note": "Difficulty of the stated/intended operation; an ambiguous item does not become usable because its rule is appropriate for this level.",
+      "judgment": "multiple_supported",
+      "uncertainty": null
+    }
+  ]
+}

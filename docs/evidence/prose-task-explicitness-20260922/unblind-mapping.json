@@ -1,0 +1,145 @@
+{
+  "capture_sha256": "be69731e5a210dc0c3dd6d20808fe4043349094e5037f0a0a8c5ec9014acf3ca",
+  "items": [
+    {
+      "id": "0c7cb665970968126f1103117c412577ddf975f6e908f7b42dd527af381fda3d",
+      "call_ordinal": 3,
+      "question_ordinal": 0,
+      "arm": "baseline",
+      "rotation": 1
+    },
+    {
+      "id": "0cee55f9c6227916e43da2007acad2941d8bb6499de2a0ef7cc97154eeb1376c",
+      "call_ordinal": 0,
+      "question_ordinal": 0,
+      "arm": "baseline",
+      "rotation": 1
+    },
+    {
+      "id": "0dd9d174b3cc308a9368b0e571e35d858f60a134150c2bb3833a6b196243a617",
+      "call_ordinal": 3,
+      "question_ordinal": 1,
+      "arm": "baseline",
+      "rotation": 0
+    },
+    {
+      "id": "19e6eeaac7101f1949ccfcb3c24bd5d20d406dc03e3554e88d0eceed773616d1",
+      "call_ordinal": 3,
+      "question_ordinal": 2,
+      "arm": "baseline",
+      "rotation": 2
+    },
+    {
+      "id": "250450a841421fc829c11ebe48086cfcfbcfce7ef2c3e953acf0e14694eb3b7f",
+      "call_ordinal": 2,
+      "question_ordinal": 4,
+      "arm": "candidate",
+      "rotation": 0
+    },
+    {
+      "id": "36f8338da4a6ad82fda276309b533bac44d1eed917a65b3ccef625844a8959e4",
+      "call_ordinal": 2,
+      "question_ordinal": 0,
+      "arm": "candidate",
+      "rotation": 1
+    },
+    {
+      "id": "42d658302e933fb647ef745aa08b4ad424ac950b0b880b064c2dcf5439cbfdae",
+      "call_ordinal": 1,
+      "question_ordinal": 0,
+      "arm": "candidate",
+      "rotation": 0
+    },
+    {
+      "id": "4477cf357ab217e84258a732686f66ffbf2d9dadc76ba30e2007d112a569f78d",
+      "call_ordinal": 2,
+      "question_ordinal": 3,
+      "arm": "candidate",
+      "rotation": 1
+    },
+    {
+      "id": "4eeb9997cbd23460292d57c2eb1aa18300a3e1482583bb2088cce48e04d954f4",
+      "call_ordinal": 2,
+      "question_ordinal": 2,
+      "arm": "candidate",
+      "rotation": 3
+    },
+    {
+      "id": "502d64e3ae4fc36decaa11c19cb2d2b56bd13a0d9440055ea8685dc9b9ea7645",
+      "call_ordinal": 3,
+      "question_ordinal": 4,
+      "arm": "baseline",
+      "rotation": 3
+    },
+    {
+      "id": "528a697db76503c4ad3b838c9da5c961b11b3cb89a052b9476e1ed0cd18be728",
+      "call_ordinal": 0,
+      "question_ordinal": 2,
+      "arm": "baseline",
+      "rotation": 1
+    },
+    {
+      "id": "70985fb8a69f66abd47dd795f645186abb5f4c06f3cfdd55cd2ea41545541c1a",
+      "call_ordinal": 1,
+      "question_ordinal": 4,
+      "arm": "candidate",
+      "rotation": 0
+    },
+    {
+      "id": "80a85f5ff8570aba7ab4fae9c7a526a99b764ef1d31006bc83b5db7f613144f0",
+      "call_ordinal": 1,
+      "question_ordinal": 1,
+      "arm": "candidate",
+      "rotation": 3
+    },
+    {
+      "id": "826119e9b65e9db06e58a91e2e5e0d1c34e22233f6b50b38006304e8fe38a990",
+      "call_ordinal": 0,
+      "question_ordinal": 4,
+      "arm": "baseline",
+      "rotation": 1
+    },
+    {
+      "id": "b5775fd1e7ca05174f8e93bde07ce3abbdf92a35fe37b9fe8a7098e0fe7528a6",
+      "call_ordinal": 2,
+      "question_ordinal": 1,
+      "arm": "candidate",
+      "rotation": 1
+    },
+    {
+      "id": "bf03cd5207ad97df05a74c21fe868f4ef9d273b7370309ed33a597b351845773",
+      "call_ordinal": 3,
+      "question_ordinal": 3,
+      "arm": "baseline",
+      "rotation": 2
+    },
+    {
+      "id": "c17c932dde6b8544bb25795d54387784dcb5991a916d15edecb54e8b72e0d37f",
+      "call_ordinal": 0,
+      "question_ordinal": 3,
+      "arm": "baseline",
+      "rotation": 1
+    },
+    {
+      "id": "c5448510f50afc25dbb4e753541ad5fee4d57f0d771476b6d386188764ff8730",
+      "call_ordinal": 1,
+      "question_ordinal": 2,
+      "arm": "candidate",
+      "rotation": 0
+    },
+    {
+      "id": "d1a5f9c17ef0560b3a2ccdae22920567b7a86ec20b650ba8eb41b80e71eebe2a",
+      "call_ordinal": 0,
+      "question_ordinal": 1,
+      "arm": "baseline",
+      "rotation": 1
+    },
+    {
+      "id": "ec883040487e1391ca6f1d4f60cd254517befee80bcf5212790b7a5a9b238dbc",
+      "call_ordinal": 1,
+      "question_ordinal": 3,
+      "arm": "candidate",
+      "rotation": 0
+    }
+  ]
+}

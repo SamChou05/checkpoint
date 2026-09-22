@@ -1,0 +1,17 @@
+# Independent prose-task content review
+
+**Do not promote the candidate from this trial.** My locked review finds **2/10 baseline** and **5/10 candidate** original rows usable under the fixed content criteria. The candidate misses its 10/10 target. All four calls were native-valid, exact-five, end-turn and timely; all twenty prompts/choices/mains meet their runtime limits, and every main is also within the separate 320-character instruction target. Each call meets the requested two agreement, two reference and one tense allocation with five distinct within-call situations.
+
+The blind review was locked at `41c97a5c02710385fcf5ed64f107ab8181cfc2ab9ed16d65209f2d7a425c8aa3` before opening any key, main or arm mapping. Capture file SHA: `332fb1c24d08b32710a2c5ee230991827b876c5e8145104b548e9580c4774bef`. Its worksheet uses the separately verified canonical digest, not the file-byte hash. All twenty raw rows match the parsed visible responses and their rotated blind projections; diagnostic sanitization preserves every main byte.
+
+The candidate's four pronoun questions all permit at least two explicit replacements. Coach and captain can each be named as nervous; laptop and floor can each be named as undamaged; manager and intern can each own the computer; Maria and Elena can each submit the report. The mains sometimes invent an intended owner or a likelihood preference to choose between them. An explanation cannot supply the missing referent afterward.
+
+The remaining candidate failure says simple past `finished` would imply simultaneous action. Simple past does not inherently impose simultaneity. `Had finished` is a valid canonical answer for anterior completion, but the claimed exclusion of the alternative is unsupported. This teaching defect remains even if another assessor accepts the intended past-perfect key as unique.
+
+The five counted candidate items are four bounded agreement replacements and the explicitly requested simple-past `finished` task. The latter's present-perfect contrast deserves a wording caveat: present perfect can describe completed events with current relevance. In the supplied explicit simple-past/last-week task, the conclusion is correct; I do not turn that incomplete general description into a new post-hoc universal-rule test.
+
+Definite baseline defects include singular `list is` versus plural `lists are`, two differently numbered but agreeing neither/nor revisions, an equivalent optional-`that` pair, and `the former` meaning exactly `the manager`. The blind review separately records uncertainty about a joint-possession `their` reading and temporal/aspect alternatives. Unblinding did not revise those judgments. All twenty model keys pick a supported reading; that does not establish unique answers.
+
+Two baseline mains use raw Option A/B/C/D references. They were evaluated against their original slots here; they are not shuffle-safe learner wording. Candidate4477 also resembles the excluded report-communication illustration and receives no credit independently because its referent is nonunique. Reusing a generic `Replace [span]` instruction alone was not treated as copying a concrete illustration.
+
+No difficulty-target regression was found. These small generated batches support only a descriptive comparison on this repeated English scope. The apparent numerator increase does not meet the candidate target, establish a causal effect, qualify the worker, or alter either earlier defective English item.

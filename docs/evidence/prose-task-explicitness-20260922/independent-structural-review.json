@@ -1,0 +1,213 @@
+{
+  "kind": "independent_structural_review",
+  "plan_sha256": "17711d5ee7cbab20584187d277be9038b5dd40ff1cb1a2d3bb0dd165b41fdb3c",
+  "capture_sha256": "332fb1c24d08b32710a2c5ee230991827b876c5e8145104b548e9580c4774bef",
+  "bindings": {
+    "source_commit": "0e4619f1696b848073f1a4d551c364ed3fbfbeb0",
+    "source_clean": true,
+    "source_and_artifact_pins_verified": 34,
+    "blind_worksheet_file_sha256": "dba0ac4c80dbb6aac54a330f1c099a023f46251615f746f392a7534495ca444d",
+    "unblind_mapping_file_sha256": "699f46eb0fe40d55b96b9c43af603c41cc56ac717169244502b3dcd0a95610cf",
+    "projection_canonical_capture_digest": "be69731e5a210dc0c3dd6d20808fe4043349094e5037f0a0a8c5ec9014acf3ca",
+    "candidate_addition_file_sha256": "e23082703b714e7dd1a0e97aa710cd09809719dd71383c67909e968c7c6e0dce"
+  },
+  "request_isolation": {
+    "order": [
+      "baseline",
+      "candidate",
+      "candidate",
+      "baseline"
+    ],
+    "exact_repeated_requests_per_arm": true,
+    "sole_candidate_delta": "Two newline characters plus the exact approved candidate addition appended to the final native system prompt.",
+    "all_other_request_fields_equal": true,
+    "no_solver_or_reviewer": true
+  },
+  "faithful_replay": {
+    "network_connections": 0,
+    "new_provider_calls": 0,
+    "captured_response_replays": 4,
+    "real_pin_checks": 27,
+    "actual_frozen_run_calls_used": true,
+    "actual_bounded_runtime_generator_used": true,
+    "all_requests_reservations_raw_rows_assessments_and_statuses_exact": true,
+    "summary_equal": true,
+    "timing_equality_claimed": false,
+    "method": "Replace only the SDK factory with exact recorded responses; block socket connections and run actual check_plan throughout. Original live timing is checked against bounds but not equated to fast replay timing."
+  },
+  "denominators": {
+    "planned_calls": 4,
+    "attempted_calls": 4,
+    "original_raw_slots": 20,
+    "per_arm_slots": 10,
+    "observed_rows": 20,
+    "failed_slots": 0,
+    "unattempted_slots": 0,
+    "extra_rows": 0,
+    "native_valid_calls": 4,
+    "native_valid_rows": 20,
+    "sanitizer_retained_diagnostic_rows": 20,
+    "semantic_rows_adjudicated_here": 0
+  },
+  "native_and_sanitizer": {
+    "wire_jsonschema_validation": true,
+    "native_adaptation_validation": true,
+    "all_originals_preserved": true,
+    "choice_key_mapping_exact": true,
+    "sanitizer_prompt_changes": 0,
+    "sanitizer_main_changes": 0,
+    "sanitizer_choice_order_changes": 4,
+    "raw_rows_receive_no_semantic_credit_from_sanitization": true,
+    "all20_runtime_length_pass": true,
+    "all20_author_main320_pass": true,
+    "observed_character_ranges": {
+      "prompt": [
+        133,
+        203
+      ],
+      "explanation": [
+        163,
+        305
+      ],
+      "choice_a": [
+        3,
+        125
+      ],
+      "choice_b": [
+        2,
+        127
+      ],
+      "choice_c": [
+        3,
+        127
+      ],
+      "choice_d": [
+        2,
+        132
+      ]
+    }
+  },
+  "projection": {
+    "opaque_items": 20,
+    "unique_opaque_ids": 20,
+    "all_requested_slots_present": true,
+    "exact_regeneration_matches_saved_worksheet_and_mapping": true,
+    "keys_teaching_arm_and_call_grouping_absent_from_worksheet": true,
+    "key_teaching_mutation_leaves_visible_projection_and_ids_unchanged": true,
+    "binding_note": "The worksheet capture_sha256 is the harness canonical JSON digest, not the capture file-byte SHA. Both bindings are recorded separately here."
+  },
+  "calls": [
+    {
+      "index": 0,
+      "arm": "baseline",
+      "request_sha256": "14d9cee1d4f80c55dc008d0d93d2a1798d3b1f07dac1b79488b026622c2cd551",
+      "raw_payload_sha256": "53569a7708642324796430ae05778a01c343480ad3f84894d864b16775b549cb",
+      "native_schema_valid": true,
+      "actual_native_adaptation_valid": true,
+      "exact_five_rows": true,
+      "raw_rows_unchanged": true,
+      "actual_sanitizer_assessment_exact": true,
+      "sanitizer_retained": 5,
+      "raw_runtime_bounds_pass": 5,
+      "author_main_320_pass": 5,
+      "elapsed_seconds": 16.251067,
+      "usage": {
+        "inputTokens": 2858,
+        "outputTokens": 1006,
+        "totalTokens": 3864
+      },
+      "end_turn": true
+    },
+    {
+      "index": 1,
+      "arm": "candidate",
+      "request_sha256": "b0a55fad0ee52e84b66faf0fc477216a0e74a3e16fadb3571ddab8a7a1be9a7a",
+      "raw_payload_sha256": "31911608514fb87946efb489f937d4d4fd7056675febd2fa33ef6eaedfcd931e",
+      "native_schema_valid": true,
+      "actual_native_adaptation_valid": true,
+      "exact_five_rows": true,
+      "raw_rows_unchanged": true,
+      "actual_sanitizer_assessment_exact": true,
+      "sanitizer_retained": 5,
+      "raw_runtime_bounds_pass": 5,
+      "author_main_320_pass": 5,
+      "elapsed_seconds": 6.905741,
+      "usage": {
+        "inputTokens": 3143,
+        "outputTokens": 688,
+        "totalTokens": 3831
+      },
+      "end_turn": true
+    },
+    {
+      "index": 2,
+      "arm": "candidate",
+      "request_sha256": "b0a55fad0ee52e84b66faf0fc477216a0e74a3e16fadb3571ddab8a7a1be9a7a",
+      "raw_payload_sha256": "9e68441f10f5091bfa04b16057cfc4aa9c52af3bd0da17f176a90809a8544638",
+      "native_schema_valid": true,
+      "actual_native_adaptation_valid": true,
+      "exact_five_rows": true,
+      "raw_rows_unchanged": true,
+      "actual_sanitizer_assessment_exact": true,
+      "sanitizer_retained": 5,
+      "raw_runtime_bounds_pass": 5,
+      "author_main_320_pass": 5,
+      "elapsed_seconds": 8.591779,
+      "usage": {
+        "inputTokens": 3143,
+        "outputTokens": 692,
+        "totalTokens": 3835
+      },
+      "end_turn": true
+    },
+    {
+      "index": 3,
+      "arm": "baseline",
+      "request_sha256": "14d9cee1d4f80c55dc008d0d93d2a1798d3b1f07dac1b79488b026622c2cd551",
+      "raw_payload_sha256": "743597b7228e6f9371eaef3e2eaeb3d7f358414410abe0d8a222e3a6ee95468e",
+      "native_schema_valid": true,
+      "actual_native_adaptation_valid": true,
+      "exact_five_rows": true,
+      "raw_rows_unchanged": true,
+      "actual_sanitizer_assessment_exact": true,
+      "sanitizer_retained": 5,
+      "raw_runtime_bounds_pass": 5,
+      "author_main_320_pass": 5,
+      "elapsed_seconds": 10.942648,
+      "usage": {
+        "inputTokens": 2858,
+        "outputTokens": 977,
+        "totalTokens": 3835
+      },
+      "end_turn": true
+    }
+  ],
+  "usage_by_arm": {
+    "baseline": {
+      "input_tokens": 5716,
+      "output_tokens": 1983,
+      "call_seconds": 27.193715,
+      "missing_usage_calls": 0
+    },
+    "candidate": {
+      "input_tokens": 6286,
+      "output_tokens": 1380,
+      "call_seconds": 15.49752,
+      "missing_usage_calls": 0
+    }
+  },
+  "usage_total": {
+    "input_tokens": 12002,
+    "output_tokens": 3363,
+    "call_seconds": 42.691235,
+    "missing_usage_calls": 0,
+    "omitted_reasoning_blocks": 0
+  },
+  "structural_checks_pass": true,
+  "semantic_or_prompt_qualification_claimed": false,
+  "limits": [
+    "Different generated items and only two calls per arm do not identify a population error rate or a matched per-item causal effect.",
+    "English correctness, literal task adequacy, variety, copy exclusions, difficulty and teaching soundness are adjudicated separately against locked blind reviews.",
+    "Author-only shape/length success is not full-worker, solver/auditor or deployment qualification."
+  ]
+}

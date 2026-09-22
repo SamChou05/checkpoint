@@ -1,0 +1,387 @@
+{
+  "capture_sha256": "be69731e5a210dc0c3dd6d20808fe4043349094e5037f0a0a8c5ec9014acf3ca",
+  "requested_slot_denominator": 20,
+  "items": [
+    {
+      "id": "0c7cb665970968126f1103117c412577ddf975f6e908f7b42dd527af381fda3d",
+      "requested_slot": true,
+      "raw_stem": "Which revision corrects the subject-verb agreement error in this sentence? \"The list of required materials, including textbooks, lab goggles, and a scientific calculator, are available at the bookstore.\"",
+      "choices": [
+        "The list of required materials, including textbooks, lab goggles, and a scientific calculator, were available at the bookstore.",
+        "The lists of required materials, including textbooks, lab goggles, and a scientific calculator, are available at the bookstore.",
+        "The list of required materials, including textbooks, lab goggles, and a scientific calculator, have been available at the bookstore.",
+        "The list of required materials, including textbooks, lab goggles, and a scientific calculator, is available at the bookstore."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "0cee55f9c6227916e43da2007acad2941d8bb6499de2a0ef7cc97154eeb1376c",
+      "requested_slot": true,
+      "raw_stem": "Which revision corrects the subject-verb agreement error in this sentence? \"The list of required materials, including scissors, glue, and colored paper, are on the teacher's desk.\"",
+      "choices": [
+        "The list of required materials, including scissors, glue, and colored paper, were on the teacher's desk.",
+        "The lists of required materials, including scissors, glue, and colored paper, are on the teacher's desk.",
+        "The list of required materials, including scissors, glue, and colored paper, have been on the teacher's desk.",
+        "The list of required materials, including scissors, glue, and colored paper, is on the teacher's desk."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "0dd9d174b3cc308a9368b0e571e35d858f60a134150c2bb3833a6b196243a617",
+      "requested_slot": true,
+      "raw_stem": "Which revision corrects the subject-verb agreement error in this sentence? \"Neither the coach nor the players was satisfied with the referee's decision.\"",
+      "choices": [
+        "Neither the coach nor the players were satisfied with the referee's decision.",
+        "Neither the coach nor the players has been satisfied with the referee's decision.",
+        "Neither the coaches nor the player were satisfied with the referee's decision.",
+        "Neither the coach or the players were satisfied with the referee's decision."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "19e6eeaac7101f1949ccfcb3c24bd5d20d406dc03e3554e88d0eceed773616d1",
+      "requested_slot": true,
+      "raw_stem": "Which revision eliminates the ambiguous pronoun reference in this sentence? \"Maya told Priya that her presentation needed more data.\"",
+      "choices": [
+        "Maya told Priya that her own presentation needed more data.",
+        "Maya told Priya that their presentation needed more data.",
+        "Maya told Priya that Maya's presentation needed more data.",
+        "Maya told Priya that she needed more data."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "250450a841421fc829c11ebe48086cfcfbcfce7ef2c3e953acf0e14694eb3b7f",
+      "requested_slot": true,
+      "raw_stem": "Replace [finish] with the simple-past form for one completed event last week: 'Last week, the committee members [finish] the budget review.'",
+      "choices": [
+        "finishes",
+        "have finished",
+        "finished",
+        "will finish"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "36f8338da4a6ad82fda276309b533bac44d1eed917a65b3ccef625844a8959e4",
+      "requested_slot": true,
+      "raw_stem": "Replace [is] with the correct verb form so the sentence follows subject-verb agreement: 'The list of required materials, including textbooks and lab notebooks, [is] available at the bookstore.'",
+      "choices": [
+        "is",
+        "were",
+        "be",
+        "are"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "42d658302e933fb647ef745aa08b4ad424ac950b0b880b064c2dcf5439cbfdae",
+      "requested_slot": true,
+      "raw_stem": "Replace [is] with the correct verb form so the sentence follows subject-verb agreement: 'The list of required materials [is] on the desk.'",
+      "choices": [
+        "are",
+        "is",
+        "were",
+        "be"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "4477cf357ab217e84258a732686f66ffbf2d9dadc76ba30e2007d112a569f78d",
+      "requested_slot": true,
+      "raw_stem": "Replace [she] with a word that makes the pronoun reference unambiguous: 'Maria told Elena that [she] needed to submit the report by Friday.'",
+      "choices": [
+        "Elena",
+        "the supervisor",
+        "the employee",
+        "Maria"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "4eeb9997cbd23460292d57c2eb1aa18300a3e1482583bb2088cce48e04d954f4",
+      "requested_slot": true,
+      "raw_stem": "Replace [has] with the correct verb form so the sentence follows subject-verb agreement: 'Neither the coach nor the players [has] decided on a practice schedule.'",
+      "choices": [
+        "are having",
+        "have",
+        "has",
+        "is having"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "502d64e3ae4fc36decaa11c19cb2d2b56bd13a0d9440055ea8685dc9b9ea7645",
+      "requested_slot": true,
+      "raw_stem": "Which revision corrects the verb tense error in this sentence? \"By the time the meeting starts, the committee already voted on the proposal.\"",
+      "choices": [
+        "By the time the meeting starts, the committee is already voting on the proposal.",
+        "By the time the meeting starts, the committee will have already voted on the proposal.",
+        "By the time the meeting starts, the committee already votes on the proposal.",
+        "By the time the meeting started, the committee already voted on the proposal."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "528a697db76503c4ad3b838c9da5c961b11b3cb89a052b9476e1ed0cd18be728",
+      "requested_slot": true,
+      "raw_stem": "Which revision eliminates the ambiguous pronoun reference in this sentence? \"Maria told Elena that her presentation needed more data.\"",
+      "choices": [
+        "Maria told Elena that their presentation needed more data.",
+        "Maria told Elena she needed more data for her presentation.",
+        "Maria told Elena that she needed more data for her presentation.",
+        "Maria told Elena that Maria's presentation needed more data."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "70985fb8a69f66abd47dd795f645186abb5f4c06f3cfdd55cd2ea41545541c1a",
+      "requested_slot": true,
+      "raw_stem": "Replace [will finish] with the correct verb form for an action completed before another past action: 'By the time the meeting started, the intern [will finish] copying the reports.'",
+      "choices": [
+        "had finished",
+        "has finished",
+        "finished",
+        "was finishing"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "80a85f5ff8570aba7ab4fae9c7a526a99b764ef1d31006bc83b5db7f613144f0",
+      "requested_slot": true,
+      "raw_stem": "Replace [have] with the correct verb form so the sentence follows subject-verb agreement: 'Each of the three finalists [have] submitted an essay.'",
+      "choices": [
+        "were",
+        "has",
+        "have",
+        "are"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "826119e9b65e9db06e58a91e2e5e0d1c34e22233f6b50b38006304e8fe38a990",
+      "requested_slot": true,
+      "raw_stem": "Which revision corrects the verb tense error in this sentence? \"By the time the meeting starts, the committee already voted on the proposal.\"",
+      "choices": [
+        "By the time the meeting starts, the committee already votes on the proposal.",
+        "By the time the meeting started, the committee already votes on the proposal.",
+        "By the time the meeting starts, the committee is already voting on the proposal.",
+        "By the time the meeting starts, the committee will have already voted on the proposal."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "b5775fd1e7ca05174f8e93bde07ce3abbdf92a35fe37b9fe8a7098e0fe7528a6",
+      "requested_slot": true,
+      "raw_stem": "Replace [their] with a word that makes the pronoun reference unambiguous: 'When the manager spoke to the intern, [their] computer crashed.'",
+      "choices": [
+        "his or her",
+        "the intern's",
+        "its",
+        "the manager's"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "bf03cd5207ad97df05a74c21fe868f4ef9d273b7370309ed33a597b351845773",
+      "requested_slot": true,
+      "raw_stem": "Which revision eliminates the ambiguous pronoun reference in this sentence? \"When the manager met with the intern, he asked several questions about the budget.\"",
+      "choices": [
+        "When the manager met with the intern, the former asked several questions about the budget.",
+        "When the manager met with the intern, one of them asked several questions about the budget.",
+        "When the manager met with the intern, the manager asked several questions about the budget.",
+        "When the manager met with the intern, he himself asked several questions about the budget."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "c17c932dde6b8544bb25795d54387784dcb5991a916d15edecb54e8b72e0d37f",
+      "requested_slot": true,
+      "raw_stem": "Which revision eliminates the ambiguous pronoun reference in this sentence? \"When the manager spoke to the intern, he seemed frustrated.\"",
+      "choices": [
+        "When the manager spoke to the intern, he seemed frustrated by him.",
+        "When the manager spoke to the intern, he seemed frustrated with his work.",
+        "When the manager spoke to the intern, he seemed frustrated and left.",
+        "When the manager spoke to the intern, the manager seemed frustrated."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "c5448510f50afc25dbb4e753541ad5fee4d57f0d771476b6d386188764ff8730",
+      "requested_slot": true,
+      "raw_stem": "Replace [they] with a noun so the sentence has unambiguous pronoun reference: 'When the coach spoke to the captain before the game, [they] seemed nervous.'",
+      "choices": [
+        "the coach",
+        "the captain",
+        "the game",
+        "the team"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "d1a5f9c17ef0560b3a2ccdae22920567b7a86ec20b650ba8eb41b80e71eebe2a",
+      "requested_slot": true,
+      "raw_stem": "Which revision corrects the subject-verb agreement error in this sentence? \"Neither the coach nor the players was ready to leave the field after the loss.\"",
+      "choices": [
+        "Neither the coaches nor the player was ready to leave the field after the loss.",
+        "Neither the coach or the players were ready to leave the field after the loss.",
+        "Neither the coach nor the players is ready to leave the field after the loss.",
+        "Neither the coach nor the players were ready to leave the field after the loss."
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "ec883040487e1391ca6f1d4f60cd254517befee80bcf5212790b7a5a9b238dbc",
+      "requested_slot": true,
+      "raw_stem": "Replace [it] with a noun so the sentence has unambiguous pronoun reference: 'The laptop fell on the concrete floor, but [it] was not damaged.'",
+      "choices": [
+        "the laptop",
+        "the concrete floor",
+        "the fall",
+        "the damage"
+      ],
+      "projection_shape": "readable_prose",
+      "review": {
+        "literal_task": null,
+        "premises": null,
+        "supported_choice_texts": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    }
+  ],
+  "instruction": "Lock literal task/premises, offered solutions and all six pair meanings before opening raw capture or unblind mapping. Missing shapes remain failures. Keys, explanations and arm/call grouping are withheld."
+}
