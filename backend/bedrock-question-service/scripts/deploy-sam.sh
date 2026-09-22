@@ -2,6 +2,15 @@
 
 set -e -o pipefail
 
+case "${BEDROCK_STRUCTURED_OUTPUT_MODE:-legacy}" in
+  legacy|native) ;;
+  *) echo "BEDROCK_STRUCTURED_OUTPUT_MODE must be legacy or native." >&2; exit 1 ;;
+esac
+case "${QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE:-inherit}" in
+  inherit|legacy|native) ;;
+  *) echo "QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE must be inherit, legacy, or native." >&2; exit 1 ;;
+esac
+
 parameters=(
   "BackendToken=$CHECKPOINT_BACKEND_TOKEN"
   "QuotaHashSecret=$QUOTA_HASH_SECRET"
@@ -15,6 +24,7 @@ parameters=(
   "BedrockFallbackModelArn=$BEDROCK_FALLBACK_MODEL_ARN"
   "BedrockReasoningEffort=$BEDROCK_REASONING_EFFORT"
   "BedrockStructuredOutputMode=${BEDROCK_STRUCTURED_OUTPUT_MODE:-legacy}"
+  "QuestionBankWorkerStructuredOutputMode=${QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE:-inherit}"
   "BedrockGuardrailIdentifier=$BEDROCK_GUARDRAIL_IDENTIFIER"
   "BedrockGuardrailVersion=$BEDROCK_GUARDRAIL_VERSION"
   "BedrockGuardrailArn=$BEDROCK_GUARDRAIL_ARN"

@@ -96,8 +96,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 55 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 55"
+[[ "${#sam_arguments[@]}" -eq 56 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 56"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -120,7 +120,7 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
-for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy; do
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit; do
   [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
 done
 for argument in "${sam_arguments[@]:11}"; do
@@ -128,12 +128,50 @@ for argument in "${sam_arguments[@]:11}"; do
     fail "unexpanded or malformed parameter override: $argument"
 done
 
-env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
-  "${deployment_environment[@]}" BEDROCK_STRUCTURED_OUTPUT_MODE=native \
-  "$script_dir/deploy-sam.sh"
-mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ " ${sam_arguments[*]} " == *" BedrockStructuredOutputMode=native "* ]] || \
-  fail "explicit native output mode was not forwarded"
+for global_mode in legacy native; do
+  for worker_mode in inherit legacy native; do
+    env -i "PATH=$PATH" "${deployment_environment[@]}" \
+      "BEDROCK_STRUCTURED_OUTPUT_MODE=$global_mode" \
+      "QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=$worker_mode" \
+      "$script_dir/validate-deployment-config.sh"
+    env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" "BEDROCK_STRUCTURED_OUTPUT_MODE=$global_mode" \
+      "QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=$worker_mode" \
+      "$script_dir/deploy-sam.sh"
+    mapfile -d '' -t sam_arguments < "$sam_capture"
+    [[ " ${sam_arguments[*]} " == *" BedrockStructuredOutputMode=$global_mode "* ]] || \
+      fail "global output mode $global_mode was not forwarded"
+    [[ " ${sam_arguments[*]} " == *" QuestionBankWorkerStructuredOutputMode=$worker_mode "* ]] || \
+      fail "worker output mode $worker_mode was not forwarded"
+  done
+done
+
+for mode_variable in BEDROCK_STRUCTURED_OUTPUT_MODE QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE; do
+  for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+    rm -f "$sam_capture"
+    if invalid_mode_output="$(
+      env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+        "${deployment_environment[@]}" "$mode_variable=invalid" \
+        "$script_dir/$checked_script" 2>&1
+    )"; then
+      fail "$checked_script accepted invalid $mode_variable"
+    fi
+    [[ "$invalid_mode_output" == *"$mode_variable must be "* ]] || \
+      fail "$checked_script did not identify invalid $mode_variable"
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid $mode_variable"
+  done
+done
+
+if fallback_output="$(
+  env -i "PATH=$PATH" "${deployment_environment[@]}" \
+    QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native \
+    BEDROCK_FALLBACK_MODEL_ARN=arn:aws:bedrock:us-east-1::foundation-model/test.fallback \
+    "$script_dir/validate-deployment-config.sh" 2>&1
+)"; then
+  fail "worker output override bypassed the fallback invoke allowlist"
+fi
+[[ "$fallback_output" == *"must include BEDROCK_FALLBACK_MODEL_ARN"* ]] || \
+  fail "fallback allowlist rejection did not return its expected diagnostic"
 
 printf '%s\n' \
   '#!/usr/bin/env bash' \
