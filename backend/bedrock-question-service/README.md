@@ -41,7 +41,7 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `BEDROCK_VERIFICATION_MODEL_ID` | `us.anthropic.claude-sonnet-4-6` locally; explicit `BedrockVerificationModelArn` in SAM | Separate author-key-blind complete-choice solver and final reviewer. Every new bank question needs one supported choice and agreement on its answer; model agreement does not prove correctness. |
 | `QUESTION_FEEDBACK_CONTRACT` | `reviewer_written` | Server-only opt-in `authored_solution` preserves the author's complete main explanation and audits it without allowing the reviewer to write replacement teaching. Requires complete-choice solving; nonempty incoming choice feedback is rejected. See the [contract and qualification status](../../docs/QUESTION_AUTHORED_SOLUTION_CONTRACT.md). Not wired to a new SAM deployment parameter or enabled by default. |
 | `BEDROCK_FALLBACK_MODEL_ID` | empty | Optional secondary model ARN; enable only after it passes the same eval suite. |
-| `BEDROCK_STRUCTURED_OUTPUT_MODE` | `legacy` | Effective per-function transport mode: `legacy` preserves prompt-requested JSON; `native` sends a versioned, stage-specific `outputConfig.textFormat` schema. Native mode fails closed for missing contracts, models outside the capability allowlist, and SDK/service schema incompatibility; it never retries without a schema. Qualify every model/stage used by the function being enabled, including its configured fallback. SAM uses `BedrockStructuredOutputMode` for the API and, by default, the worker. The documented synchronous Nova Lite configuration is not native-compatible. |
+| `BEDROCK_STRUCTURED_OUTPUT_MODE` | `legacy` | Effective per-function transport mode: `legacy` preserves prompt-requested JSON; `native` sends a versioned, stage-specific `outputConfig.textFormat` schema. Native mode fails closed for missing contracts, models outside the capability allowlist, and SDK/service schema incompatibility; it never retries without a schema. Qualify every model/stage used by the function being enabled, including its configured fallback. SAM uses `BedrockStructuredOutputMode` for the API and a separate worker override. The documented synchronous Nova Lite configuration is not native-compatible. |
 | `BEDROCK_REASONING_EFFORT` | empty locally; `low` in the deploy workflow | Optional GPT-5.6 effort: `none`, `low`, `medium`, `high`, `xhigh`, or `max`. At `low` or higher the request sends the reasoning field and deliberately omits temperature/top-p sampling controls; `none` retains the configured temperature. Non-GPT-5.6 models ignore this setting. |
 | `BEDROCK_TEMPERATURE` | `0.2` | Sampling temperature from 0 to 1 when reasoning is disabled or unsupported. GPT-5.6 requests at `low` or higher reasoning effort omit it. |
 | `BEDROCK_GUARDRAIL_IDENTIFIER` | empty | Optional Guardrail ID. Must be paired with a version. |
@@ -75,13 +75,23 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `QUESTION_BANK_FAILURE_COOLDOWN_SECONDS` | `300` | Earliest retry time recorded after a question-bank job reaches terminal failure. |
 | `EMIT_STRUCTURED_METRICS` | on in Lambda | Emits privacy-safe request and provider metrics in CloudWatch EMF. |
 
-Native output transport is independent of answer verification. The six static
+Native output transport is independent of answer verification. Versioned static
 schemas constrain authoring, skill-map inference/evolution, complete-choice
 solving, default review, and optional authored-solution review. Default native
 review feedback uses provider-only `choiceFeedback` rows, validated before
 conversion to the existing `choiceExplanations` object; accepted items still need
 exact choice coverage, independent answer agreement, and all existing semantic
 checks. Historical eval transports explicitly retain legacy prompts and shapes.
+Native authoring uses `question_author_v3`: exactly four `a`/`b`/`c`/`d` slots
+and a `correctChoice` enum, converted into the existing choices array and exact
+text answer key. Its schema puts the stem and explanation before the key while
+preserving the frozen v1/v2 schema bytes. This guarantees the choice count and
+key membership, not distinct meanings, factual correctness, or valid teaching;
+independent solving and final review still control admission. Legacy generation
+keeps v1. The [bounded author comparison](../../docs/evidence/native-author-order-20260922/REPORT.md)
+records the observed improvement and remaining ambiguity; the earlier
+[fixed-slot probe](../../docs/evidence/native-author-release-20260922/REPORT.md)
+retains its failed explanation bounds and incorrect-answer evidence.
 See the [implementation and qualification status](../../docs/NATIVE_STRUCTURED_OUTPUT_IMPLEMENTATION.md)
 and [artifact validation and rollback procedure](docs/DEPLOYMENT.md#native-structured-output-qualification-and-rollback).
 
@@ -90,9 +100,15 @@ variable `QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE` accept `inherit` (default
 `legacy`, or `native`. They resolve the worker's existing
 `BEDROCK_STRUCTURED_OUTPUT_MODE` environment variable without changing the API's
 mode or any model selection. A qualified worker can use explicit `native` while
-the Nova Lite API remains `legacy`. Roll the worker back with explicit `legacy`;
-`inherit` follows the global mode, including a global `native` setting. Default
-deployments retain their previous behavior.
+the Nova Lite API remains `legacy`. The deployment scripts validate the effective
+mode and every configured author, verifier and fallback against the runtime
+capability allowlist before SAM deployment. That check establishes configuration
+compatibility, not model quality. Roll the worker back with explicit `legacy`;
+`inherit` follows the global mode, including a global `native` setting. Clients
+requiring policy revision 4 need the complete native slot/pair path; coordinate
+any such client promotion with worker rollout. Never relabel old inventory to
+satisfy a new minimum policy. Checked-in defaults and the current client minimum
+remain unchanged while semantic qualification continues.
 
 Reasoning is configurable independently of ordinary response length. `BEDROCK_KIMI_THINKING=enabled` enables Kimi K2.5 thinking with temperature 1.0 and top-p 0.95; `disabled` preserves ordinary sampling. For Claude Sonnet/Opus 4.6, `BEDROCK_CLAUDE_THINKING=adaptive` sends adaptive thinking and `BEDROCK_CLAUDE_EFFORT` (`low`, `medium`, or `high`, default `high`) while omitting customized sampling. An explicit `max` setting is also supported for `anthropic.claude-opus-4-6-v1` and its recognized geographic profile/ARN forms, following [AWS adaptive-thinking guidance](https://docs.aws.amazon.com/bedrock/latest/userguide/claude-messages-adaptive-thinking.html). `max` fails before invocation for Sonnet 4.6 and unrecognized Opus variants. Since the setting applies to author and reviewer calls, both must use a compatible model when testing `max`. Both thinking switches initially default to `disabled`; this adds an experiment control without changing deployment defaults. DeepSeek retains its disabled-thinking setting, and GPT-5.6 retains its separate reasoning-effort configuration.
 
@@ -251,7 +267,24 @@ Use `python evals/checkpoint_learning_eval.py --output /tmp/learning-review.json
 
 ### Independent solution and diagnosis
 
-Question generation now solves stems before exposing answer choices to the verifier. The solver explicitly lists missing factual assumptions; the server discards those items before final review and preserves indexes for the supported remainder. Final feedback targets short sentences within the unchanged client limits. Generation uses a shorter task-focused prompt, and JSON with duplicate properties is rejected rather than silently selecting the last answer key. All three stages consume the same bounded call budget. No production model choice is implied by local comparison results.
+Question generation uses an author-key-blind complete-choice solver followed by
+final review. Native reviewer-written generation selects
+`complete_choice_solver_v3`: four fixed judgment slots and six fixed unordered
+pair slots, with exact input endpoints. Slot order is derived from the stem and
+choice bytes independently of the author's key. The server requires one
+supported choice, three refuted choices, exact key agreement and no declared
+equivalent or uncertain pair, then checks final review before awarding policy
+revision 4. The legacy complete-choice path stays at revision 2; optional
+`authored_solution` stays at 3. Historical stem-only evals retain revision 1.
+
+Final feedback must cover the exact choices and meet the unchanged client bounds.
+Duplicate JSON properties are rejected rather than silently selecting a value.
+All three stages consume the same bounded call budget. These checks enforce
+structure and the models' declarations; confident semantic mistakes can still
+pass. The [structural milestone and live failures](../../docs/evidence/question-reliability-release-20260922/STRUCTURAL_MILESTONE.md)
+record 1,124 passing backend tests, a failed strict pair-label qualification and
+29 admitted fresh questions with remaining content errors. No deployment or
+claim of deterministic factual correctness follows from those results.
 
 The learning evaluator records quality dispositions, provider configuration, prompt hashes, token usage, and stop reasons. Use `--review-fixtures evals/fixtures/question_verification_holdout.jsonl` for the additional eight checks. A malformed solver response is a failed evaluation, not credit for detecting a bad item. The held-out arithmetic and SQLite references were independently checked; this small set is not a production correctness estimate.
 

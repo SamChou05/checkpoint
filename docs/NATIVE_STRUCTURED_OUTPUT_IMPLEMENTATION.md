@@ -1,170 +1,126 @@
 # Native structured outputs: implementation and qualification
 
-September 9, 2026. This implementation adds optional provider-constrained JSON
-to the existing Bedrock pipeline. `BEDROCK_STRUCTURED_OUTPUT_MODE` and its SAM
-parameter `BedrockStructuredOutputMode` default to `legacy`. No deployment,
-production setting, model selection, or live inference was performed for this
-change. Native formatting does not establish factual accuracy or unique answers.
-
-**September 21 follow-up:** the initial implementation above is deployed but
-remains in `legacy` mode. A six-call synthetic worker smoke passed its three
-current stage contracts. A separate mixed-control reviewer trial exposed a v1
-schema/application mismatch: a rejected item could retain an answer and feedback
-under the schema, while the original adapter rejected those fields. The current
-v1 adapter validates the full schema and then keeps only the original index and
-Boolean false verdict for such a row. This preserves its rejection without
-discarding valid sibling reviews; accepted-row checks are unchanged. Experimental
-`default_reviewer_v2` represents accepted and rejected records as separate closed
-`anyOf` branches. Its two live calls were schema-valid but rejected all eight
-controls each time, including all three valid questions. **V2 is not qualified
-and production continues selecting v1.** See the
-[v2 result and unchanged failure evidence](evidence/structured-reliability-20260921/REVIEWER_V2_FINDINGS.md).
+Current status, September 22, 2026: verified transport and answer-provenance
+improvements are on `main`. The deployment defaults remain global `legacy` and
+worker `inherit`; the current iOS minimum remains policy 2. Native worker rollout
+and a client minimum of 4 are separate pending work. No deployment was performed
+for these changes. Native formatting enforces structure, not factual correctness.
 
 ## Runtime contracts and compatibility
 
-Every production provider call selects its stage explicitly, including author
-repair, top-ups, configured fallback attempts, API/worker generation, and
-skill-map retries. Native mode uses six closed, versioned, static schemas:
+Every provider call selects its stage explicitly, including author repair,
+top-ups, configured fallback, API/worker generation and skill-map retries. The
+registry contains ten static, closed, versioned contracts:
 
-| Contract | Native shape and application-owned checks |
+| Contract | Shape and runtime use |
 | --- | --- |
-| `question_author_v1` | Questions with text, choices, key, explanation, topic, difficulty, format, and optional map tags. Application code enforces counts, bounds, map membership, scope, and history. |
-| `skill_map_inference_v1` | Skill and objective names. The server validates 3–6 skills and 2–5 objectives and assigns IDs. |
-| `skill_map_evolution_v1` | `advance` changes with predecessor and successor names/objectives. The server enforces predecessor coverage and constructs IDs, replacements, and the new map version. |
-| `complete_choice_solver_v1` | Exact indexed choices with `supported`, `refuted`, or `uncertain` judgments. Zero/multiple supported answers remain representable and are rejected by application policy. |
-| `default_reviewer_v1` | Indexed verdict, answer, assessed difficulty, explanation, and provider-only `choiceFeedback` rows. The prompt requests empty answer/feedback on rejection; all fields still require schema-valid types. Any typed `valid:false` row adapts to only its original index and negative verdict. |
-| `authored_solution_reviewer_v1` | Indexed verdict, answer, assessed difficulty, explanation support, and issues. False, empty-answer, unsupported, uncertain, and issue-bearing results remain expressible. This unrelated mode remains opt-in. |
+| `question_author_v1` | Historical choices array and text key. Retained for legacy compatibility and frozen evidence. |
+| `question_author_v2` | Four required choice slots and an enum key; retained sorted serialization for the controlled comparison. |
+| `question_author_v3` | Current native author, including repair/fallback. Fixed slots and enum key, with stem and explanation serialized before the key. Adapter derives exact answer bytes from the selected slot. |
+| `skill_map_inference_v1` | Skill/objective names; server validates counts and assigns IDs. |
+| `skill_map_evolution_v1` | Successor names/objectives; server validates predecessor coverage and constructs map identity/version. |
+| `complete_choice_solver_v1` | Exact indexed choices with supported/refuted/uncertain declarations. Retained for legacy complete-choice and optional authored teaching. |
+| `complete_choice_solver_v3` | Native reviewer-written path: four fixed judgment slots and six fixed unordered pair slots, reasons before verdicts. Trusted input provides exact pair endpoints. |
+| `default_reviewer_v1` | Current final review: verdict, exact answer, assessed difficulty, main explanation and provider-only choiceFeedback rows. |
+| `default_reviewer_v2` | Inactive experiment with separate accepted/rejected union branches; failed valid-control retention. |
+| `authored_solution_reviewer_v1` | Optional authored-teaching audit; cannot replace the author's teaching. Not enabled by this work. |
 
-The separately retained experimental `default_reviewer_v2` has two closed item
-branches: accepted reviews require the same feedback fields with `valid:true`;
-rejections permit only `index` and `valid:false`. Strict local union validation
-rejects missing/unknown fields, non-boolean discriminators and unmatched
-branches before adaptation. The adapter preserves minimal rejections and exact
-accepted feedback. V1's schema, prompt, production routing and legacy diagnostic
-identity remain unchanged; its negative adaptation follows the safe handling
-described above. Explicit v2 calls report transport version
-2; they do not change the public verification policy revision.
+Historical schema bytes remain stable. V3 serialization deliberately preserves
+property order. Schemas contain no request-specific goals, answers, IDs or counts.
+Strict JSON/schema parsing rejects duplicate properties, nonfinite numbers,
+unknown/missing fields, invalid types/enums, refusal and incomplete output before
+adaptation. Application code still enforces counts, text bounds, scope and exact
+identity. The author adapter guarantees four slots and key membership; it cannot
+guarantee that the four meanings differ or that the selected answer is true.
 
-Schemas contain no request-specific goals, choices, IDs, answers, or counts.
-Stable serialization produces deterministic hashes and fresh request wrappers.
-Native responses undergo strict JSON and schema validation before adaptation;
-duplicate keys, nonfinite numbers, unknown/missing fields, incorrect types,
-invalid enums, refusal, and incomplete output fail admission. The default
-reviewer adapter rejects duplicate or malformed accepted feedback rows before
-constructing `choiceExplanations`; downstream review requires exactly the offered
-choices and indexes. Accepted choice bytes and feedback text are preserved by
-the adapter. Schema-valid feedback on rejected rows is discarded and cannot
-become learner content.
+Native solver slot order is derived from the stem and choice bytes independently
+of the key and incoming order. Exact decoding rejects missing/extra/self/reversed
+pairs. Application admission requires exactly one supported choice, three refuted
+choices and exact agreement with the author's key; declared equivalent or
+uncertain pairs veto the item. Different wrong answers are not automatically
+equivalent. The solver and final reviewer are fallible, so agreeing declarations
+are not a proof of correctness.
 
-Independent complete-choice solving and final review retain their separate
-visibility and rejection rules. The optional authored-solution reviewer cannot
-rewrite the author's explanation or discard incoming teaching. The public iOS
-response remains unchanged, including textual choices/keys, feedback bindings,
-map metadata, and service-owned verification. Wire verification stays at version
-1, complete-choice policy at revision 2, and optional authored-solution policy at
-revision 3. Historical eval callers explicitly select legacy transport; frozen
-prompt bytes and captured evidence are not reinterpreted.
+Final review still uses v1. After validating the full schema, its adapter turns
+any typed false review into its original index and false verdict. This keeps the
+rejection without discarding valid siblings because a rejected row also contains
+unused text. Accepted rows must retain exact choices, complete feedback and text
+bounds. The [reviewer-v2 failure](evidence/structured-reliability-20260921/REVIEWER_V2_FINDINGS.md)
+remains unchanged evidence; it does not authorize switching production to v2.
 
-Provider deadlines, sampling/reasoning settings, guardrails, IAM scope, quotas,
-durable call reservations, retry ceilings, and accepted partial work remain in
-force. Native SDK/service request incompatibility fails without dropping the
-schema or switching models. Ordinary configured fallback calls still carry the
-selected stage schema and consume the existing budget.
+Public response shape and wire verification version remain 1. Legacy
+complete-choice verification earns policy 2, optional authored teaching earns 3,
+and the complete native slot/pair path followed by successful final review earns
+4. Historical stem-only evaluation stays at 1. Stored content is never upgraded
+by changing its stamp. The client filters cached inventory by its actual required
+policy while preserving history; see the [cached inventory milestone](evidence/question-reliability-release-20260922/CACHED_INVENTORY.md).
 
-## Packaging and automated evidence
+Provider deadlines, sampling/reasoning controls, guardrails, IAM scope, quotas,
+durable reservations, retry ceilings and accepted partial work remain in force.
+Native incompatibility fails without dropping the schema. Configured fallback
+calls still carry the selected contract and consume the existing call budget.
 
-Lambda artifacts package boto3 and botocore **1.43.91** from the runtime
-`requirements.txt`; updating eval dependencies or relying on Lambda's installed
-SDK is insufficient. Run `scripts/validate-native-sdk.py` with Python 3.12
-`-I -S` against each built function directory. It requires the pinned versions,
-loads packages and Bedrock service-model data from that artifact, validates all
-seven packaged Converse request shapes (six active plus experimental v2), and
-makes no network or provider calls. See the
-[build commands](../backend/bedrock-question-service/docs/DEPLOYMENT.md#native-structured-output-qualification-and-rollback).
+## Verification and live evidence
 
-Completed preparation checks, with controlled provider fixtures:
+The September 22 structural milestone passes all **1,124 backend tests**, Ruff,
+compilation, deployment-script checks, SAM lint and a noncontainer SAM build.
+All 23 service modules match each of three built artifacts. Each artifact
+packages boto3/botocore 1.43.91 and validates all ten native request shapes with
+`scripts/validate-native-sdk.py` under Python 3.12 `-I -S`: **30 offline checks**.
+The earlier container build attempt remains unverified because Docker timed out.
+These checks do not prove provider semantic accuracy or deployed queue behavior.
 
-- Final isolated full backend run: **1,027 tests passed, no skips**, on Python
-  3.12.11 with the pinned runtime SDK and jsonschema 4.25.1 installed.
-- Ruff, Python compilation, deployment-script tests, and `git diff --check` passed.
-- Existing iOS contract/preservation suites: **102 tests passed, no skips**.
-- SAM template validation with lint passed.
-- Noncontainer SAM build passed for all three functions; artifact SDK validation
-  passed all **18 request-shape checks**.
+All experiments retain their prospective plans, raw attempts and failed criteria:
 
-The initial GitHub run exposed a pre-existing test's assumption about malformed
-HTML. Newer Python patch releases tolerate that fixture. A separate test-only
-commit now injects failure after real partial extraction and verifies no partial
-text escapes; all 20 source-acquisition tests pass on Python 3.12.11 and 3.14.6.
-Acquisition policy is unchanged. See PR checks for final GitHub runner results.
-CI and manual deployment validation now build all three artifacts and require
-the artifact SDK verifier to pass before proceeding.
+- [Author ordering comparison](evidence/native-author-order-20260922/REPORT.md):
+  four calls, twenty generated items. The sorted arm had three plainly wrong
+  keys; the ordered arm had none plainly wrong and one ambiguous recipe. This
+  supports the narrow ordering change, not a general accuracy estimate.
+- [Fixed-pair endpoint trial](evidence/choice-quality-release-20260922/ENDPOINT_RESULTS.md):
+  four calls on twenty independently reviewed controls; ten valid items retained
+  and ten defective items excluded, 80/80 correctness labels. Its strict criterion
+  **failed** at 116/120 pair labels. Correct eligibility does not erase wrong
+  intermediate labels.
+- [Fresh full-pipeline diagnostic](evidence/question-reliability-release-20260922/STRUCTURAL_MILESTONE.md):
+  thirty calls across six domains returned 29/30 requested items. Yield passed;
+  the all-admitted-content criterion **failed** because audits found false
+  teaching feedback, a position-dependent explanation and an ambiguous English
+  item. Captures and all three audit files are retained alongside the report.
+- [Earlier worker smoke](evidence/structured-reliability-20260921/PROVIDER_FINDINGS.md):
+  six calls passed the then-current author/solver/reviewer contracts on two simple
+  arithmetic questions. It does not qualify the later schemas or broad content.
 
-The Lambda container build remains unverified because the local Docker server
-timed out. A noncontainer build and local SDK shape validation do not establish
-Lambda container compatibility or Bedrock's acceptance of the JSON schemas.
+New experiments require their own frozen scope and bounds. Do not reuse an old
+call allowance, rerun failed samples invisibly or reinterpret a strict failure
+as passing because a narrower metric improved. Follow-up adaptive-thinking and
+reviewer-anchoring candidates remain experiments until their evidence is reviewed.
 
-## Bounded live qualification plan
+## Deployment and rollback
 
-Keep deployment in legacy mode while preparing an explicitly authorized test
-environment. The runtime capability allowlist recognizes documented Kimi K2.5
-and Claude Sonnet 4.6 identifiers; it does **not** mean those deployments have
-passed live qualification. The documented synchronous API uses Nova Lite, which
-is outside that allowlist. Because the native flag applies to both API and
-worker, do not enable it until every role is compatible and independently
-qualified. Do not automatically change the synchronous model to make it fit.
+The documented synchronous Nova Lite configuration is outside the runtime native
+allowlist. The worker can be enabled independently with
+`QuestionBankWorkerStructuredOutputMode=native` while
+`BedrockStructuredOutputMode=legacy` preserves the API and its skill-map path.
+The deployment scripts validate the effective modes and all selected author,
+verifier and configured fallback models against the same runtime allowlist before
+SAM. Model-family recognition is separate from account access, live schema
+acceptance and quality qualification. Keep fallback empty until evaluated.
 
-1. Record the exact resolved model/profile for synchronous authoring, worker
-   authoring, skill-map planning, solver/reviewer, and any configured fallback.
-   Resolve inference-profile destinations in the intended account and region
-   using `GetInferenceProfile`; confirm narrowly scoped IAM, access, model
-   support, and runtime recognition for each role. Keep account identifiers and
-   credentials out of published evidence. An opaque application profile needs
-   reviewed runtime support before it can pass the allowlist.
-2. Freeze synthetic goals and the six schema hashes, model settings, ordinary
-   timeouts, and call limits. Allocate **at most 12 provider attempts total,
-   including retries**: one first and one repeated request for each of the six
-   schemas. Exercise author → independent solver → default review with those
-   fixtures and separately check inference, evolution, and optional authored
-   review. If optional authored review is excluded, mark it unqualified and use
-   at most ten planned calls. Never enable that mode merely to fill the matrix.
-3. Reserve/count every dispatch. A retry consumes a planned slot; it never
-   increases the 12-attempt ceiling. Stop at the ceiling, deadline, or quota
-   limit. If distinct role/model combinations cannot all fit, report precisely
-   which remain unqualified and keep rollout disabled. One model's result does
-   not qualify another role or resolved profile.
-4. Separate normal completion, service/schema rejection, refusal/truncation,
-   schema validation, semantic rejection, elapsed time, tokens, and durable/local
-   call counts. Report accepted partial work and first/repeated measurements
-   independently. Do not call them confirmed cold/warm measurements when grammar
-   cache state is unobservable. Inspect the synthetic accepted and rejected
-   content separately from operational metrics.
-5. Keep operational metrics bounded: stage, mode, schema name/version/hash,
-   classified outcome, elapsed time, tokens, and call counts. Never log learner
-   text, keys, reasoning, credentials, or provider exception messages. Retain
-   synthetic qualification evidence privately; passing formatting checks does
-   not establish general correctness, useful yield, or production latency.
+Resolve exact model/profile destinations and IAM resources in the intended
+account/region before a reviewed rollout. Keep budgets, timeouts, concurrency and
+model selection fixed during transport enablement. Monitor schema failures,
+semantic rejection, latency, inventory fill and durable call accounting.
 
-No live-provider compatibility, first/repeated latency, semantic yield, resolved
-deployment profile, or end-to-end deployed worker result is qualified by this
-implementation's automated tests. Do not raise timeouts, budgets, or concurrency
-to obtain a passing smoke result.
+Roll the worker back with an explicit worker `legacy` override. Changing only the
+global flag cannot override an explicit worker `native`. Verify the effective
+Lambda environment after deployment; the outbox makes no provider calls. A client
+requiring policy 4 needs a worker that actually produces policy 4. Coordinate
+rollback with that client minimum; do not relabel old inventory or claim lower
+policies satisfy it. See [deployment procedures](../backend/bedrock-question-service/docs/DEPLOYMENT.md#native-structured-output-qualification-and-rollback).
 
-## Deployment review and rollback
-
-After the remaining qualification and deployment review, stage a parameter-only
-enablement of `BedrockStructuredOutputMode=native` while keeping model and
-operational settings fixed. Monitor request/schema failures, semantic rejection,
-latency, inventory fill, and call accounting. Restore
-`BedrockStructuredOutputMode=legacy` through the stack to roll back, then verify
-`BEDROCK_STRUCTURED_OUTPUT_MODE=legacy` on both API and worker Lambda functions.
-The outbox makes no provider calls. Retain accepted inventory and its existing
-verification stamps; neither direction needs an iOS, bank, or history migration.
-
-The request format and supported subset follow [AWS structured-output documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/structured-output.html).
-Capability references are the [Kimi K2.5 model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-moonshot-ai-kimi-k2-5.html)
-and [Claude Sonnet 4.6 model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-sonnet-4-6.html).
-AWS's documented capability is distinct from the deferred live qualification
-above. The historical [nullable-schema rejection](QUESTION_TASK_OBSTRUCTION_SCHEMA_FIX.md)
-and [author-only latency experiment](QUESTION_AUTHOR_SCHEMA_EXPERIMENT.md) remain
-unchanged evidence, not qualification of these six runtime schemas.
+The provider contract follows [AWS structured-output documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/structured-output.html)
+and the [Kimi K2.5](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-moonshot-ai-kimi-k2-5.html)
+and [Claude Sonnet 4.6](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-sonnet-4-6.html)
+capability references. Historical [nullable-schema rejection](QUESTION_TASK_OBSTRUCTION_SCHEMA_FIX.md)
+and [author-only latency evidence](QUESTION_AUTHOR_SCHEMA_EXPERIMENT.md) remain
+historical results, not qualification of current runtime schemas.

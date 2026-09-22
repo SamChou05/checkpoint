@@ -68,8 +68,8 @@ acceptance, latency, or application quality. Opaque application profiles that th
 runtime cannot identify fail closed and need explicit reviewed support.
 
 `requirements.txt` packages boto3 and botocore 1.43.91 in each Lambda artifact.
-After building, validate the delivered SDK and all seven packaged native request
-shapes (six active contracts plus the unqualified experimental reviewer v2):
+After building, validate the delivered SDK and all ten registered native request
+shapes, including retained historical versions and experimental reviewer v2:
 
 ```bash
 sam validate --lint --template-file template.yaml
@@ -84,13 +84,14 @@ from the artifact. It excludes host site packages and user service-model paths,
 checks the exact pinned versions, and makes zero provider calls. A local
 noncontainer build is useful packaging evidence; it does not replace the Lambda
 container build. Current preparation passed SAM lint and a noncontainer build
-with 18 request-shape checks across three artifacts. Container verification
+with 30 request-shape checks across three artifacts. Container verification
 remains unavailable because the Docker server did not respond within its timeout.
 
-Use the [implementation and qualification plan](../../../docs/NATIVE_STRUCTURED_OUTPUT_IMPLEMENTATION.md)
-for the bounded synthetic dry run: at most 12 provider attempts including retries,
-with first/repeated requests and independently reported service, schema, semantic,
-latency, token, and call-accounting results. A [six-call worker smoke](../../../docs/evidence/structured-reliability-20260921/PROVIDER_FINDINGS.md)
+See the [current implementation and evidence](../../../docs/NATIVE_STRUCTURED_OUTPUT_IMPLEMENTATION.md)
+for the versioned contracts and immutable experiment plans. The September 22
+full-pipeline diagnostic returned 29 of 30 requested questions but failed its
+all-admitted-content criterion. Structured transport and local tests do not
+establish semantic qualification; keep rollout separate from code landing. A [six-call worker smoke](../../../docs/evidence/structured-reliability-20260921/PROVIDER_FINDINGS.md)
 completed the Kimi author and Sonnet solver/reviewer stages twice on two simple
 arithmetic questions. It does not qualify other stages or establish broad
 semantic reliability or deployed queue behavior. AWS documents the [Converse interface and schema subset](https://docs.aws.amazon.com/bedrock/latest/userguide/structured-output.html)
@@ -110,10 +111,13 @@ An explicit worker `legacy` also overrides a global `native` mode. Restoring
 To roll both functions back, set both modes to `legacy` and verify their effective
 Lambda environment values; changing only the global mode cannot undo an explicit
 worker `native` override. The outbox
-consumer makes no model calls. The iOS wire contract, bank format, wire
-verification version 1, complete-choice policy revision 2, and optional
-authored-solution revision 3 need no migration or relabeling. Existing accepted
-inventory remains usable.
+consumer makes no model calls. The iOS wire contract and bank format are unchanged.
+Wire verification stays at 1; legacy complete-choice policy stays at 2 and optional
+authored-solution at 3. The complete native slot/pair path earns policy 4 only
+after final review. A client requiring 4 cannot replenish from a worker producing
+2 or 3. Coordinate worker rollback with the client minimum rather than upgrading
+old stamps or claiming old inventory meets a stronger policy. Existing inventory
+is eligible only when its actual stored stamp satisfies the caller's minimum.
 
 ### Kimi K2.5 production-validation values
 
