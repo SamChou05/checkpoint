@@ -3,9 +3,10 @@ import hashlib
 import json
 import os
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from native_output_contracts import (
+    ReviewerSlotContract,
     adapt_native_response,
     contract_metadata,
     native_output_config,
@@ -94,6 +95,41 @@ class NativeOutputContractTests(unittest.TestCase):
                         contract=contract,
                     )
                 self.assertEqual(client.calls, [])
+
+    def test_opus_5_native_stages_fail_before_sdk_creation_quota_or_provider_calls(self):
+        models = [
+            "anthropic.claude-opus-5",
+            "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-opus-5",
+            *[model for prefix in ("us.", "eu.", "au.", "global.") for model in (
+                prefix + "anthropic.claude-opus-5",
+                "arn:aws:bedrock:us-east-1:123456789012:inference-profile/"
+                + prefix + "anthropic.claude-opus-5",
+            )],
+        ]
+        # Converse and reasoning support do not imply native JSON-schema support.
+        # Cover each actual generation-stage contract and both thinking modes.
+        for model in models:
+            for thinking in ("disabled", "adaptive"):
+                for contract in ("question_author_v3", "complete_choice_solver_v3", ReviewerSlotContract(1)):
+                    with self.subTest(model=model, thinking=thinking, contract=contract):
+                        reserve = Mock()
+                        budget = ProviderCallBudget(1, reserve_call=reserve)
+                        metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
+                        with patch.dict(os.environ, {
+                            "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+                            "BEDROCK_CLAUDE_THINKING": thinking,
+                        }, clear=True), patch("question_generation._bedrock_client") as factory:
+                            with self.assertRaisesRegex(ServiceConfigurationError, "support allowlist"):
+                                _generate_with_bedrock(
+                                    {}, None, model, user_prompt="task", system_prompt="rules",
+                                    contract=contract, call_budget=budget, request_metrics=metrics,
+                                )
+                        factory.assert_not_called()
+                        reserve.assert_not_called()
+                        self.assertEqual(budget.calls, 0)
+                        self.assertEqual(metrics, {
+                            "ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0,
+                        })
 
     def test_reviewer_adapter_preserves_exact_bytes_and_rejects_duplicates(self):
         choice = "cafe\u0301"

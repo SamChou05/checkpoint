@@ -118,6 +118,15 @@ verifier and configured fallback models against the same runtime allowlist befor
 SAM. Model-family recognition is separate from account access, live schema
 acceptance and quality qualification. Keep fallback empty until evaluated.
 
+Opus 5 remains outside this native allowlist. Its [official AWS model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-opus-5.html)
+lists Converse support but marks structured outputs unsupported on
+`bedrock-runtime` (checked September 22, 2026). Existing legacy transport and
+reasoning controls do not imply native-schema support. A regression covers every
+documented Opus 5 model/profile identifier in both thinking modes, requiring
+native author, solver and reviewer requests to fail before SDK creation or quota
+reservation. This documents existing runtime behavior; it does not enable or
+invoke the model.
+
 Resolve exact model/profile destinations and IAM resources in the intended
 account/region before a reviewed rollout. Keep budgets, timeouts, concurrency and
 model selection fixed during transport enablement. Monitor schema failures,
