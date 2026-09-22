@@ -1,0 +1,239 @@
+{
+  "capture_sha256": "750a7e8a890d98fd82f8d20bfad4e136a33fb2bcd0bf547953ca728eba87d8bc",
+  "plan_sha256": "f6b10c447e3f67cee9c3d2786ab5f1bdeecdaa22d1ac03ee7a3a70c218ae9d5b",
+  "provider_calls_in_replay": 0,
+  "all_pinned_original_and_new_sources_inputs_dependencies_unchanged": true,
+  "source_failed_sonnet_capture_sha256": "b9835a4c6198694a8363a11933a350ba891cb2970b86c97d39ac37bb827b9c56",
+  "checks": [
+    {
+      "sequence": 0,
+      "source_sequence": 1,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    },
+    {
+      "sequence": 1,
+      "source_sequence": 2,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    },
+    {
+      "sequence": 2,
+      "source_sequence": 5,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    }
+  ],
+  "status": "complete_pending_manual_audit",
+  "planned_calls": 3,
+  "attempted_calls": 3,
+  "unattempted_calls": 0,
+  "planned_items": 18,
+  "strict_assessed_items": 18,
+  "failed_or_unattempted_items": 0,
+  "exact_dispositions": 17,
+  "sound_accepted_of_9": 9,
+  "defective_rejected_of_9": 8,
+  "all_accepted_content_unchanged": true,
+  "reason_before_verdict_count": 18,
+  "reason_quality_requires_independent_audit": true,
+  "input_tokens_known": 8241,
+  "output_tokens_known": 6892,
+  "usage_unknown_calls": 0,
+  "latency_seconds_sum": 109.514,
+  "latency_seconds_max": 50.624,
+  "reasoning_blocks_omitted": 3,
+  "case_results": [
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "slot": "0",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The explanation for 82.4 claims it results from reversing the weights (70% quiz, 30% final). But 0.70×84+0.30×76=58.8+22.8=81.6, not 82.4. The distractor explanation contains a false claim about how 82.4 is obtained.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "ddab3a1601897327f7021beb4eb12398e560d7c5f10175f4a82932280d79e12d"
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "slot": "1",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The explanation for 9 liters states it 'would imply a 3:3 (1:1) ratio of blue to white.' With 15 L blue and 9 L white, the ratio is 15:9 = 5:3, not 1:1. This is a materially false claim in the distractor feedback.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "99b9397bacebdc0d6fed449cbe595b1cf21ee8ad736eb384f807680c9d6d103d"
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "slot": "2",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "Key is correct: (2/3)×15=10. All distractor explanations verified: 9 L explanation correctly states 15:9=5:3; 6 L explanation correctly notes 15:6=5:2; 22.5 L explanation correctly identifies (3/2)×15 as an inverted ratio. All claims are sound.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "2024e8cd039b70a27b4920bf5072f84937629eba828b805a9be0304195b810ae",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "slot": "3",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "$60/$2.50=24 (break-even). Stem explicitly asks for 'minimum whole number' making pass strictly cheaper → 25 rides. All distractor explanations are accurate: 26 works but isn't minimum, 23 gives $57.50<$60, 24 gives exact tie. Sound throughout.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "f4625554acd27e5c40d6e3df774a283c991defa42c3b5c15ef2417c6af7b9902",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "slot": "4",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "Key 78.4 is correct: 0.30×84+0.70×76=25.2+53.2=78.4. Distractor explanations verified: 82.4=0.80×84+0.20×76=67.2+15.2 ✓; 79.2=0.40×84+0.60×76=33.6+45.6 ✓; 80.0=(84+76)/2 ✓. All claims are mathematically sound.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "833b12b19a422a112be6c4c4da8cbaa671f48aa89428f814898ea079989ae27c",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "slot": "5",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "Unlike item 3, the stem says 'How many rides per month make the pass cheaper' without specifying 'minimum.' The explanation for 26 rides concedes it 'also satisfies the condition.' With two offered choices both satisfying the stated condition, the stem does not uniquely determine one correct answer.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "81878d8dc6f9047c20478bbb5827a1bfc74da669079561e09c2b53324915881a"
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "slot": "0",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "With self-selection and unmeasured confounders, no causal conclusion is established by these observational data. The key claims the 20 pp difference 'proves' online instruction caused the higher pass rate—this is a textbook example of a claim that CANNOT be made from observational self-selected data. The correct answer ('Online instruction itself caused…') is unsupported by the stated facts, so the item has zero correct options.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "d479051714e340874c20208769f41909a125a64a15cb20f001f9405ed8e70142"
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "slot": "1",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "max(4,7)+3=10 is correct. All four distractor explanations are accurate: 7s omits packaging; 11=4+7 omits packaging; 14=4+7+3 wrongly serializes builds. Key and explanations are sound.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "e3db68fe9d9957479f402a7469bacdd191638ee52cec5ba729415476e8875941",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "slot": "2",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The explanation for the 11-second distractor states '11 seconds is 4+7+3, adding both build times and packaging sequentially.' But 4+7+3=14, not 11. This is a factual arithmetic error in the distractor explanation. (Item 1 correctly said 11=4+7.)",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "44a51f21b04b8183d803cd4ffa30b474bc22d10fb1615adfd087510923000369"
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "slot": "3",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "80%−60%=20 pp is a simple observed difference, and self-selection plus unmeasured confounders prevent any causal claim. The key ('observed pass rate 20 percentage points higher') and all explanations are sound.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "2743280dc1f34069b3e40ea0c52d60f1f413d617904f8ecb458c66fc5d5117aa",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "slot": "4",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "7*7=49 and 7≥0. The nonnegative constraint explicitly excludes −7. Explanations for all choices are accurate. Exactly one correct answer among the options.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "707852b5b28f205edf6fb83558784e2c33035b92e17171cba9a8873bcf45034c",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "slot": "5",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The prompt states 'A real number x satisfies x*x=49' with no nonnegative restriction. Both 7 and −7 satisfy x*x=49, so two offered options are correct. The explanation for −7 incorrectly claims 'The square root of 49 is nonnegative, so −7 cannot be the required value,' but the question asks which value satisfies x*x=49, not for the principal square root. The item lacks a unique correct answer.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "03cb3d2ec33ed01a1b542dd1d81b92e9c4d92f83f8d5bb129bd45ada877a7faa"
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_defective",
+      "slot": "0",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The question asks for a numerical value. Choices '2' and 'two' both represent the same value (2), so they are not meaningfully different proposed answers for a question about the value of 2 + 2. The choice explanation for 'two' explicitly acknowledges it 'denotes 2.' Two options proposing the identical answer violates the requirement that all four options express meaningfully different proposed answers.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "9a6d3ad67bb80670076b25d8796e5927972cd81c0487421d21a785a5e536fa1e"
+    },
+    {
+      "case_id": "supplement_semicolon_defective",
+      "slot": "1",
+      "verdict": "accepted",
+      "gold_verdict": "rejected",
+      "matching_disposition": false,
+      "reason": "The key is correct: a semicolon before the conjunctive adverb 'however' and a comma after it is standard punctuation for joining two independent clauses. All four options are meaningfully different (comma splice, correct form, misplaced semicolon, semicolon before coordinating conjunction). Each choice explanation accurately identifies the error or correctness of the option.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "266eb655db29ef65e0c823e97f8ad11fa56b4a74f9c38378c42e37e12b0402aa",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_sound",
+      "slot": "2",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "2 + 2 = 4 is correct. The four choices (4, 2, 5, 3) are all distinct numerical values. Each explanation is accurate: 2 is an addend, 5 is one more than 4, and 3 is one less than 4.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "98b78749c08b5f43493b49e360b9ce4584aa05cde7466ad5063e252eb8f30acc",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "supplement_decimal_representation_sound",
+      "slot": "3",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "The stem explicitly requires decimal notation with digits and a decimal point, no fraction bar or percent sign. Only 0.5 satisfies all constraints: correct value and correct format. 1/2 and 50% are excluded by stated format restrictions, 0.05 has the wrong value. All explanations are sound and match the stem's requirements.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "18e8f38b5d955c7fa71343745bb46e46bda94e4e827e5c346af54d5d30d9fb28",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "supplement_semicolon_sound",
+      "slot": "4",
+      "verdict": "accepted",
+      "gold_verdict": "accepted",
+      "matching_disposition": true,
+      "reason": "The stem specifies: semicolon joining two independent clauses, 'however' beginning the second clause, followed by a comma. Only option B meets all three criteria. Option A lacks both semicolon and 'however'; option C puts 'however' in the first clause; option D uses 'and' instead of 'however'. Explanations correctly address each distractor relative to the stem's explicit requirements.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "ce977f680e94fd9b1a448e1e55cd841d5376d420d7e6404202ef55d47934d936",
+      "accepted_content_exactly_unchanged": true
+    },
+    {
+      "case_id": "supplement_decimal_representation_defective",
+      "slot": "5",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "The stem asks 'Which option has a value equal to one half?' with no format restriction. 0.5, 1/2, and 50% all equal one half, so three choices are correct, yet only 0.5 is keyed. The choice explanations for 1/2 and 50% claim they fail because of notation, referencing 'the requested decimal notation,' but the stem makes no such request. The explanations were evidently copied from item 3, whose stem did restrict notation. Multiple correct answers and false explanations constitute a clear defect.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "9b18c49f30302fd80ce00aa0055ae8ce5c24b3b423dca984616062f40a3a5895"
+    }
+  ],
+  "independent_audit_sha256": "92bf5623fca065871f58d4d447721895728883adf5af32aaadae926ca29ceb97"
+}

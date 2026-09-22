@@ -1,0 +1,40 @@
+{
+  "checked_at_utc": "2026-09-22T07:03:16.199739+00:00",
+  "provider_inference_calls": 0,
+  "account_mutations": 0,
+  "proposed_model": "us.anthropic.claude-opus-5",
+  "read_only_api_observations": {
+    "get_inference_profile": {
+      "inferenceProfileId": "us.anthropic.claude-opus-5",
+      "status": "ACTIVE",
+      "type": "SYSTEM_DEFINED",
+      "model_regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2"
+      ]
+    },
+    "get_foundation_model_availability": {
+      "modelId": "anthropic.claude-opus-5",
+      "agreementAvailability": {
+        "status": "NOT_AVAILABLE"
+      },
+      "authorizationStatus": "AUTHORIZED",
+      "entitlementAvailability": "AVAILABLE",
+      "regionAvailability": "AVAILABLE"
+    }
+  },
+  "primary_documentation": [
+    {
+      "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-opus-5.html",
+      "finding": "Converse supported, but Structured outputs explicitly listed under Not Supported for bedrock-runtime as well as bedrock-mantle. Adaptive reasoning supported; default on."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/structured-output.html",
+      "finding": "Supported-model section delegates to model cards. It does not affirm Opus5 support over the explicit model-card negative."
+    }
+  ],
+  "disposition": "Do not freeze or dispatch the proposed native-schema Opus5 qualification on this evidence. Parent notified. Active inference profile is not proof of native structured-output support or an accepted agreement. No agreement, entitlement, subscription or account activation attempted.",
+  "possible_fallback_not_authorized": "Earlier actual Opus4.6 reviewer comparison showed successful native Converse responses. Parent may choose a new adaptive-high modelId-only plan for that documented/observed-capable model; no fallback dispatch authorized here.",
+  "repository_scope_correction": "Parent verified ensure_supported_model currently allows only Kimi/Sonnet for native output. Existing Opus5 support is legacy reasoning-request support, not native authorization; native Opus5 is already rejected. The earlier provisional repository-native-support assumption was incorrect."
+}

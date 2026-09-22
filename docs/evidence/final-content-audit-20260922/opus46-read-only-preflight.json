@@ -1,0 +1,40 @@
+{
+  "checked_at_utc": "2026-09-22T07:05:07.223812+00:00",
+  "provider_inference_calls": 0,
+  "account_mutations": 0,
+  "get_inference_profile": {
+    "id": "us.anthropic.claude-opus-4-6-v1",
+    "status": "ACTIVE",
+    "type": "SYSTEM_DEFINED",
+    "model_regions": [
+      "us-east-1",
+      "us-east-2",
+      "us-west-2"
+    ]
+  },
+  "get_foundation_model_availability": {
+    "modelId": "anthropic.claude-opus-4-6-v1",
+    "agreementAvailability": {
+      "status": "AVAILABLE"
+    },
+    "authorizationStatus": "AUTHORIZED",
+    "entitlementAvailability": "AVAILABLE",
+    "regionAvailability": "AVAILABLE"
+  },
+  "observed_native_success_evidence": "docs/evidence/verifier-model-comparison-20260922/capture.json: both Opus4.6 calls returned valid native reviewer schema output.",
+  "proposed_settings": {
+    "modelId": "us.anthropic.claude-opus-4-6-v1",
+    "additionalModelRequestFields": {
+      "thinking": {
+        "type": "adaptive"
+      },
+      "output_config": {
+        "effort": "high"
+      }
+    },
+    "inferenceConfig": {
+      "maxTokens": 16000
+    }
+  },
+  "activation_or_agreement_actions": "None."
+}
