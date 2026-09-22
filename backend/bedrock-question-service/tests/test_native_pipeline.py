@@ -29,7 +29,7 @@ from test_lambda_skill_map_evolution import _evolution_payload, _provider_respon
 
 
 AUTHOR = "question_author_v3"
-SOLVER = "complete_choice_solver_v3"
+SOLVER = "complete_choice_solver_v5_n1"
 LEGACY_SOLVER = "complete_choice_solver_v1"
 REVIEWER = "default_reviewer_v3_n1"
 AUTHORED_REVIEWER = "authored_solution_reviewer_v1"
@@ -67,6 +67,14 @@ def solver_record(item, answer, mutate=None):
             for left, right in combinations(("a", "b", "c", "d"), 2)
         }
     return result
+
+
+def solver_map(*records):
+    """Native solver output uses trusted outer keys and no nested indexes."""
+    assert len({record["index"] for record in records}) == len(records)
+    return {"solutions": {str(record["index"]): {
+        key: value for key, value in record.items() if key != "index"
+    } for record in records}}
 
 
 def task_data(request, tag):
@@ -170,7 +178,8 @@ class NativePipelineTests(unittest.TestCase):
             self.assertEqual(set(item), fields)
             self.assertNotIn("expectedAnswer", json.dumps(data))
             self.assertNotIn(question["explanation"], json.dumps(data))
-            return {"solutions": [solver_record(item, question["expectedAnswer"], mutate)]}
+            record = solver_record(item, question["expectedAnswer"], mutate)
+            return solver_map(record) if isinstance(item["choices"], dict) else {"solutions": [record]}
         return respond
 
     def pipeline(self, question=None, reviewer=None, mutate_solver=None):

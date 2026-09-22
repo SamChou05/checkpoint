@@ -45,7 +45,23 @@ class ReviewerSlotContract:
         return f"default_reviewer_v3_n{self.count}"
 
 
-NativeContract = Contract | ReviewerSlotContract
+@dataclass(frozen=True)
+class SolverSlotContract:
+    """Bind solver identities to the actual validated, answer-blind batch."""
+
+    count: int
+
+    def __post_init__(self) -> None:
+        if type(self.count) is not int or not 1 <= self.count <= MAX_REVIEW_BATCH_COUNT:
+            raise ServiceConfigurationError("Native solver count must be an integer from 1 through 40.")
+
+    @property
+    def name(self) -> str:
+        return f"complete_choice_solver_v5_n{self.count}"
+
+
+_COUNT_BOUND_CONTRACTS = (ReviewerSlotContract, SolverSlotContract)
+NativeContract = Contract | ReviewerSlotContract | SolverSlotContract
 
 _STRING = {"type": "string"}
 _INTEGER = {"type": "integer"}
@@ -184,6 +200,13 @@ def output_mode() -> str:
 
 
 def _contract_schema(contract: NativeContract) -> dict[str, Any]:
+    if isinstance(contract, SolverSlotContract):
+        row = copy.deepcopy(_SCHEMAS["complete_choice_solver_v3"]["properties"]["solutions"]["items"])
+        del row["properties"]["index"]
+        row["required"].remove("index")
+        return _object({"solutions": _object({
+            str(index): copy.deepcopy(row) for index in range(contract.count)
+        })})
     if not isinstance(contract, ReviewerSlotContract):
         return _SCHEMAS[contract]
     # Retain the exact count-five grammar qualified live: canonical v1 row
@@ -197,10 +220,35 @@ def _contract_schema(contract: NativeContract) -> dict[str, Any]:
     })})
 
 
+def _solver_slot_transport_schema(contract: SolverSlotContract) -> dict[str, Any]:
+    """Share repeated grammar definitions without relaxing the logical schema.
+
+    The strict local validator continues to use the expanded owned contract.
+    Only the provider representation uses internal references; neither external
+    references nor arbitrary user-supplied schema definitions are interpreted.
+    """
+    row = copy.deepcopy(_contract_schema(SolverSlotContract(1))["properties"]["solutions"]["properties"]["0"])
+    choice = copy.deepcopy(row["properties"]["choices"]["properties"]["a"])
+    pair = copy.deepcopy(row["properties"]["choicePairs"]["properties"]["ab"])
+    row["properties"]["choices"]["properties"] = {
+        slot: {"$ref": "#/$defs/choiceJudgment"} for slot in ("a", "b", "c", "d")
+    }
+    row["properties"]["choicePairs"]["properties"] = {
+        slot: {"$ref": "#/$defs/pairRelation"} for slot in ("ab", "ac", "ad", "bc", "bd", "cd")
+    }
+    schema = _object({"solutions": _object({
+        str(index): {"$ref": "#/$defs/solution"} for index in range(contract.count)
+    })})
+    schema["$defs"] = {"choiceJudgment": choice, "pairRelation": pair, "solution": row}
+    return schema
+
+
 def native_output_config(contract: NativeContract) -> dict[str, Any]:
     """Return an independent wrapper with stable schema serialization."""
-    schema = json.dumps(_contract_schema(contract), sort_keys=not isinstance(contract, ReviewerSlotContract),
+    schema = json.dumps(_contract_schema(contract), sort_keys=not isinstance(contract, _COUNT_BOUND_CONTRACTS),
                         separators=(",", ":"))
+    if isinstance(contract, SolverSlotContract):
+        schema = json.dumps(_solver_slot_transport_schema(contract), separators=(",", ":"))
     if contract == "complete_choice_solver_v3":
         # V3 intentionally declares reason before the final judgment/relation.
         # Scope insertion-order serialization to this new contract so all
@@ -218,15 +266,16 @@ def native_output_config(contract: NativeContract) -> dict[str, Any]:
         question["properties"] = {key: properties[key] for key in _AUTHOR_V3_PROPERTY_ORDER}
         schema = json.dumps(ordered, separators=(",", ":"))
     return {"textFormat": {"type": "json_schema", "structure": {"jsonSchema": {
-        "name": contract.name if isinstance(contract, ReviewerSlotContract) else contract, "schema": schema,
+        "name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract, "schema": schema,
     }}}}
 
 
 def contract_metadata(contract: NativeContract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
-    return {"name": contract.name if isinstance(contract, ReviewerSlotContract) else contract,
-            "version": "3" if isinstance(contract, ReviewerSlotContract) else contract.rsplit("_v", 1)[1],
+    return {"name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract,
+            "version": ("5" if isinstance(contract, SolverSlotContract) else "3"
+                        if isinstance(contract, ReviewerSlotContract) else contract.rsplit("_v", 1)[1]),
             "sha256": hashlib.sha256(schema.encode()).hexdigest()}
 
 
@@ -239,6 +288,18 @@ def ensure_supported_model(model_id: str) -> None:
 
 
 def native_prompt(system_prompt: str, contract: NativeContract) -> str:
+    if isinstance(contract, SolverSlotContract):
+        keys = ", ".join(json.dumps(str(index)) for index in range(contract.count))
+        return native_prompt(system_prompt, "complete_choice_solver_v3") + "\n\n" + (
+            f"NATIVE SOLVER IDENTITY OVERRIDE ({contract.name}): Return solutions as an object, not an array. "
+            f"It must contain exactly these required keys: {keys}. Each key identifies the "
+            "supplied item with that integer index. Return one solution value at every key; "
+            "never add an unknown key or an index field inside a value. This replaces earlier "
+            "output examples and index-field instructions. Keep exactly the existing four "
+            "choices slots and six choicePairs slots, with their unchanged reason, judgment "
+            "and relation fields. Do not alter the choice bindings, omit rejected or uncertain "
+            "items, or infer a preferred answer."
+        )
     if isinstance(contract, ReviewerSlotContract):
         keys = ", ".join(json.dumps(str(index)) for index in range(contract.count))
         # Preserve the live-qualified override wording, including its original
@@ -305,6 +366,15 @@ def adapt_native_response(raw: str, contract: NativeContract) -> str:
         _validate_schema_value(payload, _contract_schema(contract))
     except ValueError as error:
         raise ProviderError("Native stage response violates its contract.") from error
+    if isinstance(contract, SolverSlotContract):
+        # Only required trusted keys can become indexes. Validate the complete
+        # map before adapting; malformed or unbound records are never salvaged.
+        restored = {"solutions": [
+            {"index": index, **payload["solutions"][str(index)]}
+            for index in range(contract.count)
+        ]}
+        return adapt_native_response(json.dumps(restored, ensure_ascii=False, allow_nan=False),
+                                     "complete_choice_solver_v3")
     if isinstance(contract, ReviewerSlotContract):
         # Validate the complete map first. Do not drop, fill, or renumber invalid
         # model records. Only trusted required keys can supply internal indexes.

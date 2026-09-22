@@ -21,7 +21,7 @@ from test_lambda_skill_map_evolution import (
     _evolution_payload,
     _provider_response,
 )
-from test_native_pipeline import author_payload, solver_record
+from test_native_pipeline import author_payload, solver_map, solver_record
 
 
 MODEL = "us.anthropic.claude-sonnet-4-6"
@@ -114,12 +114,13 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
                 question = _raw_question("Which conclusion follows from the stated conditions?")
 
                 def solve(data):
-                    return {"solutions": [
+                    records = [
                         (solver_record if mode == "native" else _complete_solution)(
                             item, question["expectedAnswer"],
                         )
                         for item in data["items"]
-                    ]}
+                    ]
+                    return solver_map(*records) if mode == "native" else {"solutions": records}
 
                 def review(data):
                     item = data["items"][0]
@@ -151,7 +152,7 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
                      "question_author_v3" if mode == "native" else "question_author_v1",
                      author_payload(question) if mode == "native" else {"questions": [question]}),
                     ("question_solution_json",
-                     "complete_choice_solver_v3" if mode == "native" else "complete_choice_solver_v1",
+                     "complete_choice_solver_v5_n1" if mode == "native" else "complete_choice_solver_v1",
                      solve),
                     ("question_review_json", "default_reviewer_v3_n1" if mode == "native" else "default_reviewer_v1", review),
                 ])

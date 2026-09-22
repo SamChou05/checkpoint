@@ -1,0 +1,952 @@
+{
+  "plan_sha256": "3802a77697d39433b3dabe5f349f39c53e3a397e1a57cbc081d8c8edae5ef6a8",
+  "capture_sha256": "9764085b7222cccdd675a86a7adef34e39cf704c5ad57e31fa96e1bc292c3b5b",
+  "provider_calls_in_replay": 0,
+  "checks": [
+    {
+      "call_index": 0,
+      "exact_request": true,
+      "strict_assessment_reproduced": true
+    },
+    {
+      "call_index": 1,
+      "exact_request": true,
+      "strict_assessment_reproduced": true
+    }
+  ],
+  "qualified_count_scope": 5,
+  "native_contract": {
+    "name": "complete_choice_solver_v5_n5",
+    "version": "5",
+    "sha256": "0949077dd2f0202a8943462ef810bc305b4bb382d2abec366853e9f6db52447f"
+  },
+  "actual_output_order": {
+    "choice_reason_before_judgment": 40,
+    "choice_denominator": 40,
+    "pair_reason_before_relation": 60,
+    "pair_denominator": 60
+  },
+  "structurally_qualified_on_two_batches": true,
+  "structural": {
+    "planned_calls": 2,
+    "attempted_calls": 2,
+    "valid_calls": 2,
+    "failed_calls": 0,
+    "unattempted_calls": 0,
+    "identity_denominator": 10,
+    "trusted_identities": 10,
+    "choice_denominator": 40,
+    "choice_slots": 40,
+    "pair_denominator": 60,
+    "pair_slots": 60,
+    "all_exact_bindings_and_decoded_content": true,
+    "all_end_turn_within75s": true,
+    "all_sources_and_requests_unchanged": true
+  },
+  "semantic": {
+    "item_denominator": 10,
+    "scored_items": 10,
+    "all_gold_labels_and_veto_agree": 9,
+    "choice_judgments_correct": 40,
+    "choice_denominator": 40,
+    "pair_relations_correct": 59,
+    "pair_denominator": 60,
+    "eligible_gold_denominator": 4,
+    "eligible_retained": 4,
+    "defective_gold_denominator": 6,
+    "defective_excluded": 6,
+    "uncertain_choices": 0,
+    "uncertain_pairs": 0,
+    "all_reasons_require_independent_audit": true,
+    "these_scores_do_not_change_structural_qualification": true
+  },
+  "input_tokens_known": 7498,
+  "output_tokens_known": 6435,
+  "unknown_usage_calls": 0,
+  "total_elapsed_seconds": 97.351,
+  "maximum_elapsed_seconds": 64.614,
+  "reasoning_blocks_omitted": 2,
+  "semantic_rows": [
+    {
+      "case_id": "tank_irrelevant_color",
+      "choices": [
+        {
+          "choice": "80 L in a red tank",
+          "reason": "Same wrong value of 80 L as choice c; tank color is declared irrelevant, so the red-tank qualifier cannot change the calculation.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "80 L in a blue tank",
+          "reason": "80 L would correspond to 50% of capacity if 40 L is 25%; 80 ≠ 160. The blue-tank qualifier is also irrelevant per the stem.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "40 L",
+          "reason": "40 L is the current volume (25% fill), not the full capacity. Confuses part with whole.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "160 L",
+          "reason": "40 L = 25% of full capacity → full capacity = 40 / 0.25 = 160 L. Correct calculation.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "80 L in a red tank",
+          "rightChoice": "80 L in a blue tank",
+          "reason": "Both propose 80 L as the full capacity; only the irrelevant tank color differs, which the stem explicitly says does not affect the calculation.",
+          "relation": "equivalent",
+          "expected_relation": "equivalent",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "80 L in a red tank",
+          "rightChoice": "40 L",
+          "reason": "40 L versus 80 L are different numerical values as proposed full capacities.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "80 L in a red tank",
+          "rightChoice": "160 L",
+          "reason": "160 L versus 80 L are different numerical values; color label is irrelevant noise.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "80 L in a blue tank",
+          "rightChoice": "40 L",
+          "reason": "40 L versus 80 L are different numerical values as proposed full capacities.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "80 L in a blue tank",
+          "rightChoice": "160 L",
+          "reason": "160 L versus 80 L are different numerical values; color label is irrelevant noise.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "40 L",
+          "rightChoice": "160 L",
+          "reason": "160 L versus 40 L are different numerical values for full capacity.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "veto": "solver_equivalent_choices",
+      "expected_veto": "solver_equivalent_choices",
+      "expected_eligible": false,
+      "eligible": false,
+      "all_gold_agrees": true
+    },
+    {
+      "case_id": "meters_to_kilometers",
+      "choices": [
+        {
+          "choice": "1.5 km",
+          "reason": "1,500 m ÷ 1,000 m/km = 1.5 km. Correct conversion.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "15 km",
+          "reason": "15 km = 15,000 m ≠ 1,500 m. Decimal point placed too far right by one position.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "0.15 km",
+          "reason": "0.15 km = 150 m, not 1500 m. Decimal point placed too far left by one position.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "1500 km",
+          "reason": "1500 km = 1,500,000 m ≠ 1,500 m. Far too large; no conversion performed.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "1.5 km",
+          "rightChoice": "15 km",
+          "reason": "15 km and 1.5 km are numerically different proposed distances.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "1.5 km",
+          "rightChoice": "0.15 km",
+          "reason": "0.15 km and 1.5 km are numerically different proposed distances.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "1.5 km",
+          "rightChoice": "1500 km",
+          "reason": "1.5 km and 1500 km are numerically different proposed distances.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "15 km",
+          "rightChoice": "0.15 km",
+          "reason": "0.15 km and 15 km are numerically different proposed distances.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "15 km",
+          "rightChoice": "1500 km",
+          "reason": "15 km and 1500 km are numerically different proposed distances.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "0.15 km",
+          "rightChoice": "1500 km",
+          "reason": "0.15 km and 1500 km are numerically different proposed distances.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "veto": null,
+      "expected_veto": null,
+      "expected_eligible": true,
+      "eligible": true,
+      "all_gold_agrees": true
+    },
+    {
+      "case_id": "two_switches_multiple",
+      "choices": [
+        {
+          "choice": "Switch B is off.",
+          "reason": "The stem states Switch B is on, so 'Switch B is off' is directly contradicted by the given fact.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "Switch A is on.",
+          "reason": "The stem states Switch A is on, so 'Switch A is on' is directly confirmed as a true statement.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "Switch B is on.",
+          "reason": "The stem states Switch B is on, so 'Switch B is on' is directly confirmed as a true statement.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "Switch A is off.",
+          "reason": "The stem states Switch A is on, so 'Switch A is off' is directly contradicted by the given fact.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "Switch B is off.",
+          "rightChoice": "Switch A is on.",
+          "reason": "One claims B is off (about switch B), the other claims A is on (about switch A); different subjects and different states.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Switch B is off.",
+          "rightChoice": "Switch B is on.",
+          "reason": "Both concern Switch B but assert opposite states (off vs on).",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Switch B is off.",
+          "rightChoice": "Switch A is off.",
+          "reason": "Both assert something is off but about different switches (B vs A).",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Switch A is on.",
+          "rightChoice": "Switch B is on.",
+          "reason": "Both assert something is on but about different switches (A vs B).",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Switch A is on.",
+          "rightChoice": "Switch A is off.",
+          "reason": "Both concern Switch A but assert opposite states (on vs off).",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Switch B is on.",
+          "rightChoice": "Switch A is off.",
+          "reason": "One claims B is on (about switch B), the other claims A is off (about switch A); different subjects and different states.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "veto": "solver_multiple_supported",
+      "expected_veto": "solver_multiple_supported",
+      "expected_eligible": false,
+      "eligible": false,
+      "all_gold_agrees": true
+    },
+    {
+      "case_id": "python_string_case",
+      "choices": [
+        {
+          "choice": "\"ab\"",
+          "reason": "'ab' would require 'A' to be lowercased, but concatenation preserves the original characters. Refuted.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "A SyntaxError is raised.",
+          "reason": "The '+' operator is valid for string operands in Python 3; no SyntaxError is raised. This is refuted by language specification.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "\"Ab\"",
+          "reason": "In Python 3, '+' on two strings concatenates them preserving case: 'A'+'b' = 'Ab'. Correct result.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "\"AB\"",
+          "reason": "'AB' would require 'b' to be uppercased, but concatenation preserves the original characters. Refuted.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "\"ab\"",
+          "rightChoice": "A SyntaxError is raised.",
+          "reason": "A SyntaxError versus the string 'ab' are entirely different claims about the expression's result.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "\"ab\"",
+          "rightChoice": "\"Ab\"",
+          "reason": "'Ab' and 'ab' are different string values differing in the first character's case.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "\"ab\"",
+          "rightChoice": "\"AB\"",
+          "reason": "'AB' and 'ab' are different string values differing in both characters' cases.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "A SyntaxError is raised.",
+          "rightChoice": "\"Ab\"",
+          "reason": "'Ab' (a string result) versus a SyntaxError (an exception) are entirely different claims about the expression's evaluation.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "A SyntaxError is raised.",
+          "rightChoice": "\"AB\"",
+          "reason": "A SyntaxError versus the string 'AB' are entirely different claims about the expression's result.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "\"Ab\"",
+          "rightChoice": "\"AB\"",
+          "reason": "'Ab' and 'AB' are different string values differing in the second character's case.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "veto": null,
+      "expected_veto": null,
+      "expected_eligible": true,
+      "eligible": true,
+      "all_gold_agrees": true
+    },
+    {
+      "case_id": "integer_solution_absent",
+      "choices": [
+        {
+          "choice": "2",
+          "reason": "3×2 = 6 ≠ 12. n=2 does not satisfy the equation. The actual solution n=4 is not among the listed choices.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "3",
+          "reason": "3×3 = 9 ≠ 12. n=3 does not satisfy the equation.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "5",
+          "reason": "3×5 = 15 ≠ 12. n=5 does not satisfy the equation.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "1",
+          "reason": "3×1 = 3 ≠ 12. n=1 does not satisfy the equation.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "2",
+          "rightChoice": "3",
+          "reason": "n=3 and n=2 are different integer values proposed as solutions.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "5",
+          "reason": "n=5 and n=2 are different integer values proposed as solutions.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "1",
+          "reason": "n=1 and n=2 are different integer values proposed as solutions.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "3",
+          "rightChoice": "5",
+          "reason": "n=3 and n=5 are different integer values proposed as solutions.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "3",
+          "rightChoice": "1",
+          "reason": "n=1 and n=3 are different integer values proposed as solutions.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "5",
+          "rightChoice": "1",
+          "reason": "n=1 and n=5 are different integer values proposed as solutions.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "veto": "solver_zero_supported",
+      "expected_veto": "solver_zero_supported",
+      "expected_eligible": false,
+      "eligible": false,
+      "all_gold_agrees": true
+    },
+    {
+      "case_id": "dispatch_paraphrase",
+      "choices": [
+        {
+          "choice": "Hold the parcel.",
+          "reason": "Amber means hold per the stated rule, so 'Hold the parcel' correctly follows the amber signal.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "Cancel dispatch.",
+          "reason": "Red means cancel, not amber. Cancelling in response to an amber signal contradicts the rule.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "Do not send the parcel; cancel it.",
+          "reason": "This prescribes cancellation ('cancel it'), which is the red-signal action, not the amber-signal action of holding. It does not answer the amber scenario correctly.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "Send the parcel.",
+          "reason": "Green means send, not amber. Sending in response to an amber signal contradicts the rule.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "Hold the parcel.",
+          "rightChoice": "Cancel dispatch.",
+          "reason": "Choice a proposes holding; choice b proposes cancelling—two distinct actions assigned to different signals.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Hold the parcel.",
+          "rightChoice": "Do not send the parcel; cancel it.",
+          "reason": "Choice a proposes holding; choice d proposes cancellation. Despite both being 'not send,' hold and cancel are different actions.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Hold the parcel.",
+          "rightChoice": "Send the parcel.",
+          "reason": "Choice a proposes holding; choice c proposes sending—opposite actions under different signal meanings.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Cancel dispatch.",
+          "rightChoice": "Do not send the parcel; cancel it.",
+          "reason": "Both b ('Cancel dispatch') and d ('Do not send the parcel; cancel it') ultimately prescribe cancellation—same proposed action.",
+          "relation": "equivalent",
+          "expected_relation": "equivalent",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Cancel dispatch.",
+          "rightChoice": "Send the parcel.",
+          "reason": "Both b and d prescribe cancelling the dispatch; they propose the same action even though d adds 'do not send' as preamble.",
+          "relation": "equivalent",
+          "expected_relation": "distinct",
+          "relation_agrees": false
+        },
+        {
+          "leftChoice": "Do not send the parcel; cancel it.",
+          "rightChoice": "Send the parcel.",
+          "reason": "Choice c proposes sending; choice d proposes not sending and cancelling—opposite actions.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "veto": "solver_equivalent_choices",
+      "expected_veto": "solver_equivalent_choices",
+      "expected_eligible": false,
+      "eligible": false,
+      "all_gold_agrees": false
+    },
+    {
+      "case_id": "club_age_boundary",
+      "choices": [
+        {
+          "choice": "age < 18",
+          "reason": "age < 18 is the condition for exclusion, not admission. It is the opposite of the club's admission rule.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "age >= 18",
+          "reason": "age >= 18 captures everyone 18 or older and excludes everyone younger, exactly matching the stated rule.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "age > 18",
+          "reason": "age > 18 excludes 18-year-olds, who the rule explicitly admits. It does not exactly match.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "age <= 18",
+          "reason": "age <= 18 would admit people younger than 18, contradicting the rule that admits nobody younger than 18.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "age < 18",
+          "rightChoice": "age >= 18",
+          "reason": "age < 18 and age >= 18 are logical complements; they propose opposite admission conditions.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "age < 18",
+          "rightChoice": "age > 18",
+          "reason": "age < 18 excludes ≥18; age > 18 excludes ≤18. Both wrong but in opposite directions and different boundary handling.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "age < 18",
+          "rightChoice": "age <= 18",
+          "reason": "age < 18 vs age <= 18: both use less-than comparisons but differ on whether 18 is included.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "age >= 18",
+          "rightChoice": "age > 18",
+          "reason": "age >= 18 includes 18; age > 18 excludes 18. They differ on the boundary value 18.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "age >= 18",
+          "rightChoice": "age <= 18",
+          "reason": "age >= 18 admits ≥18; age <= 18 admits ≤18. Completely different sets with only overlap at exactly 18.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "age > 18",
+          "rightChoice": "age <= 18",
+          "reason": "age > 18 and age <= 18 differ: one excludes 18, the other includes 18, and they cover opposite sides.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "veto": null,
+      "expected_veto": null,
+      "expected_eligible": true,
+      "eligible": true,
+      "all_gold_agrees": true
+    },
+    {
+      "case_id": "red_ball_multiple_forms",
+      "choices": [
+        {
+          "choice": "3/9",
+          "reason": "3/9 = 1/3 ≈ 33.3%, not 1/4. This incorrectly uses only blue balls as the denominator.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "3/8",
+          "reason": "Total balls = 3+9=12; P(red)=3/12=1/4. 3/8 ≠ 1/4, so this is the wrong value.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "1/4",
+          "reason": "3/12 = 1/4, so 1/4 correctly states the probability.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "25%",
+          "reason": "3/12 = 1/4 = 25%, so 25% correctly states the probability.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "3/9",
+          "rightChoice": "3/8",
+          "reason": "3/8 = 0.375 whereas 3/9 = 0.333; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "3/9",
+          "rightChoice": "1/4",
+          "reason": "1/4 = 0.25 whereas 3/9 ≈ 0.333; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "3/9",
+          "rightChoice": "25%",
+          "reason": "25% = 0.25 whereas 3/9 = 0.333; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "3/8",
+          "rightChoice": "1/4",
+          "reason": "3/8 = 0.375 whereas 1/4 = 0.25; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "3/8",
+          "rightChoice": "25%",
+          "reason": "3/8 = 37.5% whereas 25% = 1/4; they propose different numerical values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "1/4",
+          "rightChoice": "25%",
+          "reason": "25% and 1/4 represent the same probability (0.25); they are numerically equivalent answers.",
+          "relation": "equivalent",
+          "expected_relation": "equivalent",
+          "relation_agrees": true
+        }
+      ],
+      "veto": "solver_multiple_supported",
+      "expected_veto": "solver_multiple_supported",
+      "expected_eligible": false,
+      "eligible": false,
+      "all_gold_agrees": true
+    },
+    {
+      "case_id": "map_scale_distance",
+      "choices": [
+        {
+          "choice": "8 km",
+          "reason": "8 km = 5+3, applying addition instead of multiplication. Incorrect.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "5/3 km",
+          "reason": "5/3 ≈ 1.67 km comes from dividing scale factor by map distance (5÷3), which is the wrong operation. Correct is 3×5=15 km.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "0.6 km",
+          "reason": "0.6 km = 3÷5, inverting the ratio. Incorrect.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "15 km",
+          "reason": "3 cm × 5 km/cm = 15 km. This correctly applies the scale.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "8 km",
+          "rightChoice": "5/3 km",
+          "reason": "5/3 km ≈ 1.67 km vs 8 km; different numerical values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "8 km",
+          "rightChoice": "0.6 km",
+          "reason": "8 km vs 0.6 km; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "8 km",
+          "rightChoice": "15 km",
+          "reason": "8 km vs 15 km; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "5/3 km",
+          "rightChoice": "0.6 km",
+          "reason": "5/3 ≈ 1.67 km vs 0.6 km; different values, though both result from misapplying the scale.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "5/3 km",
+          "rightChoice": "15 km",
+          "reason": "5/3 km ≈ 1.67 km vs 15 km; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "0.6 km",
+          "rightChoice": "15 km",
+          "reason": "15 km vs 0.6 km; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "veto": null,
+      "expected_veto": null,
+      "expected_eligible": true,
+      "eligible": true,
+      "all_gold_agrees": true
+    },
+    {
+      "case_id": "pencil_key_mismatch",
+      "choices": [
+        {
+          "choice": "24",
+          "reason": "6×4=24; correct multiplication gives 24 pencils.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "10",
+          "reason": "6+4=10 applies addition rather than multiplication. Incorrect; 6×4=24.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "2",
+          "reason": "6-4=2 applies subtraction instead of multiplication. Incorrect.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "12",
+          "reason": "12 is not 6×4=24 nor any natural misapplication such as 6+4=10 or 6-4=2. Possibly 6×2 or 3×4; does not match the given numbers correctly.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "24",
+          "rightChoice": "10",
+          "reason": "10 vs 24; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "24",
+          "rightChoice": "2",
+          "reason": "2 vs 24; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "24",
+          "rightChoice": "12",
+          "reason": "12 vs 24; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "10",
+          "rightChoice": "2",
+          "reason": "10 vs 2; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "10",
+          "rightChoice": "12",
+          "reason": "10 vs 12; different numerical values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "2",
+          "rightChoice": "12",
+          "reason": "12 vs 2; different values.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "veto": "answer_disagreement",
+      "expected_veto": "answer_disagreement",
+      "expected_eligible": false,
+      "eligible": false,
+      "all_gold_agrees": true
+    }
+  ],
+  "independent_audit_sha256": "495be7e327ae05ace5d966e3aead092dc1727e849805f5755e428f4597edf748"
+}

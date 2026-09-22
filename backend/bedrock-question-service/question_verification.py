@@ -201,6 +201,7 @@ def verify_questions(
     request_metrics: dict[str, Any] | None = None,
     *,
     solve: Callable[[str, str], str] | None = None,
+    solve_with_count: Callable[[str, str, int], str] | None = None,
     review_with_count: Callable[[str, str, int], str] | None = None,
     solver_contract: Literal["stem_only", "complete_choices"] = "stem_only",
     feedback_contract: Literal["reviewer_written", "authored_solution"] = "reviewer_written",
@@ -224,6 +225,8 @@ def verify_questions(
         raise ValueError("Choice-pair audit requires complete solving and reviewer-written feedback.")
     if choice_slots and not audit_choice_pairs:
         raise ValueError("Choice slots require the complete choice-pair audit.")
+    if solve_with_count is not None and (not choice_slots or solve is None):
+        raise ValueError("Count-bound solving requires the existing fixed-choice solver route.")
     if authored_solution and not complete_choices:
         raise ValueError("Authored teaching requires the complete-choice solver contract.")
     original_count = len(questions)
@@ -283,7 +286,13 @@ def verify_questions(
             except CompleteSolutionFormatError:
                 record_quality(request_metrics, "review", "invalid_solution", len(items))
                 return []
-            solution_raw = solve(solution_system, solution_prompt)
+            # This cardinality comes from the validated, dense solver input,
+            # before any solver judgments filter it. Never use targetCount or
+            # recover identity from learner text or a model-authored response.
+            solution_raw = (
+                solve_with_count(solution_system, solution_prompt, len(items))
+                if solve_with_count is not None else solve(solution_system, solution_prompt)
+            )
             try:
                 solutions = validate_batch(
                     solution_raw, items, audit_choice_pairs=audit_choice_pairs,

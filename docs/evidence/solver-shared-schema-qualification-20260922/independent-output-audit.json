@@ -1,0 +1,1819 @@
+{
+  "audit_kind": "Independent complete100-visible-reason audit and actual runtime replay; no provider calls",
+  "plan_sha256": "3802a77697d39433b3dabe5f349f39c53e3a397e1a57cbc081d8c8edae5ef6a8",
+  "capture_sha256": "9764085b7222cccdd675a86a7adef34e39cf704c5ad57e31fa96e1bc292c3b5b",
+  "all_source_pin_checks": [
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/complete_question_solution.py",
+      "sha256": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/execution_evidence.py",
+      "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/generation_diagnostics.py",
+      "sha256": "944a3020cb3b173589aee066ac39066564a5c943c972bdcfc0115cdcb2e33f30",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/lambda_function.py",
+      "sha256": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/native_output_contracts.py",
+      "sha256": "4e3162896132dced643074c5351a8a2512de646b600280b82509c1f823667e07",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_bank.py",
+      "sha256": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_bank_common.py",
+      "sha256": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_bank_inventory.py",
+      "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_bank_store.py",
+      "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_bank_worker.py",
+      "sha256": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_difficulty.py",
+      "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_generation.py",
+      "sha256": "f4551f11c1ab528820463cd536d6255ec529fe92248655732b35d0b763438d5e",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_quality.py",
+      "sha256": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_rule_construction.py",
+      "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_teaching.py",
+      "sha256": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/question_verification.py",
+      "sha256": "ed6631b0eb2e8d3eb4d3a02ee4d54b9b57c7d178bbcb7f85af4d92451280a86f",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/request_contract.py",
+      "sha256": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/service_errors.py",
+      "sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/skill_maps.py",
+      "sha256": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/smoke_test_backend.py",
+      "sha256": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/source_acquisition.py",
+      "sha256": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/verification_policy.py",
+      "sha256": "a1cac6b519ebcc4f3f9265a86966d90c8e990a34c4892c6ecd7f8d92f5c8345a",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-solver-shared-schema/backend/bedrock-question-service/web_source_search.py",
+      "sha256": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+      "matches": true
+    },
+    {
+      "kind": "new_evidence",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-shared-schema-qualification-20260922/PLAN.md",
+      "sha256": "f93a67528c69e7c84e8d69d511f88b08ee34abe9d138b5b7bdf9ede35af7a9fa",
+      "matches": true
+    },
+    {
+      "kind": "new_evidence",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-shared-schema-qualification-20260922/solver_shared_schema_probe.py",
+      "sha256": "e2e4203259d142f2b89ba599075b272d1155da23cbfd1340376e2d8fba84c8d1",
+      "matches": true
+    },
+    {
+      "kind": "new_evidence",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-shared-schema-qualification-20260922/test_solver_shared_schema_probe.py",
+      "sha256": "f1ec5eb15f2e7d423e61e0cfe5c78eb5aa0c763a7cf47909bd87080810af6574",
+      "matches": true
+    },
+    {
+      "kind": "historical",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/choice-quality-release-20260922/adaptive-plan.json",
+      "sha256": "bb44d41a7f5414b741343c0f3de3f1e80c437062c7c9b83b26684e73297de946",
+      "matches": true
+    },
+    {
+      "kind": "historical",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/choice-quality-release-20260922/adaptive-capture.json",
+      "sha256": "52b04a1adb4aabee1d5958a3a09558af151b50bf6e3e0e283351d4ba2389b3d4",
+      "matches": true
+    },
+    {
+      "kind": "historical",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/choice-quality-release-20260922/controls-draft.json",
+      "sha256": "d6263949701e1486036aa16a09c7348f478d180349a327c08fcd973485d4e305",
+      "matches": true
+    },
+    {
+      "kind": "historical",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/choice-quality-release-20260922/independent-gold-review.json",
+      "sha256": "5a91b852f948b96ca493fbcbc14a0a6f0f4a98dea081bd13ef5010ee1b440cfe",
+      "matches": true
+    },
+    {
+      "kind": "prior_v4",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-identity-qualification-20260922/plan.json",
+      "sha256": "1c31697dd30798519a5dd788a2d485fbc6213ea547e088789bc9958594bf1098",
+      "matches": true
+    },
+    {
+      "kind": "prior_v4",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-identity-qualification-20260922/capture.json",
+      "sha256": "c49e6707e44735c0211083816b13a83321ceedc4a5ebd704a4cdacf4d31206a3",
+      "matches": true
+    },
+    {
+      "kind": "prior_v4",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-identity-qualification-20260922/error_diagnostic.py",
+      "sha256": "8a26425f45eace8ccd90c4059970e2491e2b6c46cef3aa0f757c351e0a8bca1a",
+      "matches": true
+    },
+    {
+      "kind": "prior_v4",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-identity-qualification-20260922/error-diagnostic-plan.json",
+      "sha256": "db88ebd49476fe21f93ca6c43c55526e64c0a40a5a715fd882606585a8bd8ba7",
+      "matches": true
+    },
+    {
+      "kind": "prior_v4",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/solver-identity-qualification-20260922/error-diagnostic-capture.json",
+      "sha256": "9e41fc3b0bdd84ce230483c91a1ed94c7d5cf6d2f5429795ed108184f3ceae1f",
+      "matches": true
+    }
+  ],
+  "request_and_transport_checks": [
+    {
+      "call_index": 0,
+      "request_sha256": "1ced470b879f8f0fec4cda0fdc6240a21b2eeb26128f5f1f69f21c15ba7b54b6",
+      "exact_frozen_request": true,
+      "historical_delta_fields": [
+        "system",
+        "outputConfig"
+      ],
+      "v4_delta": "shared internal schema definitions and contract-name version only",
+      "expanded_v5_equals_inline_v4": true,
+      "schema_characters": {
+        "v4": 11798,
+        "v5": 1489
+      },
+      "semantic_prompt_and_input_unchanged": true,
+      "actual_runtime_replay_pass": true,
+      "elapsed_seconds": 64.614,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 3743,
+        "outputTokens": 3117,
+        "totalTokens": 6860,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "provider_reasoning_blocks_not_retained": 1
+    },
+    {
+      "call_index": 1,
+      "request_sha256": "733c818e1fc955a166693e9dae49585b19d5c78d03828a882533ed31d2b4ad4e",
+      "exact_frozen_request": true,
+      "historical_delta_fields": [
+        "system",
+        "outputConfig"
+      ],
+      "v4_delta": "shared internal schema definitions and contract-name version only",
+      "expanded_v5_equals_inline_v4": true,
+      "schema_characters": {
+        "v4": 11798,
+        "v5": 1489
+      },
+      "semantic_prompt_and_input_unchanged": true,
+      "actual_runtime_replay_pass": true,
+      "elapsed_seconds": 32.737,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 3755,
+        "outputTokens": 3318,
+        "totalTokens": 7073,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "provider_reasoning_blocks_not_retained": 1
+    }
+  ],
+  "native_contract": {
+    "name": "complete_choice_solver_v5_n5",
+    "version": "5",
+    "sha256": "0949077dd2f0202a8943462ef810bc305b4bb382d2abec366853e9f6db52447f"
+  },
+  "gold_unchanged": true,
+  "denominators": {
+    "planned_calls": 2,
+    "attempted_calls": 2,
+    "structurally_valid_calls": 2,
+    "failed_calls": 0,
+    "unattempted_calls": 0,
+    "planned_items": 10,
+    "items_assessed": 10,
+    "choice_labels": 40,
+    "choice_labels_correct": 40,
+    "pair_labels": 60,
+    "pair_labels_correct": 59,
+    "visible_reason_strings": 100,
+    "visible_reason_strings_independently_read": 100,
+    "eligibility_decisions_correct": 10,
+    "eligible_count": 4,
+    "learner_payloads_admitted_by_this_solver_only_probe": 0
+  },
+  "reason_assessment_counts": {
+    "grounded": 96,
+    "incorrect_endpoint_reference_and_relation": 1,
+    "minor_inexact_equality": 2,
+    "uncertain_generalization": 1
+  },
+  "all_100_reasons_within_240_characters": true,
+  "maximum_reason_characters": 164,
+  "qualification": {
+    "structural_n5_transport": "passed2/2; exact frozen requests, end_turn, under75seconds, native schema, local adapter and exact input/decoded bindings all pass",
+    "semantic": "not qualified: one false pair relation caused by a wrong-endpoint reason; private numeric/generalization defects also remain",
+    "prior_trials": "failed v4 and earlier semantic experiments remain unchanged",
+    "scope": "Only the repeated n5 structural transport is supported; no other-count native qualification, complete worker yield, causality, model determinism or universal semantic guarantee is established"
+  },
+  "material_error": {
+    "case_id": "dispatch_paraphrase",
+    "pair_slot": "bc",
+    "actual_left": "Cancel dispatch.",
+    "actual_right": "Send the parcel.",
+    "wrong_reason_describes": "b and d, the distinct record containing the two cancellation paraphrases",
+    "eligibility_effect": "The question correctly remains ineligible because the true b/d cancellation pair is equivalent; correct final rejection does not erase the false b/c pair label."
+  },
+  "private_wording_limits": [
+    {
+      "case_id": "red_ball_multiple_forms",
+      "fields": [
+        "choicePairs.ad.reason",
+        "choicePairs.bd.reason"
+      ],
+      "finding": "Two finite-decimal equalities should be approximate, not exact. Both pair labels remain correct.",
+      "learner_exposure": "These are private solver reasons; this probe emits no learner teaching."
+    },
+    {
+      "case_id": "pencil_key_mismatch",
+      "field": "choices.b.reason",
+      "finding": "The claim that12 reflects no natural misapplication is unsupported/subjective. The examples are explicitly hedged as possible, not an asserted student history.12≠24 and the refuted label are sound.",
+      "learner_exposure": "Private solver wording, separate from the label and from learner correctness."
+    }
+  ],
+  "items": [
+    {
+      "case_id": "tank_irrelevant_color",
+      "call_index": 0,
+      "trusted_item_index": 0,
+      "prompt": "A tank contains 40 L at 25% of full capacity. What is its full capacity? Tank color does not affect the calculation.",
+      "exact_choice_slots": {
+        "a": "160 L",
+        "b": "40 L",
+        "c": "80 L in a blue tank",
+        "d": "80 L in a red tank"
+      },
+      "gold_expectedAnswer": "160 L",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "160 L",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "40 L = 25% of full capacity → full capacity = 40 / 0.25 = 160 L. Correct calculation.",
+          "reason_sha256": "dca6b3c5bf1f05d46ba5793b5f3888378071de78e10df7e9df2ba835b47e7244",
+          "reason_assessment": "grounded",
+          "independent_check": "40/0.25 = 160 is the full capacity.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "40 L",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "40 L is the current volume (25% fill), not the full capacity. Confuses part with whole.",
+          "reason_sha256": "7f0c78ffa2396251d7d2a308e3548aa880ae0bc6e9ae3cbcd9688965ac2ace4a",
+          "reason_assessment": "grounded",
+          "independent_check": "40 is the given quarter-full amount, not 160.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "80 L in a blue tank",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "80 L would correspond to 50% of capacity if 40 L is 25%; 80 ≠ 160. The blue-tank qualifier is also irrelevant per the stem.",
+          "reason_sha256": "31a230b16974270a822d6b1ad4bcc4bd9bbbddbf1eb7d4c8b749db0d05387eb7",
+          "reason_assessment": "grounded",
+          "independent_check": "80 is half of the true full capacity 160, not the full capacity; color is irrelevant.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "80 L in a red tank",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "Same wrong value of 80 L as choice c; tank color is declared irrelevant, so the red-tank qualifier cannot change the calculation.",
+          "reason_sha256": "e8fd0c67750f6a584180116971d072d690b865d96a14b40dbe81c48dc82d2917",
+          "reason_assessment": "grounded",
+          "independent_check": "80 remains the wrong capacity regardless of color.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "160 L",
+          "rightChoice": "40 L",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "160 L versus 40 L are different numerical values for full capacity.",
+          "reason_sha256": "91308ef9bb0db199db58dfd408c40e76f0c91e2da0ec8cdf3ce750ec57f4e1d0",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 160 and 40; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "160 L",
+          "rightChoice": "80 L in a blue tank",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "160 L versus 80 L are different numerical values; color label is irrelevant noise.",
+          "reason_sha256": "5708c8b112045d2ec2db6cc59cc74607b146a7760183d524c9285204e8ecddfe",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 160 and 80; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "160 L",
+          "rightChoice": "80 L in a red tank",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "160 L versus 80 L are different numerical values; color label is irrelevant noise.",
+          "reason_sha256": "5708c8b112045d2ec2db6cc59cc74607b146a7760183d524c9285204e8ecddfe",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 160 and 80; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "40 L",
+          "rightChoice": "80 L in a blue tank",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "40 L versus 80 L are different numerical values as proposed full capacities.",
+          "reason_sha256": "45a2b1741f8be249a09a4d5e97efcf242c9b9b28c049e03c94660c0feedf3166",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 40 and 80; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "40 L",
+          "rightChoice": "80 L in a red tank",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "40 L versus 80 L are different numerical values as proposed full capacities.",
+          "reason_sha256": "45a2b1741f8be249a09a4d5e97efcf242c9b9b28c049e03c94660c0feedf3166",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 40 and 80; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "80 L in a blue tank",
+          "rightChoice": "80 L in a red tank",
+          "observed_relation": "equivalent",
+          "expected_relation": "equivalent",
+          "label_matches_gold": true,
+          "exact_reason": "Both propose 80 L as the full capacity; only the irrelevant tank color differs, which the stem explicitly says does not affect the calculation.",
+          "reason_sha256": "83d15dab3bf1465925174e96cfb5908b10d8a413799c9b542d6dc8544d28ba22",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 80 and 80; they are the same task-relevant value.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": "solver_equivalent_choices",
+      "learner_feedback_generated_or_released": false
+    },
+    {
+      "case_id": "meters_to_kilometers",
+      "call_index": 0,
+      "trusted_item_index": 1,
+      "prompt": "A car travels 1,500 m. How far is this in kilometers? Use 1 km = 1,000 m.",
+      "exact_choice_slots": {
+        "a": "0.15 km",
+        "b": "15 km",
+        "c": "1.5 km",
+        "d": "1500 km"
+      },
+      "gold_expectedAnswer": "1.5 km",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "0.15 km",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "0.15 km = 150 m, not 1500 m. Decimal point placed too far left by one position.",
+          "reason_sha256": "4c28d5b18f1b763ae994d1454cc1a46391cb9a5a3fd15ad32687684808b0a29c",
+          "reason_assessment": "grounded",
+          "independent_check": "0.15 km = 150 m, not 1500 m.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "15 km",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "15 km = 15,000 m ≠ 1,500 m. Decimal point placed too far right by one position.",
+          "reason_sha256": "6761bce819c47ecddd5769de055bf5bfa262bf3d925ffa8e353e7be5efa5cb8e",
+          "reason_assessment": "grounded",
+          "independent_check": "15 km = 15000 m, not 1500 m.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "1.5 km",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "1,500 m ÷ 1,000 m/km = 1.5 km. Correct conversion.",
+          "reason_sha256": "5be96a8328c266aa35913b54d5be68ca64fd14ec67c9ef75010c2078b48f9b24",
+          "reason_assessment": "grounded",
+          "independent_check": "1500/1000 = 1.5 km.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "1500 km",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "1500 km = 1,500,000 m ≠ 1,500 m. Far too large; no conversion performed.",
+          "reason_sha256": "596d0f3c545071e8af0b09578c18964dc5966bd99c79c42ee776bfa004060173",
+          "reason_assessment": "grounded",
+          "independent_check": "1500 km = 1500000 m, not 1500 m; the unchanged number omits scaling.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "0.15 km",
+          "rightChoice": "15 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "0.15 km and 15 km are numerically different proposed distances.",
+          "reason_sha256": "d0189766ba862576a5c3930f040b614329e9cac91326fa500f35a47e3a5a6ddb",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 3/20 and 15; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "0.15 km",
+          "rightChoice": "1.5 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "0.15 km and 1.5 km are numerically different proposed distances.",
+          "reason_sha256": "67fa083bceadc149a54969537a3da33572534cc23873fe265705b32a76ab072b",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 3/20 and 3/2; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "0.15 km",
+          "rightChoice": "1500 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "0.15 km and 1500 km are numerically different proposed distances.",
+          "reason_sha256": "a4902eb8449677e29a7c3cfbf32228503b4744bb0c888e4ac581766b47a84219",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 3/20 and 1500; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "15 km",
+          "rightChoice": "1.5 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "15 km and 1.5 km are numerically different proposed distances.",
+          "reason_sha256": "0c4e49c169c303fee78687c0c16df6a6c7795a620c2fb1583cd0852f0b012998",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 15 and 3/2; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "15 km",
+          "rightChoice": "1500 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "15 km and 1500 km are numerically different proposed distances.",
+          "reason_sha256": "5bc8cb9d596b6fd7250f0677a3572f589b34d1ec64c9d1fa97dfdf90e0ee9396",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 15 and 1500; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "1.5 km",
+          "rightChoice": "1500 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "1.5 km and 1500 km are numerically different proposed distances.",
+          "reason_sha256": "539d121c96c73394b3787f197920659e5ec9c2a1dddf08824e77db4968b1ffe3",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 3/2 and 1500; they are different task-relevant values.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": null,
+      "learner_feedback_generated_or_released": false
+    },
+    {
+      "case_id": "two_switches_multiple",
+      "call_index": 0,
+      "trusted_item_index": 2,
+      "prompt": "Switch A is on and switch B is on. Which statement is true?",
+      "exact_choice_slots": {
+        "a": "Switch B is off.",
+        "b": "Switch A is on.",
+        "c": "Switch B is on.",
+        "d": "Switch A is off."
+      },
+      "gold_expectedAnswer": "Switch A is on.",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "Switch B is off.",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "The stem states Switch B is on, so 'Switch B is off' is directly contradicted by the given fact.",
+          "reason_sha256": "3dcf5db758d9b5a1e63c9d29e655860d4a2e6fa84f029b92d44ba15d32b31de2",
+          "reason_assessment": "grounded",
+          "independent_check": "The premise says B is on, contradicting B off.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "Switch A is on.",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "The stem states Switch A is on, so 'Switch A is on' is directly confirmed as a true statement.",
+          "reason_sha256": "ee02a58ce6e2030baf20e727372b839fe0e68d0dc6771a5be88812de3cb86ba8",
+          "reason_assessment": "grounded",
+          "independent_check": "The premise explicitly says A is on.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "Switch B is on.",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "The stem states Switch B is on, so 'Switch B is on' is directly confirmed as a true statement.",
+          "reason_sha256": "38623e96fd02bd7a930920fa4197ebf0132c70e29d3858c6e4984e3ed44de338",
+          "reason_assessment": "grounded",
+          "independent_check": "The premise explicitly says B is on.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "Switch A is off.",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "The stem states Switch A is on, so 'Switch A is off' is directly contradicted by the given fact.",
+          "reason_sha256": "f8cc59992b93919860e756cc5929938b57ca0d689881abc749b3071263bebd6e",
+          "reason_assessment": "grounded",
+          "independent_check": "The premise says A is on, contradicting A off.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "Switch B is off.",
+          "rightChoice": "Switch A is on.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "One claims B is off (about switch B), the other claims A is on (about switch A); different subjects and different states.",
+          "reason_sha256": "5b73c10e84e8407249a8151bad3d3a1cb76c5e70f48f756b6d6526a6cbdd345d",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean B off and A on; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "Switch B is off.",
+          "rightChoice": "Switch B is on.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "Both concern Switch B but assert opposite states (off vs on).",
+          "reason_sha256": "066fb81f513435f46fd2e725fddf6df949de96c2a8cb80e7eea0fb0705d330d9",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean B off and B on; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "Switch B is off.",
+          "rightChoice": "Switch A is off.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "Both assert something is off but about different switches (B vs A).",
+          "reason_sha256": "7bb932104acee8369823e9c3ff19393610024de46a1c93cd5db1a3fd6ccaee4a",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean B off and A off; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "Switch A is on.",
+          "rightChoice": "Switch B is on.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "Both assert something is on but about different switches (A vs B).",
+          "reason_sha256": "3d83fb20a10f9592309be0e6596fa09ea0733bc7a4de5ba87613f9794f329151",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean A on and B on; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "Switch A is on.",
+          "rightChoice": "Switch A is off.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "Both concern Switch A but assert opposite states (on vs off).",
+          "reason_sha256": "32786484947d158c1ad9235b0d90e726d46396cba3218d1134a16b32f780a25e",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean A on and A off; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "Switch B is on.",
+          "rightChoice": "Switch A is off.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "One claims B is on (about switch B), the other claims A is off (about switch A); different subjects and different states.",
+          "reason_sha256": "bd400cc87c1c5c92ad19189383f68962c33396862bec8689482d405167f4ce26",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean B on and A off; the meanings differ under the stated task.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": "solver_multiple_supported",
+      "learner_feedback_generated_or_released": false
+    },
+    {
+      "case_id": "python_string_case",
+      "call_index": 0,
+      "trusted_item_index": 3,
+      "prompt": "In Python 3, what is the value of the expression \"A\" + \"b\"?",
+      "exact_choice_slots": {
+        "a": "\"Ab\"",
+        "b": "A SyntaxError is raised.",
+        "c": "\"AB\"",
+        "d": "\"ab\""
+      },
+      "gold_expectedAnswer": "\"Ab\"",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "\"Ab\"",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "In Python 3, '+' on two strings concatenates them preserving case: 'A'+'b' = 'Ab'. Correct result.",
+          "reason_sha256": "eda46389d07ee8861397242a78dc976248b105e829be95d117a0a2de9f4b1f0e",
+          "reason_assessment": "grounded",
+          "independent_check": "Python 3 concatenation gives the string Ab with original case.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "A SyntaxError is raised.",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "The '+' operator is valid for string operands in Python 3; no SyntaxError is raised. This is refuted by language specification.",
+          "reason_sha256": "138ea2f2af5d002a26216172bb362278e4a4cd84d949fe7d7e124322ecbcdd35",
+          "reason_assessment": "grounded",
+          "independent_check": "Two string operands joined by + are a valid expression, not a SyntaxError.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "\"AB\"",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "'AB' would require 'b' to be uppercased, but concatenation preserves the original characters. Refuted.",
+          "reason_sha256": "ea6d42ecfc8aaaa4bfb760f2f786ca693f49f94adfda5a6de3b92f51434bc3bb",
+          "reason_assessment": "grounded",
+          "independent_check": "The second input character is lowercase b, not uppercase B.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "\"ab\"",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "'ab' would require 'A' to be lowercased, but concatenation preserves the original characters. Refuted.",
+          "reason_sha256": "05a2b2443f51690ca7ff7fd44f22339d2d4a4c71479b6cbbf69521ece64d6388",
+          "reason_assessment": "grounded",
+          "independent_check": "The first input character is uppercase A, not lowercase a.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "\"Ab\"",
+          "rightChoice": "A SyntaxError is raised.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "'Ab' (a string result) versus a SyntaxError (an exception) are entirely different claims about the expression's evaluation.",
+          "reason_sha256": "ebcea5e98c7959cfcb642ed1701ad536bdf4f5ddd16222d04f587cec2e280f5a",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean string Ab and SyntaxError; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "\"Ab\"",
+          "rightChoice": "\"AB\"",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "'Ab' and 'AB' are different string values differing in the second character's case.",
+          "reason_sha256": "dd43237f8c44d2985026f33c413a09f96ad7e3d4b8dfac70a67b20715f0711da",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean string Ab and string AB; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "\"Ab\"",
+          "rightChoice": "\"ab\"",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "'Ab' and 'ab' are different string values differing in the first character's case.",
+          "reason_sha256": "496cbd9571da4a82fb22da18cba2736c3e01ac4c3c60096a3be314b359508e1c",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean string Ab and string ab; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "A SyntaxError is raised.",
+          "rightChoice": "\"AB\"",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "A SyntaxError versus the string 'AB' are entirely different claims about the expression's result.",
+          "reason_sha256": "355fd998a773f42e38f2f9ac394db358a2c8a61da612dc96d1ede47c5b8c545d",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean SyntaxError and string AB; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "A SyntaxError is raised.",
+          "rightChoice": "\"ab\"",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "A SyntaxError versus the string 'ab' are entirely different claims about the expression's result.",
+          "reason_sha256": "484f5e562fd30ef4ab689519fc1132dd937f1a3746b70b7a59adbed195ba8671",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean SyntaxError and string ab; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "\"AB\"",
+          "rightChoice": "\"ab\"",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "'AB' and 'ab' are different string values differing in both characters' cases.",
+          "reason_sha256": "873eb082ce413d7c4798985b8f95f0385e1943d19d9f713e15f6af48172ca9eb",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean string AB and string ab; the meanings differ under the stated task.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": null,
+      "learner_feedback_generated_or_released": false
+    },
+    {
+      "case_id": "integer_solution_absent",
+      "call_index": 0,
+      "trusted_item_index": 4,
+      "prompt": "Which listed integer n satisfies 3n = 12?",
+      "exact_choice_slots": {
+        "a": "1",
+        "b": "3",
+        "c": "5",
+        "d": "2"
+      },
+      "gold_expectedAnswer": "3",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "1",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "3×1 = 3 ≠ 12. n=1 does not satisfy the equation.",
+          "reason_sha256": "a8f4f4735f9ff1b634244a361bd66b31f3eb31913a574668c40883523f1a1b65",
+          "reason_assessment": "grounded",
+          "independent_check": "3×1 = 3, not 12.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "3",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "3×3 = 9 ≠ 12. n=3 does not satisfy the equation.",
+          "reason_sha256": "4153526b7eb825b155ff937ea8ce2259061180d54ce101d989db6944f541f3d0",
+          "reason_assessment": "grounded",
+          "independent_check": "3×3 = 9, not 12.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "5",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "3×5 = 15 ≠ 12. n=5 does not satisfy the equation.",
+          "reason_sha256": "24246e6f01c6fa04a45dd43a850c717fe6e095505c450ee1921a933aeb3e6776",
+          "reason_assessment": "grounded",
+          "independent_check": "3×5 = 15, not 12.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "2",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "3×2 = 6 ≠ 12. n=2 does not satisfy the equation. The actual solution n=4 is not among the listed choices.",
+          "reason_sha256": "4cd8e3e28bcc3ccf361e2dc4ed2d028644e7fa1eb4f5622664fdc26bec86b489",
+          "reason_assessment": "grounded",
+          "independent_check": "3×2 = 6; the unique solution 4 is absent.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "1",
+          "rightChoice": "3",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "n=1 and n=3 are different integer values proposed as solutions.",
+          "reason_sha256": "bdbad25190cdc7138133c27a38a5efc9a7c2709a8008e16068aa2d8918cbfdee",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 1 and 3; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "1",
+          "rightChoice": "5",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "n=1 and n=5 are different integer values proposed as solutions.",
+          "reason_sha256": "ed280a976d7063dba8430126c7d39eb241b96c8692fffb65f995cde4b6584f76",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 1 and 5; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "1",
+          "rightChoice": "2",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "n=1 and n=2 are different integer values proposed as solutions.",
+          "reason_sha256": "b79a7e71f473d46d2a4b88f99b579596c2c98e4f3b1ad702bbf6282790f9eaf7",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 1 and 2; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "3",
+          "rightChoice": "5",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "n=3 and n=5 are different integer values proposed as solutions.",
+          "reason_sha256": "fe3426d76b612a7fa58047d596711eaa952425aa41526e6364bd29870d6a9459",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 3 and 5; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "3",
+          "rightChoice": "2",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "n=3 and n=2 are different integer values proposed as solutions.",
+          "reason_sha256": "f99ad6b623c1fa2147d522a4341adacc58cf4dcf20209d635989d046cb5ee68a",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 3 and 2; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "5",
+          "rightChoice": "2",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "n=5 and n=2 are different integer values proposed as solutions.",
+          "reason_sha256": "19f25f47f94193b748342d5de534dd7165a88fde2e5a8f148be122d3e64fff54",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 5 and 2; they are different task-relevant values.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": "solver_zero_supported",
+      "learner_feedback_generated_or_released": false
+    },
+    {
+      "case_id": "dispatch_paraphrase",
+      "call_index": 1,
+      "trusted_item_index": 0,
+      "prompt": "A dispatch system uses green for send, amber for hold, and red for cancel. The signal is amber. What should the operator do?",
+      "exact_choice_slots": {
+        "a": "Hold the parcel.",
+        "b": "Cancel dispatch.",
+        "c": "Send the parcel.",
+        "d": "Do not send the parcel; cancel it."
+      },
+      "gold_expectedAnswer": "Hold the parcel.",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "Hold the parcel.",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "Amber means hold per the stated rule, so 'Hold the parcel' correctly follows the amber signal.",
+          "reason_sha256": "56776cd18c1fadc85e4119d2956c7b0a814d334b484e518272608eed847ff32d",
+          "reason_assessment": "grounded",
+          "independent_check": "The given amber rule is hold.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "Cancel dispatch.",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "Red means cancel, not amber. Cancelling in response to an amber signal contradicts the rule.",
+          "reason_sha256": "fb6673d484f7630bca9cb2fe587cf0d1209c267c8f03ca152992ce08b5877bd8",
+          "reason_assessment": "grounded",
+          "independent_check": "Cancel is the red action, not amber hold.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "Send the parcel.",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "Green means send, not amber. Sending in response to an amber signal contradicts the rule.",
+          "reason_sha256": "44babe048bda31395a8b3db781ee8c152867de93b504de30eaf568c40448384a",
+          "reason_assessment": "grounded",
+          "independent_check": "Send is the green action, not amber hold.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "Do not send the parcel; cancel it.",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "This prescribes cancellation ('cancel it'), which is the red-signal action, not the amber-signal action of holding. It does not answer the amber scenario correctly.",
+          "reason_sha256": "21065b1d052ea8d39e1b6509fb7b2e6021878445adcb041f145a89aed2a1b2f7",
+          "reason_assessment": "grounded",
+          "independent_check": "The full option explicitly prescribes cancel, which is different from hold.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "Hold the parcel.",
+          "rightChoice": "Cancel dispatch.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "Choice a proposes holding; choice b proposes cancelling—two distinct actions assigned to different signals.",
+          "reason_sha256": "bfa69250e591cb4b5f47ead7c43b5e0ecf69ca21709fec508fda316a7027d93a",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean hold and cancel; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "Hold the parcel.",
+          "rightChoice": "Send the parcel.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "Choice a proposes holding; choice c proposes sending—opposite actions under different signal meanings.",
+          "reason_sha256": "9d1e8409ea1e8240a2b2fbdfcfb45f885aa542b2e183635750c4463664aca9c2",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean hold and send; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "Hold the parcel.",
+          "rightChoice": "Do not send the parcel; cancel it.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "Choice a proposes holding; choice d proposes cancellation. Despite both being 'not send,' hold and cancel are different actions.",
+          "reason_sha256": "b5dff7e9165735da94382581d949534360aa34b3b589473b2935b25f34b5b96c",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean hold and cancel; the meanings differ under the stated task.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "Cancel dispatch.",
+          "rightChoice": "Send the parcel.",
+          "observed_relation": "equivalent",
+          "expected_relation": "distinct",
+          "label_matches_gold": false,
+          "exact_reason": "Both b and d prescribe cancelling the dispatch; they propose the same action even though d adds 'do not send' as preamble.",
+          "reason_sha256": "a011779b8493837533610f1603d2ccd49935696567aa057fd2b3ba1b02ee263d",
+          "reason_assessment": "incorrect_endpoint_reference_and_relation",
+          "independent_check": "The exact endpoints mean cancel and send; the meanings differ under the stated task.",
+          "fidelity_note": "The record is bound to b=Cancel dispatch and c=Send the parcel, but its prose explicitly discusses b and d, two cancellation choices. This is a model semantic/reference error, not an adapter rebinding. The distinct actual b/c pair is falsely labeled equivalent."
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "Cancel dispatch.",
+          "rightChoice": "Do not send the parcel; cancel it.",
+          "observed_relation": "equivalent",
+          "expected_relation": "equivalent",
+          "label_matches_gold": true,
+          "exact_reason": "Both b ('Cancel dispatch') and d ('Do not send the parcel; cancel it') ultimately prescribe cancellation—same proposed action.",
+          "reason_sha256": "ac2aa5efd6d7d96ba39297b578edfcb374b5f2113aa4328c19cb083de96650f9",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean cancel and cancel; the meanings coincide.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "Send the parcel.",
+          "rightChoice": "Do not send the parcel; cancel it.",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "Choice c proposes sending; choice d proposes not sending and cancelling—opposite actions.",
+          "reason_sha256": "c634afeb27c491489e60d9fdd32798a0534e31cb57d79ce64ff47cc56e0c05a9",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints mean send and cancel; the meanings differ under the stated task.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": "solver_equivalent_choices",
+      "learner_feedback_generated_or_released": false
+    },
+    {
+      "case_id": "club_age_boundary",
+      "call_index": 1,
+      "trusted_item_index": 1,
+      "prompt": "A club admits everyone aged 18 or older and nobody younger. Which condition on age exactly matches its rule?",
+      "exact_choice_slots": {
+        "a": "age < 18",
+        "b": "age >= 18",
+        "c": "age > 18",
+        "d": "age <= 18"
+      },
+      "gold_expectedAnswer": "age >= 18",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "age < 18",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "age < 18 is the condition for exclusion, not admission. It is the opposite of the club's admission rule.",
+          "reason_sha256": "005b004a476e66da68ee192a45b969c8dd9790638921ad9ebcd43c22cf2fbabc",
+          "reason_assessment": "grounded",
+          "independent_check": "Under the rule ages below 18 are excluded.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "age >= 18",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "age >= 18 captures everyone 18 or older and excludes everyone younger, exactly matching the stated rule.",
+          "reason_sha256": "b428c4ba77f216ffb09a453f4aff8b9e25592e7423b8b442a0f4036fda13e568",
+          "reason_assessment": "grounded",
+          "independent_check": "At least 18 is exactly the stated admission set.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "age > 18",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "age > 18 excludes 18-year-olds, who the rule explicitly admits. It does not exactly match.",
+          "reason_sha256": "7912b37789198065c0194ab80ed91b2ae6e91d7fdc1313c725f96f9d3f7afbf0",
+          "reason_assessment": "grounded",
+          "independent_check": "This excludes the admitted boundary age 18.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "age <= 18",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "age <= 18 would admit people younger than 18, contradicting the rule that admits nobody younger than 18.",
+          "reason_sha256": "5dc7d18dc6c3b268c032c3b524be84159f30f743ce9e825fe19357b89a9b6d42",
+          "reason_assessment": "grounded",
+          "independent_check": "This includes forbidden ages below 18 and excludes older admitted ages.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "age < 18",
+          "rightChoice": "age >= 18",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "age < 18 and age >= 18 are logical complements; they propose opposite admission conditions.",
+          "reason_sha256": "8050b54eb8a00b90e900679cb46cbfa6c3fdd2334f73eb287b02e8af479d63f2",
+          "reason_assessment": "grounded",
+          "independent_check": "The two offered conditions differ for age 17: left is True, right is False.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "age < 18",
+          "rightChoice": "age > 18",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "age < 18 excludes ≥18; age > 18 excludes ≤18. Both wrong but in opposite directions and different boundary handling.",
+          "reason_sha256": "918b201f66845fb3167518b1cd02a47420cd8e2bd2d9a6f5357df5a36088a523",
+          "reason_assessment": "grounded",
+          "independent_check": "The two offered conditions differ for age 17: left is True, right is False.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "age < 18",
+          "rightChoice": "age <= 18",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "age < 18 vs age <= 18: both use less-than comparisons but differ on whether 18 is included.",
+          "reason_sha256": "ae48829ec852ebb99824dcd5c019f62966a3bfa95694b7ca715b9ea906ec039a",
+          "reason_assessment": "grounded",
+          "independent_check": "The two offered conditions differ for age 18: left is False, right is True.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "age >= 18",
+          "rightChoice": "age > 18",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "age >= 18 includes 18; age > 18 excludes 18. They differ on the boundary value 18.",
+          "reason_sha256": "7df4a2a7b607b3995bc9093c6f692604873db393862a5f6436cdeda7084bf350",
+          "reason_assessment": "grounded",
+          "independent_check": "The two offered conditions differ for age 18: left is True, right is False.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "age >= 18",
+          "rightChoice": "age <= 18",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "age >= 18 admits ≥18; age <= 18 admits ≤18. Completely different sets with only overlap at exactly 18.",
+          "reason_sha256": "75af91b91bbe911e5eabf33da6e76e05ad0cf6edac185a6f6b14e8365ee45600",
+          "reason_assessment": "grounded",
+          "independent_check": "The two offered conditions differ for age 17: left is False, right is True.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "age > 18",
+          "rightChoice": "age <= 18",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "age > 18 and age <= 18 differ: one excludes 18, the other includes 18, and they cover opposite sides.",
+          "reason_sha256": "27f820d0062cb59728157543617df6300e3cffcfdc20a1b41bdb2a7f378cddf9",
+          "reason_assessment": "grounded",
+          "independent_check": "The two offered conditions differ for age 17: left is False, right is True.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": null,
+      "learner_feedback_generated_or_released": false
+    },
+    {
+      "case_id": "red_ball_multiple_forms",
+      "call_index": 1,
+      "trusted_item_index": 2,
+      "prompt": "A bag contains exactly 3 red and 9 blue balls. One ball is drawn uniformly at random. What is the probability that it is red?",
+      "exact_choice_slots": {
+        "a": "3/8",
+        "b": "25%",
+        "c": "1/4",
+        "d": "3/9"
+      },
+      "gold_expectedAnswer": "1/4",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "3/8",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "Total balls = 3+9=12; P(red)=3/12=1/4. 3/8 ≠ 1/4, so this is the wrong value.",
+          "reason_sha256": "64f187483b0d450af041fc487a870bb8cec97cf54c6468a8e370b98b022ae0e1",
+          "reason_assessment": "grounded",
+          "independent_check": "There are 12 balls and the red probability is 3/12 = 1/4, not 3/8.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "25%",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "3/12 = 1/4 = 25%, so 25% correctly states the probability.",
+          "reason_sha256": "8ec3b43036a1402bf2b54d0c92050e1365cef2f4db34baf4d76e0dbf840e0a90",
+          "reason_assessment": "grounded",
+          "independent_check": "25% = 1/4 = 3/12.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "1/4",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "3/12 = 1/4, so 1/4 correctly states the probability.",
+          "reason_sha256": "b4fb37b494d3ed99ee9d96d619f09b2ffc6c8efdb693102e53ae486f88b5e8fc",
+          "reason_assessment": "grounded",
+          "independent_check": "1/4 = 3/12.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "3/9",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "3/9 = 1/3 ≈ 33.3%, not 1/4. This incorrectly uses only blue balls as the denominator.",
+          "reason_sha256": "6bef3904994efd1fd3d4b615d4ba0ad513dcb25425d0250694554c280c538687",
+          "reason_assessment": "grounded",
+          "independent_check": "3/9 = 1/3 is approximately 33.3%, not 25%; 9 counts only the blue balls.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "3/8",
+          "rightChoice": "25%",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "3/8 = 37.5% whereas 25% = 1/4; they propose different numerical values.",
+          "reason_sha256": "dd35df6ced9e17f60a1804fb8facc56e17a9a5d62fd359150204b947324fae2b",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 3/8 and 1/4; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "3/8",
+          "rightChoice": "1/4",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "3/8 = 0.375 whereas 1/4 = 0.25; different values.",
+          "reason_sha256": "5f0bd090099c1d168855a58f3688caee621efffc2eb292b280a2a38b1431e767",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 3/8 and 1/4; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "3/8",
+          "rightChoice": "3/9",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "3/8 = 0.375 whereas 3/9 = 0.333; different values.",
+          "reason_sha256": "24eabb317f8c7df6fcb418a153a291ee6cc05d156c5e22f080abd47434581613",
+          "reason_assessment": "minor_inexact_equality",
+          "independent_check": "The exact endpoints denote 3/8 and 1/3; they are different task-relevant values.",
+          "fidelity_note": "The text writes 3/9 = 0.333 as exact, but 3/9 = 1/3 and 0.333 = 333/1000 differ by 1/3000. Approximation is intended; the pair-distinctness conclusion remains correct."
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "25%",
+          "rightChoice": "1/4",
+          "observed_relation": "equivalent",
+          "expected_relation": "equivalent",
+          "label_matches_gold": true,
+          "exact_reason": "25% and 1/4 represent the same probability (0.25); they are numerically equivalent answers.",
+          "reason_sha256": "0d1a338edfa8f8056e6e27eafad9e3575f2291daa6c665d16af5f59f555222ab",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 1/4 and 1/4; they are the same task-relevant value.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "25%",
+          "rightChoice": "3/9",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "25% = 0.25 whereas 3/9 = 0.333; different values.",
+          "reason_sha256": "f89e41c72b4dd52cc2c96e30af35fef635cbfc3b995c0280eef6670baecb75b6",
+          "reason_assessment": "minor_inexact_equality",
+          "independent_check": "The exact endpoints denote 1/4 and 1/3; they are different task-relevant values.",
+          "fidelity_note": "The text writes 3/9 = 0.333 as exact, but 3/9 = 1/3 and 0.333 = 333/1000 differ by 1/3000. Approximation is intended; the pair-distinctness conclusion remains correct."
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "1/4",
+          "rightChoice": "3/9",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "1/4 = 0.25 whereas 3/9 ≈ 0.333; different values.",
+          "reason_sha256": "2dd123b3d723272242e18651e2a0603b5cb9cb36a148fcf6acd4c233f82f325a",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 1/4 and 1/3; they are different task-relevant values.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": "solver_multiple_supported",
+      "learner_feedback_generated_or_released": false
+    },
+    {
+      "case_id": "map_scale_distance",
+      "call_index": 1,
+      "trusted_item_index": 3,
+      "prompt": "A map uses 1 cm to represent 5 km. Two towns are 3 cm apart on the map. What distance does the map indicate between them?",
+      "exact_choice_slots": {
+        "a": "5/3 km",
+        "b": "8 km",
+        "c": "15 km",
+        "d": "0.6 km"
+      },
+      "gold_expectedAnswer": "15 km",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "5/3 km",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "5/3 ≈ 1.67 km comes from dividing scale factor by map distance (5÷3), which is the wrong operation. Correct is 3×5=15 km.",
+          "reason_sha256": "391f87a10536effc08c619bfd6d8a9124ca8da726b7edc5b2f5e654f8341f9bd",
+          "reason_assessment": "grounded",
+          "independent_check": "5/3 divides the scale number by 3; multiplying 3×5 gives 15.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "8 km",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "8 km = 5+3, applying addition instead of multiplication. Incorrect.",
+          "reason_sha256": "00a6da0e3c957cf2361cf1189c7c46352a6e1011e34bf80278c51036a417ef57",
+          "reason_assessment": "grounded",
+          "independent_check": "5 + 3 = 8 uses addition; distance requires 3×5 = 15.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "15 km",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "3 cm × 5 km/cm = 15 km. This correctly applies the scale.",
+          "reason_sha256": "a656ff4a4e41f25c9232de4bf9e6e16be401c55288f9a5c228808baca0939a84",
+          "reason_assessment": "grounded",
+          "independent_check": "3 cm × 5 km/cm = 15 km.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "0.6 km",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "0.6 km = 3÷5, inverting the ratio. Incorrect.",
+          "reason_sha256": "215d61eb694084d6d3dd2b5316b12b382c71d803186437bdb15bf05b5d0d41cb",
+          "reason_assessment": "grounded",
+          "independent_check": "3/5 = 0.6 uses the inverse numerical operation, rather than 3×5.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "5/3 km",
+          "rightChoice": "8 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "5/3 km ≈ 1.67 km vs 8 km; different numerical values.",
+          "reason_sha256": "629fa7e27c8cfcb1c61fa50955e31a2db82a98b8ea01f5a7f57760beeff68ffa",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 5/3 and 8; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "5/3 km",
+          "rightChoice": "15 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "5/3 km ≈ 1.67 km vs 15 km; different values.",
+          "reason_sha256": "e3bc561dc1c832937fae4f35b07218e701c47ebbca5c227ef45e9103702b760d",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 5/3 and 15; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "5/3 km",
+          "rightChoice": "0.6 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "5/3 ≈ 1.67 km vs 0.6 km; different values, though both result from misapplying the scale.",
+          "reason_sha256": "5019d531a0b110eabd5a3cf733120d639ea2bd076e0774442f1a8940f74df02d",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 5/3 and 3/5; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "8 km",
+          "rightChoice": "15 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "8 km vs 15 km; different values.",
+          "reason_sha256": "24a3b0a977fb74a0045f6c3e23fc5846f4723692ef9b9f8f25f87fdc236c2504",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 8 and 15; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "8 km",
+          "rightChoice": "0.6 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "8 km vs 0.6 km; different values.",
+          "reason_sha256": "b9168b8f236cf10983cf9c0b86050a81fc32e90c8dfe991d7feef1ecf66dda35",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 8 and 3/5; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "15 km",
+          "rightChoice": "0.6 km",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "15 km vs 0.6 km; different values.",
+          "reason_sha256": "ad1bb5579382df483346cc313ec7e22580994c86f5476e386aa60e597238eb7b",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 15 and 3/5; they are different task-relevant values.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": true,
+      "expected_eligible": true,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": null,
+      "learner_feedback_generated_or_released": false
+    },
+    {
+      "case_id": "pencil_key_mismatch",
+      "call_index": 1,
+      "trusted_item_index": 4,
+      "prompt": "A crate contains 6 boxes with 4 pencils in each box. How many pencils are in the crate?",
+      "exact_choice_slots": {
+        "a": "10",
+        "b": "12",
+        "c": "2",
+        "d": "24"
+      },
+      "gold_expectedAnswer": "10",
+      "choices": [
+        {
+          "slot": "a",
+          "exact_choice": "10",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "6+4=10 applies addition rather than multiplication. Incorrect; 6×4=24.",
+          "reason_sha256": "1cb6f0050f6bf86f2d3f154b9dd15a2b2987ed2d8960f20a959eb14353c3465c",
+          "reason_assessment": "grounded",
+          "independent_check": "6 + 4 = 10 is addition, not the required 6×4 = 24.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "b",
+          "exact_choice": "12",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "12 is not 6×4=24 nor any natural misapplication such as 6+4=10 or 6-4=2. Possibly 6×2 or 3×4; does not match the given numbers correctly.",
+          "reason_sha256": "cfbe6f623a95317f79c83d4f1041c2822c9d1d9989ab34ead2b0f5f697fafdb1",
+          "reason_assessment": "uncertain_generalization",
+          "independent_check": "12 is not 24, and 6×2 or 3×4 can produce 12, but no evidence supports the broad claim that no natural misapplication produces it.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "c",
+          "exact_choice": "2",
+          "observed_judgment": "refuted",
+          "expected_judgment": "refuted",
+          "label_matches_gold": true,
+          "exact_reason": "6-4=2 applies subtraction instead of multiplication. Incorrect.",
+          "reason_sha256": "bd176900519eed2b116cd67e07109e8e8d2238ba79c89168ba141db3207b10e7",
+          "reason_assessment": "grounded",
+          "independent_check": "6 − 4 = 2 is subtraction, not the required product.",
+          "affects_choice_label": false
+        },
+        {
+          "slot": "d",
+          "exact_choice": "24",
+          "observed_judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_gold": true,
+          "exact_reason": "6×4=24; correct multiplication gives 24 pencils.",
+          "reason_sha256": "61e85b0ba0135773c8b3cd79eb04122d27c50ac6674db2a769fa01f1caf831ee",
+          "reason_assessment": "grounded",
+          "independent_check": "6 boxes × 4 pencils/box = 24 pencils.",
+          "affects_choice_label": false
+        }
+      ],
+      "pairs": [
+        {
+          "pair_slot": "ab",
+          "leftChoice": "10",
+          "rightChoice": "12",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "10 vs 12; different numerical values.",
+          "reason_sha256": "0e97703d36bd2e4534fb7a3d75f060a7b6db12008aba8c7c5da97f70720610bb",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 10 and 12; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ac",
+          "leftChoice": "10",
+          "rightChoice": "2",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "10 vs 2; different values.",
+          "reason_sha256": "7b6178e29ea04da026b69e4bd2fe3de5b220a0d0dded0c3ff02110eb58b8215b",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 10 and 2; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "ad",
+          "leftChoice": "10",
+          "rightChoice": "24",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "10 vs 24; different values.",
+          "reason_sha256": "be72f4c61ac70a4b068bd556ec9cd7931aaf7db251d93ccd758d8208a6f59aec",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 10 and 24; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bc",
+          "leftChoice": "12",
+          "rightChoice": "2",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "12 vs 2; different values.",
+          "reason_sha256": "0ba39a6cac41ae9d5ff42bf73bd9851e6ad920adc50978f1a72af5fde08eda15",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 12 and 2; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "bd",
+          "leftChoice": "12",
+          "rightChoice": "24",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "12 vs 24; different values.",
+          "reason_sha256": "b29c4a1f4bfc60b84ca79df8a7f0dc824fcdc8621b59ac9cb1b521826fe7188c",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 12 and 24; they are different task-relevant values.",
+          "fidelity_note": null
+        },
+        {
+          "pair_slot": "cd",
+          "leftChoice": "2",
+          "rightChoice": "24",
+          "observed_relation": "distinct",
+          "expected_relation": "distinct",
+          "label_matches_gold": true,
+          "exact_reason": "2 vs 24; different values.",
+          "reason_sha256": "f69bfa78cf0f58ab55c233a11dfa996160df44df175ffede75c08d55e6df413f",
+          "reason_assessment": "grounded",
+          "independent_check": "The exact endpoints denote 2 and 24; they are different task-relevant values.",
+          "fidelity_note": null
+        }
+      ],
+      "eligible": false,
+      "expected_eligible": false,
+      "eligibility_matches_gold": true,
+      "actual_runtime_veto": "answer_disagreement",
+      "learner_feedback_generated_or_released": false
+    }
+  ],
+  "auditor_provider_calls": 0
+}

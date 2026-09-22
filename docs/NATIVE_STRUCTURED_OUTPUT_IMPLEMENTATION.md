@@ -5,6 +5,8 @@ improvements are on `main`. The deployment defaults remain global `legacy` and
 worker `inherit`; the current iOS minimum remains policy 2. Native worker rollout
 and a client minimum of 4 are separate pending work. No deployment was performed
 for these changes. Native formatting enforces structure, not factual correctness.
+The v5 solver also passed its two-call count-five provider identity trial.
+Other counts and full semantic release qualification remain separate.
 See the [investigation findings](QUESTION_RELIABILITY_FINDINGS.md) for the application
 bugs, controlled model comparisons and answer-highlighting evidence.
 
@@ -12,8 +14,8 @@ bugs, controlled model comparisons and answer-highlighting evidence.
 
 Every provider call selects its stage explicitly, including author repair,
 top-ups, configured fallback, API/worker generation and skill-map retries. The
-registry retains ten static, closed, versioned contracts and adds a count-bound
-reviewer family:
+registry retains ten static, closed, versioned contracts and adds count-bound
+solver and reviewer families:
 
 | Contract | Shape and runtime use |
 | --- | --- |
@@ -23,14 +25,16 @@ reviewer family:
 | `skill_map_inference_v1` | Skill/objective names; server validates counts and assigns IDs. |
 | `skill_map_evolution_v1` | Successor names/objectives; server validates predecessor coverage and constructs map identity/version. |
 | `complete_choice_solver_v1` | Exact indexed choices with supported/refuted/uncertain declarations. Retained for legacy complete-choice and optional authored teaching. |
-| `complete_choice_solver_v3` | Native reviewer-written path: four fixed judgment slots and six fixed unordered pair slots, reasons before verdicts. Trusted input provides exact pair endpoints. |
+| `complete_choice_solver_v3` | Retained historical contract: four fixed judgment slots and six fixed unordered pair slots, reasons before verdicts; free outer array/index still requires local coverage validation. |
+| `complete_choice_solver_v5_n{count}` | Native reviewer-written path: required outer object keys bind the actual validated solver input (1–40), with no model-written index. Inner v3 judgment/pair schemas and exact trusted endpoints remain unchanged. The adapter restores trusted indexes before the existing semantic gates. |
 | `default_reviewer_v1` | Retained explicit native contract and legacy routing identity: verdict, exact answer, assessed difficulty, main explanation and provider-only choiceFeedback rows. |
 | `default_reviewer_v2` | Inactive experiment with separate accepted/rejected union branches; failed valid-control retention. |
 | `authored_solution_reviewer_v1` | Optional authored-teaching audit; cannot replace the author's teaching. Not enabled by this work. |
 | `default_reviewer_v3_n{count}` | Current native final review: required object keys bind every dense post-solver item, including rejections. Trusted count is 1–40; no model-written index. Feedback fields and admission checks remain v1-compatible. |
 
 Historical schema bytes remain stable. V3 serialization deliberately preserves
-property order. Schemas contain no request-specific goals, answers, IDs or counts.
+property order. Schemas contain no request-specific goals, answers or content IDs.
+Count-bound grammars vary only by bounded batch cardinality and dense numeric keys.
 Strict JSON/schema parsing rejects duplicate properties, nonfinite numbers,
 unknown/missing fields, invalid types/enums, refusal and incomplete output before
 adaptation. Application code still enforces counts, text bounds, scope and exact
@@ -45,8 +49,28 @@ uncertain pairs veto the item. Different wrong answers are not automatically
 equivalent. The solver and final reviewer are fallible, so agreeing declarations
 are not a proof of correctness.
 
-Final review still uses v1. After validating the full schema, its adapter turns
-any typed false review into its original index and false verdict. This keeps the
+The solver's outer map closes the same cardinality/identity gap as the review
+map. A trusted callback passes the number of reviewable candidates after input
+filtering, before solver judgments; it never reads request targetCount or parses
+model-authored text. All map keys and inner rows must validate before any index
+is restored. This transport version adds no provider stage or verification-policy
+revision and leaves legacy and optional authored-teaching routes unchanged.
+
+V5 shares the solution, choice-judgment and pair-relation schemas through internal
+`$defs`/`$ref` references. Local validation still uses the expanded schema. For
+every count 1–40, resolving those references reproduces the inline v4 candidate
+byte for byte, including required fields, closed objects and reason-before-verdict
+ordering. The count-five schema shrinks from 11,798 to 1,489 bytes; count forty
+shrinks from 93,233 to 2,809 bytes. Historical v3 and reviewer schemas are unchanged.
+AWS rejected the inline v4 request because its compiled grammar was too large.
+The [shared-schema trial](evidence/solver-shared-schema-qualification-20260922/RESULTS.md)
+completed both count-five requests with all ten identities and exact decoding.
+This establishes acceptance for the tested count/model/settings, not a numeric
+compiler limit or acceptance of every locally supported count.
+
+Native final review uses the count-bound v3 wrapper described below; legacy
+review retains v1. After validating the full schema, the adapter turns any typed
+false review into its trusted index and false verdict. This keeps the
 rejection without discarding valid siblings because a rejected row also contains
 unused text. Accepted rows must retain exact choices, complete feedback and text
 bounds. The [reviewer-v2 failure](evidence/structured-reliability-20260921/REVIEWER_V2_FINDINGS.md)
@@ -78,6 +102,16 @@ Ruff, compilation, deployment-script checks, SAM lint and the noncontainer build
 It expands packaged validation to the ten static shapes plus forty count variants
 per artifact (150 offline checks), with all 23 service modules identical in each
 of the three delivered artifacts.
+
+The v5 solver passes **1,150 backend tests**, SAM lint and a noncontainer
+SAM build. All 23 service modules, the pinned requirements and the SDK verifier
+match source in each of the three artifacts. Artifact-isolated Python 3.12
+`-I -S` validates ten static, forty reviewer and forty solver request shapes per
+artifact with boto3/botocore 1.43.91: **270 offline checks**, with no provider calls.
+The separate live count-five trial passed structure in 64.614 and 32.737 seconds.
+All ten admission decisions and forty answer labels matched gold, while one of
+sixty pair labels referred to the wrong pair. That semantic error remains
+reported; native field identities do not guarantee correct model judgments.
 
 All experiments retain their prospective plans, raw attempts and failed criteria:
 

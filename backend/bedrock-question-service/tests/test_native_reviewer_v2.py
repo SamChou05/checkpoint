@@ -21,7 +21,7 @@ from question_verification import verify_questions
 from request_contract import _normalize_request
 from service_errors import ProviderError
 from test_native_output_contracts import Client
-from test_native_pipeline import AUTHOR, SOLVER, ScriptedNativeClient, author_payload, review, review_map, solver_record, task_data
+from test_native_pipeline import AUTHOR, ScriptedNativeClient, author_payload, review, review_map, solver_map, solver_record, task_data
 
 
 # Exact rejected row from native-reviewer-capture.json, call 3, item 2. Its
@@ -156,11 +156,11 @@ class NativeReviewerV2Tests(unittest.TestCase):
 
         def solve(request):
             items = task_data(request, "question_solution_json")["items"]
-            return {"solutions": [solver_record(item, answers[item["prompt"]]) for item in items]}
+            return solver_map(*[solver_record(item, answers[item["prompt"]]) for item in items])
 
         client = ScriptedNativeClient(
             (AUTHOR, author_payload(self.question, self.other)),
-            (SOLVER, solve),
+            ("complete_choice_solver_v5_n2", solve),
             ("default_reviewer_v3_n2", review_map(self.accepted, {
                 **self.rejected, "answer": "", "difficulty": 0, "explanation": "", "choiceFeedback": [],
             })),

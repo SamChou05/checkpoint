@@ -14,6 +14,7 @@ against the stored key. Each boundary needs its own invariant.
 | Alphabetical schema serialization asked the author to emit choices before the stem and its key before the stem. | [Controlled ordering comparison](evidence/native-author-order-20260922/REPORT.md): three plainly wrong keys in the sorted arm; none plainly wrong and one ambiguous item in the ordered arm. | Versioned author v3 places the stem first and explanation before the key. Exact key text is derived from the selected choice slot. Historical schema bytes remain unchanged. |
 | Native review arrays could contain phantom indexes while satisfying JSON Schema. | [Count-bound trial](evidence/reviewer-identity-20260922/RESULTS.md): 2/2 calls returned all ten required identities, while semantic checks still failed. | Native reviewer v3 requires one object key per trusted survivor; missing or extra identities cannot be admitted. |
 | An array could describe six pair comparisons but could not enforce their identities. The model emitted seven rows including a self-pair. | [Stopped ordering trial](evidence/choice-quality-release-20260922/ORDER_RESULTS.md). | Four judgment slots and six closed pair slots, with exact endpoints supplied by code and strict decoding. Slot mapping does not depend on the key. |
+| The solver outer array could not constrain every item identity; a straightforward count-bound replacement exceeded AWS compiled-grammar limits. | [Exact AWS diagnostic](evidence/solver-identity-qualification-20260922/ERROR_DIAGNOSTIC_RESULTS.md) and [shared-schema trial](evidence/solver-shared-schema-qualification-20260922/RESULTS.md): 2/2 calls, all ten identities. | Solver v5 uses shared definitions and required question keys; strict local decoding preserves all choice/pair bindings. All forty supported counts are equivalent locally; live acceptance covers count five. |
 | Different strings can propose the same answer; checking which choice is correct does not check whether two wrong choices duplicate one another. | [Twenty reviewed controls](evidence/choice-quality-release-20260922/INDEPENDENT_GOLD_REVIEW.md) include equivalent values, unit conversions, paraphrases and representation-sensitive tasks. | Pair judgments are a separate admission condition. Declared equivalence or uncertainty vetoes an item, in addition to exact agreement on one supported answer. |
 | Legacy client code inferred correctness from prose. The substring `correct` also occurs in `incorrect`, so distractor feedback could overwrite the explicit answer key. | [Highlighting reproduction and permutation tests](evidence/answer-highlighting-20260921.md). | The explicit structured key is authoritative. Explanation text cannot replace it. Text-based grading preserves the key across all 24 display orders. |
 | Old inventory and position-dependent feedback could outlive the assumptions used when generated. | [Cached inventory audit](evidence/question-reliability-release-20260922/CACHED_INVENTORY.md); the fresh English capture contained “Only the first choice” despite app shuffling. | All practice tiers require the current verification policy. Old history is preserved. Final review rejects display-position references, while retaining quoted subject literals and ordinary numeric values. |
@@ -53,7 +54,7 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,141
+The tested structural changes are on main. Backend verification passes 1,150
 tests. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter
@@ -111,9 +112,10 @@ All five final-auditor trials remain failed evidence; none changed production
 routing or defaults. The fourth-stage code and budget tests remain isolated
 preparation. The next architecture candidate moves all five teaching fields into
 authoring, before the answer-blind solver and an immutable field-by-field review.
-That removes the unchecked last writer without adding a fourth call. It is a
-proposal requiring implementation and fresh end-to-end qualification, not a
-claim that model agreement proves truth.
+That removes the unchecked last writer without adding a fourth call. The isolated
+implementation passes 1,212 backend tests; its per-field known-control trial and
+fresh end-to-end qualification remain separate from those mechanical checks.
+Model agreement still does not prove truth.
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
 confirmed that signed Mantle metadata requests work with the existing AWS

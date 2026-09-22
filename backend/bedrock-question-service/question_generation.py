@@ -13,6 +13,7 @@ from native_output_contracts import (
     Contract,
     NativeContract,
     ReviewerSlotContract,
+    SolverSlotContract,
     adapt_native_response,
     contract_metadata,
     ensure_supported_model,
@@ -272,13 +273,8 @@ def _generate_sanitized_questions(
                     ),
                 )
 
-            generated_questions = verify_questions(
-                candidates,
-                current_request,
-                review_stage,
-                review_with_count=review_stage if choice_slots else None,
-                request_metrics=request_metrics,
-                solve=lambda system, prompt: _generate_with_bedrock(
+            def solve_stage(system: str, prompt: str, count: int | None = None) -> str:
+                return _generate_with_bedrock(
                     normalized_request=current_request,
                     bedrock_client=bedrock_client,
                     model_id=_verification_model_id(),
@@ -286,8 +282,17 @@ def _generate_sanitized_questions(
                     user_prompt=prompt,
                     call_budget=call_budget,
                     request_metrics=request_metrics,
-                    contract="complete_choice_solver_v3" if choice_slots else "complete_choice_solver_v1",
-                ),
+                    contract=SolverSlotContract(count) if count is not None else "complete_choice_solver_v1",
+                )
+
+            generated_questions = verify_questions(
+                candidates,
+                current_request,
+                review_stage,
+                review_with_count=review_stage if choice_slots else None,
+                request_metrics=request_metrics,
+                solve=solve_stage,
+                solve_with_count=solve_stage if choice_slots else None,
                 solver_contract="complete_choices",
                 feedback_contract=feedback_contract,
                 preserve_reviewed_text=output_mode() == "native",

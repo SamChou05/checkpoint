@@ -288,8 +288,18 @@ Use `python evals/checkpoint_learning_eval.py --output /tmp/learning-review.json
 
 Question generation uses an author-key-blind complete-choice solver followed by
 final review. Native reviewer-written generation selects
-`complete_choice_solver_v3`: four fixed judgment slots and six fixed unordered
-pair slots, with exact input endpoints. Slot order is derived from the stem and
+`complete_choice_solver_v5_n{count}`: a closed map of all validated input items,
+each with four fixed judgment slots and six fixed unordered pair slots, with
+exact input endpoints. Trusted input cardinality selects counts 1–40; the model
+must return every bound identity. Local decoding rejects missing, extra and
+duplicate keys before restoring integer indexes for the unchanged solver
+validation. The provider schema reuses internal `$defs`/`$ref` definitions;
+expanding them preserves the exact closed schema and reasons-before-verdicts
+ordering. The count-five schema is 1,489 bytes instead of 11,798 inline bytes.
+The [two-call count-five trial](../../docs/evidence/solver-shared-schema-qualification-20260922/RESULTS.md)
+passed provider acceptance and exact identities. Other counts remain locally
+tested only. One semantic pair-label error remains separate from that structural
+result. Historical v3 schema bytes remain available for frozen replays. Slot order is derived from the stem and
 choice bytes independently of the author's key. The server requires one
 supported choice, three refuted choices, exact key agreement and no declared
 equivalent or uncertain pair, then checks final review before awarding policy

@@ -13,7 +13,7 @@ from question_generation import ProviderCallBudget, _generate_provider_payload, 
 from request_contract import _normalize_request
 from service_errors import ProviderError
 from test_native_author_v2 import Client, question, raw
-from test_native_pipeline import AUTHOR, SOLVER, ScriptedNativeClient, solver_record, task_data
+from test_native_pipeline import AUTHOR, SOLVER, ScriptedNativeClient, solver_map, solver_record, task_data
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -100,7 +100,7 @@ class NativeAuthorV3Tests(unittest.TestCase):
             def refute_all(record):
                 for row in record["choices"]:
                     row.update(judgment="refuted", reason="Concentrate rises from9 to15liters:66⅔%, which is absent.")
-            return {"solutions": [solver_record(item, "25%", refute_all)]}
+            return solver_map(solver_record(item, "25%", refute_all))
 
         client = ScriptedNativeClient((AUTHOR, {"questions": [bad_question]}), (SOLVER, solve))
         request = _normalize_request({

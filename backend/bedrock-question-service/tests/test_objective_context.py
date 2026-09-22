@@ -16,7 +16,7 @@ from complete_question_solution import (
 from question_quality import _sanitize_questions
 from question_verification import verify_questions
 from request_contract import _normalize_request
-from test_native_pipeline import author_payload, review_map, solver_record
+from test_native_pipeline import author_payload, review_map, solver_map, solver_record
 
 
 MODEL = "us.anthropic.claude-sonnet-4-6"
@@ -137,12 +137,12 @@ class ObjectiveContextTests(unittest.TestCase):
                                 elif "<question_solution_json>\n" in text:
                                     tag = "question_solution_json"
                                     use_slots = mode == "native" and not authored
-                                    contract = "complete_choice_solver_v3" if use_slots else "complete_choice_solver_v1"
+                                    contract = "complete_choice_solver_v5_n1" if use_slots else "complete_choice_solver_v1"
                                     data = payload(text, tag)
-                                    response = {"solutions": [
+                                    response = solver_map(*[
                                         solver_record(item, answers[item["prompt"]])
                                         for item in data["items"]
-                                    ]} if use_slots else solutions(data["items"], answers)
+                                    ]) if use_slots else solutions(data["items"], answers)
                                     test.assertNotIn("existingQuestions", data)
                                     test.assertNotIn("independentSolutions", data)
                                 else:

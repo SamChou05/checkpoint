@@ -60,6 +60,8 @@ def main() -> None:
         raise RuntimeError("Expected ten versioned native contracts including retained author contracts and the experimental reviewer schema.")
     contracts += tuple(native_output_contracts.ReviewerSlotContract(count)
                        for count in range(1, native_output_contracts.MAX_REVIEW_BATCH_COUNT + 1))
+    contracts += tuple(native_output_contracts.SolverSlotContract(count)
+                       for count in range(1, native_output_contracts.MAX_REVIEW_BATCH_COUNT + 1))
     for contract in contracts:
         request = {
             "modelId": "us.anthropic.claude-sonnet-4-6",

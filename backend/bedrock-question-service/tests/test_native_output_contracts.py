@@ -7,6 +7,7 @@ from unittest.mock import Mock, patch
 
 from native_output_contracts import (
     ReviewerSlotContract,
+    SolverSlotContract,
     adapt_native_response,
     contract_metadata,
     native_output_config,
@@ -110,7 +111,7 @@ class NativeOutputContractTests(unittest.TestCase):
         # Cover each actual generation-stage contract and both thinking modes.
         for model in models:
             for thinking in ("disabled", "adaptive"):
-                for contract in ("question_author_v3", "complete_choice_solver_v3", ReviewerSlotContract(1)):
+                for contract in ("question_author_v3", SolverSlotContract(1), ReviewerSlotContract(1)):
                     with self.subTest(model=model, thinking=thinking, contract=contract):
                         reserve = Mock()
                         budget = ProviderCallBudget(1, reserve_call=reserve)

@@ -18,8 +18,8 @@ from native_output_contracts import (
 from question_verification import COMPLETE_REVIEW_SYSTEM_PROMPT
 from service_errors import ProviderError, ServiceConfigurationError
 from test_native_pipeline import (
-    AUTHOR, REVIEWER, SOLVER, ScriptedNativeClient,
-    author_payload, review, review_map, solver_record, task_data,
+    AUTHOR, REVIEWER, ScriptedNativeClient,
+    author_payload, review, review_map, solver_map, solver_record, task_data,
 )
 
 EVIDENCE = Path(__file__).resolve().parents[3] / "docs/evidence/reviewer-identity-20260922"
@@ -143,7 +143,7 @@ class ReviewerSurvivorRoutingTests(unittest.TestCase):
                     for value in record["choices"].values():
                         value["judgment"] = "uncertain"
                 records.append(record)
-            return {"solutions": records}
+            return solver_map(*records)
 
         def reviewer(request):
             items = task_data(request, "question_review_json")["items"]
@@ -151,7 +151,7 @@ class ReviewerSurvivorRoutingTests(unittest.TestCase):
             return review_map(review(self.question))
 
         client = ScriptedNativeClient((AUTHOR, author_payload(rejected, self.question)),
-                                      (SOLVER, solve), (REVIEWER, reviewer))
+                                      ("complete_choice_solver_v5_n2", solve), (REVIEWER, reviewer))
         request = {**self.request, "targetCount": 2}
         metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
         accepted = generation._generate_sanitized_questions(request, client, generation.ProviderCallBudget(3), metrics)
