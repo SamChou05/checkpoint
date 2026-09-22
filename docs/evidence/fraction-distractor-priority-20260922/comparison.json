@@ -1,0 +1,1516 @@
+{
+  "baseline_git": "de6b956",
+  "baseline_constructor_sha256": "766e51e50622ddc22137e204c7615e1d93a307ee634aad813363aa3031b4772f",
+  "candidate_constructor_sha256": "d838c5c2dcedcd5bf5df6423156386ecae855b5f30111ed2a22e8af7d3b3c68c",
+  "plausibility_is_hypothesis": true,
+  "comparison": {
+    "signed_rational_grid": {
+      "cases": 885,
+      "old_accepted": 780,
+      "new_accepted": 800,
+      "gains": [
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-7/2"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "7/2",
+              "-7/3",
+              "-7/2",
+              "0"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (-7/2)). What is its exact value?",
+              "choices": [
+                "7/2",
+                "-7/3",
+                "-7/2",
+                "0"
+              ],
+              "expectedAnswer": "-7/2",
+              "explanation": "Common denominator 2: 0 + (-7/2) = (0/2) + (-7/2) = -7/2. The answer is -7/2.",
+              "choiceExplanations": {
+                "7/2": "The expression evaluates exactly to -7/2, not 7/2. 7/2 is not the requested value.",
+                "-7/3": "The expression evaluates exactly to -7/2, not -7/3. -7/3 is not the requested value.",
+                "-7/2": "The expression evaluates exactly to -7/2; -7/2 is the requested value.",
+                "0": "The expression evaluates exactly to -7/2, not 0. 0 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-7/3"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "7/3",
+              "-7/4",
+              "-7/3",
+              "0"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (-7/3)). What is its exact value?",
+              "choices": [
+                "7/3",
+                "-7/4",
+                "-7/3",
+                "0"
+              ],
+              "expectedAnswer": "-7/3",
+              "explanation": "Common denominator 3: 0 + (-7/3) = (0/3) + (-7/3) = -7/3. The answer is -7/3.",
+              "choiceExplanations": {
+                "7/3": "The expression evaluates exactly to -7/3, not 7/3. 7/3 is not the requested value.",
+                "-7/4": "The expression evaluates exactly to -7/3, not -7/4. -7/4 is not the requested value.",
+                "-7/3": "The expression evaluates exactly to -7/3; -7/3 is the requested value.",
+                "0": "The expression evaluates exactly to -7/3, not 0. 0 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-1/2"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "0",
+              "1/2",
+              "-1/3",
+              "-1/2"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (-1/2)). What is its exact value?",
+              "choices": [
+                "0",
+                "1/2",
+                "-1/3",
+                "-1/2"
+              ],
+              "expectedAnswer": "-1/2",
+              "explanation": "Common denominator 2: 0 + (-1/2) = (0/2) + (-1/2) = -1/2. The answer is -1/2.",
+              "choiceExplanations": {
+                "0": "The expression evaluates exactly to -1/2, not 0. 0 is not the requested value.",
+                "1/2": "The expression evaluates exactly to -1/2, not 1/2. 1/2 is not the requested value.",
+                "-1/3": "The expression evaluates exactly to -1/2, not -1/3. -1/3 is not the requested value.",
+                "-1/2": "The expression evaluates exactly to -1/2; -1/2 is the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-1/3"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "1/3",
+              "-1/4",
+              "-1/3",
+              "0"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (-1/3)). What is its exact value?",
+              "choices": [
+                "1/3",
+                "-1/4",
+                "-1/3",
+                "0"
+              ],
+              "expectedAnswer": "-1/3",
+              "explanation": "Common denominator 3: 0 + (-1/3) = (0/3) + (-1/3) = -1/3. The answer is -1/3.",
+              "choiceExplanations": {
+                "1/3": "The expression evaluates exactly to -1/3, not 1/3. 1/3 is not the requested value.",
+                "-1/4": "The expression evaluates exactly to -1/3, not -1/4. -1/4 is not the requested value.",
+                "-1/3": "The expression evaluates exactly to -1/3; -1/3 is the requested value.",
+                "0": "The expression evaluates exactly to -1/3, not 0. 0 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-1/7"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "-1/7",
+              "1/7",
+              "0",
+              "-1/8"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (-1/7)). What is its exact value?",
+              "choices": [
+                "-1/7",
+                "1/7",
+                "0",
+                "-1/8"
+              ],
+              "expectedAnswer": "-1/7",
+              "explanation": "Common denominator 7: 0 + (-1/7) = (0/7) + (-1/7) = -1/7. The answer is -1/7.",
+              "choiceExplanations": {
+                "-1/7": "The expression evaluates exactly to -1/7; -1/7 is the requested value.",
+                "1/7": "The expression evaluates exactly to -1/7, not 1/7. 1/7 is not the requested value.",
+                "0": "The expression evaluates exactly to -1/7, not 0. 0 is not the requested value.",
+                "-1/8": "The expression evaluates exactly to -1/7, not -1/8. -1/8 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "1/7"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "1/7",
+              "-1/7",
+              "0",
+              "1/8"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (1/7)). What is its exact value?",
+              "choices": [
+                "1/7",
+                "-1/7",
+                "0",
+                "1/8"
+              ],
+              "expectedAnswer": "1/7",
+              "explanation": "Common denominator 7: 0 + (1/7) = (0/7) + (1/7) = 1/7. The answer is 1/7.",
+              "choiceExplanations": {
+                "1/7": "The expression evaluates exactly to 1/7; 1/7 is the requested value.",
+                "-1/7": "The expression evaluates exactly to 1/7, not -1/7. -1/7 is not the requested value.",
+                "0": "The expression evaluates exactly to 1/7, not 0. 0 is not the requested value.",
+                "1/8": "The expression evaluates exactly to 1/7, not 1/8. 1/8 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "1/3"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "1/4",
+              "0",
+              "-1/3",
+              "1/3"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (1/3)). What is its exact value?",
+              "choices": [
+                "1/4",
+                "0",
+                "-1/3",
+                "1/3"
+              ],
+              "expectedAnswer": "1/3",
+              "explanation": "Common denominator 3: 0 + (1/3) = (0/3) + (1/3) = 1/3. The answer is 1/3.",
+              "choiceExplanations": {
+                "1/4": "The expression evaluates exactly to 1/3, not 1/4. 1/4 is not the requested value.",
+                "0": "The expression evaluates exactly to 1/3, not 0. 0 is not the requested value.",
+                "-1/3": "The expression evaluates exactly to 1/3, not -1/3. -1/3 is not the requested value.",
+                "1/3": "The expression evaluates exactly to 1/3; 1/3 is the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "1/2"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "-1/2",
+              "1/3",
+              "0",
+              "1/2"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (1/2)). What is its exact value?",
+              "choices": [
+                "-1/2",
+                "1/3",
+                "0",
+                "1/2"
+              ],
+              "expectedAnswer": "1/2",
+              "explanation": "Common denominator 2: 0 + (1/2) = (0/2) + (1/2) = 1/2. The answer is 1/2.",
+              "choiceExplanations": {
+                "-1/2": "The expression evaluates exactly to 1/2, not -1/2. -1/2 is not the requested value.",
+                "1/3": "The expression evaluates exactly to 1/2, not 1/3. 1/3 is not the requested value.",
+                "0": "The expression evaluates exactly to 1/2, not 0. 0 is not the requested value.",
+                "1/2": "The expression evaluates exactly to 1/2; 1/2 is the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "7/3"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "0",
+              "-7/3",
+              "7/3",
+              "7/4"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (7/3)). What is its exact value?",
+              "choices": [
+                "0",
+                "-7/3",
+                "7/3",
+                "7/4"
+              ],
+              "expectedAnswer": "7/3",
+              "explanation": "Common denominator 3: 0 + (7/3) = (0/3) + (7/3) = 7/3. The answer is 7/3.",
+              "choiceExplanations": {
+                "0": "The expression evaluates exactly to 7/3, not 0. 0 is not the requested value.",
+                "-7/3": "The expression evaluates exactly to 7/3, not -7/3. -7/3 is not the requested value.",
+                "7/3": "The expression evaluates exactly to 7/3; 7/3 is the requested value.",
+                "7/4": "The expression evaluates exactly to 7/3, not 7/4. 7/4 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "add",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "7/2"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "7/3",
+              "0",
+              "7/2",
+              "-7/2"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 + (7/2)). What is its exact value?",
+              "choices": [
+                "7/3",
+                "0",
+                "7/2",
+                "-7/2"
+              ],
+              "expectedAnswer": "7/2",
+              "explanation": "Common denominator 2: 0 + (7/2) = (0/2) + (7/2) = 7/2. The answer is 7/2.",
+              "choiceExplanations": {
+                "7/3": "The expression evaluates exactly to 7/2, not 7/3. 7/3 is not the requested value.",
+                "0": "The expression evaluates exactly to 7/2, not 0. 0 is not the requested value.",
+                "7/2": "The expression evaluates exactly to 7/2; 7/2 is the requested value.",
+                "-7/2": "The expression evaluates exactly to 7/2, not -7/2. -7/2 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-7/2"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "-7",
+              "7/2",
+              "-7/2",
+              "0"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (-7/2)). What is its exact value?",
+              "choices": [
+                "-7",
+                "7/2",
+                "-7/2",
+                "0"
+              ],
+              "expectedAnswer": "7/2",
+              "explanation": "Common denominator 2: 0 - (-7/2) = (0/2) - (-7/2) = 7/2. The answer is 7/2.",
+              "choiceExplanations": {
+                "-7": "The expression evaluates exactly to 7/2, not -7. -7 is not the requested value.",
+                "7/2": "The expression evaluates exactly to 7/2; 7/2 is the requested value.",
+                "-7/2": "The expression evaluates exactly to 7/2, not -7/2. -7/2 is not the requested value.",
+                "0": "The expression evaluates exactly to 7/2, not 0. 0 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-7/3"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "0",
+              "7/3",
+              "-7/2",
+              "-7/3"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (-7/3)). What is its exact value?",
+              "choices": [
+                "0",
+                "7/3",
+                "-7/2",
+                "-7/3"
+              ],
+              "expectedAnswer": "7/3",
+              "explanation": "Common denominator 3: 0 - (-7/3) = (0/3) - (-7/3) = 7/3. The answer is 7/3.",
+              "choiceExplanations": {
+                "0": "The expression evaluates exactly to 7/3, not 0. 0 is not the requested value.",
+                "7/3": "The expression evaluates exactly to 7/3; 7/3 is the requested value.",
+                "-7/2": "The expression evaluates exactly to 7/3, not -7/2. -7/2 is not the requested value.",
+                "-7/3": "The expression evaluates exactly to 7/3, not -7/3. -7/3 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-1/2"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "-1",
+              "0",
+              "-1/2",
+              "1/2"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (-1/2)). What is its exact value?",
+              "choices": [
+                "-1",
+                "0",
+                "-1/2",
+                "1/2"
+              ],
+              "expectedAnswer": "1/2",
+              "explanation": "Common denominator 2: 0 - (-1/2) = (0/2) - (-1/2) = 1/2. The answer is 1/2.",
+              "choiceExplanations": {
+                "-1": "The expression evaluates exactly to 1/2, not -1. -1 is not the requested value.",
+                "0": "The expression evaluates exactly to 1/2, not 0. 0 is not the requested value.",
+                "-1/2": "The expression evaluates exactly to 1/2, not -1/2. -1/2 is not the requested value.",
+                "1/2": "The expression evaluates exactly to 1/2; 1/2 is the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-1/3"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "1/3",
+              "0",
+              "-1/3",
+              "-1/2"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (-1/3)). What is its exact value?",
+              "choices": [
+                "1/3",
+                "0",
+                "-1/3",
+                "-1/2"
+              ],
+              "expectedAnswer": "1/3",
+              "explanation": "Common denominator 3: 0 - (-1/3) = (0/3) - (-1/3) = 1/3. The answer is 1/3.",
+              "choiceExplanations": {
+                "1/3": "The expression evaluates exactly to 1/3; 1/3 is the requested value.",
+                "0": "The expression evaluates exactly to 1/3, not 0. 0 is not the requested value.",
+                "-1/3": "The expression evaluates exactly to 1/3, not -1/3. -1/3 is not the requested value.",
+                "-1/2": "The expression evaluates exactly to 1/3, not -1/2. -1/2 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "-1/7"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "0",
+              "-1/7",
+              "1/7",
+              "-1/6"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (-1/7)). What is its exact value?",
+              "choices": [
+                "0",
+                "-1/7",
+                "1/7",
+                "-1/6"
+              ],
+              "expectedAnswer": "1/7",
+              "explanation": "Common denominator 7: 0 - (-1/7) = (0/7) - (-1/7) = 1/7. The answer is 1/7.",
+              "choiceExplanations": {
+                "0": "The expression evaluates exactly to 1/7, not 0. 0 is not the requested value.",
+                "-1/7": "The expression evaluates exactly to 1/7, not -1/7. -1/7 is not the requested value.",
+                "1/7": "The expression evaluates exactly to 1/7; 1/7 is the requested value.",
+                "-1/6": "The expression evaluates exactly to 1/7, not -1/6. -1/6 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "1/7"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "-1/7",
+              "1/6",
+              "0",
+              "1/7"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (1/7)). What is its exact value?",
+              "choices": [
+                "-1/7",
+                "1/6",
+                "0",
+                "1/7"
+              ],
+              "expectedAnswer": "-1/7",
+              "explanation": "Common denominator 7: 0 - (1/7) = (0/7) - (1/7) = -1/7. The answer is -1/7.",
+              "choiceExplanations": {
+                "-1/7": "The expression evaluates exactly to -1/7; -1/7 is the requested value.",
+                "1/6": "The expression evaluates exactly to -1/7, not 1/6. 1/6 is not the requested value.",
+                "0": "The expression evaluates exactly to -1/7, not 0. 0 is not the requested value.",
+                "1/7": "The expression evaluates exactly to -1/7, not 1/7. 1/7 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "1/3"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "1/2",
+              "1/3",
+              "-1/3",
+              "0"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (1/3)). What is its exact value?",
+              "choices": [
+                "1/2",
+                "1/3",
+                "-1/3",
+                "0"
+              ],
+              "expectedAnswer": "-1/3",
+              "explanation": "Common denominator 3: 0 - (1/3) = (0/3) - (1/3) = -1/3. The answer is -1/3.",
+              "choiceExplanations": {
+                "1/2": "The expression evaluates exactly to -1/3, not 1/2. 1/2 is not the requested value.",
+                "1/3": "The expression evaluates exactly to -1/3, not 1/3. 1/3 is not the requested value.",
+                "-1/3": "The expression evaluates exactly to -1/3; -1/3 is the requested value.",
+                "0": "The expression evaluates exactly to -1/3, not 0. 0 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "1/2"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "-1/2",
+              "1/2",
+              "1",
+              "0"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (1/2)). What is its exact value?",
+              "choices": [
+                "-1/2",
+                "1/2",
+                "1",
+                "0"
+              ],
+              "expectedAnswer": "-1/2",
+              "explanation": "Common denominator 2: 0 - (1/2) = (0/2) - (1/2) = -1/2. The answer is -1/2.",
+              "choiceExplanations": {
+                "-1/2": "The expression evaluates exactly to -1/2; -1/2 is the requested value.",
+                "1/2": "The expression evaluates exactly to -1/2, not 1/2. 1/2 is not the requested value.",
+                "1": "The expression evaluates exactly to -1/2, not 1. 1 is not the requested value.",
+                "0": "The expression evaluates exactly to -1/2, not 0. 0 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "7/3"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "7/2",
+              "7/3",
+              "-7/3",
+              "0"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (7/3)). What is its exact value?",
+              "choices": [
+                "7/2",
+                "7/3",
+                "-7/3",
+                "0"
+              ],
+              "expectedAnswer": "-7/3",
+              "explanation": "Common denominator 3: 0 - (7/3) = (0/3) - (7/3) = -7/3. The answer is -7/3.",
+              "choiceExplanations": {
+                "7/2": "The expression evaluates exactly to -7/3, not 7/2. 7/2 is not the requested value.",
+                "7/3": "The expression evaluates exactly to -7/3, not 7/3. 7/3 is not the requested value.",
+                "-7/3": "The expression evaluates exactly to -7/3; -7/3 is the requested value.",
+                "0": "The expression evaluates exactly to -7/3, not 0. 0 is not the requested value."
+              }
+            }
+          }
+        },
+        {
+          "tree": {
+            "op": "sub",
+            "left": {
+              "value": "0"
+            },
+            "right": {
+              "value": "7/2"
+            }
+          },
+          "old": {
+            "status": "insufficient_distractors"
+          },
+          "new": {
+            "status": "accepted",
+            "choices": [
+              "7",
+              "-7/2",
+              "0",
+              "7/2"
+            ],
+            "learner": {
+              "prompt": "Let q be a unitless number, defined by q = (0 - (7/2)). What is its exact value?",
+              "choices": [
+                "7",
+                "-7/2",
+                "0",
+                "7/2"
+              ],
+              "expectedAnswer": "-7/2",
+              "explanation": "Common denominator 2: 0 - (7/2) = (0/2) - (7/2) = -7/2. The answer is -7/2.",
+              "choiceExplanations": {
+                "7": "The expression evaluates exactly to -7/2, not 7. 7 is not the requested value.",
+                "-7/2": "The expression evaluates exactly to -7/2; -7/2 is the requested value.",
+                "0": "The expression evaluates exactly to -7/2, not 0. 0 is not the requested value.",
+                "7/2": "The expression evaluates exactly to -7/2, not 7/2. 7/2 is not the requested value."
+              }
+            }
+          }
+        }
+      ],
+      "losses": [],
+      "both_rejected": 85,
+      "changed_options": 675
+    },
+    "nested": {
+      "cases": 288,
+      "old_accepted": 288,
+      "new_accepted": 288,
+      "gains": [],
+      "losses": [],
+      "both_rejected": 0,
+      "changed_options": 288
+    }
+  },
+  "seven_captured_tasks": [
+    {
+      "model": "Sonnet",
+      "source": [
+        "mixed",
+        0,
+        0
+      ],
+      "spec_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "expression": {
+          "left": {
+            "value": "3/4"
+          },
+          "op": "add",
+          "right": {
+            "value": "5/8"
+          }
+        }
+      },
+      "old": {
+        "status": "accepted",
+        "choices": [
+          "11/8",
+          "1/8",
+          "15/32",
+          "6/5"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((3/4) + (5/8)). What is its exact value?",
+          "choices": [
+            "11/8",
+            "1/8",
+            "15/32",
+            "6/5"
+          ],
+          "expectedAnswer": "11/8",
+          "explanation": "Common denominator 8: (3/4) + (5/8) = (6/8) + (5/8) = 11/8. The answer is 11/8.",
+          "choiceExplanations": {
+            "11/8": "The expression evaluates exactly to 11/8; 11/8 is the requested value.",
+            "1/8": "The expression evaluates exactly to 11/8, not 1/8. 1/8 is not the requested value.",
+            "15/32": "The expression evaluates exactly to 11/8, not 15/32. 15/32 is not the requested value.",
+            "6/5": "The expression evaluates exactly to 11/8, not 6/5. 6/5 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "1/8",
+          "15/32",
+          "6/5",
+          "3/4",
+          "5/8"
+        ]
+      },
+      "new": {
+        "status": "accepted",
+        "choices": [
+          "11/8",
+          "3/4",
+          "1",
+          "2/3"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((3/4) + (5/8)). What is its exact value?",
+          "choices": [
+            "11/8",
+            "3/4",
+            "1",
+            "2/3"
+          ],
+          "expectedAnswer": "11/8",
+          "explanation": "Common denominator 8: (3/4) + (5/8) = (6/8) + (5/8) = 11/8. The answer is 11/8.",
+          "choiceExplanations": {
+            "11/8": "The expression evaluates exactly to 11/8; 11/8 is the requested value.",
+            "3/4": "The expression evaluates exactly to 11/8, not 3/4. 3/4 is not the requested value.",
+            "1": "The expression evaluates exactly to 11/8, not 1. 1 is not the requested value.",
+            "2/3": "The expression evaluates exactly to 11/8, not 2/3. 2/3 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "2/3",
+          "1",
+          "3/4",
+          "1/8",
+          "5/8",
+          "15/32"
+        ]
+      }
+    },
+    {
+      "model": "Sonnet",
+      "source": [
+        "mixed",
+        0,
+        1
+      ],
+      "spec_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "expression": {
+          "left": {
+            "value": "5/6"
+          },
+          "op": "div",
+          "right": {
+            "value": "5/9"
+          }
+        }
+      },
+      "old": {
+        "status": "accepted",
+        "choices": [
+          "3/2",
+          "25/54",
+          "5/18",
+          "25/18"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((5/6) / (5/9)). What is its exact value?",
+          "choices": [
+            "3/2",
+            "25/54",
+            "5/18",
+            "25/18"
+          ],
+          "expectedAnswer": "3/2",
+          "explanation": "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (9/5) = 45/30 = 3/2. The answer is 3/2.",
+          "choiceExplanations": {
+            "3/2": "The expression evaluates exactly to 3/2; 3/2 is the requested value.",
+            "25/54": "The expression evaluates exactly to 3/2, not 25/54. 25/54 is not the requested value.",
+            "5/18": "The expression evaluates exactly to 3/2, not 5/18. 5/18 is not the requested value.",
+            "25/18": "The expression evaluates exactly to 3/2, not 25/18. 25/18 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "25/18",
+          "5/18",
+          "25/54",
+          "5/6",
+          "5/9",
+          "2/3"
+        ]
+      },
+      "new": {
+        "status": "accepted",
+        "choices": [
+          "3/2",
+          "2/3",
+          "25/54",
+          "54/25"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((5/6) / (5/9)). What is its exact value?",
+          "choices": [
+            "3/2",
+            "2/3",
+            "25/54",
+            "54/25"
+          ],
+          "expectedAnswer": "3/2",
+          "explanation": "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (9/5) = 45/30 = 3/2. The answer is 3/2.",
+          "choiceExplanations": {
+            "3/2": "The expression evaluates exactly to 3/2; 3/2 is the requested value.",
+            "2/3": "The expression evaluates exactly to 3/2, not 2/3. 2/3 is not the requested value.",
+            "25/54": "The expression evaluates exactly to 3/2, not 25/54. 25/54 is not the requested value.",
+            "54/25": "The expression evaluates exactly to 3/2, not 54/25. 54/25 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "25/54",
+          "2/3",
+          "54/25",
+          "5/6",
+          "5/9",
+          "25/18"
+        ]
+      }
+    },
+    {
+      "model": "Sonnet",
+      "source": [
+        "mixed",
+        0,
+        2
+      ],
+      "spec_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "expression": {
+          "left": {
+            "value": "3/5"
+          },
+          "op": "mul",
+          "right": {
+            "value": "25"
+          }
+        }
+      },
+      "old": {
+        "status": "accepted",
+        "choices": [
+          "128/5",
+          "15",
+          "-122/5",
+          "3/125"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((3/5) * 25). What is its exact value?",
+          "choices": [
+            "128/5",
+            "15",
+            "-122/5",
+            "3/125"
+          ],
+          "expectedAnswer": "15",
+          "explanation": "Multiply numerators and denominators: (3/5) * 25 = 75/5 = 15. The answer is 15.",
+          "choiceExplanations": {
+            "128/5": "The expression evaluates exactly to 15, not 128/5. 128/5 is not the requested value.",
+            "15": "The expression evaluates exactly to 15; 15 is the requested value.",
+            "-122/5": "The expression evaluates exactly to 15, not -122/5. -122/5 is not the requested value.",
+            "3/125": "The expression evaluates exactly to 15, not 3/125. 3/125 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "128/5",
+          "-122/5",
+          "3/125",
+          "3/5",
+          "25"
+        ]
+      },
+      "new": {
+        "status": "accepted",
+        "choices": [
+          "5",
+          "15",
+          "3/125",
+          "75"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((3/5) * 25). What is its exact value?",
+          "choices": [
+            "5",
+            "15",
+            "3/125",
+            "75"
+          ],
+          "expectedAnswer": "15",
+          "explanation": "Multiply numerators and denominators: (3/5) * 25 = 75/5 = 15. The answer is 15.",
+          "choiceExplanations": {
+            "5": "The expression evaluates exactly to 15, not 5. 5 is not the requested value.",
+            "15": "The expression evaluates exactly to 15; 15 is the requested value.",
+            "3/125": "The expression evaluates exactly to 15, not 3/125. 3/125 is not the requested value.",
+            "75": "The expression evaluates exactly to 15, not 75. 75 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "5",
+          "75",
+          "3/125",
+          "3/5",
+          "25",
+          "128/5"
+        ]
+      }
+    },
+    {
+      "model": "Sonnet",
+      "source": [
+        "mixed",
+        1,
+        0
+      ],
+      "spec_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "expression": {
+          "left": {
+            "value": "5/6"
+          },
+          "op": "sub",
+          "right": {
+            "value": "1/4"
+          }
+        }
+      },
+      "old": {
+        "status": "accepted",
+        "choices": [
+          "10/3",
+          "13/12",
+          "7/12",
+          "5/24"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((5/6) - (1/4)). What is its exact value?",
+          "choices": [
+            "10/3",
+            "13/12",
+            "7/12",
+            "5/24"
+          ],
+          "expectedAnswer": "7/12",
+          "explanation": "Common denominator 12: (5/6) - (1/4) = (10/12) - (3/12) = 7/12. The answer is 7/12.",
+          "choiceExplanations": {
+            "10/3": "The expression evaluates exactly to 7/12, not 10/3. 10/3 is not the requested value.",
+            "13/12": "The expression evaluates exactly to 7/12, not 13/12. 13/12 is not the requested value.",
+            "7/12": "The expression evaluates exactly to 7/12; 7/12 is the requested value.",
+            "5/24": "The expression evaluates exactly to 7/12, not 5/24. 5/24 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "13/12",
+          "5/24",
+          "10/3",
+          "5/6",
+          "1/4",
+          "-7/12"
+        ]
+      },
+      "new": {
+        "status": "accepted",
+        "choices": [
+          "1/3",
+          "2",
+          "7/12",
+          "5/6"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((5/6) - (1/4)). What is its exact value?",
+          "choices": [
+            "1/3",
+            "2",
+            "7/12",
+            "5/6"
+          ],
+          "expectedAnswer": "7/12",
+          "explanation": "Common denominator 12: (5/6) - (1/4) = (10/12) - (3/12) = 7/12. The answer is 7/12.",
+          "choiceExplanations": {
+            "1/3": "The expression evaluates exactly to 7/12, not 1/3. 1/3 is not the requested value.",
+            "2": "The expression evaluates exactly to 7/12, not 2. 2 is not the requested value.",
+            "7/12": "The expression evaluates exactly to 7/12; 7/12 is the requested value.",
+            "5/6": "The expression evaluates exactly to 7/12, not 5/6. 5/6 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "2",
+          "1/3",
+          "5/6",
+          "13/12",
+          "1/4",
+          "5/24"
+        ]
+      }
+    },
+    {
+      "model": "Kimi",
+      "source": [
+        "mixed",
+        0,
+        0
+      ],
+      "spec_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "expression": {
+          "left": {
+            "left": {
+              "value": "3/4"
+            },
+            "op": "mul",
+            "right": {
+              "value": "2/5"
+            }
+          },
+          "op": "add",
+          "right": {
+            "value": "1/2"
+          }
+        }
+      },
+      "old": {
+        "status": "accepted",
+        "choices": [
+          "3/5",
+          "3/20",
+          "4/5",
+          "-1/5"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = (((3/4) * (2/5)) + (1/2)). What is its exact value?",
+          "choices": [
+            "3/5",
+            "3/20",
+            "4/5",
+            "-1/5"
+          ],
+          "expectedAnswer": "4/5",
+          "explanation": "Multiply numerators and denominators: (3/4) * (2/5) = 6/20 = 3/10. Common denominator 10: (3/10) + (1/2) = (3/10) + (5/10) = 8/10 = 4/5. The answer is 4/5.",
+          "choiceExplanations": {
+            "3/5": "The expression evaluates exactly to 4/5, not 3/5. 3/5 is not the requested value.",
+            "3/20": "The expression evaluates exactly to 4/5, not 3/20. 3/20 is not the requested value.",
+            "4/5": "The expression evaluates exactly to 4/5; 4/5 is the requested value.",
+            "-1/5": "The expression evaluates exactly to 4/5, not -1/5. -1/5 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "-1/5",
+          "3/20",
+          "3/5",
+          "3/10",
+          "1/2",
+          "33/20",
+          "17/20",
+          "19/8",
+          "5/4",
+          "9/10"
+        ]
+      },
+      "new": {
+        "status": "accepted",
+        "choices": [
+          "1/3",
+          "2/5",
+          "3/10",
+          "4/5"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = (((3/4) * (2/5)) + (1/2)). What is its exact value?",
+          "choices": [
+            "1/3",
+            "2/5",
+            "3/10",
+            "4/5"
+          ],
+          "expectedAnswer": "4/5",
+          "explanation": "Multiply numerators and denominators: (3/4) * (2/5) = 6/20 = 3/10. Common denominator 10: (3/10) + (1/2) = (3/10) + (5/10) = 8/10 = 4/5. The answer is 4/5.",
+          "choiceExplanations": {
+            "1/3": "The expression evaluates exactly to 4/5, not 1/3. 1/3 is not the requested value.",
+            "2/5": "The expression evaluates exactly to 4/5, not 2/5. 2/5 is not the requested value.",
+            "3/10": "The expression evaluates exactly to 4/5, not 3/10. 3/10 is not the requested value.",
+            "4/5": "The expression evaluates exactly to 4/5; 4/5 is the requested value."
+          }
+        },
+        "full_pool": [
+          "1/3",
+          "2/5",
+          "3/10",
+          "-1/5",
+          "1/2",
+          "3/20",
+          "2",
+          "17/10",
+          "19/8",
+          "5/4",
+          "33/20",
+          "17/20"
+        ]
+      }
+    },
+    {
+      "model": "Kimi",
+      "source": [
+        "mixed",
+        0,
+        1
+      ],
+      "spec_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "expression": {
+          "left": {
+            "left": {
+              "value": "7"
+            },
+            "op": "div",
+            "right": {
+              "value": "2"
+            }
+          },
+          "op": "sub",
+          "right": {
+            "left": {
+              "value": "3"
+            },
+            "op": "div",
+            "right": {
+              "value": "4"
+            }
+          }
+        }
+      },
+      "old": {
+        "status": "accepted",
+        "choices": [
+          "14/3",
+          "11/4",
+          "17/4",
+          "21/8"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((7 / 2) - (3 / 4)). What is its exact value?",
+          "choices": [
+            "14/3",
+            "11/4",
+            "17/4",
+            "21/8"
+          ],
+          "expectedAnswer": "11/4",
+          "explanation": "Multiply by the reciprocal: 7 / 2 = 7 * (1/2) = 7/2. Multiply by the reciprocal: 3 / 4 = 3 * (1/4) = 3/4. Common denominator 4: (7/2) - (3/4) = (14/4) - (3/4) = 11/4. The answer is 11/4.",
+          "choiceExplanations": {
+            "14/3": "The expression evaluates exactly to 11/4, not 14/3. 14/3 is not the requested value.",
+            "11/4": "The expression evaluates exactly to 11/4; 11/4 is the requested value.",
+            "17/4": "The expression evaluates exactly to 11/4, not 17/4. 17/4 is not the requested value.",
+            "21/8": "The expression evaluates exactly to 11/4, not 21/8. 21/8 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "17/4",
+          "21/8",
+          "14/3",
+          "7/2",
+          "3/4",
+          "-11/4",
+          "33/4",
+          "53/4",
+          "25/4",
+          "5/4",
+          "-13/28",
+          "-7/2",
+          "9/2",
+          "-17/2",
+          "1/2",
+          "-1/2",
+          "13/6"
+        ]
+      },
+      "new": {
+        "status": "accepted",
+        "choices": [
+          "1",
+          "11/4",
+          "-2",
+          "7/2"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = ((7 / 2) - (3 / 4)). What is its exact value?",
+          "choices": [
+            "1",
+            "11/4",
+            "-2",
+            "7/2"
+          ],
+          "expectedAnswer": "11/4",
+          "explanation": "Multiply by the reciprocal: 7 / 2 = 7 * (1/2) = 7/2. Multiply by the reciprocal: 3 / 4 = 3 * (1/4) = 3/4. Common denominator 4: (7/2) - (3/4) = (14/4) - (3/4) = 11/4. The answer is 11/4.",
+          "choiceExplanations": {
+            "1": "The expression evaluates exactly to 11/4, not 1. 1 is not the requested value.",
+            "11/4": "The expression evaluates exactly to 11/4; 11/4 is the requested value.",
+            "-2": "The expression evaluates exactly to 11/4, not -2. -2 is not the requested value.",
+            "7/2": "The expression evaluates exactly to 11/4, not 7/2. 7/2 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "-2",
+          "1",
+          "7/2",
+          "17/4",
+          "3/4",
+          "21/8",
+          "33/4",
+          "53/4",
+          "25/4",
+          "5/4",
+          "-13/28",
+          "-7/2",
+          "9/2",
+          "-17/2",
+          "1/2",
+          "-1/2",
+          "13/6"
+        ]
+      }
+    },
+    {
+      "model": "Kimi",
+      "source": [
+        "mixed",
+        1,
+        1
+      ],
+      "spec_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "expression": {
+          "left": {
+            "left": {
+              "value": "5/6"
+            },
+            "op": "add",
+            "right": {
+              "value": "3/4"
+            }
+          },
+          "op": "sub",
+          "right": {
+            "value": "1/3"
+          }
+        }
+      },
+      "old": {
+        "status": "accepted",
+        "choices": [
+          "19/4",
+          "5/4",
+          "23/12",
+          "19/36"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = (((5/6) + (3/4)) - (1/3)). What is its exact value?",
+          "choices": [
+            "19/4",
+            "5/4",
+            "23/12",
+            "19/36"
+          ],
+          "expectedAnswer": "5/4",
+          "explanation": "Common denominator 12: (5/6) + (3/4) = (10/12) + (9/12) = 19/12. Common denominator 12: (19/12) - (1/3) = (19/12) - (4/12) = 15/12 = 5/4. The answer is 5/4.",
+          "choiceExplanations": {
+            "19/4": "The expression evaluates exactly to 5/4, not 19/4. 19/4 is not the requested value.",
+            "5/4": "The expression evaluates exactly to 5/4; 5/4 is the requested value.",
+            "23/12": "The expression evaluates exactly to 5/4, not 23/12. 23/12 is not the requested value.",
+            "19/36": "The expression evaluates exactly to 5/4, not 19/36. 19/36 is not the requested value."
+          }
+        },
+        "full_pool": [
+          "23/12",
+          "19/36",
+          "19/4",
+          "19/12",
+          "1/3",
+          "-5/4",
+          "-1/4",
+          "7/24",
+          "7/9",
+          "1/2",
+          "5/12"
+        ]
+      },
+      "new": {
+        "status": "accepted",
+        "choices": [
+          "3/2",
+          "19/12",
+          "2",
+          "5/4"
+        ],
+        "learner": {
+          "prompt": "Let q be a unitless number, defined by q = (((5/6) + (3/4)) - (1/3)). What is its exact value?",
+          "choices": [
+            "3/2",
+            "19/12",
+            "2",
+            "5/4"
+          ],
+          "expectedAnswer": "5/4",
+          "explanation": "Common denominator 12: (5/6) + (3/4) = (10/12) + (9/12) = 19/12. Common denominator 12: (19/12) - (1/3) = (19/12) - (4/12) = 15/12 = 5/4. The answer is 5/4.",
+          "choiceExplanations": {
+            "3/2": "The expression evaluates exactly to 5/4, not 3/2. 3/2 is not the requested value.",
+            "19/12": "The expression evaluates exactly to 5/4, not 19/12. 19/12 is not the requested value.",
+            "2": "The expression evaluates exactly to 5/4, not 2. 2 is not the requested value.",
+            "5/4": "The expression evaluates exactly to 5/4; 5/4 is the requested value."
+          }
+        },
+        "full_pool": [
+          "2",
+          "3/2",
+          "19/12",
+          "23/12",
+          "1/3",
+          "19/36",
+          "7/15",
+          "1/2",
+          "-1/4",
+          "5/12",
+          "7/24"
+        ]
+      }
+    }
+  ]
+}
