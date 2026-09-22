@@ -1,0 +1,154 @@
+{
+  "plan_sha256": "969a26b22fc9d71b2e1f585e703231ba103218e867c24d75a41f0db2eae1f3ec",
+  "capture_sha256": "5a918fb1293e59488a6cbf912529f8268a270641704edb3e38b82ef63691ec73",
+  "script_sha256": "ddcbb00f7fee2eebf74fba6d431ebbf1cf097312491aaa6f8603a895ab165886",
+  "pinned_sources_unchanged": true,
+  "raw_schema_checks": [
+    {
+      "job": "quantitative",
+      "stage": "question_author_mixed_v1",
+      "valid": true
+    },
+    {
+      "job": "quantitative",
+      "stage": "complete_choice_solver_v5_n4",
+      "valid": true
+    },
+    {
+      "job": "quantitative",
+      "stage": "default_reviewer_v3_n4",
+      "valid": true
+    },
+    {
+      "job": "quantitative",
+      "stage": "question_author_mixed_v1",
+      "valid": true
+    },
+    {
+      "job": "python",
+      "stage": "question_author_mixed_v1",
+      "valid": true
+    },
+    {
+      "job": "python",
+      "stage": "complete_choice_solver_v5_n5",
+      "valid": true
+    },
+    {
+      "job": "python",
+      "stage": "default_reviewer_v3_n5",
+      "valid": true
+    },
+    {
+      "job": "mixed",
+      "stage": "question_author_mixed_v1",
+      "valid": true
+    },
+    {
+      "job": "mixed",
+      "stage": "complete_choice_solver_v5_n3",
+      "valid": true
+    },
+    {
+      "job": "mixed",
+      "stage": "default_reviewer_v3_n2",
+      "valid": true
+    },
+    {
+      "job": "mixed",
+      "stage": "question_author_mixed_v1",
+      "valid": true
+    },
+    {
+      "job": "mixed",
+      "stage": "complete_choice_solver_v5_n2",
+      "valid": true
+    },
+    {
+      "job": "mixed",
+      "stage": "default_reviewer_v3_n1",
+      "valid": true
+    }
+  ],
+  "compiled_returns": [
+    {
+      "job": "quantitative",
+      "return_index": 0,
+      "original_source": [
+        "quantitative",
+        0,
+        0
+      ],
+      "spec_reconstructed_from_original_author": true,
+      "all_five_fields_exact": true,
+      "independent_unique_answer": "23/20",
+      "four_numerically_distinct_choices": true
+    },
+    {
+      "job": "quantitative",
+      "return_index": 1,
+      "original_source": [
+        "quantitative",
+        0,
+        1
+      ],
+      "spec_reconstructed_from_original_author": true,
+      "all_five_fields_exact": true,
+      "independent_unique_answer": "17/24",
+      "four_numerically_distinct_choices": true
+    },
+    {
+      "job": "quantitative",
+      "return_index": 2,
+      "original_source": [
+        "quantitative",
+        0,
+        2
+      ],
+      "spec_reconstructed_from_original_author": true,
+      "all_five_fields_exact": true,
+      "independent_unique_answer": "25/2",
+      "four_numerically_distinct_choices": true
+    },
+    {
+      "job": "quantitative",
+      "return_index": 3,
+      "original_source": [
+        "quantitative",
+        0,
+        3
+      ],
+      "spec_reconstructed_from_original_author": true,
+      "all_five_fields_exact": true,
+      "independent_unique_answer": "5",
+      "four_numerically_distinct_choices": true
+    },
+    {
+      "job": "mixed",
+      "return_index": 0,
+      "original_source": [
+        "mixed",
+        0,
+        1
+      ],
+      "spec_reconstructed_from_original_author": true,
+      "all_five_fields_exact": true,
+      "independent_unique_answer": "11",
+      "four_numerically_distinct_choices": true
+    },
+    {
+      "job": "mixed",
+      "return_index": 2,
+      "original_source": [
+        "mixed",
+        1,
+        0
+      ],
+      "spec_reconstructed_from_original_author": true,
+      "all_five_fields_exact": true,
+      "independent_unique_answer": "45/4",
+      "four_numerically_distinct_choices": true
+    }
+  ],
+  "claim_limit": "Exact bounded arithmetic/provenance only; independent plausibility, scope, difficulty and prose review remain separate."
+}

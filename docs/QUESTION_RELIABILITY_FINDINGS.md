@@ -178,9 +178,21 @@ difficulty, grammar or general factual accuracy. The compiler tests include
 tests; all 25 runtime source modules match each of three SAM artifacts, with
 273 offline packaged SDK configuration checks. Shared compiler fixtures also
 survive bank serialization, claim/replay, iOS decoding, all 24 choice orders,
-grading and feedback display. A separate fresh mixed-route trial must establish
-live grammar support, useful yield and independently sound returned content
-before this mode can be considered for rollout.
+grading and feedback display. The subsequent [fresh mixed-route trial](evidence/quantitative-mixed-qualification-20260922/RESULTS.md)
+completed all three jobs and all 13 calls with valid native structure, returning
+4/5 numerical, 5/5 Python and 3/5 mixed questions. All six compiled returns
+reproduced exactly from their original author specifications and passed a
+separate rational-answer check. Five invalid numerical specifications were
+rejected rather than repaired.
+
+The complete configuration still failed its prospective criterion: 12/15 yield
+was below 14, and independent review found one false Python distractor explanation
+among the 12 returns. All 12 keys were correct; the other 11 returned items were
+sound. The final writer falsely generalized that Boolean operators return Boolean
+values and that None occurs only through an implicit function return. This is
+new evidence of the unchecked-final-feedback gap, separate from the deterministic
+numerical guarantee. Defaults remain unchanged and the mode remains unqualified
+for rollout.
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
 confirmed that signed Mantle metadata requests work with the existing AWS

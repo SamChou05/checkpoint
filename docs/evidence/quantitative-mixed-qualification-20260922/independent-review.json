@@ -1,0 +1,638 @@
+{
+  "capture_sha256": "5a918fb1293e59488a6cbf912529f8268a270641704edb3e38b82ef63691ec73",
+  "plan_sha256": "969a26b22fc9d71b2e1f585e703231ba103218e867c24d75a41f0db2eae1f3ec",
+  "reviewed_at": "2026-09-22T11:10:09.472838+00:00",
+  "method": "Independent examination of every returned prompt, four choices, key, main explanation and all four feedback entries. Manually transcribed bounded expressions were evaluated with Python3.12.11; exact arithmetic used fractions.Fraction. Python language documentation and Purdue OWL checked the disputed Boolean rule and American agreement convention. No provider/model-judging calls or capture/source changes.",
+  "summary": {
+    "planned": 15,
+    "returned": 12,
+    "unavailable": 3,
+    "keys_correct": 12,
+    "fully_sound_returned": 11,
+    "defective_returned": 1,
+    "uncertain_returned": 0,
+    "compiled_returned": 6,
+    "compiled_mathematically_sound": 6,
+    "main_explanations_supported": 12,
+    "feedback_entries_reviewed": 48,
+    "feedback_entries_false": 1,
+    "independent_difficulty_floor_pass": 12,
+    "qualification_pass": false
+  },
+  "criteria": {
+    "returned_at_least14": false,
+    "at_least4_each": false,
+    "quantitative_returned": 4,
+    "python_returned": 5,
+    "mixed_returned": 3,
+    "compiled_at_least6": true,
+    "quantitative_compiled_at_least4": true,
+    "mixed_compiled_at_least2": true,
+    "mixed_correctly_assigned_english_prose_at_least1": true,
+    "python_semantics_preserved": true,
+    "all_returned_content_sound": false,
+    "compiled_provenance_replay": "Separate root-owned mechanical check; this report independently confirms arithmetic content, not source-to-release replay."
+  },
+  "findings": [
+    {
+      "id": "PY-01",
+      "severity": "learner_content_failure",
+      "item": "python:0",
+      "field": "choiceExplanations.None",
+      "exact_text": "Boolean operators return boolean values; None only appears when a function has no explicit return.",
+      "explanation": "The statement incorrectly generalizes that Boolean operators return Boolean values: and/or return one of their operands. None is a built-in constant and is not limited to functions without explicit return. The exact answer True is still correct, but the returned teaching is false.",
+      "counterexamples": {
+        "'operand' or False": "'operand'",
+        "[] and True": "[]",
+        "None": "None"
+      },
+      "sources": [
+        "https://docs.python.org/3/builtins/stdtypes.html#boolean-operations-and-or-not",
+        "https://docs.python.org/3/builtins/constants.html#None"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "quantitative:0",
+      "job": "quantitative",
+      "returned_index": 0,
+      "prompt": "Let q be a unitless number, defined by q = ((3/4) + (2/5)). What is its exact value?",
+      "learner_sha256": "658e53d7f9d770376e04dbe52dcb3172ac06a6d463bca33ef3b53f3d5fe1f60b",
+      "policy_revision": 6,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "23/20",
+        "independent_reason": "3/4 + 2/5 = 15/20 + 8/20 = 23/20; all three alternatives differ."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": false
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "23/20": {
+          "verdict": "supported_in_item_context"
+        },
+        "5/9": {
+          "verdict": "supported_in_item_context"
+        },
+        "1": {
+          "verdict": "supported_in_item_context"
+        },
+        "3/10": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 2,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "Fraction rules applied directly. Distractors include adding numerators/denominators and multiplying fractions."
+    },
+    {
+      "id": "quantitative:1",
+      "job": "quantitative",
+      "returned_index": 1,
+      "prompt": "Let q be a unitless number, defined by q = ((7/8) - (1/6)). What is its exact value?",
+      "learner_sha256": "123ddc4de60b1685571250763d510fc4e408907eb4e1d9b7b621a6af003b2789",
+      "policy_revision": 6,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "17/24",
+        "independent_reason": "7/8 - 1/6 = 21/24 - 4/24 = 17/24; all alternatives differ. The value3 is the classic erroneous (7-1)/(8-6)."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": false
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "17/24": {
+          "verdict": "supported_in_item_context"
+        },
+        "3": {
+          "verdict": "supported_in_item_context"
+        },
+        "1/2": {
+          "verdict": "supported_in_item_context"
+        },
+        "4/7": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 2,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "Direct fraction subtraction; no extra assumptions."
+    },
+    {
+      "id": "quantitative:2",
+      "job": "quantitative",
+      "returned_index": 2,
+      "prompt": "Let q be a unitless number, defined by q = (((5/2) * 4) / (4/5)). What is its exact value?",
+      "learner_sha256": "6210dacf29ebcf75e997cd0c3abdee189813f40278a0f59ad0b5e86cf4deeb28",
+      "policy_revision": 6,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "25/2",
+        "independent_reason": "(5/2)*4=10; dividing10 by4/5 gives25/2. Every offered value is numerically distinct."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": false
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "25/2": {
+          "verdict": "supported_in_item_context"
+        },
+        "8": {
+          "verdict": "supported_in_item_context"
+        },
+        "2": {
+          "verdict": "supported_in_item_context"
+        },
+        "16/5": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 3,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "Reviewer rated3; I assess2 for direct familiar arithmetic. Both exceed the requested floor2; this is a calibration observation, not a factual defect."
+    },
+    {
+      "id": "quantitative:3",
+      "job": "quantitative",
+      "returned_index": 3,
+      "prompt": "Let x be a unitless number. Its domain is integers from 1 through 10, inclusive. Condition: (x * 3) <= 15. What is the maximum x in this domain satisfying the condition?",
+      "learner_sha256": "47b69e5577d69cc9513e4022f562be89e8cadf1bafcf783c17afac2da9bccdcd",
+      "policy_revision": 6,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "5",
+        "independent_reason": "The integer domain is1..10; 3x<=15 exactly when x<=5. The largest satisfying value is5. Values4 and3 satisfy the condition but not the requested maximum;6 fails."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": false
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "5": {
+          "verdict": "supported_in_item_context"
+        },
+        "4": {
+          "verdict": "supported_in_item_context"
+        },
+        "3": {
+          "verdict": "supported_in_item_context"
+        },
+        "6": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 2,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "Explicit maximum/domain eliminates the unstated-minimum failure seen in earlier controls."
+    },
+    {
+      "id": "python:0",
+      "job": "python",
+      "returned_index": 0,
+      "prompt": "What is the value of the expression `not (3 > 5) and 2 == 2` in Python 3?",
+      "learner_sha256": "ca89cd1f33e2dced00b80d504d21ebdb3f478ecb99bbb6c1bc017d1b8f19c659",
+      "policy_revision": 4,
+      "verdict": "defective_feedback",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "True",
+        "independent_reason": "3>5 isFalse; not False isTrue;2==2 isTrue; True and True isTrue."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": false
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "True": {
+          "verdict": "supported_in_item_context"
+        },
+        "False": {
+          "verdict": "supported_in_item_context"
+        },
+        "None": {
+          "verdict": "false",
+          "finding": "PY-01",
+          "exact_text": "Boolean operators return boolean values; None only appears when a function has no explicit return."
+        },
+        "SyntaxError": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 2,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "Key, syntax and Boolean calculation are correct. The None distractor feedback contains two false general rules; see finding PY-01."
+    },
+    {
+      "id": "python:1",
+      "job": "python",
+      "returned_index": 1,
+      "prompt": "Given `lst = [10, 20, 30, 40]`, what does `lst[-1] + lst[1]` evaluate to?",
+      "learner_sha256": "41aec826324d2bee5b7a2b40e6c2534e6fc4afd2fa5fc969650b11b181a516a3",
+      "policy_revision": 4,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "60",
+        "independent_reason": "The list has four elements: lst[-1]=40 and lst[1]=20; sum60. Both indexes are valid."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": false
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "60": {
+          "verdict": "supported_in_item_context"
+        },
+        "50": {
+          "verdict": "supported_in_item_context"
+        },
+        "70": {
+          "verdict": "supported_in_item_context"
+        },
+        "IndexError": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 2,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "All feedback is correct for the stated indexes. Read the informal word wraps as counting from the end here, not arbitrary modular indexing."
+    },
+    {
+      "id": "python:2",
+      "job": "python",
+      "returned_index": 2,
+      "prompt": "What is the result of `[] or [0] or False` in Python 3?",
+      "learner_sha256": "96a2049856ad6617392825752b8e7135e33c82832ede84e327e147557b03132d",
+      "policy_revision": 4,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "[0]",
+        "independent_reason": "An empty list is falsey; the nonempty list[0] is truthy. or returns that operand and short-circuits before False."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": false
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "[0]": {
+          "verdict": "supported_in_item_context"
+        },
+        "[]": {
+          "verdict": "supported_in_item_context"
+        },
+        "False": {
+          "verdict": "supported_in_item_context"
+        },
+        "True": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 3,
+        "independent_assessment": 3,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "All feedback is supported in this expression. The first-truthy description is applied to this chain, which does contain a truthy operand."
+    },
+    {
+      "id": "python:3",
+      "job": "python",
+      "returned_index": 3,
+      "prompt": "What does `x = 5; print('yes' if x % 2 else 'no')` output in Python 3?",
+      "learner_sha256": "5e8770a38a7ba2625edc9c3d13194f76b604b95de4b3818f301a21efa25d3980",
+      "policy_revision": 4,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "yes",
+        "independent_reason": "5%2 is1, which is truthy; the conditional selects the string yes. print emits yes followed by a newline."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": false
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "yes": {
+          "verdict": "supported_in_item_context"
+        },
+        "no": {
+          "verdict": "supported_in_item_context"
+        },
+        "1": {
+          "verdict": "supported_in_item_context"
+        },
+        "0": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 3,
+        "independent_assessment": 3,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "The option yes is conventional displayed output; it does not purport to include string quotes or the trailing newline. All feedback is supported."
+    },
+    {
+      "id": "python:4",
+      "job": "python",
+      "returned_index": 4,
+      "prompt": "For `items = ['a', 'b', 'c']`, what is `items[len(items) - 2]`?",
+      "learner_sha256": "2bcae324082bbbb310ec7cb7859bd11b9095c929fd7c944c155bca08bdf9223c",
+      "policy_revision": 4,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "'b'",
+        "independent_reason": "The list length is3;3-2=1; index1 selects the string b. The quoted option correctly represents the string value."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": false
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "'b'": {
+          "verdict": "supported_in_item_context"
+        },
+        "'c'": {
+          "verdict": "supported_in_item_context"
+        },
+        "'a'": {
+          "verdict": "supported_in_item_context"
+        },
+        "IndexError": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 2,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "All feedback correctly distinguishes indexes0,1,2 and the absent IndexError."
+    },
+    {
+      "id": "mixed:0",
+      "job": "mixed",
+      "returned_index": 0,
+      "prompt": "Let q be a unitless number, defined by q = ((7 * 2) - 3). What is its exact value?",
+      "learner_sha256": "6e3be4cbfdb7e91627c2f6c07043cb12ac02a402744a30509b544e1d9a4d12ba",
+      "policy_revision": 6,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "11",
+        "independent_reason": "7*2-3=14-3=11; all four numerical choices are distinct."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": true
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "11": {
+          "verdict": "supported_in_item_context"
+        },
+        "8": {
+          "verdict": "supported_in_item_context"
+        },
+        "14": {
+          "verdict": "supported_in_item_context"
+        },
+        "5": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 2,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "Matches the explicit arithmetic skill/objective."
+    },
+    {
+      "id": "mixed:1",
+      "job": "mixed",
+      "returned_index": 1,
+      "prompt": "Which sentence demonstrates correct subject-verb agreement?",
+      "learner_sha256": "bc47b08a590a1cd2bdd63f80d12d349c544a345c80341d110c480ef597912e7e",
+      "policy_revision": 4,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "The group of students is preparing for the exam.",
+        "independent_reason": "Under the requested standard written American English agreement convention, group is the singular subject; students/student head the other respective subjects. Only the keyed sentence follows that convention."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": true
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "The group of students is preparing for the exam.": {
+          "verdict": "supported_in_item_context"
+        },
+        "The group of students are preparing for the exam.": {
+          "verdict": "supported_in_item_context"
+        },
+        "The students in the group is preparing for the exam.": {
+          "verdict": "supported_in_item_context"
+        },
+        "The student in the groups are preparing for the exam.": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 2,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "Assessed within the prospectively declared American English scope, not as a claim about every dialect or notional-agreement context. All four feedback entries apply the stated convention correctly."
+    },
+    {
+      "id": "mixed:2",
+      "job": "mixed",
+      "returned_index": 2,
+      "prompt": "Let q be a unitless number, defined by q = ((15 / 4) * 3). What is its exact value?",
+      "learner_sha256": "53777331e9f0087b30890a9653ca05141005f0978f82e2d552e00a8ffbf3d651",
+      "policy_revision": 6,
+      "verdict": "sound_in_stated_scope",
+      "key": {
+        "verdict": "correct_unique",
+        "value": "45/4",
+        "independent_reason": "(15/4)*3=45/4;12,75/4 and5 are different rational values."
+      },
+      "premises_and_scope": {
+        "verdict": "sufficient_and_in_scope",
+        "assignment_checked": true
+      },
+      "choices": {
+        "verdict": "distinct_and_reasonably_plausible",
+        "count": 4,
+        "empirical_distractor_quality_tested": false
+      },
+      "main_explanation": {
+        "verdict": "supported_in_item_context"
+      },
+      "choice_feedback": {
+        "45/4": {
+          "verdict": "supported_in_item_context"
+        },
+        "12": {
+          "verdict": "supported_in_item_context"
+        },
+        "75/4": {
+          "verdict": "supported_in_item_context"
+        },
+        "5": {
+          "verdict": "supported_in_item_context"
+        }
+      },
+      "difficulty": {
+        "provider": 2,
+        "independent_assessment": 2,
+        "floor": 2,
+        "meets_floor": true
+      },
+      "notes": "Matches the explicit arithmetic skill/objective. Distractors are same-kind numerical alternatives; this review does not claim measured distractor discrimination."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Python Boolean operations",
+      "url": "https://docs.python.org/3/builtins/stdtypes.html#boolean-operations-and-or-not"
+    },
+    {
+      "title": "Python None constant",
+      "url": "https://docs.python.org/3/builtins/constants.html#None"
+    },
+    {
+      "title": "Purdue OWL subject/verb agreement",
+      "url": "https://owl.purdue.edu/owl/general_writing/grammar/subject_verb_agreement.html"
+    }
+  ],
+  "claim_limits": "This fixed trial fails yield and all-returned-content criteria. Twelve correct keys do not establish correct learner teaching. Six sound compiled outputs do not qualify the complete mixed route or arbitrary-topic quality. Missing questions receive no content credit; ordinary failed attempts do not retroactively corrupt earlier verified returned content. No population accuracy estimate is made."
+}
