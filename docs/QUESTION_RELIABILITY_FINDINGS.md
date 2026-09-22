@@ -62,5 +62,11 @@ At this checkpoint, global transport remains legacy, worker transport and thinki
 inherit their global settings, and the current client minimum remains policy 2.
 Only the complete native pair-audited path followed by successful final review
 earns policy 4. Neither stored questions nor historical answers are relabeled.
-A fresh six-domain adaptive pipeline qualification is underway under the existing
-240-second worker deadline and six-call budget. No deployment has occurred.
+The [fresh adaptive full-pipeline trial](evidence/question-reliability-release-20260922/ADAPTIVE_PIPELINE_RESULTS.md)
+failed: it stopped after 11 provider attempts, with 5 of 30 planned questions
+admitted. The arithmetic reviewer emitted unbound `index: -1` records, invalidating
+two batches; Python returned five admitted items; the English solver timed out at
+75 seconds. Three later domains were unattempted. The passing isolated reasoning
+trial therefore does not justify promoting adaptive mode for the full worker.
+Next work addresses complete reviewer record identity and semantic quality within
+the same operational limits. No deployment has occurred.

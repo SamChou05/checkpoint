@@ -1,0 +1,78 @@
+{
+  "capture_sha256": "e869ab380e711854ef4ed68c83325d94ace6dc6e7ac2334ccbe10beab413f79f",
+  "plan_sha256": "5408ae80e7c2275cd1de00c181ffa43808ad5b5c5039b5fccd9e27e93bac31e8",
+  "capture_status": "stopped_after_failure",
+  "planned_jobs": 6,
+  "planned_requested_questions": 30,
+  "unattempted_job_indexes": [
+    3,
+    4,
+    5
+  ],
+  "provider_dispatches": 11,
+  "stage_dispatches": {
+    "question_author_v3": 4,
+    "complete_choice_solver_v3": 4,
+    "default_reviewer_v1": 3
+  },
+  "client_admission_failures": [],
+  "jobs": [
+    {
+      "index": 0,
+      "title": "Arithmetic decisions",
+      "accepted": 0,
+      "dispatches": 6,
+      "elapsed_seconds": 186.905,
+      "within_240_seconds": true,
+      "provider_tokens": {
+        "BedrockInputTokens": 19686,
+        "BedrockOutputTokens": 15933
+      },
+      "min_observed_read_timeout_seconds": 75.0,
+      "native_transport_failures": 0,
+      "non_end_turn_responses": 0,
+      "transport_errors": 0,
+      "calls_without_usage_metadata": 0,
+      "quality_dispositions": {
+        "sanitize": {
+          "accepted": 10
+        },
+        "review": {
+          "invalid_envelope": 10
+        }
+      }
+    },
+    {
+      "index": 1,
+      "title": "Python 3 expressions",
+      "accepted": 5,
+      "dispatches": 3,
+      "elapsed_seconds": 75.58,
+      "within_240_seconds": true,
+      "provider_tokens": {
+        "BedrockInputTokens": 9097,
+        "BedrockOutputTokens": 6062
+      },
+      "min_observed_read_timeout_seconds": 75.0,
+      "native_transport_failures": 0,
+      "non_end_turn_responses": 0,
+      "transport_errors": 0,
+      "calls_without_usage_metadata": 0,
+      "quality_dispositions": {
+        "sanitize": {
+          "accepted": 5
+        },
+        "review": {
+          "accepted": 5
+        }
+      }
+    },
+    {
+      "index": 2,
+      "status": "in_progress_or_job_failed",
+      "dispatches": 2,
+      "error_type": "ProviderError"
+    }
+  ],
+  "interpretation": "Accounting and exact response bindings only. Semantic qualification requires the separate independent item audits. A completed capture is not itself a passing result."
+}

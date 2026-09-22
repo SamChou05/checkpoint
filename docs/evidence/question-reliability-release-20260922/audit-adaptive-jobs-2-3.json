@@ -1,0 +1,230 @@
+{
+  "audit": "Independent scoped manual audit of adaptive pipeline jobs 2 and 3",
+  "scope": "Available author drafts only; no final accepted-quality pass is inferred from unproduced outputs.",
+  "source": {
+    "plan": "docs/evidence/question-reliability-release-20260922/pipeline-adaptive-plan.json",
+    "plan_sha256": "5408ae80e7c2275cd1de00c181ffa43808ad5b5c5039b5fccd9e27e93bac31e8",
+    "capture": "docs/evidence/question-reliability-release-20260922/pipeline-adaptive-capture.json",
+    "capture_sha256": "e869ab380e711854ef4ed68c83325d94ace6dc6e7ac2334ccbe10beab413f79f",
+    "capture_status": "stopped_after_failure",
+    "stop_dispatching": true
+  },
+  "method": "Read unchanged captured requests and responses; independently check exact keys, grammatical answer uniqueness, task-relevant distinctions, bounds and explanation accuracy/choice-order safety. Use primary grammar references for the nonrestrictive-clause rule. No provider calls, source edits, capture changes or output repair.",
+  "frozen_denominators": {
+    "planned_jobs": 6,
+    "target_per_job": 5,
+    "total_target": 30,
+    "required_minimum_each_job": 3,
+    "required_minimum_total": 27,
+    "assigned_jobs": [
+      2,
+      3
+    ],
+    "assigned_target": 10
+  },
+  "job_2": {
+    "topic": "English usage",
+    "status": "author_completed_solver_transport_failure",
+    "provider_calls": 2,
+    "global_call_indices_zero_based": [
+      9,
+      10
+    ],
+    "author_drafts": 5,
+    "sanitizer_retained_drafts": 5,
+    "solver_responses": 0,
+    "solver_choice_judgments_observed": 0,
+    "solver_pair_judgments_observed": 0,
+    "reviewer_calls": 0,
+    "admitted_rows_produced": 0,
+    "accepted_field_present": false,
+    "final_quality_assessment": "not_observed",
+    "author_call": {
+      "contract": "question_author_v3",
+      "native_transport_valid": true,
+      "stop_reason": "end_turn",
+      "elapsed_seconds": 14.79,
+      "sdk_total_max_attempts": 1,
+      "retry_attempts": 0
+    },
+    "solver_call": {
+      "contract": "complete_choice_solver_v3",
+      "outcome": "transport_error",
+      "error": "ReadTimeoutError",
+      "elapsed_seconds": 75.169,
+      "read_timeout_seconds": 75.0,
+      "sdk_total_max_attempts": 1,
+      "remaining_before_ms": 225186,
+      "remaining_after_ms": 150013
+    },
+    "timeout_interpretation": "The 75-second per-call read timeout occurred with about 150 seconds of the 240-second worker budget remaining. The frozen transport-failure rule stopped later dispatch; this was not overall worker-deadline exhaustion. No solver judgments or rejected/admitted decisions can be inferred.",
+    "draft_findings": [
+      {
+        "author_index": 0,
+        "prompt": "Which sentence demonstrates correct subject-verb agreement?",
+        "raw_correct_slot": "d",
+        "exact_key": "The team of researchers has published its findings.",
+        "four_distinct_literal_choices": true,
+        "bounds": {
+          "prompt": 59,
+          "choices": {
+            "a": 50,
+            "b": 65,
+            "c": 57,
+            "d": 51
+          },
+          "explanation": 145
+        },
+        "bounds_pass": true,
+        "draft_assessment": "no_defect_found_in_scoped_manual_review",
+        "unique_answer": "d",
+        "key_assessment": "The team is singular. The other choices mismatch collection/are, nearer plural employees/was, or each/have.",
+        "diversity": "Distinct complete sentence forms relevant to subject-verb agreement.",
+        "main_explanation": "Consistent with the keyed sentence.",
+        "shuffle_safe": true,
+        "provider_solver_claims_observed": false,
+        "reviewer_main_or_choice_feedback_observed": false,
+        "admitted": false
+      },
+      {
+        "author_index": 1,
+        "prompt": "Which revision corrects the pronoun reference error?",
+        "raw_correct_slot": "d",
+        "exact_key": "When she called her mother, Sarah was upset.",
+        "four_distinct_literal_choices": true,
+        "bounds": {
+          "prompt": 52,
+          "choices": {
+            "a": 44,
+            "b": 58,
+            "c": 43,
+            "d": 44
+          },
+          "explanation": 127
+        },
+        "bounds_pass": true,
+        "draft_assessment": "fails_unique_answer_and_self_containment",
+        "unique_answer": null,
+        "key_assessment": "The stem supplies no original sentence to revise. Both c and d clearly identify Sarah as upset and can be acceptable revisions; the keyed d is not established as uniquely correct.",
+        "diversity": "The written revisions differ, but literal difference does not cure multiple acceptable answers. Missing original text also prevents reliable intended-revision assessment.",
+        "main_explanation": "The claim about placing Sarah before was upset also applies to c; it does not distinguish d.",
+        "shuffle_safe": true,
+        "provider_solver_claims_observed": false,
+        "reviewer_main_or_choice_feedback_observed": false,
+        "admitted": false
+      },
+      {
+        "author_index": 2,
+        "prompt": "Which sentence uses commas correctly to set off a nonrestrictive clause?",
+        "raw_correct_slot": "c",
+        "exact_key": "The conference, which was postponed twice, will begin on Monday.",
+        "four_distinct_literal_choices": true,
+        "bounds": {
+          "prompt": 72,
+          "choices": {
+            "a": 59,
+            "b": 54,
+            "c": 64,
+            "d": 64
+          },
+          "explanation": 140
+        },
+        "bounds_pass": true,
+        "draft_assessment": "fails_teaching_accuracy",
+        "unique_answer": "c",
+        "key_assessment": "The conference sentence is the unique offered example with correctly comma-delimited nonrestrictive clause in standard written American English.",
+        "diversity": "Different offered sentence forms and clause punctuation relevant to the requested grammar distinction.",
+        "main_explanation": "The unqualified claim that nonrestrictive clauses require which is false: nonrestrictive clauses referring to people can use who. The selected example is correct, but the general teaching overreaches.",
+        "primary_sources": [
+          {
+            "url": "https://owl.purdue.edu/owl/general_writing/grammar/relative_pronouns/defining_vs_non_defining.html",
+            "supports": "Non-defining relative clauses can use who or which."
+          },
+          {
+            "url": "https://owl.purdue.edu/owl/general_writing/punctuation/commas/commas_with_nonessential_elements.html",
+            "supports": "Nonessential relative clauses can use who and be set off with commas."
+          }
+        ],
+        "shuffle_safe": true,
+        "provider_solver_claims_observed": false,
+        "reviewer_main_or_choice_feedback_observed": false,
+        "admitted": false
+      },
+      {
+        "author_index": 3,
+        "prompt": "Which sentence contains a pronoun with an ambiguous antecedent?",
+        "raw_correct_slot": "a",
+        "exact_key": "Marcus told James that he had exceeded the quota.",
+        "four_distinct_literal_choices": true,
+        "bounds": {
+          "prompt": 63,
+          "choices": {
+            "a": 49,
+            "b": 55,
+            "c": 51,
+            "d": 61
+          },
+          "explanation": 155
+        },
+        "bounds_pass": true,
+        "draft_assessment": "fails_shuffle_safe_author_explanation",
+        "unique_answer": "a",
+        "key_assessment": "He in a can refer to Marcus or James. The other sentences provide clear reference or omit the personal pronoun.",
+        "diversity": "The task tests written pronoun reference; distinctions between pronoun and explicit-name constructions are relevant even when sentences describe similar events.",
+        "main_explanation": "The substantive antecedent reasoning is correct, but In sentence A refers to an author-slot label rather than stable choice text. That label is not a supplied literal sentence name and is unsafe after choice reordering.",
+        "shuffle_safe": false,
+        "exposure_limit": "This is private author explanation in reviewer_written mode. No reviewer response or admitted item exists, so this does not establish learner exposure or a final feedback defect.",
+        "provider_solver_claims_observed": false,
+        "reviewer_main_or_choice_feedback_observed": false,
+        "admitted": false
+      },
+      {
+        "author_index": 4,
+        "prompt": "Which sentence demonstrates correct subject-verb agreement with a compound subject?",
+        "raw_correct_slot": "c",
+        "exact_key": "Both the screenwriter and the editor have revised the script.",
+        "four_distinct_literal_choices": true,
+        "bounds": {
+          "prompt": 83,
+          "choices": {
+            "a": 56,
+            "b": 66,
+            "c": 61,
+            "d": 63
+          },
+          "explanation": 177
+        },
+        "bounds_pass": true,
+        "draft_assessment": "no_defect_found_in_scoped_manual_review",
+        "unique_answer": "c",
+        "key_assessment": "Both screenwriter and editor takes have; nearer producers requires have, nearer director requires was, and nearer singular gaffer requires was.",
+        "diversity": "Distinct compound-subject sentence forms relevant to the requested agreement rule.",
+        "main_explanation": "The explanation matches the tested compound-subject constructions.",
+        "shuffle_safe": true,
+        "provider_solver_claims_observed": false,
+        "reviewer_main_or_choice_feedback_observed": false,
+        "admitted": false
+      }
+    ],
+    "draft_summary": {
+      "reviewed": 5,
+      "structurally_valid_exact_slot_keys_and_bounds": 5,
+      "no_defect_found_in_scoped_manual_review": 2,
+      "drafts_with_identified_issue": 3,
+      "not_a_final_acceptance_score": true
+    }
+  },
+  "job_3": {
+    "topic": "Interpreting quantitative evidence",
+    "status": "unattempted_after_frozen_transport_stop",
+    "planned_target": 5,
+    "capture_job_entry_present": false,
+    "provider_calls": 0,
+    "author_drafts": 0,
+    "solver_responses": 0,
+    "reviewer_responses": 0,
+    "admitted_rows_produced": 0,
+    "final_quality_assessment": "not_observed"
+  },
+  "conclusion": "Neither assigned job produced admitted rows. Job 2 failed the no-transport-failure and minimum-yield criteria; job 3 was unattempted and contributes no yield. The global 30-item denominator is unchanged. This evidence cannot qualify the adaptive pipeline or establish accepted English/quantitative question quality. The author-only defects show familiar uniqueness, overbroad-teaching, and unstable-position-reference mechanisms, but no conclusion is possible about what the missing solver/reviewer would reject or rewrite."
+}

@@ -1,0 +1,64 @@
+{
+  "plan_sha256": "5408ae80e7c2275cd1de00c181ffa43808ad5b5c5039b5fccd9e27e93bac31e8",
+  "capture_sha256": "e869ab380e711854ef4ed68c83325d94ace6dc6e7ac2334ccbe10beab413f79f",
+  "network_calls": 0,
+  "sources_match_frozen_plan": true,
+  "offline_deadline_and_ceiling_tests": {
+    "provider_network_calls": 0,
+    "synthetic_dispatches": 6,
+    "deadline_sequence": [
+      {
+        "remaining_before_client_ms": 240000,
+        "actual_read_timeout_seconds": 75.0,
+        "sdk_total_max_attempts": 1,
+        "provider_budget_calls": 1
+      },
+      {
+        "remaining_before_client_ms": 60000,
+        "actual_read_timeout_seconds": 53.999,
+        "sdk_total_max_attempts": 1,
+        "provider_budget_calls": 2
+      },
+      {
+        "remaining_before_client_ms": 10000,
+        "actual_read_timeout_seconds": 3.9989999999999997,
+        "sdk_total_max_attempts": 1,
+        "provider_budget_calls": 3
+      }
+    ],
+    "too_late_rejected_before_sdk_setup": true,
+    "deadline_rechecked_after_sdk_setup": true,
+    "seventh_provider_call_blocked": true,
+    "one_sdk_attempt_per_call": true,
+    "adaptive_actual_runtime_request_verified": true,
+    "reasoning_text_not_retained": true
+  },
+  "jobs": [
+    {
+      "job": 0,
+      "requests_byte_equivalent_as_objects": 6,
+      "exact_admitted_rows_equal": true,
+      "quality_diagnostics_equal": true,
+      "provider_error_type_equal": true,
+      "provider_calls_equal": 6
+    },
+    {
+      "job": 1,
+      "requests_byte_equivalent_as_objects": 3,
+      "exact_admitted_rows_equal": true,
+      "quality_diagnostics_equal": true,
+      "provider_error_type_equal": true,
+      "provider_calls_equal": 3
+    },
+    {
+      "job": 2,
+      "requests_byte_equivalent_as_objects": 2,
+      "exact_admitted_rows_equal": true,
+      "quality_diagnostics_equal": true,
+      "provider_error_type_equal": true,
+      "provider_calls_equal": 2
+    }
+  ],
+  "all_replay_checks_pass": true,
+  "limitation": "Replays retained final JSON, usage and the recorded timeout type; provider reasoning blocks were intentionally omitted. It verifies deterministic application admission and exact request construction, not new model correctness."
+}

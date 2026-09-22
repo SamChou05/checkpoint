@@ -1,0 +1,351 @@
+{
+  "plan_sha256": "5408ae80e7c2275cd1de00c181ffa43808ad5b5c5039b5fccd9e27e93bac31e8",
+  "capture_sha256": "e869ab380e711854ef4ed68c83325d94ace6dc6e7ac2334ccbe10beab413f79f",
+  "capture_status": "stopped_after_failure",
+  "planned_jobs": 6,
+  "planned_target_items": 30,
+  "maximum_provider_calls": 36,
+  "attempted_jobs": 3,
+  "completed_jobs": 3,
+  "unattempted_jobs": 3,
+  "attempted_provider_calls": 11,
+  "admitted_items": 5,
+  "model_usage": {
+    "moonshotai.kimi-k2.5": {
+      "calls": 4,
+      "inputTokens": 7841,
+      "outputTokens": 2608,
+      "totalTokens": 10449
+    },
+    "us.anthropic.claude-sonnet-4-6": {
+      "calls": 7,
+      "inputTokens": 22864,
+      "outputTokens": 20056,
+      "totalTokens": 42920,
+      "cacheReadInputTokens": 0,
+      "cacheWriteInputTokens": 0
+    }
+  },
+  "usage_limitation": "Observed usage covers returned responses only; the timed-out provider attempt returned no usage and may have incurred unreported work.",
+  "provider_elapsed_seconds": 352.28,
+  "total_job_elapsed_seconds": 352.474,
+  "maximum_call_seconds": 75.169,
+  "call_outcomes": {
+    "end_turn": 10,
+    "transport_error": 1
+  },
+  "contract_call_counts": {
+    "question_author_v3": 4,
+    "complete_choice_solver_v3": 4,
+    "default_reviewer_v1": 3
+  },
+  "all_sdk_one_attempt": true,
+  "read_timeout_min_seconds": 75.0,
+  "read_timeout_max_seconds": 75.0,
+  "shrunk_read_timeout_calls": [],
+  "client_admission_failures": [],
+  "all_admitted_timeouts_fit_remaining_budget": true,
+  "reasoning_blocks_omitted": 7,
+  "reasoning_content_absent_from_capture": true,
+  "quality_diagnostics": {
+    "sanitize": {
+      "accepted": 20
+    },
+    "review": {
+      "invalid_envelope": 10,
+      "accepted": 5
+    },
+    "provider": {
+      "request_failed": 1
+    }
+  },
+  "stage_checks": [
+    {
+      "call": 0,
+      "job": 0,
+      "stage": "question_author_v3",
+      "native_transport_valid": true,
+      "returned_items": 5
+    },
+    {
+      "call": 1,
+      "job": 0,
+      "stage": "complete_choice_solver_v3",
+      "native_transport_valid": true,
+      "expected_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "returned_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "exact_index_coverage": true
+    },
+    {
+      "call": 2,
+      "job": 0,
+      "stage": "default_reviewer_v1",
+      "native_transport_valid": true,
+      "expected_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "returned_indexes": [
+        -1,
+        -1
+      ],
+      "exact_index_coverage": false
+    },
+    {
+      "call": 3,
+      "job": 0,
+      "stage": "question_author_v3",
+      "native_transport_valid": true,
+      "returned_items": 5
+    },
+    {
+      "call": 4,
+      "job": 0,
+      "stage": "complete_choice_solver_v3",
+      "native_transport_valid": true,
+      "expected_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "returned_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "exact_index_coverage": true
+    },
+    {
+      "call": 5,
+      "job": 0,
+      "stage": "default_reviewer_v1",
+      "native_transport_valid": true,
+      "expected_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "returned_indexes": [
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "exact_index_coverage": false
+    },
+    {
+      "call": 6,
+      "job": 1,
+      "stage": "question_author_v3",
+      "native_transport_valid": true,
+      "returned_items": 5
+    },
+    {
+      "call": 7,
+      "job": 1,
+      "stage": "complete_choice_solver_v3",
+      "native_transport_valid": true,
+      "expected_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "returned_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "exact_index_coverage": true
+    },
+    {
+      "call": 8,
+      "job": 1,
+      "stage": "default_reviewer_v1",
+      "native_transport_valid": true,
+      "expected_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "returned_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "exact_index_coverage": true
+    },
+    {
+      "call": 9,
+      "job": 2,
+      "stage": "question_author_v3",
+      "native_transport_valid": true,
+      "returned_items": 5
+    }
+  ],
+  "jobs": [
+    {
+      "index": 0,
+      "title": "Arithmetic decisions",
+      "planned_target": 5,
+      "attempted": true,
+      "completed": true,
+      "calls": 6,
+      "responses_with_usage": 6,
+      "admitted": 0,
+      "mechanical_bounds_and_exact_feedback_coverage": 0,
+      "elapsed_seconds": 186.905,
+      "remaining_ms": 53094,
+      "within_240_second_deadline": true,
+      "error_type": null,
+      "quality_diagnostics": {
+        "sanitize": {
+          "accepted": 10
+        },
+        "review": {
+          "invalid_envelope": 10
+        }
+      },
+      "input_tokens": 19686,
+      "output_tokens": 15933
+    },
+    {
+      "index": 1,
+      "title": "Python 3 expressions",
+      "planned_target": 5,
+      "attempted": true,
+      "completed": true,
+      "calls": 3,
+      "responses_with_usage": 3,
+      "admitted": 5,
+      "mechanical_bounds_and_exact_feedback_coverage": 5,
+      "elapsed_seconds": 75.58,
+      "remaining_ms": 164420,
+      "within_240_second_deadline": true,
+      "error_type": null,
+      "quality_diagnostics": {
+        "sanitize": {
+          "accepted": 5
+        },
+        "review": {
+          "accepted": 5
+        }
+      },
+      "input_tokens": 9097,
+      "output_tokens": 6062
+    },
+    {
+      "index": 2,
+      "title": "English usage",
+      "planned_target": 5,
+      "attempted": true,
+      "completed": true,
+      "calls": 2,
+      "responses_with_usage": 1,
+      "admitted": 0,
+      "mechanical_bounds_and_exact_feedback_coverage": 0,
+      "elapsed_seconds": 89.989,
+      "remaining_ms": 150011,
+      "within_240_second_deadline": true,
+      "error_type": "ProviderError",
+      "quality_diagnostics": {
+        "sanitize": {
+          "accepted": 5
+        },
+        "provider": {
+          "request_failed": 1
+        }
+      },
+      "input_tokens": 1922,
+      "output_tokens": 669
+    },
+    {
+      "index": 3,
+      "title": "Interpreting quantitative evidence",
+      "planned_target": 5,
+      "attempted": false,
+      "completed": false,
+      "calls": 0,
+      "responses_with_usage": 0,
+      "admitted": 0,
+      "mechanical_bounds_and_exact_feedback_coverage": 0,
+      "elapsed_seconds": null,
+      "remaining_ms": null,
+      "within_240_second_deadline": null,
+      "error_type": null,
+      "quality_diagnostics": {},
+      "input_tokens": 0,
+      "output_tokens": 0
+    },
+    {
+      "index": 4,
+      "title": "Applying fictional access rules",
+      "planned_target": 5,
+      "attempted": false,
+      "completed": false,
+      "calls": 0,
+      "responses_with_usage": 0,
+      "admitted": 0,
+      "mechanical_bounds_and_exact_feedback_coverage": 0,
+      "elapsed_seconds": null,
+      "remaining_ms": null,
+      "within_240_second_deadline": null,
+      "error_type": null,
+      "quality_diagnostics": {},
+      "input_tokens": 0,
+      "output_tokens": 0
+    },
+    {
+      "index": 5,
+      "title": "Physical quantities",
+      "planned_target": 5,
+      "attempted": false,
+      "completed": false,
+      "calls": 0,
+      "responses_with_usage": 0,
+      "admitted": 0,
+      "mechanical_bounds_and_exact_feedback_coverage": 0,
+      "elapsed_seconds": null,
+      "remaining_ms": null,
+      "within_240_second_deadline": null,
+      "error_type": null,
+      "quality_diagnostics": {},
+      "input_tokens": 0,
+      "output_tokens": 0
+    }
+  ],
+  "frozen_yield_criterion_pass": false,
+  "frozen_transport_schema_coverage_criterion_pass": false,
+  "formal_qualification": "failed",
+  "content_review": "Independent manual audits are separate artifacts; mechanical checks do not establish factual correctness, distinct meaning or feedback fidelity."
+}

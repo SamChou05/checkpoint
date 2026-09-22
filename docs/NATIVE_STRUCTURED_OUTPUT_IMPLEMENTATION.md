@@ -94,8 +94,11 @@ All experiments retain their prospective plans, raw attempts and failed criteria
 
 New experiments require their own frozen scope and bounds. Do not reuse an old
 call allowance, rerun failed samples invisibly or reinterpret a strict failure
-as passing because a narrower metric improved. Follow-up adaptive-thinking and
-reviewer-anchoring candidates remain experiments until their evidence is reviewed.
+as passing because a narrower metric improved. The [adaptive solver candidate](evidence/choice-quality-release-20260922/ADAPTIVE_RESULTS.md)
+passed its twenty-control label criteria, but the [fresh adaptive full pipeline](evidence/question-reliability-release-20260922/ADAPTIVE_PIPELINE_RESULTS.md)
+failed at 5/30 planned admissions after reviewer index failures and a solver timeout.
+The [reviewer-input omission experiment](evidence/question-reliability-release-20260922/REVIEWER_ANCHORING_RESULTS.md)
+also failed. Both proposed runtime changes remain unpromoted.
 
 ## Deployment and rollback
 
