@@ -7,6 +7,7 @@
 - Keep each commit buildable and appropriately verified. Frequent commits must still represent meaningful, reviewable progress rather than arbitrary snapshots or time-based checkpoints.
 - Write descriptive commit subjects and bodies that explain what changed, why it changed, and the meaningful verification performed. Treat Git history as the project's detailed changelog.
 - Push verified milestone commits to the current tracked upstream promptly unless the user says not to push or the push would publish incomplete, unsafe, or secret material.
+- Land verified improvements on `main` promptly, using a normal merge or fast-forward push. Do not leave actual improvements only on a draft pull request or feature branch. Keep unsuccessful experiments inactive and clearly identified in their evidence. This does not authorize deployment or destructive history rewriting.
 - Before committing or pushing, confirm the target branch, run the relevant tests or checks, and run `git diff --check`.
 - In shared multi-agent checkouts, stage only files owned by the current task. Never fold another task's unrelated working-tree changes into a commit.
 - Never commit credentials, tokens, ignored local configuration, generated secrets, or build artifacts.
