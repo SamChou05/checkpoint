@@ -289,7 +289,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         )[1].split("\n  QuestionBankMaxReceiveCount:", maxsplit=1)[0]
         self.assertIn("Default: 75", parameter)
         self.assertIn("MinValue: 20", parameter)
-        self.assertIn("MaxValue: 100", parameter)
+        self.assertIn("MaxValue: 200", parameter)
         self.assertEqual(
             self.template.count(
                 "BEDROCK_READ_TIMEOUT_SECONDS: !Ref QuestionBankWorkerReadTimeoutSeconds"

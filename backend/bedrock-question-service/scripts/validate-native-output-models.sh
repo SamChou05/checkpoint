@@ -93,5 +93,17 @@ validate_skill_map_override() {
   fi
 }
 
+validate_worker_read_timeout() {
+  local timeout="${QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS-75}"
+  # SAM Number and the runtime both accept fractional seconds. Reject nonfinite
+  # and malformed values before either entry point can invoke SAM.
+  if [[ ! "$timeout" =~ ^[0-9]+([.][0-9]+)?$ ]] ||
+     ! awk -v timeout="$timeout" 'BEGIN { exit !(timeout >= 20 && timeout <= 200) }'; then
+    echo "QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS must be a finite number from 20 through 200." >&2
+    return 1
+  fi
+}
+
+validate_worker_read_timeout
 validate_skill_map_override
 validate_native_output_models

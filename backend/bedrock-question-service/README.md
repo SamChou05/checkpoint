@@ -53,7 +53,7 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `MAX_PROVIDER_CALLS_PER_REQUEST` | `6` | Hard budget across author, blind solver, final review, JSON repair, and fallback calls. It also bounds the durable total per asynchronous job across all deliveries. The worker seeds its local allowance from the leased job's persisted count; six permits at most two complete verification passes. |
 | `MAX_REQUEST_BODY_BYTES` | `131072` | Request-body ceiling enforced before quota consumption. |
 | `BEDROCK_CONNECT_TIMEOUT_SECONDS` | `3` | Bounded SDK connection timeout. |
-| `BEDROCK_READ_TIMEOUT_SECONDS` | `20` locally and in the synchronous API; `75` in the SAM worker | SDK read-timeout ceiling, capped at 100 seconds. With a Lambda deadline, each service-created client shortens this timeout to leave the configured connect timeout, 1 second for client setup, and 2 seconds for response handling; calls are refused when fewer than 2 seconds of read time fit. |
+| `BEDROCK_READ_TIMEOUT_SECONDS` | `20` locally and in the synchronous API; `75` in the SAM worker | SDK read-timeout ceiling, capped at 200 seconds. The optional worker SAM parameter `QuestionBankWorkerReadTimeoutSeconds` accepts 20..200 seconds, including fractional values. With a Lambda deadline, each service-created client shortens this timeout to leave the configured connect timeout, 1 second for client setup, and 2 seconds for response handling; calls are refused when fewer than 2 seconds of read time fit. The API's 30-second and worker's 240-second deadlines still bound all stages together. |
 | `QUESTION_BANK_GENERATION_CHUNK_SIZE` | `5` | Maximum questions requested per asynchronous worker job, capped at 20. The durable job chain continues until the bank reaches its full target. |
 | `MIN_PROVIDER_REMAINING_MILLISECONDS` | `0` (no extra floor) | Optional additional admission floor. Immediately before a call, remaining Lambda time must also exceed that client's actual connect + read timeouts plus a 2-second response allowance. Injected SDK clients retain their own timeout settings and must disable SDK retries. Deadline refusal is reported as `provider_deadline_exhausted`. |
 | `CHECKPOINT_BACKEND_TOKEN` | empty | Temporary shared bearer for internal/TestFlight builds. Empty fails closed outside explicit development mode. |
@@ -75,6 +75,17 @@ This service does not claim to implement App Attest or server-side StoreKit veri
 | `QUESTION_BANK_MAX_FAILED_GENERATION_JOBS` | `3` | Exhausted jobs retained per bank context before generation is terminally blocked. Only a new bank/fill-cycle context resets this ledger. |
 | `QUESTION_BANK_FAILURE_COOLDOWN_SECONDS` | `300` | Earliest retry time recorded after a question-bank job reaches terminal failure. |
 | `EMIT_STRUCTURED_METRICS` | on in Lambda | Emits privacy-safe request and provider metrics in CloudWatch EMF. |
+
+The longer worker read ceiling is opt-in through
+`QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS`; it does not extend the worker's
+240-second total deadline or six-call budget. A slow early call can leave too
+little time for later verification stages. AWS documents that first-time
+structured-output grammar compilation may take a few minutes and that compiled
+grammars are cached for 24 hours. This is a possible latency factor, not an
+established cause of a particular timeout. See the
+[AWS structured-output request workflow](https://docs.aws.amazon.com/bedrock/latest/userguide/structured-output.html).
+A higher ceiling requires a fresh bounded worker trial before making any
+qualification claim; existing captures and timeout failures remain unchanged.
 
 Native output transport is independent of answer verification. Versioned static
 schemas constrain authoring, skill-map inference/evolution, complete-choice

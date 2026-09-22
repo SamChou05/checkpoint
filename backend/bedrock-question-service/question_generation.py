@@ -759,7 +759,7 @@ def _configured_transport_timeouts() -> tuple[float, float]:
             "BEDROCK_READ_TIMEOUT_SECONDS",
             DEFAULT_BEDROCK_READ_TIMEOUT_SECONDS,
             MIN_BEDROCK_READ_TIMEOUT_SECONDS,
-            100.0,
+            200.0,
         ),
     )
 
@@ -795,7 +795,8 @@ def _bedrock_client(call_budget: ProviderCallBudget | None = None) -> Any:
     connect_timeout, read_timeout = _configured_transport_timeouts()
     remaining = call_budget.remaining_milliseconds() if call_budget else None
     if remaining is not None:
-        # Author, solver, and reviewer share the HTTP Lambda's 30-second limit.
+        # All stages share their Lambda's deadline (30 seconds for the API,
+        # 240 seconds for the worker), even with a longer configured ceiling.
         # Cap this attempt's real socket timeout instead of requiring the full
         # configured timeout at every stage. Leave time to construct the SDK
         # client and return the response; consume() rechecks after construction.

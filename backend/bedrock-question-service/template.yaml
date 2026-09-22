@@ -214,7 +214,7 @@ Parameters:
     Type: Number
     Default: 75
     MinValue: 20
-    MaxValue: 100
+    MaxValue: 200
     Description: Bedrock SDK read timeout for the asynchronous worker only; the synchronous API retains its 20-second runtime default.
   QuestionBankGenerationChunkSize:
     Type: Number

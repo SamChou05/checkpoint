@@ -309,7 +309,7 @@ class LambdaHttpRuntimeTests(BackendTestCase):
 
     def test_bedrock_sdk_has_exactly_one_total_attempt(self):
         os.environ["BEDROCK_SDK_MAX_ATTEMPTS"] = "3"
-        os.environ["BEDROCK_READ_TIMEOUT_SECONDS"] = "125"
+        os.environ["BEDROCK_READ_TIMEOUT_SECONDS"] = "201"
         captured = {}
         fake_boto3 = types.ModuleType("boto3")
         fake_botocore = types.ModuleType("botocore")
@@ -339,7 +339,7 @@ class LambdaHttpRuntimeTests(BackendTestCase):
 
         self.assertEqual(captured["service_name"], "bedrock-runtime")
         self.assertEqual(captured["config"]["retries"]["total_max_attempts"], 1)
-        self.assertEqual(captured["config"]["read_timeout"], 100.0)
+        self.assertEqual(captured["config"]["read_timeout"], 200.0)
 
     def test_guardrail_configuration_is_passed_to_bedrock(self):
         os.environ["BEDROCK_GUARDRAIL_IDENTIFIER"] = "guardrail-123"

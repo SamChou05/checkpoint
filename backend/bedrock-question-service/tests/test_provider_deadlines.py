@@ -19,7 +19,11 @@ from lambda_test_support import (
 )
 from question_generation import ProviderCallBudget, _generate_with_bedrock
 from request_contract import _normalize_request
-from service_errors import ProviderDeadlineExceededError, ServiceConfigurationError
+from service_errors import (
+    ProviderCallBudgetExceededError,
+    ProviderDeadlineExceededError,
+    ServiceConfigurationError,
+)
 
 
 class ProviderDeadlineTests(BackendTestCase):
@@ -103,7 +107,9 @@ class ProviderDeadlineTests(BackendTestCase):
     def test_real_client_keeps_configured_short_timeout_and_worker_timeout_ceiling(
         self,
     ):
-        for remaining, configured in ((30_000, 4.0), (240_000, 75.0)):
+        for remaining, configured in (
+            (30_000, 4.0), (240_000, 75.0), (240_000, 99.5), (240_000, 200.0),
+        ):
             with self.subTest(configured=configured):
                 with mock.patch.dict(
                     os.environ, {"BEDROCK_READ_TIMEOUT_SECONDS": str(configured)}
@@ -117,6 +123,69 @@ class ProviderDeadlineTests(BackendTestCase):
                             call_budget=ProviderCallBudget(1, context=context),
                         )
                     self.assertEqual(configs[0].read_timeout, configured)
+
+    def test_long_ceiling_still_clamps_each_stage_to_actual_lambda_deadline(self):
+        os.environ["BEDROCK_READ_TIMEOUT_SECONDS"] = "200"
+        for remaining, durations in (
+            (30_000, (3000, 1800, 1200)),
+            (240_000, (130_000, 70_000, 10_000)),
+        ):
+            with self.subTest(remaining=remaining):
+                context = FakeLambdaContext(remaining)
+                reservation = mock.Mock()
+                budget = ProviderCallBudget(6, context=context, reserve_call=reservation)
+                with self.sdk(context, durations=durations, setup_milliseconds=100) as (
+                    configs, calls, _shared, _factory,
+                ):
+                    for _ in range(3):
+                        _generate_with_bedrock(
+                            {}, None, "model", user_prompt="Synthetic input", call_budget=budget
+                        )
+                self.assertEqual((len(calls), budget.calls, reservation.call_count), (3, 3, 3))
+                self.assertEqual(configs[0].read_timeout, 200 if remaining == 240_000 else 23.999)
+                self.assertLess(configs[-1].read_timeout, configs[0].read_timeout)
+                for time_at_dispatch, config in calls:
+                    self.assertGreaterEqual(config.read_timeout, 2)
+                    self.assertLessEqual(config.read_timeout, 200)
+                    self.assertLess(
+                        (config.connect_timeout + config.read_timeout) * 1000 + 2000,
+                        time_at_dispatch,
+                    )
+                    self.assertEqual(config.retries["total_max_attempts"], 1)
+
+    def test_long_worker_timeout_cannot_spend_seventh_call_or_reservation(self):
+        os.environ["BEDROCK_READ_TIMEOUT_SECONDS"] = "200"
+        context = FakeLambdaContext(240_000)
+        reservation = mock.Mock()
+        budget = ProviderCallBudget(6, context=context, reserve_call=reservation)
+        with self.sdk(context, durations=(1000,) * 6) as (_configs, calls, _shared, _factory):
+            for _ in range(6):
+                _generate_with_bedrock(
+                    {}, None, "model", user_prompt="Synthetic input", call_budget=budget
+                )
+            with self.assertRaises(ProviderCallBudgetExceededError):
+                _generate_with_bedrock(
+                    {}, None, "model", user_prompt="Synthetic input", call_budget=budget
+                )
+        self.assertEqual((len(calls), budget.calls, reservation.call_count), (6, 6, 6))
+
+    def test_long_worker_timeout_is_rechecked_after_durable_reservation(self):
+        os.environ["BEDROCK_READ_TIMEOUT_SECONDS"] = "200"
+        context = FakeLambdaContext(240_000)
+
+        def reserve():
+            context.remaining_milliseconds -= 36_000
+
+        reservation = mock.Mock(side_effect=reserve)
+        budget = ProviderCallBudget(6, context=context, reserve_call=reservation)
+        with self.sdk(context) as (configs, calls, _shared, _factory):
+            with self.assertRaises(ProviderDeadlineExceededError):
+                _generate_with_bedrock(
+                    {}, None, "model", user_prompt="Synthetic input", call_budget=budget
+                )
+        self.assertEqual(configs[0].read_timeout, 200)
+        reservation.assert_called_once()
+        self.assertEqual((len(calls), budget.calls), (0, 0))
 
     def test_safe_minimum_refuses_before_client_reservation_or_provider(self):
         context = FakeLambdaContext(8_000)

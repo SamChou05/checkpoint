@@ -92,6 +92,31 @@ printf '%s\n' \
 chmod 0755 "$test_bin/sam"
 
 sam_capture="$test_directory/sam-arguments"
+for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+  for timeout in 20 75 99.5 200; do
+    rm -f "$sam_capture"
+    env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" "QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS=$timeout" \
+      "$script_dir/$checked_script"
+    if [[ "$checked_script" == deploy-sam.sh ]]; then
+      mapfile -d '' -t timeout_arguments < "$sam_capture"
+      [[ " ${timeout_arguments[*]} " == *" QuestionBankWorkerReadTimeoutSeconds=$timeout "* ]] || \
+        fail "worker read timeout $timeout was not forwarded exactly"
+    fi
+  done
+  for timeout in 19.9 200.1 201 NaN inf -inf '' invalid; do
+    rm -f "$sam_capture"
+    if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" "QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS=$timeout" \
+      "$script_dir/$checked_script" >"$test_directory/timeout-error" 2>&1; then
+      fail "$checked_script accepted invalid worker read timeout $timeout"
+    fi
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid worker read timeout"
+    [[ "$(cat "$test_directory/timeout-error")" == *"QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS"* ]] || \
+      fail "worker timeout rejection did not identify its setting"
+  done
+done
+
 env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
