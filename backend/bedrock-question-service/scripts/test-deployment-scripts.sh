@@ -17,8 +17,8 @@ fail() {
 
 backend_token=checkpoint-backend-token-at-least-32-characters
 quota_secret=checkpoint-quota-secret-at-least-32-characters
-api_model=arn:aws:bedrock:us-east-1::foundation-model/test.api-model
-worker_model=arn:aws:bedrock:us-east-1::foundation-model/test.worker-model
+api_model=arn:aws:bedrock:us-east-1::foundation-model/moonshotai.kimi-k2.5
+worker_model=arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-sonnet-4-6
 deployment_environment=(
   "AWS_DEPLOY_ROLE_ARN=arn:aws:iam::123456789012:role/checkpoint-deploy"
   "AWS_REGION=us-east-1"
@@ -159,6 +159,37 @@ for mode_variable in BEDROCK_STRUCTURED_OUTPUT_MODE QUESTION_BANK_WORKER_STRUCTU
     [[ "$invalid_mode_output" == *"$mode_variable must be "* ]] || \
       fail "$checked_script did not identify invalid $mode_variable"
     [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid $mode_variable"
+  done
+done
+
+unsupported_model=arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0
+for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+  # A legacy Nova API may coexist with a native Kimi/Sonnet worker.
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" \
+    "BEDROCK_MODEL_ARN=$unsupported_model" \
+    "BEDROCK_INVOKE_RESOURCE_ARNS=$unsupported_model" \
+    BEDROCK_STRUCTURED_OUTPUT_MODE=legacy \
+    QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native \
+    "$script_dir/$checked_script"
+  for model_variable in BEDROCK_MODEL_ARN QUESTION_BANK_WORKER_MODEL_ARN BEDROCK_VERIFICATION_MODEL_ARN BEDROCK_FALLBACK_MODEL_ARN; do
+    rm -f "$sam_capture"
+    if unsupported_output="$(
+      env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+        "${deployment_environment[@]}" \
+        "BEDROCK_INVOKE_RESOURCE_ARNS=$api_model,$unsupported_model" \
+        "QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS=$worker_model,$unsupported_model" \
+        "BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS=$worker_model,$unsupported_model" \
+        BEDROCK_STRUCTURED_OUTPUT_MODE=native \
+        QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=inherit \
+        "$model_variable=$unsupported_model" \
+        "$script_dir/$checked_script" 2>&1
+    )"; then
+      fail "$checked_script accepted an unsupported native $model_variable"
+    fi
+    [[ "$unsupported_output" == *"$model_variable is outside the native structured-output support allowlist"* ]] || \
+      fail "$checked_script did not identify unsupported $model_variable"
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for unsupported native $model_variable"
   done
 done
 

@@ -2,14 +2,10 @@
 
 set -e -o pipefail
 
-case "${BEDROCK_STRUCTURED_OUTPUT_MODE:-legacy}" in
-  legacy|native) ;;
-  *) echo "BEDROCK_STRUCTURED_OUTPUT_MODE must be legacy or native." >&2; exit 1 ;;
-esac
-case "${QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE:-inherit}" in
-  inherit|legacy|native) ;;
-  *) echo "QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE must be inherit, legacy, or native." >&2; exit 1 ;;
-esac
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=validate-native-output-models.sh
+# shellcheck source-path=SCRIPTDIR
+source "$script_dir/validate-native-output-models.sh"
 
 parameters=(
   "BackendToken=$CHECKPOINT_BACKEND_TOKEN"
