@@ -56,8 +56,8 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,257
-tests after combined compiler/immutable-main integration, the parenthesized-label fix and independent worker/skill-map deployment settings. All 26 runtime modules match each of three SAM artifacts, with 393 packaged SDK configuration checks. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
+The tested structural changes are on main. Backend verification passes 1,274
+tests after worked numerical teaching and typed immutable-audit flags. All 26 runtime modules match each of three SAM artifacts, with 513 packaged SDK configuration checks. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter
 deadline independent of a background-worker reasoning rollout.
@@ -248,6 +248,26 @@ The fifth Python draft also exposed a false pair veto: the solver treated `0`
 and `False` as interchangeable for an exact Python result because they compare
 numerically equal, despite their distinct result types. Enforcing fixed pair
 identities does not make the model's equivalence classification correct.
+
+Two concrete follow-up fixes are now on main. Exact-value compiler mains render
+each operation in dependency order, including common denominators, multiplication
+products/reduction and signed reciprocals. Every displayed equality is derived
+by exact arithmetic. Complete teaching over 420 characters is rejected rather
+than clipped, so complex expressions may have lower yield. All ten captured
+numerical specifications still compile under the new renderer; eight gain worked
+mains and the two scalar-condition payloads are unchanged. The revised shared
+fixture passed all ten selected iOS highlighting tests, including 72 compiled
+display orders. Historical captures and their source checkout remain unchanged.
+
+Native immutable-main audit v3 replaces free-text issues with six required Boolean
+defect flags and restricts difficulty to the five rubric values. Strict decoding
+maps true flags to stable nonblank issue codes before the existing vetoes run.
+Blank issue strings cannot fit this new schema; false flags cannot override
+unsupported teaching, a wrong key, invalid status or the difficulty floor. The
+native prompt now has one count-correct output example. All 131 historical
+contracts, metadata and prompt bytes remain unchanged. This closes the observed
+format mismatch without claiming correct model judgments or a latency improvement.
+Live acceptance and full-pipeline yield for the new combined source remain untested.
 
 The deployment workflow now exposes the worker-only feedback contract, defaulting
 to `reviewer_written`. Optional independent skill-map model/resource settings also
