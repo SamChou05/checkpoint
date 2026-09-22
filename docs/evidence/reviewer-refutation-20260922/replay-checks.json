@@ -1,0 +1,14 @@
+{
+  "plan_sha256": "39ed2eaf1cc1e543908bc3984d44142fc3d8dd9a044f527da1be57db22cd9f6a",
+  "capture_sha256": "e6e47e32267709470196700d86d588f9b167a634ffaa8d952aba753bf0940ea2",
+  "network_calls": 0,
+  "exact_plan_rebuild": true,
+  "requests_replayed_exactly": 2,
+  "same_duplicate_index_stop": true,
+  "no_candidate_deduplication_or_reindexing": true,
+  "remaining_two_requests_unattempted": true,
+  "all_frozen_input_source_and_dependency_hashes_unchanged": true,
+  "actual_native_adapter_response_validations": 2,
+  "exact_local_batch_coverage_passes": 1,
+  "scope": "Deterministic original parsing/admission reproduction, not new model or semantic evidence."
+}

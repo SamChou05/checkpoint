@@ -1,0 +1,930 @@
+{
+  "audit": "Independent full raw-output audit of stopped refutation-prompt comparison",
+  "sources": {
+    "plan.json": "39ed2eaf1cc1e543908bc3984d44142fc3d8dd9a044f527da1be57db22cd9f6a",
+    "capture.json": "e6e47e32267709470196700d86d588f9b167a634ffaa8d952aba753bf0940ea2",
+    "holdout-controls-draft.json": "6afc9d107c18a6a90d43646eb114eaae40cd0f251ae26bd02cd18c7ed6e25606",
+    "independent-holdout-review.json": "e95147ff97e6ff680f706d8dcdf284ab1a8bf2b211f63ae48bcf3a7282c188e3",
+    "baseline-paragraph.txt": "3980ac96ee8e040b029b9690140c63dc4a38a329d40a894092e8356085d9ad00",
+    "candidate-paragraph.txt": "2330ba79feee29792e986e6e5bb9b956b339dc601c67c0a5a8a6116c044b3a3a"
+  },
+  "method": "Read every raw provider review and all65 main/choice strings independently of summaries/other audits; replay the archived strict native adapter offline; verify exact requests against frozen plan and one-span prompt isolation. No provider calls, production edits, repairs, relabeling, or duplicate removal.",
+  "frozen_denominators": {
+    "planned_calls": 4,
+    "attempted_calls": 2,
+    "unattempted_calls": 2,
+    "planned_logical_reviews": 24,
+    "structurally_complete_logical_reviews": 6,
+    "failed_batch_logical_reviews": 6,
+    "unattempted_logical_reviews": 12,
+    "raw_reviews_returned": 13,
+    "raw_positive_explanation_strings_audited": 65
+  },
+  "request_isolation": [
+    {
+      "batch": 0,
+      "only_request_delta": "one predeclared final independent-solutions text span in system[0].text",
+      "exact_frozen_replacement_verified": true,
+      "all_other_request_fields_equal": true,
+      "executed": true
+    },
+    {
+      "batch": 1,
+      "only_request_delta": "one predeclared final independent-solutions text span in system[0].text",
+      "exact_frozen_replacement_verified": true,
+      "all_other_request_fields_equal": true,
+      "executed": false
+    }
+  ],
+  "calls": [
+    {
+      "sequence": 0,
+      "arm": "baseline",
+      "request_matches_frozen_plan": true,
+      "strict_native_schema_adapter_pass": true,
+      "raw_rows": 6,
+      "raw_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "exact_batch_identity_pass": true,
+      "explanation_strings_audited": 30,
+      "end_turn": true,
+      "elapsed_seconds": 16.192,
+      "retry_attempts": 0,
+      "structural_failure": null
+    },
+    {
+      "sequence": 1,
+      "arm": "candidate",
+      "request_matches_frozen_plan": true,
+      "strict_native_schema_adapter_pass": true,
+      "raw_rows": 7,
+      "raw_indices": [
+        0,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "exact_batch_identity_pass": false,
+      "explanation_strings_audited": 35,
+      "end_turn": true,
+      "elapsed_seconds": 19.989,
+      "retry_attempts": 0,
+      "structural_failure": "duplicate index0 and extra row"
+    }
+  ],
+  "raw_rows": [
+    {
+      "arm": "baseline",
+      "call_sequence": 0,
+      "raw_array_position": 0,
+      "index": 0,
+      "duplicate_index_occurrence": false,
+      "case_id": "bus_multiple_supported",
+      "valid": true,
+      "gold_eligible": false,
+      "observable_matching_disposition": false,
+      "answer": "25 rides",
+      "observable_exact_gold_key": null,
+      "observational_full_content_status": "fail",
+      "runtime_credit_allowed": true,
+      "note": "Baseline row belongs to the structurally complete familiar batch.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "Dividing $60 by $2.50 gives the break-even point of exactly 24 rides; one more ride (25) is the minimum where the pass is strictly cheaper.",
+          "status": "fail",
+          "reason": "Correct threshold arithmetic does not establish uniqueness for the unchanged stem, which never asks for a minimum."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "26 rides",
+          "text": "At 26 rides the pass is cheaper, but 25 rides is the minimum threshold where the pass first becomes strictly cheaper.",
+          "status": "fail",
+          "reason": "Admits26 is cheaper, then excludes it by silently adding the missing minimum requirement."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "25 rides",
+          "text": "Break-even is exactly 24 rides ($60 each); at 25 rides the per-ride total is $62.50, making the pass strictly cheaper for the first time.",
+          "status": "pass",
+          "reason": "25 rides costs62.50 and is the first whole-number count strictly above the break-even point; true but not uniquely responsive without a minimum requirement."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "23 rides",
+          "text": "23 × $2.50 = $57.50, which is less than $60, so paying per ride is cheaper at 23 rides.",
+          "status": "pass",
+          "reason": "23 rides costs57.50, less than the60 pass."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "24 rides",
+          "text": "24 × $2.50 = $60.00, exactly equal to the pass price; the pass is not cheaper, only tied.",
+          "status": "pass",
+          "reason": "24 rides costs60, equal to the pass."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 3,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": null,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "baseline",
+      "call_sequence": 0,
+      "raw_array_position": 1,
+      "index": 1,
+      "duplicate_index_occurrence": false,
+      "case_id": "semicolon_multiple_defensible",
+      "valid": true,
+      "gold_eligible": false,
+      "observable_matching_disposition": false,
+      "answer": "The conference ended at noon; however, many attendees stayed for the workshop.",
+      "observable_exact_gold_key": null,
+      "observational_full_content_status": "fail",
+      "runtime_credit_allowed": true,
+      "note": "Baseline row belongs to the structurally complete familiar batch.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "When a conjunctive adverb like 'however' links two independent clauses, a semicolon must precede it and a comma must follow it.",
+          "status": "fail",
+          "reason": "The blanket mandatory-before-however rule incorrectly excludes attachment to the preceding independent clause."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "The conference ended at noon, many attendees stayed for the workshop.",
+          "text": "This is a comma splice—two independent clauses joined only by a comma, with no semicolon used at all.",
+          "status": "pass",
+          "reason": "No semicolon appears in the comma-splice choice."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+          "text": "A semicolon before the conjunctive adverb 'however' and a comma after it is the standard correct punctuation pattern.",
+          "status": "pass",
+          "reason": "The conventional semicolon-before-however pattern is valid, but not uniquely licensed by this stem."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+          "text": "The semicolon is misplaced after 'however'; it must precede the conjunctive adverb, not follow it.",
+          "status": "fail",
+          "reason": "A comma-delimited however can attach to the first clause before the semicolon; the claimed obligatory preceding-semicolon position is false."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "The conference ended at noon; and many attendees stayed for the workshop.",
+          "text": "Using a semicolon before a coordinating conjunction like 'and' is nonstandard; a comma before 'and' is the correct form.",
+          "status": "uncertain",
+          "reason": "Ordinary comma-before-and advice is reasonable here, but the blanket nonstandard claim is style-sensitive; this is not needed for the established multiple-defensible-answer failure."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 2,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": null,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "baseline",
+      "call_sequence": 0,
+      "raw_array_position": 2,
+      "index": 2,
+      "duplicate_index_occurrence": false,
+      "case_id": "fuel_unique_control",
+      "valid": true,
+      "gold_eligible": true,
+      "observable_matching_disposition": true,
+      "answer": "30 mpg",
+      "observable_exact_gold_key": true,
+      "observational_full_content_status": "pass",
+      "runtime_credit_allowed": true,
+      "note": "Baseline row belongs to the structurally complete familiar batch.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "Fuel efficiency is miles divided by gallons: 240 ÷ 8 = 30 mpg.",
+          "status": "pass",
+          "reason": "Correct miles/gallons formula and30 result."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "32 mpg",
+          "text": "32 is not the result of 240 ÷ 8; this is an incorrect value with no clear arithmetic basis.",
+          "status": "pass",
+          "reason": "32 is not240/8. No clear arithmetic basis reports no identified error path rather than asserting mathematical impossibility."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "28 mpg",
+          "text": "28 is not 240 ÷ 8; this is a plausible but incorrect distractor.",
+          "status": "pass",
+          "reason": "28 is not240/8."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "1920 mpg",
+          "text": "1920 = 240 × 8, the result of multiplying instead of dividing miles by gallons.",
+          "status": "pass",
+          "reason": "1920 is240*8, the incorrect product rather than quotient."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "30 mpg",
+          "text": "240 ÷ 8 = 30 mpg, the correct application of the miles-per-gallon formula.",
+          "status": "pass",
+          "reason": "Correct quotient and units."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 1,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": 2,
+        "note": "Direct formula application fits rubric2 more closely than returned1."
+      }
+    },
+    {
+      "arm": "baseline",
+      "call_sequence": 0,
+      "raw_array_position": 3,
+      "index": 3,
+      "duplicate_index_occurrence": false,
+      "case_id": "paint_feedback",
+      "valid": true,
+      "gold_eligible": true,
+      "observable_matching_disposition": true,
+      "answer": "10 liters",
+      "observable_exact_gold_key": true,
+      "observational_full_content_status": "fail",
+      "runtime_credit_allowed": true,
+      "note": "Baseline row belongs to the structurally complete familiar batch.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "A 3:2 blue-to-white ratio means white = (2/3) × blue; for 15 liters of blue, white = 10 liters.",
+          "status": "pass",
+          "reason": "Correct2/3 scaling from15 to10."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "9 liters",
+          "text": "9 liters would imply a 3:3 (equal-parts) ratio rather than the stated 3:2 ratio.",
+          "status": "fail",
+          "reason": "15:9 is5:3, not3:3 or equal parts."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "10 liters",
+          "text": "White = (2/3) × 15 = 10 liters, correctly applying the 3:2 blue-to-white ratio.",
+          "status": "pass",
+          "reason": "Correct factor and result."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "6 liters",
+          "text": "6 liters does not satisfy the 3:2 ratio for 15 liters of blue; the correct answer is 10 liters.",
+          "status": "pass",
+          "reason": "6 does not satisfy the stated ratio with15 blue."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "22.5 liters",
+          "text": "22.5 = (3/2) × 15, which inverts the ratio, treating white as the larger component.",
+          "status": "pass",
+          "reason": "22.5 is15*3/2, inverting the required scaling."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 2,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": 2,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "baseline",
+      "call_sequence": 0,
+      "raw_array_position": 4,
+      "index": 4,
+      "duplicate_index_occurrence": false,
+      "case_id": "population_feedback",
+      "valid": true,
+      "gold_eligible": true,
+      "observable_matching_disposition": true,
+      "answer": "15%",
+      "observable_exact_gold_key": true,
+      "observational_full_content_status": "uncertain",
+      "runtime_credit_allowed": true,
+      "note": "Baseline row belongs to the structurally complete familiar batch.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "Percent increase = (change / original) × 100 = (12,000 / 80,000) × 100 = 15%.",
+          "status": "pass",
+          "reason": "Correct original-base computation and15% result."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "13%",
+          "text": "13% does not equal 12,000/80,000 × 100; this is an incorrect distractor.",
+          "status": "pass",
+          "reason": "13% is not12000/80000*100; the claim is appropriately restricted to the required calculation."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "17.4%",
+          "text": "17.4% uses an incorrect base (approximately 69,000) rather than the original population of 80,000.",
+          "status": "uncertain",
+          "reason": "An approximately69000 denominator can produce17.4%, but uses asserts a specific distractor provenance not established by the item."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "15%",
+          "text": "(92,000 − 80,000) / 80,000 × 100 = 12,000/80,000 × 100 = 15%, the correct percent increase.",
+          "status": "pass",
+          "reason": "Correct difference, original base and15% result."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "12%",
+          "text": "12% confuses the raw increase (12,000) with a percentage without dividing by the base.",
+          "status": "uncertain",
+          "reason": "The raw difference is12000, not12. The claimed raw-difference-to-percent mistake omits a further rescaling and is not a demonstrated actual derivation."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 2,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": 2,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "baseline",
+      "call_sequence": 0,
+      "raw_array_position": 5,
+      "index": 5,
+      "duplicate_index_occurrence": false,
+      "case_id": "weighted_grade_control",
+      "valid": true,
+      "gold_eligible": true,
+      "observable_matching_disposition": true,
+      "answer": "78.4",
+      "observable_exact_gold_key": true,
+      "observational_full_content_status": "pass",
+      "runtime_credit_allowed": true,
+      "note": "Baseline row belongs to the structurally complete familiar batch.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "Weighted average = (0.30 × 84) + (0.70 × 76) = 25.2 + 53.2 = 78.4.",
+          "status": "pass",
+          "reason": "Correct weighted sum78.4."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "80.0",
+          "text": "80.0 is the simple (unweighted) average of 84 and 76, ignoring the 30/70 weight split.",
+          "status": "pass",
+          "reason": "80 is the unweighted average, not the stated30/70 calculation."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "82.4",
+          "text": "82.4 has no straightforward arithmetic basis given the stated weights and scores.",
+          "status": "pass",
+          "reason": "Qualified by the stated weights and scores,82.4 is not the weighted result. The wording is vague but does not assert that no other weights can produce it."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "78.4",
+          "text": "0.30 × 84 + 0.70 × 76 = 25.2 + 53.2 = 78.4, the correct weighted average.",
+          "status": "pass",
+          "reason": "Correct weighted sum78.4."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "79.2",
+          "text": "79.2 does not result from the correct weighted-average formula with these values.",
+          "status": "pass",
+          "reason": "79.2 does not follow the required formula with the specified weights and scores."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 2,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": 2,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "candidate",
+      "call_sequence": 1,
+      "raw_array_position": 0,
+      "index": 0,
+      "duplicate_index_occurrence": false,
+      "case_id": "bus_multiple_supported",
+      "valid": true,
+      "gold_eligible": false,
+      "observable_matching_disposition": false,
+      "answer": "25 rides",
+      "observable_exact_gold_key": null,
+      "observational_full_content_status": "fail",
+      "runtime_credit_allowed": false,
+      "note": "Candidate envelope failed exact index coverage. These are observations of unadmitted raw rows, not repaired or credited candidate results.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "The break-even point is 60 ÷ 2.50 = 24 rides (equal cost); the pass is strictly cheaper only when rides exceed 24, making 25 the minimum qualifying count.",
+          "status": "fail",
+          "reason": "Correct threshold arithmetic does not establish uniqueness for the unchanged stem, which never asks for a minimum."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "26 rides",
+          "text": "The pass becomes cheaper at 25 rides; 26 rides also satisfies the condition but is not the minimum threshold the question asks for.",
+          "status": "fail",
+          "reason": "Admits26 is cheaper, then excludes it by silently adding the missing minimum requirement."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "25 rides",
+          "text": "Break-even is 24 rides ($60 each way); at 25 rides the per-ride total is $62.50, making the pass strictly cheaper for the first time.",
+          "status": "pass",
+          "reason": "25 rides costs62.50 and is the first whole-number count strictly above the break-even point; true but not uniquely responsive without a minimum requirement."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "23 rides",
+          "text": "23 × $2.50 = $57.50, which is less than $60, so paying per ride is still cheaper than the pass at this count.",
+          "status": "pass",
+          "reason": "23 rides costs57.50, less than the60 pass."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "24 rides",
+          "text": "24 × $2.50 = $60.00, exactly equal to the pass cost; the pass is not cheaper, only tied.",
+          "status": "pass",
+          "reason": "24 rides costs60, equal to the pass."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 3,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": null,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "candidate",
+      "call_sequence": 1,
+      "raw_array_position": 1,
+      "index": 0,
+      "duplicate_index_occurrence": true,
+      "case_id": "bus_multiple_supported",
+      "valid": true,
+      "gold_eligible": false,
+      "observable_matching_disposition": false,
+      "answer": "25 rides",
+      "observable_exact_gold_key": null,
+      "observational_full_content_status": "fail",
+      "runtime_credit_allowed": false,
+      "note": "Candidate envelope failed exact index coverage. These are observations of unadmitted raw rows, not repaired or credited candidate results.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "The break-even point is 60 ÷ 2.50 = 24 rides (equal cost); the pass is strictly cheaper only when rides exceed 24, making 25 the minimum qualifying count.",
+          "status": "fail",
+          "reason": "Correct threshold arithmetic does not establish uniqueness for the unchanged stem, which never asks for a minimum."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "26 rides",
+          "text": "The pass becomes cheaper at 25 rides; 26 rides also satisfies the condition but is not the minimum threshold the question asks for.",
+          "status": "fail",
+          "reason": "Admits26 is cheaper, then excludes it by silently adding the missing minimum requirement."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "25 rides",
+          "text": "Break-even is 24 rides ($60 each way); at 25 rides the per-ride total is $62.50, making the pass strictly cheaper for the first time.",
+          "status": "pass",
+          "reason": "25 rides costs62.50 and is the first whole-number count strictly above the break-even point; true but not uniquely responsive without a minimum requirement."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "23 rides",
+          "text": "23 × $2.50 = $57.50, which is less than $60, so paying per ride is still cheaper than the pass at this count.",
+          "status": "pass",
+          "reason": "23 rides costs57.50, less than the60 pass."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "24 rides",
+          "text": "24 × $2.50 = $60.00, exactly equal to the pass cost; the pass is not cheaper, only tied.",
+          "status": "pass",
+          "reason": "24 rides costs60, equal to the pass."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 3,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": null,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "candidate",
+      "call_sequence": 1,
+      "raw_array_position": 2,
+      "index": 1,
+      "duplicate_index_occurrence": false,
+      "case_id": "semicolon_multiple_defensible",
+      "valid": true,
+      "gold_eligible": false,
+      "observable_matching_disposition": false,
+      "answer": "The conference ended at noon; however, many attendees stayed for the workshop.",
+      "observable_exact_gold_key": null,
+      "observational_full_content_status": "fail",
+      "runtime_credit_allowed": false,
+      "note": "Candidate envelope failed exact index coverage. These are observations of unadmitted raw rows, not repaired or credited candidate results.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "When a conjunctive adverb like 'however' links two independent clauses, standard usage requires a semicolon immediately before it and a comma immediately after it.",
+          "status": "fail",
+          "reason": "The blanket mandatory-before-however rule incorrectly excludes attachment to the preceding independent clause."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "The conference ended at noon, many attendees stayed for the workshop.",
+          "text": "This is a comma splice: two independent clauses joined only by a comma, with no semicolon used at all.",
+          "status": "pass",
+          "reason": "No semicolon appears in the comma-splice choice."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+          "text": "A semicolon before the conjunctive adverb 'however' and a comma after it is the standard correct pattern for joining two independent clauses.",
+          "status": "pass",
+          "reason": "The conventional semicolon-before-however pattern is valid, but not uniquely licensed by this stem."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+          "text": "The semicolon is misplaced after 'however' instead of before it, violating the required pattern for conjunctive adverbs.",
+          "status": "fail",
+          "reason": "A comma-delimited however can attach to the first clause before the semicolon; the claimed obligatory preceding-semicolon position is false."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "The conference ended at noon; and many attendees stayed for the workshop.",
+          "text": "Placing a semicolon before the coordinating conjunction 'and' is nonstandard; a comma before 'and' is the correct form.",
+          "status": "uncertain",
+          "reason": "Ordinary comma-before-and advice is reasonable here, but the blanket nonstandard claim is style-sensitive; this is not needed for the established multiple-defensible-answer failure."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 2,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": null,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "candidate",
+      "call_sequence": 1,
+      "raw_array_position": 3,
+      "index": 2,
+      "duplicate_index_occurrence": false,
+      "case_id": "fuel_unique_control",
+      "valid": true,
+      "gold_eligible": true,
+      "observable_matching_disposition": true,
+      "answer": "30 mpg",
+      "observable_exact_gold_key": true,
+      "observational_full_content_status": "uncertain",
+      "runtime_credit_allowed": false,
+      "note": "Candidate envelope failed exact index coverage. These are observations of unadmitted raw rows, not repaired or credited candidate results.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "Fuel efficiency is miles divided by gallons: 240 ÷ 8 = 30 mpg.",
+          "status": "pass",
+          "reason": "Correct miles/gallons formula and30 result."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "32 mpg",
+          "text": "240 ÷ 8 = 30, not 32; this value does not result from the given numbers by any standard operation.",
+          "status": "uncertain",
+          "reason": "The correct quotient comparison is sound, but no standard operation is an unnecessary unbounded claim about possible calculation paths. It is not established by proving the requested division yields30."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "28 mpg",
+          "text": "240 ÷ 8 = 30, not 28; this is 2 mpg short of the correct quotient.",
+          "status": "pass",
+          "reason": "28 is exactly2 less than30."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "1920 mpg",
+          "text": "1920 = 240 × 8, the product rather than the quotient; dividing miles by gallons is required for mpg.",
+          "status": "pass",
+          "reason": "1920 is the product240*8, not the requested quotient."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "30 mpg",
+          "text": "240 miles ÷ 8 gallons = 30 mpg, the direct application of the miles-per-gallon definition.",
+          "status": "pass",
+          "reason": "Correct quotient and units."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 1,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": 2,
+        "note": "Direct formula application fits rubric2 more closely than returned1."
+      }
+    },
+    {
+      "arm": "candidate",
+      "call_sequence": 1,
+      "raw_array_position": 4,
+      "index": 3,
+      "duplicate_index_occurrence": false,
+      "case_id": "paint_feedback",
+      "valid": true,
+      "gold_eligible": true,
+      "observable_matching_disposition": true,
+      "answer": "10 liters",
+      "observable_exact_gold_key": true,
+      "observational_full_content_status": "fail",
+      "runtime_credit_allowed": false,
+      "note": "Candidate envelope failed exact index coverage. These are observations of unadmitted raw rows, not repaired or credited candidate results.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "With a 3:2 blue-to-white ratio, white paint = (2/3) × 15 liters = 10 liters.",
+          "status": "pass",
+          "reason": "Correct2/3 scaling from15 to10."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "9 liters",
+          "text": "9 liters implies a 3:3 (equal-parts) ratio, not the stated 3:2 blue-to-white ratio.",
+          "status": "fail",
+          "reason": "15:9 is5:3, not3:3 or equal parts."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "10 liters",
+          "text": "The ratio blue:white = 3:2 means white = (2/3) × 15 = 10 liters, which is correct.",
+          "status": "pass",
+          "reason": "Correct factor and result."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "6 liters",
+          "text": "6 liters corresponds to a 15:6 = 5:2 ratio, not the required 3:2 ratio.",
+          "status": "pass",
+          "reason": "The distractor ratio15:6 is5:2 and differs from3:2."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "22.5 liters",
+          "text": "22.5 = (3/2) × 15, which inverts the ratio, treating white as the larger component.",
+          "status": "pass",
+          "reason": "22.5 is15*3/2, inverting the required scaling."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 2,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": 2,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "candidate",
+      "call_sequence": 1,
+      "raw_array_position": 5,
+      "index": 4,
+      "duplicate_index_occurrence": false,
+      "case_id": "population_feedback",
+      "valid": true,
+      "gold_eligible": true,
+      "observable_matching_disposition": true,
+      "answer": "15%",
+      "observable_exact_gold_key": true,
+      "observational_full_content_status": "pass",
+      "runtime_credit_allowed": false,
+      "note": "Candidate envelope failed exact index coverage. These are observations of unadmitted raw rows, not repaired or credited candidate results.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "Percent increase = (change ÷ original) × 100 = (12,000 ÷ 80,000) × 100 = 15%.",
+          "status": "pass",
+          "reason": "Correct difference, original base and15% result."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "13%",
+          "text": "13% is not the result of (12,000 ÷ 80,000) × 100; the correct calculation yields 15%.",
+          "status": "pass",
+          "reason": "13% differs from the required original-base calculation."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "17.4%",
+          "text": "17.4% would require dividing the change by roughly 69,000 rather than the correct base of 80,000.",
+          "status": "pass",
+          "reason": "With the fixed change12000, obtaining17.4% requires a base of about68965.5, approximately69000, rather than80000. This is a conditional numerical comparison."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "15%",
+          "text": "(92,000 − 80,000) ÷ 80,000 × 100 = 12,000 ÷ 80,000 × 100 = 15%, the correct percent increase.",
+          "status": "pass",
+          "reason": "Correct difference, original base and15% result."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "12%",
+          "text": "12% equals the raw change in thousands (12,000) misread as a percentage, not the ratio to the original population.",
+          "status": "pass",
+          "reason": "Expressing the change in thousands gives12; misreading that number as a percent is wrong because the original-base ratio is15%. The explanation names the otherwise missing rescaling; it need not claim this was a particular learner’s actual thought process."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 2,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": 2,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    },
+    {
+      "arm": "candidate",
+      "call_sequence": 1,
+      "raw_array_position": 6,
+      "index": 5,
+      "duplicate_index_occurrence": false,
+      "case_id": "weighted_grade_control",
+      "valid": true,
+      "gold_eligible": true,
+      "observable_matching_disposition": true,
+      "answer": "78.4",
+      "observable_exact_gold_key": true,
+      "observational_full_content_status": "fail",
+      "runtime_credit_allowed": false,
+      "note": "Candidate envelope failed exact index coverage. These are observations of unadmitted raw rows, not repaired or credited candidate results.",
+      "all_explanations": [
+        {
+          "field": "explanation",
+          "text": "Weighted average = 0.30 × 84 + 0.70 × 76 = 25.2 + 53.2 = 78.4; the heavier final-exam weight pulls the grade below the simple average.",
+          "status": "pass",
+          "reason": "Correct weighted sum and direction below the simple average."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "80.0",
+          "text": "80.0 is the simple (unweighted) average of 84 and 76, ignoring the 30/70 weight split.",
+          "status": "pass",
+          "reason": "80 is the unweighted average."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "82.4",
+          "text": "82.4 reverses the weights, applying 70% to the quiz score and 30% to the final: 0.70×84 + 0.30×76 = 58.8 + 22.8 = 81.6, which does not even equal 82.4; this value has no clear calculation path from the given data.",
+          "status": "fail",
+          "reason": "Starts by claiming82.4 reverses the weights, then correctly computes that reversed weights yield81.6. The explicit contradiction remains in final teaching; its subsequent acknowledgment does not repair the false opening assertion."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "78.4",
+          "text": "0.30 × 84 + 0.70 × 76 = 25.2 + 53.2 = 78.4, the correct weighted average.",
+          "status": "pass",
+          "reason": "Correct weighted sum78.4."
+        },
+        {
+          "field": "choiceFeedback",
+          "choice": "79.2",
+          "text": "79.2 does not result from any standard weighting of the two given scores with the stated weights.",
+          "status": "pass",
+          "reason": "The stated30/70 weights do not produce79.2; the qualifier with the stated weights prevents an unsupported claim about all possible weights."
+        }
+      ],
+      "bounds_and_exact_feedback_text_coverage": true,
+      "shuffle_safe_prose": true,
+      "difficulty": {
+        "returned": 2,
+        "separate_from_semantic_retention": true,
+        "independent_assessment": 2,
+        "note": "No difficulty credit substitutes for correct disposition or teaching."
+      }
+    }
+  ],
+  "summary": {
+    "baseline": {
+      "planned_calls": 2,
+      "attempted_calls": 1,
+      "unattempted_calls": 1,
+      "planned_logical_item_reviews": 12,
+      "familiar_logical_items": 6,
+      "prospective_logical_items_unattempted": 6,
+      "raw_rows_returned": 6,
+      "raw_explanation_strings_audited": 30,
+      "structurally_complete_familiar_batch": true,
+      "credited_familiar_dispositions": 6,
+      "credited_matching_dispositions": 4,
+      "credited_familiar_full_content_pass": 2,
+      "observational_raw_full_content_status_counts": {
+        "pass": 2,
+        "fail": 3,
+        "uncertain": 1
+      },
+      "known_bad_rejected_observed": 0,
+      "candidate_batch_deduplicated_or_repaired": false,
+      "full_frozen_qualification": false
+    },
+    "candidate": {
+      "planned_calls": 2,
+      "attempted_calls": 1,
+      "unattempted_calls": 1,
+      "planned_logical_item_reviews": 12,
+      "familiar_logical_items": 6,
+      "prospective_logical_items_unattempted": 6,
+      "raw_rows_returned": 7,
+      "raw_explanation_strings_audited": 35,
+      "structurally_complete_familiar_batch": false,
+      "credited_familiar_dispositions": 0,
+      "credited_matching_dispositions": 0,
+      "credited_familiar_full_content_pass": 0,
+      "observational_raw_full_content_status_counts": {
+        "pass": 1,
+        "fail": 5,
+        "uncertain": 1
+      },
+      "known_bad_rejected_observed": 0,
+      "candidate_batch_deduplicated_or_repaired": false,
+      "full_frozen_qualification": false
+    }
+  },
+  "observable_changes_not_qualification": [
+    "The candidate remains wrong on both known defective question dispositions and repeats the paint equal-parts error.",
+    "The candidate gives correct15:6=5:2 feedback and a more explicit thousands-based interpretation for12%, but no valid candidate batch can be credited after duplicate-index failure.",
+    "The candidate regresses weighted feedback by explicitly saying82.4 reverses weights before computing81.6, a contradiction.",
+    "The candidate adds an unsupported broad no-standard-operation claim for32mpg; this is recorded as uncertainty, not a demonstrated valid correction."
+  ],
+  "prospective_batch": {
+    "status": "unattempted",
+    "controls": 6,
+    "planned_arms": 2,
+    "synthetic_solver_context": "Evaluator-authored, fallible fixtures, not actual independent model judgments. No responses exist, so none of these controls has an observed outcome."
+  },
+  "primary_grammar_source": {
+    "url": "https://cse.buffalo.edu/~rapaport/Papers/Papers.by.Others/aune01-punctuation.pdf",
+    "location": "Printed page5, R2 and first-clause however example",
+    "supports": "The comma-however-semicolon offered sentence is defensible."
+  },
+  "conclusion": "The candidate cannot qualify or support a promotion: its first batch is native-schema-valid but violates exact review identity, still accepts both known bad items, repeats false ratio feedback, and introduces contradictory weighted-average teaching. The frozen stop rule correctly leaves both prospective calls unattempted. Baseline is structurally complete but also fails semantic/teaching criteria. No aggregate result has been repaired by deduplication or by dropping unattempted controls."
+}

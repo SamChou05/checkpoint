@@ -1,0 +1,60 @@
+{
+  "approved": true,
+  "reviewed_packet_sha256": "6afc9d107c18a6a90d43646eb114eaae40cd0f251ae26bd02cd18c7ed6e25606",
+  "reviewer": "choice_semantics independent reviewer of answer_highlighting designed packet",
+  "provider_calls": 0,
+  "scope": "Prospective literal gold, task-relevant choice differences, fixture provenance and input boundaries; no output reviewed and no model performance claim.",
+  "mechanical_checks": {
+    "items": 6,
+    "valid": 4,
+    "defective": 2,
+    "all36_unordered_pairs_exactly_covered": true,
+    "all_bounds_pass": true,
+    "all_fixture_choice_bytes_exact": true,
+    "each_synthetic_fixture_claims_one_supported_choice": true
+  },
+  "cases": [
+    {
+      "case_id": "minimum_bus_derivative",
+      "approved": true,
+      "reason": "The explicit minimum whole number changes the actual task.25 is uniquely minimal above break-even24;26 cannot answer that minimum request. Keep derivative label, not unseen holdout."
+    },
+    {
+      "case_id": "parallel_build_completion",
+      "approved": true,
+      "reason": "Explicit simultaneous starts and packaging dependency establish max(4,7)+3=10.7 omits packaging;14 sequences the builds;11 is4+7, not4+7+3. The deliberately false11-second fixture reason is documented and does not invalidate the sound question."
+    },
+    {
+      "case_id": "filter_then_append_sum",
+      "approved": true,
+      "reason": "Filtering removes both2 entries while preserving5-before4. Remaining sum9 is appended. Ordering and list length distinguish all options; this is a meaningful representation-sensitive valid control."
+    },
+    {
+      "case_id": "coordinate_movement",
+      "approved": true,
+      "reason": "The explicit axes and moves yield(1+3,2-2)=(4,0). All other pairs denote different endpoints, with clear direction/no-motion errors."
+    },
+    {
+      "case_id": "self_selected_course_causality",
+      "approved": true,
+      "reason": "The reported self-selected associations do not establish any offered cause. The counterexample worlds reproduce the same observed rates while changing or eliminating the suggested mechanisms. Prior preparation, tutoring, format and exam difficulty remain different hypotheses; shared unsupported status is not equivalence."
+    },
+    {
+      "case_id": "signed_square_solutions",
+      "approved": true,
+      "reason": "Both7 and-7 satisfy the equation over real numbers, and are distinct x values. A principal-root convention cannot be inserted into an equation-solving task.0 and14 fail by direct substitution."
+    }
+  ],
+  "boundary_checks": {
+    "gold_and_counterexamples_must_stay_out_of_provider_payload": true,
+    "synthetic_records_are_not_independent_model_judgments": true,
+    "four_valid_retention_controls_prevent_blanket_rejection_success": true,
+    "five_fresh_one_labeled_derivative": true,
+    "no_required_pre_freeze_corrections": true
+  },
+  "limits": [
+    "Five new cases were designed for this task rather than sampled randomly.",
+    "No general duplicate-distractor, factual-domain, full-worker yield or model determinism claim.",
+    "Correct negative disposition cannot expose the rationale in the current native v1 shape."
+  ]
+}

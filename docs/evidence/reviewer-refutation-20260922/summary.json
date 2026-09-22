@@ -1,0 +1,105 @@
+{
+  "plan_sha256": "39ed2eaf1cc1e543908bc3984d44142fc3d8dd9a044f527da1be57db22cd9f6a",
+  "capture_sha256": "e6e47e32267709470196700d86d588f9b167a634ffaa8d952aba753bf0940ea2",
+  "status": "stopped_after_failure",
+  "stop_reason": "structural_failure",
+  "planned_calls": 4,
+  "actual_calls": 2,
+  "unattempted_calls": 2,
+  "planned_logical_item_reviews": 24,
+  "raw_reviews_returned": 13,
+  "raw_explanation_strings": 65,
+  "arms": {
+    "baseline": {
+      "planned_calls": 2,
+      "attempted_calls": 1,
+      "planned_logical_items": 12,
+      "strictly_assessed_items": 6,
+      "matching_assessed_dispositions": 4,
+      "planned_valid_items": 8,
+      "planned_bad_items": 4,
+      "assessed_valid_exact_keys": 4,
+      "assessed_bad_correct_rejections": 0,
+      "unattempted_prospective_items": 6,
+      "elapsed_seconds": 16.192,
+      "reported_usage": {
+        "inputTokens": 3573,
+        "outputTokens": 1422,
+        "totalTokens": 4995,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "strict_candidate_semantic_credit": "independent manual audit remains separate"
+    },
+    "candidate": {
+      "planned_calls": 2,
+      "attempted_calls": 1,
+      "planned_logical_items": 12,
+      "strictly_assessed_items": 0,
+      "matching_assessed_dispositions": 0,
+      "planned_valid_items": 8,
+      "planned_bad_items": 4,
+      "assessed_valid_exact_keys": 0,
+      "assessed_bad_correct_rejections": 0,
+      "unattempted_prospective_items": 6,
+      "elapsed_seconds": 19.989,
+      "reported_usage": {
+        "inputTokens": 3612,
+        "outputTokens": 1823,
+        "totalTokens": 5435,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "strict_candidate_semantic_credit": "none: failed entire envelope"
+    }
+  },
+  "calls": [
+    {
+      "sequence": 0,
+      "batch": 0,
+      "arm": "baseline",
+      "raw_rows": 6,
+      "raw_indexes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_positive_reviews": 6,
+      "raw_main_and_choice_strings": 30,
+      "duplicate_indexes": [],
+      "strict_batch_coverage_pass": true,
+      "validation_error_type": null,
+      "stop_reason": "end_turn"
+    },
+    {
+      "sequence": 1,
+      "batch": 0,
+      "arm": "candidate",
+      "raw_rows": 7,
+      "raw_indexes": [
+        0,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_positive_reviews": 7,
+      "raw_main_and_choice_strings": 35,
+      "duplicate_indexes": [
+        0
+      ],
+      "strict_batch_coverage_pass": false,
+      "validation_error_type": "ValueError",
+      "stop_reason": "end_turn"
+    }
+  ],
+  "formal_qualification": "failed; no prompt promotion",
+  "no_salvage": "The seven-row candidate response remains a failed six-item envelope. No duplicate dropping, reindexing, retry or repaired batch score is supplied.",
+  "limits": "Fresh cases were never dispatched. Candidate raw content may be audited diagnostically but receives no valid-stage or complete-trial semantic credit. No inference that the prompt caused the duplicate.",
+  "independent_output_audit_sha256": "62d72050c446673f5a5d64135605e90f5d7c2179b9a61ef0ec476058f3da4387"
+}

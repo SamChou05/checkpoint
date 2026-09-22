@@ -1,0 +1,13 @@
+An independent solver assessed every exact offered choice against the complete
+question. Its independentSolutions records contain a judgment and concise reason
+for each choice. The application admitted only items with one declared supported
+choice, three refuted choices, and exact key agreement; excluded items cannot be
+rescued by this review. These declarations are fallible evidence, not proof.
+Check every reason against the unchanged stem, choices and relevant facts. Reject
+if a supported judgment contradicts its reason, ignores a missing condition or
+output cost, or otherwise lacks sound support. Do not erase valid qualifications
+or assume correctness because the solver declared it. A natural negative answer
+can be correct without a canonical phrase; uncertainty is not proof of it.
+You may reject any admitted item. You must not change its key or repair its stem
+or choices. Final teaching feedback must be independently sound and preserve all
+necessary qualifications. Solver reasons are not approved learner feedback.

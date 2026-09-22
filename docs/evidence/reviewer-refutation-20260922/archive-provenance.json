@@ -1,0 +1,25 @@
+{
+  "source_revision": "6ec14ed8e8db4e01228ea04257046d79e5878663",
+  "purpose": "Keep experiment-native-v1 parsing and pure checks fixed without freezing evolving production router/source. No deployment copy.",
+  "files": {
+    "docs/evidence/reviewer-refutation-20260922/archive/native_output_contracts_snapshot.py": {
+      "source_path": "backend/bedrock-question-service/native_output_contracts.py",
+      "source_sha256": "d273e6d319374d587b9f856cd5905a9d4f7e0e1dd2c9e8b76f5f31206c13b8fc",
+      "archive_sha256": "d273e6d319374d587b9f856cd5905a9d4f7e0e1dd2c9e8b76f5f31206c13b8fc",
+      "copy": "byte-for-byte"
+    },
+    "docs/evidence/reviewer-refutation-20260922/archive/service_errors.py": {
+      "source_path": "backend/bedrock-question-service/service_errors.py",
+      "source_sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "archive_sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "copy": "byte-for-byte"
+    },
+    "docs/evidence/reviewer-refutation-20260922/archive/answer_reference_snapshot.py": {
+      "source_path": "backend/bedrock-question-service/question_verification.py",
+      "source_file_sha256": "b71ca421ba6fb9db687ae18f93bc36577306312720e679a66723fb8f0a5fc1de",
+      "extracted_function_sha256": "9e2150cbc5f7ecb9725c75e9249a584a3b6dfbb6ebb4fe0ac6d39a5b3e2acdd3",
+      "archive_sha256": "580259e7a7849eef62b5b8167ffd7a471f5c3b82c6c6cf7cc2d263804dba6456",
+      "copy": "Exact function text plus standalone imports; no logic edits."
+    }
+  }
+}

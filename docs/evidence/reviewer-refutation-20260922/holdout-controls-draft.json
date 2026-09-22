@@ -1,0 +1,760 @@
+{
+  "status": "draft_pending_independent_review_and_parent_freeze",
+  "packet_name": "Six prospective controls for reviewer refutation-prompt comparison",
+  "designed_by": "answer_highlighting independent subagent",
+  "candidate_refutation_paragraph_seen_by_designer": false,
+  "counts": {
+    "total": 6,
+    "familiar_derivative_positive": 1,
+    "fresh": 5,
+    "fresh_valid": 3,
+    "fresh_defective": 2,
+    "total_valid": 4,
+    "total_defective": 2
+  },
+  "scope": "A small prospective control packet, distinct from the familiar six-case historical batch. Five cases are newly designed and one required bus case is explicitly a familiar positive derivative. This is not a random sample or a full-pipeline qualification.",
+  "model_input_boundary": "Only each item and its explicitly synthetic_independent_solution are eligible to enter model inputs. Gold, provenance notes, counterexamples, supported-choice sets, pair labels, novelty labels and evaluator checks are evaluator-only. Both prompt arms must receive identical question and fixture bytes.",
+  "synthetic_context_policy": "These reviewer-shaped solver fixtures were authored by the evaluator. They are not actual model outputs, independent confirmation, or a production solver measurement. Each fixture deliberately has one claimed supported answer and three claimed refutations, matching the tested review interface. Gold depends only on the unchanged question and actual facts, never on those fallible declarations.",
+  "prospective_content_criteria": {
+    "bad_cases": "Both defective cases must be rejected with exact identity. Negative disposition does not reveal a defect-specific rationale.",
+    "valid_cases": "All four valid cases retained with exact keys and sound main/all-choice feedback. Do not reject the minimum-bus derivative merely because the26-ride option also satisfies the weaker inequality.",
+    "feedback": "Every final explanation must be independently sound, bounded and shuffle-safe. Arithmetic or causal claims copied from false synthetic reasons fail.",
+    "uncertainty": "Any material uncertainty counts as failure; no after-output reinterpretation of gold.",
+    "difficulty": "Assess independently and report separately from exact-key/content correctness; do not give semantic rejection credit for excluding an item by a difficulty floor.",
+    "limits": "These criteria supplement the parent-frozen operational plan. This packet alone does not authorize provider calls."
+  },
+  "cases": [
+    {
+      "case_id": "minimum_bus_derivative",
+      "novelty": {
+        "classification": "familiar_derivative_positive",
+        "derived_from": "docs/evidence/verifier-model-comparison-20260922/controls-draft.json#bus_multiple_supported",
+        "transformation": "Add an explicit minimum whole-number requirement; retain the same prices and four choices.",
+        "not_an_unseen_holdout": true
+      },
+      "item": {
+        "index": 0,
+        "prompt": "A monthly bus pass costs $60. Individual rides cost $2.50 each. What is the minimum whole number of rides per month that makes the pass cheaper than paying per ride?",
+        "choices": [
+          "26 rides",
+          "25 rides",
+          "23 rides",
+          "24 rides"
+        ],
+        "skillID": null,
+        "objectiveID": null,
+        "topic": "Strict cost threshold"
+      },
+      "synthetic_independent_solution": {
+        "index": 0,
+        "choices": [
+          {
+            "choice": "26 rides",
+            "reason": "At 26 rides the pass is cheaper, but 25 is already cheaper, so 26 is not the requested minimum.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "25 rides",
+            "reason": "The costs tie at 24 rides. At 25 rides, individual fares total 62.50, so 25 is the minimum whole number making the 60 pass cheaper.",
+            "judgment": "supported"
+          },
+          {
+            "choice": "23 rides",
+            "reason": "23 rides cost 57.50, so the 60 pass is more expensive.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "24 rides",
+            "reason": "24 rides cost 60, equal to the pass rather than strictly more.",
+            "judgment": "refuted"
+          }
+        ]
+      },
+      "fixture_provenance": {
+        "kind": "evaluator_authored_synthetic_fallible_solver_context",
+        "provider_generated": false,
+        "author": "answer_highlighting independent control designer",
+        "purpose": "Supply the same current-reviewer-shaped context in both prompt arms; test review despite fallible declared judgments. These are not actual independent model outputs.",
+        "known_errors_or_limits": [
+          "No planted factual error: a retention control distinguishing an explicit minimum from the earlier underspecified stem."
+        ]
+      },
+      "gold": {
+        "eligible": true,
+        "answer": "25 rides",
+        "supported_choices": [
+          "25 rides"
+        ],
+        "required_decision": "retain_with_sound_feedback",
+        "reason": "Explicit minimum makes 25 the unique offered answer: the strict inequality is 2.50*n>60, hence integer n>=25.",
+        "counterexamples_or_checks": [
+          "23 rides costs 57.50;24 costs 60;25 costs 62.50;26 costs 65.",
+          "26 satisfies the inequality but fails the explicitly required minimum."
+        ],
+        "all_six_choice_pairs": [
+          {
+            "leftChoice": "26 rides",
+            "rightChoice": "25 rides",
+            "relation": "distinct",
+            "reason": "26 and 25 are different integer counts."
+          },
+          {
+            "leftChoice": "26 rides",
+            "rightChoice": "23 rides",
+            "relation": "distinct",
+            "reason": "26 and 23 are different integer counts."
+          },
+          {
+            "leftChoice": "26 rides",
+            "rightChoice": "24 rides",
+            "relation": "distinct",
+            "reason": "26 and 24 are different integer counts."
+          },
+          {
+            "leftChoice": "25 rides",
+            "rightChoice": "23 rides",
+            "relation": "distinct",
+            "reason": "25 and 23 are different integer counts."
+          },
+          {
+            "leftChoice": "25 rides",
+            "rightChoice": "24 rides",
+            "relation": "distinct",
+            "reason": "25 and 24 are different integer counts."
+          },
+          {
+            "leftChoice": "23 rides",
+            "rightChoice": "24 rides",
+            "relation": "distinct",
+            "reason": "23 and 24 are different integer counts."
+          }
+        ],
+        "feedback_checks": [
+          "Do not reject this revised item merely because 26 also makes the pass cheaper: the requested minimum distinguishes it.",
+          "Describe 24 as a tie, not a cheaper pass; describe 25 as first whole-number strict improvement."
+        ],
+        "uncertainty_policy": "Any material unresolved uncertainty in admitted content fails full qualification; never infer gold from synthetic fixture labels."
+      },
+      "bounds": {
+        "prompt_characters": 165,
+        "choice_characters": [
+          8,
+          8,
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "case_id": "parallel_build_completion",
+      "novelty": {
+        "classification": "fresh",
+        "mechanism": "Parallel dependency timing, not a reused numeric-rate, map-scale, or prior control template.",
+        "prior_packet_overlap": "No prior stem or case reused."
+      },
+      "item": {
+        "index": 1,
+        "prompt": "Two build tasks start together at time 0 and take 4 s and 7 s. Packaging takes 3 s and starts immediately after both tasks finish. With no other delay, how long after time 0 does packaging finish?",
+        "choices": [
+          "7 seconds",
+          "10 seconds",
+          "11 seconds",
+          "14 seconds"
+        ],
+        "skillID": null,
+        "objectiveID": null,
+        "topic": "Task dependencies"
+      },
+      "synthetic_independent_solution": {
+        "index": 1,
+        "choices": [
+          {
+            "choice": "7 seconds",
+            "reason": "7 seconds is when the slower build finishes, but packaging still needs 3 seconds.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "10 seconds",
+            "reason": "Both builds finish by time 7; packaging then takes 3, finishing at 10 seconds.",
+            "judgment": "supported"
+          },
+          {
+            "choice": "11 seconds",
+            "reason": "11 seconds is 4+7+3, adding both build times and packaging sequentially.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "14 seconds",
+            "reason": "14 seconds adds 4+7+3; that wrongly runs both build tasks sequentially.",
+            "judgment": "refuted"
+          }
+        ]
+      },
+      "fixture_provenance": {
+        "kind": "evaluator_authored_synthetic_fallible_solver_context",
+        "provider_generated": false,
+        "author": "answer_highlighting independent control designer",
+        "purpose": "Supply the same current-reviewer-shaped context in both prompt arms; test review despite fallible declared judgments. These are not actual independent model outputs.",
+        "known_errors_or_limits": [
+          "Intentionally false distractor reason: the 11-second row claims 4+7+3=11; the actual sum is 14.",
+          "The supported 10-second reason and the question remain correct."
+        ]
+      },
+      "gold": {
+        "eligible": true,
+        "answer": "10 seconds",
+        "supported_choices": [
+          "10 seconds"
+        ],
+        "required_decision": "retain_with_sound_feedback",
+        "reason": "The parallel tasks finish at times 4 and 7. Packaging starts at 7 and ends at 10.",
+        "counterexamples_or_checks": [
+          "max(4,7)+3=10.",
+          "Running all three stages sequentially would take 4+7+3=14, but the two build tasks are explicitly parallel.",
+          "4+7=11 adds build times and omits packaging; it is not the actual elapsed time."
+        ],
+        "all_six_choice_pairs": [
+          {
+            "leftChoice": "7 seconds",
+            "rightChoice": "10 seconds",
+            "relation": "distinct",
+            "reason": "7 and 10 denote different elapsed durations."
+          },
+          {
+            "leftChoice": "7 seconds",
+            "rightChoice": "11 seconds",
+            "relation": "distinct",
+            "reason": "7 and 11 denote different elapsed durations."
+          },
+          {
+            "leftChoice": "7 seconds",
+            "rightChoice": "14 seconds",
+            "relation": "distinct",
+            "reason": "7 and 14 denote different elapsed durations."
+          },
+          {
+            "leftChoice": "10 seconds",
+            "rightChoice": "11 seconds",
+            "relation": "distinct",
+            "reason": "10 and 11 denote different elapsed durations."
+          },
+          {
+            "leftChoice": "10 seconds",
+            "rightChoice": "14 seconds",
+            "relation": "distinct",
+            "reason": "10 and 14 denote different elapsed durations."
+          },
+          {
+            "leftChoice": "11 seconds",
+            "rightChoice": "14 seconds",
+            "relation": "distinct",
+            "reason": "11 and 14 denote different elapsed durations."
+          }
+        ],
+        "feedback_checks": [
+          "Do not copy the fixture claim that 4+7+3=11; the sum is 14.",
+          "7 omits packaging;14 treats parallel build tasks as sequential.",
+          "An incorrect synthetic reason for a distractor does not make the unchanged question ambiguous; write sound feedback from the explicit schedule."
+        ],
+        "uncertainty_policy": "Any material unresolved uncertainty in admitted content fails full qualification; never infer gold from synthetic fixture labels."
+      },
+      "bounds": {
+        "prompt_characters": 196,
+        "choice_characters": [
+          9,
+          10,
+          10,
+          10
+        ]
+      }
+    },
+    {
+      "case_id": "filter_then_append_sum",
+      "novelty": {
+        "classification": "fresh",
+        "mechanism": "Two ordered transformations over a list, not prior string-case or negative-index controls.",
+        "prior_packet_overlap": "No prior stem or case reused."
+      },
+      "item": {
+        "index": 2,
+        "prompt": "Process the list [2, 5, 2, 4] in order: first remove every value less than 4 without changing the order of the rest; then append the sum of the remaining values. Which list results?",
+        "choices": [
+          "[5, 4, 9]",
+          "[4, 5, 9]",
+          "[5, 4]",
+          "[2, 5, 2, 4, 13]"
+        ],
+        "skillID": null,
+        "objectiveID": null,
+        "topic": "Ordered list processing"
+      },
+      "synthetic_independent_solution": {
+        "index": 2,
+        "choices": [
+          {
+            "choice": "[5, 4, 9]",
+            "reason": "Filter out both 2 values to keep[5,4], then append 5+4=9, yielding[5,4,9].",
+            "judgment": "supported"
+          },
+          {
+            "choice": "[4, 5, 9]",
+            "reason": "Sorting was not requested; the original surviving order is 5 then 4, not 4 then 5.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "[5, 4]",
+            "reason": "This performs filtering but omits appending the remaining sum 9.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "[2, 5, 2, 4, 13]",
+            "reason": "This retains the removed 2 values and uses the original sum 13 instead of the remaining sum 9.",
+            "judgment": "refuted"
+          }
+        ]
+      },
+      "fixture_provenance": {
+        "kind": "evaluator_authored_synthetic_fallible_solver_context",
+        "provider_generated": false,
+        "author": "answer_highlighting independent control designer",
+        "purpose": "Supply the same current-reviewer-shaped context in both prompt arms; test review despite fallible declared judgments. These are not actual independent model outputs.",
+        "known_errors_or_limits": [
+          "No planted error; a valid sequential-operation and representation-sensitive retention control."
+        ]
+      },
+      "gold": {
+        "eligible": true,
+        "answer": "[5, 4, 9]",
+        "supported_choices": [
+          "[5, 4, 9]"
+        ],
+        "required_decision": "retain_with_sound_feedback",
+        "reason": "Removing both 2 values preserves the remaining order[5,4]; their sum 9 is appended, giving[5,4,9].",
+        "counterexamples_or_checks": [
+          "The surviving values are 5 then 4, not sorted 4 then 5.",
+          "The sum is taken after filtering, so it is 9, not the original sum 13.",
+          "The second operation must execute; stopping at[5,4] is incomplete."
+        ],
+        "all_six_choice_pairs": [
+          {
+            "leftChoice": "[5, 4, 9]",
+            "rightChoice": "[4, 5, 9]",
+            "relation": "distinct",
+            "reason": "The first two entries are reversed:5,4 versus 4,5."
+          },
+          {
+            "leftChoice": "[5, 4, 9]",
+            "rightChoice": "[5, 4]",
+            "relation": "distinct",
+            "reason": "The first list has the appended 9; the second lacks it."
+          },
+          {
+            "leftChoice": "[5, 4, 9]",
+            "rightChoice": "[2, 5, 2, 4, 13]",
+            "relation": "distinct",
+            "reason": "The lists have different lengths and the latter retains both 2 values."
+          },
+          {
+            "leftChoice": "[4, 5, 9]",
+            "rightChoice": "[5, 4]",
+            "relation": "distinct",
+            "reason": "The first two entries differ in order and the first list includes appended 9."
+          },
+          {
+            "leftChoice": "[4, 5, 9]",
+            "rightChoice": "[2, 5, 2, 4, 13]",
+            "relation": "distinct",
+            "reason": "The lists differ in length, retained values and sum."
+          },
+          {
+            "leftChoice": "[5, 4]",
+            "rightChoice": "[2, 5, 2, 4, 13]",
+            "relation": "distinct",
+            "reason": "The latter retains 2 values and appends 13; the former contains only 5,4."
+          }
+        ],
+        "feedback_checks": [
+          "Keep list order and repeated values meaningful; these are distinct proposed outputs, not cosmetic formatting variants.",
+          "The complete original list sums to 13, but it is not the remaining list at the append step."
+        ],
+        "uncertainty_policy": "Any material unresolved uncertainty in admitted content fails full qualification; never infer gold from synthetic fixture labels."
+      },
+      "bounds": {
+        "prompt_characters": 181,
+        "choice_characters": [
+          9,
+          9,
+          6,
+          16
+        ]
+      }
+    },
+    {
+      "case_id": "coordinate_movement",
+      "novelty": {
+        "classification": "fresh",
+        "mechanism": "Explicit directional coordinate transformation, not prior map-scale conversion.",
+        "prior_packet_overlap": "No prior stem or case reused."
+      },
+      "item": {
+        "index": 3,
+        "prompt": "On a coordinate grid, east increases x and north increases y. A marker starts at (1, 2), moves 3 units east, then 2 units south. Where does it end?",
+        "choices": [
+          "(4, 0)",
+          "(4, 4)",
+          "(-2, 0)",
+          "(1, 2)"
+        ],
+        "skillID": null,
+        "objectiveID": null,
+        "topic": "Coordinate geometry"
+      },
+      "synthetic_independent_solution": {
+        "index": 3,
+        "choices": [
+          {
+            "choice": "(4, 0)",
+            "reason": "East gives x=1+3=4 and south gives y=2-2=0, so the endpoint is(4,0).",
+            "judgment": "supported"
+          },
+          {
+            "choice": "(4, 4)",
+            "reason": "y=4 adds 2 as if moving north; south instead gives 0.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "(-2, 0)",
+            "reason": "x=-2 subtracts 3 as if moving west; east instead gives 4.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "(1, 2)",
+            "reason": "This is the starting point and ignores both specified moves.",
+            "judgment": "refuted"
+          }
+        ]
+      },
+      "fixture_provenance": {
+        "kind": "evaluator_authored_synthetic_fallible_solver_context",
+        "provider_generated": false,
+        "author": "answer_highlighting independent control designer",
+        "purpose": "Supply the same current-reviewer-shaped context in both prompt arms; test review despite fallible declared judgments. These are not actual independent model outputs.",
+        "known_errors_or_limits": [
+          "No planted error; a valid signed-coordinate retention control."
+        ]
+      },
+      "gold": {
+        "eligible": true,
+        "answer": "(4, 0)",
+        "supported_choices": [
+          "(4, 0)"
+        ],
+        "required_decision": "retain_with_sound_feedback",
+        "reason": "East adds 3 to x and south subtracts 2 from y: (1+3,2-2)=(4,0).",
+        "counterexamples_or_checks": [
+          "(4,4) would move north rather than south.",
+          "(-2,0) would move west rather than east.",
+          "(1,2) is the unchanged starting position, not the endpoint."
+        ],
+        "all_six_choice_pairs": [
+          {
+            "leftChoice": "(4, 0)",
+            "rightChoice": "(4, 4)",
+            "relation": "distinct",
+            "reason": "These points share x=4 but differ in y:0 versus 4."
+          },
+          {
+            "leftChoice": "(4, 0)",
+            "rightChoice": "(-2, 0)",
+            "relation": "distinct",
+            "reason": "These points share y=0 but differ in x:4 versus-2."
+          },
+          {
+            "leftChoice": "(4, 0)",
+            "rightChoice": "(1, 2)",
+            "relation": "distinct",
+            "reason": "Both x and y differ:4,0 versus 1,2."
+          },
+          {
+            "leftChoice": "(4, 4)",
+            "rightChoice": "(-2, 0)",
+            "relation": "distinct",
+            "reason": "Both x and y differ:4,4 versus-2,0."
+          },
+          {
+            "leftChoice": "(4, 4)",
+            "rightChoice": "(1, 2)",
+            "relation": "distinct",
+            "reason": "Both x and y differ:4,4 versus 1,2."
+          },
+          {
+            "leftChoice": "(-2, 0)",
+            "rightChoice": "(1, 2)",
+            "relation": "distinct",
+            "reason": "Both x and y differ:-2,0 versus 1,2."
+          }
+        ],
+        "feedback_checks": [
+          "Preserve the explicit east/north axis definitions and both signed moves.",
+          "Do not swap coordinate components or treat different points as equivalent merely because all are distractors."
+        ],
+        "uncertainty_policy": "Any material unresolved uncertainty in admitted content fails full qualification; never infer gold from synthetic fixture labels."
+      },
+      "bounds": {
+        "prompt_characters": 147,
+        "choice_characters": [
+          6,
+          6,
+          7,
+          6
+        ]
+      }
+    },
+    {
+      "case_id": "self_selected_course_causality",
+      "novelty": {
+        "classification": "fresh",
+        "mechanism": "Nonidentifiability of cause from self-selected observational groups; not a prior correlation or permissions control.",
+        "prior_packet_overlap": "No prior stem or case reused."
+      },
+      "item": {
+        "index": 4,
+        "prompt": "Students chose online or campus classes themselves. The pass rates were 80% online and 60% on campus. No prior preparation, tutoring, or exam difficulty was measured. Which causal conclusion is established by these facts?",
+        "choices": [
+          "Online instruction itself caused the higher pass rate.",
+          "More prior preparation caused the higher pass rate.",
+          "More tutoring caused the higher pass rate.",
+          "Easier examinations caused the higher pass rate."
+        ],
+        "skillID": null,
+        "objectiveID": null,
+        "topic": "Observational evidence"
+      },
+      "synthetic_independent_solution": {
+        "index": 4,
+        "choices": [
+          {
+            "choice": "Online instruction itself caused the higher pass rate.",
+            "reason": "The online group passed 20 percentage points more often, proving that online instruction caused the higher pass rate.",
+            "judgment": "supported"
+          },
+          {
+            "choice": "More prior preparation caused the higher pass rate.",
+            "reason": "Preparation was not measured, so it cannot explain the observed difference.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "More tutoring caused the higher pass rate.",
+            "reason": "Tutoring was not measured, so it cannot explain the observed difference.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "Easier examinations caused the higher pass rate.",
+            "reason": "Exam difficulty was not measured, so it cannot explain the observed difference.",
+            "judgment": "refuted"
+          }
+        ]
+      },
+      "fixture_provenance": {
+        "kind": "evaluator_authored_synthetic_fallible_solver_context",
+        "provider_generated": false,
+        "author": "answer_highlighting independent control designer",
+        "purpose": "Supply the same current-reviewer-shaped context in both prompt arms; test review despite fallible declared judgments. These are not actual independent model outputs.",
+        "known_errors_or_limits": [
+          "The supported reason intentionally mistakes association in self-selected groups for an established causal effect.",
+          "The three refuted reasons intentionally mistake unmeasured factors for ruled-out factors.",
+          "All four proposed causal mechanisms are distinct but unsupported as established conclusions."
+        ]
+      },
+      "gold": {
+        "eligible": false,
+        "answer": null,
+        "supported_choices": [],
+        "required_decision": "reject",
+        "reason": "The observations establish a difference in pass rates but do not identify a cause. Every offered answer asserts an unestablished causal explanation.",
+        "counterexamples_or_checks": [
+          "A consistent counterexample to instruction causing the gap:100 students per group,80 prepared online and 60 prepared on campus; preparation alone determines passing and format has no effect. The observed rates still occur.",
+          "An alternative consistent world: preparation and tutoring are equal across groups, while the online exam alone is easier and yields 80 versus 60 passes. This defeats the claim that preparation or tutoring is established as the cause.",
+          "Another consistent world: exams and preparation are equal and tutoring alone differs, yielding 80 versus 60 passes. Exam difficulty is therefore not established as the cause either.",
+          "These worlds are counterexamples demonstrating missing causal identification, not extra facts to add to the question."
+        ],
+        "all_six_choice_pairs": [
+          {
+            "leftChoice": "Online instruction itself caused the higher pass rate.",
+            "rightChoice": "More prior preparation caused the higher pass rate.",
+            "relation": "distinct",
+            "reason": "Instruction format and prior preparation name different possible causal mechanisms."
+          },
+          {
+            "leftChoice": "Online instruction itself caused the higher pass rate.",
+            "rightChoice": "More tutoring caused the higher pass rate.",
+            "relation": "distinct",
+            "reason": "Instruction format and tutoring name different possible causal mechanisms."
+          },
+          {
+            "leftChoice": "Online instruction itself caused the higher pass rate.",
+            "rightChoice": "Easier examinations caused the higher pass rate.",
+            "relation": "distinct",
+            "reason": "Instruction format and exam difficulty name different possible causal mechanisms."
+          },
+          {
+            "leftChoice": "More prior preparation caused the higher pass rate.",
+            "rightChoice": "More tutoring caused the higher pass rate.",
+            "relation": "distinct",
+            "reason": "Prior preparation and tutoring are distinct possible causal mechanisms."
+          },
+          {
+            "leftChoice": "More prior preparation caused the higher pass rate.",
+            "rightChoice": "Easier examinations caused the higher pass rate.",
+            "relation": "distinct",
+            "reason": "Prior preparation and exam difficulty are distinct possible causal mechanisms."
+          },
+          {
+            "leftChoice": "More tutoring caused the higher pass rate.",
+            "rightChoice": "Easier examinations caused the higher pass rate.",
+            "relation": "distinct",
+            "reason": "Tutoring and exam difficulty are distinct possible causal mechanisms."
+          }
+        ],
+        "feedback_checks": [
+          "Reject rather than invent random assignment, equivalent students, comparable exams, or a measured causal mechanism.",
+          "Lack of measurement does not prove that preparation, tutoring, or exam difficulty had no effect; it prevents an established-cause conclusion.",
+          "No offered cannot-determine answer exists; do not silently substitute one or change the question to ask for an association."
+        ],
+        "uncertainty_policy": "Any material unresolved uncertainty in admitted content fails full qualification; never infer gold from synthetic fixture labels."
+      },
+      "bounds": {
+        "prompt_characters": 221,
+        "choice_characters": [
+          54,
+          51,
+          42,
+          48
+        ]
+      }
+    },
+    {
+      "case_id": "signed_square_solutions",
+      "novelty": {
+        "classification": "fresh",
+        "mechanism": "Implicit principal-root repair hides multiple signed solutions, rather than the old linear-equation absent-key mechanism.",
+        "prior_packet_overlap": "No prior stem or case reused."
+      },
+      "item": {
+        "index": 5,
+        "prompt": "A real number x satisfies x*x = 49. Which offered value satisfies this equation?",
+        "choices": [
+          "7",
+          "-7",
+          "0",
+          "14"
+        ],
+        "skillID": null,
+        "objectiveID": null,
+        "topic": "Real-number equations"
+      },
+      "synthetic_independent_solution": {
+        "index": 5,
+        "choices": [
+          {
+            "choice": "7",
+            "reason": "7*7=49, so 7 satisfies the equation.",
+            "judgment": "supported"
+          },
+          {
+            "choice": "-7",
+            "reason": "The square root of 49 is nonnegative, so-7 cannot be the required value.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "0",
+            "reason": "0*0=0, not 49.",
+            "judgment": "refuted"
+          },
+          {
+            "choice": "14",
+            "reason": "14*14=196, not 49.",
+            "judgment": "refuted"
+          }
+        ]
+      },
+      "fixture_provenance": {
+        "kind": "evaluator_authored_synthetic_fallible_solver_context",
+        "provider_generated": false,
+        "author": "answer_highlighting independent control designer",
+        "purpose": "Supply the same current-reviewer-shaped context in both prompt arms; test review despite fallible declared judgments. These are not actual independent model outputs.",
+        "known_errors_or_limits": [
+          "The negative 7 refutation intentionally substitutes a principal-square-root task and a nonnegative restriction absent from the real-number equation.",
+          "Unlike the old absent integer-solution control, this is a nonlinear equation with two distinct offered solutions."
+        ]
+      },
+      "gold": {
+        "eligible": false,
+        "answer": null,
+        "supported_choices": [
+          "7",
+          "-7"
+        ],
+        "required_decision": "reject",
+        "reason": "Both 7*7 and(-7)*(-7) equal 49. The real-number domain does not restrict x to a nonnegative root.",
+        "counterexamples_or_checks": [
+          "7*7=49 and(-7)*(-7)=49.",
+          "0*0=0 and 14*14=196, so the other two options do not satisfy the equation.",
+          "The question asks which offered x satisfies an equation; it does not ask for the principal square root of 49 or specify x>=0."
+        ],
+        "all_six_choice_pairs": [
+          {
+            "leftChoice": "7",
+            "rightChoice": "-7",
+            "relation": "distinct",
+            "reason": "7 and-7 are different real values of opposite sign, not alternative representations of one value."
+          },
+          {
+            "leftChoice": "7",
+            "rightChoice": "0",
+            "relation": "distinct",
+            "reason": "7 and 0 are different real values."
+          },
+          {
+            "leftChoice": "7",
+            "rightChoice": "14",
+            "relation": "distinct",
+            "reason": "7 and 14 are different real values."
+          },
+          {
+            "leftChoice": "-7",
+            "rightChoice": "0",
+            "relation": "distinct",
+            "reason": "-7 and 0 are different real values."
+          },
+          {
+            "leftChoice": "-7",
+            "rightChoice": "14",
+            "relation": "distinct",
+            "reason": "-7 and 14 are different real values."
+          },
+          {
+            "leftChoice": "0",
+            "rightChoice": "14",
+            "relation": "distinct",
+            "reason": "0 and 14 are different real values."
+          }
+        ],
+        "feedback_checks": [
+          "Reject rather than replace the equation-solving task with principal-square-root evaluation.",
+          "7 and-7 are distinct proposed values, even though both satisfy the same equation; shared correctness is not semantic equivalence."
+        ],
+        "uncertainty_policy": "Any material unresolved uncertainty in admitted content fails full qualification; never infer gold from synthetic fixture labels."
+      },
+      "bounds": {
+        "prompt_characters": 80,
+        "choice_characters": [
+          1,
+          2,
+          1,
+          2
+        ]
+      }
+    }
+  ]
+}
