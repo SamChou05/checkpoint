@@ -68,7 +68,8 @@ acceptance, latency, or application quality. Opaque application profiles that th
 runtime cannot identify fail closed and need explicit reviewed support.
 
 `requirements.txt` packages boto3 and botocore 1.43.91 in each Lambda artifact.
-After building, validate the delivered SDK and all six native request shapes:
+After building, validate the delivered SDK and all seven packaged native request
+shapes (six active contracts plus the unqualified experimental reviewer v2):
 
 ```bash
 sam validate --lint --template-file template.yaml

@@ -31,7 +31,7 @@ class NativeOutputContractTests(unittest.TestCase):
     def test_every_contract_has_stable_independent_closed_schema(self):
         names = [
             "question_author_v1", "skill_map_inference_v1", "skill_map_evolution_v1",
-            "complete_choice_solver_v1", "default_reviewer_v1",
+            "complete_choice_solver_v1", "default_reviewer_v1", "default_reviewer_v2",
             "authored_solution_reviewer_v1",
         ]
         for name in names:
