@@ -1,0 +1,31 @@
+{
+  "capture_sha256": "770742e66ad2b69043a82da31938da66bcc4542e27ff5cf3c566482335f95a10",
+  "plan_sha256": "4382f65e2a01e21b4c58ec944b48824a9b212680176324484055a84703c1543d",
+  "provider_calls": 0,
+  "all_pinned_sources_inputs_and_dependencies_unchanged": true,
+  "checks": [
+    {
+      "sequence": 0,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    },
+    {
+      "sequence": 1,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    },
+    {
+      "sequence": 2,
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    },
+    {
+      "sequence": 3,
+      "exact_request": true,
+      "same_validation_failure": true
+    }
+  ],
+  "planned_calls": 6,
+  "attempted_calls": 4,
+  "unattempted_calls": 2
+}

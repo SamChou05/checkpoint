@@ -1,0 +1,81 @@
+{
+  "reviewer": "choice_semantics, independent of answer_highlighting control design",
+  "approved": true,
+  "reviewed_packet_sha256": "0c1f821364c4241049d2828c84f531d80e8a53deda4ee11d07d1400bdb17743d",
+  "original_packet_sha256_unchanged": "a974723f3f75eb274066f2ee7b5585b646106b6cffc9b4d425caf1a8dab79648",
+  "cases": [
+    {
+      "case_id": "supplement_semicolon_defective",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 0,
+      "captured_strings_exact": true
+    },
+    {
+      "case_id": "supplement_semicolon_sound",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 0,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_defective",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 1,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_sound",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 0,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "supplement_decimal_representation_defective",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 3,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "supplement_decimal_representation_sound",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "all_six_pairs_complete": true,
+      "equivalent_pair_count": 0,
+      "captured_strings_exact": null
+    }
+  ],
+  "pre_freeze_correction": "Requested longer true correct-choice feedback in BOTH synthetic2+2 variants because the initial10-character string failed the existing12-character minimum. Designer changed only that shared statement and associated hashes before freeze or dispatch. No gold decision changed.",
+  "manual_findings": [
+    "All three sound variants have one supported matching key, meaningfully distinct task-specific alternatives, and sound main/all-choice feedback. All three defective variants require rejection for their labeled defects.",
+    "Aune R2 allows however to attach to either independent clause, with a comma separating the attachment and a semicolon separating clauses. The old unqualified item therefore permits at least the two however placements; its broad feedback is false. The repaired explicit second-clause placement makes the intended construction unique. No claim about the semicolon-and alternative is needed to prove rejection.",
+    "The2+2 defective item has unique key4 and true feedback, but2 andtwo are the same proposed value. Replacing two with5 removes that equivalence; both wrongness labels alone are irrelevant to meaning.",
+    "The value question permits0.5,1/2 and50%, which are equal numerical answers and give three equivalent pairs. The explicit digits/decimal-point/no-slash/no-percent task tests written representation, so those forms are task-distinct and only0.5 qualifies. Both variants have identical feedback, whose notation restrictions are justified only by the repaired stem.",
+    "All30 learner prose fields, all six exact key memberships, all36 pair identities, repaired-field scope and captured-source fidelity were checked."
+  ],
+  "grammar_source": {
+    "title": "Bruce Aune, Punctuation and Syntax",
+    "url": "https://cse.buffalo.edu/~rapaport/Papers/Papers.by.Others/aune01-punctuation.pdf",
+    "location": "Printed page5, R2 and following first-clause however example",
+    "checked_via_primary_source": true
+  },
+  "limitations": [
+    "Three diagnostic paired families, not broad unseen-domain performance.",
+    "Supplemental labels complement, rather than alter, the original12-case gold.",
+    "Approval is input/gold review only, not dispatch or production release."
+  ]
+}

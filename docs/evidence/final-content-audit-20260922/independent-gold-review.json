@@ -1,0 +1,119 @@
+{
+  "reviewer": "choice_semantics, independent of answer_highlighting control design",
+  "approved": true,
+  "reviewed_packet_sha256": "a974723f3f75eb274066f2ee7b5585b646106b6cffc9b4d425caf1a8dab79648",
+  "cases": [
+    {
+      "case_id": "familiar_paint_defective",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": true
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": true
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": true
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "required_gate_decision": "reject",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": null
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "required_gate_decision": "accept",
+      "bounds_and_exact_coverage": true,
+      "five_claim_field_hashes_match": true,
+      "six_distinct_pairs_complete": true,
+      "captured_strings_exact": null
+    }
+  ],
+  "manual_findings": [
+    "All six sound variants have one supported exact key and sound main/all-choice feedback. All six defective variants contain the prospectively labeled defect.",
+    "15:9=5:3, not 3:3; the paint repair changes only that false feedback.",
+    "Literal cheaper bus condition is satisfied by 25 and 26; explicit minimum makes 25 unique. The diagnostic does not claim no reader would infer minimum in the original.",
+    "84*0.3+76*0.7=78.4; reversed weights give81.6;82.4 and79.2 follow80/20 and40/60 weights respectively.",
+    "Parallel finish max(4,7)+3=10;4+7+3=14, while4+7=11 omits packaging.",
+    "Self-selected rates establish the observed20-percentage-point gap, not any offered cause. Worlds with preparation differences or instruction effects can produce the same rates.",
+    "Both7 and-7 square to49; the explicit nonnegative condition excludes-7 in the sound variant.",
+    "All alternatives in these12 cases express distinct proposed answers; shared wrongness does not make them equivalent. This suite contains no semantic-duplicate negative control and does not independently qualify duplicate detection."
+  ],
+  "limitations": [
+    "Six paired diagnostic families, not12 independent random samples.",
+    "Familiar defective payloads preserve historical text; repairs and fresh full-feedback payloads are evaluator-authored and explicitly labeled only outside provider input.",
+    "All future auditor reasons must be checked independently. Correct disposition alone does not prove correct rationale.",
+    "Approval concerns gold and input fidelity only, not dispatch or production release."
+  ]
+}

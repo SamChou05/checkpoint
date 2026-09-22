@@ -1,0 +1,828 @@
+{
+  "audit": "Independent final-content gate experiment: all raw verdicts,reasons,request isolation,and released-payload identity",
+  "sources": {
+    "plan.json": "4382f65e2a01e21b4c58ec944b48824a9b212680176324484055a84703c1543d",
+    "capture.json": "770742e66ad2b69043a82da31938da66bcc4542e27ff5cf3c566482335f95a10",
+    "controls-gold-draft.json": "a974723f3f75eb274066f2ee7b5585b646106b6cffc9b4d425caf1a8dab79648",
+    "supplemental-controls-draft.json": "0c1f821364c4241049d2828c84f531d80e8a53deda4ee11d07d1400bdb17743d",
+    "candidate_contract.py": "9e25eb7336704869a45a1c0502d130f2bfbdd859a930a9d58c157090875c4bf2",
+    "independent-gold-review.json": "3ec480f607e6a73b96f810da77fe809b44c54f93ae0277abae50683247c9463f",
+    "independent-supplemental-gold-review.json": "713f87e3183591e15a75ad2b31962ce891e9f5b6ed2dc81ca439ebcc715d03ca"
+  },
+  "method": "Read raw response text without using summary conclusions; independently assess every reason against frozen gold and exact learner payload. Replay native JSON Schema validation and strict candidate contract offline. Compare actual requests to frozen requests, check all allowed config-only deltas, and replay select_accepted against unchanged original payloads. No provider calls,production edits,repairs,relabeling,or omitted failed/unattempted denominators.",
+  "frozen_denominators": {
+    "planned_calls": 6,
+    "attempted_calls": 4,
+    "native_schema_valid_calls": 4,
+    "strict_local_valid_calls": 3,
+    "strict_local_failed_calls": 1,
+    "unattempted_calls": 2,
+    "planned_dispositions": 36,
+    "strict_assessed_dispositions": 18,
+    "failed_batch_dispositions": 6,
+    "unattempted_dispositions": 12,
+    "raw_verdicts_and_reasons_audited": 24
+  },
+  "request_isolation": [
+    {
+      "batch": 0,
+      "only_differing_request_fields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ],
+      "same_model_system_user_order_schema": true,
+      "disabled_config": {
+        "inferenceConfig": {
+          "maxTokens": 6000,
+          "temperature": 0.2
+        },
+        "additionalModelRequestFields": {
+          "thinking": {
+            "type": "disabled"
+          }
+        }
+      },
+      "adaptive_config": {
+        "inferenceConfig": {
+          "maxTokens": 16000
+        },
+        "additionalModelRequestFields": {
+          "thinking": {
+            "type": "adaptive"
+          },
+          "output_config": {
+            "effort": "high"
+          }
+        }
+      },
+      "both_calls_executed": true
+    },
+    {
+      "batch": 1,
+      "only_differing_request_fields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ],
+      "same_model_system_user_order_schema": true,
+      "disabled_config": {
+        "inferenceConfig": {
+          "maxTokens": 6000,
+          "temperature": 0.2
+        },
+        "additionalModelRequestFields": {
+          "thinking": {
+            "type": "disabled"
+          }
+        }
+      },
+      "adaptive_config": {
+        "inferenceConfig": {
+          "maxTokens": 16000
+        },
+        "additionalModelRequestFields": {
+          "thinking": {
+            "type": "adaptive"
+          },
+          "output_config": {
+            "effort": "high"
+          }
+        }
+      },
+      "both_calls_executed": true
+    },
+    {
+      "batch": 2,
+      "only_differing_request_fields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ],
+      "same_model_system_user_order_schema": true,
+      "disabled_config": {
+        "inferenceConfig": {
+          "maxTokens": 6000,
+          "temperature": 0.2
+        },
+        "additionalModelRequestFields": {
+          "thinking": {
+            "type": "disabled"
+          }
+        }
+      },
+      "adaptive_config": {
+        "inferenceConfig": {
+          "maxTokens": 16000
+        },
+        "additionalModelRequestFields": {
+          "thinking": {
+            "type": "adaptive"
+          },
+          "output_config": {
+            "effort": "high"
+          }
+        }
+      },
+      "both_calls_executed": false
+    }
+  ],
+  "call_checks": [
+    {
+      "sequence": 0,
+      "batch": 0,
+      "arm": "disabled",
+      "request_exactly_matches_plan": true,
+      "native_schema_valid": true,
+      "exact_closed_ids": true,
+      "strict_local_validation_pass": true,
+      "strict_error": null,
+      "reason_lengths": [
+        354,
+        263,
+        238,
+        297,
+        256,
+        521
+      ],
+      "stop_reason": "end_turn",
+      "elapsed_seconds": 14.64,
+      "under75_seconds": true,
+      "provider_retry_attempts": 0,
+      "reasoning_blocks_omitted": 0,
+      "released_original_count": 3
+    },
+    {
+      "sequence": 1,
+      "batch": 0,
+      "arm": "adaptive",
+      "request_exactly_matches_plan": true,
+      "native_schema_valid": true,
+      "exact_closed_ids": true,
+      "strict_local_validation_pass": true,
+      "strict_error": null,
+      "reason_lengths": [
+        282,
+        272,
+        230,
+        285,
+        237,
+        356
+      ],
+      "stop_reason": "end_turn",
+      "elapsed_seconds": 50.048,
+      "under75_seconds": true,
+      "provider_retry_attempts": 0,
+      "reasoning_blocks_omitted": 1,
+      "released_original_count": 3
+    },
+    {
+      "sequence": 2,
+      "batch": 1,
+      "arm": "adaptive",
+      "request_exactly_matches_plan": true,
+      "native_schema_valid": true,
+      "exact_closed_ids": true,
+      "strict_local_validation_pass": true,
+      "strict_error": null,
+      "reason_lengths": [
+        421,
+        409,
+        374,
+        308,
+        207,
+        419
+      ],
+      "stop_reason": "end_turn",
+      "elapsed_seconds": 40.97,
+      "under75_seconds": true,
+      "provider_retry_attempts": 0,
+      "reasoning_blocks_omitted": 1,
+      "released_original_count": 3
+    },
+    {
+      "sequence": 3,
+      "batch": 1,
+      "arm": "disabled",
+      "request_exactly_matches_plan": true,
+      "native_schema_valid": true,
+      "exact_closed_ids": true,
+      "strict_local_validation_pass": false,
+      "strict_error": "Audit reason must be nonblank and at most 600 codepoints.",
+      "reason_lengths": [
+        359,
+        748,
+        355,
+        313,
+        206,
+        514
+      ],
+      "stop_reason": "end_turn",
+      "elapsed_seconds": 11.987,
+      "under75_seconds": true,
+      "provider_retry_attempts": 0,
+      "reasoning_blocks_omitted": 0,
+      "released_original_count": 0
+    }
+  ],
+  "raw_item_audits": [
+    {
+      "sequence": 0,
+      "batch": 0,
+      "arm": "disabled",
+      "slot": "0",
+      "case_id": "familiar_weighted_grade_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Calculation checks out: 0.30×84=25.2, 0.70×76=53.2, sum=78.4. Key is correct. Distractor 80.0=(84+76)/2=80 ✓. Distractor 82.4: reversed weights 0.70×84+0.30×76=58.8+22.8=81.6, not 82.4 — the explanation claims reversing weights gives 82.4 but the actual reversed-weight result is 81.6. This is a false claim about how the distractor was obtained. Reject.",
+      "reason_characters": 354,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The stated weighted sum78.4, simple mean80, and reversed-weight result81.6 are all exact. The reason correctly identifies the captured false82.4 reversal claim.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 0,
+      "batch": 0,
+      "arm": "disabled",
+      "slot": "1",
+      "case_id": "familiar_paint_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Key 10 liters: (2/3)×15=10 ✓. Distractor 9 liters explanation claims a 3:3 (1:1) ratio, but 15:9 simplifies to 5:3, not 1:1. This is a false claim about what ratio 9 liters implies. The item 2 version has a corrected explanation for 9 liters. Reject this version.",
+      "reason_characters": 263,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "2/3*15=10 and15:9=5:3, not1:1. The direct numerical counterexample justifies rejection independently of its additional reference to paired item2.",
+      "mentions_paired_counterpart": true,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 0,
+      "batch": 0,
+      "arm": "disabled",
+      "slot": "2",
+      "case_id": "familiar_paint_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Key 10 liters: (2/3)×15=10 ✓. Distractor 9 liters: 15:9=5:3, not 3:2 ✓. Distractor 6 liters: 15:6=5:2, not 3:2 ✓. Distractor 22.5: (3/2)×15=22.5, inverted ratio ✓. All four options are meaningfully distinct, all explanations are accurate.",
+      "reason_characters": 238,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "All four exact quantities and feedback ratios are checked correctly:10L,15:9=5:3,15:6=5:2,and15*3/2=22.5.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 0,
+      "batch": 0,
+      "arm": "disabled",
+      "slot": "3",
+      "case_id": "familiar_bus_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Break-even: 60/2.50=24 rides at equal cost. At 25 rides, per-ride cost=62.50>60, so pass is cheaper. Key=25 ✓. Distractor 23: 23×2.50=57.50<60, per-ride cheaper ✓. Distractor 24: equal cost, not strictly cheaper ✓. Distractor 26: correct that 25 is the minimum threshold ✓. All explanations sound.",
+      "reason_characters": 297,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The explicit minimum requirement uniquely selects25. The break-even,23-,24-,25-ride arithmetic and26-not-minimum claim are all correct.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 0,
+      "batch": 0,
+      "arm": "disabled",
+      "slot": "4",
+      "case_id": "familiar_weighted_grade_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Key 78.4: 0.30×84+0.70×76=25.2+53.2=78.4 ✓. Distractor 80.0: unweighted average ✓. Distractor 82.4: claimed to be 0.80×84+0.20×76=67.2+15.2=82.4 ✓. Distractor 79.2: claimed to be 0.40×84+0.60×76=33.6+45.6=79.2 ✓. All explanations are accurate and distinct.",
+      "reason_characters": 256,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "All stated alternate-weight calculations are exact:30/70 gives78.4,50/50 gives80,80/20 gives82.4,and40/60 gives79.2.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 0,
+      "batch": 0,
+      "arm": "disabled",
+      "slot": "5",
+      "case_id": "familiar_bus_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "The prompt asks 'How many rides per month make the pass cheaper' without specifying minimum, making the answer potentially ambiguous (any number ≥25 satisfies it). However, the explanation and distractor for 26 rides explicitly invoke the minimum threshold concept not stated in the stem. The stem does not ask for the minimum, so 26 rides also makes the pass cheaper and is a valid answer. The question has two defensible correct answers (25 and 26, and beyond), making the single key unsupported by the stem as written.",
+      "reason_characters": 521,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The stem lacks minimum;25 and26 both satisfy strictly cheaper. Higher counts also satisfy the inequality, though only25 and26 are offered. The reason correctly rejects uniqueness rather than the arithmetic value25.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 1,
+      "batch": 0,
+      "arm": "adaptive",
+      "slot": "0",
+      "case_id": "familiar_weighted_grade_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "The explanation for distractor 82.4 claims it comes from reversing the weights (70% quiz, 30% final): 0.70×84+0.30×76=58.8+22.8=81.6, not 82.4. The claimed origin is factually wrong. The correct key and its arithmetic are fine, but a material claim in a choice explanation is false.",
+      "reason_characters": 282,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "Reversing30/70 yields81.6, not82.4; the exact false feedback claim is correctly identified.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 1,
+      "batch": 0,
+      "arm": "adaptive",
+      "slot": "1",
+      "case_id": "familiar_paint_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "The explanation for 9 liters states it 'would imply a 3:3 (1:1) ratio of blue to white.' But 15 blue to 9 white is 15:9=5:3, not 1:1. A 1:1 ratio would require 15 liters of white. The factual claim in that distractor explanation is wrong. Item 2 corrects this exact error.",
+      "reason_characters": 272,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "15:9=5:3 and1:1 would require15 white. This is an exact counterexample; paired-item2 reference is additional diagnostic context.",
+      "mentions_paired_counterpart": true,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 1,
+      "batch": 0,
+      "arm": "adaptive",
+      "slot": "2",
+      "case_id": "familiar_paint_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Key 10 liters: (2/3)×15=10 ✓. All distractor explanations checked: 9 liters gives 15:9=5:3 ✓; 6 liters gives 15:6=5:2 ✓; 22.5=(3/2)×15 inverts the ratio ✓. All four options are meaningfully distinct and all explanations are sound.",
+      "reason_characters": 230,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The key and each distractor ratio/calculation match the unchanged paint item.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 1,
+      "batch": 0,
+      "arm": "adaptive",
+      "slot": "3",
+      "case_id": "familiar_bus_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Break-even: 60÷2.50=24 rides, cost equals $60 at 24 rides. At 25 rides: 25×2.50=$62.50>$60, pass cheaper ✓. At 23 rides: $57.50<$60, per-ride cheaper ✓. Stem says 'minimum whole number,' uniquely identifying 25. Distractor 26 correctly noted as not the minimum. All explanations sound.",
+      "reason_characters": 285,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The explicit minimum whole-number wording and all shown fares establish25 uniquely. No missing requirement is silently added.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 1,
+      "batch": 0,
+      "arm": "adaptive",
+      "slot": "4",
+      "case_id": "familiar_weighted_grade_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Key 78.4: 0.30×84+0.70×76=25.2+53.2=78.4 ✓. 80.0=(84+76)/2 ✓. 82.4: 0.80×84+0.20×76=67.2+15.2=82.4 ✓ (different and correct claim from item 0). 79.2: 0.40×84+0.60×76=33.6+45.6=79.2 ✓. All four choices distinct, all explanations verified.",
+      "reason_characters": 237,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "All four weighted calculations are exact and match the repaired item. The parenthetical comparison with item0 correctly distinguishes different feedback claims.",
+      "mentions_paired_counterpart": true,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 1,
+      "batch": 0,
+      "arm": "adaptive",
+      "slot": "5",
+      "case_id": "familiar_bus_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "The stem asks 'how many rides make the pass cheaper'—no 'minimum' qualifier. The explanation for 26 rides explicitly states '26 also satisfies the condition.' Both 25 and 26 (and higher) make the pass cheaper, so the stem does not have exactly one supported answer among the offered choices. The missing word 'minimum' is present in item 3 but absent here.",
+      "reason_characters": 356,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The reason accurately quotes the admission that26 satisfies the cost condition and identifies the missing minimum qualifier. Its paired-item3 reference is accurate but unnecessary to the direct proof.",
+      "mentions_paired_counterpart": true,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 2,
+      "batch": 1,
+      "arm": "adaptive",
+      "slot": "0",
+      "case_id": "fresh_causal_evidence_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "The key and its explanation claim the 20-percentage-point difference 'proves that online instruction caused the higher pass rate.' Students self-selected their format and confounders were unmeasured, so no causal conclusion is established by these facts. The explanation is materially false; the question also has no defensible correct answer among the offered choices because none of the four causal claims is supported.",
+      "reason_characters": 421,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "Self-selection and unmeasured factors prevent the stated causal identification. Every offered choice asserts an unestablished cause; the reason correctly rejects rather than repairing the task.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 2,
+      "batch": 1,
+      "arm": "adaptive",
+      "slot": "1",
+      "case_id": "fresh_parallel_timing_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Key is correct: parallel builds both finish by t=7; packaging ends at t=10. The 7-second explanation (packaging still needed) is sound. The 11-second explanation describes a student who added builds sequentially (4+7=11) but omitted packaging, which is an unusual but internally consistent error path and not factually wrong. The 14-second explanation (4+7+3 sequential) is correct. All arithmetic checks out.",
+      "reason_characters": 409,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The scheduling calculations are exact:builds end at7,package at10;11=4+7 excludes packaging;14=4+7+3 models sequential builds. Student language describes a generic possible error path explicitly present as a calculation in the feedback; it is not evidence about a real learner’s history.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 2,
+      "batch": 1,
+      "arm": "adaptive",
+      "slot": "2",
+      "case_id": "fresh_parallel_timing_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "The explanation for the 11-second distractor states '11 seconds is 4+7+3, adding both build times and packaging sequentially.' But 4+7+3=14, not 11. This is a demonstrated arithmetic error in the feedback. The 14-second distractor explanation also claims 4+7+3=14, so the two distractor explanations are mutually inconsistent. The item must be rejected for this false claim.",
+      "reason_characters": 374,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The reason identifies the exact false11=4+7+3 equality and the within-item contradiction with the14-second explanation.4+7+3=14 is exact.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 2,
+      "batch": 1,
+      "arm": "adaptive",
+      "slot": "3",
+      "case_id": "fresh_causal_evidence_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "Key 'The online group had an observed pass rate 20 percentage points higher' is a purely descriptive claim directly supported by 80%−60%=20 pp. Explanations for the three causal distractors correctly note that unmeasured confounders cannot establish a causal contribution. All arithmetic and logic are sound.",
+      "reason_characters": 308,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "80%-60%=20 percentage points is descriptive, and the three causal distractors are not established by the observations. The assessment matches the repaired question and all feedback.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 2,
+      "batch": 1,
+      "arm": "adaptive",
+      "slot": "4",
+      "case_id": "fresh_signed_square_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "The nonnegative constraint is explicitly stated. 7×7=49 and 7≥0, so 7 is the unique nonnegative solution. −7 fails the nonnegative condition. 0²=0≠49 and 14²=196≠49. All four choice explanations are correct.",
+      "reason_characters": 207,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The explicit nonnegative domain excludes-7;7*7=49,0*0=0,and14*14=196. All claims are correctly tied to this exact domain.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 2,
+      "batch": 1,
+      "arm": "adaptive",
+      "slot": "5",
+      "case_id": "fresh_signed_square_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": true,
+      "reason": "No nonnegative restriction is stated; the domain is all real numbers. Both 7 and −7 satisfy x*x=49 ((-7)×(-7)=49). The explanation for −7 incorrectly states 'The square root of 49 is nonnegative, so −7 cannot be the required value,' conflating the principal square root function with solutions to x²=49. Because two offered choices satisfy the equation, the item has two correct answers and the −7 explanation is false.",
+      "reason_characters": 419,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "Both7 and-7 solve the real-number equation; principal square-root evaluation is a different task. The reason correctly identifies nonuniqueness and the false exclusion of-7.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": true
+    },
+    {
+      "sequence": 3,
+      "batch": 1,
+      "arm": "disabled",
+      "slot": "0",
+      "case_id": "fresh_causal_evidence_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": false,
+      "reason": "The key claims the observed 20-point difference 'proves that online instruction caused the higher pass rate.' With self-selected groups and unmeasured confounders, causation is not established—only correlation. The explanation for the correct answer is factually wrong. The distractor explanations are sound, but the key explanation is a material false claim.",
+      "reason_characters": 359,
+      "reason_within600": true,
+      "independent_reason_status": "fail",
+      "independent_reason_assessment": "The rejection and main causal criticism are correct, but the reason falsely calls the distractor explanations sound. Those explanations claim unmeasured preparation/tutoring/exam difficulty cannot explain the gap, although each may be a cause. Lack of measurement does not rule them out.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": false
+    },
+    {
+      "sequence": 3,
+      "batch": 1,
+      "arm": "disabled",
+      "slot": "1",
+      "case_id": "fresh_parallel_timing_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": false,
+      "reason": "Key and explanation are correct: parallel builds finish at 7 s, packaging adds 3 s, total 10 s. However, the explanation for distractor '11 seconds' claims 11 = 4+7, which omits packaging—but 4+7=11 does include packaging if read as sequential builds without packaging, yet the label says 'omits packaging.' Actually 4+7=11 adds the two build times; the explanation then says packaging starts at 7 and finishes at 10, which is correct. The distractor explanation is internally confused but the arithmetic check: 4+7=11 is correct arithmetic for sequential builds without packaging. The explanation says '11 = 4+7 adds the build times but omits packaging'—this is accurate (11 is the sequential-build sum without packaging). No material error found.",
+      "reason_characters": 748,
+      "reason_within600": false,
+      "independent_reason_status": "fail",
+      "independent_reason_assessment": "The final accepted verdict matches gold, but the748-character reason violates the600 limit and contains a contradiction:it says4+7=11 includes packaging while also describing builds without packaging. Its later self-correction does not remove the false/confused claim from the returned reason.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": false
+    },
+    {
+      "sequence": 3,
+      "batch": 1,
+      "arm": "disabled",
+      "slot": "2",
+      "case_id": "fresh_parallel_timing_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": false,
+      "reason": "Key and explanation are correct. Distractor '11 seconds' explanation says '11 seconds is 4+7+3, adding both build times and packaging sequentially.' But 4+7+3=14, not 11. The correct sequential-with-packaging total is 14. The value 11=4+7 omits packaging. This explanation misidentifies how 11 is obtained, which is a material false claim in the feedback.",
+      "reason_characters": 355,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The exact false11=4+7+3 claim is correctly rejected using4+7+3=14 and4+7=11.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": false
+    },
+    {
+      "sequence": 3,
+      "batch": 1,
+      "arm": "disabled",
+      "slot": "3",
+      "case_id": "fresh_causal_evidence_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": false,
+      "reason": "Key is 'The online group had an observed pass rate 20 percentage points higher,' which is a factual, non-causal observation supported by 80%-60%=20pp. The explanation correctly notes self-selection and unmeasured factors prevent causal conclusions. All distractor explanations are sound. No material errors found.",
+      "reason_characters": 313,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The described20-percentage-point association and lack of identified causality correctly match the repaired payload.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": false
+    },
+    {
+      "sequence": 3,
+      "batch": 1,
+      "arm": "disabled",
+      "slot": "4",
+      "case_id": "fresh_signed_square_sound",
+      "raw_verdict": "accepted",
+      "gold_verdict": "accepted",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": false,
+      "reason": "The stem restricts x to nonnegative reals, so x=7 is the unique solution. Key is 7. All explanations are correct: 7*7=49 and nonnegative; -7 squares to 49 but is negative; 0*0=0; 14*14=196. No errors found.",
+      "reason_characters": 206,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The nonnegative domain and all four square calculations are correctly assessed.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": false
+    },
+    {
+      "sequence": 3,
+      "batch": 1,
+      "arm": "disabled",
+      "slot": "5",
+      "case_id": "fresh_signed_square_defective",
+      "raw_verdict": "rejected",
+      "gold_verdict": "rejected",
+      "raw_disposition_matches": true,
+      "strict_batch_credit_allowed": false,
+      "reason": "The stem says 'a real number x satisfies x*x=49' with no nonnegativity restriction, so both 7 and -7 satisfy the equation. The key is 7 only, but -7 is equally valid. The distractor explanation for -7 incorrectly invokes 'the square root of 49 is nonnegative' as a reason to exclude -7—but the question asks which value satisfies x*x=49, not what the principal square root is. -7 does satisfy x*x=49 for a real number x. There is no unique correct answer among the offered choices, and the -7 explanation is false.",
+      "reason_characters": 514,
+      "reason_within600": true,
+      "independent_reason_status": "pass",
+      "independent_reason_assessment": "The reason correctly distinguishes the equation’s two real solutions from the principal square root and identifies the false-7 exclusion.",
+      "mentions_paired_counterpart": false,
+      "credited_full_check_pass": false
+    }
+  ],
+  "released_payload_hashes": [
+    {
+      "sequence": 0,
+      "arm": "disabled",
+      "slot": "2",
+      "case_id": "familiar_paint_sound",
+      "original_sha256": "2024e8cd039b70a27b4920bf5072f84937629eba828b805a9be0304195b810ae",
+      "released_sha256": "2024e8cd039b70a27b4920bf5072f84937629eba828b805a9be0304195b810ae",
+      "deep_value_and_string_identity": true
+    },
+    {
+      "sequence": 0,
+      "arm": "disabled",
+      "slot": "3",
+      "case_id": "familiar_bus_sound",
+      "original_sha256": "f4625554acd27e5c40d6e3df774a283c991defa42c3b5c15ef2417c6af7b9902",
+      "released_sha256": "f4625554acd27e5c40d6e3df774a283c991defa42c3b5c15ef2417c6af7b9902",
+      "deep_value_and_string_identity": true
+    },
+    {
+      "sequence": 0,
+      "arm": "disabled",
+      "slot": "4",
+      "case_id": "familiar_weighted_grade_sound",
+      "original_sha256": "833b12b19a422a112be6c4c4da8cbaa671f48aa89428f814898ea079989ae27c",
+      "released_sha256": "833b12b19a422a112be6c4c4da8cbaa671f48aa89428f814898ea079989ae27c",
+      "deep_value_and_string_identity": true
+    },
+    {
+      "sequence": 1,
+      "arm": "adaptive",
+      "slot": "2",
+      "case_id": "familiar_paint_sound",
+      "original_sha256": "2024e8cd039b70a27b4920bf5072f84937629eba828b805a9be0304195b810ae",
+      "released_sha256": "2024e8cd039b70a27b4920bf5072f84937629eba828b805a9be0304195b810ae",
+      "deep_value_and_string_identity": true
+    },
+    {
+      "sequence": 1,
+      "arm": "adaptive",
+      "slot": "3",
+      "case_id": "familiar_bus_sound",
+      "original_sha256": "f4625554acd27e5c40d6e3df774a283c991defa42c3b5c15ef2417c6af7b9902",
+      "released_sha256": "f4625554acd27e5c40d6e3df774a283c991defa42c3b5c15ef2417c6af7b9902",
+      "deep_value_and_string_identity": true
+    },
+    {
+      "sequence": 1,
+      "arm": "adaptive",
+      "slot": "4",
+      "case_id": "familiar_weighted_grade_sound",
+      "original_sha256": "833b12b19a422a112be6c4c4da8cbaa671f48aa89428f814898ea079989ae27c",
+      "released_sha256": "833b12b19a422a112be6c4c4da8cbaa671f48aa89428f814898ea079989ae27c",
+      "deep_value_and_string_identity": true
+    },
+    {
+      "sequence": 2,
+      "arm": "adaptive",
+      "slot": "1",
+      "case_id": "fresh_parallel_timing_sound",
+      "original_sha256": "e3db68fe9d9957479f402a7469bacdd191638ee52cec5ba729415476e8875941",
+      "released_sha256": "e3db68fe9d9957479f402a7469bacdd191638ee52cec5ba729415476e8875941",
+      "deep_value_and_string_identity": true
+    },
+    {
+      "sequence": 2,
+      "arm": "adaptive",
+      "slot": "3",
+      "case_id": "fresh_causal_evidence_sound",
+      "original_sha256": "2743280dc1f34069b3e40ea0c52d60f1f413d617904f8ecb458c66fc5d5117aa",
+      "released_sha256": "2743280dc1f34069b3e40ea0c52d60f1f413d617904f8ecb458c66fc5d5117aa",
+      "deep_value_and_string_identity": true
+    },
+    {
+      "sequence": 2,
+      "arm": "adaptive",
+      "slot": "4",
+      "case_id": "fresh_signed_square_sound",
+      "original_sha256": "707852b5b28f205edf6fb83558784e2c33035b92e17171cba9a8873bcf45034c",
+      "released_sha256": "707852b5b28f205edf6fb83558784e2c33035b92e17171cba9a8873bcf45034c",
+      "deep_value_and_string_identity": true
+    }
+  ],
+  "arm_summary": {
+    "disabled": {
+      "planned_calls": 3,
+      "attempted_calls": 2,
+      "strict_valid_calls": 1,
+      "failed_calls": 1,
+      "unattempted_calls": 1,
+      "planned_logical_dispositions": 18,
+      "raw_verdicts_observed": 12,
+      "raw_matching_verdicts": 12,
+      "credited_full_checks_pass": 6,
+      "raw_reason_content_pass": 10,
+      "raw_reason_content_fail": 2,
+      "credited_sound_accepted": 3,
+      "credited_defective_rejected": 3,
+      "accepted_payload_identity_passes": 3,
+      "unattempted_supplemental_cases": 6,
+      "all_prospective_criteria_pass": false,
+      "qualified_configuration": false
+    },
+    "adaptive": {
+      "planned_calls": 3,
+      "attempted_calls": 2,
+      "strict_valid_calls": 2,
+      "failed_calls": 0,
+      "unattempted_calls": 1,
+      "planned_logical_dispositions": 18,
+      "raw_verdicts_observed": 12,
+      "raw_matching_verdicts": 12,
+      "credited_full_checks_pass": 12,
+      "raw_reason_content_pass": 12,
+      "raw_reason_content_fail": 0,
+      "credited_sound_accepted": 6,
+      "credited_defective_rejected": 6,
+      "accepted_payload_identity_passes": 6,
+      "unattempted_supplemental_cases": 6,
+      "all_prospective_criteria_pass": false,
+      "qualified_configuration": false
+    }
+  },
+  "unattempted": [
+    {
+      "sequence": 4,
+      "batch": 2,
+      "arm": "disabled",
+      "case_ids": [
+        "supplement_duplicate_wrong_value_defective",
+        "supplement_semicolon_defective",
+        "supplement_duplicate_wrong_value_sound",
+        "supplement_decimal_representation_sound",
+        "supplement_semicolon_sound",
+        "supplement_decimal_representation_defective"
+      ],
+      "status": "unattempted_after_frozen_strict_format_stop"
+    },
+    {
+      "sequence": 5,
+      "batch": 2,
+      "arm": "adaptive",
+      "case_ids": [
+        "supplement_duplicate_wrong_value_defective",
+        "supplement_semicolon_defective",
+        "supplement_duplicate_wrong_value_sound",
+        "supplement_decimal_representation_sound",
+        "supplement_semicolon_sound",
+        "supplement_decimal_representation_defective"
+      ],
+      "status": "unattempted_after_frozen_strict_format_stop"
+    }
+  ],
+  "observed_failure_mechanism": "The fourth call returned end_turn with native-schema-valid closed IDs. Its timing reason has748 codepoints, exceeding the frozen local600 limit. Native schema declares an unconstrained string, so native shape acceptance does not establish local semantic or length validity. The strict validator and selector reject the entire batch; no accepted originals are released from it.",
+  "reason_content_findings": [
+    "Disabled fresh causal reason correctly rejects the item but falsely calls its three distractor explanations sound, despite their invalid inference that unmeasured factors cannot explain an outcome.",
+    "Disabled fresh timing reason contains contradictory packaging claims and later correction inside a748-character reason. Neither the matching verdict nor later self-correction earns valid-batch credit.",
+    "Adaptive timing reason uses a generic student/error-path frame while correctly checking the mathematical interpretation present in the supplied feedback. This is treated as an illustrative hypothetical, not evidence of real learner history; no material factual error found in that reason."
+  ],
+  "scope_limits": [
+    "The sound/defective variants were deliberately paired within each batch. Four observed reasons mention counterparts, but also supply direct item-specific calculations or qualifier checks. This remains paired diagnostic evidence, not proof of performance on independent unpaired production items.",
+    "Both configurations have12 raw matching verdicts, but disabled has only6 strict credited checks and adaptive12; neither completed all18 required checks.",
+    "The supplemental grammar, equivalent-wrong-choice and representation-sensitive families were never dispatched, so these original user concerns receive no live qualification from this run.",
+    "Adaptive used a16000 shared thinking/output budget with temperature omitted; disabled used6000 tokens and temperature0.2. This is the predeclared compatible-configuration comparison, not an isolated single-knob experiment.",
+    "The nine selected original payloads were byte-identical at the string/deep-value level and matched canonical content hashes; the auditor generated only reasons/verdicts and did not create repaired learner feedback.",
+    "A fourth-stage production integration still needs separate budget,yield,and end-to-end qualification."
+  ],
+  "recommendation": "Select neither configuration under the frozen all18-per-arm criteria. Adaptive passed the12 observed strict checks but its six supplemental cases were unattempted; disabled additionally failed the600-character bound and had two unsound reasons. Preserve this incomplete trial and its stop rather than relabeling,ignoring the failed batch,or claiming broad semantic reliability.",
+  "release_scope": "All selected/released payload counts in this audit refer only to offline replay of the inactive candidate selector. No learner bank, production state, or deployment was changed."
+}

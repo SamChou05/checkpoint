@@ -1,0 +1,1126 @@
+{
+  "status": "draft_pending_independent_review_and_parent_freeze",
+  "name": "Supplemental final learner-content gate controls",
+  "design_owner": "answer_highlighting subagent",
+  "counts": {
+    "learner_items": 6,
+    "pairs": 3,
+    "accept": 3,
+    "reject": 3,
+    "main_and_choice_explanation_fields": 30,
+    "pairwise_meaning_judgments": 36
+  },
+  "batch_design": "All six supplemental cases belong to batch2; each sound/defective pair remains together. Opaque slot assignment is owned by the separately frozen protocol.",
+  "provider_input_boundary": "Send only learner_item under opaque slots, never pair/case labels,variant,gold,provenance,repair notes or paired relationships. The gate must accept/reject unchanged learner content; no learner-feedback rewriting.",
+  "scope": "Adds one familiar captured grammar defect pair and two new diagnostic pairs distinguishing semantic equality from explicit representation-sensitive tasks. These extend the content checks but do not establish broad semantic generalization.",
+  "approved_original_packet_unchanged": {
+    "path": "docs/evidence/final-content-audit-20260922/controls-gold-draft.json",
+    "sha256": "a974723f3f75eb274066f2ee7b5585b646106b6cffc9b4d425caf1a8dab79648"
+  },
+  "source_files": {
+    "docs/evidence/question-reliability-release-20260922/pipeline-capture-v2.json": "0ff18c0a3de0254bd8aa5d01db04c5576cf1dc587797af01b1f933c55d6f2f25",
+    "docs/evidence/final-content-audit-20260922/controls-gold-draft.json": "a974723f3f75eb274066f2ee7b5585b646106b6cffc9b4d425caf1a8dab79648"
+  },
+  "no_calls_authorized_by_this_packet": true,
+  "mechanical_checks": {
+    "all6_have_exact_four_choices": true,
+    "all6_keys_are_exact_offered_text": true,
+    "all6_have_exact_four_feedback_entries": true,
+    "all6_within_existing_text_bounds": true,
+    "paired_variants_differ_explicitly": true,
+    "old_artifacts_modified": false,
+    "new_provider_calls": 0,
+    "all6_feedback_meets_12_character_minimum": true
+  },
+  "cases": [
+    {
+      "case_id": "supplement_semicolon_defective",
+      "pair_id": "supplement_semicolon",
+      "variant": "defective",
+      "batch": 2,
+      "learner_item": {
+        "prompt": "Which sentence uses a semicolon correctly to join two independent clauses?",
+        "choices": [
+          "The conference ended at noon, many attendees stayed for the workshop.",
+          "The conference ended at noon; however, many attendees stayed for the workshop.",
+          "The conference ended at noon, however; many attendees stayed for the workshop.",
+          "The conference ended at noon; and many attendees stayed for the workshop."
+        ],
+        "expectedAnswer": "The conference ended at noon; however, many attendees stayed for the workshop.",
+        "explanation": "When a conjunctive adverb like 'however' links two independent clauses, a semicolon must precede it and a comma must follow it. All other choices misplace or omit the semicolon.",
+        "choiceExplanations": {
+          "The conference ended at noon, many attendees stayed for the workshop.": "A comma alone between two independent clauses creates a comma splice; no semicolon is present at all.",
+          "The conference ended at noon; however, many attendees stayed for the workshop.": "A semicolon before the conjunctive adverb 'however' and a comma after it is the standard rule for joining two independent clauses.",
+          "The conference ended at noon, however; many attendees stayed for the workshop.": "The semicolon is misplaced after 'however' instead of before it, violating the conjunctive-adverb punctuation rule.",
+          "The conference ended at noon; and many attendees stayed for the workshop.": "A semicolon before a coordinating conjunction like 'and' is nonstandard; a comma before 'and' is the correct form."
+        }
+      },
+      "provenance": {
+        "kind": "captured_provider_text",
+        "capture": "docs/evidence/question-reliability-release-20260922/pipeline-capture-v2.json",
+        "capture_sha256": "0ff18c0a3de0254bd8aa5d01db04c5576cf1dc587797af01b1f933c55d6f2f25",
+        "call_index_zero_based": 11,
+        "review_index": 0,
+        "fidelity": "Stem and ordered choices copied from captured request; key,main,and all four feedback strings copied byte-for-byte from captured raw response. Envelope converts answer to expectedAnswer and feedback array to exact-text map; no string changed.",
+        "primary_grammar_reference": {
+          "url": "https://cse.buffalo.edu/~rapaport/Papers/Papers.by.Others/aune01-punctuation.pdf",
+          "location": "Printed page5, ruleR2 and example with however attached to the first clause before a semicolon.",
+          "supports": "A conjunctive adverb may attach to either clause; a mandatory semicolon-before-however claim is not universally true."
+        }
+      },
+      "paired_repairs": [],
+      "gold": {
+        "required_gate_decision": "reject",
+        "decision_reason": "At least two offered punctuation constructions are defensible, and final feedback incorrectly treats one conventional however placement as mandatory.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": false,
+        "supported_choices": [
+          "The conference ended at noon; however, many attendees stayed for the workshop.",
+          "The conference ended at noon, however; many attendees stayed for the workshop."
+        ],
+        "choice_assessments": [
+          {
+            "choice": "The conference ended at noon, many attendees stayed for the workshop.",
+            "supported_as_answer": false,
+            "reason": "There is no semicolon."
+          },
+          {
+            "choice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+            "supported_as_answer": true,
+            "reason": "This is a valid conventional semicolon-then-however construction."
+          },
+          {
+            "choice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+            "supported_as_answer": true,
+            "reason": "This also joins independent clauses correctly when however attaches to the first clause."
+          },
+          {
+            "choice": "The conference ended at noon; and many attendees stayed for the workshop.",
+            "supported_as_answer": false,
+            "reason": "The coordinating-conjunction punctuation is style-sensitive; this extra uncertainty is not needed to establish nonuniqueness."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "The conference ended at noon, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "Comma splice and semicolon-before-however are different written punctuation constructions, relevant to this explicit punctuation task."
+          },
+          {
+            "leftChoice": "The conference ended at noon, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "Comma splice and comma-however-semicolon are different written punctuation constructions."
+          },
+          {
+            "leftChoice": "The conference ended at noon, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon; and many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "Comma splice and semicolon-and are different written punctuation constructions."
+          },
+          {
+            "leftChoice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "The two placements attach however to different clauses; these are distinct written constructions even though both can be grammatical."
+          },
+          {
+            "leftChoice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon; and many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "However and and are different linking constructions in the written sentence."
+          },
+          {
+            "leftChoice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon; and many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "First-clause however followed by semicolon differs from semicolon followed by and."
+          }
+        ],
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "b5232048a1eeaa66c22741a7a7b45aa00d3703959db5ff19095bfe9fc7f34564",
+            "claims": [
+              {
+                "claim": "A semicolon must always precede however when it links two independent clauses.",
+                "assessment": "false_or_unjustified",
+                "reason": "However may attach to the first clause and precede the semicolon."
+              },
+              {
+                "claim": "All other offered choices misplace or omit the semicolon.",
+                "assessment": "false_or_unjustified",
+                "reason": "The comma-however-semicolon choice is defensible; the question supplies no placement restriction."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['The conference ended at noon, many attendees stayed for the workshop.']",
+            "text_sha256": "b0c593cf3f4d54905da75cd3d6335a97aff6a034885b335ac5c1cef401c7c4b4",
+            "claims": [
+              {
+                "claim": "The comma-only choice is a comma splice and lacks a semicolon.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['The conference ended at noon; however, many attendees stayed for the workshop.']",
+            "text_sha256": "1af0664439b53600e471cf9fcdb153372f707965107c502758517d23cd5024d9",
+            "claims": [
+              {
+                "claim": "Semicolon-before-however plus comma-after-however is a standard valid pattern; it is not the only possible attachment.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['The conference ended at noon, however; many attendees stayed for the workshop.']",
+            "text_sha256": "8941993c4d02cb1aa1f7c3cdf85303095a70335d723f32a747f41d7e381b89a7",
+            "claims": [
+              {
+                "claim": "A semicolon after however necessarily violates its punctuation rule.",
+                "assessment": "false_or_unjustified",
+                "reason": "The exact comma-however-semicolon construction can attach however to the first clause."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['The conference ended at noon; and many attendees stayed for the workshop.']",
+            "text_sha256": "5de1700c63c748afbfbd323e8be323fb4c03307da48793ad9b84ee6171327b2f",
+            "claims": [
+              {
+                "claim": "Semicolon before and is necessarily nonstandard in this offered sentence.",
+                "assessment": "uncertain",
+                "reason": "This is a style-sensitive claim; semicolons with coordinating conjunctions are not universally prohibited. Rejection is already established independently."
+              }
+            ],
+            "all_claims_sound": false
+          }
+        ],
+        "all_claims_sound": false,
+        "all_choices_semantically_distinct_for_task": true,
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only if exactly one offered choice correctly answers the unchanged task, the key matches it, all choices are distinct as proposed answers to that task, and every feedback claim is sound. Material uncertainty requires rejection."
+      }
+    },
+    {
+      "case_id": "supplement_semicolon_sound",
+      "pair_id": "supplement_semicolon",
+      "variant": "sound",
+      "batch": 2,
+      "learner_item": {
+        "prompt": "Which sentence correctly joins two independent clauses with a semicolon, with 'however' beginning the second clause and followed by a comma?",
+        "choices": [
+          "The conference ended at noon, many attendees stayed for the workshop.",
+          "The conference ended at noon; however, many attendees stayed for the workshop.",
+          "The conference ended at noon, however; many attendees stayed for the workshop.",
+          "The conference ended at noon; and many attendees stayed for the workshop."
+        ],
+        "expectedAnswer": "The conference ended at noon; however, many attendees stayed for the workshop.",
+        "explanation": "The task explicitly places 'however' at the start of the second clause. Put a semicolon between the clauses and a comma after 'however'.",
+        "choiceExplanations": {
+          "The conference ended at noon, many attendees stayed for the workshop.": "A comma alone between two independent clauses creates a comma splice; no semicolon is present at all.",
+          "The conference ended at noon; however, many attendees stayed for the workshop.": "A semicolon before the conjunctive adverb 'however' and a comma after it is the standard rule for joining two independent clauses.",
+          "The conference ended at noon, however; many attendees stayed for the workshop.": "This attaches 'however' to the first clause; it does not match the explicitly requested second-clause placement.",
+          "The conference ended at noon; and many attendees stayed for the workshop.": "This uses 'and', not the requested 'however', at the start of the second clause."
+        }
+      },
+      "provenance": {
+        "kind": "explicit_paired_repair",
+        "defective_pair_source": {
+          "kind": "captured_provider_text",
+          "capture": "docs/evidence/question-reliability-release-20260922/pipeline-capture-v2.json",
+          "capture_sha256": "0ff18c0a3de0254bd8aa5d01db04c5576cf1dc587797af01b1f933c55d6f2f25",
+          "call_index_zero_based": 11,
+          "review_index": 0,
+          "fidelity": "Stem and ordered choices copied from captured request; key,main,and all four feedback strings copied byte-for-byte from captured raw response. Envelope converts answer to expectedAnswer and feedback array to exact-text map; no string changed.",
+          "primary_grammar_reference": {
+            "url": "https://cse.buffalo.edu/~rapaport/Papers/Papers.by.Others/aune01-punctuation.pdf",
+            "location": "Printed page5, ruleR2 and example with however attached to the first clause before a semicolon.",
+            "supports": "A conjunctive adverb may attach to either clause; a mandatory semicolon-before-however claim is not universally true."
+          }
+        },
+        "fidelity_scope": "Only listed repaired fields change; unchanged captured strings retain exact source bytes."
+      },
+      "paired_repairs": [
+        "Prompt specifies second-clause however placement.",
+        "Main explanation is limited to the explicitly requested construction.",
+        "Feedback for comma-however-semicolon and semicolon-and is replaced by exact task-specific mismatch explanations."
+      ],
+      "gold": {
+        "required_gate_decision": "accept",
+        "decision_reason": "The explicit attachment requirement makes the intended written construction unique; repaired feedback no longer claims a universal punctuation rule.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": true,
+        "supported_choices": [
+          "The conference ended at noon; however, many attendees stayed for the workshop."
+        ],
+        "choice_assessments": [
+          {
+            "choice": "The conference ended at noon, many attendees stayed for the workshop.",
+            "supported_as_answer": false,
+            "reason": "There is no semicolon."
+          },
+          {
+            "choice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+            "supported_as_answer": true,
+            "reason": "This is a valid conventional semicolon-then-however construction."
+          },
+          {
+            "choice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+            "supported_as_answer": false,
+            "reason": "This places however in the first clause, contrary to the explicit requirement."
+          },
+          {
+            "choice": "The conference ended at noon; and many attendees stayed for the workshop.",
+            "supported_as_answer": false,
+            "reason": "This uses and, not the explicitly requested however."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "The conference ended at noon, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "Comma splice and semicolon-before-however are different written punctuation constructions, relevant to this explicit punctuation task."
+          },
+          {
+            "leftChoice": "The conference ended at noon, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "Comma splice and comma-however-semicolon are different written punctuation constructions."
+          },
+          {
+            "leftChoice": "The conference ended at noon, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon; and many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "Comma splice and semicolon-and are different written punctuation constructions."
+          },
+          {
+            "leftChoice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "The two placements attach however to different clauses; these are distinct written constructions even though both can be grammatical."
+          },
+          {
+            "leftChoice": "The conference ended at noon; however, many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon; and many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "However and and are different linking constructions in the written sentence."
+          },
+          {
+            "leftChoice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+            "rightChoice": "The conference ended at noon; and many attendees stayed for the workshop.",
+            "relation": "distinct",
+            "reason": "First-clause however followed by semicolon differs from semicolon followed by and."
+          }
+        ],
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "7523017059b5f28acc06ef52101d748406fac2a5e4bd378c508420e6e850f0c7",
+            "claims": [
+              {
+                "claim": "The repaired task explicitly places however at the start of the second clause.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              },
+              {
+                "claim": "The requested construction uses a semicolon between clauses and a comma after however.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['The conference ended at noon, many attendees stayed for the workshop.']",
+            "text_sha256": "b0c593cf3f4d54905da75cd3d6335a97aff6a034885b335ac5c1cef401c7c4b4",
+            "claims": [
+              {
+                "claim": "The comma-only choice is a comma splice and lacks a semicolon.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['The conference ended at noon; however, many attendees stayed for the workshop.']",
+            "text_sha256": "1af0664439b53600e471cf9fcdb153372f707965107c502758517d23cd5024d9",
+            "claims": [
+              {
+                "claim": "Semicolon-before-however plus comma-after-however is a standard valid pattern; it is not the only possible attachment.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['The conference ended at noon, however; many attendees stayed for the workshop.']",
+            "text_sha256": "7327829d3baba27fa6ed50b2cddb9be221c02fafa1ef2783d9d4261b0e62b1b4",
+            "claims": [
+              {
+                "claim": "This attaches however to the first clause and fails the explicit requested second-clause placement.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['The conference ended at noon; and many attendees stayed for the workshop.']",
+            "text_sha256": "9f94fcc6657b3c4612957d76e865399cfa9c13ca01261448e53e4c80660b7726",
+            "claims": [
+              {
+                "claim": "This uses and rather than the requested second-clause however.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": true,
+        "all_choices_semantically_distinct_for_task": true,
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only if exactly one offered choice correctly answers the unchanged task, the key matches it, all choices are distinct as proposed answers to that task, and every feedback claim is sound. Material uncertainty requires rejection."
+      },
+      "paired_field_differences": [
+        "prompt",
+        "explanation",
+        "choiceExplanations.The conference ended at noon, however; many attendees stayed for the workshop.",
+        "choiceExplanations.The conference ended at noon; and many attendees stayed for the workshop."
+      ]
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_defective",
+      "pair_id": "supplement_duplicate_wrong_value",
+      "variant": "defective",
+      "batch": 2,
+      "learner_item": {
+        "prompt": "What is the value of 2 + 2?",
+        "choices": [
+          "4",
+          "2",
+          "two",
+          "3"
+        ],
+        "expectedAnswer": "4",
+        "explanation": "Adding 2 and 2 gives 4.",
+        "choiceExplanations": {
+          "4": "Adding 2 and 2 gives 4.",
+          "2": "2 is one addend, not the sum of both addends.",
+          "two": "The word two denotes 2, which is one addend rather than the sum 4.",
+          "3": "3 is one less than the sum 4."
+        }
+      },
+      "provenance": {
+        "kind": "new_evaluator_authored_diagnostic_pair",
+        "provider_generated": false,
+        "novelty": "New full learner payloads, with a conventional elementary arithmetic task. No claim of random or broad subject coverage.",
+        "purpose": "Separate unique-key correctness from semantic diversity of wrong answers."
+      },
+      "paired_repairs": [],
+      "gold": {
+        "required_gate_decision": "reject",
+        "decision_reason": "The key is uniquely correct and every teaching claim is true, but2 andtwo are semantically duplicate wrong choices; the item fails the required answer diversity.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": true,
+        "supported_choices": [
+          "4"
+        ],
+        "choice_assessments": [
+          {
+            "choice": "4",
+            "supported_as_answer": true,
+            "reason": "4 is the sum."
+          },
+          {
+            "choice": "2",
+            "supported_as_answer": false,
+            "reason": "2 is not4."
+          },
+          {
+            "choice": "two",
+            "supported_as_answer": false,
+            "reason": "two denotes2, not4."
+          },
+          {
+            "choice": "3",
+            "supported_as_answer": false,
+            "reason": "3 is not4."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "4",
+            "rightChoice": "2",
+            "relation": "distinct",
+            "reason": "4 and2 are different values."
+          },
+          {
+            "leftChoice": "4",
+            "rightChoice": "two",
+            "relation": "distinct",
+            "reason": "4 andtwo=2 are different values."
+          },
+          {
+            "leftChoice": "4",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "reason": "4 and3 are different values."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "two",
+            "relation": "equivalent",
+            "reason": "2 andtwo denote the same numerical value as an answer to this value question, despite different spelling."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "reason": "2 and3 are different values."
+          },
+          {
+            "leftChoice": "two",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "reason": "two=2 and3 are different values."
+          }
+        ],
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "c8aa1bad59774850d3ed84ee4f11927f803e8837e12c79e4d280a8e280a90bcf",
+            "claims": [
+              {
+                "claim": "2+2=4.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['4']",
+            "text_sha256": "c8aa1bad59774850d3ed84ee4f11927f803e8837e12c79e4d280a8e280a90bcf",
+            "claims": [
+              {
+                "claim": "2+2=4.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['2']",
+            "text_sha256": "02288587e5d32811fe0f3e5ac8ce7018300cee969391199a5636fc1a250e3744",
+            "claims": [
+              {
+                "claim": "2 is one of the two addends and is not their sum.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['two']",
+            "text_sha256": "5c11a4981a4207d62a662668efb0267d0a1c3b05d12a49a07a4a3ccfc3f42b0b",
+            "claims": [
+              {
+                "claim": "two denotes2 and differs from the sum4.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['3']",
+            "text_sha256": "222bc0c5e63312b0872c0846fa593b5533682ef5fa8e539d079656e40297e868",
+            "claims": [
+              {
+                "claim": "3 is one less than4.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": true,
+        "all_choices_semantically_distinct_for_task": false,
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only if exactly one offered choice correctly answers the unchanged task, the key matches it, all choices are distinct as proposed answers to that task, and every feedback claim is sound. Material uncertainty requires rejection."
+      }
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_sound",
+      "pair_id": "supplement_duplicate_wrong_value",
+      "variant": "sound",
+      "batch": 2,
+      "learner_item": {
+        "prompt": "What is the value of 2 + 2?",
+        "choices": [
+          "4",
+          "2",
+          "5",
+          "3"
+        ],
+        "expectedAnswer": "4",
+        "explanation": "Adding 2 and 2 gives 4.",
+        "choiceExplanations": {
+          "4": "Adding 2 and 2 gives 4.",
+          "2": "2 is one addend, not the sum of both addends.",
+          "5": "5 is one more than the sum 4.",
+          "3": "3 is one less than the sum 4."
+        }
+      },
+      "provenance": {
+        "kind": "explicit_paired_repair",
+        "defective_pair_source": {
+          "kind": "new_evaluator_authored_diagnostic_pair",
+          "provider_generated": false,
+          "novelty": "New full learner payloads, with a conventional elementary arithmetic task. No claim of random or broad subject coverage.",
+          "purpose": "Separate unique-key correctness from semantic diversity of wrong answers."
+        },
+        "fidelity_scope": "Only thetwo choice and its feedback are replaced; all other learner strings unchanged."
+      },
+      "paired_repairs": [
+        "Replace the semantically duplicate wrong choice two with the distinct wrong value5 and replace only its feedback."
+      ],
+      "gold": {
+        "required_gate_decision": "accept",
+        "decision_reason": "Four distinct proposed values remain,4 is the only correct one, and every explanation is true.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": true,
+        "supported_choices": [
+          "4"
+        ],
+        "choice_assessments": [
+          {
+            "choice": "4",
+            "supported_as_answer": true,
+            "reason": "4 is the sum."
+          },
+          {
+            "choice": "2",
+            "supported_as_answer": false,
+            "reason": "2 is not4."
+          },
+          {
+            "choice": "5",
+            "supported_as_answer": false,
+            "reason": "5 is not4."
+          },
+          {
+            "choice": "3",
+            "supported_as_answer": false,
+            "reason": "3 is not4."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "4",
+            "rightChoice": "2",
+            "relation": "distinct",
+            "reason": "4 and2 are different values."
+          },
+          {
+            "leftChoice": "4",
+            "rightChoice": "5",
+            "relation": "distinct",
+            "reason": "4 and5 are different values."
+          },
+          {
+            "leftChoice": "4",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "reason": "4 and3 are different values."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "5",
+            "relation": "distinct",
+            "reason": "2 and5 are different values."
+          },
+          {
+            "leftChoice": "2",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "reason": "2 and3 are different values."
+          },
+          {
+            "leftChoice": "5",
+            "rightChoice": "3",
+            "relation": "distinct",
+            "reason": "5 and3 are different values."
+          }
+        ],
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "c8aa1bad59774850d3ed84ee4f11927f803e8837e12c79e4d280a8e280a90bcf",
+            "claims": [
+              {
+                "claim": "2+2=4.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['4']",
+            "text_sha256": "c8aa1bad59774850d3ed84ee4f11927f803e8837e12c79e4d280a8e280a90bcf",
+            "claims": [
+              {
+                "claim": "2+2=4.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['2']",
+            "text_sha256": "02288587e5d32811fe0f3e5ac8ce7018300cee969391199a5636fc1a250e3744",
+            "claims": [
+              {
+                "claim": "2 is one of the two addends and is not their sum.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['5']",
+            "text_sha256": "12bbcc6b0e7f0ce342bdb079d4ec27ecfbf5f0073b749f94c5e5b150bb9e513b",
+            "claims": [
+              {
+                "claim": "5 is one more than4.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['3']",
+            "text_sha256": "222bc0c5e63312b0872c0846fa593b5533682ef5fa8e539d079656e40297e868",
+            "claims": [
+              {
+                "claim": "3 is one less than4.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": true,
+        "all_choices_semantically_distinct_for_task": true,
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only if exactly one offered choice correctly answers the unchanged task, the key matches it, all choices are distinct as proposed answers to that task, and every feedback claim is sound. Material uncertainty requires rejection."
+      },
+      "paired_field_differences": [
+        "choices[2]",
+        "choiceExplanations.two",
+        "choiceExplanations.5"
+      ]
+    },
+    {
+      "case_id": "supplement_decimal_representation_defective",
+      "pair_id": "supplement_decimal_representation",
+      "variant": "defective",
+      "batch": 2,
+      "learner_item": {
+        "prompt": "Which option has a value equal to one half?",
+        "choices": [
+          "0.5",
+          "1/2",
+          "50%",
+          "0.05"
+        ],
+        "expectedAnswer": "0.5",
+        "explanation": "One half is five tenths, written 0.5 in the requested decimal notation.",
+        "choiceExplanations": {
+          "0.5": "0.5 equals one half and uses the requested decimal-point notation.",
+          "1/2": "1/2 equals one half, but it uses a fraction bar rather than the requested decimal notation.",
+          "50%": "50% equals one half, but percent notation is excluded by the stem.",
+          "0.05": "0.05 is five hundredths, or 1/20, not one half."
+        }
+      },
+      "provenance": {
+        "kind": "new_evaluator_authored_diagnostic_pair",
+        "provider_generated": false,
+        "novelty": "New full learner payloads for explicit representation-sensitive notation versus underlying value.",
+        "purpose": "Test whether the gate compares answers according to the unchanged requested task, rather than always equating numerical forms or always treating distinct strings as different answers."
+      },
+      "paired_repairs": [],
+      "gold": {
+        "required_gate_decision": "reject",
+        "decision_reason": "Three choices equal one half; feedback silently imposes notation restrictions missing from this unchanged stem.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": false,
+        "supported_choices": [
+          "0.5",
+          "1/2",
+          "50%"
+        ],
+        "choice_assessments": [
+          {
+            "choice": "0.5",
+            "supported_as_answer": true,
+            "reason": "0.5=1/2."
+          },
+          {
+            "choice": "1/2",
+            "supported_as_answer": true,
+            "reason": "1/2=one half."
+          },
+          {
+            "choice": "50%",
+            "supported_as_answer": true,
+            "reason": "50%=50/100=1/2."
+          },
+          {
+            "choice": "0.05",
+            "supported_as_answer": false,
+            "reason": "0.05=1/20, not1/2."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "1/2",
+            "relation": "equivalent",
+            "reason": "0.5 and1/2 denote the same numerical value requested by the stem."
+          },
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "50%",
+            "relation": "equivalent",
+            "reason": "0.5 and50% denote the same numerical value."
+          },
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "0.05",
+            "relation": "distinct",
+            "reason": "0.5 and0.05 are different values."
+          },
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "50%",
+            "relation": "equivalent",
+            "reason": "1/2 and50% both denote one half."
+          },
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "0.05",
+            "relation": "distinct",
+            "reason": "1/2 and0.05 are different values."
+          },
+          {
+            "leftChoice": "50%",
+            "rightChoice": "0.05",
+            "relation": "distinct",
+            "reason": "50% and0.05 are different values."
+          }
+        ],
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "8162800f4028ec385e55ba092e1cf4cc0bbed7ca6e182388153227ccc93b9412",
+            "claims": [
+              {
+                "claim": "One half is five tenths and is written0.5 as a decimal.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              },
+              {
+                "claim": "The unchanged value question requests decimal notation.",
+                "assessment": "false_or_unjustified",
+                "reason": "Its stem asks only for an equal value and imposes no notation restriction."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['0.5']",
+            "text_sha256": "75aea87a7b31c23883545f1650357f537e765c3cb8d44b181b99772e3a175e95",
+            "claims": [
+              {
+                "claim": "0.5 equals one half.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              },
+              {
+                "claim": "Decimal-point notation is requested by this value-only stem.",
+                "assessment": "false_or_unjustified",
+                "reason": "The stem asks only for equal value."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['1/2']",
+            "text_sha256": "6070501d1629cadf7217b37d8bd3a188039e27b7b8bf8f2a097d3aa05f9bb6a9",
+            "claims": [
+              {
+                "claim": "1/2 equals one half and uses a fraction bar.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              },
+              {
+                "claim": "Using a fraction bar disqualifies this answer under the unchanged task.",
+                "assessment": "false_or_unjustified",
+                "reason": "The value-only stem does not require decimal notation."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['50%']",
+            "text_sha256": "7b98925f2f7f7dc227d3413c6db24a7b4090614f41bbd094c74868c58a382946",
+            "claims": [
+              {
+                "claim": "50% equals one half.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              },
+              {
+                "claim": "Percent notation is excluded by the unchanged stem.",
+                "assessment": "false_or_unjustified",
+                "reason": "No notation exclusion appears in the value-only stem."
+              }
+            ],
+            "all_claims_sound": false
+          },
+          {
+            "field": "choiceExplanations['0.05']",
+            "text_sha256": "879719d9d8e24fe0473a96c6f3706f11fcb010a3bed75ef7107f1b379bdce80b",
+            "claims": [
+              {
+                "claim": "0.05 equals five hundredths or1/20, not one half.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": false,
+        "all_choices_semantically_distinct_for_task": false,
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only if exactly one offered choice correctly answers the unchanged task, the key matches it, all choices are distinct as proposed answers to that task, and every feedback claim is sound. Material uncertainty requires rejection."
+      }
+    },
+    {
+      "case_id": "supplement_decimal_representation_sound",
+      "pair_id": "supplement_decimal_representation",
+      "variant": "sound",
+      "batch": 2,
+      "learner_item": {
+        "prompt": "Which option writes one half in decimal notation using digits and a decimal point, with no fraction bar or percent sign?",
+        "choices": [
+          "0.5",
+          "1/2",
+          "50%",
+          "0.05"
+        ],
+        "expectedAnswer": "0.5",
+        "explanation": "One half is five tenths, written 0.5 in the requested decimal notation.",
+        "choiceExplanations": {
+          "0.5": "0.5 equals one half and uses the requested decimal-point notation.",
+          "1/2": "1/2 equals one half, but it uses a fraction bar rather than the requested decimal notation.",
+          "50%": "50% equals one half, but percent notation is excluded by the stem.",
+          "0.05": "0.05 is five hundredths, or 1/20, not one half."
+        }
+      },
+      "provenance": {
+        "kind": "explicit_paired_repair",
+        "defective_pair_source": {
+          "kind": "new_evaluator_authored_diagnostic_pair",
+          "provider_generated": false,
+          "novelty": "New full learner payloads for explicit representation-sensitive notation versus underlying value.",
+          "purpose": "Test whether the gate compares answers according to the unchanged requested task, rather than always equating numerical forms or always treating distinct strings as different answers."
+        },
+        "fidelity_scope": "Only the stem changes. Choices,key,main explanation,and all four feedback strings are byte-identical across the pair."
+      },
+      "paired_repairs": [
+        "Only the prompt changes to request an exact decimal-point representation and explicitly exclude fraction-bar and percent forms."
+      ],
+      "gold": {
+        "required_gate_decision": "accept",
+        "decision_reason": "Only0.5 has both the correct value and the explicitly required written form. Equivalent quantities in fraction or percent notation do not answer this notation task.",
+        "expected_answer_exactly_offered": true,
+        "expected_answer_supported": true,
+        "exactly_one_supported_choice": true,
+        "supported_choices": [
+          "0.5"
+        ],
+        "choice_assessments": [
+          {
+            "choice": "0.5",
+            "supported_as_answer": true,
+            "reason": "0.5 has both the correct value and the exact requested notation."
+          },
+          {
+            "choice": "1/2",
+            "supported_as_answer": false,
+            "reason": "The fraction bar violates the explicit notation restriction despite correct value."
+          },
+          {
+            "choice": "50%",
+            "supported_as_answer": false,
+            "reason": "The percent sign violates the explicit notation restriction despite correct value."
+          },
+          {
+            "choice": "0.05",
+            "supported_as_answer": false,
+            "reason": "0.05 has decimal-point form but the wrong value."
+          }
+        ],
+        "all_six_pair_judgments": [
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "1/2",
+            "relation": "distinct",
+            "reason": "Decimal-point0.5 and fraction-bar1/2 are different written forms; that distinction is explicitly requested."
+          },
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "50%",
+            "relation": "distinct",
+            "reason": "Decimal-point0.5 and percent-form50% are different written forms under the explicit task."
+          },
+          {
+            "leftChoice": "0.5",
+            "rightChoice": "0.05",
+            "relation": "distinct",
+            "reason": "0.5 and0.05 have different values even though both use decimal-point notation."
+          },
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "50%",
+            "relation": "distinct",
+            "reason": "Fraction-bar1/2 and percent-form50% are different literal representations; both fail different explicit form restrictions."
+          },
+          {
+            "leftChoice": "1/2",
+            "rightChoice": "0.05",
+            "relation": "distinct",
+            "reason": "1/2 and0.05 differ in written form and value."
+          },
+          {
+            "leftChoice": "50%",
+            "rightChoice": "0.05",
+            "relation": "distinct",
+            "reason": "50% and0.05 differ in written form and value."
+          }
+        ],
+        "all_learner_claims": [
+          {
+            "field": "explanation",
+            "text_sha256": "8162800f4028ec385e55ba092e1cf4cc0bbed7ca6e182388153227ccc93b9412",
+            "claims": [
+              {
+                "claim": "One half is five tenths, written0.5 in the explicitly requested decimal form.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['0.5']",
+            "text_sha256": "75aea87a7b31c23883545f1650357f537e765c3cb8d44b181b99772e3a175e95",
+            "claims": [
+              {
+                "claim": "0.5 equals one half and has the explicitly requested decimal-point form.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['1/2']",
+            "text_sha256": "6070501d1629cadf7217b37d8bd3a188039e27b7b8bf8f2a097d3aa05f9bb6a9",
+            "claims": [
+              {
+                "claim": "1/2 equals one half but has an explicitly excluded fraction bar.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['50%']",
+            "text_sha256": "7b98925f2f7f7dc227d3413c6db24a7b4090614f41bbd094c74868c58a382946",
+            "claims": [
+              {
+                "claim": "50% equals one half but uses explicitly excluded percent notation.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          },
+          {
+            "field": "choiceExplanations['0.05']",
+            "text_sha256": "879719d9d8e24fe0473a96c6f3706f11fcb010a3bed75ef7107f1b379bdce80b",
+            "claims": [
+              {
+                "claim": "0.05 equals1/20, not one half.",
+                "assessment": "true",
+                "reason": "Follows from the exact requested form, supplied facts, or shown arithmetic."
+              }
+            ],
+            "all_claims_sound": true
+          }
+        ],
+        "all_claims_sound": true,
+        "all_choices_semantically_distinct_for_task": true,
+        "text_bounds_pass": true,
+        "exact_four_choice_feedback_coverage": true,
+        "shuffle_safe_references": true,
+        "criterion": "Accept only if exactly one offered choice correctly answers the unchanged task, the key matches it, all choices are distinct as proposed answers to that task, and every feedback claim is sound. Material uncertainty requires rejection."
+      },
+      "paired_field_differences": [
+        "prompt"
+      ]
+    }
+  ]
+}
