@@ -53,7 +53,7 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,133
+The tested structural changes are on main. Backend verification passes 1,140
 tests. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter
@@ -69,5 +69,18 @@ admitted. The arithmetic reviewer emitted unbound `index: -1` records, invalidat
 two batches; Python returned five admitted items; the English solver timed out at
 75 seconds. Three later domains were unattempted. The passing isolated reasoning
 trial therefore does not justify promoting adaptive mode for the full worker.
-Next work addresses complete reviewer record identity and semantic quality within
-the same operational limits. No deployment has occurred.
+The count-bound reviewer fix subsequently resolved the reproduced identity gap in
+two live calls and is now on main. Semantic quality remains a separate gate:
+[switching to Opus](evidence/verifier-model-comparison-20260922/RESULTS.md) and
+[rewriting the refutation instructions](evidence/reviewer-refutation-20260922/RESULTS.md)
+both failed their frozen criteria and were not promoted. The next candidate audits
+the complete frozen learner response after all feedback has been written; it is
+not yet a production stage or a qualified release.
+
+A fresh [read-only deployment inspection](evidence/reviewer-release-20260922/DEPLOYMENT.md)
+at 06:18 UTC on September 22 confirmed that both API and worker still use the
+September 11 packages and legacy transport. All seven inspected runtime modules
+in each package match `7d9cc6a`; this does not identify every file in the deployed
+repository. Activating the already-main structural fixes requires deploying the
+new code/template and selecting native transport for the worker while keeping
+the Nova Lite API in legacy mode. No deployment has occurred.
