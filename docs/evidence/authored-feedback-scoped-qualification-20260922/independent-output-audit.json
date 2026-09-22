@@ -1,0 +1,706 @@
+{
+  "audit_kind": "Independent parent review of every returned visible task/feedback reason and exact original learner claims; no provider calls",
+  "plan_sha256": "560d42a8576ff6b19923f649879a4bae19061d30defd18e06137d4063f6d2d8d",
+  "capture_sha256": "181a2370ecbdecb0fc0cedf59661f7157d05a6a96e893f7a362c997288962d1b",
+  "all_72_returned_reasons_reviewed": true,
+  "reason_denominator": 144,
+  "returned_reason_count": 72,
+  "missing_reason_count": 72,
+  "primary_component_criteria_passed": false,
+  "structural_calls": {
+    "valid": 2,
+    "planned": 4
+  },
+  "admission": {
+    "observed_correct": 12,
+    "planned": 24,
+    "sound_retained": 6,
+    "sound_planned": 12,
+    "defective_rejected": 6,
+    "defective_planned": 12
+  },
+  "selected_original_content_unchanged": true,
+  "selected_original_count": 6,
+  "diagnostic_label_counts": {
+    "task": {
+      "matching": 11,
+      "observed": 12,
+      "planned": 24
+    },
+    "answer": {
+      "matching": 12,
+      "observed": 12,
+      "planned": 24
+    },
+    "feedback": {
+      "matching": 52,
+      "observed": 60,
+      "planned": 120
+    }
+  },
+  "review_categories": {
+    "imprecise_justification": 1,
+    "false_claim_endorsed": 4,
+    "grounded_for_exact_claim": 62,
+    "true_claim_rejected_for_missing_uniqueness": 3,
+    "interpretation_dependent_exclusion": 1,
+    "unsupplied_history_used": 1
+  },
+  "findings": [
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "field": "task",
+      "reason_sha256": "53ab50e0b9a75716c341cefa78199a3c6944555affeb82422ab17d67b5b449b6",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "imprecise_justification",
+      "finding": "There are three distractors, not four. Reversing weights gives 81.6, which is not offered; the task itself still has four distinct values and one correct answer."
+    },
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "field": "main",
+      "reason_sha256": "477545842f1210f22dd5922b2e2cd21f6c173e25fceca20e350ad98acb0f5bee",
+      "judgment": "supported",
+      "expected_judgment": "unsupported",
+      "review": "false_claim_endorsed",
+      "finding": "The actual main explanation says reversing or equalizing weights produces the distractors. Reversal gives 81.6, absent from the choices; equalizing gives only 80.0. Calling the claim directionally accurate fails to check its material false assertion."
+    },
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "field": "a",
+      "reason_sha256": "de80b6fc81924b1a070840eb35e296a5268e1aaa019c4ec77e243306f7af5b62",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "field": "b",
+      "reason_sha256": "a3da71cbc5ad7f6549b726b573ae6c823a52548fcc9fbf318d89eeeb9817e349",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "field": "c",
+      "reason_sha256": "ba806d3f3c2fb8191f2c96048fd22488817298e3a3b2c94bfdd5f2d69d6e27f0",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "field": "d",
+      "reason_sha256": "b4ddb391c9518ccd8dfcb9374c4af99ff1b4ef110a2139b41a8007b2ca4f8c56",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "field": "task",
+      "reason_sha256": "27fea7570b869da55d1bda6b83eb59a4d2280103c4baec060fed93046beab0d3",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "field": "main",
+      "reason_sha256": "c6318794e32d46f5c76bc739a1e3fbd11e0b64c7c610ba8aa434d9e39bfc78c7",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "field": "a",
+      "reason_sha256": "cced6d86fcf3eaadf8d0107b713142c83a63bf62c4509340bda74698fc91c534",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "field": "b",
+      "reason_sha256": "0f12e7a7ad5d4d1bc655b8145ff2ab974d669a8a3428a20609675ddedf55d6da",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "field": "c",
+      "reason_sha256": "43176264c4a98afd97e923527c1d24e280c93df1bb9b616898c8c8244a19a131",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "field": "d",
+      "reason_sha256": "4dfd7c82d49292feeeffc889526c390d0748f19da69d8e6a8a497de1fd0ed60a",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "field": "task",
+      "reason_sha256": "719c570b8687cad92eb31b70c99ad34ae5cbfaab3395dd1631f8152146ef14f2",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "field": "main",
+      "reason_sha256": "21d6c4b2daa76d2d62574dbd256c60ae3e359ba190e58158e4ab3696d6ea2c20",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "field": "a",
+      "reason_sha256": "cfcd76a59b593b831254942dc89fe977e4d951a802c4df34ce6dfbccafad3854",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "field": "b",
+      "reason_sha256": "0f12e7a7ad5d4d1bc655b8145ff2ab974d669a8a3428a20609675ddedf55d6da",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "field": "c",
+      "reason_sha256": "43176264c4a98afd97e923527c1d24e280c93df1bb9b616898c8c8244a19a131",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "field": "d",
+      "reason_sha256": "4dfd7c82d49292feeeffc889526c390d0748f19da69d8e6a8a497de1fd0ed60a",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "field": "task",
+      "reason_sha256": "1e25d0a92c2e3a5ca2f9649823dea6162276c52b4f7a5b09e3ced07d1a115eb5",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "field": "main",
+      "reason_sha256": "0314b3d63670cd1a1fc8e2a368b3de2607f3508d224dfc4cd9cb6e39dfcae753",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "field": "a",
+      "reason_sha256": "7daaea627194574b926eb9711aa3fc8a9348c76199d2f3e3a92a70e1f50d6c7c",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "field": "b",
+      "reason_sha256": "de2fac9b82fb682e89d0a25f12c7ca014bf35a96dc811443360b1415d8e54994",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "field": "c",
+      "reason_sha256": "b1b2c8290c9368e14f5207e974ca6344d577c7190f9c5a487c28d62abc88ae65",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "field": "d",
+      "reason_sha256": "805e6898bb5cabe3f17fc403d99ba3ecd9c85389dc21016b456bbbf406b01cd3",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "field": "task",
+      "reason_sha256": "6eccb240164486b71955af6887614e97595e5cc7c1fdd7968442614108ee560b",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "field": "main",
+      "reason_sha256": "34023cd3cad7bc165cc91e2e3a12ab4726aa336d7d2ca3c636acea0e1b65db5f",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "field": "a",
+      "reason_sha256": "7076c1a6a19aad2abd647b0ce907e86287163dbe0519e1c394dad7f328aaa94f",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "field": "b",
+      "reason_sha256": "e896608415ab3804e5f0a986a36570abfdb44c550beaee919d7c08943647ddd7",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "field": "c",
+      "reason_sha256": "2f7276b7b4b7e8316df45a27090c97908efee99cfde747a8924cc05443bd96d5",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "field": "d",
+      "reason_sha256": "70ffdeab9d27349d7955c0f913465a7688539318fd89feb3c6d97ed4c058cd14",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "field": "task",
+      "reason_sha256": "79d2e86631b715d0ab72677e2eb0f79f789b10ed8c3826402232e31d95270a4d",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "field": "main",
+      "reason_sha256": "85d759446325bd59541b16859c18a11b2c8a2a2fdd784ea5a12e402ee4ef1e79",
+      "judgment": "unsupported",
+      "expected_judgment": "supported",
+      "review": "true_claim_rejected_for_missing_uniqueness",
+      "finding": "The minimum/first-threshold calculation is literally true. The stem has two satisfying choices and fails the task gate, but that does not make the field arithmetic false. Preserve the original supported field annotation."
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "field": "a",
+      "reason_sha256": "80bf73740fccf2ccc2fa327a2058af3e68b50ac44c50777533a6bc3763d9f06e",
+      "judgment": "unsupported",
+      "expected_judgment": "uncertain",
+      "review": "interpretation_dependent_exclusion",
+      "finding": "The arithmetic and minimum-threshold observation are true, but excluding 26 because it is not minimum adds a condition absent from the stem. The prospectively uncertain field annotation remains unchanged; the task is independently multiple-answer."
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "field": "b",
+      "reason_sha256": "1760752c7460502072dad1ee7c29972b4a00b5836282ed390e90faf53101b782",
+      "judgment": "unsupported",
+      "expected_judgment": "supported",
+      "review": "true_claim_rejected_for_missing_uniqueness",
+      "finding": "The assertion that 25 is the first whole-number threshold is true. Its incompleteness for the unqualified stem does not make the stated claim false. Preserve the original supported field annotation."
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "field": "c",
+      "reason_sha256": "326badb68140d13d3f7ff5c3e557f5c99dce5ce98bcfb38ef73b23e835f6e831",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "field": "d",
+      "reason_sha256": "b4dfe91151aa41dca0f5195c1898ace9742d4055e112b4e417acc54eba7e8040",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "field": "task",
+      "reason_sha256": "da0192cb00173b278f7be33052a028e2f972041ca0ceb0ee9fb5ae9868969262",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "field": "main",
+      "reason_sha256": "611346d5abd8410ff5f6773165f6433e6dfe968682d51164a9997de5b595e4b3",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "field": "a",
+      "reason_sha256": "fdec52062f159943989f4a2b9626d780c253fb92d9a53ee91a27005139297fd1",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "field": "b",
+      "reason_sha256": "e71cb9928db122debbe59680a7ae76f657407e4df6ea1802eab78aeab4b3b194",
+      "judgment": "supported",
+      "expected_judgment": "unsupported",
+      "review": "false_claim_endorsed",
+      "finding": "The supplied teaching says Preparation was not measured, so it cannot explain the observed difference. The model substitutes the weaker claim that the evidence does not establish this causal explanation. Unmeasured factors can explain a difference; endorsing the actual exclusion is false."
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "field": "c",
+      "reason_sha256": "2259dc62e1cf3900db7bd88f51a7c3d8f6fd1986b9d7f91c309a0b63ded5c746",
+      "judgment": "supported",
+      "expected_judgment": "unsupported",
+      "review": "false_claim_endorsed",
+      "finding": "The supplied teaching says Tutoring was not measured, so it cannot explain the observed difference. The model substitutes the weaker claim that the evidence does not establish this causal explanation. Unmeasured factors can explain a difference; endorsing the actual exclusion is false."
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "field": "d",
+      "reason_sha256": "606db40cdd7ca2d5071f1f419bdc159e995f3ff6f4201d90ad99cc030fc7a56a",
+      "judgment": "supported",
+      "expected_judgment": "unsupported",
+      "review": "false_claim_endorsed",
+      "finding": "The supplied teaching says Exam difficulty was not measured, so it cannot explain the observed difference. The model substitutes the weaker claim that the evidence does not establish this causal explanation. Unmeasured factors can explain a difference; endorsing the actual exclusion is false."
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "field": "task",
+      "reason_sha256": "2d9b7252bb68510f9bebe3449ca76a6a48bc1fa19433181596c948f2956fea31",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "field": "main",
+      "reason_sha256": "a3093a0a72e83e34036566b6d17c3ce80ad1ceaac4177bb17f37024e8414e705",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "field": "a",
+      "reason_sha256": "9dc436143f08e9f447140869928f5c22a7532847672125311fc8ff59cc1efcaa",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "field": "b",
+      "reason_sha256": "b2938b94d16e84558c074d331271d504914ae2f3b65cf60506fda8c13d70c095",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "field": "c",
+      "reason_sha256": "c9f57c8e9b5517b1c585095703e5589c5c714c51f491d15206e9ea6c8e15a89c",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "field": "d",
+      "reason_sha256": "8449d6e1fafcf15b60bdb49bd1a2e875e68761c00872bcc091fe99bc7ab73964",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "field": "task",
+      "reason_sha256": "3383739c45faa2a6632926d6a074d5659e1de22be742a09cc10ce0a55743e2bd",
+      "judgment": "unsupported",
+      "expected_judgment": "supported",
+      "review": "unsupplied_history_used",
+      "finding": "The model rejects this as a duplicate of its sound sibling in the same test batch despite empty existingQuestionCoverage. That comparison is not the prospectively specified history gate; other paired controls were allowed on that basis. The false choice-c feedback still correctly excludes the item."
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "field": "main",
+      "reason_sha256": "def2a9e000ba52566c8ac0400057a179d0d9ab8eb87088de244718e6cd7e93c2",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "field": "a",
+      "reason_sha256": "6c01c8c4d799120f3a719fdfb638d6fa4e1bcf126906efb47294ce1b62f93d1d",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "field": "b",
+      "reason_sha256": "d02cf6c25e06869b9931dc1a5d4009621415aeb07c11921ba56faee7a2e4feee",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "field": "c",
+      "reason_sha256": "3e5605399a3ce20cd2681a6a1ae1f867c85b9b1706f4b6e12e4ab8349f66b8f7",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "field": "d",
+      "reason_sha256": "2bb220eaeacce777eb03aee1df3f3a7a9fc931b0ab5642561f30f1cac8f17b52",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "field": "task",
+      "reason_sha256": "604ced109c70e2dce9fedb46f9dd03ee6b240221871e0dfecd213b0afc9aaf3a",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "field": "main",
+      "reason_sha256": "e79971ba645a27cfedeef2f2cfafcc461797774c3a326e65fc481f0b8ecfcb8d",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "field": "a",
+      "reason_sha256": "09076dd9c16aad6dcdc17668ae5581cc015702b27b4bf23adba48af2705eb5ff",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "field": "b",
+      "reason_sha256": "48d52e65d2d9bfdb7c3647852770a1df7803d771727019eff4291552e9af297d",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "field": "c",
+      "reason_sha256": "7b038999585f013c13c341432adf585c1bf8e8e1725710456cad4226ed03a2a5",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "field": "d",
+      "reason_sha256": "ca69fadc80add4ee537092c8ec81c3ac02b28c2bfaf35bc5575b6b3140367a72",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "field": "task",
+      "reason_sha256": "af9ba945c65d3e3e4d9aaaea9c1b0112d22297fb6d4aeb6e96d4ad71de3182df",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "field": "main",
+      "reason_sha256": "82345fb6741625c4ade3bfff86061250302207d42fa5eba8f0b00e173916794d",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "field": "a",
+      "reason_sha256": "97196c6354ee4f7ff2a78a8f4486dab22850b04ea0b2472a781a698e9e76a7d3",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "field": "b",
+      "reason_sha256": "49fc6b8429d586d00e5c792da93a5ef39607e8a5735ea995cb865e6c17c2e4b3",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "field": "c",
+      "reason_sha256": "7415ee24947be2df0f9261aa729221a21692985e9bc472231bc36a4178e7d801",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "field": "d",
+      "reason_sha256": "2e87dc5a1750de79a876f64123467c5505f601ea9df543baf80b08bf1e4a6e39",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "field": "task",
+      "reason_sha256": "dcd52830baf1b2f1f73a60d686b3666a9ee594a5f2abcc0ee1e7a2b2d4b61c0e",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "field": "main",
+      "reason_sha256": "2ea45e771be8b2f9387e7b00bff664750ca54977ea8b38739ece2de44fb2fe1c",
+      "judgment": "unsupported",
+      "expected_judgment": "supported",
+      "review": "true_claim_rejected_for_missing_uniqueness",
+      "finding": "The supplied main field says 7 times 7 equals 49, so 7 satisfies the equation; that is true. Omitting the other satisfying root makes the question insufficiently unique but does not falsify this literal statement. Preserve the original supported annotation."
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "field": "a",
+      "reason_sha256": "186b7dfb61a84b32d1bd194ea200abccda5af45cf55b6a47bef04d9582bbad2f",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "field": "b",
+      "reason_sha256": "2f9688afedb365515b58bac831e0fba1ec57e032b21348490643874fd654c7e3",
+      "judgment": "unsupported",
+      "expected_judgment": "unsupported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "field": "c",
+      "reason_sha256": "7415ee24947be2df0f9261aa729221a21692985e9bc472231bc36a4178e7d801",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "field": "d",
+      "reason_sha256": "2e87dc5a1750de79a876f64123467c5505f601ea9df543baf80b08bf1e4a6e39",
+      "judgment": "supported",
+      "expected_judgment": "supported",
+      "review": "grounded_for_exact_claim",
+      "finding": "Reviewed against the unchanged stem, exact choice or feedback text, and stated facts. The reason supports the declared judgment without a material added premise."
+    }
+  ],
+  "limits": [
+    "The two ReadTimeoutError batches returned no output; missing cases receive no semantic credit and are not counted as demonstrated semantic errors.",
+    "Original learner content, gold labels, and prospective interpretation caveats are unchanged.",
+    "True but incomplete mathematical statements are distinguished from false arithmetic, false exclusions, and false explanations of distractors.",
+    "Correct observed admission despite unreliable component judgments does not qualify all 24 controls, fresh content, full pipeline yield, or nonempty assignment/history behavior.",
+    "Only model-requested short structured rationales were reviewed; native provider reasoning content was omitted."
+  ]
+}

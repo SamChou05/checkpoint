@@ -113,13 +113,26 @@ routing or defaults. The fourth-stage code and budget tests remain isolated
 preparation. The next architecture candidate moves all five teaching fields into
 authoring, before the answer-blind solver and an immutable field-by-field review.
 That removes the unchecked last writer without adding a fourth call. The isolated
-implementation passes 1,212 backend tests. Its first [per-field known-control
-trial](evidence/authored-feedback-qualification-20260922/RESULTS.md) timed out on
-the first six-item request at 75.167 seconds, before returning any model output.
-Three planned requests remained unattempted. This supplies no semantic result
-and does not qualify the worker. Assigned-objective context and the bounded
-latency configuration are under review before the next production candidate.
-Model agreement still does not prove truth.
+implementation now passes 1,223 backend tests, including preservation of assigned
+skill/objective context and bounded prior-question history after solver filtering.
+Its first [per-field known-control trial](evidence/authored-feedback-qualification-20260922/RESULTS.md)
+timed out on the first six-item request at 75.167 seconds, before returning any
+model output. Three planned requests remained unattempted; that failure is unchanged.
+
+The [scoped follow-up trial](evidence/authored-feedback-scoped-qualification-20260922/RESULTS.md)
+used the corrected context path and a prospectively selected 100-second ceiling.
+All four independent batches ran once. Two completed in 84.228 and 85.652 seconds,
+with all 12 observed admission decisions correct; the other two timed out without
+output. Its primary result is therefore failed: 2/4 valid calls and 12/24 assessed
+controls. Independent review of all 72 returned short reasons found four false
+feedback claims endorsed, despite those items being rejected on other grounds.
+True but incomplete mathematical statements and interpretation-dependent
+exclusions are recorded separately from false claims. The controls have empty
+assignments/history, so this does not qualify nonempty context behavior, fresh
+content, or worker yield. The next measurements exercise the actual solver plus
+audit at the worker's maximum batch size of five and the complete fresh generation
+route within its unchanged 240-second, six-call job budget. Model agreement still
+does not prove truth.
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
 confirmed that signed Mantle metadata requests work with the existing AWS

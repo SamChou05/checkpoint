@@ -1,0 +1,774 @@
+{
+  "plan_sha256": "560d42a8576ff6b19923f649879a4bae19061d30defd18e06137d4063f6d2d8d",
+  "capture_sha256": "181a2370ecbdecb0fc0cedf59661f7157d05a6a96e893f7a362c997288962d1b",
+  "provider_calls_in_replay": 0,
+  "primary_component_criteria_passed": false,
+  "global_stop_reason": null,
+  "request_and_replay_checks": [
+    {
+      "sequence": 0,
+      "exact_request": true,
+      "failure_reason": null,
+      "strict_credit": true,
+      "actual_native_local_replay_matches": true
+    },
+    {
+      "sequence": 1,
+      "exact_request": true,
+      "failure_reason": null,
+      "strict_credit": true,
+      "actual_native_local_replay_matches": true
+    },
+    {
+      "sequence": 2,
+      "exact_request": true,
+      "failure_reason": "provider_failure",
+      "strict_credit": false,
+      "operational_or_integrity_failure_preserved": true
+    },
+    {
+      "sequence": 3,
+      "exact_request": true,
+      "failure_reason": "provider_failure",
+      "strict_credit": false,
+      "operational_or_integrity_failure_preserved": true
+    }
+  ],
+  "denominators": {
+    "calls_planned": 4,
+    "calls_attempted": 4,
+    "calls_strictly_valid": 2,
+    "calls_failed": 2,
+    "calls_unattempted": 0,
+    "items_planned": 24,
+    "items_strictly_assessed": 12,
+    "items_in_failed_batches": 12,
+    "items_unattempted": 0,
+    "reasons_planned": 144,
+    "reasons_strictly_assessed": 72,
+    "reason_semantics_independently_assessed": 72
+  },
+  "admission": {
+    "correct": 12,
+    "denominator": 24,
+    "sound_retained": 6,
+    "sound_denominator": 12,
+    "defective_rejected": 6,
+    "defective_denominator": 12,
+    "false_accepts": [],
+    "false_rejects": []
+  },
+  "labels_diagnostic_only": {
+    "task_matches": 11,
+    "task_denominator": 24,
+    "answer_matches": 12,
+    "answer_denominator": 24,
+    "feedback_matches": 52,
+    "feedback_denominator": 120,
+    "interpretation_dependent_fields_assessed": 1
+  },
+  "actual_reason_before_judgment_fields": 72,
+  "reason_order_denominator": 144,
+  "private_reason_semantics": "Independent audit completed for all 72 returned reasons; 72 missing reasons remain unassessed. Review does not change primary qualification.",
+  "difficulty_values": {
+    "1": 1,
+    "2": 7,
+    "3": 4
+  },
+  "difficulty_used_for_content_gate": false,
+  "selected_original_count": 6,
+  "selected_original_hashes": [
+    "2024e8cd039b70a27b4920bf5072f84937629eba828b805a9be0304195b810ae",
+    "f4625554acd27e5c40d6e3df774a283c991defa42c3b5c15ef2417c6af7b9902",
+    "833b12b19a422a112be6c4c4da8cbaa671f48aa89428f814898ea079989ae27c",
+    "e3db68fe9d9957479f402a7469bacdd191638ee52cec5ba729415476e8875941",
+    "2743280dc1f34069b3e40ea0c52d60f1f413d617904f8ecb458c66fc5d5117aa",
+    "707852b5b28f205edf6fb83558784e2c33035b92e17171cba9a8873bcf45034c"
+  ],
+  "selected_content_unchanged": true,
+  "all_selected_content_checks_are_vacuous": false,
+  "input_tokens_known": 6031,
+  "output_tokens_known": 14552,
+  "unknown_usage_calls": 2,
+  "total_elapsed_seconds": 370.05487,
+  "maximum_elapsed_seconds": 100.171258,
+  "reasoning_blocks_omitted": 3,
+  "diagnostic_rows": [
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "trusted_id": "0",
+      "accepted": false,
+      "expected_accept": false,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "Clear weighted-average question, unique correct answer c=78.4, four meaningfully distinct distractors (unweighted avg, reversed weights, alternate weighting), well-scoped.",
+        "judgment": "supported",
+        "expected_judgment": "supported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "c",
+      "expected_answerChoice": "c",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "0.30\u00d784+0.70\u00d776=25.2+53.2=78.4. Claim about distractors from reversing or equalizing weights is directionally accurate.",
+          "judgment": "supported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": false,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "(84+76)/2=80.0. Unweighted average claim is arithmetically correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "Reversing weights gives 0.70\u00d784+0.30\u00d776=58.8+22.8=81.6, not 82.4. The 'reversed weights' explanation is factually wrong.",
+          "judgment": "unsupported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "0.30\u00d784+0.70\u00d776=25.2+53.2=78.4. Arithmetic and explanation are correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "0.40\u00d784+0.60\u00d776=33.6+45.6=79.2; this IS a standard 40/60 weighting, not merely a random calculation error as claimed.",
+          "judgment": "unsupported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 2,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "trusted_id": "1",
+      "accepted": false,
+      "expected_accept": false,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "Clear ratio-proportion question, unique correct answer b=10 liters, four meaningfully distinct choices, plausible distractors.",
+        "judgment": "supported",
+        "expected_judgment": "supported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "b",
+      "expected_answerChoice": "b",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "(2/3)\u00d715=10. Explanation is correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "15:9=5:3, not 3:3 (1:1) as claimed. The stated ratio is arithmetically wrong.",
+          "judgment": "unsupported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "(2/3)\u00d715=10 liters correctly verified.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "15:6=5:2, not 3:2. Claim is arithmetically correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "(3/2)\u00d715=22.5, inverting the ratio. Claim is correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 2,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "trusted_id": "2",
+      "accepted": true,
+      "expected_accept": true,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "Stem and all choices are identical to item 1; however existingQuestionCoverage is empty so no prior coverage is documented.",
+        "judgment": "supported",
+        "expected_judgment": "supported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "b",
+      "expected_answerChoice": "b",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "(2/3)\u00d715=10 L. Explanation is correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "15:9=5:3 correctly stated; not the required 3:2. Arithmetic and claim are correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "(2/3)\u00d715=10 liters correctly verified.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "15:6=5:2, not 3:2. Claim is arithmetically correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "(3/2)\u00d715=22.5, inverting the ratio. Claim is correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 2,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "trusted_id": "3",
+      "accepted": true,
+      "expected_accept": true,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "'Minimum whole number' uniquely constrains the answer to 25. Four meaningfully distinct choices around the break-even point.",
+        "judgment": "supported",
+        "expected_judgment": "supported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "b",
+      "expected_answerChoice": "b",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "$60/$2.50=24 (break-even); 25 rides costs $62.50>$60, making pass strictly cheaper first. Correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "26 rides also satisfies strictly cheaper but is not the minimum. Correct reasoning.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "24 rides ties exactly at $60; 25 rides at $62.50 first exceeds pass cost. Correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "23\u00d7$2.50=$57.50<$60, so per-ride is cheaper. Correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "24\u00d7$2.50=$60 equals pass cost, not cheaper. Correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 3,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "trusted_id": "4",
+      "accepted": true,
+      "expected_accept": true,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "Clear weighted-average question, unique correct answer c=78.4. Stem and choices identical to item 0; existingQuestionCoverage is empty.",
+        "judgment": "supported",
+        "expected_judgment": "supported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "c",
+      "expected_answerChoice": "c",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "0.30\u00d784+0.70\u00d776=25.2+53.2=78.4. Correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "(84+76)/2=80.0. Unweighted average claim is correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "0.80\u00d784+0.20\u00d776=67.2+15.2=82.4. Arithmetic verified; 80/20 weight claim is correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "0.30\u00d784+0.70\u00d776=78.4. Correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "0.40\u00d784+0.60\u00d776=33.6+45.6=79.2. 40/60 weight claim is arithmetically verified and correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 2,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "trusted_id": "5",
+      "accepted": false,
+      "expected_accept": false,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "Stem asks 'how many rides make the pass cheaper' without specifying minimum; both 25 ($62.50>$60) and 26 ($65>$60) satisfy this, so no unique answer exists among the choices.",
+        "judgment": "unsupported",
+        "expected_judgment": "unsupported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "multiple",
+      "expected_answerChoice": "multiple",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "Feedback imposes a minimum-threshold rationale not requested by the stem, which only asks 'how many rides make the pass cheaper.'",
+          "judgment": "unsupported",
+          "expected_judgment": "supported",
+          "label_matches_draft": false,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "Rejects 26 because it is not the minimum threshold, but the stem does not ask for minimum; 26 rides legitimately satisfies the stated condition.",
+          "judgment": "unsupported",
+          "expected_judgment": "uncertain",
+          "label_matches_draft": false,
+          "interpretation_dependent_expectation": true
+        },
+        "b": {
+          "reason": "Invokes minimum threshold logic ('for the first time') that is not part of the stem's question.",
+          "judgment": "unsupported",
+          "expected_judgment": "supported",
+          "label_matches_draft": false,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "23\u00d7$2.50=$57.50<$60, so per-ride cost is lower; correctly identifies this choice as wrong.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "24\u00d7$2.50=$60 equals pass cost, not cheaper. Correctly identifies this as the break-even, not strictly cheaper.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 3,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "trusted_id": "0",
+      "accepted": false,
+      "expected_accept": false,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "All four choices assert a specific causal explanation; observational self-selected data with unmeasured confounders establishes none of them. No offered answer is correct.",
+        "judgment": "unsupported",
+        "expected_judgment": "unsupported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "none",
+      "expected_answerChoice": "none",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "Claiming the 20 pp difference 'proves that online instruction caused the higher pass rate' is false; self-selection and unmeasured confounders prevent any causal inference.",
+          "judgment": "unsupported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "Same false claim as main\u2014asserts the observed difference proves causation from observational data with self-selection and no controls.",
+          "judgment": "unsupported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "Correctly notes preparation was unmeasured, so the rate difference does not establish this causal claim.",
+          "judgment": "supported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": false,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "Correctly notes tutoring was unmeasured, so the rate difference does not establish this causal claim.",
+          "judgment": "supported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": false,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "Correctly notes exam difficulty was unmeasured, so the rate difference does not establish this causal claim.",
+          "judgment": "supported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": false,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 3,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "trusted_id": "1",
+      "accepted": true,
+      "expected_accept": true,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "Clear parallel-scheduling problem with one correct answer (10 s); distractors represent distinct errors: stopping at build completion, summing builds sequentially, and summing all three sequentially.",
+        "judgment": "supported",
+        "expected_judgment": "supported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "b",
+      "expected_answerChoice": "b",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "max(4,7)=7, then 7+3=10 is correct arithmetic and reasoning.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "Correctly identifies 7 as only the slower build's finish time, not the total including packaging.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "Correctly explains the right answer with accurate arithmetic.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "Describes 11 as 4+7 (sequential builds, packaging omitted) then correctly explains parallelism and the true total; factually accurate.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "Correctly identifies 14=4+7+3 as the error of running all three stages sequentially.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 2,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "trusted_id": "2",
+      "accepted": false,
+      "expected_accept": false,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "Stem, choices, and correct answer are identical to item 1; this is an exact duplicate with no fresh application or changed context.",
+        "judgment": "unsupported",
+        "expected_judgment": "supported",
+        "label_matches_draft": false
+      },
+      "answerChoice": "b",
+      "expected_answerChoice": "b",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "Correct calculation and reasoning, same as item 1.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "Correctly identifies 7 as only the slower build's finish time.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "Correctly explains the right answer.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "Claims '11 seconds is 4+7+3' but 4+7+3=14, not 11. The arithmetic attribution is factually wrong; that sum describes choice d, not c.",
+          "judgment": "unsupported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "Correctly identifies 4+7+3=14 as the sequential-all-tasks error.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 2,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "trusted_id": "3",
+      "accepted": true,
+      "expected_accept": true,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "Choice a states only the observed 20 pp difference without causation, which is directly established by the given percentages; b, c, d all require unmeasured causal factors. Distinct from item 0.",
+        "judgment": "supported",
+        "expected_judgment": "supported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "a",
+      "expected_answerChoice": "a",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "Correctly computes 80-60=20 pp and explains that self-selection and unmeasured factors prevent causal conclusions.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "Correctly confirms the arithmetic and that it is a purely descriptive claim.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "Correctly explains that unmeasured preparation prevents this causal attribution.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "Correctly explains that unmeasured tutoring prevents this causal attribution.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "Correctly explains that unmeasured exam difficulty prevents this causal attribution.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 3,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "trusted_id": "4",
+      "accepted": true,
+      "expected_accept": true,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "Clear equation with a nonnegative constraint; unique answer is 7; distractors (-7 violates constraint, 0 and 14 fail arithmetic) are meaningfully distinct.",
+        "judgment": "supported",
+        "expected_judgment": "supported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "a",
+      "expected_answerChoice": "a",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "7\u00d77=49 and 7\u22650; correctly notes -7 also squares to 49 but is excluded by the stated constraint.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "7\u00d77=49 confirmed; correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "(-7)\u00b2=49 acknowledged; correctly applies the nonnegative restriction to exclude -7.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "0\u00d70=0\u226049; correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "14\u00d714=196\u226049; correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 2,
+      "difficulty_used_for_content_gate": false
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "trusted_id": "5",
+      "accepted": false,
+      "expected_accept": false,
+      "admission_matches_gold": true,
+      "task": {
+        "reason": "No nonnegative restriction is stated; both 7 and -7 satisfy x*x=49 for a real number x, so choices a and b are both correct, making this a defective single-answer question.",
+        "judgment": "unsupported",
+        "expected_judgment": "unsupported",
+        "label_matches_draft": true
+      },
+      "answerChoice": "multiple",
+      "expected_answerChoice": "multiple",
+      "answer_matches_draft": true,
+      "feedback": {
+        "main": {
+          "reason": "Presents only 7 as satisfying x*x=49 without acknowledging that -7 also satisfies the equation for an unrestricted real x.",
+          "judgment": "unsupported",
+          "expected_judgment": "supported",
+          "label_matches_draft": false,
+          "interpretation_dependent_expectation": false
+        },
+        "a": {
+          "reason": "7\u00d77=49 is correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "b": {
+          "reason": "Invokes 'principal square root is nonnegative' to exclude -7, but the stem is x*x=49 for a real x, which has two solutions; -7 is valid and is not excluded by any stated condition.",
+          "judgment": "unsupported",
+          "expected_judgment": "unsupported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "c": {
+          "reason": "0\u00d70=0\u226049; correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        },
+        "d": {
+          "reason": "14\u00d714=196\u226049; correct.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "label_matches_draft": true,
+          "interpretation_dependent_expectation": false
+        }
+      },
+      "difficulty": 1,
+      "difficulty_used_for_content_gate": false
+    }
+  ],
+  "independent_audit_sha256": "9f53dbd5e4ed01d7f654ffa22773be02acfe010033e488111bfc98d303703acc",
+  "independent_reason_review": {
+    "exact_plan_capture_count_and_reason_bindings_verified": true,
+    "reviewed": 72,
+    "planned": 144,
+    "missing_unassessed": 72,
+    "review_categories": {
+      "imprecise_justification": 1,
+      "false_claim_endorsed": 4,
+      "grounded_for_exact_claim": 62,
+      "true_claim_rejected_for_missing_uniqueness": 3,
+      "interpretation_dependent_exclusion": 1,
+      "unsupplied_history_used": 1
+    },
+    "capture_recorded_reason_audit_count": 0
+  }
+}
