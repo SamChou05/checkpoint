@@ -160,6 +160,35 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         self.assertIn("QUESTION_BANK_WORKER_FEEDBACK_CONTRACT || 'reviewer_written'", self.deploy_workflow)
         self.assertIn('"QuestionBankWorkerFeedbackContract=${QUESTION_BANK_WORKER_FEEDBACK_CONTRACT:-reviewer_written}"', self.deploy_script)
 
+    def test_optional_skill_map_override_binds_model_and_iam_only_on_api(self):
+        for parameter in ("SkillMapModelArn", "SkillMapInvokeResourceArns"):
+            self.assertIn('Default: ""', _indented_block(self.template, parameter))
+        condition = re.search(r"  HasSkillMapModelOverride: !And\n(.*?)(?=^  \S)", self.template, re.M | re.S).group(1)
+        self.assertIn('!Not [!Equals [!Ref SkillMapModelArn, ""]]', condition)
+        self.assertIn('!Not [!Equals [!Select [0, !Ref SkillMapInvokeResourceArns], ""]]', condition)
+        self.assertIn("!Contains [!Ref SkillMapInvokeResourceArns, !Ref SkillMapModelArn]", self.template)
+        self.assertIn('!Not [!Contains [!Ref SkillMapInvokeResourceArns, ""]]', self.template)
+        api = _indented_block(self.template, "CheckpointQuestionFunction")
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
+        for prefix, override, inherited in (("SKILL_MAP_MODEL_ID", "SkillMapModelArn", "QuestionBankWorkerModelArn"),
+                                             ("Resource", "SkillMapInvokeResourceArns", "QuestionBankWorkerInvokeResourceArns")):
+            self.assertIn(f"{prefix}: !If [HasSkillMapModelOverride, !Ref {override}, !Ref {inherited}]", api)
+            self.assertNotIn(f"!Ref {override}", worker)
+        self.assertIn("BEDROCK_MODEL_ID: !Ref BedrockModelArn", api)
+        for variable, parameter in (("SKILL_MAP_MODEL_ARN", "SkillMapModelArn"),
+                                     ("SKILL_MAP_INVOKE_RESOURCE_ARNS", "SkillMapInvokeResourceArns")):
+            self.assertIn(f"{variable}: ${{{{ vars.{variable} }}}}", self.deploy_workflow)
+            self.assertIn(f'"{parameter}=${{{variable}:-}}"', self.deploy_script)
+        expressions = [re.search(rf"{prefix}: !If \[HasSkillMapModelOverride, !Ref (\w+), !Ref (\w+)\]", api).groups()
+                       for prefix in ("SKILL_MAP_MODEL_ID", "Resource")]
+        for model in ("", "kimi"):
+            settings = {"SkillMapModelArn": model, "QuestionBankWorkerModelArn": "sonnet",
+                        "SkillMapInvokeResourceArns": ["kimi"] if model else [""],
+                        "QuestionBankWorkerInvokeResourceArns": ["sonnet"]}
+            effective = [settings[override if settings["SkillMapModelArn"] else inherited]
+                         for override, inherited in expressions]
+            self.assertEqual(effective, ["kimi", ["kimi"]] if model else ["sonnet", ["sonnet"]])
+
     @classmethod
     def setUpClass(cls):
         cls.template = TEMPLATE.read_text(encoding="utf-8")
@@ -197,15 +226,15 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         )
         self.assertNotIn("bedrock:InvokeModelWithResponseStream", self.template)
 
-    def test_api_uses_synchronous_model_for_questions_and_worker_model_for_skill_maps(
+    def test_api_uses_synchronous_question_model_and_inherits_skill_map_model_by_default(
         self,
     ):
         api = _indented_block(self.template, "CheckpointQuestionFunction")
         worker = _indented_block(self.template, "QuestionBankWorkerFunction")
         self.assertIn("BEDROCK_MODEL_ID: !Ref BedrockModelArn", api)
-        self.assertIn("SKILL_MAP_MODEL_ID: !Ref QuestionBankWorkerModelArn", api)
+        self.assertIn("SKILL_MAP_MODEL_ID: !If [HasSkillMapModelOverride, !Ref SkillMapModelArn, !Ref QuestionBankWorkerModelArn]", api)
         self.assertIn("Resource: !Ref BedrockInvokeResourceArns", api)
-        self.assertIn("Resource: !Ref QuestionBankWorkerInvokeResourceArns", api)
+        self.assertIn("Resource: !If [HasSkillMapModelOverride, !Ref SkillMapInvokeResourceArns, !Ref QuestionBankWorkerInvokeResourceArns]", api)
         self.assertIn(
             "BEDROCK_MODEL_ID: !Ref QuestionBankWorkerModelArn",
             worker,

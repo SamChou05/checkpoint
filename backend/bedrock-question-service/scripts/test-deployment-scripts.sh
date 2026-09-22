@@ -96,8 +96,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 60 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 60"
+[[ "${#sam_arguments[@]}" -eq 62 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 62"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -126,6 +126,50 @@ done
 for argument in "${sam_arguments[@]:11}"; do
   [[ "$argument" == *=* && "$argument" != *'$'* ]] || \
     fail "unexpanded or malformed parameter override: $argument"
+done
+
+[[ " ${sam_arguments[*]} " == *" SkillMapModelArn= "* ]] || fail "skill-map model inheritance changed"
+[[ " ${sam_arguments[*]} " == *" SkillMapInvokeResourceArns= "* ]] || fail "skill-map IAM inheritance changed"
+skill_map_model=arn:aws:bedrock:us-east-1::foundation-model/moonshotai.kimi-k2.5
+for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" "SKILL_MAP_MODEL_ARN=$skill_map_model" \
+    "SKILL_MAP_INVOKE_RESOURCE_ARNS=$skill_map_model" "$script_dir/$checked_script"
+  for invalid_pair in model_only resources_only missing_model wildcard question_wildcard model_wildcard empty_entry; do
+    model="$skill_map_model" resources="$skill_map_model"
+    case "$invalid_pair" in
+      model_only) resources="" ;;
+      resources_only) model="" ;;
+      missing_model) resources="$worker_model" ;;
+      wildcard) resources="$skill_map_model,*" ;;
+      question_wildcard) resources="$skill_map_model,arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-sonnet-4-?" ;;
+      model_wildcard) model="arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-sonnet-4-?"; resources="$model" ;;
+      empty_entry) resources="$skill_map_model," ;;
+    esac
+    rm -f "$sam_capture"
+    if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" "SKILL_MAP_MODEL_ARN=$model" \
+      "SKILL_MAP_INVOKE_RESOURCE_ARNS=$resources" "$script_dir/$checked_script" >"$test_directory/skill-map-error" 2>&1; then
+      fail "$checked_script accepted invalid skill-map configuration $invalid_pair"
+    fi
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid skill-map configuration"
+  done
+  unsupported_skill=arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0
+  if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" BEDROCK_STRUCTURED_OUTPUT_MODE=native \
+    "SKILL_MAP_MODEL_ARN=$unsupported_skill" "SKILL_MAP_INVOKE_RESOURCE_ARNS=$unsupported_skill" \
+    "$script_dir/$checked_script" >"$test_directory/skill-map-native-error" 2>&1; then
+    fail "$checked_script accepted unsupported native skill-map model"
+  fi
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" "SKILL_MAP_MODEL_ARN=$skill_map_model" \
+    "SKILL_MAP_INVOKE_RESOURCE_ARNS=$skill_map_model" "$script_dir/$checked_script"
+  if [[ "$checked_script" == deploy-sam.sh ]]; then
+    mapfile -d '' -t sam_arguments < "$sam_capture"
+    [[ " ${sam_arguments[*]} " == *" SkillMapModelArn=$skill_map_model "* ]] || fail "skill-map model not forwarded"
+    [[ " ${sam_arguments[*]} " == *" SkillMapInvokeResourceArns=$skill_map_model "* ]] || fail "skill-map IAM not forwarded"
+    [[ " ${sam_arguments[*]} " == *" QuestionBankWorkerModelArn=$worker_model "* ]] || fail "skill-map override changed worker"
+  fi
 done
 
 for global_mode in legacy native; do

@@ -38,8 +38,12 @@ validate_native_output_models() {
     return 1
   fi
 
+  # The API skill-map route has its own effective model, even when the worker
+  # uses a different transport. Check that model whenever the API is native.
+  local skill_map_model_variable=QUESTION_BANK_WORKER_MODEL_ARN
+  [[ -z "${SKILL_MAP_MODEL_ARN:-}" ]] || skill_map_model_variable=SKILL_MAP_MODEL_ARN
   local -a required_models=()
-  [[ "$global_mode" != native ]] || required_models+=(BEDROCK_MODEL_ARN)
+  [[ "$global_mode" != native ]] || required_models+=(BEDROCK_MODEL_ARN "$skill_map_model_variable")
   [[ "$worker_mode" != native ]] || required_models+=(QUESTION_BANK_WORKER_MODEL_ARN)
   if [[ "$global_mode" == native || "$worker_mode" == native ]]; then
     required_models+=(BEDROCK_VERIFICATION_MODEL_ARN)
@@ -55,4 +59,34 @@ validate_native_output_models() {
   done
 }
 
+validate_skill_map_override() {
+  local model="${SKILL_MAP_MODEL_ARN:-}" resources="${SKILL_MAP_INVOKE_RESOURCE_ARNS:-}"
+  [[ -n "$model" || -n "$resources" ]] || return 0
+  if [[ -z "$model" || -z "$resources" || "$model" != arn:*:bedrock:* || "$model" == *'*'* || "$model" == *'?'* ]]; then
+    echo "SKILL_MAP_MODEL_ARN and SKILL_MAP_INVOKE_RESOURCE_ARNS must be supplied together with an exact Bedrock model ARN." >&2
+    return 1
+  fi
+  local resource matched=false
+  local -a entries
+  IFS=',' read -r -a entries <<< "$resources"
+  if [[ "$resources" == ,* || "$resources" == *, || "$resources" == *,,* ]]; then
+    echo "SKILL_MAP_INVOKE_RESOURCE_ARNS must contain nonempty exact Bedrock ARNs." >&2
+    return 1
+  fi
+  for resource in "${entries[@]}"; do
+    resource="${resource#"${resource%%[![:space:]]*}"}"
+    resource="${resource%"${resource##*[![:space:]]}"}"
+    if [[ -z "$resource" || "$resource" == *'*'* || "$resource" == *'?'* || "$resource" != arn:*:bedrock:* ]]; then
+      echo "SKILL_MAP_INVOKE_RESOURCE_ARNS must contain nonempty exact Bedrock ARNs." >&2
+      return 1
+    fi
+    [[ "$resource" != "$model" ]] || matched=true
+  done
+  if [[ "$matched" != true ]]; then
+    echo "SKILL_MAP_INVOKE_RESOURCE_ARNS must include SKILL_MAP_MODEL_ARN." >&2
+    return 1
+  fi
+}
+
+validate_skill_map_override
 validate_native_output_models

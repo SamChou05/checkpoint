@@ -15,6 +15,16 @@ Parameters:
   QuestionBankWorkerInvokeResourceArns:
     Type: CommaDelimitedList
     Description: Comma-delimited least-privilege invoke resources for the asynchronous worker model and its cross-region destinations.
+  SkillMapModelArn:
+    Type: String
+    Default: ""
+    AllowedPattern: '^$|^arn:[^\s*?]+:bedrock:[^\s*?]+$'
+    Description: Optional synchronous skill-map model/profile ARN. Empty preserves inheritance from the worker model; set together with SkillMapInvokeResourceArns.
+  SkillMapInvokeResourceArns:
+    Type: CommaDelimitedList
+    Default: ""
+    AllowedPattern: '^$|^arn:[^\s*?]+:bedrock:[^\s*?]+$'
+    Description: Optional skill-map model/profile and cross-region destination ARNs. Empty preserves worker-resource inheritance.
   BedrockVerificationModelArn:
     Type: String
     Description: Exact Bedrock ARN for the separately evaluated answer-blind reviewer.
@@ -247,6 +257,17 @@ Parameters:
     MinValue: 1
 
 Rules:
+  SkillMapOverrideRequiresMatchingResources:
+    Assertions:
+      - Assert: !Or
+          - !And
+            - !Equals [!Ref SkillMapModelArn, ""]
+            - !EachMemberEquals [!Ref SkillMapInvokeResourceArns, ""]
+          - !And
+            - !Not [!Equals [!Ref SkillMapModelArn, ""]]
+            - !Contains [!Ref SkillMapInvokeResourceArns, !Ref SkillMapModelArn]
+            - !Not [!Contains [!Ref SkillMapInvokeResourceArns, ""]]
+        AssertDescription: Leave both skill-map overrides empty, or supply a model ARN included in its explicit invocation resource list.
   GuardrailConfigurationAllOrNone:
     Assertions:
       - Assert: !Or
@@ -271,6 +292,9 @@ Rules:
         AssertDescription: Production requires a complete Bedrock Guardrail configuration plus operations and budget alert emails.
 
 Conditions:
+  HasSkillMapModelOverride: !And
+    - !Not [!Equals [!Ref SkillMapModelArn, ""]]
+    - !Not [!Equals [!Select [0, !Ref SkillMapInvokeResourceArns], ""]]
   WorkerAuthorModeInheritsGlobal: !Equals [!Ref QuestionBankWorkerAuthorMode, inherit]
   WorkerClaudeThinkingInheritsGlobal: !Equals [!Ref QuestionBankWorkerClaudeThinking, inherit]
   WorkerStructuredOutputInheritsGlobal: !Equals [!Ref QuestionBankWorkerStructuredOutputMode, inherit]
@@ -365,7 +389,7 @@ Resources:
       Environment:
         Variables:
           BEDROCK_MODEL_ID: !Ref BedrockModelArn
-          SKILL_MAP_MODEL_ID: !Ref QuestionBankWorkerModelArn
+          SKILL_MAP_MODEL_ID: !If [HasSkillMapModelOverride, !Ref SkillMapModelArn, !Ref QuestionBankWorkerModelArn]
           BEDROCK_VERIFICATION_MODEL_ID: !Ref BedrockVerificationModelArn
           BEDROCK_FALLBACK_MODEL_ID: !Ref BedrockFallbackModelArn
           BEDROCK_STRUCTURED_OUTPUT_MODE: !Ref BedrockStructuredOutputMode
@@ -437,7 +461,7 @@ Resources:
             - Effect: Allow
               Action:
                 - bedrock:InvokeModel
-              Resource: !Ref QuestionBankWorkerInvokeResourceArns
+              Resource: !If [HasSkillMapModelOverride, !Ref SkillMapInvokeResourceArns, !Ref QuestionBankWorkerInvokeResourceArns]
             - Effect: Allow
               Action:
                 - bedrock:InvokeModel
