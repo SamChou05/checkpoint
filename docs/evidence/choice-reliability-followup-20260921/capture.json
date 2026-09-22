@@ -1,0 +1,816 @@
+{
+  "plan_sha256": "23aad680edd28f991e332942b20224fe1aef6b3ea084d8068b3c79ec26ba09e4",
+  "started_at": "2026-09-22T04:23:07.631107+00:00",
+  "status": "complete",
+  "calls": [
+    {
+      "call_index": 0,
+      "arm": "baseline",
+      "batch_index": 0,
+      "request_sha256": "dbcd663227a28f6827961f1dfbb36871fa84e12de545602e6b6481c295cc8e01",
+      "dispatch_attempted": true,
+      "elapsed_seconds": 8.885,
+      "raw": "{\"solutions\":[{\"choices\":[{\"choice\":\"1/4\",\"judgment\":\"refuted\",\"reason\":\"Half full means 1/2 of capacity is filled, not 1/4.\"},{\"choice\":\"0.25\",\"judgment\":\"refuted\",\"reason\":\"0.25 = 1/4, not 1/2; half full corresponds to 0.5.\"},{\"choice\":\"3/4\",\"judgment\":\"refuted\",\"reason\":\"3/4 means three-quarters full, not half full.\"},{\"choice\":\"1/2\",\"judgment\":\"supported\",\"reason\":\"Half full directly means 1/2 of the bottle's capacity is filled.\"}],\"index\":0},{\"choices\":[{\"choice\":\"1 minute\",\"judgment\":\"refuted\",\"reason\":\"The unit word used is 'minute', not 'seconds'.\"},{\"choice\":\"3 minutes\",\"judgment\":\"refuted\",\"reason\":\"The unit word used is 'minutes', not 'seconds'.\"},{\"choice\":\"2 minutes\",\"judgment\":\"refuted\",\"reason\":\"The unit word used is 'minutes', not 'seconds'.\"},{\"choice\":\"60 seconds\",\"judgment\":\"supported\",\"reason\":\"This choice explicitly uses 'seconds' as its unit word.\"}],\"index\":1},{\"choices\":[{\"choice\":\"Continue straight.\",\"judgment\":\"refuted\",\"reason\":\"The sign says only a left turn reaches the library; going straight does not.\"},{\"choice\":\"Turn left.\",\"judgment\":\"supported\",\"reason\":\"The fictional sign states only a left turn reaches the library, so turning left is the correct direction.\"},{\"choice\":\"Turn right.\",\"judgment\":\"refuted\",\"reason\":\"The sign specifies only a left turn reaches the library; turning right does not.\"},{\"choice\":\"Make a right turn.\",\"judgment\":\"refuted\",\"reason\":\"This is a right turn, which the sign excludes as a route to the library.\"}],\"index\":2},{\"choices\":[{\"choice\":\"x < 3\",\"judgment\":\"supported\",\"reason\":\"x < 3 describes all real numbers less than 3 and strictly excludes x = 3, matching the condition exactly.\"},{\"choice\":\"x <= 3\",\"judgment\":\"refuted\",\"reason\":\"x ≤ 3 includes x = 3, but the condition requires excluding x = 3.\"},{\"choice\":\"x > 3\",\"judgment\":\"refuted\",\"reason\":\"x > 3 describes values greater than 3, the opposite of what is required.\"},{\"choice\":\"x >= 3\",\"judgment\":\"refuted\",\"reason\":\"x ≥ 3 describes values greater than or equal to 3, not less than 3.\"}],\"index\":3},{\"choices\":[{\"choice\":\"No lamps are on.\",\"judgment\":\"refuted\",\"reason\":\"Exactly one lamp is on, so it is false that no lamps are on.\"},{\"choice\":\"Every lamp is off.\",\"judgment\":\"refuted\",\"reason\":\"One lamp is on, so not every lamp is off.\"},{\"choice\":\"All lamps are on.\",\"judgment\":\"refuted\",\"reason\":\"Only one of the two lamps is on, so not all lamps are on.\"},{\"choice\":\"Some lamps are on.\",\"judgment\":\"supported\",\"reason\":\"'Some' means at least one; exactly one lamp is on, so 'some lamps are on' is true.\"}],\"index\":4}]}",
+      "usage": {
+        "inputTokens": 1396,
+        "outputTokens": 740,
+        "totalTokens": 2136,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "stop_reason": "end_turn",
+      "score": {
+        "strict_schema_and_coverage_valid": true,
+        "rows": [
+          {
+            "case_id": "fraction_value_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "1/2"
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": false
+          },
+          {
+            "case_id": "unit_notation_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "60 seconds"
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "turn_action_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "Turn left."
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": false
+          },
+          {
+            "case_id": "inequality_boundary_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "x < 3"
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "lamp_negation_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "Some lamps are on."
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": false
+          }
+        ]
+      }
+    },
+    {
+      "call_index": 1,
+      "arm": "pairwise",
+      "batch_index": 0,
+      "request_sha256": "8771437db7b55cb567d0267e366a570777d2f085cd4ab60ce1851551ac4ff340",
+      "dispatch_attempted": true,
+      "elapsed_seconds": 22.583,
+      "raw": "{\"solutions\":[{\"choicePairs\":[{\"leftChoice\":\"1/4\",\"reason\":\"1/4=0.25, both propose the same fraction value (one quarter) as the answer to what fraction is filled.\",\"relation\":\"equivalent\",\"rightChoice\":\"0.25\"},{\"leftChoice\":\"1/4\",\"reason\":\"1/4 proposes one quarter filled; 3/4 proposes three quarters filled. Different fractional values.\",\"relation\":\"distinct\",\"rightChoice\":\"3/4\"},{\"leftChoice\":\"1/4\",\"reason\":\"1/4 proposes one quarter; 1/2 proposes one half. Different fractional values.\",\"relation\":\"distinct\",\"rightChoice\":\"1/2\"},{\"leftChoice\":\"0.25\",\"reason\":\"0.25 proposes one quarter filled; 3/4 proposes three quarters filled. Different values.\",\"relation\":\"distinct\",\"rightChoice\":\"3/4\"},{\"leftChoice\":\"0.25\",\"reason\":\"0.25 proposes one quarter; 1/2 proposes one half. Different fractional values.\",\"relation\":\"distinct\",\"rightChoice\":\"1/2\"},{\"leftChoice\":\"3/4\",\"reason\":\"3/4 proposes three quarters filled; 1/2 proposes one half filled. Different values.\",\"relation\":\"distinct\",\"rightChoice\":\"1/2\"}],\"choices\":[{\"choice\":\"1/4\",\"judgment\":\"refuted\",\"reason\":\"Half full means 1/2 of capacity is filled, not 1/4.\"},{\"choice\":\"0.25\",\"judgment\":\"refuted\",\"reason\":\"0.25 = 1/4, not 1/2. Half full means 1/2 of capacity is filled.\"},{\"choice\":\"3/4\",\"judgment\":\"refuted\",\"reason\":\"Half full means 1/2 of capacity is filled, not 3/4.\"},{\"choice\":\"1/2\",\"judgment\":\"supported\",\"reason\":\"Half full directly means 1/2 of the bottle's capacity is filled.\"}],\"index\":0},{\"choicePairs\":[{\"leftChoice\":\"1 minute\",\"reason\":\"Both use 'minutes' as the unit word, not 'seconds'. Neither matches the criterion.\",\"relation\":\"equivalent\",\"rightChoice\":\"3 minutes\"},{\"leftChoice\":\"1 minute\",\"reason\":\"Both use 'minutes' as the unit word, not 'seconds'. Neither matches the criterion.\",\"relation\":\"equivalent\",\"rightChoice\":\"2 minutes\"},{\"leftChoice\":\"1 minute\",\"reason\":\"'1 minute' uses 'minute'; '60 seconds' uses 'seconds'. Different unit words — the stem asks which uses 'seconds'.\",\"relation\":\"distinct\",\"rightChoice\":\"60 seconds\"},{\"leftChoice\":\"3 minutes\",\"reason\":\"Both use 'minutes' as the unit word, not 'seconds'. Neither matches the criterion.\",\"relation\":\"equivalent\",\"rightChoice\":\"2 minutes\"},{\"leftChoice\":\"3 minutes\",\"reason\":\"'3 minutes' uses 'minutes'; '60 seconds' uses 'seconds'. Different unit words.\",\"relation\":\"distinct\",\"rightChoice\":\"60 seconds\"},{\"leftChoice\":\"2 minutes\",\"reason\":\"'2 minutes' uses 'minutes'; '60 seconds' uses 'seconds'. Different unit words.\",\"relation\":\"distinct\",\"rightChoice\":\"60 seconds\"}],\"choices\":[{\"choice\":\"1 minute\",\"judgment\":\"refuted\",\"reason\":\"The unit word in '1 minute' is 'minute', not 'seconds'.\"},{\"choice\":\"3 minutes\",\"judgment\":\"refuted\",\"reason\":\"The unit word in '3 minutes' is 'minutes', not 'seconds'.\"},{\"choice\":\"2 minutes\",\"judgment\":\"refuted\",\"reason\":\"The unit word in '2 minutes' is 'minutes', not 'seconds'.\"},{\"choice\":\"60 seconds\",\"judgment\":\"supported\",\"reason\":\"The unit word in '60 seconds' is 'seconds', exactly matching the criterion.\"}],\"index\":1},{\"choicePairs\":[{\"leftChoice\":\"Continue straight.\",\"reason\":\"Straight vs. left — different directions proposed.\",\"relation\":\"distinct\",\"rightChoice\":\"Turn left.\"},{\"leftChoice\":\"Continue straight.\",\"reason\":\"Straight vs. right — different directions proposed.\",\"relation\":\"distinct\",\"rightChoice\":\"Turn right.\"},{\"leftChoice\":\"Continue straight.\",\"reason\":\"Straight vs. right — different directions proposed.\",\"relation\":\"distinct\",\"rightChoice\":\"Make a right turn.\"},{\"leftChoice\":\"Turn left.\",\"reason\":\"Left vs. right — different directions proposed.\",\"relation\":\"distinct\",\"rightChoice\":\"Turn right.\"},{\"leftChoice\":\"Turn left.\",\"reason\":\"Left vs. right — different directions proposed.\",\"relation\":\"distinct\",\"rightChoice\":\"Make a right turn.\"},{\"leftChoice\":\"Turn right.\",\"reason\":\"Both propose turning right, just worded differently. Same direction as an answer.\",\"relation\":\"equivalent\",\"rightChoice\":\"Make a right turn.\"}],\"choices\":[{\"choice\":\"Continue straight.\",\"judgment\":\"refuted\",\"reason\":\"The sign says only a left turn reaches the library; going straight does not.\"},{\"choice\":\"Turn left.\",\"judgment\":\"supported\",\"reason\":\"The fictional sign states only a left turn reaches the library, so turning left is the correct direction.\"},{\"choice\":\"Turn right.\",\"judgment\":\"refuted\",\"reason\":\"The sign says only a left turn reaches the library; turning right does not.\"},{\"choice\":\"Make a right turn.\",\"judgment\":\"refuted\",\"reason\":\"The sign says only a left turn reaches the library; making a right turn does not.\"}],\"index\":2},{\"choicePairs\":[{\"leftChoice\":\"x < 3\",\"reason\":\"x<3 excludes x=3 (strict); x<=3 includes x=3. Different boundary conditions — the stem requires exclusion of x=3.\",\"relation\":\"distinct\",\"rightChoice\":\"x <= 3\"},{\"leftChoice\":\"x < 3\",\"reason\":\"x<3 covers values less than 3; x>3 covers values greater than 3. Opposite inequalities.\",\"relation\":\"distinct\",\"rightChoice\":\"x > 3\"},{\"leftChoice\":\"x < 3\",\"reason\":\"x<3 covers values less than 3; x>=3 covers values 3 and above. Opposite inequalities.\",\"relation\":\"distinct\",\"rightChoice\":\"x >= 3\"},{\"leftChoice\":\"x <= 3\",\"reason\":\"x<=3 includes x=3 and below; x>3 covers values strictly above 3. Opposite inequalities.\",\"relation\":\"distinct\",\"rightChoice\":\"x > 3\"},{\"leftChoice\":\"x <= 3\",\"reason\":\"x<=3 includes x=3 and below; x>=3 covers x=3 and above. Different sets.\",\"relation\":\"distinct\",\"rightChoice\":\"x >= 3\"},{\"leftChoice\":\"x > 3\",\"reason\":\"x>3 covers values strictly above 3; x>=3 covers x=3 and above. Different boundary conditions.\",\"relation\":\"distinct\",\"rightChoice\":\"x >= 3\"}],\"choices\":[{\"choice\":\"x < 3\",\"judgment\":\"supported\",\"reason\":\"x < 3 describes all real x less than 3 and strictly excludes x = 3, matching the stem exactly.\"},{\"choice\":\"x <= 3\",\"judgment\":\"refuted\",\"reason\":\"x <= 3 includes x = 3, but the stem requires excluding x = 3.\"},{\"choice\":\"x > 3\",\"judgment\":\"refuted\",\"reason\":\"x > 3 describes values greater than 3, not less than 3.\"},{\"choice\":\"x >= 3\",\"judgment\":\"refuted\",\"reason\":\"x >= 3 describes values greater than or equal to 3, not less than 3.\"}],\"index\":3},{\"choicePairs\":[{\"leftChoice\":\"No lamps are on.\",\"reason\":\"'No lamps on' vs 'every lamp off' — these are logically equivalent claims (both assert zero lamps are on), proposing the same answer.\",\"relation\":\"equivalent\",\"rightChoice\":\"Every lamp is off.\"},{\"leftChoice\":\"No lamps are on.\",\"reason\":\"'No lamps on' vs 'all lamps on' — opposite claims about how many lamps are on.\",\"relation\":\"distinct\",\"rightChoice\":\"All lamps are on.\"},{\"leftChoice\":\"No lamps are on.\",\"reason\":\"'No lamps on' asserts zero lamps on; 'some lamps on' asserts at least one lamp on. Opposite claims.\",\"relation\":\"distinct\",\"rightChoice\":\"Some lamps are on.\"},{\"leftChoice\":\"Every lamp is off.\",\"reason\":\"'Every lamp off' vs 'all lamps on' — opposite claims.\",\"relation\":\"distinct\",\"rightChoice\":\"All lamps are on.\"},{\"leftChoice\":\"Every lamp is off.\",\"reason\":\"'Every lamp off' asserts zero on; 'some lamps on' asserts at least one on. Opposite claims.\",\"relation\":\"distinct\",\"rightChoice\":\"Some lamps are on.\"},{\"leftChoice\":\"All lamps are on.\",\"reason\":\"'All lamps on' asserts both are on; 'some lamps on' asserts at least one is on. Different quantifiers — not equivalent.\",\"relation\":\"distinct\",\"rightChoice\":\"Some lamps are on.\"}],\"choices\":[{\"choice\":\"No lamps are on.\",\"judgment\":\"refuted\",\"reason\":\"Exactly one lamp is on, so it is false that no lamps are on.\"},{\"choice\":\"Every lamp is off.\",\"judgment\":\"refuted\",\"reason\":\"Exactly one lamp is on, so not every lamp is off.\"},{\"choice\":\"All lamps are on.\",\"judgment\":\"refuted\",\"reason\":\"Exactly one of two lamps is on, so it is false that all lamps are on.\"},{\"choice\":\"Some lamps are on.\",\"judgment\":\"supported\",\"reason\":\"'Some' means at least one. Exactly one lamp is on, so 'some lamps are on' is true.\"}],\"index\":4}]}",
+      "usage": {
+        "inputTokens": 2017,
+        "outputTokens": 2220,
+        "totalTokens": 4237,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "stop_reason": "end_turn",
+      "score": {
+        "strict_schema_and_coverage_valid": true,
+        "rows": [
+          {
+            "case_id": "fraction_value_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "1/2"
+            ],
+            "pairs": [
+              {
+                "leftChoice": "1/4",
+                "reason": "1/4=0.25, both propose the same fraction value (one quarter) as the answer to what fraction is filled.",
+                "relation": "equivalent",
+                "rightChoice": "0.25",
+                "expected_relation": "equivalent",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "1/4",
+                "reason": "1/4 proposes one quarter filled; 3/4 proposes three quarters filled. Different fractional values.",
+                "relation": "distinct",
+                "rightChoice": "3/4",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "1/4",
+                "reason": "1/4 proposes one quarter; 1/2 proposes one half. Different fractional values.",
+                "relation": "distinct",
+                "rightChoice": "1/2",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "0.25",
+                "reason": "0.25 proposes one quarter filled; 3/4 proposes three quarters filled. Different values.",
+                "relation": "distinct",
+                "rightChoice": "3/4",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "0.25",
+                "reason": "0.25 proposes one quarter; 1/2 proposes one half. Different fractional values.",
+                "relation": "distinct",
+                "rightChoice": "1/2",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "3/4",
+                "reason": "3/4 proposes three quarters filled; 1/2 proposes one half filled. Different values.",
+                "relation": "distinct",
+                "rightChoice": "1/2",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": "equivalent_choices",
+            "eligible": false,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "unit_notation_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "60 seconds"
+            ],
+            "pairs": [
+              {
+                "leftChoice": "1 minute",
+                "reason": "Both use 'minutes' as the unit word, not 'seconds'. Neither matches the criterion.",
+                "relation": "equivalent",
+                "rightChoice": "3 minutes",
+                "expected_relation": "distinct",
+                "relation_agrees": false
+              },
+              {
+                "leftChoice": "1 minute",
+                "reason": "Both use 'minutes' as the unit word, not 'seconds'. Neither matches the criterion.",
+                "relation": "equivalent",
+                "rightChoice": "2 minutes",
+                "expected_relation": "distinct",
+                "relation_agrees": false
+              },
+              {
+                "leftChoice": "1 minute",
+                "reason": "'1 minute' uses 'minute'; '60 seconds' uses 'seconds'. Different unit words — the stem asks which uses 'seconds'.",
+                "relation": "distinct",
+                "rightChoice": "60 seconds",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "3 minutes",
+                "reason": "Both use 'minutes' as the unit word, not 'seconds'. Neither matches the criterion.",
+                "relation": "equivalent",
+                "rightChoice": "2 minutes",
+                "expected_relation": "distinct",
+                "relation_agrees": false
+              },
+              {
+                "leftChoice": "3 minutes",
+                "reason": "'3 minutes' uses 'minutes'; '60 seconds' uses 'seconds'. Different unit words.",
+                "relation": "distinct",
+                "rightChoice": "60 seconds",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "2 minutes",
+                "reason": "'2 minutes' uses 'minutes'; '60 seconds' uses 'seconds'. Different unit words.",
+                "relation": "distinct",
+                "rightChoice": "60 seconds",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": "equivalent_choices",
+            "eligible": false,
+            "eligibility_agrees": false
+          },
+          {
+            "case_id": "turn_action_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "Turn left."
+            ],
+            "pairs": [
+              {
+                "leftChoice": "Continue straight.",
+                "reason": "Straight vs. left — different directions proposed.",
+                "relation": "distinct",
+                "rightChoice": "Turn left.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "Continue straight.",
+                "reason": "Straight vs. right — different directions proposed.",
+                "relation": "distinct",
+                "rightChoice": "Turn right.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "Continue straight.",
+                "reason": "Straight vs. right — different directions proposed.",
+                "relation": "distinct",
+                "rightChoice": "Make a right turn.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "Turn left.",
+                "reason": "Left vs. right — different directions proposed.",
+                "relation": "distinct",
+                "rightChoice": "Turn right.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "Turn left.",
+                "reason": "Left vs. right — different directions proposed.",
+                "relation": "distinct",
+                "rightChoice": "Make a right turn.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "Turn right.",
+                "reason": "Both propose turning right, just worded differently. Same direction as an answer.",
+                "relation": "equivalent",
+                "rightChoice": "Make a right turn.",
+                "expected_relation": "equivalent",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": "equivalent_choices",
+            "eligible": false,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "inequality_boundary_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "x < 3"
+            ],
+            "pairs": [
+              {
+                "leftChoice": "x < 3",
+                "reason": "x<3 excludes x=3 (strict); x<=3 includes x=3. Different boundary conditions — the stem requires exclusion of x=3.",
+                "relation": "distinct",
+                "rightChoice": "x <= 3",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "x < 3",
+                "reason": "x<3 covers values less than 3; x>3 covers values greater than 3. Opposite inequalities.",
+                "relation": "distinct",
+                "rightChoice": "x > 3",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "x < 3",
+                "reason": "x<3 covers values less than 3; x>=3 covers values 3 and above. Opposite inequalities.",
+                "relation": "distinct",
+                "rightChoice": "x >= 3",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "x <= 3",
+                "reason": "x<=3 includes x=3 and below; x>3 covers values strictly above 3. Opposite inequalities.",
+                "relation": "distinct",
+                "rightChoice": "x > 3",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "x <= 3",
+                "reason": "x<=3 includes x=3 and below; x>=3 covers x=3 and above. Different sets.",
+                "relation": "distinct",
+                "rightChoice": "x >= 3",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "x > 3",
+                "reason": "x>3 covers values strictly above 3; x>=3 covers x=3 and above. Different boundary conditions.",
+                "relation": "distinct",
+                "rightChoice": "x >= 3",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "lamp_negation_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "Some lamps are on."
+            ],
+            "pairs": [
+              {
+                "leftChoice": "No lamps are on.",
+                "reason": "'No lamps on' vs 'every lamp off' — these are logically equivalent claims (both assert zero lamps are on), proposing the same answer.",
+                "relation": "equivalent",
+                "rightChoice": "Every lamp is off.",
+                "expected_relation": "equivalent",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "No lamps are on.",
+                "reason": "'No lamps on' vs 'all lamps on' — opposite claims about how many lamps are on.",
+                "relation": "distinct",
+                "rightChoice": "All lamps are on.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "No lamps are on.",
+                "reason": "'No lamps on' asserts zero lamps on; 'some lamps on' asserts at least one lamp on. Opposite claims.",
+                "relation": "distinct",
+                "rightChoice": "Some lamps are on.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "Every lamp is off.",
+                "reason": "'Every lamp off' vs 'all lamps on' — opposite claims.",
+                "relation": "distinct",
+                "rightChoice": "All lamps are on.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "Every lamp is off.",
+                "reason": "'Every lamp off' asserts zero on; 'some lamps on' asserts at least one on. Opposite claims.",
+                "relation": "distinct",
+                "rightChoice": "Some lamps are on.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "All lamps are on.",
+                "reason": "'All lamps on' asserts both are on; 'some lamps on' asserts at least one is on. Different quantifiers — not equivalent.",
+                "relation": "distinct",
+                "rightChoice": "Some lamps are on.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": "equivalent_choices",
+            "eligible": false,
+            "eligibility_agrees": true
+          }
+        ]
+      }
+    },
+    {
+      "call_index": 2,
+      "arm": "pairwise",
+      "batch_index": 1,
+      "request_sha256": "8eb8873d1440d5e04630bcd6b0781277bfa4d476971fa902f1ba2cf594b58bb1",
+      "dispatch_attempted": true,
+      "elapsed_seconds": 19.897,
+      "raw": "{\"solutions\":[{\"choicePairs\":[{\"leftChoice\":\"0.25\",\"reason\":\"0.25 is a decimal numeral; 3/4 uses '/' notation — distinct proposed answers\",\"relation\":\"distinct\",\"rightChoice\":\"3/4\"},{\"leftChoice\":\"0.25\",\"reason\":\"0.25 is a decimal numeral; 1/2 uses '/' notation — distinct proposed answers\",\"relation\":\"distinct\",\"rightChoice\":\"1/2\"},{\"leftChoice\":\"0.25\",\"reason\":\"0.25 is a decimal numeral; 1/4 uses '/' notation — distinct proposed answers\",\"relation\":\"distinct\",\"rightChoice\":\"1/4\"},{\"leftChoice\":\"3/4\",\"reason\":\"Both use '/' fraction notation, but they are different fractions (3/4 vs 1/2) — distinct as written representations\",\"relation\":\"distinct\",\"rightChoice\":\"1/2\"},{\"leftChoice\":\"3/4\",\"reason\":\"Both use '/' fraction notation, but they are different fractions (3/4 vs 1/4) — distinct as written representations\",\"relation\":\"distinct\",\"rightChoice\":\"1/4\"},{\"leftChoice\":\"1/2\",\"reason\":\"Both use '/' fraction notation, but they are different fractions (1/2 vs 1/4) — distinct as written representations\",\"relation\":\"distinct\",\"rightChoice\":\"1/4\"}],\"choices\":[{\"choice\":\"0.25\",\"judgment\":\"supported\",\"reason\":\"0.25 is written as a decimal numeral using a decimal point, not using '/' notation. It directly answers the question.\"},{\"choice\":\"3/4\",\"judgment\":\"refuted\",\"reason\":\"3/4 is written with '/', making it a fraction in '/' notation, not a decimal numeral.\"},{\"choice\":\"1/2\",\"judgment\":\"refuted\",\"reason\":\"1/2 is written with '/', making it a fraction in '/' notation, not a decimal numeral.\"},{\"choice\":\"1/4\",\"judgment\":\"refuted\",\"reason\":\"1/4 is written with '/', making it a fraction in '/' notation, not a decimal numeral.\"}],\"index\":0},{\"choicePairs\":[{\"leftChoice\":\"3 minutes\",\"reason\":\"3 minutes ≠ 2 minutes; these propose different durations\",\"relation\":\"distinct\",\"rightChoice\":\"2 minutes\"},{\"leftChoice\":\"3 minutes\",\"reason\":\"3 minutes vs 60 seconds: 60 seconds = 1 minute ≠ 3 minutes — distinct durations\",\"relation\":\"distinct\",\"rightChoice\":\"60 seconds\"},{\"leftChoice\":\"3 minutes\",\"reason\":\"3 minutes vs 1 minute — distinct durations\",\"relation\":\"distinct\",\"rightChoice\":\"1 minute\"},{\"leftChoice\":\"2 minutes\",\"reason\":\"2 minutes vs 60 seconds: 60 seconds = 1 minute ≠ 2 minutes — distinct durations\",\"relation\":\"distinct\",\"rightChoice\":\"60 seconds\"},{\"leftChoice\":\"2 minutes\",\"reason\":\"2 minutes vs 1 minute — distinct durations\",\"relation\":\"distinct\",\"rightChoice\":\"1 minute\"},{\"leftChoice\":\"60 seconds\",\"reason\":\"60 seconds = 1 minute by the given conversion, so both propose the same duration\",\"relation\":\"equivalent\",\"rightChoice\":\"1 minute\"}],\"choices\":[{\"choice\":\"3 minutes\",\"judgment\":\"refuted\",\"reason\":\"120 seconds ÷ 60 = 2 minutes, not 3 minutes.\"},{\"choice\":\"2 minutes\",\"judgment\":\"supported\",\"reason\":\"120 seconds ÷ 60 seconds/minute = 2 minutes exactly.\"},{\"choice\":\"60 seconds\",\"judgment\":\"refuted\",\"reason\":\"60 seconds = 1 minute, not 120 seconds = 2 minutes.\"},{\"choice\":\"1 minute\",\"judgment\":\"refuted\",\"reason\":\"1 minute = 60 seconds, not 120 seconds.\"}],\"index\":1},{\"choicePairs\":[{\"leftChoice\":\"\\\"ab\\\"\",\"reason\":\"\\\"ab\\\" has zero spaces; \\\"a b\\\" has one space — distinct space counts\",\"relation\":\"distinct\",\"rightChoice\":\"\\\"a b\\\"\"},{\"leftChoice\":\"\\\"ab\\\"\",\"reason\":\"\\\"ab\\\" has zero spaces; \\\"a  b\\\" has two spaces — distinct space counts\",\"relation\":\"distinct\",\"rightChoice\":\"\\\"a  b\\\"\"},{\"leftChoice\":\"\\\"ab\\\"\",\"reason\":\"\\\"ab\\\" has zero spaces; \\\"a   b\\\" has three spaces — distinct space counts\",\"relation\":\"distinct\",\"rightChoice\":\"\\\"a   b\\\"\"},{\"leftChoice\":\"\\\"a b\\\"\",\"reason\":\"\\\"a b\\\" has one space; \\\"a  b\\\" has two spaces — distinct space counts\",\"relation\":\"distinct\",\"rightChoice\":\"\\\"a  b\\\"\"},{\"leftChoice\":\"\\\"a b\\\"\",\"reason\":\"\\\"a b\\\" has one space; \\\"a   b\\\" has three spaces — distinct space counts\",\"relation\":\"distinct\",\"rightChoice\":\"\\\"a   b\\\"\"},{\"leftChoice\":\"\\\"a  b\\\"\",\"reason\":\"\\\"a  b\\\" has two spaces; \\\"a   b\\\" has three spaces — distinct space counts\",\"relation\":\"distinct\",\"rightChoice\":\"\\\"a   b\\\"\"}],\"choices\":[{\"choice\":\"\\\"ab\\\"\",\"judgment\":\"refuted\",\"reason\":\"\\\"ab\\\" contains zero spaces between a and b, not two.\"},{\"choice\":\"\\\"a b\\\"\",\"judgment\":\"refuted\",\"reason\":\"\\\"a b\\\" contains exactly one space between a and b, not two.\"},{\"choice\":\"\\\"a  b\\\"\",\"judgment\":\"supported\",\"reason\":\"\\\"a  b\\\" contains exactly two spaces between a and b, matching the condition.\"},{\"choice\":\"\\\"a   b\\\"\",\"judgment\":\"refuted\",\"reason\":\"\\\"a   b\\\" contains exactly three spaces between a and b, not two.\"}],\"index\":2},{\"choicePairs\":[{\"leftChoice\":\"x+1\",\"reason\":\"x+1 equals x plus a constant 1; 1+x equals 1 plus x — these are the same expression by commutativity of addition, proposing the same function\",\"relation\":\"equivalent\",\"rightChoice\":\"1+x\"},{\"leftChoice\":\"x+1\",\"reason\":\"x+1 adds 1 to x; x-1 subtracts 1 from x — distinct functions\",\"relation\":\"distinct\",\"rightChoice\":\"x-1\"},{\"leftChoice\":\"x+1\",\"reason\":\"x+1 = x+1; 2*x = 2x — distinct functions (differ when x≠1)\",\"relation\":\"distinct\",\"rightChoice\":\"2*x\"},{\"leftChoice\":\"1+x\",\"reason\":\"1+x adds 1 to x; x-1 subtracts 1 from x — distinct functions\",\"relation\":\"distinct\",\"rightChoice\":\"x-1\"},{\"leftChoice\":\"1+x\",\"reason\":\"1+x = x+1; 2*x = 2x — distinct functions (differ when x≠1)\",\"relation\":\"distinct\",\"rightChoice\":\"2*x\"},{\"leftChoice\":\"x-1\",\"reason\":\"x-1 subtracts 1; 2*x doubles x — distinct functions\",\"relation\":\"distinct\",\"rightChoice\":\"2*x\"}],\"choices\":[{\"choice\":\"x+1\",\"judgment\":\"refuted\",\"reason\":\"x+1 ≠ x+x=2x for all real x (e.g., x=2: x+1=3, 2x=4).\"},{\"choice\":\"1+x\",\"judgment\":\"refuted\",\"reason\":\"1+x = x+1 ≠ 2x for all real x (same counterexample as x+1).\"},{\"choice\":\"x-1\",\"judgment\":\"refuted\",\"reason\":\"x-1 ≠ 2x for all real x (e.g., x=2: x-1=1, 2x=4).\"},{\"choice\":\"2*x\",\"judgment\":\"supported\",\"reason\":\"2*x = 2x = x+x for every real x, satisfying the identity exactly.\"}],\"index\":3},{\"choicePairs\":[{\"leftChoice\":\"Exactly one item.\",\"reason\":\"Exactly one item excludes zero and two+; At most one item allows zero and one but excludes two+ — distinct conditions\",\"relation\":\"distinct\",\"rightChoice\":\"At most one item.\"},{\"leftChoice\":\"Exactly one item.\",\"reason\":\"Exactly one item requires exactly 1; More than one item requires 2+ — distinct conditions\",\"relation\":\"distinct\",\"rightChoice\":\"More than one item.\"},{\"leftChoice\":\"Exactly one item.\",\"reason\":\"Exactly one item requires exactly 1; At least one item requires 1+ — distinct conditions\",\"relation\":\"distinct\",\"rightChoice\":\"At least one item.\"},{\"leftChoice\":\"More than one item.\",\"reason\":\"More than one item requires 2+; At most one item allows 0 or 1 — distinct, in fact opposite conditions\",\"relation\":\"distinct\",\"rightChoice\":\"At most one item.\"},{\"leftChoice\":\"More than one item.\",\"reason\":\"More than one item requires 2+; At least one item requires 1+ — distinct conditions\",\"relation\":\"distinct\",\"rightChoice\":\"At least one item.\"},{\"leftChoice\":\"At most one item.\",\"reason\":\"At most one item allows 0 or 1; At least one item allows 1+ — distinct conditions (overlap only at exactly 1)\",\"relation\":\"distinct\",\"rightChoice\":\"At least one item.\"}],\"choices\":[{\"choice\":\"Exactly one item.\",\"judgment\":\"refuted\",\"reason\":\"'Exactly one item' excludes zero items, but the condition must allow zero items.\"},{\"choice\":\"More than one item.\",\"judgment\":\"refuted\",\"reason\":\"'More than one item' requires at least two items, which is the opposite of what is needed.\"},{\"choice\":\"At most one item.\",\"judgment\":\"supported\",\"reason\":\"'At most one item' allows zero items (0 ≤ 1) and one item (1 ≤ 1) but excludes two or more items (2 > 1). This matches exactly.\"},{\"choice\":\"At least one item.\",\"judgment\":\"refuted\",\"reason\":\"'At least one item' excludes zero items and allows two or more items, both of which contradict the required condition.\"}],\"index\":4}]}",
+      "usage": {
+        "inputTokens": 2022,
+        "outputTokens": 2294,
+        "totalTokens": 4316,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "stop_reason": "end_turn",
+      "score": {
+        "strict_schema_and_coverage_valid": true,
+        "rows": [
+          {
+            "case_id": "fraction_notation_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "0.25"
+            ],
+            "pairs": [
+              {
+                "leftChoice": "0.25",
+                "reason": "0.25 is a decimal numeral; 3/4 uses '/' notation — distinct proposed answers",
+                "relation": "distinct",
+                "rightChoice": "3/4",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "0.25",
+                "reason": "0.25 is a decimal numeral; 1/2 uses '/' notation — distinct proposed answers",
+                "relation": "distinct",
+                "rightChoice": "1/2",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "0.25",
+                "reason": "0.25 is a decimal numeral; 1/4 uses '/' notation — distinct proposed answers",
+                "relation": "distinct",
+                "rightChoice": "1/4",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "3/4",
+                "reason": "Both use '/' fraction notation, but they are different fractions (3/4 vs 1/2) — distinct as written representations",
+                "relation": "distinct",
+                "rightChoice": "1/2",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "3/4",
+                "reason": "Both use '/' fraction notation, but they are different fractions (3/4 vs 1/4) — distinct as written representations",
+                "relation": "distinct",
+                "rightChoice": "1/4",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "1/2",
+                "reason": "Both use '/' fraction notation, but they are different fractions (1/2 vs 1/4) — distinct as written representations",
+                "relation": "distinct",
+                "rightChoice": "1/4",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "duration_unit_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "2 minutes"
+            ],
+            "pairs": [
+              {
+                "leftChoice": "3 minutes",
+                "reason": "3 minutes ≠ 2 minutes; these propose different durations",
+                "relation": "distinct",
+                "rightChoice": "2 minutes",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "3 minutes",
+                "reason": "3 minutes vs 60 seconds: 60 seconds = 1 minute ≠ 3 minutes — distinct durations",
+                "relation": "distinct",
+                "rightChoice": "60 seconds",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "3 minutes",
+                "reason": "3 minutes vs 1 minute — distinct durations",
+                "relation": "distinct",
+                "rightChoice": "1 minute",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "2 minutes",
+                "reason": "2 minutes vs 60 seconds: 60 seconds = 1 minute ≠ 2 minutes — distinct durations",
+                "relation": "distinct",
+                "rightChoice": "60 seconds",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "2 minutes",
+                "reason": "2 minutes vs 1 minute — distinct durations",
+                "relation": "distinct",
+                "rightChoice": "1 minute",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "60 seconds",
+                "reason": "60 seconds = 1 minute by the given conversion, so both propose the same duration",
+                "relation": "equivalent",
+                "rightChoice": "1 minute",
+                "expected_relation": "equivalent",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": "equivalent_choices",
+            "eligible": false,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "literal_spaces_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "\"a  b\""
+            ],
+            "pairs": [
+              {
+                "leftChoice": "\"ab\"",
+                "reason": "\"ab\" has zero spaces; \"a b\" has one space — distinct space counts",
+                "relation": "distinct",
+                "rightChoice": "\"a b\"",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "\"ab\"",
+                "reason": "\"ab\" has zero spaces; \"a  b\" has two spaces — distinct space counts",
+                "relation": "distinct",
+                "rightChoice": "\"a  b\"",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "\"ab\"",
+                "reason": "\"ab\" has zero spaces; \"a   b\" has three spaces — distinct space counts",
+                "relation": "distinct",
+                "rightChoice": "\"a   b\"",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "\"a b\"",
+                "reason": "\"a b\" has one space; \"a  b\" has two spaces — distinct space counts",
+                "relation": "distinct",
+                "rightChoice": "\"a  b\"",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "\"a b\"",
+                "reason": "\"a b\" has one space; \"a   b\" has three spaces — distinct space counts",
+                "relation": "distinct",
+                "rightChoice": "\"a   b\"",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "\"a  b\"",
+                "reason": "\"a  b\" has two spaces; \"a   b\" has three spaces — distinct space counts",
+                "relation": "distinct",
+                "rightChoice": "\"a   b\"",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "algebra_function_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "2*x"
+            ],
+            "pairs": [
+              {
+                "leftChoice": "x+1",
+                "reason": "x+1 equals x plus a constant 1; 1+x equals 1 plus x — these are the same expression by commutativity of addition, proposing the same function",
+                "relation": "equivalent",
+                "rightChoice": "1+x",
+                "expected_relation": "equivalent",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "x+1",
+                "reason": "x+1 adds 1 to x; x-1 subtracts 1 from x — distinct functions",
+                "relation": "distinct",
+                "rightChoice": "x-1",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "x+1",
+                "reason": "x+1 = x+1; 2*x = 2x — distinct functions (differ when x≠1)",
+                "relation": "distinct",
+                "rightChoice": "2*x",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "1+x",
+                "reason": "1+x adds 1 to x; x-1 subtracts 1 from x — distinct functions",
+                "relation": "distinct",
+                "rightChoice": "x-1",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "1+x",
+                "reason": "1+x = x+1; 2*x = 2x — distinct functions (differ when x≠1)",
+                "relation": "distinct",
+                "rightChoice": "2*x",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "x-1",
+                "reason": "x-1 subtracts 1; 2*x doubles x — distinct functions",
+                "relation": "distinct",
+                "rightChoice": "2*x",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": "equivalent_choices",
+            "eligible": false,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "quantifier_boundary_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "At most one item."
+            ],
+            "pairs": [
+              {
+                "leftChoice": "Exactly one item.",
+                "reason": "Exactly one item excludes zero and two+; At most one item allows zero and one but excludes two+ — distinct conditions",
+                "relation": "distinct",
+                "rightChoice": "At most one item.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "Exactly one item.",
+                "reason": "Exactly one item requires exactly 1; More than one item requires 2+ — distinct conditions",
+                "relation": "distinct",
+                "rightChoice": "More than one item.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "Exactly one item.",
+                "reason": "Exactly one item requires exactly 1; At least one item requires 1+ — distinct conditions",
+                "relation": "distinct",
+                "rightChoice": "At least one item.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "More than one item.",
+                "reason": "More than one item requires 2+; At most one item allows 0 or 1 — distinct, in fact opposite conditions",
+                "relation": "distinct",
+                "rightChoice": "At most one item.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "More than one item.",
+                "reason": "More than one item requires 2+; At least one item requires 1+ — distinct conditions",
+                "relation": "distinct",
+                "rightChoice": "At least one item.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              },
+              {
+                "leftChoice": "At most one item.",
+                "reason": "At most one item allows 0 or 1; At least one item allows 1+ — distinct conditions (overlap only at exactly 1)",
+                "relation": "distinct",
+                "rightChoice": "At least one item.",
+                "expected_relation": "distinct",
+                "relation_agrees": true
+              }
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": true
+          }
+        ]
+      }
+    },
+    {
+      "call_index": 3,
+      "arm": "baseline",
+      "batch_index": 1,
+      "request_sha256": "87a8cabfc1c5e0e4be1dc390b0a58deaf5708ceb668a2acb5f731b8839efde39",
+      "dispatch_attempted": true,
+      "elapsed_seconds": 6.905,
+      "raw": "{\"solutions\":[{\"choices\":[{\"choice\":\"0.25\",\"judgment\":\"supported\",\"reason\":\"0.25 is written as a decimal numeral using a decimal point, not as a fraction with '/'.\"},{\"choice\":\"3/4\",\"judgment\":\"refuted\",\"reason\":\"3/4 uses the '/' character, making it a fraction written with '/', not a decimal numeral.\"},{\"choice\":\"1/2\",\"judgment\":\"refuted\",\"reason\":\"1/2 uses the '/' character, making it a fraction written with '/', not a decimal numeral.\"},{\"choice\":\"1/4\",\"judgment\":\"refuted\",\"reason\":\"1/4 uses the '/' character, making it a fraction written with '/', not a decimal numeral.\"}],\"index\":0},{\"choices\":[{\"choice\":\"3 minutes\",\"judgment\":\"refuted\",\"reason\":\"120 seconds ÷ 60 = 2 minutes, not 3 minutes.\"},{\"choice\":\"2 minutes\",\"judgment\":\"supported\",\"reason\":\"120 seconds ÷ 60 seconds/minute = 2 minutes exactly.\"},{\"choice\":\"60 seconds\",\"judgment\":\"refuted\",\"reason\":\"60 seconds equals 1 minute, not 120 seconds.\"},{\"choice\":\"1 minute\",\"judgment\":\"refuted\",\"reason\":\"1 minute = 60 seconds, not 120 seconds.\"}],\"index\":1},{\"choices\":[{\"choice\":\"\\\"ab\\\"\",\"judgment\":\"refuted\",\"reason\":\"\\\"ab\\\" contains zero spaces between a and b, not two.\"},{\"choice\":\"\\\"a b\\\"\",\"judgment\":\"refuted\",\"reason\":\"\\\"a b\\\" contains exactly one space between a and b, not two.\"},{\"choice\":\"\\\"a  b\\\"\",\"judgment\":\"supported\",\"reason\":\"\\\"a  b\\\" contains exactly two spaces between a and b.\"},{\"choice\":\"\\\"a   b\\\"\",\"judgment\":\"refuted\",\"reason\":\"\\\"a   b\\\" contains exactly three spaces between a and b, not two.\"}],\"index\":2},{\"choices\":[{\"choice\":\"x+1\",\"judgment\":\"refuted\",\"reason\":\"x+1 ≠ x+x in general; e.g., x=2 gives 3 vs 4.\"},{\"choice\":\"1+x\",\"judgment\":\"refuted\",\"reason\":\"1+x ≠ x+x in general; e.g., x=2 gives 3 vs 4.\"},{\"choice\":\"x-1\",\"judgment\":\"refuted\",\"reason\":\"x-1 ≠ x+x in general; e.g., x=2 gives 1 vs 4.\"},{\"choice\":\"2*x\",\"judgment\":\"supported\",\"reason\":\"2*x = x+x for every real x by definition of multiplication.\"}],\"index\":3},{\"choices\":[{\"choice\":\"Exactly one item.\",\"judgment\":\"refuted\",\"reason\":\"'Exactly one item' excludes zero items, so it does not allow zero items.\"},{\"choice\":\"More than one item.\",\"judgment\":\"refuted\",\"reason\":\"'More than one item' requires at least two items, excluding zero and one.\"},{\"choice\":\"At most one item.\",\"judgment\":\"supported\",\"reason\":\"'At most one item' allows zero or one item and excludes two or more items.\"},{\"choice\":\"At least one item.\",\"judgment\":\"refuted\",\"reason\":\"'At least one item' allows one, two, or more items; it does not exclude two or more.\"}],\"index\":4}]}",
+      "usage": {
+        "inputTokens": 1401,
+        "outputTokens": 777,
+        "totalTokens": 2178,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "stop_reason": "end_turn",
+      "score": {
+        "strict_schema_and_coverage_valid": true,
+        "rows": [
+          {
+            "case_id": "fraction_notation_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "0.25"
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "duration_unit_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "2 minutes"
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": false
+          },
+          {
+            "case_id": "literal_spaces_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "\"a  b\""
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": true
+          },
+          {
+            "case_id": "algebra_function_duplicate",
+            "expected_eligible": false,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "2*x"
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": false
+          },
+          {
+            "case_id": "quantifier_boundary_distinct",
+            "expected_eligible": true,
+            "baseline_rejection": null,
+            "supported_choices": [
+              "At most one item."
+            ],
+            "pair_rejection": null,
+            "eligible": true,
+            "eligibility_agrees": true
+          }
+        ]
+      }
+    }
+  ],
+  "completed_at": "2026-09-22T04:24:05.920889+00:00"
+}

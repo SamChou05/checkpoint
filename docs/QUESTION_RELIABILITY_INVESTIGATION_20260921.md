@@ -10,7 +10,9 @@ A subsequent fix addresses the native v1 batch failure directly. After strict JS
 
 Replaying that exact failed response through the updated adapter and real admission code now retains its three valid controls and rejects all five invalid controls. The updated backend passes all **1,072 tests**, Ruff, compilation, and whitespace checks. No extra provider call was needed to prove this deterministic improvement.
 
-Full iOS CI subsequently executed 1,044 tests (one skipped) and exposed one stale session-test assertion expecting the removed prose-derived key. The corrected test now preserves the conflicting explanation but asserts the explicit key in the attempt snapshot. Release build and static analysis passed. Two other local, unsigned-simulator failures required an unavailable App Group file container; the same Screen Time tests passed in CI, and their application/test code was unchanged from the investigation baseline. Only those file-dependent tests now explicitly skip when the container is unavailable. The corrected focused run passed 97 session/Screen Time tests with two environment-dependent skips and zero failures.
+Full iOS CI subsequently executed 1,044 tests (one skipped) and exposed one stale session-test assertion expecting the removed prose-derived key. The corrected test now preserves the conflicting explanation but asserts the explicit key in the attempt snapshot. Release build and static analysis passed. Two other local, unsigned-simulator failures required an unavailable App Group file container; the same Screen Time tests passed in CI, and their application/test code was unchanged from the investigation baseline. Only those file-dependent tests now explicitly skip when the container is unavailable. After the focused 97-test check, the final full local iOS run on `efc0033` passed **1,044 tests, three skips, zero failures**. The skips were the existing opt-in walkthrough and the two unavailable App Group container tests.
+
+A further four-call comparison tested explicit pairwise equivalence judgments in the existing solver, using ten new controls in five-question batches under the unchanged 6,000-token cap. Both arms solved all ten keys correctly. The baseline admitted all five duplicate-choice items; the candidate blocked all five and retained four of five predeclared-valid controls. It labeled three pairs equivalent in the remaining unit-notation control, contrary to the frozen labels. This is useful evidence of added duplicate detection, but it misses the frozen all-valid-controls retention criterion. The candidate is archived with its tests as an experiment; production solver routing and policy are unchanged. No extra trial or retrospective relabeling replaced the failed criterion. [Results and bounded comparison](evidence/choice-reliability-followup-20260921/RESULTS.md).
 
 ## Findings established by code, replay, and current deployment inspection
 
@@ -26,7 +28,7 @@ Full iOS CI subsequently executed 1,044 tests (one skipped) and exposed one stal
 
 ## Fresh experiments and verification
 
-The team made **15 bounded Bedrock calls** across four separately frozen experiments. None changed deployed settings or learner inventory. Captured ordinary responses, exact requests, source/schema hashes, usage, and failures are preserved; reasoning blocks and credentials are excluded.
+The initial investigation made **15 bounded Bedrock calls** across four separately frozen experiments; the follow-up above added four, for **19 calls total**. None changed deployed settings or learner inventory. Captured ordinary responses, exact requests, source/schema hashes, usage, and failures are preserved; reasoning blocks and credentials are excluded.
 
 | Experiment | Observed result | What it establishes |
 | --- | --- | --- |
@@ -52,10 +54,11 @@ The [local endpoint comparison](evidence/question-reliability-20260921/local-end
 ## Changes delivered
 
 - Removed Swift legacy explanation-based key rewriting and contradiction guesses. Grading, correct-answer highlighting, and review references now use the structured key or explicit legacy label mapping.
+- Preserve valid sibling reviews when a schema-valid negative native review includes unused answer or feedback fields. The rejected item stays rejected; strict JSON/schema checks, index correlation, and positive-review requirements still apply.
 - Added `QuestionBankWorkerStructuredOutputMode` with `inherit`, `legacy`, and `native` values. The default is `inherit`, preserving current behavior. A worker can now opt into native output while the synchronous API remains legacy. Deployment scripts validate and propagate the setting; rollback can explicitly select worker `legacy`.
 - Added reproducible probes, regression tests, and immutable live evidence, including the unsuccessful semantic-prompt and experimental reviewer-v2 trials. Existing main's answer-vocabulary and backend prose-filter fixes were preserved, not reimplemented.
 
-These changes are committed on `codex/question-reliability-investigation`. No backend deployment, mode enablement, model promotion, or cache/history migration occurred. Native output remains off in the inspected deployment.
+The verified changes landed on `main` through PR #10 and subsequent milestone commits. No backend deployment, mode enablement, model promotion, or cache/history migration occurred. Native output remains off in the inspected deployment.
 
 ## Engineering implications
 

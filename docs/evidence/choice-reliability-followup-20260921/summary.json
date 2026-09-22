@@ -1,0 +1,85 @@
+{
+  "experiment": "complete-choice-pairwise-equivalence-heldout-20260921",
+  "scope": "Four completed fixed-control calls, one observation per item per arm; no population estimate or repeated stability claim. Original frozen gold remains unchanged. Exact source and request hashes are in plan.json; preflight-plan.json was undispatched preparation.",
+  "plan_byte_sha256": "1674aefe43577c4f271048afbf592a7b52c46117d1f68530532c2c012d3f82ac",
+  "capture_byte_sha256": "5615f2f7e34a8d7c91fe0dc55dc0c35861646a40d9bd790859ea8a944aabaa1e",
+  "calls_planned": 4,
+  "calls_attempted": 4,
+  "calls_completed": 4,
+  "unattempted_calls": 0,
+  "arms": {
+    "baseline": {
+      "calls": 2,
+      "format_coverage_valid": 2,
+      "input_tokens": 2797,
+      "output_tokens": 1517,
+      "elapsed_seconds": 15.79,
+      "items": 10,
+      "unique_key_correct": 10,
+      "eligible": 10,
+      "valid_controls_retained": 5,
+      "duplicate_controls_rejected": 0,
+      "valid_controls_false_vetoed": 0,
+      "duplicate_controls_admitted": 5
+    },
+    "pairwise": {
+      "calls": 2,
+      "format_coverage_valid": 2,
+      "input_tokens": 4039,
+      "output_tokens": 4514,
+      "elapsed_seconds": 42.48,
+      "items": 10,
+      "unique_key_correct": 10,
+      "eligible": 4,
+      "valid_controls_retained": 4,
+      "duplicate_controls_rejected": 5,
+      "valid_controls_false_vetoed": 1,
+      "duplicate_controls_admitted": 0,
+      "pair_rows": 60,
+      "expected_equivalent": 5,
+      "correct_equivalent": 5,
+      "uncertain_pair_rows": 0,
+      "expected_distinct": 55,
+      "correct_distinct": 52
+    }
+  },
+  "pair_errors": [
+    {
+      "call_index": 1,
+      "case_id": "unit_notation_distinct",
+      "leftChoice": "1 minute",
+      "reason": "Both use 'minutes' as the unit word, not 'seconds'. Neither matches the criterion.",
+      "relation": "equivalent",
+      "rightChoice": "3 minutes",
+      "expected_relation": "distinct",
+      "relation_agrees": false
+    },
+    {
+      "call_index": 1,
+      "case_id": "unit_notation_distinct",
+      "leftChoice": "1 minute",
+      "reason": "Both use 'minutes' as the unit word, not 'seconds'. Neither matches the criterion.",
+      "relation": "equivalent",
+      "rightChoice": "2 minutes",
+      "expected_relation": "distinct",
+      "relation_agrees": false
+    },
+    {
+      "call_index": 1,
+      "case_id": "unit_notation_distinct",
+      "leftChoice": "3 minutes",
+      "reason": "Both use 'minutes' as the unit word, not 'seconds'. Neither matches the criterion.",
+      "relation": "equivalent",
+      "rightChoice": "2 minutes",
+      "expected_relation": "distinct",
+      "relation_agrees": false
+    }
+  ],
+  "prospective_criteria_met": false,
+  "unmet_criteria": [
+    "Candidate retained4/5predeclared-valid controls, below required5/5.",
+    "Candidate classified52/55distinct pairs correctly, below required55/55."
+  ],
+  "decision": "The candidate directly catches all five selected duplicate families while preserving keys, unlike baseline; however the strict pair veto falsely excludes the predeclared-valid unit-notation case. Do not describe this as fully qualified or broadly reliable. Preserve the held-out failure and independently inspect the contextual gold and model reason before any promotion. No additional trials are included.",
+  "runtime_budget": "No extra stage: existing solver replaced. Both candidate five-item batches finish normally below6000tokens/read75. More tokens and latency than baseline are observed in these paired calls, not a causal population cost estimate."
+}

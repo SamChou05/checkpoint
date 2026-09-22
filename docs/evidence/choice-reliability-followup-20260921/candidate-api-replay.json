@@ -1,0 +1,92 @@
+{
+  "kind": "Offline archived-candidate API replay; no new provider calls",
+  "candidate_source_sha256": "9473291262cdf0aee9068a93138c1487e80252cbf9efbdce839840dc68b56d87",
+  "plan_sha256": "23aad680edd28f991e332942b20224fe1aef6b3ea084d8068b3c79ec26ba09e4",
+  "capture_file_sha256": "5615f2f7e34a8d7c91fe0dc55dc0c35861646a40d9bd790859ea8a944aabaa1e",
+  "calls": [
+    {
+      "call_index": 1,
+      "exact_prompt_match": true,
+      "strict_candidate_validation_passed": true,
+      "rows": [
+        {
+          "case_id": "fraction_value_duplicate",
+          "rejection_reason": "solver_equivalent_choices",
+          "eligible": false,
+          "expected_eligible": false,
+          "matches_original_scoring": true
+        },
+        {
+          "case_id": "unit_notation_distinct",
+          "rejection_reason": "solver_equivalent_choices",
+          "eligible": false,
+          "expected_eligible": true,
+          "matches_original_scoring": true
+        },
+        {
+          "case_id": "turn_action_duplicate",
+          "rejection_reason": "solver_equivalent_choices",
+          "eligible": false,
+          "expected_eligible": false,
+          "matches_original_scoring": true
+        },
+        {
+          "case_id": "inequality_boundary_distinct",
+          "rejection_reason": null,
+          "eligible": true,
+          "expected_eligible": true,
+          "matches_original_scoring": true
+        },
+        {
+          "case_id": "lamp_negation_duplicate",
+          "rejection_reason": "solver_equivalent_choices",
+          "eligible": false,
+          "expected_eligible": false,
+          "matches_original_scoring": true
+        }
+      ]
+    },
+    {
+      "call_index": 2,
+      "exact_prompt_match": true,
+      "strict_candidate_validation_passed": true,
+      "rows": [
+        {
+          "case_id": "fraction_notation_distinct",
+          "rejection_reason": null,
+          "eligible": true,
+          "expected_eligible": true,
+          "matches_original_scoring": true
+        },
+        {
+          "case_id": "duration_unit_duplicate",
+          "rejection_reason": "solver_equivalent_choices",
+          "eligible": false,
+          "expected_eligible": false,
+          "matches_original_scoring": true
+        },
+        {
+          "case_id": "literal_spaces_distinct",
+          "rejection_reason": null,
+          "eligible": true,
+          "expected_eligible": true,
+          "matches_original_scoring": true
+        },
+        {
+          "case_id": "algebra_function_duplicate",
+          "rejection_reason": "solver_equivalent_choices",
+          "eligible": false,
+          "expected_eligible": false,
+          "matches_original_scoring": true
+        },
+        {
+          "case_id": "quantifier_boundary_distinct",
+          "rejection_reason": null,
+          "eligible": true,
+          "expected_eligible": true,
+          "matches_original_scoring": true
+        }
+      ]
+    }
+  ]
+}
