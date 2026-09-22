@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-09-22T10:50:38.943305+00:00",
+  "region": "us-east-1",
+  "api_calls": [
+    "GetFoundationModelAvailability",
+    "GetInferenceProfile"
+  ],
+  "inference_calls": 0,
+  "account_mutations": 0,
+  "foundation_model": {
+    "modelId": "anthropic.claude-opus-4-7",
+    "agreementStatus": "AVAILABLE",
+    "authorizationStatus": "AUTHORIZED",
+    "entitlementAvailability": "AVAILABLE",
+    "regionAvailability": "AVAILABLE"
+  },
+  "inference_profile": {
+    "inferenceProfileId": "us.anthropic.claude-opus-4-7",
+    "status": "ACTIVE",
+    "type": "SYSTEM_DEFINED",
+    "destination_regions": [
+      "us-east-1",
+      "us-east-2",
+      "us-west-2"
+    ]
+  },
+  "sdk": {
+    "connect_timeout_seconds": 3,
+    "read_timeout_seconds": 15,
+    "total_max_attempts": 1
+  }
+}
