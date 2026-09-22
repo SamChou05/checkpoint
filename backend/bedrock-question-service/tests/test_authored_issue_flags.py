@@ -150,7 +150,7 @@ class AuthoredIssueFlagTests(unittest.TestCase):
     def test_all_131_historical_configs_metadata_and_prompts_keep_their_bytes(self):
         # Snapshot from b33759b before v3; includes both placeholder and actual
         # historical authored prompt composition, all static contracts/counts.
-        contracts = (*get_args(native.Contract), *(native.SolverSlotContract(n) for n in range(1, 41)),
+        contracts = (*(c for c in get_args(native.Contract) if c != "question_author_constructed_v1"), *(native.SolverSlotContract(n) for n in range(1, 41)),
                      *(native.ReviewerSlotContract(n) for n in range(1, 41)),
                      *(native.AuthoredSolutionReviewContract(n) for n in range(1, 41)))
         self.assertEqual(len(contracts), 131)

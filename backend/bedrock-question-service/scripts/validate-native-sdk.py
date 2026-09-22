@@ -56,8 +56,8 @@ def main() -> None:
         "Converse"
     ).input_shape
     contracts = get_args(native_output_contracts.Contract)
-    if len(contracts) != 11:
-        raise RuntimeError("Expected eleven static native contracts including the opt-in mixed author and retained historical contracts.")
+    if len(contracts) != 12:
+        raise RuntimeError("Expected twelve static native contracts including the opt-in constructed author and retained historical contracts.")
     contracts += tuple(native_output_contracts.ReviewerSlotContract(count)
                        for count in range(1, native_output_contracts.MAX_REVIEW_BATCH_COUNT + 1))
     contracts += tuple(native_output_contracts.SolverSlotContract(count)

@@ -3,7 +3,7 @@
 from typing import Any
 
 QUALITY_REASONS = {
-    "compile": {"accepted", "invalid_spec", "no_answer", "multiple_answers", "equivalent_choices"},
+    "compile": {"accepted", "invalid_spec", "no_answer", "multiple_answers", "equivalent_choices", "insufficient_distractors"},
     "sanitize": {
         "invalid_envelope",
         "invalid_allocation",

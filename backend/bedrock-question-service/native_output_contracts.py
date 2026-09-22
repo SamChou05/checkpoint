@@ -14,6 +14,7 @@ from typing import Any, Literal
 from service_errors import ProviderError, ServiceConfigurationError
 from quantitative_authoring import (
     MIXED_AUTHOR_CONTRACT, MIXED_AUTHOR_INSTRUCTIONS, mixed_author_schema,
+    CONSTRUCTED_AUTHOR_CONTRACT, CONSTRUCTED_AUTHOR_INSTRUCTIONS, constructed_author_schema,
 )
 
 
@@ -22,6 +23,7 @@ Contract = Literal[
     "question_author_v2",
     "question_author_v3",
     "question_author_mixed_v1",
+    "question_author_constructed_v1",
     "skill_map_inference_v1",
     "skill_map_evolution_v1",
     "complete_choice_solver_v1",
@@ -237,6 +239,9 @@ _AUTHOR_V3_PROPERTY_ORDER = (
 _SCHEMAS[MIXED_AUTHOR_CONTRACT] = mixed_author_schema(
     _SCHEMAS["question_author_v3"]["properties"]["questions"]["items"]
 )
+_SCHEMAS[CONSTRUCTED_AUTHOR_CONTRACT] = constructed_author_schema(
+    _SCHEMAS["question_author_v3"]["properties"]["questions"]["items"]
+)
 
 
 def output_mode() -> str:
@@ -347,6 +352,10 @@ def native_output_config(contract: NativeContract) -> dict[str, Any]:
         prose = json.loads(native_output_config("question_author_v3")["textFormat"]["structure"]["jsonSchema"]["schema"])
         schema = json.dumps(mixed_author_schema(prose["properties"]["questions"]["items"], shared=True),
                             separators=(",", ":"))
+    if contract == CONSTRUCTED_AUTHOR_CONTRACT:
+        prose = json.loads(native_output_config("question_author_v3")["textFormat"]["structure"]["jsonSchema"]["schema"])
+        schema = json.dumps(constructed_author_schema(prose["properties"]["questions"]["items"], shared=True),
+                            separators=(",", ":"))
     return {"textFormat": {"type": "json_schema", "structure": {"jsonSchema": {
         "name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract, "schema": schema,
     }}}}
@@ -435,6 +444,20 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
             "exact or cosmetic repeats, while allowing a fresh application of the same objective. "
             "Report a scope or novelty defect in issues; do not rewrite the item to fix it."
         )
+    if contract == CONSTRUCTED_AUTHOR_CONTRACT:
+        prose_example = json.loads(_SLOT_AUTHOR_EXAMPLE)["questions"][0]
+        example = json.dumps({"questions": [
+            {"kind": "prose", "question": prose_example},
+            {"kind": "quantitative", "task": {"kind": "exact_value", "unit": "unitless",
+                "nodes": [{"kind": "literal", "value": "8"}, {"kind": "literal", "value": "3"},
+                          {"kind": "binary", "op": "sub", "left": 0, "right": 1}], "root": 2},
+             "topic": "Arithmetic", "difficulty": 2},
+        ]}, separators=(",", ":"))
+        system_prompt = system_prompt.replace(_LEGACY_AUTHOR_EXAMPLE, example).replace(
+            "Exactly four distinct choices; expectedAnswer exactly equals one of them.",
+            "Prose rows have four distinct choices and correctChoice. Code constructs quantitative choices and the exact key.",
+        )
+        return system_prompt + "\n\n" + CONSTRUCTED_AUTHOR_INSTRUCTIONS
     if contract == MIXED_AUTHOR_CONTRACT:
         prose_example = json.loads(_SLOT_AUTHOR_EXAMPLE)["questions"][0]
         example = json.dumps({"questions": [

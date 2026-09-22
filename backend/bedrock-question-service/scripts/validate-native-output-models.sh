@@ -29,12 +29,17 @@ validate_native_output_models() {
   esac
   case "$worker_author" in
     inherit) worker_author="$global_author" ;;
-    prose|mixed_quantitative) ;;
-    *) echo "QUESTION_BANK_WORKER_AUTHOR_MODE must be inherit, prose, or mixed_quantitative." >&2; return 1 ;;
+    prose|mixed_quantitative|constructed_quantitative) ;;
+    *) echo "QUESTION_BANK_WORKER_AUTHOR_MODE must be inherit, prose, mixed_quantitative, or constructed_quantitative." >&2; return 1 ;;
   esac
   if [[ "$global_author" == mixed_quantitative && "$global_mode" != native ]] ||
-     [[ "$worker_author" == mixed_quantitative && "$worker_mode" != native ]]; then
+     [[ "$worker_author" != prose && "$worker_mode" != native ]]; then
     echo "Mixed quantitative authoring requires native transport for each enabled function." >&2
+    return 1
+  fi
+
+  if [[ "$worker_author" == constructed_quantitative && "${QUESTION_BANK_WORKER_FEEDBACK_CONTRACT:-reviewer_written}" != authored_solution ]]; then
+    echo "Constructed quantitative authoring requires authored_solution worker feedback." >&2
     return 1
   fi
 

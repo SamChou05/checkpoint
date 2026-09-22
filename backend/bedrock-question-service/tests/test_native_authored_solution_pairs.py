@@ -256,7 +256,7 @@ class NativeAuthoredSolutionPairTests(unittest.TestCase):
     def test_all_historical_native_schemas_metadata_and_prompt_overrides_are_unchanged(self):
         # Digest from cea3570, before this opt-in route changed. Includes every
         # static contract and all forty existing solver/reviewer cardinalities.
-        contracts = (*get_args(native.Contract), *(native.SolverSlotContract(n) for n in range(1, 41)),
+        contracts = (*(c for c in get_args(native.Contract) if c != "question_author_constructed_v1"), *(native.SolverSlotContract(n) for n in range(1, 41)),
                      *(native.ReviewerSlotContract(n) for n in range(1, 41)))
         values = [{"config": native.native_output_config(c), "metadata": native.contract_metadata(c),
                    "prompt": native.native_prompt("UNCHANGED SYSTEM", c)} for c in contracts]

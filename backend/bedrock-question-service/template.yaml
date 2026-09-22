@@ -53,8 +53,8 @@ Parameters:
   QuestionBankWorkerAuthorMode:
     Type: String
     Default: inherit
-    AllowedValues: [inherit, prose, mixed_quantitative]
-    Description: Worker-only author mode. Inherit preserves QuestionAuthorMode.
+    AllowedValues: [inherit, prose, mixed_quantitative, constructed_quantitative]
+    Description: Worker-only author mode. Inherit preserves QuestionAuthorMode. Constructed quantitative requires native transport and authored_solution feedback.
   QuestionBankWorkerFeedbackContract:
     Type: String
     Default: reviewer_written

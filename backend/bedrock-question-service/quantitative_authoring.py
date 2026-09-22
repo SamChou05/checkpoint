@@ -9,6 +9,7 @@ import copy
 from dataclasses import dataclass
 import json
 
+from quantitative_choice_construction import QuantitativeConstructionError, construct_quantitative_spec
 from quantitative_task_compiler import (
     MAX_EXPRESSION_DEPTH, MAX_EXPRESSION_NODES, RELATIONS, SELECTIONS, UNITS,
     QuantitativeTaskError, compile_question,
@@ -16,6 +17,7 @@ from quantitative_task_compiler import (
 
 
 MIXED_AUTHOR_CONTRACT = "question_author_mixed_v1"
+CONSTRUCTED_AUTHOR_CONTRACT = "question_author_constructed_v1"
 SLOTS = ("a", "b", "c", "d")
 LEARNER_FIELDS = ("prompt", "choices", "expectedAnswer", "explanation", "choiceExplanations")
 METADATA = ("topic", "difficulty", "skillID", "objectiveID", "objective")
@@ -68,6 +70,63 @@ def mixed_author_schema(prose_schema, *, shared=False):
     if shared:
         schema["$defs"] = {"node": node, "task": task, "proseQuestion": copy.deepcopy(prose_schema)}
     return schema
+
+
+def constructed_author_schema(prose_schema, *, shared=False):
+    """Separate task-only grammar; preserve every historical mixed/prose byte."""
+    schema = mixed_author_schema(prose_schema, shared=shared)
+    task = (schema["$defs"]["task"] if shared else
+            schema["properties"]["questions"]["items"]["anyOf"][1]["properties"]["task"])
+    exact, scalar = task["anyOf"]
+    for variant in (exact, scalar):
+        del variant["properties"]["choices"]
+        variant["required"].remove("choices")
+    scalar["properties"]["domain"] = scalar["properties"]["domain"]["anyOf"][1]
+    return schema
+
+
+CONSTRUCTED_AUTHOR_INSTRUCTIONS = """
+CONSTRUCTED AUTHOR CONTRACT (question_author_constructed_v1): Return {"questions":[...]} using exactly
+one of two closed row variants. This replaces earlier author output examples
+only. Preserve subject, assignment, difficulty, novelty and quality requirements.
+
+For ordinary subject questions return {"kind":"prose","question":{...}}. The
+nested question uses prompt, choices with exactly a/b/c/d string slots,
+explanation, correctChoice (a/b/c/d), topic, difficulty, format:"Multiple Choice",
+and optional skillID/objectiveID/objective. No expectedAnswer or choice feedback.
+
+Use {"kind":"quantitative","task":{...},"topic":"...","difficulty":2,...optional
+skill/objective metadata} only when a self-contained numerical expression or
+scalar-condition task fully serves the objective. Scenario facts, physical laws,
+causal inference, programming syntax and representation distinctions require the
+prose variant. Do not reduce a different objective to arithmetic. Code constructs
+four numeric choices and renders the complete prompt, exact key and all teaching.
+Never provide choices, a key, stem, explanation, approval or provenance in a
+quantitative row. Author a complete mathematical task, not a proposed answer set.
+
+Task kind exact_value uses unit, nodes and root. Task kind scalar_condition uses
+unit, nodes, condition:{left,relation,right}, selection:any_satisfying|minimum|maximum,
+and domain:{kind:"integer_interval",lower,upper}. No offered domain is supported.
+The inclusive interval contains at most 201 integers within -1000000..1000000.
+Relations lt/le/gt/ge/eq/ne mean </<=/>/>=/=/!=. A minimum or maximum is over the
+entire stated domain. For any_satisfying, code selects one true value and three
+false values; at least three false domain values must exist. No unstated
+nonnegative, principal-root, minimum or monotonicity assumption is permitted.
+
+Nodes are an array of 1..31 entries; each position is its identity. A literal is
+{kind:"literal",value:"exact number"}; a variable is {kind:"variable"} and means x
+(scalar tasks only); a binary is {kind:"binary",op:"add|sub|mul|div",
+left:earlier_position,right:earlier_position}. Use only backward references and
+use every node. Roots are positions in nodes. Shared references count again
+toward the expanded maximum 31 nodes (both condition roots combined) and depth 6.
+No code, function calls, free expression strings, or hidden premises. Number
+strings are integers, decimals or fractions with positive denominator, at most 24
+characters, numerator magnitude and denominator at most 10^9. All values use one
+declared unit, with no implicit conversion. Undefined arithmetic anywhere in the
+domain, unsolved tasks, inadequate distinct distractors, or overlong rendered
+teaching are rejected. Never repair a failed typed task as prose in the same row;
+a later bounded top-up may author a new complete task within the original scope.
+""".strip()
 
 
 MIXED_AUTHOR_INSTRUCTIONS = """
@@ -226,6 +285,28 @@ class CompiledCandidate:
         return rendered
 
 
+def _constructed_candidate(task):
+    # Provider fields must be closed before local placeholders are inserted.
+    # Placeholders validate/translate the graph only; they never reach construction.
+    if type(task) is not dict or type(task.get("kind")) is not str:
+        raise QuantitativeAuthoringError("Invalid constructed task kind.")
+    if task["kind"] == "exact_value":
+        _fields(task, ("kind", "unit", "nodes", "root"))
+    elif task["kind"] == "scalar_condition":
+        _fields(task, ("kind", "unit", "nodes", "condition", "selection", "domain"))
+        _fields(task["domain"], ("kind", "lower", "upper"))
+        if type(task["domain"]["kind"]) is not str or task["domain"]["kind"] != "integer_interval":
+            raise QuantitativeAuthoringError("Constructed tasks require an explicit integer interval.")
+    else:
+        raise QuantitativeAuthoringError("Invalid constructed task kind.")
+    translated = flat_task_spec({**task, "choices": dict(zip(SLOTS, ("0", "1", "2", "3"), strict=True))})
+    del translated["choices"]
+    spec = construct_quantitative_spec(translated)
+    learner = compile_question(spec)
+    return CompiledCandidate(json.dumps(spec, sort_keys=True, allow_nan=False),
+                             json.dumps(learner, sort_keys=True, allow_nan=False))
+
+
 def checked_provenance(mapping, count):
     if mapping is None:
         return {}
@@ -236,8 +317,10 @@ def checked_provenance(mapping, count):
     return dict(mapping)
 
 
-def prepare_mixed_rows(payload):
+def prepare_mixed_rows(payload, *, construct_choices=False):
     """Keep source positions even for a failed spec; never fall back to prose."""
+    if type(construct_choices) is not bool:
+        raise QuantitativeAuthoringError("Construction mode must be trusted Boolean configuration.")
     _fields(payload, ("questions",))
     if type(payload["questions"]) is not list:
         raise QuantitativeAuthoringError("Questions must be an array.")
@@ -261,11 +344,12 @@ def prepare_mixed_rows(payload):
         elif row["kind"] == "quantitative":
             _fields(row, ("kind", "task", "topic", "difficulty"), ("skillID", "objectiveID", "objective"))
             try:
-                provenance = CompiledCandidate.from_task(row["task"])
-            except (QuantitativeAuthoringError, QuantitativeTaskError) as error:
+                provenance = (_constructed_candidate(row["task"]) if construct_choices
+                              else CompiledCandidate.from_task(row["task"]))
+            except (QuantitativeAuthoringError, QuantitativeTaskError, QuantitativeConstructionError) as error:
                 rows.append(None)
                 code = getattr(error, "code", "invalid_spec")
-                failures.append(code if code in {"no_answer", "multiple_answers", "equivalent_choices"} else "invalid_spec")
+                failures.append(code if code in {"no_answer", "multiple_answers", "equivalent_choices", "insufficient_distractors"} else "invalid_spec")
                 continue
             compiled[index] = provenance
             rows.append({**provenance.content(), **{key: row[key] for key in METADATA if key in row},

@@ -56,7 +56,7 @@ from service_errors import (
 )
 from question_verification import NEGATIVE_ANSWER_GUIDANCE, verify_questions
 from quantitative_authoring import (
-    MIXED_AUTHOR_CONTRACT, QuantitativeAuthoringError, prepare_mixed_rows,
+    MIXED_AUTHOR_CONTRACT, CONSTRUCTED_AUTHOR_CONTRACT, QuantitativeAuthoringError, prepare_mixed_rows,
 )
 
 
@@ -150,7 +150,8 @@ def _generate_provider_payload(
     request_metrics: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     errors: list[ProviderError] = []
-    author_contract: Contract = (MIXED_AUTHOR_CONTRACT if _author_mode() == "mixed_quantitative" else
+    author_contract: Contract = (CONSTRUCTED_AUTHOR_CONTRACT if _author_mode() == "constructed_quantitative" else
+                                MIXED_AUTHOR_CONTRACT if _author_mode() == "mixed_quantitative" else
                                 "question_author_v3" if output_mode() == "native" else "question_author_v1")
     for model_id in _model_attempts():
         try:
@@ -220,7 +221,8 @@ def _generate_sanitized_questions(
     request_metrics: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     feedback_contract = _feedback_contract()
-    mixed_quantitative = _author_mode() == "mixed_quantitative"
+    author_mode = _author_mode()
+    mixed_quantitative = author_mode in {"mixed_quantitative", "constructed_quantitative"}
     # Native fixed slots hide the sanitizer's correct-answer-first ordering and
     # make four choice judgments plus six unordered pair judgments explicit.
     choice_slots = output_mode() == "native"
@@ -260,7 +262,10 @@ def _generate_sanitized_questions(
             compiled_output = {}
             if mixed_quantitative:
                 try:
-                    raw_questions, compiled_candidates, failures = prepare_mixed_rows(provider_payload)
+                    raw_questions, compiled_candidates, failures = (
+                        prepare_mixed_rows(provider_payload, construct_choices=True)
+                        if author_mode == "constructed_quantitative" else prepare_mixed_rows(provider_payload)
+                    )
                 except QuantitativeAuthoringError as error:
                     raise ProviderError("Mixed author envelope violated its contract.") from error
                 for reason in failures:
@@ -700,9 +705,11 @@ def _feedback_contract() -> str:
 
 
 def _author_mode() -> str:
-    mode = _model_setting("QUESTION_AUTHOR_MODE", "prose", {"prose", "mixed_quantitative"})
-    if mode == "mixed_quantitative" and output_mode() != "native":
+    mode = _model_setting("QUESTION_AUTHOR_MODE", "prose", {"prose", "mixed_quantitative", "constructed_quantitative"})
+    if mode in {"mixed_quantitative", "constructed_quantitative"} and output_mode() != "native":
         raise ServiceConfigurationError("Mixed quantitative authoring requires native mode.")
+    if mode == "constructed_quantitative" and _feedback_contract() != "authored_solution":
+        raise ServiceConfigurationError("Constructed quantitative authoring requires authored_solution feedback.")
     return mode
 
 

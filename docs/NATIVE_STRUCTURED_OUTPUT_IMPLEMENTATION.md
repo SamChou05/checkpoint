@@ -14,7 +14,7 @@ bugs, controlled model comparisons and answer-highlighting evidence.
 
 Every provider call selects its stage explicitly, including author repair,
 top-ups, configured fallback, API/worker generation and skill-map retries. The
-registry contains eleven static, closed, versioned contracts and adds count-bound
+registry contains twelve static, closed, versioned contracts and adds count-bound
 solver and reviewer families, including the opt-in immutable-main audit:
 
 | Contract | Shape and runtime use |
@@ -23,6 +23,7 @@ solver and reviewer families, including the opt-in immutable-main audit:
 | `question_author_v2` | Four required choice slots and an enum key; retained sorted serialization for the controlled comparison. |
 | `question_author_v3` | Current native author, including repair/fallback. Fixed slots and enum key, with stem and explanation serialized before the key. Adapter derives exact answer bytes from the selected slot. |
 | `question_author_mixed_v1` | Explicit opt-in mixed author: ordinary v3 prose rows or typed numerical specs with shared, nonrecursive flat-node schema. Local compiler derives all learner fields; provider qualification remains pending. See [bounded subset and provenance](QUANTITATIVE_TASK_COMPILER.md). |
+| `question_author_constructed_v1` | Separate opt-in task-only numeric author with unchanged ordered prose rows. Quantitative rows omit choices and permit exact expressions or explicit integer-interval scalar conditions. Code constructs choices and compiler provenance; requires native transport plus immutable authored feedback. Existing proof/audit path yields compiled 8 and prose 7. No provider qualification is claimed. |
 | `skill_map_inference_v1` | Skill/objective names; server validates counts and assigns IDs. |
 | `skill_map_evolution_v1` | Successor names/objectives; server validates predecessor coverage and constructs map identity/version. |
 | `complete_choice_solver_v1` | Exact indexed choices with supported/refuted/uncertain declarations. Retained for legacy complete-choice and legacy authored teaching. |
@@ -102,6 +103,39 @@ Provider deadlines, sampling/reasoning controls, guardrails, IAM scope, quotas,
 durable reservations, retry ceilings and accepted partial work remain in force.
 Native incompatibility fails without dropping the schema. Configured fallback
 calls still carry the selected contract and consume the existing call budget.
+
+## Constructed quantitative author opt-in
+
+`QUESTION_AUTHOR_MODE=constructed_quantitative` requires native transport and
+`QUESTION_FEEDBACK_CONTRACT=authored_solution` before provider work. The separate
+v1 author grammar retains the exact ordered prose row but removes quantitative
+choice fields entirely and permits only explicit integer-interval scalar domains.
+The server rejects supplied choices and malformed/unused graph nodes, translates
+the graph with local placeholders solely for structural validation, removes those
+placeholders, and calls the [bounded constructor](QUANTITATIVE_CHOICE_CONSTRUCTION.md).
+Only its full spec passing the existing compiler creates private ordinal
+provenance. A finite pool with fewer than three distinct wrong choices rejects
+the item; the bounded `insufficient_distractors` diagnostic preserves valid
+siblings. No provider key, feedback, approval, or provenance is trusted.
+
+The existing final audit remains mandatory for every survivor. Compiled items
+retain exact five-field content/policy 8; prose keeps its blind solver, exact main,
+empty choice feedback/policy 7. SAM exposes this new mode through the worker
+only; the existing global/API author options and all defaults stay unchanged.
+The model, deadline, token settings, quotas, partial top-ups and six-call ceiling
+are unchanged. This is an unqualified opt-in; no provider acceptance, improved
+live yield or deployment is inferred from offline checks.
+
+Verification: **1,309 backend tests** pass, including **69 focused groups** across
+constructed orchestration, mixed author validation, historical contracts and
+worker configuration. The pure constructor's twelve groups and new integration's
+twelve groups cover finite choices, malformed graphs, immutable fields, dense
+identities, audit vetoes and budget failures. All **171 historical** schema,
+metadata and prompt families retain their exact digest. Ruff, compilation,
+fake deployment validation, SAM lint/build and whitespace/secret checks pass.
+All 27 runtime modules plus requirements/verifier match each Lambda artifact;
+172 isolated SDK request shapes per artifact provide **516 offline checks**.
+No provider or deployment action was performed.
 
 ## Verification and live evidence
 

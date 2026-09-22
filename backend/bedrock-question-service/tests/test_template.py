@@ -129,7 +129,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         self.assertIn("Default: prose", global_parameter)
         self.assertIn("Default: inherit", worker_parameter)
         self.assertIn("AllowedValues: [prose, mixed_quantitative]", global_parameter)
-        self.assertIn("AllowedValues: [inherit, prose, mixed_quantitative]", worker_parameter)
+        self.assertIn("AllowedValues: [inherit, prose, mixed_quantitative, constructed_quantitative]", worker_parameter)
         self.assertIn("QUESTION_AUTHOR_MODE: !Ref QuestionAuthorMode",
                       _indented_block(self.template, "CheckpointQuestionFunction"))
         worker = _indented_block(self.template, "QuestionBankWorkerFunction")
@@ -140,7 +140,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             rf"^  {condition}: !Equals \[!Ref (\w+), (\w+)\]$",
             self.template, re.MULTILINE).groups()
         for global_mode in ("prose", "mixed_quantitative"):
-            for worker_mode in ("inherit", "prose", "mixed_quantitative"):
+            for worker_mode in ("inherit", "prose", "mixed_quantitative", "constructed_quantitative"):
                 parameters = {"QuestionAuthorMode": global_mode, "QuestionBankWorkerAuthorMode": worker_mode}
                 chosen = true_ref if parameters[condition_ref] == expected else false_ref
                 self.assertEqual(parameters[chosen], global_mode if worker_mode == "inherit" else worker_mode)

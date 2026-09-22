@@ -191,10 +191,11 @@ for global_mode in legacy native; do
 done
 
 for global_author in prose mixed_quantitative; do
-  for worker_author in inherit prose mixed_quantitative; do
+  for worker_author in inherit prose mixed_quantitative constructed_quantitative; do
     env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
       "${deployment_environment[@]}" BEDROCK_STRUCTURED_OUTPUT_MODE=native \
       "QUESTION_AUTHOR_MODE=$global_author" "QUESTION_BANK_WORKER_AUTHOR_MODE=$worker_author" \
+      QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=authored_solution \
       "$script_dir/deploy-sam.sh"
     mapfile -d '' -t sam_arguments < "$sam_capture"
     [[ " ${sam_arguments[*]} " == *" QuestionAuthorMode=$global_author "* ]] || fail "global author mode not forwarded"
@@ -211,6 +212,38 @@ for checked_script in validate-deployment-config.sh deploy-sam.sh; do
     fi
     [[ ! -e "$sam_capture" ]] || fail "SAM ran for incompatible author mode"
   done
+done
+
+for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+  rm -f "$sam_capture"
+  if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" QUESTION_BANK_WORKER_AUTHOR_MODE=constructed_quantitative \
+    QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=authored_solution \
+    "$script_dir/$checked_script" >"$test_directory/constructed-legacy-error" 2>&1; then
+    fail "$checked_script accepted constructed authoring with legacy transport"
+  fi
+  [[ ! -e "$sam_capture" ]] || fail "SAM ran for constructed legacy transport"
+  for invalid_feedback in reviewer_written invalid; do
+    rm -f "$sam_capture"
+    if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" BEDROCK_STRUCTURED_OUTPUT_MODE=legacy \
+      QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native QUESTION_BANK_WORKER_AUTHOR_MODE=constructed_quantitative \
+      "QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=$invalid_feedback" \
+      "$script_dir/$checked_script" >"$test_directory/constructed-error" 2>&1; then
+      fail "$checked_script accepted constructed authoring without immutable feedback"
+    fi
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for incompatible constructed feedback"
+  done
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" BEDROCK_STRUCTURED_OUTPUT_MODE=legacy QUESTION_AUTHOR_MODE=prose \
+    QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native QUESTION_BANK_WORKER_AUTHOR_MODE=constructed_quantitative \
+    QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=authored_solution "$script_dir/$checked_script"
+  if [[ "$checked_script" == deploy-sam.sh ]]; then
+    mapfile -d '' -t sam_arguments < "$sam_capture"
+    [[ " ${sam_arguments[*]} " == *" QuestionBankWorkerAuthorMode=constructed_quantitative "* ]] || fail "constructed worker mode not forwarded"
+    [[ " ${sam_arguments[*]} " == *" BedrockStructuredOutputMode=legacy "* ]] || fail "constructed worker changed API transport"
+    [[ " ${sam_arguments[*]} " == *" QuestionAuthorMode=prose "* ]] || fail "constructed worker changed API author"
+  fi
 done
 
 for feedback in reviewer_written authored_solution; do
