@@ -29,6 +29,7 @@ parameters=(
   "BedrockThinkingMaxTokens=${BEDROCK_THINKING_MAX_TOKENS:-16000}"
   "BedrockKimiThinking=${BEDROCK_KIMI_THINKING:-disabled}"
   "BedrockClaudeThinking=${BEDROCK_CLAUDE_THINKING:-disabled}"
+  "QuestionBankWorkerClaudeThinking=${QUESTION_BANK_WORKER_CLAUDE_THINKING:-inherit}"
   "BedrockClaudeEffort=${BEDROCK_CLAUDE_EFFORT:-high}"
   "GenerationAttempts=$GENERATION_ATTEMPTS"
   "MaxProviderCallsPerRequest=$MAX_PROVIDER_CALLS_PER_REQUEST"

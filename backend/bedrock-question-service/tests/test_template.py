@@ -32,12 +32,41 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         for parameter, env in [
             ("BedrockThinkingMaxTokens", "BEDROCK_THINKING_MAX_TOKENS"),
             ("BedrockKimiThinking", "BEDROCK_KIMI_THINKING"),
-            ("BedrockClaudeThinking", "BEDROCK_CLAUDE_THINKING"),
             ("BedrockClaudeEffort", "BEDROCK_CLAUDE_EFFORT"),
         ]:
             self.assertEqual(self.template.count(f"{env}: !Ref {parameter}"), 2)
             self.assertIn(f"{env}: ${{{{ vars.{env}", self.deploy_workflow)
             self.assertIn(f'"{parameter}=${{{env}:-', self.deploy_script)
+
+    def test_worker_thinking_override_preserves_api_and_resolves_all_combinations(self):
+        parameter = _indented_block(self.template, "QuestionBankWorkerClaudeThinking")
+        self.assertIn("Default: inherit", parameter)
+        self.assertIn("AllowedValues: [inherit, adaptive, disabled]", parameter)
+        self.assertIn("QUESTION_BANK_WORKER_CLAUDE_THINKING || 'inherit'", self.deploy_workflow)
+        self.assertIn(
+            '"QuestionBankWorkerClaudeThinking=${QUESTION_BANK_WORKER_CLAUDE_THINKING:-inherit}"',
+            self.deploy_script,
+        )
+        api = _indented_block(self.template, "CheckpointQuestionFunction")
+        self.assertIn("BEDROCK_CLAUDE_THINKING: !Ref BedrockClaudeThinking", api)
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
+        expression = re.search(r"BEDROCK_CLAUDE_THINKING: ([^\n]+)", worker).group(1)
+        condition, true_ref, false_ref = re.fullmatch(
+            r"!If \[(\w+), !Ref (\w+), !Ref (\w+)\]", expression,
+        ).groups()
+        condition_ref, expected = re.search(
+            rf"^  {condition}: !Equals \[!Ref (\w+), (\w+)\]$",
+            self.template, re.MULTILINE,
+        ).groups()
+        for global_mode in ("disabled", "adaptive"):
+            for worker_mode in ("inherit", "disabled", "adaptive"):
+                with self.subTest(global_mode=global_mode, worker_mode=worker_mode):
+                    parameters = {
+                        "BedrockClaudeThinking": global_mode,
+                        "QuestionBankWorkerClaudeThinking": worker_mode,
+                    }
+                    chosen = true_ref if parameters[condition_ref] == expected else false_ref
+                    self.assertEqual(parameters[chosen], global_mode if worker_mode == "inherit" else worker_mode)
 
     def test_native_output_mode_defaults_to_legacy_with_worker_inheritance(self):
         parameter = _indented_block(self.template, "BedrockStructuredOutputMode")

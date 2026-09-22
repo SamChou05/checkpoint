@@ -30,6 +30,7 @@ Important guided values:
 - `DeploymentEnvironment`: use `testflight` for internal distribution; selecting `production` does not make bearer auth App Store-safe
 - `BedrockStructuredOutputMode`: defaults to `legacy`; controls the API and the worker when its override is `inherit`. `native` is an explicit post-qualification rollout.
 - `QuestionBankWorkerStructuredOutputMode`: defaults to `inherit`, preserving the global mode. Explicit `legacy` or `native` overrides only the asynchronous worker. The deploy workflow variable is `QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE`.
+- `QuestionBankWorkerClaudeThinking`: defaults to `inherit`; `adaptive` or `disabled` overrides Claude thinking only in the worker. Configure `QUESTION_BANK_WORKER_CLAUDE_THINKING` in the deployment environment. The API retains `BedrockClaudeThinking`, so worker reasoning trials do not consume its shorter request deadline. Keep effort and token limits consistent with the evaluated candidate.
 - `QuestionBankTTLSeconds`: defaults to 30 days; choose and publish the production retention period before launch
 - `QuestionBankWorkerReservedConcurrency`: defaults to 2 and independently caps asynchronous Bedrock work
 - `QuestionBankWorkerReadTimeoutSeconds`: defaults to 75 seconds for asynchronous generation; keep it below the worker's 240-second Lambda timeout. It does not change the synchronous API's 20-second default

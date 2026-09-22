@@ -83,6 +83,11 @@ Parameters:
     Type: String
     Default: disabled
     AllowedValues: [adaptive, disabled]
+  QuestionBankWorkerClaudeThinking:
+    Type: String
+    Default: inherit
+    AllowedValues: [inherit, adaptive, disabled]
+    Description: Worker-only Claude thinking override; inherit preserves the global setting and API behavior.
   BedrockClaudeEffort:
     Type: String
     Default: high
@@ -251,6 +256,7 @@ Rules:
         AssertDescription: Production requires a complete Bedrock Guardrail configuration plus operations and budget alert emails.
 
 Conditions:
+  WorkerClaudeThinkingInheritsGlobal: !Equals [!Ref QuestionBankWorkerClaudeThinking, inherit]
   WorkerStructuredOutputInheritsGlobal: !Equals [!Ref QuestionBankWorkerStructuredOutputMode, inherit]
   HasGuardrailArn: !Not [!Equals [!Ref BedrockGuardrailArn, ""]]
   HasAlertEmail: !Not [!Equals [!Ref AlertEmail, ""]]
@@ -474,7 +480,7 @@ Resources:
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
           BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens
           BEDROCK_KIMI_THINKING: !Ref BedrockKimiThinking
-          BEDROCK_CLAUDE_THINKING: !Ref BedrockClaudeThinking
+          BEDROCK_CLAUDE_THINKING: !If [WorkerClaudeThinkingInheritsGlobal, !Ref BedrockClaudeThinking, !Ref QuestionBankWorkerClaudeThinking]
           BEDROCK_CLAUDE_EFFORT: !Ref BedrockClaudeEffort
           BEDROCK_READ_TIMEOUT_SECONDS: !Ref QuestionBankWorkerReadTimeoutSeconds
           QUESTION_BANK_GENERATION_CHUNK_SIZE: !Ref QuestionBankGenerationChunkSize

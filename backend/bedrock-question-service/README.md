@@ -112,6 +112,19 @@ remain unchanged while semantic qualification continues.
 
 Reasoning is configurable independently of ordinary response length. `BEDROCK_KIMI_THINKING=enabled` enables Kimi K2.5 thinking with temperature 1.0 and top-p 0.95; `disabled` preserves ordinary sampling. For Claude Sonnet/Opus 4.6, `BEDROCK_CLAUDE_THINKING=adaptive` sends adaptive thinking and `BEDROCK_CLAUDE_EFFORT` (`low`, `medium`, or `high`, default `high`) while omitting customized sampling. An explicit `max` setting is also supported for `anthropic.claude-opus-4-6-v1` and its recognized geographic profile/ARN forms, following [AWS adaptive-thinking guidance](https://docs.aws.amazon.com/bedrock/latest/userguide/claude-messages-adaptive-thinking.html). `max` fails before invocation for Sonnet 4.6 and unrecognized Opus variants. Since the setting applies to author and reviewer calls, both must use a compatible model when testing `max`. Both thinking switches initially default to `disabled`; this adds an experiment control without changing deployment defaults. DeepSeek retains its disabled-thinking setting, and GPT-5.6 retains its separate reasoning-effort configuration.
 
+The worker-only SAM parameter `QuestionBankWorkerClaudeThinking` and workflow
+variable `QUESTION_BANK_WORKER_CLAUDE_THINKING` accept `inherit` (default),
+`adaptive`, or `disabled`. They set the worker's existing
+`BEDROCK_CLAUDE_THINKING` independently; the API continues using the global
+`BedrockClaudeThinking` value. This allows a qualified background-worker
+reasoning configuration without extending inference on the synchronous API's
+shorter deadline. The token cap and effort settings remain shared. The
+[bounded adaptive solver trial](../../docs/evidence/choice-quality-release-20260922/ADAPTIVE_RESULTS.md)
+passed its frozen label criteria but averaged 36.655 seconds per call, with
+49.392 seconds maximum, so it does not justify changing API thinking or prove a
+complete worker pipeline fits its budget. The override defaults to inheritance
+and does not enable adaptive thinking or deploy a change by itself.
+
 Enabled Kimi/Claude thinking uses `BEDROCK_THINKING_MAX_TOKENS` (default 16000, capped at 16384) for reasoning plus final output. Ordinary responses retain `BEDROCK_MAX_TOKENS` (default 6000, capped at 16384). These settings are wired through SAM and deployment variables. The runtime rejects token-truncated output even when a fragment parses, and emits bounded `QuestionQuality` counters for sanitization, answer review, and provider failures without learner text. Increasing a budget does not establish correctness: selected live baseline reviews ended normally below 6000 tokens and still accepted invalid answers.
 
 Provider observations record `reasoningContentBlockCount` alongside the requested `reasoningConfig`, including for a response rejected as truncated. This counts returned [Converse reasoning-content blocks](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_ReasoningContentBlock.html), including redacted blocks, without storing their text, signatures, or redacted bytes. Zero means no such block was returned; it does not establish that the model performed no internal reasoning. Presence likewise does not prove answer correctness or measure reasoning quality.
