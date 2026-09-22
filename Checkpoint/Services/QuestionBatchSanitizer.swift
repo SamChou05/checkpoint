@@ -56,8 +56,7 @@ enum QuestionBatchSanitizer {
             } else {
                 choiceResolution = sanitizedChoices(
                     question.choices,
-                    expectedAnswer: expectedAnswer,
-                    explanation: question.explanation
+                    expectedAnswer: expectedAnswer
                 )
             }
             guard let choiceResolution else {
@@ -141,11 +140,6 @@ enum QuestionBatchSanitizer {
             && !isGenericAssessmentMetaQuestion(question)
             && !isStudyStrategyPrompt(question.prompt, context: request.questionContext)
             && !containsEmbeddedAnswerOptions(question.prompt)
-            && (question.verificationVersion == 1 || !explanationSupportsDifferentChoice(
-                expectedAnswer: question.expectedAnswer,
-                choices: question.choices,
-                explanation: question.explanation
-            ))
     }
 
     private static func isGenericAssessmentMetaQuestion(_ question: CheckpointQuestion) -> Bool {
@@ -245,60 +239,9 @@ enum QuestionBatchSanitizer {
         ) != nil
     }
 
-    private static func explanationSupportsDifferentChoice(
-        expectedAnswer: String,
-        choices: [String],
-        explanation: String
-    ) -> Bool {
-        guard let supportedChoice = explanationSupportedChoice(explanation, choices: choices) else {
-            return false
-        }
-
-        return choiceUniquenessKey(supportedChoice) != choiceUniquenessKey(expectedAnswer)
-    }
-
-    private static func explanationSupportedChoice(_ explanation: String, choices: [String]) -> String? {
-        let normalizedExplanation = QuestionText.collapsedWhitespace(explanation)
-            .folding(
-                options: [.diacriticInsensitive, .caseInsensitive],
-                locale: Locale(identifier: "en_US_POSIX")
-            )
-            .lowercased()
-        let shortOutputChoices: Set<String> = ["positive", "negative", "zero", "undefined", "true", "false"]
-        var supportedChoices: [String] = []
-
-        for choice in choices {
-            let normalizedChoice = QuestionText.collapsedWhitespace(choice)
-                .folding(
-                    options: [.diacriticInsensitive, .caseInsensitive],
-                    locale: Locale(identifier: "en_US_POSIX")
-                )
-                .lowercased()
-            guard shortOutputChoices.contains(normalizedChoice) else { continue }
-
-            let pattern = #"\b(?:which|that|it|this|result|sign|value)\s+(?:is|are|equals?)\s+\#(NSRegularExpression.escapedPattern(for: normalizedChoice))\b"#
-            if normalizedExplanation.range(of: pattern, options: .regularExpression) != nil {
-                supportedChoices.append(choice)
-            }
-        }
-
-        if let explicitlyCorrectChoice = MultipleChoiceAnswerNormalizer.choiceMentionedAsCorrect(
-            in: explanation,
-            choices: choices,
-            collapsingWhitespaceForPhraseMatching: true
-        ) {
-            supportedChoices.append(explicitlyCorrectChoice)
-        }
-
-        let supportedKeys = Set(supportedChoices.map(choiceUniquenessKey))
-        guard supportedKeys.count == 1 else { return nil }
-        return supportedChoices.first
-    }
-
     private static func sanitizedChoices(
         _ choices: [String],
-        expectedAnswer: String,
-        explanation: String
+        expectedAnswer: String
     ) -> (expectedAnswer: String, choices: [String])? {
         let normalizedChoices = choices
             .map { MultipleChoiceAnswerNormalizer.text(for: $0) }
@@ -332,12 +275,9 @@ enum QuestionBatchSanitizer {
 
         guard let matchedChoice else { return nil }
 
-        let explanationChoice = MultipleChoiceAnswerNormalizer.choiceMentionedAsCorrect(
-            in: explanation,
-            choices: uniqueChoices,
-            collapsingWhitespaceForPhraseMatching: true
-        )
-        let expectedChoice = explanationChoice ?? matchedChoice
+        // Keep the structured key authoritative. Prose is not a reliable answer
+        // repair or contradiction detector, even for historical unreviewed items.
+        let expectedChoice = matchedChoice
         let finalExpectedKey = answerKey(expectedChoice)
         let distractors = uniqueChoices.filter { answerKey($0) != finalExpectedKey }
         guard distractors.count == 3 else { return nil }
