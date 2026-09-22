@@ -1,0 +1,354 @@
+{
+  "method": "POST-HOC CONTENT DIAGNOSTIC ONLY: inspect every fenced JSON block in each original raw response and report declarations from its sole syntactically valid object. One response also contains an abandoned malformed object and a correction announcement. Surrounding prose and all objects remain in the immutable capture. These are content declarations, never production admission or a format success. Primary strict result is 4/4 format failures and 0/32 admitted item observations. No calls rerun and no parsing change proposed.",
+  "capture_sha256": "d7e47b85386de76e4037d786033ed32f6d9a613ec312ff5965b1812ca498990e",
+  "distinct_controls": 8,
+  "repetitions_per_arm": 2,
+  "arms": {
+    "current_core": {
+      "calls": 2,
+      "strict_format_failures": 2,
+      "item_observations": 16,
+      "raw_declared_valid": 10,
+      "expected_valid_observations": 6,
+      "wrong_acceptance": 4,
+      "wrong_rejection": 0
+    },
+    "explicit_diversity": {
+      "calls": 2,
+      "strict_format_failures": 2,
+      "item_observations": 16,
+      "raw_declared_valid": 6,
+      "expected_valid_observations": 6,
+      "wrong_acceptance": 0,
+      "wrong_rejection": 0
+    }
+  },
+  "fenced_blocks": [
+    {
+      "call_index": 0,
+      "fence_index": 0,
+      "valid_json": true
+    },
+    {
+      "call_index": 1,
+      "fence_index": 0,
+      "valid_json": false,
+      "error": "Expecting ':' delimiter: line 9 column 252 (char 1647)"
+    },
+    {
+      "call_index": 1,
+      "fence_index": 1,
+      "valid_json": true
+    },
+    {
+      "call_index": 2,
+      "fence_index": 0,
+      "valid_json": true
+    },
+    {
+      "call_index": 3,
+      "fence_index": 0,
+      "valid_json": true
+    }
+  ],
+  "rows": [
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "valid_arithmetic",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "4",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "equivalent_numeric_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": true,
+      "raw_answer": "4",
+      "semantic_declaration_agrees": false
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "equivalent_verbal_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": true,
+      "raw_answer": "Two",
+      "semantic_declaration_agrees": false
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "equivalent_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "multiple_correct_properties",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "zero_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "case_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "True",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "operator_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "n + 1",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "valid_arithmetic",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "4",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_numeric_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_verbal_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "multiple_correct_properties",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "zero_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "case_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "True",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "operator_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "n + 1",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "valid_arithmetic",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "4",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_numeric_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_verbal_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "multiple_correct_properties",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "zero_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "case_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "True",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "operator_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "n + 1",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 3,
+      "arm": "current_core",
+      "case_id": "valid_arithmetic",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "4",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 3,
+      "arm": "current_core",
+      "case_id": "equivalent_numeric_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": true,
+      "raw_answer": "4",
+      "semantic_declaration_agrees": false
+    },
+    {
+      "call_index": 3,
+      "arm": "current_core",
+      "case_id": "equivalent_verbal_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": true,
+      "raw_answer": "Two",
+      "semantic_declaration_agrees": false
+    },
+    {
+      "call_index": 3,
+      "arm": "current_core",
+      "case_id": "equivalent_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 3,
+      "arm": "current_core",
+      "case_id": "multiple_correct_properties",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 3,
+      "arm": "current_core",
+      "case_id": "zero_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "raw_answer": "",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 3,
+      "arm": "current_core",
+      "case_id": "case_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "True",
+      "semantic_declaration_agrees": true
+    },
+    {
+      "call_index": 3,
+      "arm": "current_core",
+      "case_id": "operator_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "raw_answer": "n + 1",
+      "semantic_declaration_agrees": true
+    }
+  ],
+  "tokens": {
+    "input": 4840,
+    "output": 5602
+  },
+  "latency_seconds": [
+    15.559,
+    18.371,
+    14.908,
+    16.088
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "scope": "Read-only seven-day CloudWatch quality-counter aggregation from stack-declared log groups; no learner text retained. Event counts are not question counts.",
+  "observedUTC": "2026-09-22T03:34:28.483295+00:00",
+  "lookbackDays": 7,
+  "roles": {
+    "api": {
+      "querySucceeded": true,
+      "returnedEvents": 0,
+      "parsedQualityEvents": 0,
+      "counts": {}
+    },
+    "worker": {
+      "querySucceeded": true,
+      "returnedEvents": 0,
+      "parsedQualityEvents": 0,
+      "counts": {}
+    }
+  }
+}

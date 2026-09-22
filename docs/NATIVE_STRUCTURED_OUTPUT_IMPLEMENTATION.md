@@ -6,6 +6,17 @@ parameter `BedrockStructuredOutputMode` default to `legacy`. No deployment,
 production setting, model selection, or live inference was performed for this
 change. Native formatting does not establish factual accuracy or unique answers.
 
+**September 21 follow-up:** the initial implementation above is deployed but
+remains in `legacy` mode. A six-call synthetic worker smoke passed its three
+current stage contracts. A separate mixed-control reviewer trial exposed a v1
+schema/application mismatch: a rejected item could retain an answer and feedback
+under the schema, while the adapter rejects those fields. Experimental
+`default_reviewer_v2` represents accepted and rejected records as separate closed
+`anyOf` branches. Its two live calls were schema-valid but rejected all eight
+controls each time, including all three valid questions. **V2 is not qualified
+and production continues selecting v1.** See the
+[v2 result and unchanged failure evidence](evidence/structured-reliability-20260921/REVIEWER_V2_FINDINGS.md).
+
 ## Runtime contracts and compatibility
 
 Every production provider call selects its stage explicitly, including author
@@ -20,6 +31,15 @@ skill-map retries. Native mode uses six closed, versioned, static schemas:
 | `complete_choice_solver_v1` | Exact indexed choices with `supported`, `refuted`, or `uncertain` judgments. Zero/multiple supported answers remain representable and are rejected by application policy. |
 | `default_reviewer_v1` | Indexed verdict, answer, assessed difficulty, explanation, and provider-only `choiceFeedback` rows. Rejections use `valid:false`, `answer:""`, `explanation:""`, and `choiceFeedback:[]`; an integer difficulty remains required. |
 | `authored_solution_reviewer_v1` | Indexed verdict, answer, assessed difficulty, explanation support, and issues. False, empty-answer, unsupported, uncertain, and issue-bearing results remain expressible. This unrelated mode remains opt-in. |
+
+The separately retained experimental `default_reviewer_v2` has two closed item
+branches: accepted reviews require the same feedback fields with `valid:true`;
+rejections permit only `index` and `valid:false`. Strict local union validation
+rejects missing/unknown fields, non-boolean discriminators and unmatched
+branches before adaptation. The adapter preserves minimal rejections and exact
+accepted feedback. V1's schema, prompt, adaptation, production routing and legacy
+diagnostic identity remain unchanged. Explicit v2 calls report transport version
+2; they do not change the public verification policy revision.
 
 Schemas contain no request-specific goals, choices, IDs, answers, or counts.
 Stable serialization produces deterministic hashes and fresh request wrappers.
@@ -52,7 +72,8 @@ Lambda artifacts package boto3 and botocore **1.43.91** from the runtime
 SDK is insufficient. Run `scripts/validate-native-sdk.py` with Python 3.12
 `-I -S` against each built function directory. It requires the pinned versions,
 loads packages and Bedrock service-model data from that artifact, validates all
-six Converse request shapes, and makes no network or provider calls. See the
+seven packaged Converse request shapes (six active plus experimental v2), and
+makes no network or provider calls. See the
 [build commands](../backend/bedrock-question-service/docs/DEPLOYMENT.md#native-structured-output-qualification-and-rollback).
 
 Completed preparation checks, with controlled provider fixtures:

@@ -1,0 +1,6 @@
+{
+  "scope": "Current original-checkout endpoint host compared with CloudFormation public endpoint outputs. No bearer token read or persisted. Build overrides or installed-app configuration are not established.",
+  "matchingStacks": [
+    "checkpoint-question-service-testflight"
+  ]
+}

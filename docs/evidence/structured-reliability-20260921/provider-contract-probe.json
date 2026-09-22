@@ -1,0 +1,144 @@
+{
+  "kind": "Offline deterministic transport and schema characterization",
+  "live_provider_calls": 0,
+  "head": "7d9cc6ad93128893fb52f1a0183fea620b3b00ac",
+  "baseline": "aa2db49c45153c52a34da051beaf803d5f39577d",
+  "runtime": {
+    "python": "3.12.11",
+    "boto3": "1.43.91",
+    "botocore": "1.43.91"
+  },
+  "source_sha256": {
+    "committed_question_generation": "aa64b8b36ce3533a426790bd7d12610fd7d97dda895aed71771dbe7c15650cc6",
+    "native_output_contracts.py": "d43c0e223be0eb80a1ace46cb3373eff22a967a5970510a4f7b6aa8890802037",
+    "question_generation.py": "d8394f1958057248cd878e5db5768021da6fa26b9554be6d23e64fdc780ce0a6"
+  },
+  "request_snapshots": {
+    "committed_kimi": {
+      "calls": 1,
+      "has_output_config": false,
+      "has_tool_config": false,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "sdk_input_shape_valid": true
+    },
+    "working_legacy_kimi": {
+      "calls": 1,
+      "has_output_config": false,
+      "has_tool_config": false,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "sdk_input_shape_valid": true
+    },
+    "working_native_kimi": {
+      "calls": 1,
+      "has_output_config": true,
+      "has_tool_config": false,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "sdk_input_shape_valid": true
+    },
+    "working_native_sonnet": {
+      "calls": 1,
+      "has_output_config": true,
+      "has_tool_config": false,
+      "inference_config": {
+        "maxTokens": 6000,
+        "temperature": 0.2
+      },
+      "sdk_input_shape_valid": true
+    },
+    "working_native_nova": {
+      "calls": 0,
+      "configuration_error": "Configured model is outside the native structured-output support allowlist."
+    }
+  },
+  "author_schema_cases": [
+    {
+      "case": "valid",
+      "accepted_by_transport_schema": true
+    },
+    {
+      "case": "empty_batch",
+      "accepted_by_transport_schema": true
+    },
+    {
+      "case": "only_three_choices",
+      "accepted_by_transport_schema": true
+    },
+    {
+      "case": "five_choices",
+      "accepted_by_transport_schema": true
+    },
+    {
+      "case": "duplicate_choice_text",
+      "accepted_by_transport_schema": true
+    },
+    {
+      "case": "answer_not_offered",
+      "accepted_by_transport_schema": true
+    },
+    {
+      "case": "invalid_difficulty_range",
+      "accepted_by_transport_schema": true
+    },
+    {
+      "case": "empty_prompt",
+      "accepted_by_transport_schema": true
+    },
+    {
+      "case": "unknown_property",
+      "accepted_by_transport_schema": false
+    },
+    {
+      "case": "wrong_format_enum",
+      "accepted_by_transport_schema": false
+    },
+    {
+      "case": "wrong_choice_type",
+      "accepted_by_transport_schema": false
+    },
+    {
+      "case": "boolean_not_integer",
+      "accepted_by_transport_schema": false
+    },
+    {
+      "case": "missing_required_answer",
+      "accepted_by_transport_schema": false
+    }
+  ],
+  "fixed_slot_alternative_cases": [
+    {
+      "case": "valid",
+      "accepted_by_transport_schema": true
+    },
+    {
+      "case": "missing_fourth_slot",
+      "accepted_by_transport_schema": false
+    },
+    {
+      "case": "extra_fifth_slot",
+      "accepted_by_transport_schema": false
+    },
+    {
+      "case": "nonexistent_answer_slot",
+      "accepted_by_transport_schema": false
+    },
+    {
+      "case": "duplicate_text_still_needs_application_validation",
+      "accepted_by_transport_schema": true
+    }
+  ],
+  "limitations": [
+    "A transport-schema acceptance is not acceptance into the question bank.",
+    "Current sanitization, independent solving and final review add further gates.",
+    "No fresh provider behavior, deployment configuration, or semantic error rate was measured.",
+    "Alternative fixed slots remove cardinality and answer-reference freedom, not factual ambiguity or duplicate text."
+  ]
+}

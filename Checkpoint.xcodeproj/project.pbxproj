@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D92120260000000000000001 /* AnswerHighlightingReliabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92120260000000000000002 /* AnswerHighlightingReliabilityTests.swift */; };
 		A10000000000000000000001 /* CheckpointApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* CheckpointApp.swift */; };
 		A10000000000000000000002 /* CheckpointStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* CheckpointStore.swift */; };
 		A10000000000000000000004 /* QuestionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* QuestionEngine.swift */; };
@@ -182,6 +183,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D92120260000000000000002 /* AnswerHighlightingReliabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerHighlightingReliabilityTests.swift; sourceTree = "<group>"; };
 		A20000000000000000000001 /* CheckpointApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* CheckpointStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckpointStore.swift; sourceTree = "<group>"; };
 		A20000000000000000000004 /* QuestionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionEngine.swift; sourceTree = "<group>"; };
@@ -574,6 +576,7 @@
 				CA0000000000000000000009 /* QuestionGenerationTests.swift */,
 				CA0000000000000000000026 /* SourceTruncationTests.swift */,
 				CA000000000000000000000B /* QuestionValidationTests.swift */,
+				D92120260000000000000002 /* AnswerHighlightingReliabilityTests.swift */,
 				CA0000000000000000000008 /* QuestionBankAsyncFlowTests.swift */,
 				CA000000000000000000000F /* UnlockPolicyTests.swift */,
 				CC0000000000000000000001 /* TestSupport */,
@@ -942,6 +945,7 @@
 				CB0000000000000000000009 /* QuestionGenerationTests.swift in Sources */,
 				CB0000000000000000000026 /* SourceTruncationTests.swift in Sources */,
 				CB000000000000000000000B /* QuestionValidationTests.swift in Sources */,
+				D92120260000000000000001 /* AnswerHighlightingReliabilityTests.swift in Sources */,
 				CB0000000000000000000008 /* QuestionBankAsyncFlowTests.swift in Sources */,
 				CB000000000000000000000F /* UnlockPolicyTests.swift in Sources */,
 				CB0000000000000000000010 /* CheckpointTestFixtures.swift in Sources */,

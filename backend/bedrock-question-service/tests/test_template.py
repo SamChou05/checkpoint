@@ -39,7 +39,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             self.assertIn(f"{env}: ${{{{ vars.{env}", self.deploy_workflow)
             self.assertIn(f'"{parameter}=${{{env}:-', self.deploy_script)
 
-    def test_native_output_mode_is_explicit_legacy_default_on_both_functions(self):
+    def test_native_output_mode_defaults_to_legacy_with_worker_inheritance(self):
         parameter = _indented_block(self.template, "BedrockStructuredOutputMode")
         self.assertIn("Default: legacy", parameter)
         self.assertIn("AllowedValues: [legacy, native]", parameter)
@@ -47,13 +47,52 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             self.template.count(
                 "BEDROCK_STRUCTURED_OUTPUT_MODE: !Ref BedrockStructuredOutputMode"
             ),
-            2,
+            1,
         )
         self.assertIn("BEDROCK_STRUCTURED_OUTPUT_MODE || 'legacy'", self.deploy_workflow)
         self.assertIn(
             '"BedrockStructuredOutputMode=${BEDROCK_STRUCTURED_OUTPUT_MODE:-legacy}"',
             self.deploy_script,
         )
+        worker_parameter = _indented_block(self.template, "QuestionBankWorkerStructuredOutputMode")
+        self.assertIn("Default: inherit", worker_parameter)
+        self.assertIn("AllowedValues: [inherit, legacy, native]", worker_parameter)
+        self.assertIn("QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE || 'inherit'", self.deploy_workflow)
+        self.assertIn(
+            '"QuestionBankWorkerStructuredOutputMode=${QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE:-inherit}"',
+            self.deploy_script,
+        )
+
+    def test_worker_output_override_resolves_all_combinations_without_changing_api(self):
+        def resolve(function, parameters):
+            block = _indented_block(self.template, function)
+            expression = re.search(r"BEDROCK_STRUCTURED_OUTPUT_MODE: ([^\n]+)", block).group(1)
+            if expression.startswith("!Ref "):
+                return parameters[expression.removeprefix("!Ref ")]
+            condition, true_ref, false_ref = re.fullmatch(
+                r"!If \[(\w+), !Ref (\w+), !Ref (\w+)\]", expression,
+            ).groups()
+            condition_ref, expected = re.search(
+                rf"^  {condition}: !Equals \[!Ref (\w+), (\w+)\]$",
+                self.template, re.MULTILINE,
+            ).groups()
+            return parameters[true_ref if parameters[condition_ref] == expected else false_ref]
+
+        for global_mode, worker_mode, expected_worker in [
+            ("legacy", "inherit", "legacy"),
+            ("native", "inherit", "native"),
+            ("legacy", "legacy", "legacy"),
+            ("legacy", "native", "native"),
+            ("native", "legacy", "legacy"),
+            ("native", "native", "native"),
+        ]:
+            with self.subTest(global_mode=global_mode, worker_mode=worker_mode):
+                parameters = {
+                    "BedrockStructuredOutputMode": global_mode,
+                    "QuestionBankWorkerStructuredOutputMode": worker_mode,
+                }
+                self.assertEqual(resolve("CheckpointQuestionFunction", parameters), global_mode)
+                self.assertEqual(resolve("QuestionBankWorkerFunction", parameters), expected_worker)
 
     @classmethod
     def setUpClass(cls):

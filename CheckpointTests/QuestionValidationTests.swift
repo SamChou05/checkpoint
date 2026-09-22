@@ -489,24 +489,24 @@ final class QuestionValidationTests: XCTestCase {
         XCTAssertTrue(sanitized.isEmpty)
     }
 
-    func testSanitizerRejectsExplanationSupportingDifferentChoice() {
+    func testLegacySanitizerDoesNotInferFinalAnswerFromAnIntermediateValue() {
         let goal = makeGoal()
         let request = makeRequest(goal: goal)
         let question = makeQuestion(
             goal: goal,
             index: 1,
             topic: "signed quantities",
-            prompt: "A computation gives -1. What is the sign of the result?",
+            prompt: "What is the sign of -(2 - 5)?",
             expectedAnswer: "positive",
             choices: ["positive", "negative", "zero", "undefined"],
-            explanation: "The computed result is -1, which is negative.",
+            explanation: "The inner value is -3, which is negative. Negating it gives 3, so the final answer is positive.",
             verificationVersion: 0,
             difficulty: 4
         )
 
         let sanitized = QuestionBatchSanitizer.sanitize([question], for: request)
 
-        XCTAssertTrue(sanitized.isEmpty)
+        XCTAssertEqual(sanitized.map(\.expectedAnswer), ["positive"])
     }
 
     func testSanitizerRejectsPromptWithEmbeddedAnswerOptions() {
@@ -733,16 +733,16 @@ final class QuestionValidationTests: XCTestCase {
         XCTAssertTrue(sanitized.isEmpty)
     }
 
-    func testSanitizerUsesExplanationWhenItContradictsExpectedAnswer() throws {
+    func testLegacySanitizerPreservesStructuredKeyWhenExplanationContradictsIt() throws {
         let goal = makeGoal()
         let request = makeRequest(goal: goal)
         let question = makeQuestion(
             goal: goal,
             index: 1,
             prompt: "Which answer matches the explanation?",
-            expectedAnswer: "The tempting but wrong answer",
+            expectedAnswer: "The explicitly keyed answer",
             choices: [
-                "The tempting but wrong answer",
+                "The explicitly keyed answer",
                 "The answer supported by the argument",
                 "An unrelated answer",
                 "A too-broad answer"
@@ -754,27 +754,27 @@ final class QuestionValidationTests: XCTestCase {
 
         let sanitizedQuestion = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: request).first)
 
-        XCTAssertEqual(sanitizedQuestion.expectedAnswer, "The answer supported by the argument")
+        XCTAssertEqual(sanitizedQuestion.expectedAnswer, "The explicitly keyed answer")
         XCTAssertEqual(
             AnswerGrader.evaluate(answer: "The answer supported by the argument", question: sanitizedQuestion).result,
-            .correct
+            .incorrect
         )
         XCTAssertEqual(
-            AnswerGrader.evaluate(answer: "The tempting but wrong answer", question: sanitizedQuestion).result,
-            .incorrect
+            AnswerGrader.evaluate(answer: "The explicitly keyed answer", question: sanitizedQuestion).result,
+            .correct
         )
     }
 
-    func testSanitizerCollapsesWhitespaceWhenReadingExplanationAnswerCue() throws {
+    func testLegacySanitizerNeverRewritesTheKeyFromMultilineExplanation() throws {
         let goal = makeGoal()
         let request = makeRequest(goal: goal)
         let question = makeQuestion(
             goal: goal,
             index: 1,
             prompt: "Which answer matches the explanation?",
-            expectedAnswer: "The tempting but wrong answer",
+            expectedAnswer: "The explicitly keyed answer",
             choices: [
-                "The tempting but wrong answer",
+                "The explicitly keyed answer",
                 "The answer supported by the argument",
                 "An unrelated answer",
                 "A too-broad answer"
@@ -786,18 +786,18 @@ final class QuestionValidationTests: XCTestCase {
 
         let sanitizedQuestion = try XCTUnwrap(QuestionBatchSanitizer.sanitize([question], for: request).first)
 
-        XCTAssertEqual(sanitizedQuestion.expectedAnswer, "The answer supported by the argument")
+        XCTAssertEqual(sanitizedQuestion.expectedAnswer, "The explicitly keyed answer")
     }
 
-    func testMultipleChoiceGraderUsesExplanationForPersistedAnswerMismatch() {
+    func testLegacyMultipleChoiceGraderUsesStructuredKeyForPersistedExplanationMismatch() {
         let goal = makeGoal()
         let question = makeQuestion(
             goal: goal,
             index: 1,
             prompt: "Which persisted answer should the grader trust?",
-            expectedAnswer: "The tempting but wrong answer",
+            expectedAnswer: "The explicitly keyed answer",
             choices: [
-                "The tempting but wrong answer",
+                "The explicitly keyed answer",
                 "The answer supported by the argument",
                 "An unrelated answer",
                 "A too-broad answer"
@@ -809,15 +809,15 @@ final class QuestionValidationTests: XCTestCase {
 
         XCTAssertEqual(
             AnswerGrader.evaluate(answer: "The answer supported by the argument", question: question).result,
-            .correct
-        )
-        XCTAssertEqual(
-            AnswerGrader.evaluate(answer: "The tempting but wrong answer", question: question).result,
             .incorrect
         )
         XCTAssertEqual(
+            AnswerGrader.evaluate(answer: "The explicitly keyed answer", question: question).result,
+            .correct
+        )
+        XCTAssertEqual(
             AnswerGrader.correctAnswerText(for: question, after: .incorrect),
-            "The answer supported by the argument"
+            "The explicitly keyed answer"
         )
     }
 
@@ -906,7 +906,7 @@ final class QuestionValidationTests: XCTestCase {
         XCTAssertNil(AnswerGrader.correctAnswerText(for: question, after: .incorrect))
     }
 
-    func testMultipleChoiceGraderKeepsStrictAnswerCueWhitespaceMatching() {
+    func testLegacyMultipleChoiceGraderPreservesKeyWithMultilineExplanation() {
         let goal = makeGoal()
         let question = makeQuestion(
             goal: goal,

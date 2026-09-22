@@ -44,31 +44,6 @@ enum MultipleChoiceAnswerNormalizer {
         }
     }
 
-    static func choiceMentionedAsCorrect(
-        in explanation: String,
-        choices: [String],
-        collapsingWhitespaceForPhraseMatching: Bool = false
-    ) -> String? {
-        let phraseMatchingText = collapsingWhitespaceForPhraseMatching
-            ? explanation.split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
-            : explanation
-        let explanationWords = normalizedText(phraseMatchingText)
-        guard explanationWords.contains("correct")
-            || explanationWords.contains("best answer")
-            || explanationWords.contains("right answer") else {
-            return nil
-        }
-
-        let normalizedExplanation = key(for: phraseMatchingText)
-        let mentionedChoices = choices.filter { choice in
-            let choiceKey = key(for: choice)
-            return choice.count >= 12 && normalizedExplanation.range(of: choiceKey) != nil
-        }
-
-        guard mentionedChoices.count == 1 else { return nil }
-        return mentionedChoices[0]
-    }
-
     static func strippingAnswerPrefix(from text: String) -> String {
         let prefixes = [
             "correct answer",
@@ -220,19 +195,16 @@ enum AnswerGrader {
             let choiceKey = MultipleChoiceAnswerNormalizer.key(for: $0)
             return choiceKey == expectedKey || ($0.count >= 12 && expectedKey.range(of: choiceKey) != nil)
         }
-        let explanationChoice = MultipleChoiceAnswerNormalizer.choiceMentionedAsCorrect(
-            in: question.explanation,
-            choices: question.choices
-        )
-        let resolvedExpectedKey = (explanationChoice ?? matchingExpectedChoice).map {
+        // Explanation prose can refute a distractor or describe an intermediate
+        // result. It must never replace the explicit key or legacy label mapping.
+        let resolvedExpectedKey = matchingExpectedChoice.map {
             MultipleChoiceAnswerNormalizer.key(for: $0)
         } ?? expectedKey
-        let allowsRawExpectedFallback = explanationChoice == nil
 
         let isOfferedChoice = question.choices.contains {
             MultipleChoiceAnswerNormalizer.key(for: $0) == answerKey
         }
-        if isOfferedChoice && (answerKey == resolvedExpectedKey || (allowsRawExpectedFallback && answerKey == expectedKey)) {
+        if isOfferedChoice && answerKey == resolvedExpectedKey {
             return AnswerEvaluation(result: .correct, feedback: "Correct choice.")
         }
 

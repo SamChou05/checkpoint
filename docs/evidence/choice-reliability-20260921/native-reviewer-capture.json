@@ -1,0 +1,399 @@
+{
+  "plan_sha256": "1fb1749ebfbc46dc62454341a8a8bf65f384e33b478b2c26f59516d173af3c34",
+  "started_at": "2026-09-22T03:36:56.657803+00:00",
+  "status": "stopped_after_failure",
+  "calls": [
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "request_sha256": "09c1d7a29f2cacb2f2ca33ac700849bb21ba09aed1e857c9353d544a23eae223",
+      "dispatch_attempted": true,
+      "provider_raw": "{\"reviews\":[{\"answer\":\"4\",\"choiceFeedback\":[{\"choice\":\"4\",\"explanation\":\"2+2 equals 4 by basic arithmetic.\"},{\"choice\":\"5\",\"explanation\":\"2+2 does not equal 5.\"},{\"choice\":\"6\",\"explanation\":\"2+2 does not equal 6.\"},{\"choice\":\"7\",\"explanation\":\"2+2 does not equal 7.\"}],\"difficulty\":1,\"explanation\":\"Basic arithmetic: 2+2=4. Only one choice is correct.\",\"index\":0,\"valid\":true},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":1,\"valid\":false},{\"answer\":\"Two\",\"choiceFeedback\":[{\"choice\":\"Two\",\"explanation\":\"'Two' denotes the number 2, which matches the fictional rule's allowed answer exactly.\"},{\"choice\":\"Three\",\"explanation\":\"Three denotes 3, not 2.\"},{\"choice\":\"The number three\",\"explanation\":\"This also denotes 3, not 2.\"},{\"choice\":\"Four\",\"explanation\":\"Four denotes 4, not 2.\"}],\"difficulty\":2,\"explanation\":\"The stem defines the allowed answer as exactly two; 'Two' is the only option that denotes that number.\",\"index\":2,\"valid\":true},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":3,\"valid\":false},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":4,\"valid\":false},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":5,\"valid\":false},{\"answer\":\"True\",\"choiceFeedback\":[{\"choice\":\"True\",\"explanation\":\"Python's Boolean true literal is exactly 'True' (capital T, lowercase rue).\"},{\"choice\":\"true\",\"explanation\":\"'true' is not a valid Python keyword; it raises a NameError.\"},{\"choice\":\"TRUE\",\"explanation\":\"'TRUE' is not a valid Python keyword; it raises a NameError.\"},{\"choice\":\"False\",\"explanation\":\"'False' is the Boolean false literal, not true.\"}],\"difficulty\":1,\"explanation\":\"Python is case-sensitive; the Boolean true literal is spelled 'True'. All other capitalizations are undefined names.\",\"index\":6,\"valid\":true},{\"answer\":\"n + 1\",\"choiceFeedback\":[{\"choice\":\"n + 1\",\"explanation\":\"Adding 1 to n yields n+1, which is one more than n.\"},{\"choice\":\"n - 1\",\"explanation\":\"This subtracts 1, yielding one less than n.\"},{\"choice\":\"n * 1\",\"explanation\":\"Multiplying by 1 leaves n unchanged.\"},{\"choice\":\"n / 1\",\"explanation\":\"Dividing by 1 leaves n unchanged (and may change its type to float).\"}],\"difficulty\":1,\"explanation\":\"Adding one to n is expressed as n+1. The other operations do not increment n by one.\",\"index\":7,\"valid\":true}]}",
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 1690,
+        "outputTokens": 681,
+        "totalTokens": 2371,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 7.864,
+      "native_stage_valid": true,
+      "adapted": "{\"reviews\": [{\"answer\": \"4\", \"difficulty\": 1, \"explanation\": \"Basic arithmetic: 2+2=4. Only one choice is correct.\", \"index\": 0, \"valid\": true, \"choiceExplanations\": {\"4\": \"2+2 equals 4 by basic arithmetic.\", \"5\": \"2+2 does not equal 5.\", \"6\": \"2+2 does not equal 6.\", \"7\": \"2+2 does not equal 7.\"}}, {\"answer\": \"\", \"difficulty\": 0, \"explanation\": \"\", \"index\": 1, \"valid\": false, \"choiceExplanations\": {}}, {\"answer\": \"Two\", \"difficulty\": 2, \"explanation\": \"The stem defines the allowed answer as exactly two; 'Two' is the only option that denotes that number.\", \"index\": 2, \"valid\": true, \"choiceExplanations\": {\"Two\": \"'Two' denotes the number 2, which matches the fictional rule's allowed answer exactly.\", \"Three\": \"Three denotes 3, not 2.\", \"The number three\": \"This also denotes 3, not 2.\", \"Four\": \"Four denotes 4, not 2.\"}}, {\"answer\": \"\", \"difficulty\": 0, \"explanation\": \"\", \"index\": 3, \"valid\": false, \"choiceExplanations\": {}}, {\"answer\": \"\", \"difficulty\": 0, \"explanation\": \"\", \"index\": 4, \"valid\": false, \"choiceExplanations\": {}}, {\"answer\": \"\", \"difficulty\": 0, \"explanation\": \"\", \"index\": 5, \"valid\": false, \"choiceExplanations\": {}}, {\"answer\": \"True\", \"difficulty\": 1, \"explanation\": \"Python is case-sensitive; the Boolean true literal is spelled 'True'. All other capitalizations are undefined names.\", \"index\": 6, \"valid\": true, \"choiceExplanations\": {\"True\": \"Python's Boolean true literal is exactly 'True' (capital T, lowercase rue).\", \"true\": \"'true' is not a valid Python keyword; it raises a NameError.\", \"TRUE\": \"'TRUE' is not a valid Python keyword; it raises a NameError.\", \"False\": \"'False' is the Boolean false literal, not true.\"}}, {\"answer\": \"n + 1\", \"difficulty\": 1, \"explanation\": \"Adding one to n is expressed as n+1. The other operations do not increment n by one.\", \"index\": 7, \"valid\": true, \"choiceExplanations\": {\"n + 1\": \"Adding 1 to n yields n+1, which is one more than n.\", \"n - 1\": \"This subtracts 1, yielding one less than n.\", \"n * 1\": \"Multiplying by 1 leaves n unchanged.\", \"n / 1\": \"Dividing by 1 leaves n unchanged (and may change its type to float).\"}}]}",
+      "metrics": {
+        "ProviderCalls": 1,
+        "BedrockInputTokens": 1690,
+        "BedrockOutputTokens": 681,
+        "ProviderObservations": [
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "92b3c2fd7ecddd126ac0ef8e181aaa2a1c00a87920b2d4c4e76b166f6014a3ef",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "elapsedSeconds": 7.863,
+            "usage": {
+              "inputTokens": 1690,
+              "outputTokens": 681,
+              "totalTokens": 2371,
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0
+            },
+            "structuredOutput": {
+              "mode": "native",
+              "name": "default_reviewer_v1",
+              "version": "1",
+              "sha256": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe"
+            }
+          }
+        ]
+      },
+      "score": {
+        "strict_parse": true,
+        "rows": [
+          {
+            "case_id": "valid_arithmetic",
+            "expected_valid": true,
+            "declared_valid": true,
+            "declaration_agrees": true,
+            "declared_answer": "4",
+            "equivalent_pairs": []
+          },
+          {
+            "case_id": "equivalent_numeric_wrong",
+            "expected_valid": false,
+            "declared_valid": false,
+            "declaration_agrees": true,
+            "declared_answer": "",
+            "equivalent_pairs": [
+              [
+                "5",
+                "5.0"
+              ]
+            ]
+          },
+          {
+            "case_id": "equivalent_verbal_wrong",
+            "expected_valid": false,
+            "declared_valid": true,
+            "declaration_agrees": false,
+            "declared_answer": "Two",
+            "equivalent_pairs": [
+              [
+                "Three",
+                "The number three"
+              ]
+            ]
+          },
+          {
+            "case_id": "equivalent_correct",
+            "expected_valid": false,
+            "declared_valid": false,
+            "declaration_agrees": true,
+            "declared_answer": "",
+            "equivalent_pairs": [
+              [
+                "0.5",
+                "1/2"
+              ]
+            ]
+          },
+          {
+            "case_id": "multiple_correct_properties",
+            "expected_valid": false,
+            "declared_valid": false,
+            "declaration_agrees": true,
+            "declared_answer": "",
+            "equivalent_pairs": []
+          },
+          {
+            "case_id": "zero_correct",
+            "expected_valid": false,
+            "declared_valid": false,
+            "declaration_agrees": true,
+            "declared_answer": "",
+            "equivalent_pairs": []
+          },
+          {
+            "case_id": "case_sensitive_valid",
+            "expected_valid": true,
+            "declared_valid": true,
+            "declaration_agrees": true,
+            "declared_answer": "True",
+            "equivalent_pairs": []
+          },
+          {
+            "case_id": "operator_sensitive_valid",
+            "expected_valid": true,
+            "declared_valid": true,
+            "declaration_agrees": true,
+            "declared_answer": "n + 1",
+            "equivalent_pairs": []
+          }
+        ],
+        "current_parser_accepted_case_ids": [
+          "valid_arithmetic",
+          "equivalent_verbal_wrong",
+          "case_sensitive_valid",
+          "operator_sensitive_valid"
+        ],
+        "current_parser_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "accepted": 4,
+              "rejected_by_model": 4
+            }
+          }
+        },
+        "native_preserved_parser_accepted_case_ids": [
+          "valid_arithmetic",
+          "equivalent_verbal_wrong",
+          "case_sensitive_valid",
+          "operator_sensitive_valid"
+        ],
+        "native_preserved_parser_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "accepted": 4,
+              "rejected_by_model": 4
+            }
+          }
+        }
+      }
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "request_sha256": "def64bcda5cbc67f5d3bcc56aee2e371a90874cec27972a092c50f24f016528d",
+      "dispatch_attempted": true,
+      "provider_raw": "{\"reviews\":[{\"answer\":\"4\",\"choiceFeedback\":[{\"choice\":\"4\",\"explanation\":\"2+2 equals 4; this is the correct result.\"},{\"choice\":\"5\",\"explanation\":\"2+2 is not 5; off by one.\"},{\"choice\":\"6\",\"explanation\":\"2+2 is not 6; off by two.\"},{\"choice\":\"7\",\"explanation\":\"2+2 is not 7; off by three.\"}],\"difficulty\":1,\"explanation\":\"Basic arithmetic: 2+2=4. Only one choice matches.\",\"index\":0,\"valid\":true},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":1,\"valid\":false},{\"answer\":\"Two\",\"choiceFeedback\":[{\"choice\":\"Two\",\"explanation\":\"The word 'Two' denotes the number two, satisfying the fictional rule exactly.\"},{\"choice\":\"Three\",\"explanation\":\"Three denotes the number three, not two.\"},{\"choice\":\"The number three\",\"explanation\":\"This phrase denotes three, not two.\"},{\"choice\":\"Four\",\"explanation\":\"Four denotes the number four, not two.\"}],\"difficulty\":2,\"explanation\":\"The stem explicitly defines the allowed answer as exactly two; 'Two' is the only option that denotes that number.\",\"index\":2,\"valid\":true},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":3,\"valid\":false},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":4,\"valid\":false},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":5,\"valid\":false},{\"answer\":\"True\",\"choiceFeedback\":[{\"choice\":\"True\",\"explanation\":\"Python's Boolean true literal is exactly 'True' (capital T, lowercase rest).\"},{\"choice\":\"true\",\"explanation\":\"'true' is not a valid Python keyword; it raises a NameError.\"},{\"choice\":\"TRUE\",\"explanation\":\"'TRUE' is not a valid Python keyword; Python is case-sensitive.\"},{\"choice\":\"False\",\"explanation\":\"'False' is the Boolean false literal, not true.\"}],\"difficulty\":1,\"explanation\":\"Python is case-sensitive; the Boolean true literal is spelled 'True'. All other casings are undefined names or the opposite value.\",\"index\":6,\"valid\":true},{\"answer\":\"n + 1\",\"choiceFeedback\":[{\"choice\":\"n + 1\",\"explanation\":\"Adding 1 to n produces n+1, which is one more than n.\"},{\"choice\":\"n - 1\",\"explanation\":\"Subtracting 1 gives one less than n, not one more.\"},{\"choice\":\"n * 1\",\"explanation\":\"Multiplying by 1 leaves n unchanged.\"},{\"choice\":\"n / 1\",\"explanation\":\"Dividing by 1 also leaves n unchanged (and may change its type to float).\"}],\"difficulty\":1,\"explanation\":\"Only n+1 increases n by exactly one; the other operations subtract, leave unchanged, or divide.\",\"index\":7,\"valid\":true}]}",
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 1818,
+        "outputTokens": 697,
+        "totalTokens": 2515,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 8.075,
+      "native_stage_valid": true,
+      "adapted": "{\"reviews\": [{\"answer\": \"4\", \"difficulty\": 1, \"explanation\": \"Basic arithmetic: 2+2=4. Only one choice matches.\", \"index\": 0, \"valid\": true, \"choiceExplanations\": {\"4\": \"2+2 equals 4; this is the correct result.\", \"5\": \"2+2 is not 5; off by one.\", \"6\": \"2+2 is not 6; off by two.\", \"7\": \"2+2 is not 7; off by three.\"}}, {\"answer\": \"\", \"difficulty\": 0, \"explanation\": \"\", \"index\": 1, \"valid\": false, \"choiceExplanations\": {}}, {\"answer\": \"Two\", \"difficulty\": 2, \"explanation\": \"The stem explicitly defines the allowed answer as exactly two; 'Two' is the only option that denotes that number.\", \"index\": 2, \"valid\": true, \"choiceExplanations\": {\"Two\": \"The word 'Two' denotes the number two, satisfying the fictional rule exactly.\", \"Three\": \"Three denotes the number three, not two.\", \"The number three\": \"This phrase denotes three, not two.\", \"Four\": \"Four denotes the number four, not two.\"}}, {\"answer\": \"\", \"difficulty\": 0, \"explanation\": \"\", \"index\": 3, \"valid\": false, \"choiceExplanations\": {}}, {\"answer\": \"\", \"difficulty\": 0, \"explanation\": \"\", \"index\": 4, \"valid\": false, \"choiceExplanations\": {}}, {\"answer\": \"\", \"difficulty\": 0, \"explanation\": \"\", \"index\": 5, \"valid\": false, \"choiceExplanations\": {}}, {\"answer\": \"True\", \"difficulty\": 1, \"explanation\": \"Python is case-sensitive; the Boolean true literal is spelled 'True'. All other casings are undefined names or the opposite value.\", \"index\": 6, \"valid\": true, \"choiceExplanations\": {\"True\": \"Python's Boolean true literal is exactly 'True' (capital T, lowercase rest).\", \"true\": \"'true' is not a valid Python keyword; it raises a NameError.\", \"TRUE\": \"'TRUE' is not a valid Python keyword; Python is case-sensitive.\", \"False\": \"'False' is the Boolean false literal, not true.\"}}, {\"answer\": \"n + 1\", \"difficulty\": 1, \"explanation\": \"Only n+1 increases n by exactly one; the other operations subtract, leave unchanged, or divide.\", \"index\": 7, \"valid\": true, \"choiceExplanations\": {\"n + 1\": \"Adding 1 to n produces n+1, which is one more than n.\", \"n - 1\": \"Subtracting 1 gives one less than n, not one more.\", \"n * 1\": \"Multiplying by 1 leaves n unchanged.\", \"n / 1\": \"Dividing by 1 also leaves n unchanged (and may change its type to float).\"}}]}",
+      "metrics": {
+        "ProviderCalls": 1,
+        "BedrockInputTokens": 1818,
+        "BedrockOutputTokens": 697,
+        "ProviderObservations": [
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a239d51e7a3cbc74a8054bcecce36600dbcd46d3494d170cb8f71cb04a50c15f",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "elapsedSeconds": 8.075,
+            "usage": {
+              "inputTokens": 1818,
+              "outputTokens": 697,
+              "totalTokens": 2515,
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0
+            },
+            "structuredOutput": {
+              "mode": "native",
+              "name": "default_reviewer_v1",
+              "version": "1",
+              "sha256": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe"
+            }
+          }
+        ]
+      },
+      "score": {
+        "strict_parse": true,
+        "rows": [
+          {
+            "case_id": "valid_arithmetic",
+            "expected_valid": true,
+            "declared_valid": true,
+            "declaration_agrees": true,
+            "declared_answer": "4",
+            "equivalent_pairs": []
+          },
+          {
+            "case_id": "equivalent_numeric_wrong",
+            "expected_valid": false,
+            "declared_valid": false,
+            "declaration_agrees": true,
+            "declared_answer": "",
+            "equivalent_pairs": [
+              [
+                "5",
+                "5.0"
+              ]
+            ]
+          },
+          {
+            "case_id": "equivalent_verbal_wrong",
+            "expected_valid": false,
+            "declared_valid": true,
+            "declaration_agrees": false,
+            "declared_answer": "Two",
+            "equivalent_pairs": [
+              [
+                "Three",
+                "The number three"
+              ]
+            ]
+          },
+          {
+            "case_id": "equivalent_correct",
+            "expected_valid": false,
+            "declared_valid": false,
+            "declaration_agrees": true,
+            "declared_answer": "",
+            "equivalent_pairs": [
+              [
+                "0.5",
+                "1/2"
+              ]
+            ]
+          },
+          {
+            "case_id": "multiple_correct_properties",
+            "expected_valid": false,
+            "declared_valid": false,
+            "declaration_agrees": true,
+            "declared_answer": "",
+            "equivalent_pairs": []
+          },
+          {
+            "case_id": "zero_correct",
+            "expected_valid": false,
+            "declared_valid": false,
+            "declaration_agrees": true,
+            "declared_answer": "",
+            "equivalent_pairs": []
+          },
+          {
+            "case_id": "case_sensitive_valid",
+            "expected_valid": true,
+            "declared_valid": true,
+            "declaration_agrees": true,
+            "declared_answer": "True",
+            "equivalent_pairs": []
+          },
+          {
+            "case_id": "operator_sensitive_valid",
+            "expected_valid": true,
+            "declared_valid": true,
+            "declaration_agrees": true,
+            "declared_answer": "n + 1",
+            "equivalent_pairs": []
+          }
+        ],
+        "current_parser_accepted_case_ids": [
+          "valid_arithmetic",
+          "equivalent_verbal_wrong",
+          "case_sensitive_valid",
+          "operator_sensitive_valid"
+        ],
+        "current_parser_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "accepted": 4,
+              "rejected_by_model": 4
+            }
+          }
+        },
+        "native_preserved_parser_accepted_case_ids": [
+          "valid_arithmetic",
+          "equivalent_verbal_wrong",
+          "case_sensitive_valid",
+          "operator_sensitive_valid"
+        ],
+        "native_preserved_parser_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "accepted": 4,
+              "rejected_by_model": 4
+            }
+          }
+        }
+      }
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "request_sha256": "def64bcda5cbc67f5d3bcc56aee2e371a90874cec27972a092c50f24f016528d",
+      "dispatch_attempted": true,
+      "provider_raw": "{\"reviews\":[{\"answer\":\"4\",\"choiceFeedback\":[{\"choice\":\"4\",\"explanation\":\"2+2 equals 4; this is the correct result.\"},{\"choice\":\"5\",\"explanation\":\"2+2 does not equal 5; off by one.\"},{\"choice\":\"6\",\"explanation\":\"2+2 does not equal 6; off by two.\"},{\"choice\":\"7\",\"explanation\":\"2+2 does not equal 7; off by three.\"}],\"difficulty\":1,\"explanation\":\"Basic arithmetic: 2+2=4. Only one choice matches.\",\"index\":0,\"valid\":true},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":1,\"valid\":false},{\"answer\":\"Two\",\"choiceFeedback\":[{\"choice\":\"Two\",\"explanation\":\"The word 'Two' names the number two, satisfying the fictional rule exactly.\"},{\"choice\":\"Three\",\"explanation\":\"Three names the number three, not two.\"},{\"choice\":\"The number three\",\"explanation\":\"This phrase also denotes three, not two; it duplicates 'Three' as a wrong answer.\"},{\"choice\":\"Four\",\"explanation\":\"Four names the number four, not two.\"}],\"difficulty\":2,\"explanation\":\"The stem defines the allowed answer as exactly two; only 'Two' satisfies that. 'Three' and 'The number three' are duplicates of each other as wrong answers, making this item defective.\",\"index\":2,\"valid\":false},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":3,\"valid\":false},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":4,\"valid\":false},{\"answer\":\"\",\"choiceFeedback\":[],\"difficulty\":0,\"explanation\":\"\",\"index\":5,\"valid\":false},{\"answer\":\"True\",\"choiceFeedback\":[{\"choice\":\"True\",\"explanation\":\"Python's Boolean true literal is exactly 'True' (capital T, lowercase rue).\"},{\"choice\":\"true\",\"explanation\":\"'true' is not a valid Python keyword; it raises a NameError.\"},{\"choice\":\"TRUE\",\"explanation\":\"'TRUE' is not a valid Python keyword; Python identifiers are case-sensitive.\"},{\"choice\":\"False\",\"explanation\":\"'False' is the Boolean false literal, the opposite value.\"}],\"difficulty\":1,\"explanation\":\"Python is case-sensitive; the Boolean true literal is 'True'. All other casings are either invalid identifiers or the opposite Boolean.\",\"index\":6,\"valid\":true},{\"answer\":\"n + 1\",\"choiceFeedback\":[{\"choice\":\"n + 1\",\"explanation\":\"Adding 1 to n yields n+1, which is one more than n.\"},{\"choice\":\"n - 1\",\"explanation\":\"Subtracting 1 gives one less than n, not one more.\"},{\"choice\":\"n * 1\",\"explanation\":\"Multiplying by 1 leaves n unchanged.\"},{\"choice\":\"n / 1\",\"explanation\":\"Dividing by 1 also leaves n unchanged (and may change its type in Python 3).\"}],\"difficulty\":1,\"explanation\":\"Adding one to n is expressed as n+1. The other operations either decrease, preserve, or type-convert n.\",\"index\":7,\"valid\":true}]}",
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 1818,
+        "outputTokens": 740,
+        "totalTokens": 2558,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds": 9.102,
+      "native_stage_valid": false,
+      "error_type": "ProviderError",
+      "error": "Native rejected review contains learner feedback or an answer.",
+      "metrics": {
+        "ProviderCalls": 1,
+        "BedrockInputTokens": 1818,
+        "BedrockOutputTokens": 740,
+        "ProviderObservations": [
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "a239d51e7a3cbc74a8054bcecce36600dbcd46d3494d170cb8f71cb04a50c15f",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "elapsedSeconds": 9.102,
+            "usage": {
+              "inputTokens": 1818,
+              "outputTokens": 740,
+              "totalTokens": 2558,
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0
+            },
+            "structuredOutput": {
+              "mode": "native",
+              "name": "default_reviewer_v1",
+              "version": "1",
+              "sha256": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe"
+            }
+          }
+        ],
+        "QuestionQuality": {
+          "provider": {
+            "native_contract_invalid": 1
+          }
+        }
+      }
+    }
+  ]
+}

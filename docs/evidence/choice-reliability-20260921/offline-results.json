@@ -1,0 +1,1934 @@
+{
+  "experiment": "choice-reliability-20260921-offline",
+  "network_calls": 0,
+  "source_revision": "7d9cc6ad93128893fb52f1a0183fea620b3b00ac",
+  "runtime_source_sha256": {
+    "question_quality.py": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+    "request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+    "complete_question_solution.py": "50733a57d85156e25fe3a494363273312c2f918ffcd7bf446645fdbfaf91203e"
+  },
+  "synthetic": {
+    "scope": "Synthetic declarations isolate deterministic boundaries; these are not observed model successes or failures.",
+    "rows": [
+      {
+        "id": "valid_arithmetic",
+        "prompt": "What is 2 + 2?",
+        "choices": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "expectedAnswer": "4",
+        "supported": [
+          "4"
+        ],
+        "equivalent_pairs": [],
+        "identity_pass": true,
+        "normalized_choices_pass": true,
+        "truthful_solver_gate": null,
+        "unique_correct_authored_key": true,
+        "diverse_options": true
+      },
+      {
+        "id": "exact_duplicate_wrong",
+        "prompt": "What is 2 + 2?",
+        "choices": [
+          "4",
+          "5",
+          "5",
+          "6"
+        ],
+        "expectedAnswer": "4",
+        "supported": [
+          "4"
+        ],
+        "equivalent_pairs": [
+          [
+            "5",
+            "5"
+          ]
+        ],
+        "identity_pass": false,
+        "normalized_choices_pass": false,
+        "truthful_solver_gate": "invalid_choices",
+        "unique_correct_authored_key": true,
+        "diverse_options": false
+      },
+      {
+        "id": "equivalent_numeric_wrong",
+        "prompt": "What is 2 + 2?",
+        "choices": [
+          "4",
+          "5",
+          "5.0",
+          "6"
+        ],
+        "expectedAnswer": "4",
+        "supported": [
+          "4"
+        ],
+        "equivalent_pairs": [
+          [
+            "5",
+            "5.0"
+          ]
+        ],
+        "identity_pass": true,
+        "normalized_choices_pass": true,
+        "truthful_solver_gate": null,
+        "unique_correct_authored_key": true,
+        "diverse_options": false
+      },
+      {
+        "id": "equivalent_verbal_wrong",
+        "prompt": "A fictional quiz defines the allowed answer as exactly two. Which option gives that number?",
+        "choices": [
+          "Two",
+          "Three",
+          "The number three",
+          "Four"
+        ],
+        "expectedAnswer": "Two",
+        "supported": [
+          "Two"
+        ],
+        "equivalent_pairs": [
+          [
+            "Three",
+            "The number three"
+          ]
+        ],
+        "identity_pass": true,
+        "normalized_choices_pass": true,
+        "truthful_solver_gate": null,
+        "unique_correct_authored_key": true,
+        "diverse_options": false
+      },
+      {
+        "id": "equivalent_correct",
+        "prompt": "What is one half expressed as a number?",
+        "choices": [
+          "0.5",
+          "1/2",
+          "2",
+          "3"
+        ],
+        "expectedAnswer": "0.5",
+        "supported": [
+          "0.5",
+          "1/2"
+        ],
+        "equivalent_pairs": [
+          [
+            "0.5",
+            "1/2"
+          ]
+        ],
+        "identity_pass": true,
+        "normalized_choices_pass": true,
+        "truthful_solver_gate": "solver_multiple_supported",
+        "unique_correct_authored_key": false,
+        "diverse_options": false
+      },
+      {
+        "id": "multiple_correct_properties",
+        "prompt": "Every valid report has a date and a signature. Which property must a valid report have?",
+        "choices": [
+          "It has a date.",
+          "It has a signature.",
+          "It has a photograph.",
+          "It has a serial number."
+        ],
+        "expectedAnswer": "It has a date.",
+        "supported": [
+          "It has a date.",
+          "It has a signature."
+        ],
+        "equivalent_pairs": [],
+        "identity_pass": true,
+        "normalized_choices_pass": true,
+        "truthful_solver_gate": "solver_multiple_supported",
+        "unique_correct_authored_key": false,
+        "diverse_options": true
+      },
+      {
+        "id": "zero_correct",
+        "prompt": "What is 2 + 2?",
+        "choices": [
+          "1",
+          "2",
+          "3",
+          "5"
+        ],
+        "expectedAnswer": "1",
+        "supported": [],
+        "equivalent_pairs": [],
+        "identity_pass": true,
+        "normalized_choices_pass": true,
+        "truthful_solver_gate": "solver_zero_supported",
+        "unique_correct_authored_key": false,
+        "diverse_options": true
+      },
+      {
+        "id": "wrong_author_key",
+        "prompt": "What is 2 + 2?",
+        "choices": [
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "expectedAnswer": "3",
+        "supported": [
+          "4"
+        ],
+        "equivalent_pairs": [],
+        "identity_pass": true,
+        "normalized_choices_pass": true,
+        "truthful_solver_gate": "answer_disagreement",
+        "unique_correct_authored_key": false,
+        "diverse_options": true
+      },
+      {
+        "id": "case_sensitive_valid",
+        "prompt": "Which Python literal denotes the Boolean true value?",
+        "choices": [
+          "True",
+          "true",
+          "TRUE",
+          "False"
+        ],
+        "expectedAnswer": "True",
+        "supported": [
+          "True"
+        ],
+        "equivalent_pairs": [],
+        "identity_pass": true,
+        "normalized_choices_pass": true,
+        "truthful_solver_gate": null,
+        "unique_correct_authored_key": true,
+        "diverse_options": true
+      },
+      {
+        "id": "operator_sensitive_valid",
+        "prompt": "Which Python expression adds one to n?",
+        "choices": [
+          "n + 1",
+          "n - 1",
+          "n * 1",
+          "n / 1"
+        ],
+        "expectedAnswer": "n + 1",
+        "supported": [
+          "n + 1"
+        ],
+        "equivalent_pairs": [],
+        "identity_pass": true,
+        "normalized_choices_pass": true,
+        "truthful_solver_gate": null,
+        "unique_correct_authored_key": true,
+        "diverse_options": true
+      }
+    ],
+    "counts": {
+      "controls": 10,
+      "truthful_solver_eligible": 5,
+      "equivalent_wrong_options_eligible": 2,
+      "bad_key_controls_blocked_with_truthful_solver": 4
+    },
+    "correlated_wrong_declaration": {
+      "case": "wrong_author_key",
+      "factual_answer": "4",
+      "declared_answer": "3",
+      "solver_gate": null,
+      "meaning": "Shape and declaration agreement cannot prove arithmetic truth."
+    }
+  },
+  "historical_author_sanitizer": {
+    "provenance": {
+      "path": "docs/evidence/question-prompt-experiment-20260906.json",
+      "sha256": "71f32fd33b46932dd456116f718b3d1ffcc1a182be3f00fe732c1d03cbc7267e"
+    },
+    "scope": "Current deterministic sanitizer only, replaying all 60 saved author candidates. Historical blind assessments are reused, not recertified. Sanitizer acceptance is not production release approval.",
+    "counts": {
+      "current_author": {
+        "total": 30,
+        "historically_valid": 26,
+        "accepted": 30,
+        "true_accept": 26,
+        "false_accept": 4
+      },
+      "simple": {
+        "total": 30,
+        "historically_valid": 24,
+        "accepted": 25,
+        "true_reject": 2,
+        "true_accept": 21,
+        "false_accept": 4,
+        "false_reject": 3
+      }
+    },
+    "rows": [
+      {
+        "arm": "current_author",
+        "case_id": "fictional_game_source_goal",
+        "key": "591b3e93d0de",
+        "prompt": "A player at space 5 holds 1 blue token and moves forward 2 spaces, passing through space 6 (a beacon) and landing on space 7. How many blue tokens do they have after this move?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "591b3e93d0de",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Passing a beacon earns nothing under the supplied rules, so the player keeps one blue token."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "fictional_game_source_goal",
+        "key": "0991d8b0e6da",
+        "prompt": "A player at space 1 holds 3 blue tokens and moves forward 1 space, landing on the beacon at space 2. How many blue tokens do they have after this move?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "0991d8b0e6da",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Landing on the beacon earns one, but the three-blue cap discards the excess, leaving three."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "fictional_game_source_goal",
+        "key": "5f5ee7953740",
+        "prompt": "A player at space 4 holds 3 blue tokens and 1 gold token. They choose the exchange action. What are their token totals immediately after?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "5f5ee7953740",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "At legal exchange space 4, subtract two blue from three and add one gold to one: one blue and two gold."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "fictional_game_source_goal",
+        "key": "f956c0270c3e",
+        "prompt": "A player at space 3 holds 2 gold and 2 blue tokens with one turn left. Scoring is 2 per gold, 1 per blue. Which single action maximizes their final score?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "f956c0270c3e",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "Gather yields 2*2+3=7 points; either move gives six; exchange is illegal at space 3."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "fictional_game_source_goal",
+        "key": "1f6b49f5c7fd",
+        "prompt": "Starting at space 0 with 0 tokens, a player takes three turns: (1) move forward 2, (2) move forward 2, (3) gather. What is their position and token count after all three turns?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "1f6b49f5c7fd",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "0 to 2 earns one blue, 2 to 4 earns none, then gather gives two blue at space 4 and no gold."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "574b9a72eeaa",
+        "prompt": "In the early 1800s, a country experiences rapid rural-to-urban migration, a decline in artisan workshops, and a surge in child labor at large production sites. Which economic transformation best explains all three of these simultaneous developments?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "574b9a72eeaa",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "Factory industrialization accounts jointly for urban migration, displacement of craft workshops, and concentrated child labor; the distractors do not explain all three."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "ccdccd5f09cb",
+        "prompt": "An 1840s parliamentary report reveals that factory workers in a British industrial city have an average life expectancy of 17 years, while rural laborers nearby average 38 years. Which consequence of industrialization does this disparity most directly reflect?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "ccdccd5f09cb",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "The mortality disparity is consistent with documented industrial urban overcrowding and sanitation problems. Other answers assert unsupported specific policies or total mechanization; this is a best-explanation question, not a causal proof."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "351b47cbed82",
+        "prompt": "In the 1880s, a European state annexes an African territory, replaces local chiefs with European administrators, and restructures the economy around raw-material exports. Which form of imperial governance does this scenario best illustrate?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "351b47cbed82",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Replacing chiefs with metropolitan administrators explicitly distinguishes direct from indirect rule; the League did not exist in the 1880s."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "aa57311d81a2",
+        "prompt": "A European power justifies its colonial expansion by citing a duty to spread Christianity, introduce modern medicine, and build railroads in colonized regions. However, colonial revenues flow primarily to the metropole. Which interpretation best accounts for both elements of this situation?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "aa57311d81a2",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "The juxtaposed moral justification and metropolitan revenue supports legitimization of economic imperialism; the exclusive alternatives conflict with the facts."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "3c53573f6e77",
+        "prompt": "After independence in the early 1960s, a former African colony keeps its colonial-era borders, continues exporting a single cash crop to its former metropole, and adopts the colonial language officially. Which concept best describes this pattern of ongoing dependency?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "3c53573f6e77",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Formal independence combined with continuing economic dependency fits neocolonialism among these alternatives."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "music_theory_raw_goal",
+        "key": "34c2e5ceefa9",
+        "prompt": "A student is composing a piece that uses five flats in its key signature. The piece resolves to a Db major chord that sounds like the tonal center. What key is the piece most likely in?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "34c2e5ceefa9",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Five flats and a Db tonic identify Db major; Bb minor shares the signature but not the stated tonic."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "music_theory_raw_goal",
+        "key": "0a5799fb526b",
+        "prompt": "A vocalist sings from C4 up to Ab4. She counts the letter names C–D–E–F–G–A and identifies the interval as a major sixth. What correction should her teacher make?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "0a5799fb526b",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "C to Ab spans six letter names and eight semitones, a minor sixth. Enharmonic alternatives do not preserve the written interval spelling."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "music_theory_raw_goal",
+        "key": "37fd71b99ebb",
+        "prompt": "In the key of A major a songwriter writes the progression I–V–vi–IV. What is the correct sequence of chord qualities for these Roman numerals?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "37fd71b99ebb",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 1,
+          "reason": "Uppercase Roman numerals denote major triads and lowercase vi minor; the key adds no required reasoning."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "music_theory_raw_goal",
+        "key": "a807ab7cc380",
+        "prompt": "A composer writes a measure in 5/4 time containing a half note, a quarter note, and a dotted quarter note. What single note value completes the measure?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "a807ab7cc380",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Five quarter beats minus 2+1+1.5 leaves half a quarter beat, an eighth note."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "music_theory_raw_goal",
+        "key": "46725179a1aa",
+        "prompt": "A student analyzes a 32-bar jazz standard: bars 1–8 present a theme, bars 9–16 repeat it, bars 17–24 introduce a contrasting theme, and bars 25–32 return to the original theme. What form does this piece follow?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "46725179a1aa",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "The stated sections are original, repeat, contrast, original: AABA."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "sourdough_raw_goal",
+        "key": "8451eb89c0de",
+        "prompt": "You feed your sourdough starter with equal weights of flour and water every 24 hours. After a week it rises predictably, doubling in size within 4–6 hours of feeding, and has a pleasantly tangy aroma. However, one morning you notice it has a strong acetone-like smell and has collapsed well past its peak. What is the most likely cause?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "8451eb89c0de",
+          "choices": [],
+          "status": "underspecified",
+          "challenge": 2,
+          "reason": "An acetone smell and collapse support a hungry/overripe starter, but no observation establishes that ambient temperature increased. The best offered option adds that unstated cause."
+        },
+        "current_sanitizer_accepted": false,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "prompt_length": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "sourdough_raw_goal",
+        "key": "ace91ed0d04a",
+        "prompt": "You are developing a sourdough recipe and want an open, airy crumb. Your current formula uses 70% hydration (baker's percentages) with bread flour, but the crumb is consistently tight. Assuming your starter is active and your bulk fermentation time is adequate, which single adjustment is most likely to produce a more open crumb?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "ace91ed0d04a",
+          "choices": [],
+          "status": "wording_conflict",
+          "challenge": 3,
+          "reason": "Higher hydration plus adding stretch-and-fold is a plausible combined strategy, but it contains two changes despite the explicit single-adjustment requirement. This is an editorial defect rather than a demonstrated arithmetic error."
+        },
+        "current_sanitizer_accepted": false,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "prompt_length": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "sourdough_raw_goal",
+        "key": "33a1b6446200",
+        "prompt": "After shaping your sourdough loaf, you place it seam-side up in a banneton and refrigerate it overnight for a cold retard. The next morning the dough looks slightly puffed but still springs back slowly when poked. You preheat your Dutch oven to 245 °C (475 °F). What should you do next for the best oven spring?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "33a1b6446200",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Given the described proofing cues, score and bake from cold; deflation, omitting scoring, or an arbitrary two-hour proof are inferior offered actions. Proofing cues are approximate."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "sourdough_raw_goal",
+        "key": "7babfad74022",
+        "prompt": "You bake your sourdough loaf in a Dutch oven at 245 °C (475 °F) for 20 minutes with the lid on, then remove the lid and continue baking. After cooling, the crust is pale, soft, and chewy rather than deeply caramelized and crisp. Which factor most likely caused this outcome?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "7babfad74022",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Insufficient uncovered baking limits drying and browning, matching pale soft crust. The alternatives assert incorrect mechanisms."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "sourdough_raw_goal",
+        "key": "65a08c2c1fe6",
+        "prompt": "Your sourdough loaf has a dense, gummy layer just above the bottom crust even though the top crumb is well-aerated. The internal temperature reached 98 °C (208 °F) before you removed it from the oven. Which practice would most effectively prevent this problem in future bakes?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "65a08c2c1fe6",
+          "choices": [],
+          "status": "underspecified",
+          "challenge": 2,
+          "reason": "A gummy bottom can have several causes. The stem does not say it was sliced warm; adequate internal temperature does not establish cooling as the uniquely most effective prevention."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "photography_raw_goal",
+        "key": "ec2e5b4471fa",
+        "prompt": "A photographer shooting a soccer match at dusk sees motion blur in the players. Settings: f/5.6, 1/60s, ISO 200. The lens cannot open wider than f/5.6. Which single change freezes the action while maintaining correct exposure?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "ec2e5b4471fa",
+          "choices": [],
+          "status": "wording_conflict",
+          "challenge": 3,
+          "reason": "The intended first option approximately preserves exposure with a three-stop ISO increase and three-stop faster shutter, but that is two setting changes. It contradicts the explicit single-change requirement."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "photography_raw_goal",
+        "key": "cf4c7a85901a",
+        "prompt": "A landscape photo shows a lighthouse centered in the frame with the horizon bisecting the image exactly in half. The result looks static and flat. Which adjustment best adds depth and visual interest to the composition?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "cf4c7a85901a",
+          "choices": [],
+          "status": "subjective",
+          "challenge": 2,
+          "reason": "Rule-of-thirds placement is the intended convention, but the stated framing alone does not establish uniquely greater depth or visual interest. Ask about the compositional convention itself or supply a specific visual criterion."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "photography_raw_goal",
+        "key": "bc9e8d349ef2",
+        "prompt": "A photographer shoots portraits in a café lit by tungsten bulbs. With the camera set to Daylight white balance, every image has a strong orange color cast. Which white balance setting best neutralizes this cast?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "bc9e8d349ef2",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Tungsten white balance compensates the warm tungsten illumination; shade/cloudy settings compensate cooler light."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "photography_raw_goal",
+        "key": "16d787a53d80",
+        "prompt": "A wildlife photographer wants to capture a distant eagle on a branch while rendering the forest background as a smooth, blurred wash of color. Which lens and aperture combination best achieves both goals?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "16d787a53d80",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "The long lens frames the distant eagle and its wider offered aperture supports background blur; the other options sacrifice reach or aperture."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "photography_raw_goal",
+        "key": "21d3b37a4d88",
+        "prompt": "Using evaluative metering, a photographer captures a person standing before a bright window. The subject appears as a dark silhouette. Without adding flash, which single adjustment best corrects the subject's exposure?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "21d3b37a4d88",
+          "choices": [],
+          "status": "underspecified",
+          "challenge": 2,
+          "reason": "Metering the face guides correct exposure but changing metering mode alone does not change exposure in manual mode. The stem never establishes automatic exposure or adjustment to the new reading."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "b9f7427334f4",
+        "prompt": "You are at an airport and your friend says: \"Espero que tú _____ el pasaporte antes de llegar al aeropuerto.\" Which verb form correctly completes the sentence?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "b9f7427334f4",
+          "choices": [
+            1,
+            3
+          ],
+          "status": "ambiguous",
+          "challenge": 2,
+          "reason": "Traigas is the standard wish reading, but RAE permits future indicative with esperar in some confident-expectation readings. The stem gives no intended reading, and its airport/before-arrival timing is awkward. Treat as a language-review flag, not a clear numerical error."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "db656f7c7e8f",
+        "prompt": "A travel agent tells you about a hotel: \"No creo que el hotel _____ cerca de la estación de tren.\" Which form correctly fills the blank?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "db656f7c7e8f",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "The normal negative-belief construction selects subjunctive, and a hotel's location uses estar: este with the written accent."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "022c65fc26bb",
+        "prompt": "You lost your boarding pass. A fellow traveler found it and says: \"Encontré tu tarjeta de embarque. _____ doy ahora.\" Which object pronoun correctly completes the sentence?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "022c65fc26bb",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Te is the indirect recipient and la agrees with feminine tarjeta; the indirect pronoun precedes the direct pronoun."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "d98a66b37b75",
+        "prompt": "You want to buy souvenirs for your parents during a trip. You tell the shop clerk: \"Quiero comprar_____ unos recuerdos.\" Which object pronoun correctly completes the sentence?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "d98a66b37b75",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Parents are plural indirect recipients, so comprarles unos recuerdos uses les; recuerdos already supplies the direct object."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "f0a3602f4e2d",
+        "prompt": "At a train station, you ask for help: \"Es importante que nosotros _____ los boletos antes de que _____ el tren.\" Which pair of subjunctive forms correctly fills the blanks?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "f0a3602f4e2d",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Es importante que and prospective antes de que call for compremos and salga in the stated reading."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "bc5a180ab47a",
+        "prompt": "A European nation in the 1880s rapidly builds textile factories, experiences massive rural-to-urban migration, and sees child labor become widespread. A reform movement then emerges demanding government regulation of working conditions. Which earlier national experience most directly provided both the economic model and the cautionary lessons that informed these reformers?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "bc5a180ab47a",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Britain's earlier factory industrialization and labor reform experience match the scenario; the other historical cases concern different economic transformations."
+        },
+        "current_sanitizer_accepted": false,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "prompt_length": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "289b4bbb06e2",
+        "prompt": "In the 1890s, a European power occupies a region in Africa, builds railroads connecting interior mines to a coastal port, and mandates that local inhabitants pay taxes in European currency. Which outcome does this combination of policies most directly ensure for the colonizing power?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "289b4bbb06e2",
+          "choices": [],
+          "status": "overclaim",
+          "challenge": 3,
+          "reason": "Cash taxes and export railways pressure participation in colonial wage/extraction economies, but do not ensure a forced labor supply; selling crops or other exchange can also fund taxes. The intended mechanism needs qualified wording."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "d24e541821ca",
+        "prompt": "After World War II, an Asian colony's nationalist leaders argue that the war exposed the myth of European military invincibility—especially after the colony's European ruler was quickly defeated by Japan in 1942. Which country's independence movement best fits this specific scenario?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "d24e541821ca",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "The 1942 Japanese conquest of the Dutch East Indies and subsequent Dutch recognition of sovereignty in 1949 make Indonesia the best match among these choices."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "25a6d3d738d5",
+        "prompt": "During the late 19th century, two industrializing nations compete for global markets. Nation A focuses on heavy industry (steel, chemicals, electrical engineering) with close coordination between banks and large firms, while Nation B relies on smaller firms, free-trade policies, and an older textile-based industrial base. Nation A's GDP growth eventually surpasses Nation B's. This scenario best describes the rivalry between which two countries?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "25a6d3d738d5",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "German heavy/chemical/electrical industry and universal-bank ties contrasted with Britain's earlier textile industrialization and free-trade orientation."
+        },
+        "current_sanitizer_accepted": false,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "prompt_length": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "modern_world_history_source_reasoning",
+        "key": "38ef9211bf63",
+        "prompt": "In 1955, leaders from recently independent nations in Asia and Africa convene to promote solidarity, oppose colonialism, and assert a non-aligned position in the Cold War. A delegate argues that political independence is meaningless without economic independence, because former colonial powers still control commodity prices and trade networks. Which concept best captures the ongoing economic dynamic the delegate is criticizing?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "38ef9211bf63",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "The explicit contrast between formal sovereignty and continued economic dependency defines neocolonialism."
+        },
+        "current_sanitizer_accepted": false,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "prompt_length": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "photography_raw_goal",
+        "key": "5c28599bb4a8",
+        "prompt": "You are photographing a portrait outdoors on a sunny day and want the subject sharply focused while the background appears blurred. Which aperture setting is most appropriate to achieve this effect?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "5c28599bb4a8",
+          "choices": [
+            2
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "The widest offered aperture, f/2.8, gives the shallowest depth of field with other factors held constant, matching the portrait goal."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "photography_raw_goal",
+        "key": "e7684114a46c",
+        "prompt": "You are shooting a waterfall and want to capture the water with a smooth, silky motion-blur effect. Which shutter speed would best achieve this look?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "e7684114a46c",
+          "choices": [
+            3
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "The longest offered exposure, half a second, records substantially more water motion than the faster alternatives."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "photography_raw_goal",
+        "key": "1f08e037f3d4",
+        "prompt": "You are photographing indoors under tungsten (incandescent) lighting and your images appear overly warm with an orange color cast. Which white balance setting should you select to correct this?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "1f08e037f3d4",
+          "choices": [
+            2
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "The tungsten preset compensates the warm incandescent illumination."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "photography_raw_goal",
+        "key": "94a4c272b684",
+        "prompt": "While composing a landscape photograph, you position the horizon along the lower third of the frame and place a lone tree at the intersection of two dividing lines. Which compositional principle are you primarily applying?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "94a4c272b684",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 1,
+          "reason": "The placement directly describes the rule-of-thirds grid and intersections."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "photography_raw_goal",
+        "key": "ac135d62eadd",
+        "prompt": "You are photographing a dimly lit concert and have already set the widest aperture and the slowest handheld-safe shutter speed, yet your images are still too dark. Which adjustment should you make next to brighten the exposure?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "ac135d62eadd",
+          "choices": [
+            2
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "With aperture and shutter constraints already specified, higher ISO raises image brightness among the offered changes."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "c33eba4d22b9",
+        "prompt": "A traveler is unsure about the bus schedule. Choose the correct completion: \"Dudo que el autobús _____ a tiempo a la estación.\"",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "c33eba4d22b9",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Affirmative dudo que marks doubt and selects subjunctive llegue in this future-arrival context."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "098985cb5c5f",
+        "prompt": "A hotel guest calls reception: \"Quiero que alguien _____ las toallas de mi habitación.\" Which verb form correctly completes the sentence?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "098985cb5c5f",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Quiero que expresses a request or desire with a distinct subordinate subject, selecting cambie."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "be62f31fdbf7",
+        "prompt": "Your friend got a seat upgrade on the flight. You react: \"Me alegra que _____ un mejor asiento en el avión.\" Which form is correct?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "be62f31fdbf7",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "The stated emotional reaction me alegra que takes subjunctive tengas for the friend's current seat situation."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "d07e90c9aabd",
+        "prompt": "At an airport counter you ask for your boarding pass (la tarjeta de embarque). The agent replies: \"Sí, _____ imprimo en un momento.\" Which pronoun combination correctly replaces both objects?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "d07e90c9aabd",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "In the formal-address reading, indirect le becomes se before feminine direct-object la, referring to the boarding pass."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "spanish_subjunctive_easy_application",
+        "key": "933b76b7b349",
+        "prompt": "You just landed in Madrid and need to collect your checked suitcases. Which airport sign should you follow?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "933b76b7b349",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 1,
+          "reason": "Recogida de equipajes denotes baggage claim; the other signs refer to check-in, boarding, or passport control."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "sourdough_raw_goal",
+        "key": "6ff1d2e037d8",
+        "prompt": "A baker's starter doubles in 4 hours after a 1:1:1 feeding at 75°F. They must leave it unattended at room temperature for 3 days. Which single adjustment best keeps the starter viable until they return?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "6ff1d2e037d8",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "A larger feed relative to inoculum extends food availability compared with the other offered actions; warmer conditions accelerate activity, not slow it. This does not guarantee baking readiness after three days."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "sourdough_raw_goal",
+        "key": "69755f78c4d9",
+        "prompt": "After 90 minutes of bulk fermentation at 76°F, a 75%-hydration bread-flour sourdough shows a few surface bubbles but tears when gently stretched instead of forming a translucent windowpane. What does this evidence suggest?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "69755f78c4d9",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "Tearing rather than a windowpane indicates insufficient developed dough strength; early bubbles do not establish completed fermentation or an inactive starter."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "sourdough_raw_goal",
+        "key": "8c8c33d89d1a",
+        "prompt": "After a 12-hour cold retard at 38°F, a baker presses a floured finger gently into the shaped dough. The indent springs back slowly, leaving a shallow impression that does not fill in completely. What should the baker conclude?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "8c8c33d89d1a",
+          "choices": [],
+          "status": "underspecified",
+          "challenge": 2,
+          "reason": "Cold dough changes poke-test behavior. Twelve hours at 38F and a slow-return indentation alone do not establish that fermentation/proofing is complete; no pre-retard maturity or volume evidence is supplied."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "sourdough_raw_goal",
+        "key": "f8faecda352e",
+        "prompt": "A sourdough boule baked in a preheated 475°F Dutch oven shows explosive oven spring but a ragged, blown-out score instead of a clean ear. The crumb has a dense, gummy ring just beneath the top crust. What is the most likely cause?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "f8faecda352e",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "Explosive spring, tearing, and dense gummy crumb collectively favor underproofing over the other offered causes; a dull blade alone does not explain the crumb."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "current_author",
+        "case_id": "sourdough_raw_goal",
+        "key": "44f2115ddfe2",
+        "prompt": "A finished loaf is flat with a pale, thick crust and dense crumb. The starter was fed 24 hours before mixing at room temperature and had collapsed well past its peak. During shaping the dough felt very extensible but lacked elasticity. What is the most likely root cause?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "44f2115ddfe2",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "An overripe acidic starter and loss of dough elasticity together support acid-associated gluten weakening better than the other offered causes."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "music_theory_raw_goal",
+        "key": "86c6c4ca6d56",
+        "prompt": "A piece of music has three sharps in its key signature (F♯, C♯, G♯). However, the melody consistently gravitates toward the note A, and the final chord is an A minor triad. What key is this piece most likely in?",
+        "historical_unique_key_assessment": false,
+        "historical_assessment": {
+          "key": "86c6c4ca6d56",
+          "choices": [
+            0,
+            2
+          ],
+          "status": "ambiguous",
+          "challenge": 3,
+          "reason": "Three sharps fit A major, while the final Am chord suggests parallel-minor mixture or A minor with an unconventional signature. A tonic pitch and one final chord do not resolve the contradictory mode evidence."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "music_theory_raw_goal",
+        "key": "6f47d87f1a5d",
+        "prompt": "A guitarist wants to voice a Dm7 chord. Which set of pitch classes should the chord contain?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "6f47d87f1a5d",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "D minor seventh contains root D, minor third F, perfect fifth A, and minor seventh C."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "music_theory_raw_goal",
+        "key": "d3471449ce1d",
+        "prompt": "In the key of C major, a phrase ends with the chords G major moving to A minor (V → vi). A student recognizes that the expected resolution to C major was avoided. What type of cadence is this?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "d3471449ce1d",
+          "choices": [
+            3
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "The stated V-to-vi replacement of expected tonic resolution is a deceptive cadence."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "music_theory_raw_goal",
+        "key": "0af38aea5ada",
+        "prompt": "A composer writes a piece in a 6/8 time signature. Performers notice that the music feels like it has two main pulses per measure, each subdivided into three eighth notes. This best describes which meter classification?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "0af38aea5ada",
+          "choices": [
+            2
+          ],
+          "status": "valid",
+          "challenge": 1,
+          "reason": "Two beats means duple and three subdivisions per beat means compound; both defining properties are explicitly supplied."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "music_theory_raw_goal",
+        "key": "dad1baf29dda",
+        "prompt": "A songwriter writes a progression in C major: C – Am – F – G (I – vi – IV – V). She wants to transpose the entire progression up a whole step to D major. What will the new chord progression be?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "dad1baf29dda",
+          "choices": [
+            0
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "Transpose each root up two semitones while preserving quality: C Am F G becomes D Bm G A."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "fictional_game_source_goal",
+        "key": "97f7812fc399",
+        "prompt": "A player starts at space 0 with no tokens and takes these four turns in order: move forward 2, gather, move forward 2, exchange. What is the player's total score after these four turns?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "97f7812fc399",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "Move to 2 earns one blue, gather makes two, move to 4 earns none, and exchange yields one gold and zero blue: two points."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "fictional_game_source_goal",
+        "key": "0d613ac2e81f",
+        "prompt": "A player is at space 5 with 1 blue token and chooses to move forward 2 spaces. How many blue tokens does the player have after this action?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "0d613ac2e81f",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "Moving from 5 to 7 passes but does not land on beacon 6, so blue remains one."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "fictional_game_source_goal",
+        "key": "466bde685f25",
+        "prompt": "A player starts at space 0 with 0 blue and 0 gold tokens. What is the fewest number of turns needed to earn exactly one gold token?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "466bde685f25",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "At least two moves reach exchange space 4; only one beacon can be collected on that shortest route, so a gather and exchange are also required: four turns."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "fictional_game_source_goal",
+        "key": "407631b5cddb",
+        "prompt": "A player at space 1 has 3 blue tokens. They move forward 1 space, landing on the beacon at space 2. How many blue tokens do they have now?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "407631b5cddb",
+          "choices": [
+            1
+          ],
+          "status": "valid",
+          "challenge": 2,
+          "reason": "The beacon award cannot raise blue holdings above three."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      },
+      {
+        "arm": "simple",
+        "case_id": "fictional_game_source_goal",
+        "key": "096ae89ca553",
+        "prompt": "A player is at space 2 with 3 blue tokens and 1 gold token. They take these three actions in order: move forward 2, exchange, gather. What is the player's score after these actions?",
+        "historical_unique_key_assessment": true,
+        "historical_assessment": {
+          "key": "096ae89ca553",
+          "choices": [
+            2
+          ],
+          "status": "valid",
+          "challenge": 3,
+          "reason": "Move to 4 with three blue/one gold; exchange leaves one blue/two gold; gather leaves two blue/two gold, scoring six."
+        },
+        "current_sanitizer_accepted": true,
+        "current_sanitizer_metrics": {
+          "QuestionQuality": {
+            "sanitize": {
+              "accepted": 1
+            }
+          }
+        }
+      }
+    ]
+  },
+  "historical_pipeline": {
+    "provenance": [
+      {
+        "path": "docs/evidence/author-model-comparison-stem-assessment-a-20260908.json",
+        "sha256": "f8ff3e92b53ec8b1e54adeb4e6c34d2fa8fbe6945bb3705577e4a7eab0074e1e"
+      },
+      {
+        "path": "docs/evidence/author-model-comparison-mapping-20260908.json",
+        "sha256": "91cefb3ae237b0a80ca20316fc44d5b106b08dd87c360d105f22ccdbb8b7b5f9"
+      },
+      {
+        "path": "docs/evidence/author-model-comparison-capture-20260908.json",
+        "sha256": "485a90f097467b9fb6d20703829ef82204911b1abaa623fbeb8f26d0bfd94c38"
+      }
+    ],
+    "scope": "Join saved author/solver/teaching-auditor capture to its answer-hidden assessment. This trial used the authored_solution feedback contract, not a claim about current deployment or population accuracy.",
+    "counts": {
+      "raw_candidates": 12,
+      "historically_unique_keys": 7,
+      "returned": 6,
+      "returned_unique_keys": 4,
+      "returned_three_plausible_distinct_distractors": 0,
+      "returned_unsupported_keys": 2
+    },
+    "rows": [
+      {
+        "candidate_id": "q01",
+        "arm": "kimi",
+        "case_id": "topographic_contour_profiles",
+        "prompt": "A hiker compares two routes on a 40-foot contour interval map. Route A crosses 8 ordinary contour lines over 0.5 miles horizontal distance. Route B stays between the 800 ft and 840 ft index contours for 0.4 miles. Which statement correctly compares elevation change and steepness?",
+        "historical_returned": false,
+        "historical_unique_key_assessment": false,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "No fully warranted listed answer.",
+          "The 800/840 labels being called index contours would need its legend under conventional index spacing; this secondary concern is not needed for the failure."
+        ]
+      },
+      {
+        "candidate_id": "q02",
+        "arm": "kimi",
+        "case_id": "english_articles_in_context",
+        "prompt": "A travel blog reads: \"We arrived in Paris and checked into a hotel near the river. In the evening, the hotel offered a free walking tour.\" Why does the second sentence use \"the hotel\" rather than \"a hotel\"?",
+        "historical_returned": true,
+        "historical_unique_key_assessment": true,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "Third option is weak; low-depth item despite a complete unique answer."
+        ]
+      },
+      {
+        "candidate_id": "q03",
+        "arm": "kimi",
+        "case_id": "topographic_contour_profiles",
+        "prompt": "On a 20-meter contour interval map, two trails each run 2 km between points labeled 400 m and 500 m. Trail X crosses 5 ordinary contours; Trail Y crosses 5 ordinary contours plus 2 supplementary contours (dashed, typically at half the interval). Which trail has steeper terrain and why?",
+        "historical_returned": false,
+        "historical_unique_key_assessment": false,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "No fully warranted answer to unqualified terrain steepness.",
+          "Do not call five ordinary contours intrinsically impossible: counting the arrival contour can make that count coherent.",
+          "Both endpoints differ by100 m; this does not identify every slope or total ascent."
+        ]
+      },
+      {
+        "candidate_id": "q04",
+        "arm": "kimi",
+        "case_id": "houseplant_propagation_decisions",
+        "prompt": "A friend offers you a detached Monstera deliciosa leaf with petiole but no stem section, and a pothos stem cutting with two nodes. Based on propagation methods suited to each plant's structure, which statement accurately describes what you should expect?",
+        "historical_returned": true,
+        "historical_unique_key_assessment": true,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "Do not infer from no-new-plant evidence that every detached leaf is absolutely incapable of any transient root formation.",
+          "Three distractors are not strongly distinct."
+        ]
+      },
+      {
+        "candidate_id": "q05",
+        "arm": "kimi",
+        "case_id": "english_articles_in_context",
+        "prompt": "A recipe states: \"Start with butter. Melt the butter slowly, then add a pinch of salt.\" Why is the first \"butter\" articleless while the second takes \"the\"?",
+        "historical_returned": true,
+        "historical_unique_key_assessment": false,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "No fully precise warranted explanation among the choices; generic meaning is being conflated with an indefinite ingredient amount."
+        ]
+      },
+      {
+        "candidate_id": "q06",
+        "arm": "opus",
+        "case_id": "topographic_contour_profiles",
+        "prompt": "A hiker walks from Point A (elevation 400 m) to Point B (elevation 600 m), crossing 10 contour lines spaced 2 cm apart on the map. A second hiker walks from Point C (500 m) to Point D (700 m), crossing 10 contour lines spaced 5 cm apart. The contour interval is 20 m for both routes. Which comparison is correct?",
+        "historical_returned": false,
+        "historical_unique_key_assessment": true,
+        "historical_distractor_quality": true,
+        "material_concerns": [
+          "Assessment uses the ordinary shared-map reading of the map; two differently scaled maps would not justify the comparison.",
+          "The10-crossing wording does not supply the gain; explicit endpoints do. No claim of constant slope outside the stated spacing."
+        ]
+      },
+      {
+        "candidate_id": "q07",
+        "arm": "opus",
+        "case_id": "houseplant_propagation_decisions",
+        "prompt": "You have a Monstera deliciosa with a long vine and a detached African violet leaf with its petiole. A beginner asks which tissue from each plant is appropriate for propagation. Based on species and available tissue, what is the best guidance?",
+        "historical_returned": true,
+        "historical_unique_key_assessment": true,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "No root/growth-condition interpretation is required."
+        ]
+      },
+      {
+        "candidate_id": "q08",
+        "arm": "kimi",
+        "case_id": "houseplant_propagation_decisions",
+        "prompt": "A gardener has two Monstera deliciosa cuttings. Cutting A has firm, creamy-white roots and a new leaf unfurling. Cutting B has soft, brown roots and no visible new growth. Both are currently in water. Which propagation decision follows the guidance for this species?",
+        "historical_returned": true,
+        "historical_unique_key_assessment": false,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "Best-listed versus fully supported action must remain separate.",
+          "A root-disease diagnosis or exact cause cannot be guaranteed solely from appearance; root rot is a concern.",
+          "The packet guidance to return few/no roots to medium is not blanket advice to leave soft-brown-rooted material unchanged."
+        ]
+      },
+      {
+        "candidate_id": "q09",
+        "arm": "opus",
+        "case_id": "houseplant_propagation_decisions",
+        "prompt": "A friend shows you a Monstera deliciosa cutting rooting in water. It has several roots that are firm and creamy white, each about 3 inches long, and a new leaf is beginning to unfurl. She asks whether it's ready to move to a pot with soil. What should you advise?",
+        "historical_returned": true,
+        "historical_unique_key_assessment": true,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "Clear answer but unlikely to achieve the requested evidence-interpretation depth."
+        ]
+      },
+      {
+        "candidate_id": "q10",
+        "arm": "opus",
+        "case_id": "topographic_contour_profiles",
+        "prompt": "On a map with a 40 ft contour interval, a trail crosses 5 contour lines over 1 cm of map distance heading north, then crosses 5 more contour lines over 4 cm heading east. All contours show increasing elevation in both directions. Which statement best describes the terrain along this trail?",
+        "historical_returned": false,
+        "historical_unique_key_assessment": false,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "No fully warranted exact option because numeric key needs endpoint positions."
+        ]
+      },
+      {
+        "candidate_id": "q11",
+        "arm": "opus",
+        "case_id": "english_articles_in_context",
+        "prompt": "Consider: \"Dogs are wonderful companions.\" vs. \"The dogs next door bark all night.\" Which explanation best accounts for the article difference between these two sentences?",
+        "historical_returned": false,
+        "historical_unique_key_assessment": true,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "Good contrast but below the requested level3."
+        ]
+      },
+      {
+        "candidate_id": "q12",
+        "arm": "opus",
+        "case_id": "english_articles_in_context",
+        "prompt": "Read the passage: \"Maria bought a laptop last week. Yesterday she noticed the screen had a crack in it.\" Why does the writer use 'the screen' rather than 'a screen' in the second sentence?",
+        "historical_returned": false,
+        "historical_unique_key_assessment": true,
+        "historical_distractor_quality": false,
+        "material_concerns": [
+          "Several distractors are easy to discard without reasoning about the association."
+        ]
+      }
+    ]
+  },
+  "historical_solver": {
+    "provenance": {
+      "path": "docs/evidence/runtime-qualification-capture-20260908.json",
+      "sha256": "6b4e90c111164618d042fe7b920d15bf0bd878dbd4b1a397b8de694c95bb3c5d"
+    },
+    "scope": "One actual saved Sonnet solver call on five fixed simple controls, revalidated with today's exact complete-choice parser.",
+    "counts": {
+      "items": 5,
+      "correct_cardinality": 5
+    },
+    "rows": [
+      {
+        "index": 0,
+        "prompt": "Teams A, B, C and D completed 30 of 100, 21 of 60, 16 of 80 and 27 of 90 tasks respectively. Which team had the highest observed completion rate?",
+        "expected_supported_count": 1,
+        "declared_supported": [
+          "Team B"
+        ],
+        "cardinality_agrees": true
+      },
+      {
+        "index": 1,
+        "prompt": "In a fictional lab, every sample that turns green contains reagent R. Sample X contains R. Which conclusion must follow from these facts?",
+        "expected_supported_count": 0,
+        "declared_supported": [],
+        "cardinality_agrees": true
+      },
+      {
+        "index": 2,
+        "prompt": "A jar contains exactly 12 marbles. Every marble is exactly one of red or blue. Exactly 7 are red and exactly 8 are blue. What fraction of the jar's marbles are blue?",
+        "expected_supported_count": 0,
+        "declared_supported": [],
+        "cardinality_agrees": true
+      },
+      {
+        "index": 3,
+        "prompt": "Under a fictional archive's rules, every valid report includes both a date and a signature. Which property must a valid report have?",
+        "expected_supported_count": 2,
+        "declared_supported": [
+          "It includes a signature.",
+          "It includes a date."
+        ],
+        "cardinality_agrees": true
+      },
+      {
+        "index": 4,
+        "prompt": "A survey recorded 80 responses: 50 preferred design A and 30 preferred design B. Were all people eligible for this survey included among those 80 respondents?",
+        "expected_supported_count": 1,
+        "declared_supported": [
+          "The response counts do not establish whether everyone eligible responded."
+        ],
+        "cardinality_agrees": true
+      }
+    ]
+  }
+}

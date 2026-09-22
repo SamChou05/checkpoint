@@ -1,0 +1,313 @@
+{
+  "plan_sha256": "0ebe2da31efbec1689763ab53b2926f4ec007abb57218251e55bb8161e3a626a",
+  "status": "completed",
+  "calls": [
+    {
+      "iteration": 1,
+      "dispatch_attempted": true,
+      "response": {
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1943,
+          "outputTokens": 80,
+          "totalTokens": 2023,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        },
+        "content": [
+          {
+            "text": "{\"reviews\":[{\"index\":0,\"valid\":false},{\"index\":1,\"valid\":false},{\"index\":2,\"valid\":false},{\"index\":3,\"valid\":false},{\"index\":4,\"valid\":false},{\"index\":5,\"valid\":false},{\"index\":6,\"valid\":false},{\"index\":7,\"valid\":false}]}"
+          }
+        ]
+      },
+      "adapted": "{\"reviews\": [{\"index\": 0, \"valid\": false}, {\"index\": 1, \"valid\": false}, {\"index\": 2, \"valid\": false}, {\"index\": 3, \"valid\": false}, {\"index\": 4, \"valid\": false}, {\"index\": 5, \"valid\": false}, {\"index\": 6, \"valid\": false}, {\"index\": 7, \"valid\": false}]}",
+      "score": {
+        "cases": [
+          {
+            "id": "valid_arithmetic",
+            "expected_valid": true,
+            "declared_valid": false,
+            "verdict_matches": false,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "equivalent_numeric_wrong",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "equivalent_verbal_wrong",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "equivalent_correct",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "multiple_correct_properties",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "zero_correct",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "case_sensitive_valid",
+            "expected_valid": true,
+            "declared_valid": false,
+            "verdict_matches": false,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "operator_sensitive_valid",
+            "expected_valid": true,
+            "declared_valid": false,
+            "verdict_matches": false,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          }
+        ],
+        "admitted_case_ids": [],
+        "admission_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "rejected_by_model": 8
+            }
+          }
+        }
+      },
+      "outcome": "completed",
+      "elapsed_seconds": 5.33,
+      "metrics": {
+        "ProviderCalls": 1,
+        "BedrockInputTokens": 1943,
+        "BedrockOutputTokens": 80,
+        "ProviderObservations": [
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "8ddc958ed49e054b7df4d67ccbc5e1697d93e097d7492bbc8ef753ab3203e9aa",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "elapsedSeconds": 5.328,
+            "usage": {
+              "inputTokens": 1943,
+              "outputTokens": 80,
+              "totalTokens": 2023,
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0
+            },
+            "structuredOutput": {
+              "mode": "native",
+              "name": "default_reviewer_v2",
+              "version": "2",
+              "sha256": "9f1298dd793f50235dc7c2e35ab5debeb1896173b090a137e6da7cfea2aba09a"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "iteration": 2,
+      "dispatch_attempted": true,
+      "response": {
+        "stopReason": "end_turn",
+        "usage": {
+          "inputTokens": 1943,
+          "outputTokens": 80,
+          "totalTokens": 2023,
+          "cacheReadInputTokens": 0,
+          "cacheWriteInputTokens": 0
+        },
+        "content": [
+          {
+            "text": "{\"reviews\":[{\"index\":0,\"valid\":false},{\"index\":1,\"valid\":false},{\"index\":2,\"valid\":false},{\"index\":3,\"valid\":false},{\"index\":4,\"valid\":false},{\"index\":5,\"valid\":false},{\"index\":6,\"valid\":false},{\"index\":7,\"valid\":false}]}"
+          }
+        ]
+      },
+      "adapted": "{\"reviews\": [{\"index\": 0, \"valid\": false}, {\"index\": 1, \"valid\": false}, {\"index\": 2, \"valid\": false}, {\"index\": 3, \"valid\": false}, {\"index\": 4, \"valid\": false}, {\"index\": 5, \"valid\": false}, {\"index\": 6, \"valid\": false}, {\"index\": 7, \"valid\": false}]}",
+      "score": {
+        "cases": [
+          {
+            "id": "valid_arithmetic",
+            "expected_valid": true,
+            "declared_valid": false,
+            "verdict_matches": false,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "equivalent_numeric_wrong",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "equivalent_verbal_wrong",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "equivalent_correct",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "multiple_correct_properties",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "zero_correct",
+            "expected_valid": false,
+            "declared_valid": false,
+            "verdict_matches": true,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "case_sensitive_valid",
+            "expected_valid": true,
+            "declared_valid": false,
+            "verdict_matches": false,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          },
+          {
+            "id": "operator_sensitive_valid",
+            "expected_valid": true,
+            "declared_valid": false,
+            "verdict_matches": false,
+            "rejected_fields": [
+              "index",
+              "valid"
+            ]
+          }
+        ],
+        "admitted_case_ids": [],
+        "admission_metrics": {
+          "QuestionQuality": {
+            "review": {
+              "rejected_by_model": 8
+            }
+          }
+        }
+      },
+      "outcome": "completed",
+      "elapsed_seconds": 1.763,
+      "metrics": {
+        "ProviderCalls": 1,
+        "BedrockInputTokens": 1943,
+        "BedrockOutputTokens": 80,
+        "ProviderObservations": [
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "systemPromptSHA256": "8ddc958ed49e054b7df4d67ccbc5e1697d93e097d7492bbc8ef753ab3203e9aa",
+            "inferenceConfig": {
+              "maxTokens": 6000,
+              "temperature": 0.2
+            },
+            "reasoningConfig": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "reasoningContentBlockCount": 0,
+            "stopReason": "end_turn",
+            "elapsedSeconds": 1.761,
+            "usage": {
+              "inputTokens": 1943,
+              "outputTokens": 80,
+              "totalTokens": 2023,
+              "cacheReadInputTokens": 0,
+              "cacheWriteInputTokens": 0
+            },
+            "structuredOutput": {
+              "mode": "native",
+              "name": "default_reviewer_v2",
+              "version": "2",
+              "sha256": "9f1298dd793f50235dc7c2e35ab5debeb1896173b090a137e6da7cfea2aba09a"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "started_at": "2026-09-22T03:48:34.990665+00:00",
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.91",
+    "botocore": "1.43.91"
+  },
+  "finished_at": "2026-09-22T03:48:43.204797+00:00"
+}

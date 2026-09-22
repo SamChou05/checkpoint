@@ -1,0 +1,315 @@
+{
+  "scope": "Separate native reviewer-only fixed-controls trial. Source plan frozen before calls; original legacy results unchanged. No retries or further calls after native adapter failure. Valid JSON/schema is distinguished from cross-field stage validity, semantic judgments, and admitted items.",
+  "capture_sha256": "77ddb49865c278757dfa23e9a5b0b01bc1515d5daa7042038bc018e642dbdef9",
+  "plan_file_sha256": "10b9db5ae3e3270e3c2233b5eaa3a396cd0b1d64e7ef2196b611650541d4b1cc",
+  "status": "stopped_after_failure",
+  "denominators": {
+    "planned_calls": 4,
+    "attempted_calls": 3,
+    "schema_valid_responses": 3,
+    "native_stage_valid_responses": 2,
+    "cross_field_adapter_failures": 1,
+    "unattempted_calls": 1,
+    "distinct_controls": 8,
+    "attempted_item_observations": 24,
+    "admitted_item_observations": 8
+  },
+  "arms": {
+    "current_core": {
+      "attempted_calls": 1,
+      "native_stage_valid": 1,
+      "schema_valid_responses": 1
+    },
+    "explicit_diversity": {
+      "attempted_calls": 2,
+      "native_stage_valid": 1,
+      "schema_valid_responses": 2
+    }
+  },
+  "cross_field_violations": [
+    {
+      "call_index": 2,
+      "case_id": "equivalent_verbal_wrong",
+      "valid": false,
+      "answer": "Two",
+      "feedback_rows": 4,
+      "explanation_nonempty": true
+    }
+  ],
+  "rows": [
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "valid_arithmetic",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "declared_answer": "4",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": true
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "equivalent_numeric_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "equivalent_verbal_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": true,
+      "declared_answer": "Two",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": false,
+      "admitted": true
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "equivalent_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "multiple_correct_properties",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "zero_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "case_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "declared_answer": "True",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": true
+    },
+    {
+      "call_index": 0,
+      "arm": "current_core",
+      "case_id": "operator_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "declared_answer": "n + 1",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "valid_arithmetic",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "declared_answer": "4",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_numeric_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_verbal_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": true,
+      "declared_answer": "Two",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": false,
+      "admitted": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "multiple_correct_properties",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "zero_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "case_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "declared_answer": "True",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": true
+    },
+    {
+      "call_index": 1,
+      "arm": "explicit_diversity",
+      "case_id": "operator_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "declared_answer": "n + 1",
+      "native_stage_valid": true,
+      "raw_declaration_agrees": true,
+      "admitted": true
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "valid_arithmetic",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "declared_answer": "4",
+      "native_stage_valid": false,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_numeric_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": false,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_verbal_wrong",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "Two",
+      "native_stage_valid": false,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "equivalent_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": false,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "multiple_correct_properties",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": false,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "zero_correct",
+      "expected_valid": false,
+      "raw_declared_valid": false,
+      "declared_answer": "",
+      "native_stage_valid": false,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "case_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "declared_answer": "True",
+      "native_stage_valid": false,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    },
+    {
+      "call_index": 2,
+      "arm": "explicit_diversity",
+      "case_id": "operator_sensitive_valid",
+      "expected_valid": true,
+      "raw_declared_valid": true,
+      "declared_answer": "n + 1",
+      "native_stage_valid": false,
+      "raw_declaration_agrees": true,
+      "admitted": false
+    }
+  ],
+  "tokens": {
+    "input": 5326,
+    "output": 2118
+  },
+  "latency_seconds": [
+    7.864,
+    8.075,
+    9.102
+  ],
+  "decision": "Do not promote explicit-diversity wording based on this trial: no clean advantage under the actual native contract; both first calls admitted the equivalent verbal distractors, and the second treatment failed the native cross-field contract. Further stages are not justified by these data."
+}

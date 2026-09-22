@@ -19,6 +19,7 @@ Contract = Literal[
     "skill_map_evolution_v1",
     "complete_choice_solver_v1",
     "default_reviewer_v1",
+    "default_reviewer_v2",
     "authored_solution_reviewer_v1",
 ]
 
@@ -83,6 +84,23 @@ _SCHEMAS: dict[Contract, dict[str, Any]] = {
             })},
         })}
     }),
+    # Experimental only: production continues to select v1. Closed branches
+    # exclude learner feedback on rejections, but live qualification rejected
+    # valid controls too. Do not promote schema validity as useful-output proof.
+    "default_reviewer_v2": _object({
+        "reviews": {"type": "array", "items": {"anyOf": [
+            _object({
+                "index": _INTEGER, "valid": {"type": "boolean", "enum": [True]},
+                "answer": _STRING, "difficulty": _INTEGER, "explanation": _STRING,
+                "choiceFeedback": {"type": "array", "items": _object({
+                    "choice": _STRING, "explanation": _STRING,
+                })},
+            }),
+            _object({
+                "index": _INTEGER, "valid": {"type": "boolean", "enum": [False]},
+            }),
+        ]}}
+    }),
     "authored_solution_reviewer_v1": _object({
         "reviews": {"type": "array", "items": _object({
             "index": _INTEGER, "valid": _BOOLEAN, "answer": _STRING,
@@ -114,7 +132,8 @@ def native_output_config(contract: Contract) -> dict[str, Any]:
 def contract_metadata(contract: Contract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
-    return {"name": contract, "version": "1", "sha256": hashlib.sha256(schema.encode()).hexdigest()}
+    return {"name": contract, "version": contract.rsplit("_v", 1)[1],
+            "sha256": hashlib.sha256(schema.encode()).hexdigest()}
 
 
 def ensure_supported_model(model_id: str) -> None:
@@ -126,6 +145,17 @@ def ensure_supported_model(model_id: str) -> None:
 
 
 def native_prompt(system_prompt: str, contract: Contract) -> str:
+    if contract == "default_reviewer_v2":
+        return system_prompt + """
+
+NATIVE TRANSPORT OVERRIDE: For an accepted review return index, valid:true,
+answer, difficulty, explanation, and the schema's choiceFeedback array instead
+of choiceExplanations. Include exactly one feedback row for every offered
+choice, preserving exact choice bytes. For a rejected review return only
+index and valid:false. Do not include answer, difficulty, explanation, or
+choiceFeedback on a rejection. This replaces the earlier output example and
+minimal negative response shape. Do not add fields.
+"""
     if contract == "default_reviewer_v1":
         return system_prompt + """
 
@@ -151,12 +181,16 @@ def adapt_native_response(raw: str, contract: Contract) -> str:
         _validate_schema_value(payload, _SCHEMAS[contract])
     except ValueError as error:
         raise ProviderError("Native stage response violates its contract.") from error
-    if contract != "default_reviewer_v1":
+    if contract not in {"default_reviewer_v1", "default_reviewer_v2"}:
         return raw
     if type(payload) is not dict or set(payload) != {"reviews"} or type(payload["reviews"]) is not list:
         raise ProviderError("Native reviewer returned an invalid envelope.")
     adapted = copy.deepcopy(payload)
     for review in adapted["reviews"]:
+        if contract == "default_reviewer_v2" and review["valid"] is False:
+            # The closed rejection branch has already rejected any answer or
+            # feedback. Preserve only its index and false verdict for admission.
+            continue
         expected = {"index", "valid", "answer", "difficulty", "explanation", "choiceFeedback"}
         if type(review) is not dict or set(review) != expected or type(review["valid"]) is not bool:
             raise ProviderError("Native reviewer returned unknown or missing fields.")
@@ -191,6 +225,20 @@ def _reject_constant(value: str) -> None:
 
 
 def _validate_schema_value(value: Any, schema: dict[str, Any]) -> None:
+    if "anyOf" in schema:
+        branches = schema["anyOf"]
+        # Support only standalone unions used by these owned contracts. Never
+        # silently ignore sibling constraints or accept an invalid union shape.
+        if (set(schema) != {"anyOf"} or type(branches) is not list or not branches
+                or any(type(branch) is not dict for branch in branches)):
+            raise ValueError("Unsupported native union schema.")
+        for branch in branches:
+            try:
+                _validate_schema_value(value, branch)
+            except ValueError:
+                continue
+            return
+        raise ValueError("No native union branch matched.")
     expected = schema.get("type")
     matches = {
         "object": type(value) is dict,

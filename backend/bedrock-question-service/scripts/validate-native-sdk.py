@@ -56,8 +56,8 @@ def main() -> None:
         "Converse"
     ).input_shape
     contracts = get_args(native_output_contracts.Contract)
-    if len(contracts) != 6:
-        raise RuntimeError("Expected the six versioned native stage contracts.")
+    if len(contracts) != 7:
+        raise RuntimeError("Expected six active native stage contracts plus the experimental reviewer schema.")
     for contract in contracts:
         request = {
             "modelId": "us.anthropic.claude-sonnet-4-6",
