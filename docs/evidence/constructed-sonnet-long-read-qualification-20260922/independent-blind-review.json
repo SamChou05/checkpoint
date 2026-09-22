@@ -1,0 +1,1351 @@
+{
+  "review_mode": "independent_blind_lock_before_capture_keys_teaching_or_model_judgments",
+  "worksheet_path": "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/constructed-sonnet-long-read-qualification-20260922/blind-items.json",
+  "worksheet_sha256": "c45a3708c80ed7f482a99fdff63fe559e9e4d4efca572b7db635a7374274cc4f",
+  "capture_sha256_from_worksheet_only": "c68f424b5a71d981083283e3b5d1ef667aa61ad6ebfb6ba8d08996e2ef9acfcb",
+  "prior_visibility": "Only this worksheet plus parent-provided13/15 count and source77 identity. Earlier trial reviews and construction work are known; this is answer/teaching-blind for the new returned items, not domain-naive. No current capture, root solution lock, model keys, explanations, provenance or judgments were opened.",
+  "denominators": {
+    "planned": 15,
+    "returned": 13,
+    "missing": 2,
+    "returned_by_job": {
+      "quantitative": 4,
+      "python": 5,
+      "mixed": 4
+    },
+    "blind_literal_pass": 12,
+    "uncertain": 1,
+    "definite_failure": 0,
+    "choice_judgments": 52,
+    "supported_choice_labels": 13,
+    "refuted_choice_labels": 38,
+    "uncertain_choice_labels": 1,
+    "pair_judgments": 78,
+    "distinct_pairs": 78
+  },
+  "independent_checks": "Fixed local Fraction arithmetic, exhaustive integer domains, and literal list/Boolean/conditional expressions were checked with assertions. No captured/model-supplied code was executed. Grammar was checked independently against primary educational/style sources before key unblinding.",
+  "items": [
+    {
+      "id": "quantitative:0",
+      "worksheet_item_sha256": "bc289015359f81e12e9dcd49f982d7773e0d748561908b02b15ca5efe1e9b017",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "D"
+      ],
+      "certain_supported_choice_texts": [
+        "19/12"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "The exact sum is9/12+10/12=19/12.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "9/10",
+          "judgment": "refuted",
+          "proof": "9/10 is the quotient of the supplied operands, not their sum."
+        },
+        {
+          "label": "B",
+          "text": "5/8",
+          "judgment": "refuted",
+          "proof": "5/8 is their product, not their sum."
+        },
+        {
+          "label": "C",
+          "text": "-1/12",
+          "judgment": "refuted",
+          "proof": "-1/12 is their difference, not their sum."
+        },
+        {
+          "label": "D",
+          "text": "19/12",
+          "judgment": "supported",
+          "proof": "3/4+5/6=19/12."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "9/10",
+          "right_choice": "5/8",
+          "relation": "distinct",
+          "proof": "The exact rational values 9/10 and 5/8 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "9/10",
+          "right_choice": "-1/12",
+          "relation": "distinct",
+          "proof": "The exact rational values 9/10 and -1/12 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "9/10",
+          "right_choice": "19/12",
+          "relation": "distinct",
+          "proof": "The exact rational values 9/10 and 19/12 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "5/8",
+          "right_choice": "-1/12",
+          "relation": "distinct",
+          "proof": "The exact rational values 5/8 and -1/12 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "5/8",
+          "right_choice": "19/12",
+          "relation": "distinct",
+          "proof": "The exact rational values 5/8 and 19/12 differ."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "-1/12",
+          "right_choice": "19/12",
+          "relation": "distinct",
+          "proof": "The exact rational values -1/12 and 19/12 differ."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "quantitative:1",
+      "worksheet_item_sha256": "6aabb8e05eabdce7a1f2e75f97237f67786e93dad075a6b62cff0dedc78c0ae9",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "D"
+      ],
+      "certain_supported_choice_texts": [
+        "14/25"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "Multiplication gives28/50=14/25.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "7/8",
+          "judgment": "refuted",
+          "proof": "7/8 is the quotient, not the product."
+        },
+        {
+          "label": "B",
+          "text": "3/2",
+          "judgment": "refuted",
+          "proof": "3/2 is the sum, not the product."
+        },
+        {
+          "label": "C",
+          "text": "-1/10",
+          "judgment": "refuted",
+          "proof": "-1/10 is the difference, not the product."
+        },
+        {
+          "label": "D",
+          "text": "14/25",
+          "judgment": "supported",
+          "proof": "(7/10)*(4/5)=14/25."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "7/8",
+          "right_choice": "3/2",
+          "relation": "distinct",
+          "proof": "The exact rational values 7/8 and 3/2 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "7/8",
+          "right_choice": "-1/10",
+          "relation": "distinct",
+          "proof": "The exact rational values 7/8 and -1/10 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "7/8",
+          "right_choice": "14/25",
+          "relation": "distinct",
+          "proof": "The exact rational values 7/8 and 14/25 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "3/2",
+          "right_choice": "-1/10",
+          "relation": "distinct",
+          "proof": "The exact rational values 3/2 and -1/10 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "3/2",
+          "right_choice": "14/25",
+          "relation": "distinct",
+          "proof": "The exact rational values 3/2 and 14/25 differ."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "-1/10",
+          "right_choice": "14/25",
+          "relation": "distinct",
+          "proof": "The exact rational values -1/10 and 14/25 differ."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "quantitative:2",
+      "worksheet_item_sha256": "b1110f89b9dc7e165da19ebc42424ec82e8dc36acb4fdb78941374d56833ddad",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "C"
+      ],
+      "certain_supported_choice_texts": [
+        "8"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "The inequality gives x>=22/3. Among the explicit integers1 through20, the minimum is8.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "6",
+          "judgment": "refuted",
+          "proof": "3*6=18 is below22."
+        },
+        {
+          "label": "B",
+          "text": "9",
+          "judgment": "refuted",
+          "proof": "9 satisfies the condition but is not the minimum because8 also satisfies it."
+        },
+        {
+          "label": "C",
+          "text": "8",
+          "judgment": "supported",
+          "proof": "3*8=24 satisfies; every smaller allowed integer is at most7 and gives at most21."
+        },
+        {
+          "label": "D",
+          "text": "7",
+          "judgment": "refuted",
+          "proof": "3*7=21 is below22."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "6",
+          "right_choice": "9",
+          "relation": "distinct",
+          "proof": "The exact values 6 and 9 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "6",
+          "right_choice": "8",
+          "relation": "distinct",
+          "proof": "The exact values 6 and 8 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "6",
+          "right_choice": "7",
+          "relation": "distinct",
+          "proof": "The exact values 6 and 7 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "9",
+          "right_choice": "8",
+          "relation": "distinct",
+          "proof": "The exact values 9 and 8 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "9",
+          "right_choice": "7",
+          "relation": "distinct",
+          "proof": "The exact values 9 and 7 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "8",
+          "right_choice": "7",
+          "relation": "distinct",
+          "proof": "The exact values 8 and 7 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "quantitative:3",
+      "worksheet_item_sha256": "412e479fd6ec3d20f90c67be90e310ed454350754274ae35d58a41c1146b0d78",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "A"
+      ],
+      "certain_supported_choice_texts": [
+        "11"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "2n+3<=25 gives n<=11;11 belongs to the stated integer domain and is its largest satisfying value.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "11",
+          "judgment": "supported",
+          "proof": "2*11+3=25 satisfies; every larger integer gives more than25."
+        },
+        {
+          "label": "B",
+          "text": "10",
+          "judgment": "refuted",
+          "proof": "10 satisfies but is not largest."
+        },
+        {
+          "label": "C",
+          "text": "12",
+          "judgment": "refuted",
+          "proof": "2*12+3=27 violates the bound."
+        },
+        {
+          "label": "D",
+          "text": "5",
+          "judgment": "refuted",
+          "proof": "5 is the domain minimum, not the largest satisfying integer."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "11",
+          "right_choice": "10",
+          "relation": "distinct",
+          "proof": "The exact values 11 and 10 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "11",
+          "right_choice": "12",
+          "relation": "distinct",
+          "proof": "The exact values 11 and 12 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "11",
+          "right_choice": "5",
+          "relation": "distinct",
+          "proof": "The exact values 11 and 5 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "10",
+          "right_choice": "12",
+          "relation": "distinct",
+          "proof": "The exact values 10 and 12 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "10",
+          "right_choice": "5",
+          "relation": "distinct",
+          "proof": "The exact values 10 and 5 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "12",
+          "right_choice": "5",
+          "relation": "distinct",
+          "proof": "The exact values 12 and 5 differ. Requested extrema also distinguish satisfying nonextreme candidates from the stated optimum."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "python:0",
+      "worksheet_item_sha256": "b67bd58bf5d729cd99099382de7efd74a79b8a8426557afe7f705d7c1baea6fa",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "B"
+      ],
+      "certain_supported_choice_texts": [
+        "40"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "The preceding assignment supplies the list; index-2 selects its second-to-last entry40.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "20",
+          "judgment": "refuted",
+          "proof": "20 is index1 or-4, not-2."
+        },
+        {
+          "label": "B",
+          "text": "40",
+          "judgment": "supported",
+          "proof": "40 is index3 or-2."
+        },
+        {
+          "label": "C",
+          "text": "50",
+          "judgment": "refuted",
+          "proof": "50 is index4 or-1."
+        },
+        {
+          "label": "D",
+          "text": "30",
+          "judgment": "refuted",
+          "proof": "30 is index2 or-3."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "20",
+          "right_choice": "40",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "20",
+          "right_choice": "50",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "20",
+          "right_choice": "30",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "40",
+          "right_choice": "50",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "40",
+          "right_choice": "30",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "50",
+          "right_choice": "30",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "python:1",
+      "worksheet_item_sha256": "63ce5669483ad5fa5b4170bcfba1fad43e72e238e55e8c340df55a0cd5032691",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "B"
+      ],
+      "certain_supported_choice_texts": [
+        "\"hello\""
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "0 is falsey; the next operand is the truthy string hello, so the last operand99 is not evaluated and the string is returned.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "99",
+          "judgment": "refuted",
+          "proof": "99 would require continuing after the already truthy string."
+        },
+        {
+          "label": "B",
+          "text": "\"hello\"",
+          "judgment": "supported",
+          "proof": "The exact returned object value is the string hello."
+        },
+        {
+          "label": "C",
+          "text": "True",
+          "judgment": "refuted",
+          "proof": "or returns the selected operand rather than coercing this string to True."
+        },
+        {
+          "label": "D",
+          "text": "0",
+          "judgment": "refuted",
+          "proof": "The falsey first operand does not stop this or chain."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "99",
+          "right_choice": "\"hello\"",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "99",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "99",
+          "right_choice": "0",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "\"hello\"",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "\"hello\"",
+          "right_choice": "0",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "True",
+          "right_choice": "0",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "python:2",
+      "worksheet_item_sha256": "c3514d3367b1111d6b38d3d9d1d64da5a353e9c9749615c55a5b658d4da0c713",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "B"
+      ],
+      "certain_supported_choice_texts": [
+        "\"big\""
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "The explicitly assigned15 is greater than10, so label receives the string big.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "15",
+          "judgment": "refuted",
+          "proof": "15 is the value of x, not the selected string assigned to label."
+        },
+        {
+          "label": "B",
+          "text": "\"big\"",
+          "judgment": "supported",
+          "proof": "The true branch assigns big."
+        },
+        {
+          "label": "C",
+          "text": "\"small\"",
+          "judgment": "refuted",
+          "proof": "The false branch is not selected."
+        },
+        {
+          "label": "D",
+          "text": "True",
+          "judgment": "refuted",
+          "proof": "True is the condition value, not the selected result."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "15",
+          "right_choice": "\"big\"",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "15",
+          "right_choice": "\"small\"",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "15",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "\"big\"",
+          "right_choice": "\"small\"",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "\"big\"",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "\"small\"",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The alternatives denote different literal values or types in the supplied Python expression; they are not equivalent outcomes of this task."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "python:3",
+      "worksheet_item_sha256": "295c710199c235030889d4be92dab3f26e426da44e9322f634917e245fb28d65",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "A"
+      ],
+      "certain_supported_choice_texts": [
+        "[\"c\", \"d\"]"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "The preceding assignment supplies the list. Slice2:4 includes indexes2 and3, giving c and d.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "[\"c\", \"d\"]",
+          "judgment": "supported",
+          "proof": "Exactly the requested half-open slice."
+        },
+        {
+          "label": "B",
+          "text": "[\"b\", \"c\", \"d\"]",
+          "judgment": "refuted",
+          "proof": "Incorrectly includes index1."
+        },
+        {
+          "label": "C",
+          "text": "[\"c\", \"d\", \"e\"]",
+          "judgment": "refuted",
+          "proof": "Incorrectly includes stop index4."
+        },
+        {
+          "label": "D",
+          "text": "[\"b\", \"c\"]",
+          "judgment": "refuted",
+          "proof": "Uses start1/stop3 instead of start2/stop4."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "[\"c\", \"d\"]",
+          "right_choice": "[\"b\", \"c\", \"d\"]",
+          "relation": "distinct",
+          "proof": "The literal lists differ in length or at an indexed element; the same list value is not repeated."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "[\"c\", \"d\"]",
+          "right_choice": "[\"c\", \"d\", \"e\"]",
+          "relation": "distinct",
+          "proof": "The literal lists differ in length or at an indexed element; the same list value is not repeated."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "[\"c\", \"d\"]",
+          "right_choice": "[\"b\", \"c\"]",
+          "relation": "distinct",
+          "proof": "The literal lists differ in length or at an indexed element; the same list value is not repeated."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "[\"b\", \"c\", \"d\"]",
+          "right_choice": "[\"c\", \"d\", \"e\"]",
+          "relation": "distinct",
+          "proof": "The literal lists differ in length or at an indexed element; the same list value is not repeated."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "[\"b\", \"c\", \"d\"]",
+          "right_choice": "[\"b\", \"c\"]",
+          "relation": "distinct",
+          "proof": "The literal lists differ in length or at an indexed element; the same list value is not repeated."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "[\"c\", \"d\", \"e\"]",
+          "right_choice": "[\"b\", \"c\"]",
+          "relation": "distinct",
+          "proof": "The literal lists differ in length or at an indexed element; the same list value is not repeated."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "python:4",
+      "worksheet_item_sha256": "0a009380b4b77b0e469df3e5be6afb5459ec181fa515e3edd1271f6354b71c18",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "A"
+      ],
+      "certain_supported_choice_texts": [
+        "[]"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "The empty list is falsey, so and returns that left operand without evaluating1/0.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "[]",
+          "judgment": "supported",
+          "proof": "The falsey empty list itself is returned."
+        },
+        {
+          "label": "B",
+          "text": "False",
+          "judgment": "refuted",
+          "proof": "The result is not coerced to the Boolean False."
+        },
+        {
+          "label": "C",
+          "text": "0",
+          "judgment": "refuted",
+          "proof": "The result is not coerced to integer0."
+        },
+        {
+          "label": "D",
+          "text": "A ZeroDivisionError is raised",
+          "judgment": "refuted",
+          "proof": "The division expression is skipped, so no ZeroDivisionError is raised."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "[]",
+          "right_choice": "False",
+          "relation": "distinct",
+          "proof": "These are distinct exact Python outcomes: an empty list, Boolean False, integer0, or a raised exception. Shared falseyness does not make them the same returned typed value."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "[]",
+          "right_choice": "0",
+          "relation": "distinct",
+          "proof": "These are distinct exact Python outcomes: an empty list, Boolean False, integer0, or a raised exception. Shared falseyness does not make them the same returned typed value."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "[]",
+          "right_choice": "A ZeroDivisionError is raised",
+          "relation": "distinct",
+          "proof": "These are distinct exact Python outcomes: an empty list, Boolean False, integer0, or a raised exception. Shared falseyness does not make them the same returned typed value."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "False",
+          "right_choice": "0",
+          "relation": "distinct",
+          "proof": "These are distinct exact Python outcomes: an empty list, Boolean False, integer0, or a raised exception. Shared falseyness does not make them the same returned typed value."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "False",
+          "right_choice": "A ZeroDivisionError is raised",
+          "relation": "distinct",
+          "proof": "These are distinct exact Python outcomes: an empty list, Boolean False, integer0, or a raised exception. Shared falseyness does not make them the same returned typed value."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "0",
+          "right_choice": "A ZeroDivisionError is raised",
+          "relation": "distinct",
+          "proof": "These are distinct exact Python outcomes: an empty list, Boolean False, integer0, or a raised exception. Shared falseyness does not make them the same returned typed value."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "mixed:0",
+      "worksheet_item_sha256": "e37a9f3161456b7be0ab452a079949043844a987fb849062b15fc0bcc61bc60c",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "A"
+      ],
+      "certain_supported_choice_texts": [
+        "20"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "36/4=9;9*3=27;27-7=20.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "20",
+          "judgment": "supported",
+          "proof": "The exact value is20."
+        },
+        {
+          "label": "B",
+          "text": "27/7",
+          "judgment": "refuted",
+          "proof": "27/7 replaces the final subtraction with division."
+        },
+        {
+          "label": "C",
+          "text": "34",
+          "judgment": "refuted",
+          "proof": "34 replaces the final subtraction with addition."
+        },
+        {
+          "label": "D",
+          "text": "189",
+          "judgment": "refuted",
+          "proof": "189 replaces the final subtraction with multiplication."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "20",
+          "right_choice": "27/7",
+          "relation": "distinct",
+          "proof": "The exact rational values 20 and 27/7 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "20",
+          "right_choice": "34",
+          "relation": "distinct",
+          "proof": "The exact rational values 20 and 34 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "20",
+          "right_choice": "189",
+          "relation": "distinct",
+          "proof": "The exact rational values 20 and 189 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "27/7",
+          "right_choice": "34",
+          "relation": "distinct",
+          "proof": "The exact rational values 27/7 and 34 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "27/7",
+          "right_choice": "189",
+          "relation": "distinct",
+          "proof": "The exact rational values 27/7 and 189 differ."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "34",
+          "right_choice": "189",
+          "relation": "distinct",
+          "proof": "The exact rational values 34 and 189 differ."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 3,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "mixed:1",
+      "worksheet_item_sha256": "940f393b5345c8bf4f8d794dcc1f76d22e9873fac93012dca0f63064db971a4f",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "D"
+      ],
+      "certain_supported_choice_texts": [
+        "10"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "5+3=8;8*4=32;32/2=16;16-6=10.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "8/3",
+          "judgment": "refuted",
+          "proof": "8/3 is16/6, replacing the final subtraction with division."
+        },
+        {
+          "label": "B",
+          "text": "22",
+          "judgment": "refuted",
+          "proof": "22 is16+6, replacing the final subtraction with addition."
+        },
+        {
+          "label": "C",
+          "text": "96",
+          "judgment": "refuted",
+          "proof": "96 is16*6, replacing the final subtraction with multiplication."
+        },
+        {
+          "label": "D",
+          "text": "10",
+          "judgment": "supported",
+          "proof": "The exact value is10."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "8/3",
+          "right_choice": "22",
+          "relation": "distinct",
+          "proof": "The exact rational values 8/3 and 22 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "8/3",
+          "right_choice": "96",
+          "relation": "distinct",
+          "proof": "The exact rational values 8/3 and 96 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "8/3",
+          "right_choice": "10",
+          "relation": "distinct",
+          "proof": "The exact rational values 8/3 and 10 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "22",
+          "right_choice": "96",
+          "relation": "distinct",
+          "proof": "The exact rational values 22 and 96 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "22",
+          "right_choice": "10",
+          "relation": "distinct",
+          "proof": "The exact rational values 22 and 10 differ."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "96",
+          "right_choice": "10",
+          "relation": "distinct",
+          "proof": "The exact rational values 96 and 10 differ."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 3,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "mixed:2",
+      "worksheet_item_sha256": "c8e975b769f41bb07a91c0b1df4bbb1de4a9b9778d8b60eac2d3d3c99aac1859",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "C"
+      ],
+      "certain_supported_choice_texts": [
+        "22"
+      ],
+      "unique_offered_answer_status": "pass",
+      "solution_proof": "7*4=28 and18/3=6;28-6=22.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "14/3",
+          "judgment": "refuted",
+          "proof": "14/3 is28/6, replacing the final subtraction with division."
+        },
+        {
+          "label": "B",
+          "text": "168",
+          "judgment": "refuted",
+          "proof": "168 is28*6, replacing the final subtraction with multiplication."
+        },
+        {
+          "label": "C",
+          "text": "22",
+          "judgment": "supported",
+          "proof": "The exact value is22."
+        },
+        {
+          "label": "D",
+          "text": "34",
+          "judgment": "refuted",
+          "proof": "34 is28+6, replacing the final subtraction with addition."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "14/3",
+          "right_choice": "168",
+          "relation": "distinct",
+          "proof": "The exact rational values 14/3 and 168 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "14/3",
+          "right_choice": "22",
+          "relation": "distinct",
+          "proof": "The exact rational values 14/3 and 22 differ."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "14/3",
+          "right_choice": "34",
+          "relation": "distinct",
+          "proof": "The exact rational values 14/3 and 34 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "168",
+          "right_choice": "22",
+          "relation": "distinct",
+          "proof": "The exact rational values 168 and 22 differ."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "168",
+          "right_choice": "34",
+          "relation": "distinct",
+          "proof": "The exact rational values 168 and 34 differ."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "22",
+          "right_choice": "34",
+          "relation": "distinct",
+          "proof": "The exact rational values 22 and 34 differ."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 3,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [],
+      "primary_literal_status": "pass",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    },
+    {
+      "id": "mixed:3",
+      "worksheet_item_sha256": "2aaedc0c837ad6cbbd3335261033e94be3f94835069c850ca06c5e4fb9513e28",
+      "literal_task_explicit": true,
+      "premises_sufficient_for_certain_answer": true,
+      "certain_supported_choice_labels": [
+        "D"
+      ],
+      "certain_supported_choice_texts": [
+        "Each of the volunteers receives a name badge at the door."
+      ],
+      "unique_offered_answer_status": "uncertain",
+      "solution_proof": "Each is singular and licenses receives. B mismatches nearer plural players; C mismatches singular box. A has a collective-noun notional-agreement sensitivity.",
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "The committee have decided to postpone the annual meeting.",
+          "judgment": "uncertain",
+          "proof": "The usual American unit reading of committee favors has decided. Chicago also recognizes plural collective agreement when members are treated as individuals; this stem names no particular style rule or unit interpretation. I retain uncertainty about rejecting A categorically rather than declare it definitely grammatical or ungrammatical."
+        },
+        {
+          "label": "B",
+          "text": "Neither the coach nor the players was ready for the match.",
+          "judgment": "refuted",
+          "proof": "With neither coach nor players, nearer plural players calls for were, not was, under the standard proximity-agreement rule."
+        },
+        {
+          "label": "C",
+          "text": "The box of chocolates are on the kitchen counter.",
+          "judgment": "refuted",
+          "proof": "Singular box controls agreement despite plural chocolates in the modifier; are mismatches."
+        },
+        {
+          "label": "D",
+          "text": "Each of the volunteers receives a name badge at the door.",
+          "judgment": "supported",
+          "proof": "Singular Each takes receives; of the volunteers does not change the head number."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "The committee have decided to postpone the annual meeting.",
+          "right_choice": "Neither the coach nor the players was ready for the match.",
+          "relation": "distinct",
+          "proof": "The full alternatives make different claims about different subjects and test different agreement constructions; they are not synonymous alternatives even when both contain agreement defects."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "The committee have decided to postpone the annual meeting.",
+          "right_choice": "The box of chocolates are on the kitchen counter.",
+          "relation": "distinct",
+          "proof": "The full alternatives make different claims about different subjects and test different agreement constructions; they are not synonymous alternatives even when both contain agreement defects."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "The committee have decided to postpone the annual meeting.",
+          "right_choice": "Each of the volunteers receives a name badge at the door.",
+          "relation": "distinct",
+          "proof": "The full alternatives make different claims about different subjects and test different agreement constructions; they are not synonymous alternatives even when both contain agreement defects."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "Neither the coach nor the players was ready for the match.",
+          "right_choice": "The box of chocolates are on the kitchen counter.",
+          "relation": "distinct",
+          "proof": "The full alternatives make different claims about different subjects and test different agreement constructions; they are not synonymous alternatives even when both contain agreement defects."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "Neither the coach nor the players was ready for the match.",
+          "right_choice": "Each of the volunteers receives a name badge at the door.",
+          "relation": "distinct",
+          "proof": "The full alternatives make different claims about different subjects and test different agreement constructions; they are not synonymous alternatives even when both contain agreement defects."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "The box of chocolates are on the kitchen counter.",
+          "right_choice": "Each of the volunteers receives a name badge at the door.",
+          "relation": "distinct",
+          "proof": "The full alternatives make different claims about different subjects and test different agreement constructions; they are not synonymous alternatives even when both contain agreement defects."
+        }
+      ],
+      "plausibility": "pass; alternatives correspond to nearby arithmetic operation/index/boundary/truthiness/branch mistakes or agreement constructions, not absurd padding. This is qualitative, not measured learner frequency.",
+      "scope_fit": "pass; numerical operations and explicit extrema in quantitative; Python result semantics in python; exact arithmetic and the displayed agreement objective in mixed.",
+      "difficulty": {
+        "independent_level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct rule application at2; several explicitly grouped arithmetic steps at3. Model difficulty labels remain hidden."
+      },
+      "uncertainties": [
+        "D is definitely grammatical. A is disfavored under the usual singular committee reading, but recognized notional plural agreement makes categorical exclusion a style/context boundary. Conservative uniqueness status is uncertain; ordinary Purdue-style scoring would select D uniquely. No unsupported British-English substitution is assumed."
+      ],
+      "primary_literal_status": "uncertain_counts_as_failure",
+      "teaching_and_model_key": "not_read_pending_unblind"
+    }
+  ],
+  "primary_sources": [
+    {
+      "title": "Purdue OWL: Making Subjects and Verbs Agree",
+      "url": "https://owl.purdue.edu/owl/general_writing/grammar/subject_verb_agreement.html",
+      "supports": "Nearer-subject agreement with or/nor, each as singular, modifier does not change head agreement, and usual singular collective-noun treatment.",
+      "interpretation": "Supports D and rejection of B/C; favors singular has for A under its conventional collective-unit teaching rule."
+    },
+    {
+      "title": "Chicago Manual of Style: Plurals Q&A, page3",
+      "url": "https://www.chicagomanualofstyle.org/qanda/data/faq/topics/Plurals.html?page=3",
+      "supports": "Its sports-team answer acknowledges plural collective agreement for members considered individually as an exception less common in American English.",
+      "interpretation": "Does not specifically adjudicate this committee sentence; it prevents treating all American collective nouns as invariably singular. The applicability to A remains explicitly uncertain."
+    }
+  ],
+  "limits": [
+    "All13 returned stems specify a task and have at least one certain answer; one English uniqueness boundary remains uncertain under conservative admission.",
+    "No judgment has yet been made about hidden model keys, any learner explanation, native envelopes, policy stamps, source preservation, stage timing or compiler quotas.",
+    "The two unreturned planned slots receive no semantic credit; no full-worker qualification follows from this blind review.",
+    "Do not relabel uncertainty after seeing model agreement. An ordinary singular-collective classroom rule would yield13/13 literal passes; the conservative primary is12/13 pending no rescue."
+  ]
+}

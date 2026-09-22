@@ -1,0 +1,742 @@
+{
+  "plan_sha256": "37ebfc0e48ab8c80f31f34fbd1732ce6e9992d2685bbab046e89e521fe24c5c1",
+  "capture_sha256": "c68f424b5a71d981083283e3b5d1ef667aa61ad6ebfb6ba8d08996e2ef9acfcb",
+  "source_commit": "77f794efa8cc24f94123cda61532ae7fe30d3e38",
+  "source_clean": true,
+  "source_and_artifact_pins": 81,
+  "baseline_source_pins_verified": 44,
+  "baseline_plan_sha256": "6230622117349a2617e7502def86d625bd70fb401b82c3dd8f59c2a048624dcc",
+  "baseline_capture_sha256": "9402ce571dee1c386aa3489e548b82292408e9b4a984a4807d596a6ca982a707",
+  "configuration_change": "Read ceiling100 to200 only, including approved exact runtime bound/comment change; all models/settings/jobs/criteria preserved",
+  "network_connections": 0,
+  "new_provider_calls": 0,
+  "replay": {
+    "real_pin_checks": 35,
+    "exact_request_replays": 13,
+    "recorded_calls": 13,
+    "mismatches": [],
+    "error": null,
+    "timing_equality_claimed": false,
+    "note": "Actual frozen run_jobs with recorded SDK responses; live deadlines assessed from capture, not replay speed."
+  },
+  "native_counts": {
+    "stop:end_turn": 12,
+    "valid_wire_and_native_calls": 12,
+    "raw_author_rows": 20,
+    "raw_quantitative": 8,
+    "raw_prose": 12,
+    "strict_solver_items": 7,
+    "choice_judgments": 28,
+    "pair_judgments": 42,
+    "strict_audit_items": 14,
+    "audit_positive": 13,
+    "audit_negative": 1,
+    "provider_failed_calls": 1
+  },
+  "calls": [
+    {
+      "ordinal": 0,
+      "job": "quantitative",
+      "stage": "question_author_constructed_v1",
+      "input_count": 5,
+      "request_sha256": "900889814eb6d8bf9f2551e89080d4f4394fcd530b181d7c4f2e05e8acc03dbb",
+      "read_timeout_seconds": 200.0,
+      "elapsed_seconds": 161.842709,
+      "remaining_before_ms": 239891,
+      "remaining_after_ms": 78047,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 1,
+      "job": "quantitative",
+      "stage": "complete_choice_solver_v5_n1",
+      "input_count": 1,
+      "request_sha256": "33cecfa2bfaa0f7047835e7c482b03dea83162d498457f483376891ce98fe74e",
+      "read_timeout_seconds": 71.993,
+      "elapsed_seconds": 9.149641,
+      "remaining_before_ms": 77965,
+      "remaining_after_ms": 68813,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 2,
+      "job": "quantitative",
+      "stage": "authored_solution_reviewer_v3_n4",
+      "input_count": 4,
+      "request_sha256": "d930b159bb9d522bdde353be4a34c58abd87e078f6f52b976f45b79214e928a6",
+      "read_timeout_seconds": 62.775999999999996,
+      "elapsed_seconds": 24.419545,
+      "remaining_before_ms": 68750,
+      "remaining_after_ms": 44328,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 3,
+      "job": "quantitative",
+      "stage": "question_author_constructed_v1",
+      "input_count": 1,
+      "request_sha256": "e71e7d251f743162ed27dd00280028790fa895cbf271e964efefa584e84ce148",
+      "read_timeout_seconds": 38.278,
+      "elapsed_seconds": 31.809292,
+      "remaining_before_ms": 44248,
+      "remaining_after_ms": 12436,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 4,
+      "job": "quantitative",
+      "stage": "complete_choice_solver_v5_n1",
+      "input_count": 1,
+      "request_sha256": "eeb7b14e5ab74c1b1d5ae61a667364b9ba3e0e6772badb6e742d591f34fe4f17",
+      "read_timeout_seconds": 6.396000000000001,
+      "elapsed_seconds": 6.786299,
+      "remaining_before_ms": 12365,
+      "remaining_after_ms": 5575,
+      "error": {
+        "type": "ReadTimeoutError",
+        "code": null,
+        "message": null,
+        "request_id": null,
+        "http_status": null
+      }
+    },
+    {
+      "ordinal": 5,
+      "job": "python",
+      "stage": "question_author_constructed_v1",
+      "input_count": 5,
+      "request_sha256": "8b13a9b57f33db74440d438175bd8fd058c4f696181f523dbc09130da23a7a37",
+      "read_timeout_seconds": 200.0,
+      "elapsed_seconds": 29.158937,
+      "remaining_before_ms": 239953,
+      "remaining_after_ms": 210791,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 6,
+      "job": "python",
+      "stage": "complete_choice_solver_v5_n5",
+      "input_count": 5,
+      "request_sha256": "9fa42b0bfd264633d53ed67154aada925582bb6ddd0d60526bb61195225a4809",
+      "read_timeout_seconds": 200.0,
+      "elapsed_seconds": 40.553468,
+      "remaining_before_ms": 210721,
+      "remaining_after_ms": 170164,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 7,
+      "job": "python",
+      "stage": "authored_solution_reviewer_v3_n5",
+      "input_count": 5,
+      "request_sha256": "2eac6cd7e00a3cbe259061d988fc0a19a1c5c6839b3eacbbec550c4da2da4728",
+      "read_timeout_seconds": 164.116,
+      "elapsed_seconds": 22.579154,
+      "remaining_before_ms": 170077,
+      "remaining_after_ms": 147494,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 8,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "input_count": 5,
+      "request_sha256": "7f29660e3c4bd5bc34abec842462b59b53828cd17afe72f60de573bf0dfae133",
+      "read_timeout_seconds": 200.0,
+      "elapsed_seconds": 85.720444,
+      "remaining_before_ms": 239953,
+      "remaining_after_ms": 154229,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 9,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n3",
+      "input_count": 3,
+      "request_sha256": "bf2292c6e3173926e6c0e9fbf6ad534970c106c7067f4f4320009b7aa1f6f050",
+      "read_timeout_seconds": 148.176,
+      "elapsed_seconds": 38.259644,
+      "remaining_before_ms": 154146,
+      "remaining_after_ms": 115881,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 10,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "input_count": 3,
+      "request_sha256": "a49adb437041c536253a265dbd77949d4dd36e1a85f7d8aaf48a43b8337b411f",
+      "read_timeout_seconds": 109.851,
+      "elapsed_seconds": 64.331404,
+      "remaining_before_ms": 115824,
+      "remaining_after_ms": 51487,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 11,
+      "job": "mixed",
+      "stage": "complete_choice_solver_v5_n1",
+      "input_count": 1,
+      "request_sha256": "bc3ce4499e20548d06563123cee8a01534878655bae8c2aafd8fff48a7cda41d",
+      "read_timeout_seconds": 45.427,
+      "elapsed_seconds": 15.575591,
+      "remaining_before_ms": 51397,
+      "remaining_after_ms": 35816,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 12,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n2",
+      "input_count": 2,
+      "request_sha256": "a2c69b693968af17563bb85bea40b7990f9bd773042951deb14d376554d72669",
+      "read_timeout_seconds": 29.762,
+      "elapsed_seconds": 20.450152,
+      "remaining_before_ms": 35731,
+      "remaining_after_ms": 15275,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    }
+  ],
+  "jobs": [
+    {
+      "job": "quantitative",
+      "status": "finished",
+      "requested": 5,
+      "returned": 4,
+      "provider_calls": 5,
+      "elapsed_seconds": 234.468424,
+      "within_deadline": true,
+      "passes": 2,
+      "compiled_candidates": 4,
+      "compiler_rejections": {},
+      "returned_compiled": 3,
+      "returned_prose": 1,
+      "error": null
+    },
+    {
+      "job": "python",
+      "status": "finished",
+      "requested": 5,
+      "returned": 5,
+      "provider_calls": 3,
+      "elapsed_seconds": 92.549306,
+      "within_deadline": true,
+      "passes": 1,
+      "compiled_candidates": 0,
+      "compiler_rejections": {},
+      "returned_compiled": 0,
+      "returned_prose": 5,
+      "error": null
+    },
+    {
+      "job": "mixed",
+      "status": "finished",
+      "requested": 5,
+      "returned": 4,
+      "provider_calls": 5,
+      "elapsed_seconds": 224.776729,
+      "within_deadline": true,
+      "passes": 2,
+      "compiled_candidates": 4,
+      "compiler_rejections": {},
+      "returned_compiled": 3,
+      "returned_prose": 1,
+      "error": null
+    }
+  ],
+  "provenance": {
+    "raw_task_to_constructed_spec_and_five_fields_replayed": 8,
+    "returned_compiled_five_fields_exact": 6,
+    "returned_prose_main_exact": 7
+  },
+  "usage": {
+    "input_tokens": 48562,
+    "output_tokens": 49801,
+    "calls_without_reported_usage": 1,
+    "missing_usage_is_not_zero": true,
+    "provider_call_seconds": 550.63628,
+    "reasoning_blocks_omitted": 13
+  },
+  "original_requested_denominator": 15,
+  "capture_summary": {
+    "planned_jobs": 3,
+    "planned_questions": 15,
+    "attempted_jobs": 3,
+    "attempted_calls": 13,
+    "returned_questions": 13,
+    "independent_content_review": "pending",
+    "qualified": false,
+    "reported_token_usage": {
+      "input_tokens": 48562,
+      "output_tokens": 49801,
+      "calls_without_reported_usage": 1,
+      "missing_usage_is_not_zero": true
+    }
+  },
+  "content_semantics_adjudicated_here": false,
+  "global_stop": null,
+  "reviewer": "choice_semantics",
+  "review_type": "independent_structural_and_deadline_replay",
+  "structural_replay_passed": true,
+  "full_trial_qualified": false,
+  "qualification_failures_independent_of_content_review": [
+    "returned_total: 13 < 14",
+    "quantitative_job_compiled: 3 < 4"
+  ],
+  "prospective_criteria_unchanged": {
+    "returned_total_of_15": 14,
+    "minimum_per_job": 4,
+    "compiled_total": 6,
+    "quantitative_job_compiled": 4,
+    "mixed_job_compiled": 2,
+    "mixed_job_english_prose": 1,
+    "all_returned_content_independently_sound": true,
+    "compiled_fields_exactly_original": true,
+    "prose_main_exactly_authored": true,
+    "prose_feedback_must_be_empty": true,
+    "all_jobs_in_denominator": true,
+    "scope_and_difficulty_required": true
+  },
+  "criteria_observations": {
+    "returned_total": {
+      "actual": 13,
+      "minimum": 14,
+      "met": false
+    },
+    "minimum_per_job": {
+      "actual": 4,
+      "minimum": 4,
+      "met": true
+    },
+    "compiled_total": {
+      "actual": 6,
+      "minimum": 6,
+      "met": true
+    },
+    "quantitative_job_compiled": {
+      "actual": 3,
+      "minimum": 4,
+      "met": false
+    },
+    "mixed_job_compiled": {
+      "actual": 3,
+      "minimum": 2,
+      "met": true
+    },
+    "mixed_prose": {
+      "actual": 1,
+      "required_english": 1,
+      "assignment_semantics": "separate independent review"
+    },
+    "all_learner_content_sound": "separate independent review required"
+  },
+  "deadline_aware_replay": {
+    "real_pin_checks": 35,
+    "exact_request_replays": 13,
+    "recorded_calls": 13,
+    "mismatches": [],
+    "error": null,
+    "timing_equality_claimed": false,
+    "deadline_configurations": [
+      {
+        "ordinal": 0,
+        "read_timeout": 200.0,
+        "factory_remaining_ms": 239891,
+        "before_converse_ms": 239891
+      },
+      {
+        "ordinal": 1,
+        "read_timeout": 71.993,
+        "factory_remaining_ms": 77994,
+        "before_converse_ms": 77965
+      },
+      {
+        "ordinal": 2,
+        "read_timeout": 62.775999999999996,
+        "factory_remaining_ms": 68777,
+        "before_converse_ms": 68750
+      },
+      {
+        "ordinal": 3,
+        "read_timeout": 38.278,
+        "factory_remaining_ms": 44279,
+        "before_converse_ms": 44248
+      },
+      {
+        "ordinal": 4,
+        "read_timeout": 6.396000000000001,
+        "factory_remaining_ms": 12397,
+        "before_converse_ms": 12365
+      },
+      {
+        "ordinal": 5,
+        "read_timeout": 200.0,
+        "factory_remaining_ms": 239953,
+        "before_converse_ms": 239953
+      },
+      {
+        "ordinal": 6,
+        "read_timeout": 200.0,
+        "factory_remaining_ms": 210721,
+        "before_converse_ms": 210721
+      },
+      {
+        "ordinal": 7,
+        "read_timeout": 164.116,
+        "factory_remaining_ms": 170117,
+        "before_converse_ms": 170077
+      },
+      {
+        "ordinal": 8,
+        "read_timeout": 200.0,
+        "factory_remaining_ms": 239953,
+        "before_converse_ms": 239953
+      },
+      {
+        "ordinal": 9,
+        "read_timeout": 148.176,
+        "factory_remaining_ms": 154177,
+        "before_converse_ms": 154146
+      },
+      {
+        "ordinal": 10,
+        "read_timeout": 109.851,
+        "factory_remaining_ms": 115852,
+        "before_converse_ms": 115824
+      },
+      {
+        "ordinal": 11,
+        "read_timeout": 45.427,
+        "factory_remaining_ms": 51428,
+        "before_converse_ms": 51397
+      },
+      {
+        "ordinal": 12,
+        "read_timeout": 29.762,
+        "factory_remaining_ms": 35763,
+        "before_converse_ms": 35731
+      }
+    ],
+    "exact_recorded_timeout_and_remaining_buckets": true,
+    "note": "Actual run_jobs/client/budget with recorded SDK responses and reconstructed logical deadline: each real factory recomputes its captured timeout, then recorded before/after millisecond buckets drive unchanged admission. Factory time is inferred where necessary, never a new latency observation."
+  },
+  "replay_pin_checks": {
+    "fast": 35,
+    "recorded_deadline": 35,
+    "each_checks_all81_pins": true
+  },
+  "successful_provider_responses": 12,
+  "failed_provider_attempts": 1,
+  "native_issue_flags": {
+    "typed_booleans": 84,
+    "false": 83,
+    "true": 1,
+    "true_flag": {
+      "call_ordinal": 9,
+      "audit_index": 2,
+      "source": [
+        "mixed",
+        0,
+        2
+      ],
+      "field": "explanation"
+    },
+    "support_declarations": {
+      "supported": 13,
+      "uncertain": 1
+    },
+    "semantics_adjudicated": false
+  },
+  "raw_attempt_accounting": {
+    "raw_author_rows": 20,
+    "prose": 12,
+    "quantitative": 8,
+    "returned": 13,
+    "losses": {
+      "pre_solver_answer_label_references": 4,
+      "compiled_surplus_before_review": 1,
+      "uncertain_main_final_audit": 1,
+      "prose_solver_timeout": 1
+    },
+    "compiler_errors": 0,
+    "model_solver_content_vetoes": 0,
+    "original_requested_denominator_remains15": true
+  },
+  "pass_counts": [
+    {
+      "job": "quantitative",
+      "pass": 0,
+      "raw_rows": 5,
+      "raw_kind_counts": {
+        "quantitative": 3,
+        "prose": 2
+      },
+      "constructed": 3,
+      "compiler_errors": [],
+      "sanitized": 5,
+      "verified": 4
+    },
+    {
+      "job": "quantitative",
+      "pass": 1,
+      "raw_rows": 2,
+      "raw_kind_counts": {
+        "prose": 1,
+        "quantitative": 1
+      },
+      "constructed": 1,
+      "compiler_errors": [],
+      "sanitized": 1,
+      "verified": 0
+    },
+    {
+      "job": "python",
+      "pass": 0,
+      "raw_rows": 5,
+      "raw_kind_counts": {
+        "prose": 5
+      },
+      "constructed": 0,
+      "compiler_errors": [],
+      "sanitized": 5,
+      "verified": 5
+    },
+    {
+      "job": "mixed",
+      "pass": 0,
+      "raw_rows": 5,
+      "raw_kind_counts": {
+        "quantitative": 3,
+        "prose": 2
+      },
+      "constructed": 3,
+      "compiler_errors": [],
+      "sanitized": 5,
+      "verified": 2
+    },
+    {
+      "job": "mixed",
+      "pass": 1,
+      "raw_rows": 3,
+      "raw_kind_counts": {
+        "quantitative": 1,
+        "prose": 2
+      },
+      "constructed": 1,
+      "compiler_errors": [],
+      "sanitized": 3,
+      "verified": 2
+    }
+  ],
+  "author_count_observations": [
+    {
+      "call_ordinal": 0,
+      "requested": 5,
+      "native_rows": 5
+    },
+    {
+      "call_ordinal": 3,
+      "requested": 1,
+      "native_rows": 2
+    },
+    {
+      "call_ordinal": 5,
+      "requested": 5,
+      "native_rows": 5
+    },
+    {
+      "call_ordinal": 8,
+      "requested": 5,
+      "native_rows": 5
+    },
+    {
+      "call_ordinal": 10,
+      "requested": 3,
+      "native_rows": 3
+    }
+  ],
+  "surplus_binding": {
+    "call_ordinal": 3,
+    "job": "quantitative",
+    "requested": 1,
+    "raw_rows": 2,
+    "first_row": {
+      "source": [
+        "quantitative",
+        1,
+        0
+      ],
+      "kind": "prose",
+      "sanitized_and_sent_to_solver": true
+    },
+    "second_row": {
+      "source": [
+        "quantitative",
+        1,
+        1
+      ],
+      "kind": "quantitative",
+      "compiled_successfully": true,
+      "discarded_as_surplus": true
+    },
+    "native_array_schema_does_not_encode_exact_requested_row_count": true,
+    "deterministic_actual_sanitizer_cap_preserved": true,
+    "no_posthoc_reordering_or_substitution": true
+  },
+  "typed_task_outcomes": {
+    "observed": 8,
+    "constructed_successfully": 8,
+    "sent_to_final_audit": 7,
+    "released": 6,
+    "discarded_as_surplus": 1,
+    "uncertain_main_audit_rejection": 1,
+    "no_supplied_choices_or_key": true,
+    "raw_task_to_full_spec_and_five_fields_exact": 8,
+    "all_released_compiled_fields_exact": 6,
+    "no_solver_for_private_compiler_proof": true
+  },
+  "pre_solver_freeze_rejections": [
+    {
+      "source": [
+        "quantitative",
+        0,
+        1
+      ],
+      "actual_error": "AuthoredTeachingFormatError: Teaching cannot reference shuffled answer labels."
+    },
+    {
+      "source": [
+        "mixed",
+        0,
+        3
+      ],
+      "actual_error": "AuthoredTeachingFormatError: Teaching cannot reference shuffled answer labels."
+    },
+    {
+      "source": [
+        "mixed",
+        0,
+        4
+      ],
+      "actual_error": "AuthoredTeachingFormatError: Teaching cannot reference shuffled answer labels."
+    },
+    {
+      "source": [
+        "mixed",
+        1,
+        2
+      ],
+      "actual_error": "AuthoredTeachingFormatError: Teaching cannot reference shuffled answer labels."
+    }
+  ],
+  "solver_coverage": {
+    "submitted_items": 8,
+    "strictly_assessed_items": 7,
+    "timeout_items_without_judgments": 1,
+    "assessed_choice_judgments": 28,
+    "assessed_pair_judgments": 42
+  },
+  "timeout": {
+    "call_ordinal": 4,
+    "job": "quantitative",
+    "stage": "complete_choice_solver_v5_n1",
+    "read_limit_seconds": 6.396000000000001,
+    "elapsed_seconds": 6.786299,
+    "remaining_before_ms": 12365,
+    "remaining_after_ms": 5575,
+    "error_type": "ReadTimeoutError",
+    "response_available": false,
+    "usage": "unknown; not zero",
+    "native_or_content_judgments": "unavailable; no credit",
+    "initial_four_approved_items_preserved": true,
+    "later_independent_jobs_continue": true
+  },
+  "budgets": {
+    "per_job_deadline_seconds": 240,
+    "per_job_call_cap": 6,
+    "overall_call_cap": 18,
+    "actual_reservations": 13,
+    "actual_dispatches": 13,
+    "all_three_jobs_within_deadline": true,
+    "jobs": {
+      "quantitative": {
+        "calls": 5,
+        "remaining_call_slots": 1,
+        "remaining_ms": 5531
+      },
+      "python": {
+        "calls": 3,
+        "target_filled": true
+      },
+      "mixed": {
+        "calls": 5,
+        "remaining_call_slots": 1,
+        "remaining_ms": 15223
+      }
+    },
+    "minimum_calls_to_start_new_mixed_pass": 3,
+    "partial_jobs_stop": "Only one call remains, below existing conservative three-call admission; no harness rescue.",
+    "all_successful_calls_below_recorded_socket_read_timeout": true,
+    "first_author_seconds": 161.842709,
+    "read_ceiling_seconds": 200,
+    "connect_seconds": 3,
+    "sdk_total_attempts": 1,
+    "total_worker_seconds_across_independent_jobs": 551.794459
+  },
+  "reproduction": {
+    "python": "3.12.11",
+    "executable": "/tmp/checkpoint-reliability-20260921-venv/bin/python",
+    "fast_script": "/tmp/checkpoint_constructed_sonnet_long_read_worker_structural_replay.py",
+    "fast_script_sha256": "a0787ede9e8135e8cbadaa9d2ec107123eef44c1e8ed005cd33ff05abf39003f",
+    "fast_data_sha256": "595f4a35e75c5b3f61591762c42267b469e2973c9b85741cb5e6a79be16a40f5",
+    "deadline_script": "/tmp/checkpoint_constructed_sonnet_long_read_deadline_replay.py",
+    "deadline_script_sha256": "fbdf4a7f95ffae780f4faf9e281cedf013ecf94f9ffc376f9004de7237c50a0f",
+    "deadline_data_sha256": "f99612139b9c43fd39771254560272d1bc5531f1f66188895995580f5826bf18",
+    "method": "Both runs invoke actual frozen run_jobs with sockets blocked and only local SDK responses/errors replacing network. Every request, reservation, pass, return and provenance object association must match. Second run also delegates to the original client factory and budget with a logical clock reconstructed from captured remaining-millisecond buckets; all13 read/connect/SDK settings and before/after buckets must match exactly. Native schema, adapters, local parsers and complete mathematical recompilation are checked separately.",
+    "clock_limits": "For clamped calls, factory remaining time is inferred from the unchanged read formula; for capped calls a consistent point in the cap interval is used. This is observation-driven control-flow replay, not measurement of original factory timestamps or latency."
+  },
+  "limitations": [
+    "No independent open-domain content judgment is made here; exact retention and model agreement are not truth certificates.",
+    "The uncertain-main audit flag gives no prose rationale; no hidden reason is inferred and veto legitimacy is left to the content reviewers.",
+    "The timeout supplied no response or usage. Reported tokens cover12 responses and are not complete billed totals.",
+    "A161.842709-second completed author call demonstrates this run used the longer ceiling; it does not prove why the prior100-second attempt failed or establish cache state/causation.",
+    "Observed native counts only: successful author targets5/1/3, solver counts1/5 (one count1timeout), audit counts4/5/3/2. The author array admitted a surplus row; local runtime capping, not native exact author count, prevented excess release.",
+    "No prompt addition, warmup, cache flush, repair, new source1d behavior, provider call, source/default/deployment change or relabeling of prior trials occurred during this audit."
+  ]
+}

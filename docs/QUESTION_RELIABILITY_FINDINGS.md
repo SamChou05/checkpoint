@@ -6,6 +6,14 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
+Current source verification passes **1,318 backend tests** after the optional
+timeout and fraction-distractor improvements. The latest
+[full-worker trial](evidence/constructed-sonnet-long-read-qualification-20260922/RESULTS.md)
+still fails qualification at 13/15 returns and three numerical compiled items
+where four were required. Its frozen source excludes the newer fraction-priority
+change. Verified improvements are on main; the last inspected deployment remains
+the September 11 legacy package. No deployment or inventory transition has occurred.
+
 ## Findings and verified fixes
 
 | Finding | Evidence | Fix on main |
@@ -54,7 +62,7 @@ That treatment still invented false feedback and rejected a valid item: it faile
 and remains inactive. More stages, or hiding an input without evidence, do not
 automatically improve quality.
 
-## Current release boundary
+## Earlier release checkpoint (historical)
 
 The tested structural changes are on main. Backend verification passes 1,309
 tests after opt-in task-only numerical construction. All 27 runtime modules match each of three SAM artifacts, with 516 packaged SDK configuration checks. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
@@ -312,3 +320,7 @@ The [task-only constructor worker trial](evidence/constructed-worker-qualificati
 The [Sonnet author full-worker comparison](evidence/constructed-sonnet-worker-qualification-20260922/RESULTS.md) returned 9/15: zero numerical, five Python and four mixed. The numerical author timed out at 100 seconds without a response or usage; all other eight responses were native-valid. Three compiled items and all nine keys were correct, while one Python main retains an explicit universal-versus-contextual wording sensitivity (8/15 strict, 9/15 contextual). Two raw mains referenced shuffled answer letters and one mathematically sound constructed item received a distractor veto. Every reading fails the original yield and compiler quotas; its conditional rollout draft is marked inactive.
 
 A separate [verified timeout improvement](evidence/worker-response-timeout-200-20260922/VERIFICATION.json) allows selecting a read ceiling up to 200 seconds. Defaults stay unchanged, and the actual API/worker deadlines, six-call reservation limit and single SDK attempt continue to constrain every dispatch. It passed 1,312 backend tests, deployment validation, SAM packaging and 516 packaged SDK shape checks. A fresh bounded trial is required to measure the selected ceiling; neither that code change nor the observed timeout establishes grammar-cache causation.
+
+The completed [longer-read trial](evidence/constructed-sonnet-long-read-qualification-20260922/RESULTS.md) returned 13/15 within deadline. Its first author took 161.843 seconds, so the larger ceiling was used; a later solver still timed out under a 6.396-second remaining allowance. Twelve received responses were native-valid. All eight typed drafts constructed, but only six released and only three were in the numerical job. Four raw mains referenced shuffled answer labels, one compiled surplus was capped behind a prose row, and one mathematically sound scalar main received an unexplained uncertainty veto. Both independent reviewers preserve the same English ambiguity and Boolean-rule sensitivities; no reading qualifies the original criteria.
+
+A separate [fraction-pool improvement](evidence/fraction-distractor-priority-20260922/RESULTS.md) now prioritizes bounded fraction-procedure mistakes over generic operator swaps. It preserves exact keys, distinct values, final compilation and all audit vetoes. Verification covers 1,318 backend tests, 885 signed cases with twenty constructibility gains and no losses, all 288 nested cases, and the three packaged artifacts. These deterministic checks do not establish novice distractor plausibility or full-worker qualification. The earlier frozen trials remain unchanged.

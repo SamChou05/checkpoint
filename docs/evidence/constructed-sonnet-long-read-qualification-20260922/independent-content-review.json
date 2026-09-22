@@ -1,0 +1,2360 @@
+{
+  "status": "independently_reviewed_failed_worker_qualification",
+  "capture_sha256": "c68f424b5a71d981083283e3b5d1ef667aa61ad6ebfb6ba8d08996e2ef9acfcb",
+  "plan_sha256": "37ebfc0e48ab8c80f31f34fbd1732ce6e9992d2685bbab046e89e521fe24c5c1",
+  "blind_review_sha256": "02513e7f85e7191f8fb3f544b241f662f21c1a782c07d304e0864eb7c3f5ed76",
+  "worksheet_sha256": "c45a3708c80ed7f482a99fdff63fe559e9e4d4efca572b7db635a7374274cc4f",
+  "review_sequence": "New stems/choices were solved and locked before capture access. After parent unblind authorization, I read the raw capture and performed this independent content/source review. No current root-content-review or parent content count was read before writing this artifact. The old contextual-versus-generic sensitivity and this blind collective-agreement uncertainty are preserved.",
+  "denominators": {
+    "planned": 15,
+    "returned": 13,
+    "missing": 2,
+    "certain_answer_matches": 13,
+    "blind_unique_literal_pass": 12,
+    "blind_literal_uncertain": 1,
+    "all_four_choice_judgments": 52,
+    "all_six_pair_judgments": 78,
+    "main_fields_read": 13,
+    "compiled_feedback_fields_read": 24,
+    "compiled_returned": 6,
+    "prose_returned": 7,
+    "strict_full_content_pass": 10,
+    "general_rule_sensitive_failures": 2,
+    "locked_collective_uncertainty": 1,
+    "contextual_reading_pass_with_collective_uncertainty_preserved": 12,
+    "ordinary_singular_collective_plus_contextual_reading_pass": 13,
+    "attempted_calls": 13,
+    "successful_native_responses": 12,
+    "timeout_calls": 1,
+    "author_requests": 5,
+    "author_slots_requested_including_topups": 19,
+    "author_rows_observed": 20,
+    "successful_solver_rows": 7,
+    "unproduced_solver_rows_due_timeout": 1,
+    "visible_solver_choice_labels": 28,
+    "visible_solver_pair_labels": 42,
+    "visible_solver_reasons": 70,
+    "typed_audit_rows": 14
+  },
+  "primary_judgment": "No returned explicit key contradicts a certain blind answer. The conservative full-content result is10/13: two mains give incomplete generic operator rules although the specific evaluations are correct, and the independently locked committee agreement uncertainty remains. Contextual operator wording gives12/13 with that uncertainty preserved; additionally adopting the conventional singular-collective classroom rule gives13/13. The frozen worker still fails at13/15 and3 quantitative compiled versus4 required under every reading.",
+  "operator_sensitivity": {
+    "items": [
+      "python:1",
+      "python:4"
+    ],
+    "primary": "The unqualified first-truthy/first-falsey rules are incomplete when no such operand exists, consistently with the earlier strict main-rule reading.",
+    "contextual": "Every displayed operand/result and skipped evaluation is correct for these supplied expressions. If the first sentence is scoped to the worked case, each main is sound. These are not concrete execution-order mistakes.",
+    "countermodels": [
+      {
+        "rule": "or always returns the first truthy operand",
+        "expression": "0 or 0",
+        "result": "0",
+        "type": "int",
+        "reason": "There is no truthy operand, yet0 is returned."
+      },
+      {
+        "rule": "and always returns the first falsey operand",
+        "expression": "1 and 2",
+        "result": "2",
+        "type": "int",
+        "reason": "There is no falsey operand, yet2 is returned."
+      }
+    ]
+  },
+  "collective_uncertainty": {
+    "item": "mixed:3",
+    "status": "Preserved from blind review; no post-key relabeling.",
+    "main": "The final main and private solver categorically require has with committee. Standard singular-unit pedagogy supports that choice, while the independently consulted Chicago collective-member exception prevents certainty under every interpretation. D remains certainly grammatical.",
+    "primary_sources": [
+      {
+        "title": "Purdue OWL: Making Subjects and Verbs Agree",
+        "url": "https://owl.purdue.edu/owl/general_writing/grammar/subject_verb_agreement.html",
+        "supports": "Nearer-subject agreement with or/nor, each as singular, modifier does not change head agreement, and usual singular collective-noun treatment.",
+        "interpretation": "Supports D and rejection of B/C; favors singular has for A under its conventional collective-unit teaching rule."
+      },
+      {
+        "title": "Chicago Manual of Style: Plurals Q&A, page3",
+        "url": "https://www.chicagomanualofstyle.org/qanda/data/faq/topics/Plurals.html?page=3",
+        "supports": "Its sports-team answer acknowledges plural collective agreement for members considered individually as an exception less common in American English.",
+        "interpretation": "Does not specifically adjudicate this committee sentence; it prevents treating all American collective nouns as invariably singular. The applicability to A remains explicitly uncertain."
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "quantitative:0",
+      "source": [
+        "quantitative",
+        0,
+        0
+      ],
+      "explicit_key": "19/12",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Common denominator 12: (3/4) + (5/6) = (9/12) + (10/12) = 19/12. The answer is 19/12.",
+      "main_sha256": "b2d7cbce0c6f7614ef50b07a7339032230f82685c7942b8b34951b0a80f9e08d",
+      "main_proof": "3/4=9/12;5/6=10/12;sum19/12. All equalities and exact-answer clauses are true.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [
+        {
+          "choice": "-1/12",
+          "text": "The expression evaluates exactly to 19/12, not -1/12. -1/12 is not the requested value.",
+          "sha256": "f410ea198a9ced6fd70b127e6bcc741df6a44e898ca715180246cf509a0c412a",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "19/12",
+          "text": "The expression evaluates exactly to 19/12; 19/12 is the requested value.",
+          "sha256": "1a9ef5fb66bafd260ee93981a124f1bd99759383929901a8f8057a2293bb87ce",
+          "status": "supported",
+          "proof": "The offered exact rational equals the computed expression value."
+        },
+        {
+          "choice": "9/10",
+          "text": "The expression evaluates exactly to 19/12, not 9/10. 9/10 is not the requested value.",
+          "sha256": "dc9aa98481a517f18aff6ec29c2c6aec928aba80d058bf1c6c6c4cdbcd0ed5a9",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "5/8",
+          "text": "The expression evaluates exactly to 19/12, not 5/8. 5/8 is not the requested value.",
+          "sha256": "dc29a4a662561f5fc0f7ca1e55658ac6bfee7596c8c7b4799c9b651d01c8ce4c",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        }
+      ],
+      "policy": 8,
+      "source_preservation": "All five learner fields equal fresh compilation and saved private original, including exact choice order.",
+      "five_field_digest": "f371a47b36f1e1cc61a67512a6672a2d24061e219211caeb46b3404317c16ced",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 84,
+        "choices": [
+          5,
+          5,
+          4,
+          3
+        ],
+        "main": 85,
+        "feedback": [
+          87,
+          72,
+          85,
+          83
+        ],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "quantitative:1",
+      "source": [
+        "quantitative",
+        0,
+        2
+      ],
+      "explicit_key": "14/25",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Multiply numerators and denominators: (7/10) * (4/5) = 28/50 = 14/25. The answer is 14/25.",
+      "main_sha256": "40ebd60999a2c9a7cf95ffc4ec8712cac5d9e571b51c5762af150f8ebf45fe82",
+      "main_proof": "(7/10)*(4/5)=28/50=14/25. All equalities are exact.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [
+        {
+          "choice": "3/2",
+          "text": "The expression evaluates exactly to 14/25, not 3/2. 3/2 is not the requested value.",
+          "sha256": "1f1ba24a79e38fb5cfe515f6c590bd85771f6713ec74e27fd44203e05ccc1aad",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "-1/10",
+          "text": "The expression evaluates exactly to 14/25, not -1/10. -1/10 is not the requested value.",
+          "sha256": "d0a2446824acc790a8a2b86df22786f6c7ca6aa73475b862254ee1e87839b233",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "14/25",
+          "text": "The expression evaluates exactly to 14/25; 14/25 is the requested value.",
+          "sha256": "76d09e1b1b9cea06c9ba3dfa397753297e160a725f9eef0690b90dd1e94f08c9",
+          "status": "supported",
+          "proof": "The offered exact rational equals the computed expression value."
+        },
+        {
+          "choice": "7/8",
+          "text": "The expression evaluates exactly to 14/25, not 7/8. 7/8 is not the requested value.",
+          "sha256": "98dbcbf3dc3784920d342ad1cf0161ae66869a2839d7162af1c62770e1477503",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        }
+      ],
+      "policy": 8,
+      "source_preservation": "All five learner fields equal fresh compilation and saved private original, including exact choice order.",
+      "five_field_digest": "9c5ba3c1cdc3741ac63526b181edf91f8e21680d86d3c6f9a288b8b591d219b3",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 85,
+        "choices": [
+          3,
+          5,
+          5,
+          3
+        ],
+        "main": 90,
+        "feedback": [
+          83,
+          87,
+          72,
+          83
+        ],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "quantitative:2",
+      "source": [
+        "quantitative",
+        0,
+        3
+      ],
+      "explicit_key": "8",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "At x = 8, 24 >= 22 is true. 8 is the minimum value satisfying the condition in this domain. Every smaller value in the stated domain fails the condition.",
+      "main_sha256": "2a320f90715e0eb092f92b70bb920d5f5f3efeb3b8d5c127b8d4909091f0fd64",
+      "main_proof": "3*8=24>=22. Every allowed smaller integer is at most7 and has3*x<=21<22. The stated minimum and exhaustive smaller-value claim are true.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [
+        {
+          "choice": "7",
+          "text": "At x = 7, 21 >= 22 is false. This value does not satisfy the condition.",
+          "sha256": "9b77ba41fbeee887261d56408e20c1a7a0f8168fafef68651bd631f9b0dd57e4",
+          "status": "supported",
+          "proof": "At x=7,3*x=21; the comparison with22 is False. The domain minimum satisfying it is8. The displayed truth value and minimum/not-minimum clauses are correct."
+        },
+        {
+          "choice": "6",
+          "text": "At x = 6, 18 >= 22 is false. This value does not satisfy the condition.",
+          "sha256": "190b81f6a23768c28fc9788a83408fa32953d749042a7a24d6680f860b497da1",
+          "status": "supported",
+          "proof": "At x=6,3*x=18; the comparison with22 is False. The domain minimum satisfying it is8. The displayed truth value and minimum/not-minimum clauses are correct."
+        },
+        {
+          "choice": "9",
+          "text": "At x = 9, 27 >= 22 is true. The question asks for the minimum; that value is 8.",
+          "sha256": "92ded435e4151f293c842b011914dfb6d10d24ccdbd09dcc090ce226ef863eb9",
+          "status": "supported",
+          "proof": "At x=9,3*x=27; the comparison with22 is True. The domain minimum satisfying it is8. The displayed truth value and minimum/not-minimum clauses are correct."
+        },
+        {
+          "choice": "8",
+          "text": "At x = 8, 24 >= 22 is true. This is the minimum value satisfying the condition in this domain.",
+          "sha256": "4822dae6e0ff6261b23bf2da97df95dd03a768ab55c6bd73d1870d8df86c2828",
+          "status": "supported",
+          "proof": "At x=8,3*x=24; the comparison with22 is True. The domain minimum satisfying it is8. The displayed truth value and minimum/not-minimum clauses are correct."
+        }
+      ],
+      "policy": 8,
+      "source_preservation": "All five learner fields equal fresh compilation and saved private original, including exact choice order.",
+      "five_field_digest": "56abdbf3100fc337aa05b3b95ff0939f5f9b8b68b05c60afcc6a10b4458082c4",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 169,
+        "choices": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "main": 153,
+        "feedback": [
+          71,
+          71,
+          79,
+          94
+        ],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "quantitative:3",
+      "source": [
+        "quantitative",
+        0,
+        4
+      ],
+      "explicit_key": "11",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Solve 2n + 3 ≤ 25: subtract 3 to get 2n ≤ 22, then divide by 2 to get n ≤ 11. The largest integer in [5, 30] satisfying this is 11, since 2(11)+3 = 25 ≤ 25, but 2(12)+3 = 27 > 25. Choosing 12 ignores the +3 term; choosing 10 is valid but not the maximum.",
+      "main_sha256": "456dbd3693b6ebaa86d26dd3dceaf9bff5fbd207da03c8babf81330dd9f1a6d1",
+      "main_proof": "Subtract3 and divide by positive2 to obtain n<=11;11 is in[5,30]. The shown checks at11/12 are true. Ignoring the+3 term would produce largest integer12, so this is a defensible description of that distractor mechanism, not proof of an actual learner thought process.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [],
+      "policy": 7,
+      "source_preservation": "Prompt, key and all choice strings match raw author; main bytes are exact; per-choice feedback stays empty. Choice display order may change.",
+      "five_field_digest": "4801411d07ee52611370534de75f59222ebd0af80bf969229e7d6f3293f13c14",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 3,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 85,
+        "choices": [
+          2,
+          2,
+          2,
+          1
+        ],
+        "main": 254,
+        "feedback": [],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "python:0",
+      "source": [
+        "python",
+        0,
+        0
+      ],
+      "explicit_key": "40",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Negative indices count from the end of the list. Index -1 refers to the last element (50), -2 to the second-to-last (40), and so on. So nums[-2] is 40.",
+      "main_sha256": "7342b98acfe48c3c33298663fdff996d4e6a8b0664509151069da2184e16c87a",
+      "main_proof": "In the supplied list, -1 is50 and -2 is40. The concrete explanation is exact.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [],
+      "policy": 7,
+      "source_preservation": "Prompt, key and all choice strings match raw author; main bytes are exact; per-choice feedback stays empty. Choice display order may change.",
+      "five_field_digest": "77955621c13991d87e3e70b28f34a04df48ff2d32c347cb3248c42e0c5a894f0",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 85,
+        "choices": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "main": 151,
+        "feedback": [],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "python:1",
+      "source": [
+        "python",
+        0,
+        1
+      ],
+      "explicit_key": "\"hello\"",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Python's or operator returns the first truthy operand. 0 is falsy, so evaluation continues. \"hello\" is a non-empty string and therefore truthy, so it is returned immediately and 99 is never evaluated.",
+      "main_sha256": "a7a710d2a43945c368746ee709a8800bb2ec51a8d73d93349860713510d2d337",
+      "main_proof": "0 is falsey; hello is truthy and returned;99 is not evaluated. This is correct concrete execution. The generic opening is incomplete if no truthy operand exists.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "incomplete_unqualified_rule",
+      "primary_full_content_status": "failure_general_rule_sensitivity",
+      "feedback": [],
+      "policy": 7,
+      "source_preservation": "Prompt, key and all choice strings match raw author; main bytes are exact; per-choice feedback stays empty. Choice display order may change.",
+      "five_field_digest": "2768d6afcf95ee52168c9967a625a8df4f0d6471acfe823187b1e53ebf0f5643",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 79,
+        "choices": [
+          7,
+          4,
+          1,
+          2
+        ],
+        "main": 200,
+        "feedback": [],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "python:2",
+      "source": [
+        "python",
+        0,
+        2
+      ],
+      "explicit_key": "\"big\"",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "A conditional expression evaluates the condition first. x > 10 is 15 > 10, which is True, so the expression returns the value before if, which is \"big\". The else branch is not used.",
+      "main_sha256": "ee8a068ff59c0fef3f57bfd459017b15d49a5a2270ce274a7a9078dc76fa3b3f",
+      "main_proof": "15>10 is true, so big is selected and the else branch is not evaluated.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [],
+      "policy": 7,
+      "source_preservation": "Prompt, key and all choice strings match raw author; main bytes are exact; per-choice feedback stays empty. Choice display order may change.",
+      "five_field_digest": "962dcd59f8516f4c9860c173cc47ede81bdde17233b8680901cd89ac9d7f07d3",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 102,
+        "choices": [
+          5,
+          7,
+          4,
+          2
+        ],
+        "main": 181,
+        "feedback": [],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "python:3",
+      "source": [
+        "python",
+        0,
+        3
+      ],
+      "explicit_key": "[\"c\", \"d\"]",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Slice [2:4] includes indices 2 and 3 but excludes index 4. items[2] is \"c\" and items[3] is \"d\", so the result is [\"c\", \"d\"]. The stop index is always exclusive in Python slices.",
+      "main_sha256": "0e42392362237c71be3f16de8cbc3fd6ba34634f72619e9810a9741e1a519c6a",
+      "main_proof": "For the supplied built-in list, indexes2 and3 hold c and d; stop4 is excluded. This is correct.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [],
+      "policy": 7,
+      "source_preservation": "Prompt, key and all choice strings match raw author; main bytes are exact; per-choice feedback stays empty. Choice display order may change.",
+      "five_field_digest": "87069342976712a92bc3adcf6d2f410b300a015740b7be6a5b9b35a639888c9c",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 93,
+        "choices": [
+          10,
+          15,
+          15,
+          10
+        ],
+        "main": 177,
+        "feedback": [],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "python:4",
+      "source": [
+        "python",
+        0,
+        4
+      ],
+      "explicit_key": "[]",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Python's and operator returns the first falsy operand without evaluating the rest. An empty list [] is falsy, so the result is [] immediately. The expression 1/0 is never reached, so no exception is raised.",
+      "main_sha256": "f5c84e68b12710b93de67a1c1dd6d8b19da586f3237b02bbf1f9f02e904c1277",
+      "main_proof": "The empty list is falsey and is returned unchanged by and;1/0 is skipped. This is correct concrete execution. The generic first-falsey opening omits the all-truthy case.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "incomplete_unqualified_rule",
+      "primary_full_content_status": "failure_general_rule_sensitivity",
+      "feedback": [],
+      "policy": 7,
+      "source_preservation": "Prompt, key and all choice strings match raw author; main bytes are exact; per-choice feedback stays empty. Choice display order may change.",
+      "five_field_digest": "ae548be6a1e7c1e0dddb54009586eca71d694fce3867cd1701a96e8edff0b7db",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 3,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 71,
+        "choices": [
+          2,
+          5,
+          1,
+          29
+        ],
+        "main": 206,
+        "feedback": [],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "mixed:0",
+      "source": [
+        "mixed",
+        0,
+        0
+      ],
+      "explicit_key": "20",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Multiply by the reciprocal: 36 / 4 = 36 * (1/4) = 36/4 = 9. Multiply: 9 * 3 = 27. Subtract: 27 - 7 = 20. The answer is 20.",
+      "main_sha256": "019a8923a1184b96ac0fa18db9b681dcd64dedc2cb3280c5c942f680cdf1520d",
+      "main_proof": "36/4=36*(1/4)=9;9*3=27;27-7=20. Every step is exact.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [
+        {
+          "choice": "34",
+          "text": "The expression evaluates exactly to 20, not 34. 34 is not the requested value.",
+          "sha256": "860cc52f3c7da3bf47e9d80bc54c688f7d22b49c1e17b216136ec14d0b0e54c2",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "189",
+          "text": "The expression evaluates exactly to 20, not 189. 189 is not the requested value.",
+          "sha256": "39454556374eadec3a35d192defb82102c09f51b9771253c536f03ac644fa7bb",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "20",
+          "text": "The expression evaluates exactly to 20; 20 is the requested value.",
+          "sha256": "0cbc6d617bbc13143495360cd23c5e5a43f5271597584c8d263e75a99444e0e4",
+          "status": "supported",
+          "proof": "The offered exact rational equals the computed expression value."
+        },
+        {
+          "choice": "27/7",
+          "text": "The expression evaluates exactly to 20, not 27/7. 27/7 is not the requested value.",
+          "sha256": "8eb4b05ee3452cb62b4b8d4729bab6e399009b7e51c27bbfb5ef66170b200f97",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        }
+      ],
+      "policy": 8,
+      "source_preservation": "All five learner fields equal fresh compilation and saved private original, including exact choice order.",
+      "five_field_digest": "f6596961e97bb028980b42aac626cbf97116be0ae59587e075acf8a6ac09a978",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 3,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 89,
+        "choices": [
+          2,
+          3,
+          2,
+          4
+        ],
+        "main": 122,
+        "feedback": [
+          78,
+          80,
+          66,
+          82
+        ],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "mixed:1",
+      "source": [
+        "mixed",
+        0,
+        1
+      ],
+      "explicit_key": "10",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Add: 5 + 3 = 8. Multiply: 8 * 4 = 32. Multiply by the reciprocal: 32 / 2 = 32 * (1/2) = 32/2 = 16. Subtract: 16 - 6 = 10. The answer is 10.",
+      "main_sha256": "4d1989fb070874b79c67ad3f5da134046844771e211fa046f76174c4d4cdb4e6",
+      "main_proof": "5+3=8;8*4=32;32/2=32*(1/2)=16;16-6=10. Every step is exact.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [
+        {
+          "choice": "22",
+          "text": "The expression evaluates exactly to 10, not 22. 22 is not the requested value.",
+          "sha256": "3983ac537b6f2f9db8dd9a6fc54f959bc5d85fbc3125f64d3a9093e2c6127d7b",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "96",
+          "text": "The expression evaluates exactly to 10, not 96. 96 is not the requested value.",
+          "sha256": "698c57a7650ed38aa8db80acc653e4acbfbef5dc70ecf6e48578137fc545c0e9",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "10",
+          "text": "The expression evaluates exactly to 10; 10 is the requested value.",
+          "sha256": "18e19fe851798e633dfc97e20c26d67d3e081fb656e78123c2deb9509cb9198a",
+          "status": "supported",
+          "proof": "The offered exact rational equals the computed expression value."
+        },
+        {
+          "choice": "8/3",
+          "text": "The expression evaluates exactly to 10, not 8/3. 8/3 is not the requested value.",
+          "sha256": "aef063fabc8b2d6cecd797f2ce651a1e7c71813b8f14670687917d3da7eb3d35",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        }
+      ],
+      "policy": 8,
+      "source_preservation": "All five learner fields equal fresh compilation and saved private original, including exact choice order.",
+      "five_field_digest": "65975e272990387bed1b99d3c165f717497e48a5c0ace325855940dc367fabb1",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 3,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 94,
+        "choices": [
+          2,
+          2,
+          2,
+          3
+        ],
+        "main": 139,
+        "feedback": [
+          78,
+          78,
+          66,
+          80
+        ],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "mixed:2",
+      "source": [
+        "mixed",
+        1,
+        0
+      ],
+      "explicit_key": "22",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "pass",
+      "main": "Multiply: 7 * 4 = 28. Multiply by the reciprocal: 18 / 3 = 18 * (1/3) = 18/3 = 6. Subtract: 28 - 6 = 22. The answer is 22.",
+      "main_sha256": "bbe7465f607a4a4bbce2842673d5adc50f2b23f2dccce89234e1ca7e1cf4016e",
+      "main_proof": "7*4=28;18/3=18*(1/3)=6;28-6=22. Every step is exact.",
+      "main_contextual_status": "supported",
+      "main_complete_general_rule_status": "supported",
+      "primary_full_content_status": "pass",
+      "feedback": [
+        {
+          "choice": "14/3",
+          "text": "The expression evaluates exactly to 22, not 14/3. 14/3 is not the requested value.",
+          "sha256": "3a88fc9e0936672cfc544ee3083acf2b01ca7aa992ab953d539473006c9e7f54",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "168",
+          "text": "The expression evaluates exactly to 22, not 168. 168 is not the requested value.",
+          "sha256": "79a16613ec5d74cdb6b0f081e65bf9ff51b33155f7fadb6da6d0159b6a7f593a",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        },
+        {
+          "choice": "22",
+          "text": "The expression evaluates exactly to 22; 22 is the requested value.",
+          "sha256": "737467f1755e0b3b4992192942ae4d90fc0ee7046a0ac5930ffce5f18df902b2",
+          "status": "supported",
+          "proof": "The offered exact rational equals the computed expression value."
+        },
+        {
+          "choice": "34",
+          "text": "The expression evaluates exactly to 22, not 34. 34 is not the requested value.",
+          "sha256": "856122dac72c8cc351b829f7bf147110c8fbb580426d31dceb02eb51a384f27f",
+          "status": "supported",
+          "proof": "The offered exact rational differs from the computed expression value, so both exclusion clauses are true."
+        }
+      ],
+      "policy": 8,
+      "source_preservation": "All five learner fields equal fresh compilation and saved private original, including exact choice order.",
+      "five_field_digest": "9d1d608f1fb3ab56da09e2b0932fb5551cfb8c0a82d2c70cecb708e9b385a101",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 3,
+        "reviewer": 2,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 89,
+        "choices": [
+          4,
+          3,
+          2,
+          2
+        ],
+        "main": 122,
+        "feedback": [
+          82,
+          80,
+          66,
+          78
+        ],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "mixed:3",
+      "source": [
+        "mixed",
+        1,
+        1
+      ],
+      "explicit_key": "Each of the volunteers receives a name badge at the door.",
+      "matches_certain_blind_answer": true,
+      "literal_task_unique_distinct_status": "uncertain_counts_as_failure",
+      "main": "In American English, 'each' is always singular and takes a singular verb, so 'receives' is correct. The other sentences fail: 'committee' is singular (needs 'has decided'); with 'neither…nor,' the verb agrees with the nearer subject 'players,' requiring 'were'; 'box' is the head noun and needs 'is,' not 'are.'",
+      "main_sha256": "d62b033c9bb138e1ec33d5a9c499fe49f8324b4c400bcfd7d8d19396445318aa",
+      "main_proof": "Each as the subject takes receives; nearer players favors were; box favors is. The committee exclusion repeats the pre-key blind uncertainty, which model agreement does not resolve.",
+      "main_contextual_status": "uncertain_collective_exclusion",
+      "main_complete_general_rule_status": "uncertain_collective_exclusion",
+      "primary_full_content_status": "uncertain_counts_as_failure",
+      "feedback": [],
+      "policy": 7,
+      "source_preservation": "Prompt, key and all choice strings match raw author; main bytes are exact; per-choice feedback stays empty. Choice display order may change.",
+      "five_field_digest": "36c325472d71d3658c0c6d1e0af6bf7bbdeedc748c762ac25f4496a8d973e25e",
+      "scope_fit": true,
+      "difficulty": {
+        "blind": 2,
+        "reviewer": 3,
+        "within_required_2_or_3": true
+      },
+      "bounds": {
+        "prompt": 88,
+        "choices": [
+          57,
+          58,
+          58,
+          49
+        ],
+        "main": 311,
+        "feedback": [],
+        "author_320_main": true,
+        "runtime_420_main": true
+      },
+      "shuffle_safe": true
+    }
+  ],
+  "offline_replay": {
+    "source_root": "/tmp/checkpoint-worker-response-timeout-200/backend/bedrock-question-service",
+    "source_commit": "77f794efa8cc24f94123cda61532ae7fe30d3e38",
+    "all81pins_match": true,
+    "frozen_plan_exact": true,
+    "native_adapters_passed": 12,
+    "all13request_native_configs_models_and_adaptive_settings_exact": true,
+    "prepared_passes": [
+      {
+        "job": "quantitative",
+        "pass": 0,
+        "raw_count": 5,
+        "compiled_count": 3,
+        "failures": [],
+        "all_rows_exact": true
+      },
+      {
+        "job": "quantitative",
+        "pass": 1,
+        "raw_count": 2,
+        "compiled_count": 1,
+        "failures": [],
+        "all_rows_exact": true
+      },
+      {
+        "job": "python",
+        "pass": 0,
+        "raw_count": 5,
+        "compiled_count": 0,
+        "failures": [],
+        "all_rows_exact": true
+      },
+      {
+        "job": "mixed",
+        "pass": 0,
+        "raw_count": 5,
+        "compiled_count": 3,
+        "failures": [],
+        "all_rows_exact": true
+      },
+      {
+        "job": "mixed",
+        "pass": 1,
+        "raw_count": 3,
+        "compiled_count": 1,
+        "failures": [],
+        "all_rows_exact": true
+      }
+    ],
+    "compiled_specs_reconstructed": 8,
+    "returned_compiled_all_five_fields_exact": 6,
+    "returned_prose_raw_main_exact": 7,
+    "returned_verified_records_exact": 13,
+    "live_identity_limit": "Offline checks confirm saved ordinal associations and bytes; they do not recreate live object identity beyond the frozen harness observations."
+  },
+  "calls": [
+    {
+      "ordinal": 0,
+      "job": "quantitative",
+      "stage": "question_author_constructed_v1",
+      "elapsed_seconds": 161.842709,
+      "read_timeout": 200.0,
+      "remaining_before_ms": 239891,
+      "remaining_after_ms": 78047,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "requested_author_rows": 5,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "c8b20089808aff2d5ca3b9cc32c4b6d024ef5573170b0ebd1a2830a1e76fc260",
+      "observed_author_rows": 5,
+      "exact_requested_count": true
+    },
+    {
+      "ordinal": 1,
+      "job": "quantitative",
+      "stage": "complete_choice_solver_v5_n1",
+      "elapsed_seconds": 9.149641,
+      "read_timeout": 71.993,
+      "remaining_before_ms": 77965,
+      "remaining_after_ms": 68813,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "d55235472db4b75a6e1b91d6b8e5a009caa1054d6f16b4b64e608ff51650229a"
+    },
+    {
+      "ordinal": 2,
+      "job": "quantitative",
+      "stage": "authored_solution_reviewer_v3_n4",
+      "elapsed_seconds": 24.419545,
+      "read_timeout": 62.775999999999996,
+      "remaining_before_ms": 68750,
+      "remaining_after_ms": 44328,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "b4a45cfd94f04a67f8e85efcaab72f5b7ec1a46ada2c8f1c2ac338e0de176421"
+    },
+    {
+      "ordinal": 3,
+      "job": "quantitative",
+      "stage": "question_author_constructed_v1",
+      "elapsed_seconds": 31.809292,
+      "read_timeout": 38.278,
+      "remaining_before_ms": 44248,
+      "remaining_after_ms": 12436,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "requested_author_rows": 1,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "c95d6c6a5672e08b71abcf6e80b381a53bd533cb05b4f46021e7f4517133589a",
+      "observed_author_rows": 2,
+      "exact_requested_count": false
+    },
+    {
+      "ordinal": 4,
+      "job": "quantitative",
+      "stage": "complete_choice_solver_v5_n1",
+      "elapsed_seconds": 6.786299,
+      "read_timeout": 6.396000000000001,
+      "remaining_before_ms": 12365,
+      "remaining_after_ms": 5575,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": {
+        "type": "ReadTimeoutError",
+        "code": null,
+        "message": null,
+        "request_id": null,
+        "http_status": null
+      },
+      "native_response_valid": false
+    },
+    {
+      "ordinal": 5,
+      "job": "python",
+      "stage": "question_author_constructed_v1",
+      "elapsed_seconds": 29.158937,
+      "read_timeout": 200.0,
+      "remaining_before_ms": 239953,
+      "remaining_after_ms": 210791,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "requested_author_rows": 5,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "9fce268c6b043a413b03cd6b13c7eb85c2cce8513bf94742bd0154f3e5bfe735",
+      "observed_author_rows": 5,
+      "exact_requested_count": true
+    },
+    {
+      "ordinal": 6,
+      "job": "python",
+      "stage": "complete_choice_solver_v5_n5",
+      "elapsed_seconds": 40.553468,
+      "read_timeout": 200.0,
+      "remaining_before_ms": 210721,
+      "remaining_after_ms": 170164,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "a502093296afce3b85ea43ae3c9b06aa22e467735bad8137f7d3021c7ae93492"
+    },
+    {
+      "ordinal": 7,
+      "job": "python",
+      "stage": "authored_solution_reviewer_v3_n5",
+      "elapsed_seconds": 22.579154,
+      "read_timeout": 164.116,
+      "remaining_before_ms": 170077,
+      "remaining_after_ms": 147494,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "237d4f4a80cef16b8fa3fe8c2738c4606ae0410faab1992154caaf5555dcb264"
+    },
+    {
+      "ordinal": 8,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "elapsed_seconds": 85.720444,
+      "read_timeout": 200.0,
+      "remaining_before_ms": 239953,
+      "remaining_after_ms": 154229,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "requested_author_rows": 5,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "de5ed4f2975d61356bf906db5f72d9cdf79c3f8ccaf42a7e4c4dc26199663736",
+      "observed_author_rows": 5,
+      "exact_requested_count": true
+    },
+    {
+      "ordinal": 9,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n3",
+      "elapsed_seconds": 38.259644,
+      "read_timeout": 148.176,
+      "remaining_before_ms": 154146,
+      "remaining_after_ms": 115881,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "23f874d13db31f754d459fc4c9a66f72285b533ef44d3dbec627384e253c1085"
+    },
+    {
+      "ordinal": 10,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "elapsed_seconds": 64.331404,
+      "read_timeout": 109.851,
+      "remaining_before_ms": 115824,
+      "remaining_after_ms": 51487,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "requested_author_rows": 3,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "36cfb9213858ad9ce6853f3b3a761b1296087c9ce5bdb32179c76da892c212ad",
+      "observed_author_rows": 3,
+      "exact_requested_count": true
+    },
+    {
+      "ordinal": 11,
+      "job": "mixed",
+      "stage": "complete_choice_solver_v5_n1",
+      "elapsed_seconds": 15.575591,
+      "read_timeout": 45.427,
+      "remaining_before_ms": 51397,
+      "remaining_after_ms": 35816,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "e0b2673d9e04799a2d5f8ac95f44fbeef84821ba599a360958f0d4520f08240e"
+    },
+    {
+      "ordinal": 12,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n2",
+      "elapsed_seconds": 20.450152,
+      "read_timeout": 29.762,
+      "remaining_before_ms": 35731,
+      "remaining_after_ms": 15275,
+      "sdk_attempts": 1,
+      "exact_pinned_native_config": true,
+      "error": null,
+      "native_response_valid": true,
+      "stop_reason": "end_turn",
+      "within_recorded_read_timeout": true,
+      "raw_text_sha256": "4b8eefb2f4d71c2e422cd9c517231b6c70d073d706888d9fad3a1e46bc4d1bcc"
+    }
+  ],
+  "private_reason_audit": {
+    "choice_labels_concordant_with_certain_blind_labels": 27,
+    "choice_labels_touching_locked_uncertainty": 1,
+    "pair_labels_matching_distinct_blind_pairs": 42,
+    "status_counts": {
+      "contextual_pass_general_rule_sensitivity": 1,
+      "locked_collective_agreement_uncertainty": 4,
+      "supported_in_actual_task": 64,
+      "unsupported_factual_fragment": 1
+    },
+    "records": [
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choices.a",
+        "bound_choice_or_pair": "12",
+        "label": "refuted",
+        "reason": "2(12)+3=27>25, so n=12 violates the constraint 2n+3≤25. It is not in the feasible set at all, so it cannot be the largest feasible integer.",
+        "reason_length": 139,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choices.b",
+        "bound_choice_or_pair": "11",
+        "label": "supported",
+        "reason": "2(11)+3=25≤25, so n=11 satisfies the constraint. n=12 fails the constraint, so no integer in [5,30] larger than 11 satisfies it. Thus 11 is the largest qualifying integer.",
+        "reason_length": 171,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choices.c",
+        "bound_choice_or_pair": "10",
+        "label": "refuted",
+        "reason": "2(10)+3=23≤25, so n=10 satisfies the constraint, but n=11 also satisfies it and is larger. Therefore 10 is not the largest qualifying integer in the range.",
+        "reason_length": 155,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choices.d",
+        "bound_choice_or_pair": "5",
+        "label": "refuted",
+        "reason": "n=5 satisfies 2(5)+3=13≤25, but many larger values (up to 11) also satisfy the constraint, so 5 is far from the largest qualifying integer.",
+        "reason_length": 139,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "12",
+          "rightChoice": "11"
+        },
+        "label": "distinct",
+        "reason": "12 and 11 are distinct integer values proposed as the answer to a 'largest n' question.",
+        "reason_length": 87,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "12",
+          "rightChoice": "10"
+        },
+        "label": "distinct",
+        "reason": "12 and 10 are distinct integer values proposed as the answer.",
+        "reason_length": 61,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "12",
+          "rightChoice": "5"
+        },
+        "label": "distinct",
+        "reason": "12 and 5 are distinct integer values proposed as the answer.",
+        "reason_length": 60,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "11",
+          "rightChoice": "10"
+        },
+        "label": "distinct",
+        "reason": "11 and 10 are distinct integer values; both satisfy the constraint but propose different largest-n answers.",
+        "reason_length": 107,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "11",
+          "rightChoice": "5"
+        },
+        "label": "distinct",
+        "reason": "11 and 5 are distinct integer values proposed as the answer.",
+        "reason_length": 60,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 1,
+        "item_index": 0,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "10",
+          "rightChoice": "5"
+        },
+        "label": "distinct",
+        "reason": "10 and 5 are distinct integer values proposed as the answer.",
+        "reason_length": 60,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choices.a",
+        "bound_choice_or_pair": "50",
+        "label": "refuted",
+        "reason": "nums[-1] is 50 (last element). nums[-2] is the second-to-last element, which is 40, not 50.",
+        "reason_length": 91,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choices.b",
+        "bound_choice_or_pair": "40",
+        "label": "supported",
+        "reason": "In Python, negative index -2 counts two from the end. List is [10,20,30,40,50], so index -2 is 40. This is correct.",
+        "reason_length": 115,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choices.c",
+        "bound_choice_or_pair": "30",
+        "label": "refuted",
+        "reason": "nums[-3] would be 30. nums[-2] is 40, not 30.",
+        "reason_length": 45,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choices.d",
+        "bound_choice_or_pair": "20",
+        "label": "refuted",
+        "reason": "nums[-4] would be 20. nums[-2] is 40, not 20.",
+        "reason_length": 45,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "50",
+          "rightChoice": "40"
+        },
+        "label": "distinct",
+        "reason": "50 and 40 are distinct integer values; both are elements in the list but at different negative indices (-1 vs -2).",
+        "reason_length": 114,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "50",
+          "rightChoice": "30"
+        },
+        "label": "distinct",
+        "reason": "50 and 30 are distinct integer values at different positions in the list.",
+        "reason_length": 73,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "50",
+          "rightChoice": "20"
+        },
+        "label": "distinct",
+        "reason": "50 and 20 are distinct integer values at different positions.",
+        "reason_length": 61,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "40",
+          "rightChoice": "30"
+        },
+        "label": "distinct",
+        "reason": "40 and 30 are distinct integer values at different positions.",
+        "reason_length": 61,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "40",
+          "rightChoice": "20"
+        },
+        "label": "distinct",
+        "reason": "40 and 20 are distinct integer values at different positions.",
+        "reason_length": 61,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 0,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "30",
+          "rightChoice": "20"
+        },
+        "label": "distinct",
+        "reason": "30 and 20 are distinct integer values at different positions.",
+        "reason_length": 61,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choices.a",
+        "bound_choice_or_pair": "0",
+        "label": "refuted",
+        "reason": "0 is falsy; Python's `or` moves past it and does not return 0. The result is the first truthy operand encountered after 0.",
+        "reason_length": 122,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choices.b",
+        "bound_choice_or_pair": "\"hello\"",
+        "label": "supported",
+        "reason": "Python `or` returns the first truthy value. 0 is falsy, so evaluation continues; 'hello' is truthy, so it is returned as-is. This is correct.",
+        "reason_length": 141,
+        "assessment": "contextual_pass_general_rule_sensitivity",
+        "proof": "The exact or-chain returns hello; the generic first-truthy description omits the all-false case. The learner main has the same separately reported sensitivity."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choices.c",
+        "bound_choice_or_pair": "True",
+        "label": "refuted",
+        "reason": "Python `or` returns the actual operand value, not a boolean conversion. The result is the string 'hello', not the boolean True.",
+        "reason_length": 127,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choices.d",
+        "bound_choice_or_pair": "99",
+        "label": "refuted",
+        "reason": "Evaluation stops at 'hello' due to short-circuit. 99 is never returned.",
+        "reason_length": 71,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "0",
+          "rightChoice": "\"hello\""
+        },
+        "label": "distinct",
+        "reason": "0 proposes the integer zero as the result; 'hello' proposes the string. Different values.",
+        "reason_length": 89,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "0",
+          "rightChoice": "True"
+        },
+        "label": "distinct",
+        "reason": "0 proposes integer zero; True proposes boolean True. Different Python values.",
+        "reason_length": 77,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "0",
+          "rightChoice": "99"
+        },
+        "label": "distinct",
+        "reason": "0 and 99 are different integer values.",
+        "reason_length": 38,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"hello\"",
+          "rightChoice": "True"
+        },
+        "label": "distinct",
+        "reason": "'hello' is the actual string returned; True is the boolean. Different Python objects/types.",
+        "reason_length": 91,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"hello\"",
+          "rightChoice": "99"
+        },
+        "label": "distinct",
+        "reason": "'hello' and 99 are different values; one string, one integer.",
+        "reason_length": 61,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 1,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "True",
+          "rightChoice": "99"
+        },
+        "label": "distinct",
+        "reason": "True (boolean) and 99 (integer) are different Python values.",
+        "reason_length": 60,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choices.a",
+        "bound_choice_or_pair": "True",
+        "label": "refuted",
+        "reason": "The condition x>10 evaluates to True, but the ternary assigns 'big' to label, not the boolean result of the condition.",
+        "reason_length": 118,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choices.b",
+        "bound_choice_or_pair": "\"small\"",
+        "label": "refuted",
+        "reason": "x=15 satisfies x>10, so the else branch ('small') is not taken. label is 'big', not 'small'.",
+        "reason_length": 92,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choices.c",
+        "bound_choice_or_pair": "15",
+        "label": "refuted",
+        "reason": "label is assigned the result of the conditional expression, which is 'big'. It does not receive the value of x (15).",
+        "reason_length": 116,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choices.d",
+        "bound_choice_or_pair": "\"big\"",
+        "label": "supported",
+        "reason": "x=15 > 10 is True, so the if-branch value 'big' is assigned to label. Correct.",
+        "reason_length": 78,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "True",
+          "rightChoice": "\"small\""
+        },
+        "label": "distinct",
+        "reason": "True (boolean) vs 'small' (string) are different proposed values for label.",
+        "reason_length": 75,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "True",
+          "rightChoice": "15"
+        },
+        "label": "distinct",
+        "reason": "True (boolean) vs 15 (integer) are different proposed values for label.",
+        "reason_length": 71,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "True",
+          "rightChoice": "\"big\""
+        },
+        "label": "distinct",
+        "reason": "True (boolean) vs 'big' (string) are different proposed values for label.",
+        "reason_length": 73,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"small\"",
+          "rightChoice": "15"
+        },
+        "label": "distinct",
+        "reason": "'small' and 15 are different Python values/types.",
+        "reason_length": 49,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"small\"",
+          "rightChoice": "\"big\""
+        },
+        "label": "distinct",
+        "reason": "'small' and 'big' are different string values.",
+        "reason_length": 46,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 2,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "15",
+          "rightChoice": "\"big\""
+        },
+        "label": "distinct",
+        "reason": "15 (integer) and 'big' (string) are different Python values/types.",
+        "reason_length": 66,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choices.a",
+        "bound_choice_or_pair": "[\"b\", \"c\"]",
+        "label": "refuted",
+        "reason": "items[2:4] starts at index 2 ('c'), not index 1 ('b'). ['b','c'] would be items[1:3].",
+        "reason_length": 85,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choices.b",
+        "bound_choice_or_pair": "[\"b\", \"c\", \"d\"]",
+        "label": "refuted",
+        "reason": "items[2:4] excludes index 4; it covers indices 2 and 3 only: ['c','d'], not ['b','c','d'].",
+        "reason_length": 90,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choices.c",
+        "bound_choice_or_pair": "[\"c\", \"d\", \"e\"]",
+        "label": "refuted",
+        "reason": "items[2:4] stops before index 4 ('e'), so 'e' is not included. This would be items[2:5].",
+        "reason_length": 88,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choices.d",
+        "bound_choice_or_pair": "[\"c\", \"d\"]",
+        "label": "supported",
+        "reason": "items[2:4] includes indices 2 ('c') and 3 ('d'), stopping before index 4. Result is ['c','d']. Correct.",
+        "reason_length": 103,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "[\"b\", \"c\"]",
+          "rightChoice": "[\"b\", \"c\", \"d\"]"
+        },
+        "label": "distinct",
+        "reason": "['b','c'] has different start element and different length than ['b','c','d']. Distinct lists.",
+        "reason_length": 94,
+        "assessment": "unsupported_factual_fragment",
+        "proof": "Both lists start with b. The reason incorrectly says different start element. Their lengths and full list values do differ, so the distinct verdict remains correct."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "[\"b\", \"c\"]",
+          "rightChoice": "[\"c\", \"d\", \"e\"]"
+        },
+        "label": "distinct",
+        "reason": "['b','c'] starts at 'b'; ['c','d','e'] starts at 'c' and includes 'e'. Distinct lists.",
+        "reason_length": 86,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "[\"b\", \"c\"]",
+          "rightChoice": "[\"c\", \"d\"]"
+        },
+        "label": "distinct",
+        "reason": "['b','c'] starts at 'b'; ['c','d'] starts at 'c'. Different elements.",
+        "reason_length": 69,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "[\"b\", \"c\", \"d\"]",
+          "rightChoice": "[\"c\", \"d\", \"e\"]"
+        },
+        "label": "distinct",
+        "reason": "['b','c','d'] starts at 'b'; ['c','d','e'] starts at 'c' and ends at 'e'. Different elements.",
+        "reason_length": 93,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "[\"b\", \"c\", \"d\"]",
+          "rightChoice": "[\"c\", \"d\"]"
+        },
+        "label": "distinct",
+        "reason": "['b','c','d'] has three elements starting at 'b'; ['c','d'] has two elements starting at 'c'. Distinct.",
+        "reason_length": 103,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 3,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "[\"c\", \"d\", \"e\"]",
+          "rightChoice": "[\"c\", \"d\"]"
+        },
+        "label": "distinct",
+        "reason": "['c','d','e'] includes 'e' and has 3 elements; ['c','d'] has 2 elements. Distinct lists.",
+        "reason_length": 88,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choices.a",
+        "bound_choice_or_pair": "A ZeroDivisionError is raised",
+        "label": "refuted",
+        "reason": "Python's `and` short-circuits: `[]` is falsy, so the right operand `1/0` is never evaluated. No error is raised.",
+        "reason_length": 112,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choices.b",
+        "bound_choice_or_pair": "[]",
+        "label": "supported",
+        "reason": "`[]` is falsy, so `and` short-circuits and returns the first falsy operand `[]`. This is correct.",
+        "reason_length": 97,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choices.c",
+        "bound_choice_or_pair": "0",
+        "label": "refuted",
+        "reason": "The `and` operator returns the actual operand `[]`, not the integer 0. Short-circuit prevents evaluation of 1/0.",
+        "reason_length": 112,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choices.d",
+        "bound_choice_or_pair": "False",
+        "label": "refuted",
+        "reason": "Python returns the actual object `[]`, not the boolean False, even though `[]` is falsy. `[] is not False`.",
+        "reason_length": 107,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "A ZeroDivisionError is raised",
+          "rightChoice": "[]"
+        },
+        "label": "distinct",
+        "reason": "Choice a proposes an exception is raised; choice b proposes the value [] is returned. Entirely different outcomes.",
+        "reason_length": 114,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "A ZeroDivisionError is raised",
+          "rightChoice": "0"
+        },
+        "label": "distinct",
+        "reason": "Choice a proposes a ZeroDivisionError; choice c proposes integer 0. Different outcomes.",
+        "reason_length": 87,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "A ZeroDivisionError is raised",
+          "rightChoice": "False"
+        },
+        "label": "distinct",
+        "reason": "Choice a proposes an exception; choice d proposes boolean False. Different outcomes.",
+        "reason_length": 84,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "[]",
+          "rightChoice": "0"
+        },
+        "label": "distinct",
+        "reason": "[] is an empty list object; 0 is an integer. Different Python values/types.",
+        "reason_length": 75,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "[]",
+          "rightChoice": "False"
+        },
+        "label": "distinct",
+        "reason": "[] (empty list) and False (boolean) are different Python objects; [] == False is False in Python.",
+        "reason_length": 97,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 6,
+        "item_index": 4,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "0",
+          "rightChoice": "False"
+        },
+        "label": "distinct",
+        "reason": "0 (integer) and False (boolean) are different types; though 0==False in Python, they propose different objects as the result.",
+        "reason_length": 125,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choices.a",
+        "bound_choice_or_pair": "Neither the coach nor the players was ready for the match.",
+        "label": "refuted",
+        "reason": "With 'neither...nor,' the verb agrees with the nearer subject. 'Players' is plural and nearest to the verb, so the correct form is 'were,' not 'was.' This sentence violates subject-verb agreement.",
+        "reason_length": 196,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choices.b",
+        "bound_choice_or_pair": "The committee have decided to postpone the annual meeting.",
+        "label": "refuted",
+        "reason": "In standard written American English, collective nouns like 'committee' take singular verbs. 'The committee have decided' is a British English construction; AmE requires 'has decided.' This sentence is incorrect under the stated standard.",
+        "reason_length": 238,
+        "assessment": "locked_collective_agreement_uncertainty",
+        "proof": "This categorically excludes plural committee agreement. The pre-key blind lock recorded that applicability as uncertain under recognized notional agreement. Pair distinctness does not depend on resolving it."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choices.c",
+        "bound_choice_or_pair": "The box of chocolates are on the kitchen counter.",
+        "label": "refuted",
+        "reason": "The grammatical subject is 'box' (singular); 'of chocolates' is a prepositional phrase, not the subject. The verb should be 'is,' not 'are.' This sentence violates subject-verb agreement.",
+        "reason_length": 187,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choices.d",
+        "bound_choice_or_pair": "Each of the volunteers receives a name badge at the door.",
+        "label": "supported",
+        "reason": "'Each' is an indefinite pronoun that always takes a singular verb in standard written American English. 'Each of the volunteers receives' correctly matches a singular verb to the singular pronoun subject. This sentence is grammatically correct.",
+        "reason_length": 244,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "Neither the coach nor the players was ready for the match.",
+          "rightChoice": "The committee have decided to postpone the annual meeting."
+        },
+        "label": "distinct",
+        "reason": "A errs on the neither...nor closer-subject rule (plural 'players' requires 'were'); B errs on AmE collective-noun number (committee requires 'has'). Different agreement errors, both incorrect.",
+        "reason_length": 192,
+        "assessment": "locked_collective_agreement_uncertainty",
+        "proof": "This categorically excludes plural committee agreement. The pre-key blind lock recorded that applicability as uncertain under recognized notional agreement. Pair distinctness does not depend on resolving it."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "Neither the coach nor the players was ready for the match.",
+          "rightChoice": "The box of chocolates are on the kitchen counter."
+        },
+        "label": "distinct",
+        "reason": "A misapplies the neither...nor proximity rule; C misidentifies 'chocolates' in a prepositional phrase as the subject instead of 'box.' Different errors producing different incorrect sentences.",
+        "reason_length": 192,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "Neither the coach nor the players was ready for the match.",
+          "rightChoice": "Each of the volunteers receives a name badge at the door."
+        },
+        "label": "distinct",
+        "reason": "A proposes an incorrect sentence (wrong verb with neither...nor); D proposes a correct sentence (each + singular verb). They give opposite answers to the question of which sentence is correct.",
+        "reason_length": 192,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "The committee have decided to postpone the annual meeting.",
+          "rightChoice": "The box of chocolates are on the kitchen counter."
+        },
+        "label": "distinct",
+        "reason": "B uses a plural verb with a collective noun (AmE error); C uses a plural verb with a singular noun 'box' (prepositional phrase confusion). Both incorrect but for different grammatical reasons.",
+        "reason_length": 192,
+        "assessment": "locked_collective_agreement_uncertainty",
+        "proof": "This categorically excludes plural committee agreement. The pre-key blind lock recorded that applicability as uncertain under recognized notional agreement. Pair distinctness does not depend on resolving it."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "The committee have decided to postpone the annual meeting.",
+          "rightChoice": "Each of the volunteers receives a name badge at the door."
+        },
+        "label": "distinct",
+        "reason": "B proposes an incorrect sentence (collective noun with plural verb in AmE); D proposes the correct sentence (each + singular verb). Opposite answers to the question.",
+        "reason_length": 165,
+        "assessment": "locked_collective_agreement_uncertainty",
+        "proof": "This categorically excludes plural committee agreement. The pre-key blind lock recorded that applicability as uncertain under recognized notional agreement. Pair distinctness does not depend on resolving it."
+      },
+      {
+        "call_ordinal": 11,
+        "item_index": 0,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "The box of chocolates are on the kitchen counter.",
+          "rightChoice": "Each of the volunteers receives a name badge at the door."
+        },
+        "label": "distinct",
+        "reason": "C proposes an incorrect sentence (plural verb with singular subject 'box'); D proposes the correct sentence (singular verb with 'each'). Opposite answers to the question.",
+        "reason_length": 170,
+        "assessment": "supported_in_actual_task",
+        "proof": "The concrete result, value/type distinction or grammatical distinction supports this exact offered choice/pair."
+      }
+    ],
+    "concrete_wrong_fragment": "Call6 Python slice row3 pairab claims different start element for [b,c] and[b,c,d]; both start with b. Their different lengths still support distinctness. This false fragment is private, not learner teaching.",
+    "audit_records": [
+      {
+        "call_ordinal": 2,
+        "dense_index": 0,
+        "prompt": "Let q be a unitless number, defined by q = ((3/4) + (5/6)). What is its exact value?",
+        "valid": true,
+        "answer": "19/12",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 2,
+        "dense_index": 1,
+        "prompt": "Let q be a unitless number, defined by q = ((7/10) * (4/5)). What is its exact value?",
+        "valid": true,
+        "answer": "14/25",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 2,
+        "dense_index": 2,
+        "prompt": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: (3 * x) >= 22. What is the minimum x in this domain satisfying the condition?",
+        "valid": true,
+        "answer": "8",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 2,
+        "dense_index": 3,
+        "prompt": "What is the largest integer n in the range 5 to 30, inclusive, such that 2n + 3 ≤ 25?",
+        "valid": true,
+        "answer": "11",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 7,
+        "dense_index": 0,
+        "prompt": "What does the following expression evaluate to?\n\nnums = [10, 20, 30, 40, 50]\nnums[-2]",
+        "valid": true,
+        "answer": "40",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 7,
+        "dense_index": 1,
+        "prompt": "What does the following expression evaluate to in Python 3?\n\n0 or \"hello\" or 99",
+        "valid": true,
+        "answer": "\"hello\"",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 7,
+        "dense_index": 2,
+        "prompt": "After running the code below, what value does label hold?\n\nx = 15\nlabel = \"big\" if x > 10 else \"small\"",
+        "valid": true,
+        "answer": "\"big\"",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 7,
+        "dense_index": 3,
+        "prompt": "What does the following expression evaluate to?\n\nitems = [\"a\", \"b\", \"c\", \"d\", \"e\"]\nitems[2:4]",
+        "valid": true,
+        "answer": "[\"c\", \"d\"]",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 7,
+        "dense_index": 4,
+        "prompt": "What does the following expression evaluate to in Python 3?\n\n[] and 1/0",
+        "valid": true,
+        "answer": "[]",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 9,
+        "dense_index": 0,
+        "prompt": "Let q be a unitless number, defined by q = (((36 / 4) * 3) - 7). What is its exact value?",
+        "valid": true,
+        "answer": "20",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 9,
+        "dense_index": 1,
+        "prompt": "Let q be a unitless number, defined by q = ((((5 + 3) * 4) / 2) - 6). What is its exact value?",
+        "valid": true,
+        "answer": "10",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 9,
+        "dense_index": 2,
+        "prompt": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: ((2 * x) - 3) >= 11. What is the minimum x in this domain satisfying the condition?",
+        "valid": false,
+        "answer": "7",
+        "difficulty": 2,
+        "explanationSupport": "uncertain",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": true,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 12,
+        "dense_index": 0,
+        "prompt": "Let q be a unitless number, defined by q = ((7 * 4) - (18 / 3)). What is its exact value?",
+        "valid": true,
+        "answer": "22",
+        "difficulty": 2,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      {
+        "call_ordinal": 12,
+        "dense_index": 1,
+        "prompt": "Which sentence uses correct subject-verb agreement in standard written American English?",
+        "valid": true,
+        "answer": "Each of the volunteers receives a name badge at the door.",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      }
+    ],
+    "audit_free_reason_strings": 0
+  },
+  "nonreturned_paths": {
+    "position_reference_rejections": [
+      {
+        "source": [
+          "quantitative",
+          0,
+          1
+        ],
+        "reason": "Existing position-reference guard rejects the unchanged authored main.",
+        "main": "To divide fractions, multiply by the reciprocal of the divisor: (1/2) ÷ (3/4) = (1/2) × (4/3) = 4/6 = 2/3. Choice a (3/8) results from multiplying without flipping. Choice c (3/2) comes from flipping the dividend instead of the divisor. Choice d (8/3) results from flipping both fractions."
+      },
+      {
+        "source": [
+          "mixed",
+          0,
+          3
+        ],
+        "reason": "Existing position-reference guard rejects the unchanged authored main.",
+        "main": "The grammatical subject is \"box\" (singular); \"of cookies\" is a prepositional phrase that modifies the subject but does not change it. A singular subject requires the singular verb \"was.\" Choice a pairs singular \"box\" with plural \"were.\" Choices c and d pair plural \"boxes\" with singular \"was.\""
+      },
+      {
+        "source": [
+          "mixed",
+          0,
+          4
+        ],
+        "reason": "Existing position-reference guard rejects the unchanged authored main.",
+        "main": "In choice b, \"he\" can refer only to Thomas (the single named person), and \"it\" can refer only to the office. In choices a, c, and d, the pronoun could plausibly refer to either of two people named in the sentence, making the reference ambiguous."
+      },
+      {
+        "source": [
+          "mixed",
+          1,
+          2
+        ],
+        "reason": "Existing position-reference guard rejects the unchanged authored main.",
+        "main": "In (c), Maria is the only person mentioned, so 'she' and 'her' can refer only to her—the reference is unambiguous. In (a), 'he' could be James or his brother. In (b), 'her' could belong to the teacher or the student. In (d), 'he' could be Kevin or Paul."
+      }
+    ],
+    "quantitative_topup": {
+      "requested": 1,
+      "raw_returned": 2,
+      "first_item": "Prose5/6-3/8 with exact key11/24 and correct main.",
+      "second_item": "Valid compiled maximum task with key8; discarded as surplus by unchanged first-N admission.",
+      "outcome": "Only first prose item reaches solver. Actual read ceiling shrinks to6.396seconds and the call times out at6.786299; runtime returns the previously verified4 items. No failed response is salvaged or reordered."
+    },
+    "mixed_audit_veto": {
+      "source": [
+        "mixed",
+        0,
+        2
+      ],
+      "verdict": "validfalse, explanationSupportuncertain, explanationflagtrue",
+      "exact_math": "Domain integers1..20 and2*x-3>=11 imply minimum7. At7 comparison11>=11 is true; all smaller domain values fail. All four saved choice feedback comparisons are true.",
+      "assessment": "The compiler main and feedback are independently sound; the auditor unnecessarily withheld this item on explanation uncertainty. No free audit reason was returned, so its internal cause is unknown."
+    }
+  },
+  "quota_and_timing": {
+    "returned_by_job": [
+      4,
+      5,
+      4
+    ],
+    "compiled_by_job": [
+      3,
+      0,
+      3
+    ],
+    "english_prose_mixed": 1,
+    "calls_by_job": [
+      5,
+      3,
+      5
+    ],
+    "job_seconds": [
+      234.468424,
+      92.549306,
+      224.776729
+    ],
+    "all_jobs_within240": true,
+    "within6calls_perjob18total": true,
+    "at_least14total": false,
+    "at_least4perjob": true,
+    "compiled_total_at_least6": true,
+    "quantitative_compiled_at_least4": false,
+    "mixed_compiled_at_least2": true,
+    "mixed_english_at_least1": true,
+    "qualified": false,
+    "first_author": "161.842709seconds within200 ceiling; this does not establish why the prior call timed out or any cache causal effect.",
+    "usage": {
+      "input_tokens": 48562,
+      "output_tokens": 49801,
+      "calls_without_reported_usage": 1,
+      "missing_usage_is_not_zero": true
+    }
+  },
+  "limits": [
+    "No new provider call, credential/AWS access, source edit, frozen artifact change or deployment occurred in this review.",
+    "The two missing returned slots and one unproduced solver judgment retain zero semantic credit.",
+    "The separate newer fraction-priority constructor was not used or evaluated; all replay uses source77 with its old constructor.",
+    "No current or previous failed trial is rescued. Returned content, private visible reasoning, structure and quotas are distinct evidence.",
+    "Primary-source grammar uncertainty and contextual operator sensitivity are explicit rather than manufactured categorical gold.",
+    "Qualitative difficulty/plausibility assessments are not learner calibration or universal correctness guarantees."
+  ]
+}
