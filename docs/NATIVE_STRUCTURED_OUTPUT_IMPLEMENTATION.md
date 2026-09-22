@@ -113,6 +113,15 @@ All ten admission decisions and forty answer labels matched gold, while one of
 sixty pair labels referred to the wrong pair. That semantic error remains
 reported; native field identities do not guarantee correct model judgments.
 
+The native author now presents an output example and answer requirement that
+match its actual fixed choice slots and `correctChoice` field. Previously the
+same system prompt first requested legacy arrays/`expectedAnswer`, then appended
+instructions forbidding them. The legacy path retains its original example;
+all wire schema bytes and answer adapters are unchanged. Actual orchestration
+tests validate each transmitted example against its selected schema. The full
+backend suite passes 1,151 tests. This removes contradictory format instructions;
+no fresh semantic accuracy improvement is claimed from this cleanup alone.
+
 All experiments retain their prospective plans, raw attempts and failed criteria:
 
 - [Author ordering comparison](evidence/native-author-order-20260922/REPORT.md):

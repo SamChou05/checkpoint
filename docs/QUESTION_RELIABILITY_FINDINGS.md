@@ -12,6 +12,7 @@ against the stored key. Each boundary needs its own invariant.
 | --- | --- | --- |
 | Native structured output support existed, but the inspected TestFlight API and worker were using legacy prompt-only JSON. | [Recorded deployment configuration](evidence/reviewer-release-20260922/DEPLOYMENT.md). | Worker transport can be selected independently, incompatible model configurations fail before deployment, and native authoring uses four required slots plus a key enum. Rollout remains separate. |
 | Alphabetical schema serialization asked the author to emit choices before the stem and its key before the stem. | [Controlled ordering comparison](evidence/native-author-order-20260922/REPORT.md): three plainly wrong keys in the sorted arm; none plainly wrong and one ambiguous item in the ordered arm. | Versioned author v3 places the stem first and explanation before the key. Exact key text is derived from the selected choice slot. Historical schema bytes remain unchanged. |
+| Native author instructions still requested legacy arrays and `expectedAnswer` before appending a contrary slot-format override. | Actual dispatched prompt inspection and schema-validation tests for native and legacy examples. | The native example and key requirement now match four fixed slots and `correctChoice`; schema bytes and legacy behavior are unchanged. This is format consistency, not a demonstrated semantic accuracy gain. |
 | Native review arrays could contain phantom indexes while satisfying JSON Schema. | [Count-bound trial](evidence/reviewer-identity-20260922/RESULTS.md): 2/2 calls returned all ten required identities, while semantic checks still failed. | Native reviewer v3 requires one object key per trusted survivor; missing or extra identities cannot be admitted. |
 | An array could describe six pair comparisons but could not enforce their identities. The model emitted seven rows including a self-pair. | [Stopped ordering trial](evidence/choice-quality-release-20260922/ORDER_RESULTS.md). | Four judgment slots and six closed pair slots, with exact endpoints supplied by code and strict decoding. Slot mapping does not depend on the key. |
 | The solver outer array could not constrain every item identity; a straightforward count-bound replacement exceeded AWS compiled-grammar limits. | [Exact AWS diagnostic](evidence/solver-identity-qualification-20260922/ERROR_DIAGNOSTIC_RESULTS.md) and [shared-schema trial](evidence/solver-shared-schema-qualification-20260922/RESULTS.md): 2/2 calls, all ten identities. | Solver v5 uses shared definitions and required question keys; strict local decoding preserves all choice/pair bindings. All forty supported counts are equivalent locally; live acceptance covers count five. |
@@ -54,7 +55,7 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,150
+The tested structural changes are on main. Backend verification passes 1,151
 tests. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter

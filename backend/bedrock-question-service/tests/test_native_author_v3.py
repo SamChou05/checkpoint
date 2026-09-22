@@ -7,7 +7,9 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 
-from lambda_test_support import _request_payload
+from jsonschema import Draft202012Validator
+
+from lambda_test_support import _raw_question, _request_payload
 from native_output_contracts import adapt_native_response, contract_metadata, native_output_config, native_prompt
 from question_generation import ProviderCallBudget, _generate_provider_payload, _generate_sanitized_questions
 from request_contract import _normalize_request
@@ -21,7 +23,7 @@ CONTRACT = "question_author_v3"
 
 
 class NativeAuthorV3Tests(unittest.TestCase):
-    def test_v3_uses_exact_tested_schema_bytes_and_unchanged_transport_prompt(self):
+    def test_v3_uses_exact_tested_schema_bytes_and_shared_slot_prompt(self):
         plan = json.loads((ROOT / "docs/evidence/native-author-order-20260922/plan.json").read_text())
         tested = next(job for job in plan["jobs"] if job["arm"] == "ordered")
         expected = tested["provider_request"]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]
@@ -66,8 +68,32 @@ class NativeAuthorV3Tests(unittest.TestCase):
         self.assertEqual(result["questions"][0]["choices"], list(source["choices"].values()))
         self.assertEqual(result["questions"][0]["expectedAnswer"], source["choices"]["d"])
         self.assertEqual(client.calls[0]["outputConfig"], native_output_config(CONTRACT))
+        instructions = client.calls[0]["system"][0]["text"]
+        examples = [json.loads(line) for line in instructions.splitlines() if line.startswith('{"questions":')]
+        self.assertEqual(len(examples), 1)
+        schema = json.loads(client.calls[0]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["schema"])
+        Draft202012Validator(schema).validate(examples[0])
+        self.assertNotIn("expectedAnswer exactly equals", instructions)
+        self.assertIn("correctChoice identifies exactly one", instructions)
         self.assertEqual(metrics["ProviderObservations"][0]["structuredOutput"],
                          {"mode": "native", **contract_metadata(CONTRACT)})
+
+    def test_legacy_author_keeps_its_own_matching_output_example(self):
+        client = Client(raw(_raw_question("Which statement follows from the given evidence?")))
+        request = _normalize_request(_request_payload(target_count=1))
+        with patch.dict(os.environ, {
+            "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy", "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+            "BEDROCK_FALLBACK_MODEL_ID": "", "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+        }):
+            _generate_provider_payload(request, client, ProviderCallBudget(1))
+        sent = client.calls[0]
+        self.assertNotIn("outputConfig", sent)
+        instructions = sent["system"][0]["text"]
+        example = next(json.loads(line) for line in instructions.splitlines() if line.startswith('{"questions":'))
+        schema = json.loads(native_output_config("question_author_v1")["textFormat"]["structure"]["jsonSchema"]["schema"])
+        Draft202012Validator(schema).validate(example)
+        self.assertIn("expectedAnswer exactly equals one", instructions)
+        self.assertNotIn("correctChoice", instructions)
 
     def test_initial_and_json_repair_share_the_mode_selected_author_contract(self):
         request = _normalize_request(_request_payload(target_count=1))

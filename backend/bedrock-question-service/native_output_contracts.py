@@ -29,6 +29,10 @@ Contract = Literal[
 
 MAX_REVIEW_BATCH_COUNT = 40
 
+# Match only the owned author example, never arbitrary JSON or subject content.
+_LEGACY_AUTHOR_EXAMPLE = '{"questions":[{"prompt":"...","explanation":"...","expectedAnswer":"...","choices":["...","...","...","..."],"topic":"...","skillID":"...","objectiveID":"...","objective":"...","difficulty":3,"format":"Multiple Choice"}]}'
+_SLOT_AUTHOR_EXAMPLE = '{"questions":[{"prompt":"...","choices":{"a":"...","b":"...","c":"...","d":"..."},"explanation":"...","correctChoice":"a","topic":"...","skillID":"...","objectiveID":"...","objective":"...","difficulty":3,"format":"Multiple Choice"}]}'
+
 
 @dataclass(frozen=True)
 class ReviewerSlotContract:
@@ -316,8 +320,13 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
             "the question, choices or key."
         )
     if contract in {"question_author_v2", "question_author_v3"}:
-        # Keep the tested slot-transport wording byte-identical. The v2 label
-        # identifies this representation; v3 changes ordering, not these rules.
+        # Give the author one consistent representation. A later override
+        # should not have to contradict the example and answer requirement.
+        # Historical wire schemas and legacy prompts remain unchanged.
+        system_prompt = system_prompt.replace(_LEGACY_AUTHOR_EXAMPLE, _SLOT_AUTHOR_EXAMPLE).replace(
+            "Exactly four distinct choices; expectedAnswer exactly equals one of them.",
+            "Exactly four distinct choices; correctChoice identifies exactly one of them.",
+        )
         return system_prompt + """
 
 NATIVE TRANSPORT OVERRIDE (question_author_v2): Return choices as an object
@@ -326,7 +335,7 @@ exactly one of "a", "b", "c", or "d", identifying the slot containing the
 correct answer. Do not return expectedAnswer or a choices array. Slot names
 are transport fields only; do not add slot labels to the choice text. Preserve
 the requested question content and all other required and optional metadata.
-This replaces the earlier output example's choices and answer representation.
+The output example and native schema use this same representation.
 Do not add fields. The application derives the answer text from the selected
 slot; the explanation must not select or replace that answer.
 """
