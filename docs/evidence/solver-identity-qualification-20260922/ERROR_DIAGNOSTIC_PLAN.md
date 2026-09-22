@@ -1,0 +1,9 @@
+# One-request diagnostic repeat for the missing service error
+
+The frozen structural qualification failed on its first request with provider ValidationException, but that runner saved only the exception class. This separate diagnostic repeats exactly that first rejected provider request once solely to recover AWS's validation details. It is not a resumed qualification or a retry/rescue of its outcome. The failed qualification remains0/2 even if this diagnostic unexpectedly succeeds. No semantic or deployment approval follows.
+
+Copy the complete first request object from the failed frozen plan without changing any field. Same Sonnet4.6 adaptive-high/no-temperature/16000 settings, count-five schema, prompt, inputs and order. Same us-east-1 client, connect3s/read75s and SDK total attempts1. Maximum one dispatch, with new exclusive plan and capture files; no resume, retries, warmups, substitutions, follow-up calls or replacements.
+
+Retain only the provider's Error.Code (at most128characters), Error.Message (at most2000characters), HTTPStatus and RequestId (at most128characters), plus ordinary diagnostic status/time/request hashes. Before bounding text, redact exact in-memory credential values and common credential/token forms. Never serialize the complete exception or response headers. Do not retain any model output or reasoning blocks if the request unexpectedly succeeds. Credentials stay in memory. Unit tests must exercise redaction before truncation, missing/nonstandard error structures, exact request reuse, one-dispatch/no-resume behavior and the SDK/time bounds.
+
+The new safe-error helper is available for future runners. Historical plans, captures and runners remain unchanged. Grammar complexity is an unconfirmed hypothesis; only the returned service message may establish what the service rejected. Parent approval of this diagnostic's exact frozen plan hash is required before dispatch.

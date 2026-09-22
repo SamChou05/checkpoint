@@ -1,0 +1,21 @@
+{
+  "plan_sha256": "db88ebd49476fe21f93ca6c43c55526e64c0a40a5a715fd882606585a8bd8ba7",
+  "calls": [
+    {
+      "request_sha256": "7e89c7591eda8d3c595d4fbf359d024bbb4a3a281919f0b7b3ff93d0f7438ef8",
+      "dispatch_attempted": true,
+      "safe_error": {
+        "Error": {
+          "Code": "ValidationException",
+          "Message": "The model returned the following errors: The compiled grammar is too large, which would cause performance issues. Simplify your tool schemas or reduce the number of strict tools."
+        },
+        "HTTPStatus": 400,
+        "RequestId": "576983a6-cd02-4788-9162-0668062ff497"
+      },
+      "elapsed_seconds": 0.527
+    }
+  ],
+  "status": "completed_with_error_details",
+  "started_at": "2026-09-22T08:36:45.477740+00:00",
+  "completed_at": "2026-09-22T08:36:46.888643+00:00"
+}

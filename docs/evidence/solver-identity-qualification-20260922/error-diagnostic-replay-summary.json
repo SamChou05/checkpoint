@@ -1,0 +1,15 @@
+{
+  "diagnostic_plan_sha256": "db88ebd49476fe21f93ca6c43c55526e64c0a40a5a715fd882606585a8bd8ba7",
+  "diagnostic_capture_sha256": "9e41fc3b0bdd84ce230483c91a1ed94c7d5cf6d2f5429795ed108184f3ceae1f",
+  "original_plan_sha256": "1c31697dd30798519a5dd788a2d485fbc6213ea547e088789bc9958594bf1098",
+  "original_capture_sha256": "c49e6707e44735c0211083816b13a83321ceedc4a5ebd704a4cdacf4d31206a3",
+  "provider_calls_in_replay": 0,
+  "diagnostic_dispatches": 1,
+  "exact_rejected_request_reused": true,
+  "safe_error_fields_and_bounds_only": true,
+  "model_output_or_reasoning_retained": false,
+  "diagnostic_elapsed_seconds": 0.527,
+  "original_structurally_qualified_calls": 0,
+  "original_planned_calls": 2,
+  "original_failure_preserved": true
+}
