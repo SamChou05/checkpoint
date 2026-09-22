@@ -1,8 +1,9 @@
 # Deterministic numerical option construction
 
-This pure module is an inactive building block. It does not select a runtime
-route, call a provider, create verification metadata, or change existing author
-contracts. `construct_quantitative_spec(spec_without_choices)` accepts a complete
+This pure module is used by the optional `constructed_quantitative` author
+route. The module itself does not select a runtime route, call a provider, create
+verification metadata, or change existing author contracts. The route requires
+native transport and `authored_solution`; defaults remain unchanged. `construct_quantitative_spec(spec_without_choices)` accepts a complete
 nested compiler task without options and returns a separate full compiler spec
 with four exact numerical choices. Rejection raises
 `QuantitativeConstructionError`, with a stable `code` describing the failure.
