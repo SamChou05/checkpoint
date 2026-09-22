@@ -1,0 +1,1491 @@
+{
+  "status": "independently_reviewed_failed_worker_qualification",
+  "capture_sha256": "9402ce571dee1c386aa3489e548b82292408e9b4a984a4807d596a6ca982a707",
+  "plan_sha256": "6230622117349a2617e7502def86d625bd70fb401b82c3dd8f59c2a048624dcc",
+  "blind_review_sha256": "814ccbb73a503bc5fc862f369fb1a65a97a1e961a92211fc83c66dd8c01eee92",
+  "worksheet_sha256": "6ad74fb6ebf778033c65a7b8917c5cbbc34d4809c94af8cb5189644b122d2e69",
+  "review_sequence": "Blind worksheet/answer lock first; parent authorized unblind; raw capture and own local source checks next; no current root content review or count was read before this artifact was written. Prior parent communication asked to preserve contextual-vs-universal sensitivity; the prior baseline independent artifact distinguished a concrete wrong execution narrative from an incomplete generic rule.",
+  "denominators": {
+    "planned": 15,
+    "returned": 9,
+    "missing": 6,
+    "literal_unique_key_distinct_pass": 9,
+    "main_contextual_application_pass": 9,
+    "full_teaching_primary_pass": 8,
+    "full_teaching_primary_fail": 1,
+    "universal_vs_contextual_sensitive_items": 1,
+    "compiled_returned": 3,
+    "prose_returned": 6,
+    "main_fields_reviewed": 9,
+    "compiled_choice_fields_reviewed": 12,
+    "prose_choice_feedback_entries": 0,
+    "raw_author_rows_observed": 12,
+    "solver_rows_observed": 6,
+    "solver_choice_labels": 24,
+    "solver_pair_labels": 36,
+    "solver_reason_strings": 60,
+    "audit_flag_rows": 10,
+    "attempted_calls": 9,
+    "successful_native_responses": 8,
+    "timeout_calls": 1
+  },
+  "primary_judgment": "The conservative all-teaching-claims reading counts8/9 returned items fully sound. Python0 teaches two false unqualified generalizations in its opening sentence; its explicit key and concrete worked application are correct. A contextual reading scoped to the supplied expression counts9/9. This sensitivity is explicit and does not alter any old gold/criteria or the failed15-slot result.",
+  "operator_sensitivity": {
+    "id": "python:0",
+    "exact_sentence": "The or operator returns the first truthy operand, not a boolean.",
+    "primary": "Unsupported when read as the generic operator rule its wording states. It omits the all-false case and can return a Boolean operand.",
+    "contextual_reading": "For 0 or hello, the first truthy operand is hello and it is a string. The following two sentences accurately explain this exact result and make the intended anti-coercion lesson understandable.",
+    "countermodels": [
+      {
+        "expression": "0 or 0",
+        "result": "0",
+        "type": "int",
+        "proof": "Returns falsey0, despite no truthy operand existing."
+      },
+      {
+        "expression": "False or True",
+        "result": "True",
+        "type": "bool",
+        "proof": "Returns the Boolean operand True, disproving a universal non-Boolean return claim."
+      }
+    ],
+    "not_an_execution_order_failure": true,
+    "effect_on_qualification": "None:9/15returned and missing quantitative/compiler quotas already fail."
+  },
+  "items": [
+    {
+      "id": "python:0",
+      "source": [
+        "python",
+        0,
+        0
+      ],
+      "explicit_key": "\"hello\"",
+      "matches_locked_blind_answer": true,
+      "literal_task_and_unique_distinct_choices": "pass_from_locked_blind_review",
+      "scope_and_difficulty": "pass; direct application at independently assessed level2",
+      "learner_main": "The or operator returns the first truthy operand, not a boolean. 0 is falsy, so Python evaluates the right operand \"hello\", which is truthy, and returns it directly. The result is the string \"hello\", not the boolean True.",
+      "main_sha256": "2e4039b011deb3830c6f3eee040704127bc230d47af76958e77358b0f1b6699b",
+      "main_contextual_application_status": "supported",
+      "main_unqualified_rule_status": "unsupported_generalization",
+      "primary_full_teaching_status": "fail_unqualified_operator_rule",
+      "main_proof": "The falsey integer 0 causes or to return the right operand string hello. The latter two main sentences accurately describe this evaluation. The opening generic operator rule is not universal; fixed countermodels below.",
+      "all_choice_feedback": [],
+      "policy": 7,
+      "exact_source_preservation": "Exact raw authored main/prompt/key and choice texts survive; choices may be reordered by sanitizer. No per-choice teaching is synthesized.",
+      "five_field_digest": "8710bde88945aa729e69fda25c14d7d0f8d177d48325dff96a4a7158a218f7c9",
+      "verified_record_exact": true,
+      "bounds": {
+        "prompt": 64,
+        "choices": [
+          7,
+          4,
+          1,
+          5
+        ],
+        "main": 221,
+        "feedback": [],
+        "author_main_instruction_320": true,
+        "runtime_main_420": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "python:1",
+      "source": [
+        "python",
+        0,
+        1
+      ],
+      "explicit_key": "\"banana\"",
+      "matches_locked_blind_answer": true,
+      "literal_task_and_unique_distinct_choices": "pass_from_locked_blind_review",
+      "scope_and_difficulty": "pass; direct application at independently assessed level2",
+      "learner_main": "Negative indices count from the end. Index -1 is the last element (\"cherry\"), -2 is the second-to-last (\"banana\"), and -3 is the first (\"apple\"). So fruits[-2] returns \"banana\".",
+      "main_sha256": "8edeb5d9283a1e259dfe66108aebed8edb4fec57de34c4ec0c963be594b4393b",
+      "main_contextual_application_status": "supported",
+      "main_unqualified_rule_status": "supported",
+      "primary_full_teaching_status": "pass",
+      "main_proof": "In a length-3 list, -1 maps to index2 and -2 to index1; the listed cherry/banana/apple mapping is exact.",
+      "all_choice_feedback": [],
+      "policy": 7,
+      "exact_source_preservation": "Exact raw authored main/prompt/key and choice texts survive; choices may be reordered by sanitizer. No per-choice teaching is synthesized.",
+      "five_field_digest": "c6cbf9529d869039ec442b0eb45c6f05e10affe6e644e099630116d272e539b7",
+      "verified_record_exact": true,
+      "bounds": {
+        "prompt": 79,
+        "choices": [
+          8,
+          7,
+          8,
+          10
+        ],
+        "main": 177,
+        "feedback": [],
+        "author_main_instruction_320": true,
+        "runtime_main_420": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "python:2",
+      "source": [
+        "python",
+        0,
+        2
+      ],
+      "explicit_key": "\"big\"",
+      "matches_locked_blind_answer": true,
+      "literal_task_and_unique_distinct_choices": "pass_from_locked_blind_review",
+      "scope_and_difficulty": "pass; direct application at independently assessed level2",
+      "learner_main": "A conditional expression evaluates its condition first. x > 5 is 10 > 5, which is True, so the expression yields the value before if, which is \"big\". The else branch \"small\" is not reached.",
+      "main_sha256": "df122672be9497a8349e50dee72a6b398c5e25525aa735e590865d135e902bf9",
+      "main_contextual_application_status": "supported",
+      "main_unqualified_rule_status": "supported",
+      "primary_full_teaching_status": "pass",
+      "main_proof": "10 > 5 is true. The conditional yields the pre-if string big and does not evaluate the else expression.",
+      "all_choice_feedback": [],
+      "policy": 7,
+      "exact_source_preservation": "Exact raw authored main/prompt/key and choice texts survive; choices may be reordered by sanitizer. No per-choice teaching is synthesized.",
+      "five_field_digest": "e273b3c21dee4d7205edf3b3f94a14b853c047946b113a46e2ffb289d35b6f43",
+      "verified_record_exact": true,
+      "bounds": {
+        "prompt": 72,
+        "choices": [
+          5,
+          7,
+          4,
+          2
+        ],
+        "main": 189,
+        "feedback": [],
+        "author_main_instruction_320": true,
+        "runtime_main_420": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "python:3",
+      "source": [
+        "python",
+        0,
+        3
+      ],
+      "explicit_key": "True",
+      "matches_locked_blind_answer": true,
+      "literal_task_and_unique_distinct_choices": "pass_from_locked_blind_review",
+      "scope_and_difficulty": "pass; direct application at independently assessed level2",
+      "learner_main": "Python supports chained comparisons. 3 < 5 < 10 is equivalent to (3 < 5) and (5 < 10). Both sub-comparisons are True, so the overall result is True.",
+      "main_sha256": "e99a895f73db5bfdc78827ce7322f004ec048ff2c232ce66f8c914edd02c93fa",
+      "main_contextual_application_status": "supported",
+      "main_unqualified_rule_status": "supported",
+      "primary_full_teaching_status": "pass",
+      "main_proof": "Both 3 < 5 and 5 < 10 are true. For these literal operands the stated Boolean conjunction is equivalent.",
+      "all_choice_feedback": [],
+      "policy": 7,
+      "exact_source_preservation": "Exact raw authored main/prompt/key and choice texts survive; choices may be reordered by sanitizer. No per-choice teaching is synthesized.",
+      "five_field_digest": "6da5279041c588f2c34a5026b69932e27d0561fb9f2af194f67043d833a62585",
+      "verified_record_exact": true,
+      "bounds": {
+        "prompt": 62,
+        "choices": [
+          4,
+          5,
+          9,
+          1
+        ],
+        "main": 148,
+        "feedback": [],
+        "author_main_instruction_320": true,
+        "runtime_main_420": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "python:4",
+      "source": [
+        "python",
+        0,
+        4
+      ],
+      "explicit_key": "[20, 30, 40]",
+      "matches_locked_blind_answer": true,
+      "literal_task_and_unique_distinct_choices": "pass_from_locked_blind_review",
+      "scope_and_difficulty": "pass; direct application at independently assessed level2",
+      "learner_main": "A slice [start:stop] returns elements from index start up to but not including index stop. nums[1:4] collects indices 1, 2, and 3, yielding [20, 30, 40]. Index 4 (value 50) is excluded.",
+      "main_sha256": "0482c114894f0008ae451ccca5ab1731fd1a7e048bb277d70dc604fd55ad7d88",
+      "main_contextual_application_status": "supported",
+      "main_unqualified_rule_status": "supported",
+      "primary_full_teaching_status": "pass",
+      "main_proof": "The half-open slice includes indices1,2,3, hence values20,30,40; index4/value50 is excluded.",
+      "all_choice_feedback": [],
+      "policy": 7,
+      "exact_source_preservation": "Exact raw authored main/prompt/key and choice texts survive; choices may be reordered by sanitizer. No per-choice teaching is synthesized.",
+      "five_field_digest": "456099b273e216e328d65390bd735d2a95a6419feed893a6ed2504f0bd7d276c",
+      "verified_record_exact": true,
+      "bounds": {
+        "prompt": 67,
+        "choices": [
+          12,
+          12,
+          16,
+          16
+        ],
+        "main": 185,
+        "feedback": [],
+        "author_main_instruction_320": true,
+        "runtime_main_420": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "mixed:0",
+      "source": [
+        "mixed",
+        0,
+        0
+      ],
+      "explicit_key": "11/8",
+      "matches_locked_blind_answer": true,
+      "literal_task_and_unique_distinct_choices": "pass_from_locked_blind_review",
+      "scope_and_difficulty": "pass; direct application at independently assessed level2",
+      "learner_main": "Common denominator 8: (3/4) + (5/8) = (6/8) + (5/8) = 11/8. The answer is 11/8.",
+      "main_sha256": "b91c7b154befd880ca9381af4b1948781d7ccee8085815751dc4b3a24d6ded9d",
+      "main_contextual_application_status": "supported",
+      "main_unqualified_rule_status": "supported",
+      "primary_full_teaching_status": "pass",
+      "main_proof": "3/4 = 6/8; 6/8 + 5/8 = 11/8. Every displayed equality and answer assertion is exact.",
+      "all_choice_feedback": [
+        {
+          "choice": "11/8",
+          "text": "The expression evaluates exactly to 11/8; 11/8 is the requested value.",
+          "sha256": "d3920e1ab964024d2a9cc3ab6c9249f4e77a149fc8e815c054d45dd2950dfcc6",
+          "status": "supported",
+          "proof": "It is exactly the expression value."
+        },
+        {
+          "choice": "1/8",
+          "text": "The expression evaluates exactly to 11/8, not 1/8. 1/8 is not the requested value.",
+          "sha256": "8e10ff03ed82b0c4bdb9c027bc8d72a35923189d5b44709a44ca4f6e6eea4693",
+          "status": "supported",
+          "proof": "Its exact rational value differs from the independently calculated expression value; both negative clauses are true."
+        },
+        {
+          "choice": "15/32",
+          "text": "The expression evaluates exactly to 11/8, not 15/32. 15/32 is not the requested value.",
+          "sha256": "c6c2b06a9cda05d5dea1d44aef392efbdc2c8aecfe6ea759649afb318a5b0fc2",
+          "status": "supported",
+          "proof": "Its exact rational value differs from the independently calculated expression value; both negative clauses are true."
+        },
+        {
+          "choice": "6/5",
+          "text": "The expression evaluates exactly to 11/8, not 6/5. 6/5 is not the requested value.",
+          "sha256": "69d22da04c499a87e23f925852a9abccab5d91e4c3343d7a2be47fcca355760c",
+          "status": "supported",
+          "proof": "Its exact rational value differs from the independently calculated expression value; both negative clauses are true."
+        }
+      ],
+      "policy": 8,
+      "exact_source_preservation": "All five fields match fresh compilation of the captured private source spec, including exact choice order and all feedback.",
+      "five_field_digest": "01965243b2c24a70553161195a086d3168d7786eb3b1c8474fcac138ff7ac2d3",
+      "verified_record_exact": true,
+      "bounds": {
+        "prompt": 84,
+        "choices": [
+          4,
+          3,
+          5,
+          3
+        ],
+        "main": 79,
+        "feedback": [
+          70,
+          82,
+          86,
+          82
+        ],
+        "author_main_instruction_320": true,
+        "runtime_main_420": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "mixed:1",
+      "source": [
+        "mixed",
+        0,
+        1
+      ],
+      "explicit_key": "3/2",
+      "matches_locked_blind_answer": true,
+      "literal_task_and_unique_distinct_choices": "pass_from_locked_blind_review",
+      "scope_and_difficulty": "pass; direct application at independently assessed level2",
+      "learner_main": "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (9/5) = 45/30 = 3/2. The answer is 3/2.",
+      "main_sha256": "c37cf9d1998fb5629a5fb0fb2cdbea0679e91b2de337b0ad06c1fa36fe57e98c",
+      "main_contextual_application_status": "supported",
+      "main_unqualified_rule_status": "supported",
+      "primary_full_teaching_status": "pass",
+      "main_proof": "Dividing by nonzero 5/9 equals multiplying by9/5; (5/6)*(9/5)=45/30=3/2 exactly.",
+      "all_choice_feedback": [
+        {
+          "choice": "3/2",
+          "text": "The expression evaluates exactly to 3/2; 3/2 is the requested value.",
+          "sha256": "8e747673705ecaca0e7c665ecdf402340f10269636224c510925d91fe3cf7a4f",
+          "status": "supported",
+          "proof": "It is exactly the expression value."
+        },
+        {
+          "choice": "25/54",
+          "text": "The expression evaluates exactly to 3/2, not 25/54. 25/54 is not the requested value.",
+          "sha256": "87bdbc1c1fa7c25620886cc4b7f874fc6ffb1e1b2b32c6a17ef5ffbed69b6ca9",
+          "status": "supported",
+          "proof": "Its exact rational value differs from the independently calculated expression value; both negative clauses are true."
+        },
+        {
+          "choice": "5/18",
+          "text": "The expression evaluates exactly to 3/2, not 5/18. 5/18 is not the requested value.",
+          "sha256": "d85ce098f141429187a14a235a58d0c5df9f09820e16b31a2623b242cb7221cd",
+          "status": "supported",
+          "proof": "Its exact rational value differs from the independently calculated expression value; both negative clauses are true."
+        },
+        {
+          "choice": "25/18",
+          "text": "The expression evaluates exactly to 3/2, not 25/18. 25/18 is not the requested value.",
+          "sha256": "66bc77338477a7cdc468386ad05b4be3e8e8e60974a4c06ad21de7475ae02040",
+          "status": "supported",
+          "proof": "Its exact rational value differs from the independently calculated expression value; both negative clauses are true."
+        }
+      ],
+      "policy": 8,
+      "exact_source_preservation": "All five fields match fresh compilation of the captured private source spec, including exact choice order and all feedback.",
+      "five_field_digest": "41d3d261432c85356ffe6ec95bf7a7f86f8623f5186194a0f84c8db6cf2881dc",
+      "verified_record_exact": true,
+      "bounds": {
+        "prompt": 84,
+        "choices": [
+          3,
+          5,
+          4,
+          5
+        ],
+        "main": 91,
+        "feedback": [
+          68,
+          85,
+          83,
+          85
+        ],
+        "author_main_instruction_320": true,
+        "runtime_main_420": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "mixed:2",
+      "source": [
+        "mixed",
+        0,
+        3
+      ],
+      "explicit_key": "was",
+      "matches_locked_blind_answer": true,
+      "literal_task_and_unique_distinct_choices": "pass_from_locked_blind_review",
+      "scope_and_difficulty": "pass; direct application at independently assessed level2",
+      "learner_main": "The subject is \"box\" (singular), not \"chocolates.\" The prepositional phrase \"of chocolates\" modifies the subject but does not change its number. A singular subject requires a singular verb, so \"was\" is correct. \"Were,\" \"have been,\" and \"are\" are plural forms that do not agree with the singular subject \"box.\"",
+      "main_sha256": "36ec2c4c9726bea295b76eef0c0c41ab0039886707c63036347721f7a0e69fb7",
+      "main_contextual_application_status": "supported",
+      "main_unqualified_rule_status": "supported",
+      "primary_full_teaching_status": "pass",
+      "main_proof": "The singular head is box; of chocolates is an intervening modifier. Of the offered forms only was agrees in the ordinary declarative passive sentence. No tense assumption is necessary. The main does not import the private solver invented past-time claim.",
+      "all_choice_feedback": [],
+      "policy": 7,
+      "exact_source_preservation": "Exact raw authored main/prompt/key and choice texts survive; choices may be reordered by sanitizer. No per-choice teaching is synthesized.",
+      "five_field_digest": "1b67dcb6579faabb4d436339a648b3d52ae4f8f3b6cee8f895d1b6773b753ead",
+      "verified_record_exact": true,
+      "bounds": {
+        "prompt": 100,
+        "choices": [
+          3,
+          4,
+          9,
+          3
+        ],
+        "main": 309,
+        "feedback": [],
+        "author_main_instruction_320": true,
+        "runtime_main_420": true
+      },
+      "shuffle_safe": true
+    },
+    {
+      "id": "mixed:3",
+      "source": [
+        "mixed",
+        1,
+        0
+      ],
+      "explicit_key": "7/12",
+      "matches_locked_blind_answer": true,
+      "literal_task_and_unique_distinct_choices": "pass_from_locked_blind_review",
+      "scope_and_difficulty": "pass; direct application at independently assessed level2",
+      "learner_main": "Common denominator 12: (5/6) - (1/4) = (10/12) - (3/12) = 7/12. The answer is 7/12.",
+      "main_sha256": "e7cf37c271108399709d31abd43412bfd5efa81b5f300bf07a708b21c779e1e2",
+      "main_contextual_application_status": "supported",
+      "main_unqualified_rule_status": "supported",
+      "primary_full_teaching_status": "pass",
+      "main_proof": "5/6 = 10/12 and 1/4 = 3/12; subtracting gives7/12 exactly.",
+      "all_choice_feedback": [
+        {
+          "choice": "10/3",
+          "text": "The expression evaluates exactly to 7/12, not 10/3. 10/3 is not the requested value.",
+          "sha256": "56effb21111d5bf248fa48a6ec59e5f79487ea8641f70e6c2b8cd84071ca129b",
+          "status": "supported",
+          "proof": "Its exact rational value differs from the independently calculated expression value; both negative clauses are true."
+        },
+        {
+          "choice": "13/12",
+          "text": "The expression evaluates exactly to 7/12, not 13/12. 13/12 is not the requested value.",
+          "sha256": "d181e9f4bb547c04567fe9b22fa6bb9f3c60180544f0ece08b6d3b2765ee406b",
+          "status": "supported",
+          "proof": "Its exact rational value differs from the independently calculated expression value; both negative clauses are true."
+        },
+        {
+          "choice": "7/12",
+          "text": "The expression evaluates exactly to 7/12; 7/12 is the requested value.",
+          "sha256": "4fa49dec67689d7a38f20cda9eebc5372b61f9d1849223f1bdac5ce7dd2d3894",
+          "status": "supported",
+          "proof": "It is exactly the expression value."
+        },
+        {
+          "choice": "5/24",
+          "text": "The expression evaluates exactly to 7/12, not 5/24. 5/24 is not the requested value.",
+          "sha256": "d444103050125758344e81f52e7962a66a32ea358306eebe26ea1ebfafa98eec",
+          "status": "supported",
+          "proof": "Its exact rational value differs from the independently calculated expression value; both negative clauses are true."
+        }
+      ],
+      "policy": 8,
+      "exact_source_preservation": "All five fields match fresh compilation of the captured private source spec, including exact choice order and all feedback.",
+      "five_field_digest": "351a25bbc522b32e31aa5608bc8b0d7af83c80d163d3187e1b48dd01f42ca77f",
+      "verified_record_exact": true,
+      "bounds": {
+        "prompt": 84,
+        "choices": [
+          4,
+          5,
+          4,
+          4
+        ],
+        "main": 83,
+        "feedback": [
+          84,
+          86,
+          70,
+          84
+        ],
+        "author_main_instruction_320": true,
+        "runtime_main_420": true
+      },
+      "shuffle_safe": true
+    }
+  ],
+  "offline_replay": {
+    "source_pin_count": 44,
+    "all_source_pins_exact": true,
+    "captured_plan_exact_frozen_file": true,
+    "requests_have_exact_native_configs": true,
+    "all_calls_sonnet_adaptive_high_16000_no_sampling": true,
+    "successful_native_adapters": 8,
+    "prepared_pass_replays": [
+      {
+        "job": "python",
+        "pass": 0,
+        "all_prepared_rows_exact": true,
+        "compiled_count": 0,
+        "compiler_failures": []
+      },
+      {
+        "job": "mixed",
+        "pass": 0,
+        "all_prepared_rows_exact": true,
+        "compiled_count": 3,
+        "compiler_failures": []
+      },
+      {
+        "job": "mixed",
+        "pass": 1,
+        "all_prepared_rows_exact": true,
+        "compiled_count": 1,
+        "compiler_failures": []
+      }
+    ],
+    "returned_records_exact_to_observed_verified_record": 9,
+    "compiled_five_field_recompilations": 3,
+    "prose_exact_main_checks": 6,
+    "live_object_identity_limit": "Offline replay confirms saved source associations and bytes; it does not recreate live object identity. That was instrumented by the frozen harness."
+  },
+  "calls": [
+    {
+      "ordinal": 0,
+      "job": "quantitative",
+      "stage": "question_author_constructed_v1",
+      "elapsed_seconds": 100.168049,
+      "read_timeout": 100.0,
+      "sdk_attempts": 1,
+      "request_contract_exact": true,
+      "error": {
+        "type": "ReadTimeoutError",
+        "code": null,
+        "message": null,
+        "request_id": null,
+        "http_status": null
+      },
+      "response_schema_and_adapter_valid": false
+    },
+    {
+      "ordinal": 1,
+      "job": "python",
+      "stage": "question_author_constructed_v1",
+      "elapsed_seconds": 30.301816,
+      "read_timeout": 100.0,
+      "sdk_attempts": 1,
+      "request_contract_exact": true,
+      "error": null,
+      "response_schema_and_adapter_valid": true,
+      "stop_reason": "end_turn",
+      "returned_before_read_deadline": true,
+      "raw_response_text_sha256": "a3ec033f51253550312e54dd6396e6338f13ef7a89b05baf56ee5f00b62f9dd3",
+      "rows": 5
+    },
+    {
+      "ordinal": 2,
+      "job": "python",
+      "stage": "complete_choice_solver_v5_n5",
+      "elapsed_seconds": 36.950654,
+      "read_timeout": 100.0,
+      "sdk_attempts": 1,
+      "request_contract_exact": true,
+      "error": null,
+      "response_schema_and_adapter_valid": true,
+      "stop_reason": "end_turn",
+      "returned_before_read_deadline": true,
+      "raw_response_text_sha256": "c6a6fe4d546f8ba4e239357d21ea77bb670fa08feff0f85cedaf5fe125b05f5c"
+    },
+    {
+      "ordinal": 3,
+      "job": "python",
+      "stage": "authored_solution_reviewer_v3_n5",
+      "elapsed_seconds": 25.62428,
+      "read_timeout": 100.0,
+      "sdk_attempts": 1,
+      "request_contract_exact": true,
+      "error": null,
+      "response_schema_and_adapter_valid": true,
+      "stop_reason": "end_turn",
+      "returned_before_read_deadline": true,
+      "raw_response_text_sha256": "d479d3810955402a3a4e25d32cc62b3b73def0cec8194aa7ba4313a4a86877af",
+      "rows": 5
+    },
+    {
+      "ordinal": 4,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "elapsed_seconds": 67.795596,
+      "read_timeout": 100.0,
+      "sdk_attempts": 1,
+      "request_contract_exact": true,
+      "error": null,
+      "response_schema_and_adapter_valid": true,
+      "stop_reason": "end_turn",
+      "returned_before_read_deadline": true,
+      "raw_response_text_sha256": "fdf591c401bd928855a45ad998dcfebffac9e281e5612573df686c102f0eb1fa",
+      "rows": 5
+    },
+    {
+      "ordinal": 5,
+      "job": "mixed",
+      "stage": "complete_choice_solver_v5_n1",
+      "elapsed_seconds": 17.579779,
+      "read_timeout": 100.0,
+      "sdk_attempts": 1,
+      "request_contract_exact": true,
+      "error": null,
+      "response_schema_and_adapter_valid": true,
+      "stop_reason": "end_turn",
+      "returned_before_read_deadline": true,
+      "raw_response_text_sha256": "96fce309bf2097e5d4e7b9f997a6783a29e70635b5634bccd635c1bdb70a267f"
+    },
+    {
+      "ordinal": 6,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n4",
+      "elapsed_seconds": 36.682486,
+      "read_timeout": 100.0,
+      "sdk_attempts": 1,
+      "request_contract_exact": true,
+      "error": null,
+      "response_schema_and_adapter_valid": true,
+      "stop_reason": "end_turn",
+      "returned_before_read_deadline": true,
+      "raw_response_text_sha256": "9b50d772e68a55f277aba23cd8ddb0c4dc20c035bf048c9c2d3671e285c3309c",
+      "rows": 4
+    },
+    {
+      "ordinal": 7,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "elapsed_seconds": 21.852456,
+      "read_timeout": 100.0,
+      "sdk_attempts": 1,
+      "request_contract_exact": true,
+      "error": null,
+      "response_schema_and_adapter_valid": true,
+      "stop_reason": "end_turn",
+      "returned_before_read_deadline": true,
+      "raw_response_text_sha256": "72e25cb7761d62f601de9495ad592ee0138e2b3d0c274f9961858bb55185a195",
+      "rows": 2
+    },
+    {
+      "ordinal": 8,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n1",
+      "elapsed_seconds": 11.188354,
+      "read_timeout": 89.786,
+      "sdk_attempts": 1,
+      "request_contract_exact": true,
+      "error": null,
+      "response_schema_and_adapter_valid": true,
+      "stop_reason": "end_turn",
+      "returned_before_read_deadline": true,
+      "raw_response_text_sha256": "26c4b8878c54a30dbdb1a48c3ce2d026be74a6108648083807d1d29e20a997ca",
+      "rows": 1
+    }
+  ],
+  "private_reason_audit": {
+    "choice_labels_match_blind": 24,
+    "pair_labels_match_blind": 36,
+    "reason_status_counts": {
+      "contextual_pass_universal_rule_sensitivity": 2,
+      "supported_in_stated_task": 54,
+      "unsupported_additional_premise": 3,
+      "wording_sensitivity": 1
+    },
+    "records": [
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choices.a",
+        "bound_choice_or_pair": "False",
+        "label": "refuted",
+        "reason": "Python's `or` returns one of its operands, not a Boolean coercion. Since 0 is falsy, it returns the right operand 'hello', not the boolean False.",
+        "reason_length": 145,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choices.b",
+        "bound_choice_or_pair": "True",
+        "label": "refuted",
+        "reason": "Python's `or` returns the actual operand value, not a boolean. The result is the string 'hello', not the boolean True.",
+        "reason_length": 118,
+        "assessment": "contextual_pass_universal_rule_sensitivity",
+        "proof": "Correct for 0 or hello; the generic not-a-boolean / first-truthy wording is not a universally valid operator rule. See learner main sensitivity and fixed countermodels."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choices.c",
+        "bound_choice_or_pair": "0",
+        "label": "refuted",
+        "reason": "Python `or` skips falsy left operands and returns the right operand. 0 is falsy so the result is 'hello', not 0.",
+        "reason_length": 112,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choices.d",
+        "bound_choice_or_pair": "\"hello\"",
+        "label": "supported",
+        "reason": "Python's `or` returns the first truthy operand. 0 is falsy, so evaluation continues to 'hello' which is truthy; 'hello' is returned.",
+        "reason_length": 132,
+        "assessment": "contextual_pass_universal_rule_sensitivity",
+        "proof": "Correct for 0 or hello; the generic not-a-boolean / first-truthy wording is not a universally valid operator rule. See learner main sensitivity and fixed countermodels."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "False",
+          "rightChoice": "True"
+        },
+        "label": "distinct",
+        "reason": "False and True are opposite boolean values; both differ from the actual string result.",
+        "reason_length": 86,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "False",
+          "rightChoice": "0"
+        },
+        "label": "distinct",
+        "reason": "False (boolean) and 0 (integer) are different types and different proposed return values, even though False==0 in Python.",
+        "reason_length": 121,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "False",
+          "rightChoice": "\"hello\""
+        },
+        "label": "distinct",
+        "reason": "False (boolean) vs the string 'hello' are entirely different proposed return values.",
+        "reason_length": 84,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "True",
+          "rightChoice": "0"
+        },
+        "label": "distinct",
+        "reason": "True (boolean) vs 0 (integer) are different types and different proposed return values.",
+        "reason_length": 87,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "True",
+          "rightChoice": "\"hello\""
+        },
+        "label": "distinct",
+        "reason": "True (boolean) vs 'hello' (string) are entirely different proposed return values.",
+        "reason_length": 81,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 0,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "0",
+          "rightChoice": "\"hello\""
+        },
+        "label": "distinct",
+        "reason": "0 (integer) vs 'hello' (string) are different proposed return values.",
+        "reason_length": 69,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choices.a",
+        "bound_choice_or_pair": "\"apple\"",
+        "label": "refuted",
+        "reason": "Index -2 in a 3-element list is the second-to-last element. The list is ['apple','banana','cherry'], so -2 maps to index 1, which is 'banana', not 'apple'.",
+        "reason_length": 155,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choices.b",
+        "bound_choice_or_pair": "\"cherry\"",
+        "label": "refuted",
+        "reason": "Index -1 is 'cherry'; index -2 is the second-to-last, which is 'banana', not 'cherry'.",
+        "reason_length": 86,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choices.c",
+        "bound_choice_or_pair": "IndexError",
+        "label": "refuted",
+        "reason": "A 3-element list allows indices -3 through 2; -2 is a valid index, so no IndexError is raised.",
+        "reason_length": 94,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choices.d",
+        "bound_choice_or_pair": "\"banana\"",
+        "label": "supported",
+        "reason": "Negative index -2 in ['apple','banana','cherry'] counts two from the end: position 1, which is 'banana'.",
+        "reason_length": 104,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"apple\"",
+          "rightChoice": "\"cherry\""
+        },
+        "label": "distinct",
+        "reason": "'apple' and 'cherry' are different list elements at different positions (first vs last).",
+        "reason_length": 88,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"apple\"",
+          "rightChoice": "IndexError"
+        },
+        "label": "distinct",
+        "reason": "'apple' is a valid string return value; IndexError is an exception outcome — entirely different claims.",
+        "reason_length": 103,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"apple\"",
+          "rightChoice": "\"banana\""
+        },
+        "label": "distinct",
+        "reason": "'apple' and 'banana' are different list elements at different positions.",
+        "reason_length": 72,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"cherry\"",
+          "rightChoice": "IndexError"
+        },
+        "label": "distinct",
+        "reason": "'cherry' is a valid string return value; IndexError is an exception outcome — entirely different claims.",
+        "reason_length": 104,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"cherry\"",
+          "rightChoice": "\"banana\""
+        },
+        "label": "distinct",
+        "reason": "'cherry' and 'banana' are different list elements at different positions.",
+        "reason_length": 73,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 1,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "IndexError",
+          "rightChoice": "\"banana\""
+        },
+        "label": "distinct",
+        "reason": "IndexError (exception) vs 'banana' (string value) are entirely different proposed outcomes.",
+        "reason_length": 91,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choices.a",
+        "bound_choice_or_pair": "10",
+        "label": "refuted",
+        "reason": "The ternary assigns a string, not the numeric value of x. With x=10, 'big' is assigned, not 10.",
+        "reason_length": 95,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choices.b",
+        "bound_choice_or_pair": "\"big\"",
+        "label": "supported",
+        "reason": "x=10 satisfies x>5, so the condition is True and result is assigned 'big'.",
+        "reason_length": 74,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choices.c",
+        "bound_choice_or_pair": "True",
+        "label": "refuted",
+        "reason": "The expression evaluates a condition and assigns a string; it returns 'big', not the boolean True.",
+        "reason_length": 98,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choices.d",
+        "bound_choice_or_pair": "\"small\"",
+        "label": "refuted",
+        "reason": "x>5 is True when x=10, so the else branch 'small' is never taken; result is 'big', not 'small'.",
+        "reason_length": 95,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "10",
+          "rightChoice": "\"big\""
+        },
+        "label": "distinct",
+        "reason": "10 (integer) vs 'big' (string) are different proposed values for result.",
+        "reason_length": 72,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "10",
+          "rightChoice": "True"
+        },
+        "label": "distinct",
+        "reason": "10 (integer) vs True (boolean) are different proposed values for result.",
+        "reason_length": 72,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "10",
+          "rightChoice": "\"small\""
+        },
+        "label": "distinct",
+        "reason": "10 (integer) vs 'small' (string) are different proposed values for result.",
+        "reason_length": 74,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"big\"",
+          "rightChoice": "True"
+        },
+        "label": "distinct",
+        "reason": "'big' (string) vs True (boolean) are different proposed values for result.",
+        "reason_length": 74,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "\"big\"",
+          "rightChoice": "\"small\""
+        },
+        "label": "distinct",
+        "reason": "'big' and 'small' are different string values proposed for result.",
+        "reason_length": 66,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 2,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "True",
+          "rightChoice": "\"small\""
+        },
+        "label": "distinct",
+        "reason": "True (boolean) vs 'small' (string) are different proposed values for result.",
+        "reason_length": 76,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choices.a",
+        "bound_choice_or_pair": "TypeError",
+        "label": "refuted",
+        "reason": "Python 3 fully supports chained comparisons. `3 < 5 < 10` is evaluated as `3 < 5 and 5 < 10`, which is valid and raises no TypeError.",
+        "reason_length": 133,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choices.b",
+        "bound_choice_or_pair": "False",
+        "label": "refuted",
+        "reason": "Both sub-comparisons are true: 3<5 is True and 5<10 is True, so the chained expression is True, not False.",
+        "reason_length": 106,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choices.c",
+        "bound_choice_or_pair": "2",
+        "label": "refuted",
+        "reason": "Chained comparison returns a boolean, not a numeric difference. 2 is never produced here.",
+        "reason_length": 89,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choices.d",
+        "bound_choice_or_pair": "True",
+        "label": "supported",
+        "reason": "Python 3 chained comparison `3 < 5 < 10` means `3 < 5 and 5 < 10`; both are True, so the result is True.",
+        "reason_length": 104,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "TypeError",
+          "rightChoice": "False"
+        },
+        "label": "distinct",
+        "reason": "TypeError (exception) vs False (boolean) are entirely different proposed outcomes.",
+        "reason_length": 82,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "TypeError",
+          "rightChoice": "2"
+        },
+        "label": "distinct",
+        "reason": "TypeError (exception) vs 2 (integer) are entirely different proposed outcomes.",
+        "reason_length": 78,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "TypeError",
+          "rightChoice": "True"
+        },
+        "label": "distinct",
+        "reason": "TypeError (exception) vs True (boolean) are entirely different proposed outcomes.",
+        "reason_length": 81,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "False",
+          "rightChoice": "2"
+        },
+        "label": "distinct",
+        "reason": "False and 2 are different proposed values; False is a boolean, 2 is an integer (and 2!=True).",
+        "reason_length": 93,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "False",
+          "rightChoice": "True"
+        },
+        "label": "distinct",
+        "reason": "False and True are opposite boolean values.",
+        "reason_length": 43,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 3,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "2",
+          "rightChoice": "True"
+        },
+        "label": "distinct",
+        "reason": "2 (integer) and True (boolean) are different proposed values; 2 != True (True==1).",
+        "reason_length": 82,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choices.a",
+        "bound_choice_or_pair": "[20, 30, 40, 50]",
+        "label": "refuted",
+        "reason": "nums[1:4] starts at index 1 and stops before index 4, giving [20,30,40]. Including index 4 (value 50) would require slice [1:5]; this choice adds 50 incorrectly.",
+        "reason_length": 161,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choices.b",
+        "bound_choice_or_pair": "[10, 20, 30, 40]",
+        "label": "refuted",
+        "reason": "nums[1:4] starts at index 1, not 0. Index 0 (value 10) is excluded; this choice starts from 10 (index 0) incorrectly.",
+        "reason_length": 117,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choices.c",
+        "bound_choice_or_pair": "[10, 20, 30]",
+        "label": "refuted",
+        "reason": "nums[1:4] starts at index 1, not 0. [10,20,30] would be nums[0:3]; this choice uses the wrong start and wrong end.",
+        "reason_length": 114,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choices.d",
+        "bound_choice_or_pair": "[20, 30, 40]",
+        "label": "supported",
+        "reason": "nums[1:4] gives indices 1,2,3 → values 20,30,40. This is exactly [20,30,40].",
+        "reason_length": 76,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "[20, 30, 40, 50]",
+          "rightChoice": "[10, 20, 30, 40]"
+        },
+        "label": "distinct",
+        "reason": "[20,30,40,50] vs [10,20,30,40] differ in both starting and ending elements.",
+        "reason_length": 75,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "[20, 30, 40, 50]",
+          "rightChoice": "[10, 20, 30]"
+        },
+        "label": "distinct",
+        "reason": "[20,30,40,50] vs [10,20,30] differ in all elements; different proposed slices.",
+        "reason_length": 78,
+        "assessment": "wording_sensitivity",
+        "proof": "The lists differ at every corresponding position and in length, so the pair is distinct. They share the values 20 and 30, so differ in all elements is imprecise if read as set membership."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "[20, 30, 40, 50]",
+          "rightChoice": "[20, 30, 40]"
+        },
+        "label": "distinct",
+        "reason": "[20,30,40,50] includes 50 and has 4 elements starting at 20; [20,30,40] has 3 elements — different lists.",
+        "reason_length": 105,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "[10, 20, 30, 40]",
+          "rightChoice": "[10, 20, 30]"
+        },
+        "label": "distinct",
+        "reason": "[10,20,30,40] starts at 10; [10,20,30] also starts at 10 but ends earlier — different lengths and content.",
+        "reason_length": 106,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "[10, 20, 30, 40]",
+          "rightChoice": "[20, 30, 40]"
+        },
+        "label": "distinct",
+        "reason": "[10,20,30,40] starts at 10 and has 4 elements; [20,30,40] starts at 20 and has 3 elements — different lists.",
+        "reason_length": 108,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 2,
+        "item_index": 4,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "[10, 20, 30]",
+          "rightChoice": "[20, 30, 40]"
+        },
+        "label": "distinct",
+        "reason": "[10,20,30] starts at 10; [20,30,40] starts at 20 — different first elements and different proposed slices.",
+        "reason_length": 106,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choices.a",
+        "bound_choice_or_pair": "have been",
+        "label": "refuted",
+        "reason": "'have been' is plural present-perfect; the subject 'a box' is grammatically singular, requiring a singular verb, and the past context requires past tense. This form fails on both number and tense.",
+        "reason_length": 196,
+        "assessment": "unsupported_additional_premise",
+        "proof": "Correct number-agreement disposition, but the stem supplies no past-time context. Passive left does not itself fix tense; is left would be grammatical but is not an offered choice. The claimed past constraint is invented and unnecessary."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choices.b",
+        "bound_choice_or_pair": "are",
+        "label": "refuted",
+        "reason": "'are' is plural simple-present; the singular head noun 'box' demands a singular verb, and the context is clearly past, not present. Fails on both number and tense.",
+        "reason_length": 163,
+        "assessment": "unsupported_additional_premise",
+        "proof": "Correct number-agreement disposition, but the stem supplies no past-time context. Passive left does not itself fix tense; is left would be grammatical but is not an offered choice. The claimed past constraint is invented and unnecessary."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choices.c",
+        "bound_choice_or_pair": "was",
+        "label": "supported",
+        "reason": "'was' is singular simple-past passive ('was left'), which matches the singular subject 'a box' and the past-action context. This is the standard subject-verb agreement choice.",
+        "reason_length": 175,
+        "assessment": "unsupported_additional_premise",
+        "proof": "Correct number-agreement disposition, but the stem supplies no past-time context. Passive left does not itself fix tense; is left would be grammatical but is not an offered choice. The claimed past constraint is invented and unnecessary."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choices.d",
+        "bound_choice_or_pair": "were",
+        "label": "refuted",
+        "reason": "'were' is plural simple-past; 'a box' is singular, so a plural past verb does not agree with the subject. The plural of nearby 'chocolates' cannot override the head noun 'box'.",
+        "reason_length": 176,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choicePairs.ab",
+        "bound_choice_or_pair": {
+          "leftChoice": "have been",
+          "rightChoice": "are"
+        },
+        "label": "distinct",
+        "reason": "Both are plural and non-past, but 'have been' is present-perfect plural while 'are' is simple-present plural—different tense/aspect forms, distinct proposals.",
+        "reason_length": 158,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choicePairs.ac",
+        "bound_choice_or_pair": {
+          "leftChoice": "have been",
+          "rightChoice": "was"
+        },
+        "label": "distinct",
+        "reason": "'have been' is plural present-perfect (refuted); 'was' is singular past (supported). They differ in both number and tense—clearly distinct.",
+        "reason_length": 139,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choicePairs.ad",
+        "bound_choice_or_pair": {
+          "leftChoice": "have been",
+          "rightChoice": "were"
+        },
+        "label": "distinct",
+        "reason": "'have been' is present-perfect plural; 'were' is simple-past plural. Both are plural but differ in tense/aspect, so distinct proposals.",
+        "reason_length": 135,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choicePairs.bc",
+        "bound_choice_or_pair": {
+          "leftChoice": "are",
+          "rightChoice": "was"
+        },
+        "label": "distinct",
+        "reason": "'are' is simple-present plural; 'was' is simple-past singular. They differ in both tense and number—distinct proposals.",
+        "reason_length": 119,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choicePairs.bd",
+        "bound_choice_or_pair": {
+          "leftChoice": "are",
+          "rightChoice": "were"
+        },
+        "label": "distinct",
+        "reason": "'are' is simple-present plural; 'were' is simple-past plural. Both are plural but differ in tense—distinct proposals.",
+        "reason_length": 117,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      },
+      {
+        "call_ordinal": 5,
+        "item_index": 0,
+        "field": "choicePairs.cd",
+        "bound_choice_or_pair": {
+          "leftChoice": "was",
+          "rightChoice": "were"
+        },
+        "label": "distinct",
+        "reason": "'was' is singular past; 'were' is plural past. Same tense but different grammatical number—the precise distinction the question tests. Distinct.",
+        "reason_length": 144,
+        "assessment": "supported_in_stated_task",
+        "proof": "The concrete result/type/list position or grammatical form supports this exact choice/pair label."
+      }
+    ],
+    "final_audit_free_reason_strings": 0,
+    "final_audit_findings": "Typed audit flags rejected one compiled multiplication task for distractors. It marked all9 released mains supported; Python0 generic-rule sensitivity remains. No audit rationale is exposed, so the exact concern behind the distractor veto cannot be inferred."
+  },
+  "yield_and_failures": {
+    "quantitative": {
+      "returned": 0,
+      "compiled": 0,
+      "calls": 1,
+      "job_elapsed_seconds": 100.290039,
+      "outcome": "First author ReadTimeoutError at100.168049; no returned body/drafts, no solver/audit; missing token usage unknown, not zero."
+    },
+    "python": {
+      "returned": 5,
+      "compiled": 0,
+      "calls": 3,
+      "job_elapsed_seconds": 93.102481
+    },
+    "mixed": {
+      "returned": 4,
+      "compiled": 3,
+      "english_prose": 1,
+      "calls": 5,
+      "job_elapsed_seconds": 155.475229,
+      "topup": "Actual runtime starts2-item topup after initial3survivors. It releases one further compiled item; one budget unit remains, insufficient for unchanged next-pass reservation minimum."
+    },
+    "criteria": {
+      "at_least14of15": false,
+      "at_least4_each_job": false,
+      "compiled_total_at_least6": false,
+      "quantitative_compiled_at_least4": false,
+      "mixed_compiled_at_least2": true,
+      "mixed_english_at_least1": true,
+      "all3_jobs_within240seconds": true,
+      "within6calls_each18overall": true,
+      "exact_compiled_fields_and_prose_main": true,
+      "all_returned_teaching_primary": false,
+      "all_returned_teaching_contextual_sensitivity": true
+    },
+    "qualified": false,
+    "raw_nonreturned_content": "Four constructed tasks translated and compiled, with no malformed task or missing-choice failure. One multiplication task was vetoed only by audit distractors flag; its wrong values correspond to substituting +, -, / for *, so rejection may be conservative but no private audit reason establishes why. Two prose mains contain explicit choice A/B/C/D references and fail the existing immutable-main position-reference gate before model solving; no repair was performed."
+  },
+  "limits": [
+    "No provider invocation, AWS access, deployment, source edit or capture change in this audit.",
+    "This is a repeated-scope three-job observation, not a causal comparison, arbitrary-topic guarantee, deployed worker qualification or inventory approval.",
+    "Difficulty and distractor plausibility are reasoned task assessments, not measured learner calibration.",
+    "Only visible solver reason fields were reviewed; provider internal reasoning/signatures are omitted from capture.",
+    "Missing six learner outputs cannot be assigned semantic correctness; all15remain denominator."
+  ]
+}

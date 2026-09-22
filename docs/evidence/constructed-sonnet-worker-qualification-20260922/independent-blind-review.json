@@ -1,0 +1,1018 @@
+{
+  "review_mode": "Independent blind literal-content review locked before reading capture, model keys, learner explanations, provenance or root review.",
+  "worksheet_path": "docs/evidence/constructed-sonnet-worker-qualification-20260922/blind-items.json",
+  "worksheet_sha256": "6ad74fb6ebf778033c65a7b8917c5cbbc34d4809c94af8cb5189644b122d2e69",
+  "capture_sha256_from_worksheet_only": "9402ce571dee1c386aa3489e548b82292408e9b4a984a4807d596a6ca982a707",
+  "prior_visibility": "Reviewer knew configuration, job requests and operational0numerical/5Python/4mixed totals. Only this blinded worksheet was opened for content; no capture, keys, teaching, root review or provider calls.",
+  "denominators": {
+    "planned": 15,
+    "returned_projected": 9,
+    "unreturned_not_assessed": 6,
+    "by_job": {
+      "quantitative": {
+        "planned": 5,
+        "returned": 0
+      },
+      "python": {
+        "planned": 5,
+        "returned": 5
+      },
+      "mixed": {
+        "planned": 5,
+        "returned": 4
+      }
+    }
+  },
+  "independent_oracle": {
+    "method": "Explicit locally typed expressions; no evaluation of model-provided source strings or imported runtime/model judgments. Arithmetic checked with stdlib Fraction. Grammar judged from literal singular-head agreement in the supplied American-English task.",
+    "python_version": "3.9.13",
+    "python_results": [
+      {
+        "id": "python:0",
+        "python_repr": "'hello'",
+        "python_type": "str"
+      },
+      {
+        "id": "python:1",
+        "python_repr": "'banana'",
+        "python_type": "str"
+      },
+      {
+        "id": "python:2",
+        "python_repr": "'big'",
+        "python_type": "str"
+      },
+      {
+        "id": "python:3",
+        "python_repr": "True",
+        "python_type": "bool"
+      },
+      {
+        "id": "python:4",
+        "python_repr": "[20, 30, 40]",
+        "python_type": "list"
+      }
+    ],
+    "rational_results": {
+      "mixed:0": "11/8",
+      "mixed:1": "3/2",
+      "mixed:3": "7/12"
+    }
+  },
+  "items": [
+    {
+      "id": "python:0",
+      "worksheet_item_sha256": "cbb66d9e03bea430caffc1652c6296b461caad87a4124f05cc7976b125ccec0c",
+      "literal_task": "Evaluate the explicitly written Python 3 or expression.",
+      "premises_sufficient": true,
+      "solution_proof": "The integer0 is falsey, so or evaluates and returns its right operand, the string hello.",
+      "supported_choice_labels": [
+        "B"
+      ],
+      "supported_choice_texts": [
+        "\"hello\""
+      ],
+      "unique_offered_solution": true,
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "False",
+          "judgment": "refuted",
+          "meaning": "Boolean false",
+          "proof": "Not the returned right operand; plausible confusion with Boolean coercion of0."
+        },
+        {
+          "label": "B",
+          "text": "\"hello\"",
+          "judgment": "supported",
+          "meaning": "string hello",
+          "proof": "The returned right operand."
+        },
+        {
+          "label": "C",
+          "text": "True",
+          "judgment": "refuted",
+          "meaning": "Boolean true",
+          "proof": "Not the returned string; plausible confusion with its truthiness."
+        },
+        {
+          "label": "D",
+          "text": "0",
+          "judgment": "refuted",
+          "meaning": "integer zero",
+          "proof": "The falsey left operand is not returned; plausible operand-selection error."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "False",
+          "right_choice": "\"hello\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express Boolean false versus string hello, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "False",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The complete alternatives express Boolean false versus Boolean true, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "False",
+          "right_choice": "0",
+          "relation": "distinct",
+          "proof": "False is a bool and0 is an int. They compare equal numerically but are different exact typed results of a Python expression; this task concerns which value or returns, not numerical equivalence."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "\"hello\"",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The complete alternatives express string hello versus Boolean true, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "\"hello\"",
+          "right_choice": "0",
+          "relation": "distinct",
+          "proof": "The complete alternatives express string hello versus integer zero, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "True",
+          "right_choice": "0",
+          "relation": "distinct",
+          "proof": "The complete alternatives express Boolean true versus integer zero, which are distinct outcomes or grammatical forms in this task."
+        }
+      ],
+      "distractor_plausibility": "pass; concrete nearby rule, boundary or operation confusions, not a claim of measured learner error rates",
+      "scope_assignment": "pass; Python semantics for all python rows, exact arithmetic for mixed0/1/3, subject-verb agreement for mixed2; displayed assignmentIDs match these subjects",
+      "difficulty_assessment": {
+        "level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct application of one familiar operation, indexing/conditional/comparison/slicing rule, or singular-head agreement; not pure terminology recall."
+      },
+      "literal_content_status": "pass",
+      "uncertainties": [],
+      "authored_key_and_main_review": "withheld_pending_unblind_authorization"
+    },
+    {
+      "id": "python:1",
+      "worksheet_item_sha256": "1c1a92be263cfacc148f775d96df87ccda88ef2a3619bb4df2fb205e2cc82680",
+      "literal_task": "Index the supplied three-element list at-2.",
+      "premises_sufficient": true,
+      "solution_proof": "Negative indexing counts from the end; -1 is cherry and-2 is banana.",
+      "supported_choice_labels": [
+        "B"
+      ],
+      "supported_choice_texts": [
+        "\"banana\""
+      ],
+      "unique_offered_solution": true,
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "IndexError",
+          "judgment": "refuted",
+          "meaning": "an indexing exception",
+          "proof": "-2 is within bounds; plausible misconception that negative indices are invalid."
+        },
+        {
+          "label": "B",
+          "text": "\"banana\"",
+          "judgment": "supported",
+          "meaning": "string banana",
+          "proof": "This is the list element at-2."
+        },
+        {
+          "label": "C",
+          "text": "\"apple\"",
+          "judgment": "refuted",
+          "meaning": "string apple",
+          "proof": "This is at-3 or0; plausible backward-counting error."
+        },
+        {
+          "label": "D",
+          "text": "\"cherry\"",
+          "judgment": "refuted",
+          "meaning": "string cherry",
+          "proof": "This is at-1; plausible off-by-one error."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "IndexError",
+          "right_choice": "\"banana\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express an indexing exception versus string banana, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "IndexError",
+          "right_choice": "\"apple\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express an indexing exception versus string apple, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "IndexError",
+          "right_choice": "\"cherry\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express an indexing exception versus string cherry, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "\"banana\"",
+          "right_choice": "\"apple\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express string banana versus string apple, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "\"banana\"",
+          "right_choice": "\"cherry\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express string banana versus string cherry, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "\"apple\"",
+          "right_choice": "\"cherry\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express string apple versus string cherry, which are distinct outcomes or grammatical forms in this task."
+        }
+      ],
+      "distractor_plausibility": "pass; concrete nearby rule, boundary or operation confusions, not a claim of measured learner error rates",
+      "scope_assignment": "pass; Python semantics for all python rows, exact arithmetic for mixed0/1/3, subject-verb agreement for mixed2; displayed assignmentIDs match these subjects",
+      "difficulty_assessment": {
+        "level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct application of one familiar operation, indexing/conditional/comparison/slicing rule, or singular-head agreement; not pure terminology recall."
+      },
+      "literal_content_status": "pass",
+      "uncertainties": [],
+      "authored_key_and_main_review": "withheld_pending_unblind_authorization"
+    },
+    {
+      "id": "python:2",
+      "worksheet_item_sha256": "096bb628e2347c58ee78a977385a208938c91bd865ed20aa54af9bde645d2c12",
+      "literal_task": "Determine result after the supplied assignment and conditional expression.",
+      "premises_sufficient": true,
+      "solution_proof": "The supplied x is10, so x>5 is true and the conditional expression selects the string big.",
+      "supported_choice_labels": [
+        "B"
+      ],
+      "supported_choice_texts": [
+        "\"big\""
+      ],
+      "unique_offered_solution": true,
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "10",
+          "judgment": "refuted",
+          "meaning": "integer ten",
+          "proof": "This is x, not result; plausible confusion between the tested variable and selected value."
+        },
+        {
+          "label": "B",
+          "text": "\"big\"",
+          "judgment": "supported",
+          "meaning": "string big",
+          "proof": "This branch is selected when x>5."
+        },
+        {
+          "label": "C",
+          "text": "\"small\"",
+          "judgment": "refuted",
+          "meaning": "string small",
+          "proof": "The false branch is not selected; plausible branch reversal."
+        },
+        {
+          "label": "D",
+          "text": "True",
+          "judgment": "refuted",
+          "meaning": "Boolean true",
+          "proof": "The condition is true, but the result receives a branch string; plausible confusion with condition value."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "10",
+          "right_choice": "\"big\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express integer ten versus string big, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "10",
+          "right_choice": "\"small\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express integer ten versus string small, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "10",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The complete alternatives express integer ten versus Boolean true, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "\"big\"",
+          "right_choice": "\"small\"",
+          "relation": "distinct",
+          "proof": "The complete alternatives express string big versus string small, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "\"big\"",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The complete alternatives express string big versus Boolean true, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "\"small\"",
+          "right_choice": "True",
+          "relation": "distinct",
+          "proof": "The complete alternatives express string small versus Boolean true, which are distinct outcomes or grammatical forms in this task."
+        }
+      ],
+      "distractor_plausibility": "pass; concrete nearby rule, boundary or operation confusions, not a claim of measured learner error rates",
+      "scope_assignment": "pass; Python semantics for all python rows, exact arithmetic for mixed0/1/3, subject-verb agreement for mixed2; displayed assignmentIDs match these subjects",
+      "difficulty_assessment": {
+        "level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct application of one familiar operation, indexing/conditional/comparison/slicing rule, or singular-head agreement; not pure terminology recall."
+      },
+      "literal_content_status": "pass",
+      "uncertainties": [],
+      "authored_key_and_main_review": "withheld_pending_unblind_authorization"
+    },
+    {
+      "id": "python:3",
+      "worksheet_item_sha256": "58bd38c3dbab6317133c51abf52603033d4a6298a9cb83b9e8a9a6610ad31ef3",
+      "literal_task": "Evaluate the supplied chained comparison in Python 3.",
+      "premises_sufficient": true,
+      "solution_proof": "The chain requires3<5 and5<10; both hold, so its result is the Boolean True.",
+      "supported_choice_labels": [
+        "A"
+      ],
+      "supported_choice_texts": [
+        "True"
+      ],
+      "unique_offered_solution": true,
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "True",
+          "judgment": "supported",
+          "meaning": "Boolean true",
+          "proof": "Both linked comparisons are true."
+        },
+        {
+          "label": "B",
+          "text": "False",
+          "judgment": "refuted",
+          "meaning": "Boolean false",
+          "proof": "Neither comparison makes the chain false; a plausible wrong Boolean result."
+        },
+        {
+          "label": "C",
+          "text": "TypeError",
+          "judgment": "refuted",
+          "meaning": "a type exception",
+          "proof": "All operands are comparable integers; plausible misconception that Python disallows comparison chains."
+        },
+        {
+          "label": "D",
+          "text": "2",
+          "judgment": "refuted",
+          "meaning": "integer two",
+          "proof": "Python returns a Boolean here, not a count of successful comparisons; plausible count-based misconception."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "True",
+          "right_choice": "False",
+          "relation": "distinct",
+          "proof": "The complete alternatives express Boolean true versus Boolean false, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "True",
+          "right_choice": "TypeError",
+          "relation": "distinct",
+          "proof": "The complete alternatives express Boolean true versus a type exception, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "True",
+          "right_choice": "2",
+          "relation": "distinct",
+          "proof": "The complete alternatives express Boolean true versus integer two, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "False",
+          "right_choice": "TypeError",
+          "relation": "distinct",
+          "proof": "The complete alternatives express Boolean false versus a type exception, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "False",
+          "right_choice": "2",
+          "relation": "distinct",
+          "proof": "The complete alternatives express Boolean false versus integer two, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "TypeError",
+          "right_choice": "2",
+          "relation": "distinct",
+          "proof": "The complete alternatives express a type exception versus integer two, which are distinct outcomes or grammatical forms in this task."
+        }
+      ],
+      "distractor_plausibility": "pass; concrete nearby rule, boundary or operation confusions, not a claim of measured learner error rates",
+      "scope_assignment": "pass; Python semantics for all python rows, exact arithmetic for mixed0/1/3, subject-verb agreement for mixed2; displayed assignmentIDs match these subjects",
+      "difficulty_assessment": {
+        "level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct application of one familiar operation, indexing/conditional/comparison/slicing rule, or singular-head agreement; not pure terminology recall."
+      },
+      "literal_content_status": "pass",
+      "uncertainties": [],
+      "authored_key_and_main_review": "withheld_pending_unblind_authorization"
+    },
+    {
+      "id": "python:4",
+      "worksheet_item_sha256": "2cc8416e4f1cc76e5b9c4eab84f4810667d394599a23c79accdb79554d5dfac5",
+      "literal_task": "Evaluate the slice of the supplied list.",
+      "premises_sufficient": true,
+      "solution_proof": "The slice includes indices1,2,3 and excludes stop index4, producing20,30,40.",
+      "supported_choice_labels": [
+        "A"
+      ],
+      "supported_choice_texts": [
+        "[20, 30, 40]"
+      ],
+      "unique_offered_solution": true,
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "[20, 30, 40]",
+          "judgment": "supported",
+          "meaning": "three-element list20,30,40",
+          "proof": "Indices1through3 are included."
+        },
+        {
+          "label": "B",
+          "text": "[10, 20, 30]",
+          "judgment": "refuted",
+          "meaning": "three-element list10,20,30",
+          "proof": "Plausible one-based/start-offset error."
+        },
+        {
+          "label": "C",
+          "text": "[20, 30, 40, 50]",
+          "judgment": "refuted",
+          "meaning": "four-element list20,30,40,50",
+          "proof": "Plausible error including the stop index4."
+        },
+        {
+          "label": "D",
+          "text": "[10, 20, 30, 40]",
+          "judgment": "refuted",
+          "meaning": "four-element list10,20,30,40",
+          "proof": "Plausible error starting at0 instead of1."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "[20, 30, 40]",
+          "right_choice": "[10, 20, 30]",
+          "relation": "distinct",
+          "proof": "The complete alternatives express three-element list20,30,40 versus three-element list10,20,30, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "[20, 30, 40]",
+          "right_choice": "[20, 30, 40, 50]",
+          "relation": "distinct",
+          "proof": "The complete alternatives express three-element list20,30,40 versus four-element list20,30,40,50, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "[20, 30, 40]",
+          "right_choice": "[10, 20, 30, 40]",
+          "relation": "distinct",
+          "proof": "The complete alternatives express three-element list20,30,40 versus four-element list10,20,30,40, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "[10, 20, 30]",
+          "right_choice": "[20, 30, 40, 50]",
+          "relation": "distinct",
+          "proof": "The complete alternatives express three-element list10,20,30 versus four-element list20,30,40,50, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "[10, 20, 30]",
+          "right_choice": "[10, 20, 30, 40]",
+          "relation": "distinct",
+          "proof": "The complete alternatives express three-element list10,20,30 versus four-element list10,20,30,40, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "[20, 30, 40, 50]",
+          "right_choice": "[10, 20, 30, 40]",
+          "relation": "distinct",
+          "proof": "The complete alternatives express four-element list20,30,40,50 versus four-element list10,20,30,40, which are distinct outcomes or grammatical forms in this task."
+        }
+      ],
+      "distractor_plausibility": "pass; concrete nearby rule, boundary or operation confusions, not a claim of measured learner error rates",
+      "scope_assignment": "pass; Python semantics for all python rows, exact arithmetic for mixed0/1/3, subject-verb agreement for mixed2; displayed assignmentIDs match these subjects",
+      "difficulty_assessment": {
+        "level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct application of one familiar operation, indexing/conditional/comparison/slicing rule, or singular-head agreement; not pure terminology recall."
+      },
+      "literal_content_status": "pass",
+      "uncertainties": [],
+      "authored_key_and_main_review": "withheld_pending_unblind_authorization"
+    },
+    {
+      "id": "mixed:0",
+      "worksheet_item_sha256": "c92767b2f35cdb03466e0d5a0a528b4649842d2b1e5b83ca32e412268862de86",
+      "literal_task": "Find the exact value of the fully specified unitless sum.",
+      "premises_sufficient": true,
+      "solution_proof": "3/4+5/8=6/8+5/8=11/8.",
+      "supported_choice_labels": [
+        "C"
+      ],
+      "supported_choice_texts": [
+        "11/8"
+      ],
+      "unique_offered_solution": true,
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "15/32",
+          "judgment": "refuted",
+          "meaning": "rational15/32",
+          "proof": "This is multiplication rather than the supplied addition."
+        },
+        {
+          "label": "B",
+          "text": "6/5",
+          "judgment": "refuted",
+          "meaning": "rational6/5",
+          "proof": "This is division rather than the supplied addition."
+        },
+        {
+          "label": "C",
+          "text": "11/8",
+          "judgment": "supported",
+          "meaning": "rational11/8",
+          "proof": "This is the exact supplied sum."
+        },
+        {
+          "label": "D",
+          "text": "1/8",
+          "judgment": "refuted",
+          "meaning": "rational1/8",
+          "proof": "This is subtraction rather than the supplied addition."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "15/32",
+          "right_choice": "6/5",
+          "relation": "distinct",
+          "proof": "15/32 and6/5 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "15/32",
+          "right_choice": "11/8",
+          "relation": "distinct",
+          "proof": "15/32 and11/8 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "15/32",
+          "right_choice": "1/8",
+          "relation": "distinct",
+          "proof": "15/32 and1/8 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "6/5",
+          "right_choice": "11/8",
+          "relation": "distinct",
+          "proof": "6/5 and11/8 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "6/5",
+          "right_choice": "1/8",
+          "relation": "distinct",
+          "proof": "6/5 and1/8 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "11/8",
+          "right_choice": "1/8",
+          "relation": "distinct",
+          "proof": "11/8 and1/8 are unequal exact rational values; Fraction comparison confirms inequality."
+        }
+      ],
+      "distractor_plausibility": "pass; concrete nearby rule, boundary or operation confusions, not a claim of measured learner error rates",
+      "scope_assignment": "pass; Python semantics for all python rows, exact arithmetic for mixed0/1/3, subject-verb agreement for mixed2; displayed assignmentIDs match these subjects",
+      "difficulty_assessment": {
+        "level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct application of one familiar operation, indexing/conditional/comparison/slicing rule, or singular-head agreement; not pure terminology recall."
+      },
+      "literal_content_status": "pass",
+      "uncertainties": [],
+      "authored_key_and_main_review": "withheld_pending_unblind_authorization"
+    },
+    {
+      "id": "mixed:1",
+      "worksheet_item_sha256": "47ed2310ff045e4e332edef25b54abb26379abdd9c939b4aca3783132ce11474",
+      "literal_task": "Find the exact value of the fully specified unitless quotient.",
+      "premises_sufficient": true,
+      "solution_proof": "(5/6)/(5/9)=(5/6)*(9/5)=3/2.",
+      "supported_choice_labels": [
+        "B"
+      ],
+      "supported_choice_texts": [
+        "3/2"
+      ],
+      "unique_offered_solution": true,
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "25/18",
+          "judgment": "refuted",
+          "meaning": "rational25/18",
+          "proof": "This is addition rather than the supplied division."
+        },
+        {
+          "label": "B",
+          "text": "3/2",
+          "judgment": "supported",
+          "meaning": "rational3/2",
+          "proof": "This is the exact supplied quotient."
+        },
+        {
+          "label": "C",
+          "text": "25/54",
+          "judgment": "refuted",
+          "meaning": "rational25/54",
+          "proof": "This is multiplication rather than the supplied division."
+        },
+        {
+          "label": "D",
+          "text": "5/18",
+          "judgment": "refuted",
+          "meaning": "rational5/18",
+          "proof": "This is subtraction rather than the supplied division."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "25/18",
+          "right_choice": "3/2",
+          "relation": "distinct",
+          "proof": "25/18 and3/2 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "25/18",
+          "right_choice": "25/54",
+          "relation": "distinct",
+          "proof": "25/18 and25/54 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "25/18",
+          "right_choice": "5/18",
+          "relation": "distinct",
+          "proof": "25/18 and5/18 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "3/2",
+          "right_choice": "25/54",
+          "relation": "distinct",
+          "proof": "3/2 and25/54 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "3/2",
+          "right_choice": "5/18",
+          "relation": "distinct",
+          "proof": "3/2 and5/18 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "25/54",
+          "right_choice": "5/18",
+          "relation": "distinct",
+          "proof": "25/54 and5/18 are unequal exact rational values; Fraction comparison confirms inequality."
+        }
+      ],
+      "distractor_plausibility": "pass; concrete nearby rule, boundary or operation confusions, not a claim of measured learner error rates",
+      "scope_assignment": "pass; Python semantics for all python rows, exact arithmetic for mixed0/1/3, subject-verb agreement for mixed2; displayed assignmentIDs match these subjects",
+      "difficulty_assessment": {
+        "level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct application of one familiar operation, indexing/conditional/comparison/slicing rule, or singular-head agreement; not pure terminology recall."
+      },
+      "literal_content_status": "pass",
+      "uncertainties": [],
+      "authored_key_and_main_review": "withheld_pending_unblind_authorization"
+    },
+    {
+      "id": "mixed:2",
+      "worksheet_item_sha256": "a253e935ff05437e5bd51dc07b95912b8dc8a8598409812703340a5c2621253a",
+      "literal_task": "Select the offered completion of the explicitly quoted sentence.",
+      "premises_sufficient": true,
+      "solution_proof": "The noun phrase has singular head box; chocolates is inside an of-phrase. Of the offered completions, only was supplies singular agreement. The passive was left is grammatical. No unstated tense restriction is needed because the other offered forms all disagree in number.",
+      "supported_choice_labels": [
+        "A"
+      ],
+      "supported_choice_texts": [
+        "was"
+      ],
+      "unique_offered_solution": true,
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "was",
+          "judgment": "supported",
+          "meaning": "singular simple-past passive completion",
+          "proof": "Matches singular box and forms the grammatical was left."
+        },
+        {
+          "label": "B",
+          "text": "were",
+          "judgment": "refuted",
+          "meaning": "plural simple-past passive completion",
+          "proof": "Number mismatch with box; plausible attraction to chocolates."
+        },
+        {
+          "label": "C",
+          "text": "have been",
+          "judgment": "refuted",
+          "meaning": "plural present-perfect passive completion",
+          "proof": "Number mismatch with box; differs in aspect/time from were and are."
+        },
+        {
+          "label": "D",
+          "text": "are",
+          "judgment": "refuted",
+          "meaning": "plural present passive completion",
+          "proof": "Number mismatch with box; differs in time from were and aspect from have been."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "was",
+          "right_choice": "were",
+          "relation": "distinct",
+          "proof": "The complete alternatives express singular simple-past passive completion versus plural simple-past passive completion, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "was",
+          "right_choice": "have been",
+          "relation": "distinct",
+          "proof": "The complete alternatives express singular simple-past passive completion versus plural present-perfect passive completion, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "was",
+          "right_choice": "are",
+          "relation": "distinct",
+          "proof": "The complete alternatives express singular simple-past passive completion versus plural present passive completion, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "were",
+          "right_choice": "have been",
+          "relation": "distinct",
+          "proof": "The complete alternatives express plural simple-past passive completion versus plural present-perfect passive completion, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "were",
+          "right_choice": "are",
+          "relation": "distinct",
+          "proof": "The complete alternatives express plural simple-past passive completion versus plural present passive completion, which are distinct outcomes or grammatical forms in this task."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "have been",
+          "right_choice": "are",
+          "relation": "distinct",
+          "proof": "The complete alternatives express plural present-perfect passive completion versus plural present passive completion, which are distinct outcomes or grammatical forms in this task."
+        }
+      ],
+      "distractor_plausibility": "pass; concrete nearby rule, boundary or operation confusions, not a claim of measured learner error rates",
+      "scope_assignment": "pass; Python semantics for all python rows, exact arithmetic for mixed0/1/3, subject-verb agreement for mixed2; displayed assignmentIDs match these subjects",
+      "difficulty_assessment": {
+        "level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct application of one familiar operation, indexing/conditional/comparison/slicing rule, or singular-head agreement; not pure terminology recall."
+      },
+      "literal_content_status": "pass",
+      "uncertainties": [],
+      "authored_key_and_main_review": "withheld_pending_unblind_authorization"
+    },
+    {
+      "id": "mixed:3",
+      "worksheet_item_sha256": "fa904a065efd55b8115db4ce5116a7a2cc43e7da709229e656f3af6a1353d651",
+      "literal_task": "Find the exact value of the fully specified unitless difference.",
+      "premises_sufficient": true,
+      "solution_proof": "5/6-1/4=10/12-3/12=7/12.",
+      "supported_choice_labels": [
+        "B"
+      ],
+      "supported_choice_texts": [
+        "7/12"
+      ],
+      "unique_offered_solution": true,
+      "four_choice_judgments": [
+        {
+          "label": "A",
+          "text": "13/12",
+          "judgment": "refuted",
+          "meaning": "rational13/12",
+          "proof": "This is addition rather than the supplied subtraction."
+        },
+        {
+          "label": "B",
+          "text": "7/12",
+          "judgment": "supported",
+          "meaning": "rational7/12",
+          "proof": "This is the exact supplied difference."
+        },
+        {
+          "label": "C",
+          "text": "5/24",
+          "judgment": "refuted",
+          "meaning": "rational5/24",
+          "proof": "This is multiplication rather than the supplied subtraction."
+        },
+        {
+          "label": "D",
+          "text": "10/3",
+          "judgment": "refuted",
+          "meaning": "rational10/3",
+          "proof": "This is division rather than the supplied subtraction."
+        }
+      ],
+      "six_pair_judgments": [
+        {
+          "left_label": "A",
+          "right_label": "B",
+          "left_choice": "13/12",
+          "right_choice": "7/12",
+          "relation": "distinct",
+          "proof": "13/12 and7/12 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "A",
+          "right_label": "C",
+          "left_choice": "13/12",
+          "right_choice": "5/24",
+          "relation": "distinct",
+          "proof": "13/12 and5/24 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "A",
+          "right_label": "D",
+          "left_choice": "13/12",
+          "right_choice": "10/3",
+          "relation": "distinct",
+          "proof": "13/12 and10/3 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "B",
+          "right_label": "C",
+          "left_choice": "7/12",
+          "right_choice": "5/24",
+          "relation": "distinct",
+          "proof": "7/12 and5/24 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "B",
+          "right_label": "D",
+          "left_choice": "7/12",
+          "right_choice": "10/3",
+          "relation": "distinct",
+          "proof": "7/12 and10/3 are unequal exact rational values; Fraction comparison confirms inequality."
+        },
+        {
+          "left_label": "C",
+          "right_label": "D",
+          "left_choice": "5/24",
+          "right_choice": "10/3",
+          "relation": "distinct",
+          "proof": "5/24 and10/3 are unequal exact rational values; Fraction comparison confirms inequality."
+        }
+      ],
+      "distractor_plausibility": "pass; concrete nearby rule, boundary or operation confusions, not a claim of measured learner error rates",
+      "scope_assignment": "pass; Python semantics for all python rows, exact arithmetic for mixed0/1/3, subject-verb agreement for mixed2; displayed assignmentIDs match these subjects",
+      "difficulty_assessment": {
+        "level": 2,
+        "meets_requested_2_or_3": true,
+        "basis": "Direct application of one familiar operation, indexing/conditional/comparison/slicing rule, or singular-head agreement; not pure terminology recall."
+      },
+      "literal_content_status": "pass",
+      "uncertainties": [],
+      "authored_key_and_main_review": "withheld_pending_unblind_authorization"
+    }
+  ],
+  "counts": {
+    "blind_literal_pass": 9,
+    "blind_literal_fail": 0,
+    "blind_literal_uncertain": 0,
+    "unique_offered_solutions": 9,
+    "choice_judgments": 36,
+    "distinct_pair_judgments": 54,
+    "difficulty_fit": 9,
+    "scope_fit": 9,
+    "model_key_correctness_assessed": 0,
+    "main_explanations_assessed": 0
+  },
+  "limits": [
+    "The6unreturned slots earn no content credit;0numerical output cannot establish quality or compiled uptake for that job.",
+    "This lock does not assess any hidden authored key/main, compiler status, solver/audit rationale or overall worker qualification.",
+    "Plausibility and difficulty are reviewer judgments, not measured psychometrics; no hidden premises were added.",
+    "All relevant Python choices denote exact outcomes, including type. Numerical equality of False and0 does not make them the same exact result in this programming question."
+  ]
+}

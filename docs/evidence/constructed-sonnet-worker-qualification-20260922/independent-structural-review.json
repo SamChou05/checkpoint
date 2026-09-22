@@ -1,0 +1,486 @@
+{
+  "plan_sha256": "6230622117349a2617e7502def86d625bd70fb401b82c3dd8f59c2a048624dcc",
+  "capture_sha256": "9402ce571dee1c386aa3489e548b82292408e9b4a984a4807d596a6ca982a707",
+  "source_commit": "0e4619f1696b848073f1a4d551c364ed3fbfbeb0",
+  "source_clean": true,
+  "source_and_artifact_pins": 44,
+  "baseline_source_pins_verified": 37,
+  "baseline_plan_sha256": "29ca1b56074a64c9af5306c6c3e14880a6c7d9ed53bb065c6e2d0dd22f81b87c",
+  "baseline_capture_sha256": "49833e414ec775090b3408ff6b73d5b967c401fd64b6b4294d7533f1ac8c2658",
+  "configuration_change": "Author model only; existing Claude settings produce adaptive/high max16000 and no sampling",
+  "network_connections": 0,
+  "new_provider_calls": 0,
+  "replay": {
+    "real_pin_checks": 27,
+    "exact_request_replays": 9,
+    "recorded_calls": 9,
+    "mismatches": [],
+    "error": null,
+    "timing_equality_claimed": false,
+    "note": "Actual frozen run_jobs with recorded SDK responses; live deadlines assessed from capture, not replay speed."
+  },
+  "native_counts": {
+    "provider_failed_calls": 1,
+    "stop:end_turn": 8,
+    "valid_wire_and_native_calls": 8,
+    "raw_author_rows": 12,
+    "raw_prose": 8,
+    "strict_solver_items": 6,
+    "choice_judgments": 24,
+    "pair_judgments": 36,
+    "strict_audit_items": 10,
+    "audit_positive": 9,
+    "audit_negative": 1,
+    "raw_quantitative": 4
+  },
+  "calls": [
+    {
+      "ordinal": 0,
+      "job": "quantitative",
+      "stage": "question_author_constructed_v1",
+      "input_count": 5,
+      "request_sha256": "900889814eb6d8bf9f2551e89080d4f4394fcd530b181d7c4f2e05e8acc03dbb",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 100.168049,
+      "remaining_before_ms": 239918,
+      "remaining_after_ms": 139749,
+      "error": {
+        "type": "ReadTimeoutError",
+        "code": null,
+        "message": null,
+        "request_id": null,
+        "http_status": null
+      }
+    },
+    {
+      "ordinal": 1,
+      "job": "python",
+      "stage": "question_author_constructed_v1",
+      "input_count": 5,
+      "request_sha256": "8b13a9b57f33db74440d438175bd8fd058c4f696181f523dbc09130da23a7a37",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 30.301816,
+      "remaining_before_ms": 239960,
+      "remaining_after_ms": 209657,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 2,
+      "job": "python",
+      "stage": "complete_choice_solver_v5_n5",
+      "input_count": 5,
+      "request_sha256": "24f04da7b862dfe6b4e9bc9bd8e0538a1888d677f135ff0aae300c7a38d2bb49",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 36.950654,
+      "remaining_before_ms": 209582,
+      "remaining_after_ms": 172629,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 3,
+      "job": "python",
+      "stage": "authored_solution_reviewer_v3_n5",
+      "input_count": 5,
+      "request_sha256": "c5920f7898aa68a57270948ee6f9f8c14570dd282460e85a490b01335b2ca817",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 25.62428,
+      "remaining_before_ms": 172562,
+      "remaining_after_ms": 146935,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 4,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "input_count": 5,
+      "request_sha256": "7f29660e3c4bd5bc34abec842462b59b53828cd17afe72f60de573bf0dfae133",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 67.795596,
+      "remaining_before_ms": 239959,
+      "remaining_after_ms": 172162,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 5,
+      "job": "mixed",
+      "stage": "complete_choice_solver_v5_n1",
+      "input_count": 1,
+      "request_sha256": "b9fb975752064eb313bd7fbdc6b1410f853ccf84e82cf381c980f78bec8eecda",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 17.579779,
+      "remaining_before_ms": 172100,
+      "remaining_after_ms": 154517,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 6,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n4",
+      "input_count": 4,
+      "request_sha256": "79eadf2e4e569d054c9df95a300f1d2eb0abaa1307623423c3fc0892502052f6",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 36.682486,
+      "remaining_before_ms": 154447,
+      "remaining_after_ms": 117761,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 7,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "input_count": 2,
+      "request_sha256": "5864b5d15a62ea8d07dca938ab88d4035d147391fe2ce72d7f2dcd325fafe644",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 21.852456,
+      "remaining_before_ms": 117690,
+      "remaining_after_ms": 95834,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 8,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n1",
+      "input_count": 1,
+      "request_sha256": "d8409020579be616c6e5951c1e9783e7cf836eb0a37b49afa1165e2d0a029fc8",
+      "read_timeout_seconds": 89.786,
+      "elapsed_seconds": 11.188354,
+      "remaining_before_ms": 95760,
+      "remaining_after_ms": 84567,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    }
+  ],
+  "jobs": [
+    {
+      "job": "quantitative",
+      "status": "failed",
+      "requested": 5,
+      "returned": 0,
+      "provider_calls": 1,
+      "elapsed_seconds": 100.290039,
+      "within_deadline": true,
+      "passes": 0,
+      "compiled_candidates": 0,
+      "compiler_rejections": {},
+      "returned_compiled": 0,
+      "returned_prose": 0,
+      "error": {
+        "type": "ProviderError",
+        "code": null,
+        "message": null,
+        "request_id": null,
+        "http_status": null
+      }
+    },
+    {
+      "job": "python",
+      "status": "finished",
+      "requested": 5,
+      "returned": 5,
+      "provider_calls": 3,
+      "elapsed_seconds": 93.102481,
+      "within_deadline": true,
+      "passes": 1,
+      "compiled_candidates": 0,
+      "compiler_rejections": {},
+      "returned_compiled": 0,
+      "returned_prose": 5,
+      "error": null
+    },
+    {
+      "job": "mixed",
+      "status": "finished",
+      "requested": 5,
+      "returned": 4,
+      "provider_calls": 5,
+      "elapsed_seconds": 155.475229,
+      "within_deadline": true,
+      "passes": 2,
+      "compiled_candidates": 4,
+      "compiler_rejections": {},
+      "returned_compiled": 3,
+      "returned_prose": 1,
+      "error": null
+    }
+  ],
+  "provenance": {
+    "raw_task_to_constructed_spec_and_five_fields_replayed": 4,
+    "returned_compiled_five_fields_exact": 3,
+    "returned_prose_main_exact": 6
+  },
+  "usage": {
+    "input_tokens": 31935,
+    "output_tokens": 21665,
+    "calls_without_reported_usage": 1,
+    "missing_usage_is_not_zero": true,
+    "provider_call_seconds": 348.14347,
+    "reasoning_blocks_omitted": 8
+  },
+  "original_requested_denominator": 15,
+  "capture_summary": {
+    "planned_jobs": 3,
+    "planned_questions": 15,
+    "attempted_jobs": 3,
+    "attempted_calls": 9,
+    "returned_questions": 9,
+    "independent_content_review": "pending",
+    "qualified": false,
+    "reported_token_usage": {
+      "input_tokens": 31935,
+      "output_tokens": 21665,
+      "calls_without_reported_usage": 1,
+      "missing_usage_is_not_zero": true
+    }
+  },
+  "content_semantics_adjudicated_here": false,
+  "global_stop": null,
+  "reviewer": "choice_semantics",
+  "review_type": "independent_structural_runtime_replay",
+  "structural_replay_passed": true,
+  "provider_calls_successful": 8,
+  "provider_calls_failed": 1,
+  "full_trial_qualified": false,
+  "full_trial_failure_already_established_without_content_adjudication": [
+    "returned_total: 9 < 14",
+    "quantitative_job_returned: 0 < 4",
+    "compiled_total: 3 < 6",
+    "quantitative_job_compiled: 0 < 4"
+  ],
+  "prospective_criteria_unchanged": {
+    "returned_total_of_15": 14,
+    "minimum_per_job": 4,
+    "compiled_total": 6,
+    "quantitative_job_compiled": 4,
+    "mixed_job_compiled": 2,
+    "mixed_job_english_prose": 1,
+    "all_returned_content_independently_sound": true,
+    "compiled_fields_exactly_original": true,
+    "prose_main_exactly_authored": true,
+    "prose_feedback_must_be_empty": true,
+    "all_jobs_in_denominator": true,
+    "scope_and_difficulty_required": true
+  },
+  "criteria_observations": {
+    "returned_total": {
+      "actual": 9,
+      "minimum": 14,
+      "met": false
+    },
+    "minimum_returned_per_job": {
+      "actual": 0,
+      "minimum": 4,
+      "met": false
+    },
+    "compiled_total": {
+      "actual": 3,
+      "minimum": 6,
+      "met": false
+    },
+    "quantitative_job_compiled": {
+      "actual": 0,
+      "minimum": 4,
+      "met": false
+    },
+    "mixed_job_compiled": {
+      "actual": 3,
+      "minimum": 2,
+      "met": true
+    },
+    "mixed_prose_returned": {
+      "actual": 1,
+      "required_english": 1,
+      "assignment_semantics": "separate review"
+    },
+    "all_returned_semantically_sound": "separate independent content review required"
+  },
+  "timeout": {
+    "call_ordinal": 0,
+    "stage": "question_author_constructed_v1",
+    "job": "quantitative",
+    "observed_error_type": "ReadTimeoutError",
+    "elapsed_seconds": 100.168049,
+    "read_timeout_seconds": 100,
+    "sdk_total_attempts": 1,
+    "provider_response_available": false,
+    "native_validity": "unknown; no response",
+    "reasoning_text_available": false,
+    "usage": "unknown; not zero",
+    "authored_rows_observed": 0,
+    "requested_items_unobserved": 5,
+    "later_jobs_continue": true,
+    "new_inference_retry_or_rescue": false,
+    "note": "Socket timeout plus local overhead is recorded as a failed attempt, not a native-schema or model-content rejection. Five unobserved tasks retain their original denominator."
+  },
+  "native_issue_flags": {
+    "typed_booleans": 60,
+    "false": 59,
+    "true": 1,
+    "true_flag": {
+      "call_ordinal": 6,
+      "audit_index": 2,
+      "raw_source": [
+        "mixed",
+        0,
+        2
+      ],
+      "field": "distractors"
+    },
+    "all_explanation_support_declarations": "supported",
+    "semantics_adjudicated": false
+  },
+  "pass_counts": [
+    {
+      "job": "python",
+      "pass": 0,
+      "raw_rows": 5,
+      "raw_kind_counts": {
+        "prose": 5
+      },
+      "compiled_candidates": 0,
+      "compiler_rejections": [],
+      "sanitized_rows": 5,
+      "verified_rows": 5
+    },
+    {
+      "job": "mixed",
+      "pass": 0,
+      "raw_rows": 5,
+      "raw_kind_counts": {
+        "quantitative": 3,
+        "prose": 2
+      },
+      "compiled_candidates": 3,
+      "compiler_rejections": [],
+      "sanitized_rows": 5,
+      "verified_rows": 3
+    },
+    {
+      "job": "mixed",
+      "pass": 1,
+      "raw_rows": 2,
+      "raw_kind_counts": {
+        "quantitative": 1,
+        "prose": 1
+      },
+      "compiled_candidates": 1,
+      "compiler_rejections": [],
+      "sanitized_rows": 2,
+      "verified_rows": 1
+    }
+  ],
+  "raw_attempt_accounting": {
+    "observed_author_rows": 12,
+    "prose": 8,
+    "quantitative": 4,
+    "returned": 9,
+    "not_an_alternative_denominator": true,
+    "timed_out_job_requested_slots_without_observed_rows": 5,
+    "observed_draft_losses": {
+      "pre_solver_invalid_feedback": 2,
+      "immutable_audit_reported_issues": 1
+    },
+    "compiler_rejections": 0,
+    "model_solver_vetoes": 0
+  },
+  "typed_task_outcomes": {
+    "raw_task_only_rows": 4,
+    "all_from_job": "mixed",
+    "constructed_successfully": 4,
+    "released": 3,
+    "final_audit_rejected": 1,
+    "compiler_errors": [],
+    "all_original_flat_tasks_reconstructed": true,
+    "no_supplied_choices": true,
+    "all_compiler_candidates_receive_audit": true,
+    "model_solver_skipped_only_for_private_compiler_proof": true,
+    "auditor_distractor_veto_legitimacy": "not adjudicated here; a typed declaration without returned rationale"
+  },
+  "prose_freeze_rejections": [
+    {
+      "raw_source": [
+        "mixed",
+        0,
+        4
+      ],
+      "stage": "before solver",
+      "actual_error": "AuthoredTeachingFormatError: Teaching cannot reference shuffled answer labels."
+    },
+    {
+      "raw_source": [
+        "mixed",
+        1,
+        1
+      ],
+      "stage": "before solver",
+      "actual_error": "AuthoredTeachingFormatError: Teaching cannot reference shuffled answer labels."
+    }
+  ],
+  "budget_and_stop": {
+    "per_job_call_cap": 6,
+    "global_call_cap": 18,
+    "actual_reservations": 9,
+    "actual_dispatches": 9,
+    "dense_reservation_ordinals_verified": true,
+    "global_stop": null,
+    "all_jobs_attempted": 3,
+    "per_job_deadline_seconds": 240,
+    "all_jobs_complete_within_worker_deadline": true,
+    "mixed_final_remaining_call_slots": 1,
+    "minimum_new_mixed_pass_call_slots": 3,
+    "mixed_partial_stop": "Existing conservative three-call admission rule; no harness rescue.",
+    "total_worker_seconds_across_independent_jobs": 348.867749,
+    "read_ceiling_seconds": 100,
+    "connect_seconds": 3,
+    "sdk_total_attempts": 1,
+    "last_call_read_seconds": 89.786,
+    "last_call_remaining_before_converse_ms": 95760,
+    "last_factory_remaining_inferred_ms": 95787,
+    "factory_to_converse_interval_inferred_ms": 27,
+    "inference_note": "Runtime read formula subtracts connect3s, safety2s, client setup1s and1ms; no separate factory timestamp was captured.",
+    "all_successful_call_elapsed_below_read_timeout": true,
+    "failed_timeout_measured_above_read_limit": true
+  },
+  "reproduction": {
+    "python_version": "3.12.11",
+    "python_executable": "/tmp/checkpoint-reliability-20260921-venv/bin/python",
+    "temporary_replay_script": "/tmp/checkpoint_constructed_sonnet_worker_structural_replay.py",
+    "temporary_replay_script_sha256": "e9a527b3db756cdd1ed08963476273086078a12480ed5147eea5386c47079a32",
+    "derived_replay_data_sha256": "87b478a6df69644328ee14cd52ccfc9ab60fa73f3d8ab7f65d431922acc63551",
+    "procedure": "Import pinned mixed_probe; real check_plan before/after dispatch and completion; block socket.socket.connect; replace only SDK factory with captured exact responses and a same-type offline ReadTimeoutError; call real run_jobs into a temporary capture. Compare every dynamic request, reservation, pass, return, source, provenance and status. Independently validate serialized native JSON schemas, adapters and local solver/auditor parsers. Rebuild all original typed tasks and all five released compiler fields. Bind prose mains to actual returned verifier objects and raw source ordinals.",
+    "timeout_replay_note": "Same named exception preserves runtime classification/control flow. No claim of reproducing the network exception internals or live elapsed time.",
+    "timing_note": "Live capture values are authoritative. Fast socket-blocked replay reproduces content and control flow, not latency or the recorded reduced timeout."
+  },
+  "limitations": [
+    "Structural validity and exact immutable content do not establish open-domain truth, adequate difficulty, novelty or distractor plausibility.",
+    "The first author returned no response, so its schema validity, typed-task uptake, hidden work and token use are unknown.",
+    "Reported tokens cover only eight responses and cannot be treated as complete billed usage or a price estimate.",
+    "Visible solver labels/reasons and final flags are checked for shape/binding here; private reasoning is neither retained nor inferred.",
+    "Actual native cardinalities observed: successful author targets5/2, solver counts5/1, audit counts5/4/1. No live claim for all configured counts.",
+    "Fresh generations on three repeated scopes; no matched-item causal comparison, broad population rate or production rollout claim.",
+    "Only the configured author model changes from baseline; its inherited existing Claude reasoning/token policy changes the author request from Kimi disabled6000 to Sonnet adaptive/high16000. Solver/auditor policy and all criteria stay unchanged.",
+    "No source, prompt, plan, capture, gold, policy floor or previous failure was edited. No provider, account or deployment action occurred during this audit."
+  ]
+}

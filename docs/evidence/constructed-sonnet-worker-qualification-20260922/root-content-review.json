@@ -1,0 +1,146 @@
+{
+  "reviewer": "root",
+  "phase": "after blind lock",
+  "capture_sha256": "9402ce571dee1c386aa3489e548b82292408e9b4a984a4807d596a6ca982a707",
+  "blind_lock_sha256": "567d8ef6545bbeac6c3e4a9c1702ae582f454b1e75c061ac139bbbd060c158a2",
+  "planned_denominator": 15,
+  "returned_denominator": 9,
+  "keys_matching_blind": 9,
+  "sound_contextual_adjudication": 9,
+  "sound_strict_sensitivity": 8,
+  "all_compiled_choice_feedback_supported": 12,
+  "compiled_returned": 3,
+  "items": [
+    {
+      "id": "python:0",
+      "key_matches_blind": true,
+      "main_supported_contextually": true,
+      "main_supported_strict_universal_reading": false,
+      "interpretation_sensitive": true,
+      "choice_feedback_supported": true,
+      "choice_feedback_fields": 0,
+      "compiled": false,
+      "policy": 7,
+      "assessment": "The first sentence is incomplete as a universal rule: or can return a falsey final operand and may return a Boolean operand. The following sentences correctly describe this exact 0/string expression without Boolean coercion. Root preserves the same contextual adjudication used in prior Sonnet-author evidence, plus the strict sensitivity. This differs from the prior explicit false execution sequence."
+    },
+    {
+      "id": "python:1",
+      "key_matches_blind": true,
+      "main_supported_contextually": true,
+      "main_supported_strict_universal_reading": true,
+      "interpretation_sensitive": false,
+      "choice_feedback_supported": true,
+      "choice_feedback_fields": 0,
+      "compiled": false,
+      "policy": 7,
+      "assessment": "The exact displayed task supports the main and any supplied choice feedback; no unbound display references or false execution narrative found."
+    },
+    {
+      "id": "python:2",
+      "key_matches_blind": true,
+      "main_supported_contextually": true,
+      "main_supported_strict_universal_reading": true,
+      "interpretation_sensitive": false,
+      "choice_feedback_supported": true,
+      "choice_feedback_fields": 0,
+      "compiled": false,
+      "policy": 7,
+      "assessment": "The exact displayed task supports the main and any supplied choice feedback; no unbound display references or false execution narrative found."
+    },
+    {
+      "id": "python:3",
+      "key_matches_blind": true,
+      "main_supported_contextually": true,
+      "main_supported_strict_universal_reading": true,
+      "interpretation_sensitive": false,
+      "choice_feedback_supported": true,
+      "choice_feedback_fields": 0,
+      "compiled": false,
+      "policy": 7,
+      "assessment": "The exact displayed task supports the main and any supplied choice feedback; no unbound display references or false execution narrative found."
+    },
+    {
+      "id": "python:4",
+      "key_matches_blind": true,
+      "main_supported_contextually": true,
+      "main_supported_strict_universal_reading": true,
+      "interpretation_sensitive": false,
+      "choice_feedback_supported": true,
+      "choice_feedback_fields": 0,
+      "compiled": false,
+      "policy": 7,
+      "assessment": "The exact displayed task supports the main and any supplied choice feedback; no unbound display references or false execution narrative found."
+    },
+    {
+      "id": "mixed:0",
+      "key_matches_blind": true,
+      "main_supported_contextually": true,
+      "main_supported_strict_universal_reading": true,
+      "interpretation_sensitive": false,
+      "choice_feedback_supported": true,
+      "choice_feedback_fields": 4,
+      "compiled": true,
+      "policy": 8,
+      "assessment": "The exact displayed task supports the main and any supplied choice feedback; no unbound display references or false execution narrative found."
+    },
+    {
+      "id": "mixed:1",
+      "key_matches_blind": true,
+      "main_supported_contextually": true,
+      "main_supported_strict_universal_reading": true,
+      "interpretation_sensitive": false,
+      "choice_feedback_supported": true,
+      "choice_feedback_fields": 4,
+      "compiled": true,
+      "policy": 8,
+      "assessment": "The exact displayed task supports the main and any supplied choice feedback; no unbound display references or false execution narrative found."
+    },
+    {
+      "id": "mixed:2",
+      "key_matches_blind": true,
+      "main_supported_contextually": true,
+      "main_supported_strict_universal_reading": true,
+      "interpretation_sensitive": false,
+      "choice_feedback_supported": true,
+      "choice_feedback_fields": 0,
+      "compiled": false,
+      "policy": 7,
+      "assessment": "The exact displayed task supports the main and any supplied choice feedback; no unbound display references or false execution narrative found."
+    },
+    {
+      "id": "mixed:3",
+      "key_matches_blind": true,
+      "main_supported_contextually": true,
+      "main_supported_strict_universal_reading": true,
+      "interpretation_sensitive": false,
+      "choice_feedback_supported": true,
+      "choice_feedback_fields": 4,
+      "compiled": true,
+      "policy": 8,
+      "assessment": "The exact displayed task supports the main and any supplied choice feedback; no unbound display references or false execution narrative found."
+    }
+  ],
+  "reference_for_interpretation": "https://docs.python.org/3/reference/expressions.html#boolean-operations",
+  "prior_consistency": "Same context-specific operand-return reading as docs/evidence/sonnet-mixed-author-diagnostic-20260922/RESULT.md; both counts preserved. Neither qualifies this failed fullworker run.",
+  "private_diagnostics": {
+    "choice_judgments": 24,
+    "pair_judgments": 36,
+    "dispositions_correct": true,
+    "reason_fidelity": "The grammar solver invents a required past-time context absent from the literal stem. That added reason is unsupported; the actual number-agreement distinction alone establishes the unique offered answer. Learner main discusses agreement and does not repeat the invented tense requirement. Some Python reasons use the same context-sensitive Boolean shortcut wording as the main; exact result and type comparisons are correct.",
+    "no_private_reason_is_learner_teaching": true
+  },
+  "stored_key_permutation_checks": 216,
+  "permutation_limit": "Membership only, not live UI or semantic proof. Existing independent Swift audit is separate.",
+  "format_and_provenance": "Root reproduced all3compiled5-field outputs and exact empty maps for6prose; every returned prompt/choice/main bound passes and all prose mains also meet320 author target. Exact network-blocked request/source replay separately audited.",
+  "failure": {
+    "qualified": false,
+    "reason": "9/15 returned below14, zero numerical returns/compiled below4, total3compiled below6. Five numerical slots have no observed response aftertimeout; one mixed slot missing. Content-reading sensitivity cannot change failed disposition.",
+    "timeout_usage_unknown": true,
+    "no_retry_or_replacement": true
+  },
+  "limits": [
+    "New generations on repeated scopes, no matched-item causal claim or broad accuracy estimate.",
+    "No proof of cold grammar compilation as the cause of timeout; provider-stage breakdown and grammar cache state unavailable.",
+    "No deployment or inventory/floor change."
+  ]
+}
