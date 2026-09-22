@@ -58,6 +58,8 @@ def main() -> None:
     contracts = get_args(native_output_contracts.Contract)
     if len(contracts) != 10:
         raise RuntimeError("Expected ten versioned native contracts including retained author contracts and the experimental reviewer schema.")
+    contracts += tuple(native_output_contracts.ReviewerSlotContract(count)
+                       for count in range(1, native_output_contracts.MAX_REVIEW_BATCH_COUNT + 1))
     for contract in contracts:
         request = {
             "modelId": "us.anthropic.claude-sonnet-4-6",
@@ -76,7 +78,8 @@ def main() -> None:
         "botocore_version": botocore.__version__,
         "botocore_path": botocore.__file__,
         "service_model_search_paths": loader.search_paths,
-        "validated_contracts": contracts,
+        "validated_contracts": [native_output_contracts.contract_metadata(contract)["name"]
+                                for contract in contracts],
         "sdk_request_shapes_validated": len(contracts),
         "live_provider_calls": 0,
     }, indent=2))

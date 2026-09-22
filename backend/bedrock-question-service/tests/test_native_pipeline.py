@@ -31,7 +31,7 @@ from test_lambda_skill_map_evolution import _evolution_payload, _provider_respon
 AUTHOR = "question_author_v3"
 SOLVER = "complete_choice_solver_v3"
 LEGACY_SOLVER = "complete_choice_solver_v1"
-REVIEWER = "default_reviewer_v1"
+REVIEWER = "default_reviewer_v3_n1"
 AUTHORED_REVIEWER = "authored_solution_reviewer_v1"
 MODEL = "us.anthropic.claude-sonnet-4-6"
 FALLBACK = "moonshotai.kimi-k2.5"
@@ -89,6 +89,11 @@ def review(question, index=0, **changes):
     }
 
 
+def review_map(*records):
+    return {"reviews": {str(row["index"]): {key: value for key, value in row.items() if key != "index"}
+                        for row in records}}
+
+
 class ScriptedNativeClient:
     """Fail immediately if a real stage loses or selects the wrong contract."""
 
@@ -105,8 +110,8 @@ class ScriptedNativeClient:
         system = request["system"][0]["text"]
         if contract == AUTHOR:
             assert "NATIVE TRANSPORT OVERRIDE (question_author_v2)" in system
-        elif contract == REVIEWER:
-            assert "NATIVE TRANSPORT OVERRIDE" in system
+        elif contract.startswith("default_reviewer_v3_n"):
+            assert "REVIEW IDENTITY OVERRIDE" in system
             assert "choiceFeedback" in system
         else:
             assert contract in system
@@ -173,7 +178,7 @@ class NativePipelineTests(unittest.TestCase):
         return ScriptedNativeClient(
             (AUTHOR, author_payload(question)),
             (SOLVER, self.solver(question, mutate_solver)),
-            (REVIEWER, {"reviews": [reviewer or review(question)]}),
+            (REVIEWER, review_map(reviewer or review(question))),
         )
 
     def test_http_preserves_wire_feedback_and_independent_verification(self):
@@ -379,9 +384,14 @@ class NativePipelineTests(unittest.TestCase):
                 else:
                     record["index"] = 1
                 client = self.pipeline(reviewer=record)
-                self.assertEqual(generation._generate_sanitized_questions(
-                    self.request, client, generation.ProviderCallBudget(3),
-                ), [])
+                if state == "index":
+                    with self.assertRaises(ProviderError):
+                        generation._generate_sanitized_questions(
+                            self.request, client, generation.ProviderCallBudget(3))
+                else:
+                    self.assertEqual(generation._generate_sanitized_questions(
+                        self.request, client, generation.ProviderCallBudget(3),
+                    ), [])
                 self.assertEqual(len(client.calls), 3)
 
     def test_authored_native_audit_preserves_immutable_explanation(self):

@@ -82,6 +82,12 @@ review feedback uses provider-only `choiceFeedback` rows, validated before
 conversion to the existing `choiceExplanations` object; accepted items still need
 exact choice coverage, independent answer agreement, and all existing semantic
 checks. Historical eval transports explicitly retain legacy prompts and shapes.
+Native final review uses `default_reviewer_v3_n{count}` with required keys for
+every surviving item. Trusted post-solver count selects one of forty bounded
+schema variants; local validation rejects missing, extra or duplicate identities.
+The two live count-five calls passed identity coverage while failing semantic
+quality. These guarantees do not establish correct teaching or unique answers.
+
 Native authoring uses `question_author_v3`: exactly four `a`/`b`/`c`/`d` slots
 and a `correctChoice` enum, converted into the existing choices array and exact
 text answer key. Its schema puts the stem and explanation before the key while

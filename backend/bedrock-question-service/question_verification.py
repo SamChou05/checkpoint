@@ -201,6 +201,7 @@ def verify_questions(
     request_metrics: dict[str, Any] | None = None,
     *,
     solve: Callable[[str, str], str] | None = None,
+    review_with_count: Callable[[str, str, int], str] | None = None,
     solver_contract: Literal["stem_only", "complete_choices"] = "stem_only",
     feedback_contract: Literal["reviewer_written", "authored_solution"] = "reviewer_written",
     preserve_reviewed_text: bool = False,
@@ -357,12 +358,13 @@ def verify_questions(
         + json.dumps(data, ensure_ascii=False)
         + "\n</question_review_json>"
     )
-    raw = review(
-        AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT if authored_solution else (
-            COMPLETE_REVIEW_SYSTEM_PROMPT if complete_choices else REVIEW_SYSTEM_PROMPT
-        ),
-        prompt,
+    system = AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT if authored_solution else (
+        COMPLETE_REVIEW_SYSTEM_PROMPT if complete_choices else REVIEW_SYSTEM_PROMPT
     )
+    # Pass trusted dense survivor cardinality directly, never infer it from a
+    # target count, learner text, or a model-authored response.
+    raw = (review_with_count(system, prompt, len(data["items"]))
+           if review_with_count is not None else review(system, prompt))
     if authored_solution:
         try:
             reviews = validate_authored_reviews(raw, data["items"])

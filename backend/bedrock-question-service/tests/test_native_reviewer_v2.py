@@ -10,6 +10,7 @@ from jsonschema import Draft202012Validator
 
 from lambda_test_support import FakeBedrockClient, _raw_question, _request_payload
 from native_output_contracts import (
+    ReviewerSlotContract,
     _validate_schema_value,
     adapt_native_response,
     contract_metadata,
@@ -20,7 +21,7 @@ from question_verification import verify_questions
 from request_contract import _normalize_request
 from service_errors import ProviderError
 from test_native_output_contracts import Client
-from test_native_pipeline import AUTHOR, REVIEWER, SOLVER, ScriptedNativeClient, author_payload, review, solver_record, task_data
+from test_native_pipeline import AUTHOR, SOLVER, ScriptedNativeClient, author_payload, review, review_map, solver_record, task_data
 
 
 # Exact rejected row from native-reviewer-capture.json, call 3, item 2. Its
@@ -150,7 +151,7 @@ class NativeReviewerV2Tests(unittest.TestCase):
         with self.assertRaises(ProviderError):
             adapt_native_response(json.dumps({"reviews": [old_negative]}), "default_reviewer_v2")
 
-    def test_production_pipeline_keeps_v1_after_v2_failed_live_qualification(self):
+    def test_production_pipeline_uses_bound_identities_without_failed_v2_union(self):
         answers = {q["prompt"]: q["expectedAnswer"] for q in (self.question, self.other)}
 
         def solve(request):
@@ -160,9 +161,9 @@ class NativeReviewerV2Tests(unittest.TestCase):
         client = ScriptedNativeClient(
             (AUTHOR, author_payload(self.question, self.other)),
             (SOLVER, solve),
-            (REVIEWER, {"reviews": [self.accepted, {
+            ("default_reviewer_v3_n2", review_map(self.accepted, {
                 **self.rejected, "answer": "", "difficulty": 0, "explanation": "", "choiceFeedback": [],
-            }]}),
+            })),
         )
         metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
         with patch.dict(os.environ, {
@@ -177,8 +178,8 @@ class NativeReviewerV2Tests(unittest.TestCase):
             row["choice"]: row["explanation"] for row in self.accepted["choiceFeedback"]
         })
         self.assertEqual(metrics["QuestionQuality"]["review"]["rejected_by_model"], 1)
-        self.assertEqual(client.calls[-1]["outputConfig"], native_output_config("default_reviewer_v1"))
-        self.assertEqual(metrics["ProviderObservations"][-1]["structuredOutput"]["version"], "1")
+        self.assertEqual(client.calls[-1]["outputConfig"], native_output_config(ReviewerSlotContract(2)))
+        self.assertEqual(metrics["ProviderObservations"][-1]["structuredOutput"]["version"], "3")
         self.assertEqual(accepted[0]["verificationPolicyRevision"], 4)
 
     def test_explicit_v2_stage_adapts_mixed_feedback_without_promoting_rejections(self):

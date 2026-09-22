@@ -11,6 +11,8 @@ from typing import Any, Callable
 from generation_diagnostics import quality_summary, record_quality
 from native_output_contracts import (
     Contract,
+    NativeContract,
+    ReviewerSlotContract,
     adapt_native_response,
     contract_metadata,
     ensure_supported_model,
@@ -254,10 +256,9 @@ def _generate_sanitized_questions(
                 provider_payload.get("questions", []), current_request, request_metrics,
                 preserve_authored_explanation=feedback_contract == "authored_solution",
             )
-            generated_questions = verify_questions(
-                candidates,
-                current_request,
-                lambda system, prompt: _generate_with_bedrock(
+
+            def review_stage(system: str, prompt: str, count: int | None = None) -> str:
+                return _generate_with_bedrock(
                     normalized_request=current_request,
                     bedrock_client=bedrock_client,
                     model_id=_verification_model_id(),
@@ -266,11 +267,16 @@ def _generate_sanitized_questions(
                     call_budget=call_budget,
                     request_metrics=request_metrics,
                     contract=(
-                        "authored_solution_reviewer_v1"
-                        if feedback_contract == "authored_solution"
-                        else "default_reviewer_v1"
+                        "authored_solution_reviewer_v1" if feedback_contract == "authored_solution"
+                        else (ReviewerSlotContract(count) if count is not None else "default_reviewer_v1")
                     ),
-                ),
+                )
+
+            generated_questions = verify_questions(
+                candidates,
+                current_request,
+                review_stage,
+                review_with_count=review_stage if choice_slots else None,
                 request_metrics=request_metrics,
                 solve=lambda system, prompt: _generate_with_bedrock(
                     normalized_request=current_request,
@@ -365,7 +371,7 @@ def _generate_with_bedrock(
     system_prompt: str | None = None,
     call_budget: ProviderCallBudget | None = None,
     request_metrics: dict[str, Any] | None = None,
-    contract: Contract | None = None,
+    contract: NativeContract | None = None,
     *,
     legacy_transport: bool = False,
 ) -> str:

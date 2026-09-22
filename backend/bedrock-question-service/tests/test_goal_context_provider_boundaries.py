@@ -139,7 +139,8 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
                         ]
                     else:
                         result["choiceExplanations"] = feedback
-                    return {"reviews": [result]}
+                    return ({"reviews": {str(result["index"]): {k: v for k, v in result.items() if k != "index"}}}
+                            if mode == "native" else {"reviews": [result]})
 
                 steps = []
                 if mode == "legacy":
@@ -152,7 +153,7 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
                     ("question_solution_json",
                      "complete_choice_solver_v3" if mode == "native" else "complete_choice_solver_v1",
                      solve),
-                    ("question_review_json", "default_reviewer_v1", review),
+                    ("question_review_json", "default_reviewer_v3_n1" if mode == "native" else "default_reviewer_v1", review),
                 ])
                 client = _ScriptedClient(self.check_request, steps)
                 result = generation._generate_sanitized_questions(

@@ -5,6 +5,7 @@ and answer agreement remain the responsibility of the existing stage validators.
 """
 
 import copy
+from dataclasses import dataclass
 import hashlib
 import json
 import os
@@ -25,6 +26,26 @@ Contract = Literal[
     "default_reviewer_v2",
     "authored_solution_reviewer_v1",
 ]
+
+MAX_REVIEW_BATCH_COUNT = 40
+
+
+@dataclass(frozen=True)
+class ReviewerSlotContract:
+    """Bind reviewer identities to the trusted post-solver batch cardinality."""
+
+    count: int
+
+    def __post_init__(self) -> None:
+        if type(self.count) is not int or not 1 <= self.count <= MAX_REVIEW_BATCH_COUNT:
+            raise ServiceConfigurationError("Native review count must be an integer from 1 through 40.")
+
+    @property
+    def name(self) -> str:
+        return f"default_reviewer_v3_n{self.count}"
+
+
+NativeContract = Contract | ReviewerSlotContract
 
 _STRING = {"type": "string"}
 _INTEGER = {"type": "integer"}
@@ -117,7 +138,7 @@ _SCHEMAS: dict[Contract, dict[str, Any]] = {
             })},
         })}
     }),
-    # Experimental only: production continues to select v1. Closed branches
+    # Experimental only: production does not select this union. Closed branches
     # exclude learner feedback on rejections, but live qualification rejected
     # valid controls too. Do not promote schema validity as useful-output proof.
     "default_reviewer_v2": _object({
@@ -162,9 +183,24 @@ def output_mode() -> str:
     return mode
 
 
-def native_output_config(contract: Contract) -> dict[str, Any]:
+def _contract_schema(contract: NativeContract) -> dict[str, Any]:
+    if not isinstance(contract, ReviewerSlotContract):
+        return _SCHEMAS[contract]
+    # Retain the exact count-five grammar qualified live: canonical v1 row
+    # properties, no model-written index, and required trusted outer identities.
+    legacy = json.loads(json.dumps(_SCHEMAS["default_reviewer_v1"], sort_keys=True))
+    row = legacy["properties"]["reviews"]["items"]
+    del row["properties"]["index"]
+    row["required"].remove("index")
+    return _object({"reviews": _object({
+        str(index): copy.deepcopy(row) for index in range(contract.count)
+    })})
+
+
+def native_output_config(contract: NativeContract) -> dict[str, Any]:
     """Return an independent wrapper with stable schema serialization."""
-    schema = json.dumps(_SCHEMAS[contract], sort_keys=True, separators=(",", ":"))
+    schema = json.dumps(_contract_schema(contract), sort_keys=not isinstance(contract, ReviewerSlotContract),
+                        separators=(",", ":"))
     if contract == "complete_choice_solver_v3":
         # V3 intentionally declares reason before the final judgment/relation.
         # Scope insertion-order serialization to this new contract so all
@@ -182,14 +218,15 @@ def native_output_config(contract: Contract) -> dict[str, Any]:
         question["properties"] = {key: properties[key] for key in _AUTHOR_V3_PROPERTY_ORDER}
         schema = json.dumps(ordered, separators=(",", ":"))
     return {"textFormat": {"type": "json_schema", "structure": {"jsonSchema": {
-        "name": contract, "schema": schema,
+        "name": contract.name if isinstance(contract, ReviewerSlotContract) else contract, "schema": schema,
     }}}}
 
 
-def contract_metadata(contract: Contract) -> dict[str, str]:
+def contract_metadata(contract: NativeContract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
-    return {"name": contract, "version": contract.rsplit("_v", 1)[1],
+    return {"name": contract.name if isinstance(contract, ReviewerSlotContract) else contract,
+            "version": "3" if isinstance(contract, ReviewerSlotContract) else contract.rsplit("_v", 1)[1],
             "sha256": hashlib.sha256(schema.encode()).hexdigest()}
 
 
@@ -201,7 +238,22 @@ def ensure_supported_model(model_id: str) -> None:
         )
 
 
-def native_prompt(system_prompt: str, contract: Contract) -> str:
+def native_prompt(system_prompt: str, contract: NativeContract) -> str:
+    if isinstance(contract, ReviewerSlotContract):
+        keys = ", ".join(json.dumps(str(index)) for index in range(contract.count))
+        # Preserve the live-qualified override wording, including its original
+        # experiment label. This label does not select routing or relax checks.
+        return native_prompt(system_prompt, "default_reviewer_v1") + "\n\n" + (
+            "EXPERIMENTAL REVIEW IDENTITY OVERRIDE: Return reviews as an object, not an array. "
+            f"It must contain exactly these required keys: {keys}. Each key identifies the "
+            "supplied item with that integer index. Return one review value at every key, "
+            "including rejected items; never add an unknown key or an index field inside a value. "
+            "This replaces all earlier output examples and index-field instructions. Keep "
+            "the existing valid, answer, difficulty, explanation and choiceFeedback fields. "
+            'Use answer:"", explanation:"" and choiceFeedback:[] for a rejected item; '
+            "use difficulty:0 when rejecting without a difficulty assessment. Do not change "
+            "the question, choices or key."
+        )
     if contract in {"question_author_v2", "question_author_v3"}:
         # Keep the tested slot-transport wording byte-identical. The v2 label
         # identifies this representation; v3 changes ordering, not these rules.
@@ -243,16 +295,25 @@ Do not add fields.
     return system_prompt + f"\n\nNATIVE TRANSPORT: Return only the JSON shape constrained by {contract}."
 
 
-def adapt_native_response(raw: str, contract: Contract) -> str:
+def adapt_native_response(raw: str, contract: NativeContract) -> str:
     """Validate native JSON before any provider-only shape is adapted."""
     try:
         payload = json.loads(raw, object_pairs_hook=_reject_duplicate_pairs, parse_constant=_reject_constant)
     except (TypeError, ValueError) as error:
         raise ProviderError("Native stage returned malformed JSON.") from error
     try:
-        _validate_schema_value(payload, _SCHEMAS[contract])
+        _validate_schema_value(payload, _contract_schema(contract))
     except ValueError as error:
         raise ProviderError("Native stage response violates its contract.") from error
+    if isinstance(contract, ReviewerSlotContract):
+        # Validate the complete map first. Do not drop, fill, or renumber invalid
+        # model records. Only trusted required keys can supply internal indexes.
+        restored = {"reviews": [
+            {"index": index, **payload["reviews"][str(index)]}
+            for index in range(contract.count)
+        ]}
+        return adapt_native_response(json.dumps(restored, ensure_ascii=False, allow_nan=False),
+                                     "default_reviewer_v1")
     if contract in {"question_author_v2", "question_author_v3"}:
         adapted = copy.deepcopy(payload)
         for question in adapted["questions"]:

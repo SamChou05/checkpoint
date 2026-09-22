@@ -12,7 +12,8 @@ bugs, controlled model comparisons and answer-highlighting evidence.
 
 Every provider call selects its stage explicitly, including author repair,
 top-ups, configured fallback, API/worker generation and skill-map retries. The
-registry contains ten static, closed, versioned contracts:
+registry retains ten static, closed, versioned contracts and adds a count-bound
+reviewer family:
 
 | Contract | Shape and runtime use |
 | --- | --- |
@@ -23,9 +24,10 @@ registry contains ten static, closed, versioned contracts:
 | `skill_map_evolution_v1` | Successor names/objectives; server validates predecessor coverage and constructs map identity/version. |
 | `complete_choice_solver_v1` | Exact indexed choices with supported/refuted/uncertain declarations. Retained for legacy complete-choice and optional authored teaching. |
 | `complete_choice_solver_v3` | Native reviewer-written path: four fixed judgment slots and six fixed unordered pair slots, reasons before verdicts. Trusted input provides exact pair endpoints. |
-| `default_reviewer_v1` | Current final review: verdict, exact answer, assessed difficulty, main explanation and provider-only choiceFeedback rows. |
+| `default_reviewer_v1` | Retained explicit native contract and legacy routing identity: verdict, exact answer, assessed difficulty, main explanation and provider-only choiceFeedback rows. |
 | `default_reviewer_v2` | Inactive experiment with separate accepted/rejected union branches; failed valid-control retention. |
 | `authored_solution_reviewer_v1` | Optional authored-teaching audit; cannot replace the author's teaching. Not enabled by this work. |
+| `default_reviewer_v3_n{count}` | Current native final review: required object keys bind every dense post-solver item, including rejections. Trusted count is 1–40; no model-written index. Feedback fields and admission checks remain v1-compatible. |
 
 Historical schema bytes remain stable. V3 serialization deliberately preserves
 property order. Schemas contain no request-specific goals, answers, IDs or counts.
@@ -71,6 +73,11 @@ packages boto3/botocore 1.43.91 and validates all ten native request shapes with
 `scripts/validate-native-sdk.py` under Python 3.12 `-I -S`: **30 offline checks**.
 The earlier container build attempt remains unverified because Docker timed out.
 These checks do not prove provider semantic accuracy or deployed queue behavior.
+The subsequent reviewer-identity integration passes all **1,140 backend tests**,
+Ruff, compilation, deployment-script checks, SAM lint and the noncontainer build.
+It expands packaged validation to the ten static shapes plus forty count variants
+per artifact (150 offline checks), with all 23 service modules identical in each
+of the three delivered artifacts.
 
 All experiments retain their prospective plans, raw attempts and failed criteria:
 
@@ -129,3 +136,21 @@ and [Claude Sonnet 4.6](https://docs.aws.amazon.com/bedrock/latest/userguide/mod
 capability references. Historical [nullable-schema rejection](QUESTION_TASK_OBSTRUCTION_SCHEMA_FIX.md)
 and [author-only latency evidence](QUESTION_AUTHOR_SCHEMA_EXPERIMENT.md) remain
 historical results, not qualification of current runtime schemas.
+
+### Bound final-review identities
+
+The native reviewer now receives a closed required map keyed by trusted dense
+post-solver indexes. The count is passed directly by the verifier, rather than
+parsed from prompt text or copied from the original request. The adapter rejects
+missing, extra, duplicate, noncanonical or embedded identities before deriving
+internal indexes; it never fills or repairs a model batch. Historical schemas
+and legacy/authored-review routing remain available with their original bytes.
+
+The [two-call count-five trial](evidence/reviewer-identity-20260922/RESULTS.md)
+returned all ten required identities. Production preserves that schema body and
+override text, including the original experimental label; the schema name and
+telemetry version now identify production v3. Tests cover all counts 1–40 locally
+and in the packaged SDK, but live qualification covers only count five. Cold
+grammar latency at other counts remains unmeasured. Both ambiguous controls
+were still accepted and faulty feedback remained, so this is an identity fix,
+not semantic release qualification or authorization to change rollout defaults.

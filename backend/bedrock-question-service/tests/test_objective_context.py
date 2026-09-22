@@ -16,7 +16,7 @@ from complete_question_solution import (
 from question_quality import _sanitize_questions
 from question_verification import verify_questions
 from request_contract import _normalize_request
-from test_native_pipeline import author_payload, solver_record
+from test_native_pipeline import author_payload, review_map, solver_record
 
 
 MODEL = "us.anthropic.claude-sonnet-4-6"
@@ -83,7 +83,7 @@ def reviews(items, answers, *, authored=False, native=False):
             else:
                 record["choiceExplanations"] = feedback
         records.append(record)
-    return {"reviews": records}
+    return review_map(*records) if native and not authored else {"reviews": records}
 
 
 class ObjectiveContextTests(unittest.TestCase):
@@ -147,7 +147,8 @@ class ObjectiveContextTests(unittest.TestCase):
                                     test.assertNotIn("independentSolutions", data)
                                 else:
                                     tag = "question_review_json"
-                                    contract = "authored_solution_reviewer_v1" if authored else "default_reviewer_v1"
+                                    contract = ("authored_solution_reviewer_v1" if authored else
+                                                "default_reviewer_v3_n1" if mode == "native" else "default_reviewer_v1")
                                     data = payload(text, tag)
                                     response = reviews(data["items"], answers, authored=authored, native=mode == "native")
                                     test.assertEqual("independentSolutions" in data, not authored)
