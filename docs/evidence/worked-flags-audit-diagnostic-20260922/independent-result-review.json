@@ -1,0 +1,292 @@
+{
+  "reviewer": "choice_semantics",
+  "status": "complete",
+  "bindings": {
+    "plan.json": "dafc994df9c628e2c4e5cd5c4b6c5fe1468f8839674f66924e2aa8da5b4fd544",
+    "capture.json": "460c4468a9b9af524fc496938a8a294151ae956f94929a6b8e00eb85cc0ead44",
+    "controls-draft.json": "3463294975e19e8f1f71a562a77a4f79c57bbea712418ce6eba569a39b97795f",
+    "root-gold-review.json": "175c1b93307d5c02872efe61cc34071558aacfe96cc8a2c9aeb399f2c50e9334"
+  },
+  "method": "Read every returned row and all60 boolean flags against prospectively root-approved gold; replay actual frozen request construction and native/local adaptation plus scoring with sockets disabled. Independent fixed Fraction arithmetic and enumeration confirm all10 task/key/main classifications. No provider calls, repairs, retries or frozen artifact changes. Not a blinded output review.",
+  "source_pins_verified": 27,
+  "artifact_pins_verified": 8,
+  "actual_requests_exact_to_frozen_plan": 2,
+  "only_subject_delta_between_calls": "The five controlled main explanation strings; every task, choice, goal/context and model/schema/transport setting is otherwise identical. Explicit keys, gold, specs and solver judgments are absent from provider subject data.",
+  "summary": {
+    "planned_calls": 2,
+    "completed_calls": 2,
+    "unattempted_calls": 0,
+    "native_and_local_valid_calls": 2,
+    "planned_items": 10,
+    "reviewed_items": 10,
+    "sound_accepted": 5,
+    "false_mains_rejected": 5,
+    "exact_answers_matching": 10,
+    "main_support_labels_matching": 10,
+    "validity_labels_matching": 10,
+    "boolean_flags_matching": 60,
+    "true_flags": 5,
+    "all_true_flags_are_explanation_on_negative_controls": true,
+    "all_positive_difficulties_at_least2": true,
+    "component_diagnostic_pass": true,
+    "full_worker_qualified": false,
+    "learner_release": false
+  },
+  "calls": [
+    {
+      "ordinal": 0,
+      "seconds": 39.76243962510489,
+      "read_timeout": 100,
+      "connect_timeout": 3,
+      "sdk_attempts": 1,
+      "native_contract": "authored_solution_reviewer_v3_n5",
+      "reasoning_blocks_omitted": 1,
+      "usage": {
+        "inputTokens": 2877,
+        "outputTokens": 1849,
+        "totalTokens": 4726,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      }
+    },
+    {
+      "ordinal": 1,
+      "seconds": 34.43275637505576,
+      "read_timeout": 100,
+      "connect_timeout": 3,
+      "sdk_attempts": 1,
+      "native_contract": "authored_solution_reviewer_v3_n5",
+      "reasoning_blocks_omitted": 1,
+      "usage": {
+        "inputTokens": 2877,
+        "outputTokens": 3491,
+        "totalTokens": 6368,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      }
+    }
+  ],
+  "reported_total_usage": {
+    "input_tokens": 5754,
+    "output_tokens": 5340,
+    "calls_without_usage": 0
+  },
+  "rows": [
+    {
+      "id": "sound:0",
+      "call_ordinal": 0,
+      "dense_index": 0,
+      "answer": "7/12",
+      "valid": true,
+      "explanationSupport": "supported",
+      "difficulty": 2,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": false,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "40b9e95771c66581ffb247916e0b11dd6663dbf95ff5a168840e9571b0f36568",
+      "learner_release": false
+    },
+    {
+      "id": "sound:1",
+      "call_ordinal": 0,
+      "dense_index": 1,
+      "answer": "3/2",
+      "valid": true,
+      "explanationSupport": "supported",
+      "difficulty": 2,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": false,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "b170bf1ce00b35678ef4123292b0b287b55e8914596d3647078e07e66f149720",
+      "learner_release": false
+    },
+    {
+      "id": "sound:2",
+      "call_ordinal": 0,
+      "dense_index": 2,
+      "answer": "47/20",
+      "valid": true,
+      "explanationSupport": "supported",
+      "difficulty": 2,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": false,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "9527e8b9337013fe1c760580f3883ebfe1529b8a4d0fbb1db5c5c69ec5ad255a",
+      "learner_release": false
+    },
+    {
+      "id": "sound:3",
+      "call_ordinal": 0,
+      "dense_index": 3,
+      "answer": "14",
+      "valid": true,
+      "explanationSupport": "supported",
+      "difficulty": 3,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": false,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "d6e42f4f88316d378c6a9247535814f8f0ed0fbfcc8d8689fd8316a072f3ef9f",
+      "learner_release": false
+    },
+    {
+      "id": "sound:4",
+      "call_ordinal": 0,
+      "dense_index": 4,
+      "answer": "3/2",
+      "valid": true,
+      "explanationSupport": "supported",
+      "difficulty": 2,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": false,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "c37cf9d1998fb5629a5fb0fb2cdbea0679e91b2de337b0ad06c1fa36fe57e98c",
+      "learner_release": false
+    },
+    {
+      "id": "false_main:0",
+      "call_ordinal": 1,
+      "dense_index": 0,
+      "answer": "7/12",
+      "valid": false,
+      "explanationSupport": "unsupported",
+      "difficulty": 2,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": true,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "e41f6cd246635b94da3039135bb7f10efc67b81009c67c582d9679b98aa66edf",
+      "learner_release": false
+    },
+    {
+      "id": "false_main:1",
+      "call_ordinal": 1,
+      "dense_index": 1,
+      "answer": "3/2",
+      "valid": false,
+      "explanationSupport": "unsupported",
+      "difficulty": 2,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": true,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "0812346a6ea6f4a84c3e53fdf9d792876cf3fd9e3831c13ae6180de01a06871f",
+      "learner_release": false
+    },
+    {
+      "id": "false_main:2",
+      "call_ordinal": 1,
+      "dense_index": 2,
+      "answer": "47/20",
+      "valid": false,
+      "explanationSupport": "unsupported",
+      "difficulty": 2,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": true,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "011ac9e84f7e6672c082af72181dcf9c0eab0ae5ba010f51b75c71eb152a6dba",
+      "learner_release": false
+    },
+    {
+      "id": "false_main:3",
+      "call_ordinal": 1,
+      "dense_index": 3,
+      "answer": "14",
+      "valid": false,
+      "explanationSupport": "unsupported",
+      "difficulty": 2,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": true,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "e2cd6ab82cb11934550403ebc6a700e40cce359c9a790f08b6f2c8020dda39ee",
+      "learner_release": false
+    },
+    {
+      "id": "false_main:4",
+      "call_ordinal": 1,
+      "dense_index": 4,
+      "answer": "3/2",
+      "valid": false,
+      "explanationSupport": "unsupported",
+      "difficulty": 2,
+      "issueFlags": {
+        "answer_or_ambiguity": false,
+        "explanation": true,
+        "distractors": false,
+        "scope_assignment": false,
+        "novelty": false,
+        "other": false
+      },
+      "all_declared_gold_matches": true,
+      "input_main_sha256": "3eb37b8eb946f9d05b6fefe91e1b401c08675a6a984b8e049d11220d01ca25bc",
+      "learner_release": false
+    }
+  ],
+  "independent_counterexamples": [
+    "9/12 − 2/12 = 7/12, not 8/12.",
+    "18/10 = 9/5, not 3/2.",
+    "7/4 = 35/20, not 34/20.",
+    "15 is larger than 14 and is permitted; 3 × 15 = 45 > 40, refuting the changed all-larger-fail claim.",
+    "(5/6) × (5/9) = 25/54, not 3/2; the reciprocal of 5/9 is 9/5."
+  ],
+  "rating_observation": "The unchanged minimum task is rated3 with sound teaching and2 with false teaching; both are within the requested2–3 range and meet minimum2. This variation is reported, not treated as a failed mathematical answer.",
+  "interpretation": [
+    "The two actual HTTP200 end-turn responses demonstrate native authored_solution_reviewer_v3_n5 grammar acceptance for the selected Sonnet4.6 adaptive/high configuration and strict local decoding at count5. No claim is made for every count1–40.",
+    "The sound worked mains were retained and the five material falsehood controls rejected. This resolves the observed outcomes for these familiar stage-level controls, not a production semantic guarantee.",
+    "No model rationale was returned. The selected explanation flags do not reveal which equation or counterexample the model used, and no hidden reasoning is inferred.",
+    "Worked teaching and native issueFlags both changed from the earlier failed capture. This is not an isolated causal comparison, a population error-rate estimate, fresh-domain holdout or full-worker deadline/yield qualification.",
+    "Negative copies are evaluator-authored audit controls and cannot acquire valid compiled provenance; no learner content was released.",
+    "The original capture remains byte-identical with its provisional qualified=false and independent-review-pending markers. This separate derived review supplies the completed independent component conclusion."
+  ]
+}

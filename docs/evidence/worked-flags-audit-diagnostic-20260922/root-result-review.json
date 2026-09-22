@@ -1,0 +1,101 @@
+{
+  "reviewer": "root",
+  "capture_sha256": "460c4468a9b9af524fc496938a8a294151ae956f94929a6b8e00eb85cc0ead44",
+  "plan_sha256": "dafc994df9c628e2c4e5cd5c4b6c5fe1468f8839674f66924e2aa8da5b4fd544",
+  "source_request_and_native_local_replay": "passed",
+  "method": "Root independently proved the paired tasks before dispatch and inspected all 10 returned keys, support/validity labels, ratings and all60 flags after dispatch. Not blind; no provider internal reasoning retained or inferred.",
+  "cases": [
+    {
+      "id": "sound:0",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": true,
+      "rejected_material_false_main": false,
+      "released": false
+    },
+    {
+      "id": "sound:1",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": true,
+      "rejected_material_false_main": false,
+      "released": false
+    },
+    {
+      "id": "sound:2",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": true,
+      "rejected_material_false_main": false,
+      "released": false
+    },
+    {
+      "id": "sound:3",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": true,
+      "rejected_material_false_main": false,
+      "released": false
+    },
+    {
+      "id": "sound:4",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": true,
+      "rejected_material_false_main": false,
+      "released": false
+    },
+    {
+      "id": "false_main:0",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": false,
+      "rejected_material_false_main": true,
+      "released": false
+    },
+    {
+      "id": "false_main:1",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": false,
+      "rejected_material_false_main": true,
+      "released": false
+    },
+    {
+      "id": "false_main:2",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": false,
+      "rejected_material_false_main": true,
+      "released": false
+    },
+    {
+      "id": "false_main:3",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": false,
+      "rejected_material_false_main": true,
+      "released": false
+    },
+    {
+      "id": "false_main:4",
+      "all_required_labels_match": true,
+      "all_six_flags_consistent_with_gold": true,
+      "exact_key_correct": true,
+      "accepted_sound_main": false,
+      "rejected_material_false_main": true,
+      "released": false
+    }
+  ],
+  "component_result": "All frozen criteria pass: 2/2 native-valid timely calls, 5/5 sound mains accepted, 5/5 material false mains rejected,10/10exact keys and60/60gold-consistent issue flags.",
+  "limits": "Only familiar five-item quantitative audit batches. The compiler renderer and audit format both changed since the earlier failure; not a matched causal ablation, broad-domain error estimate, worker-yield qualification or learner release."
+}

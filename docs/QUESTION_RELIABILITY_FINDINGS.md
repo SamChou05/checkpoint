@@ -267,7 +267,7 @@ unsupported teaching, a wrong key, invalid status or the difficulty floor. The
 native prompt now has one count-correct output example. All 131 historical
 contracts, metadata and prompt bytes remain unchanged. This closes the observed
 format mismatch without claiming correct model judgments or a latency improvement.
-Live acceptance and full-pipeline yield for the new combined source remain untested.
+The subsequent [two-call audit diagnostic](evidence/worked-flags-audit-diagnostic-20260922/RESULT.md) established live native-v3 acceptance at count five: all five worked mains were accepted, all five materially false copies were rejected, and all ten exact keys matched. Both calls finished within 100 seconds. This small component result does not establish full-pipeline yield or broad-topic accuracy.
 
 The deployment workflow now exposes the worker-only feedback contract, defaulting
 to `reviewer_written`. Optional independent skill-map model/resource settings also
