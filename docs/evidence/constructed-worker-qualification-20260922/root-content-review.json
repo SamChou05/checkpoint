@@ -1,0 +1,203 @@
+{
+  "reviewer": "root",
+  "phase": "post blind lock content review",
+  "blind_lock_sha256": "eb640f0e2d99e3f5f566e2cbdfbc0c452bdef2195c5f7d1bb65cf2c0b28f7acf",
+  "capture_sha256": "49833e414ec775090b3408ff6b73d5b967c401fd64b6b4294d7533f1ac8c2658",
+  "planned_questions": 15,
+  "returned_questions": 14,
+  "keys_matching_blind_solutions": 14,
+  "sound_learner_items": 13,
+  "compiled_items": 3,
+  "compiled_choice_feedback_fields_supported": 12,
+  "source_preservation": "Independent exact replay is separate; root recompiled all3carriers and compared all5learner fields, and checked every prose feedback map is empty.",
+  "items": [
+    {
+      "id": "quantitative:0",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "quantitative:1",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "quantitative:2",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "quantitative:3",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "quantitative:4",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "python:0",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "python:1",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "python:2",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "python:3",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "python:4",
+      "key_matches_blind_answer": true,
+      "main_supported": false,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": false,
+      "explanation_assessment": "Correct grouping and final value, but the stated first/then evaluation sequence is false. Python evaluates the left True for or and skips the entire right conjunction. This is an execution narrative defect, not the earlier context-dependent Boolean return-type wording."
+    },
+    {
+      "id": "mixed:0",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 4,
+      "choice_feedback_supported": true,
+      "compiled": true,
+      "policy": 8,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "mixed:1",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 4,
+      "choice_feedback_supported": true,
+      "compiled": true,
+      "policy": 8,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "mixed:2",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 0,
+      "choice_feedback_supported": true,
+      "compiled": false,
+      "policy": 7,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    },
+    {
+      "id": "mixed:3",
+      "key_matches_blind_answer": true,
+      "main_supported": true,
+      "choice_feedback_count": 4,
+      "choice_feedback_supported": true,
+      "compiled": true,
+      "policy": 8,
+      "usable": true,
+      "explanation_assessment": "Exact displayed task supports the main explanation; all numerical calculation steps or contextual Python/agreement claims checked. Compiled choice feedback agrees with the independently solved value."
+    }
+  ],
+  "execution_narrative_check": {
+    "method": "Handwritten AST grouping check and fresh side-effect marker expression, not execution of provider text. Pure literal folding in CPython is not used to infer general evaluation order.",
+    "visited_operands": [
+      "left"
+    ],
+    "reference": "https://docs.python.org/3/reference/expressions.html#boolean-operations"
+  },
+  "permutation_membership_checks": 336,
+  "permutation_limit": "Exact stored key membership only; real Swift behavior separately checked in client audit. This is not a semantic proof or UI interaction.",
+  "private_reason_review": {
+    "choices": 44,
+    "pairs": 66,
+    "declarations_correct": true,
+    "notes": [
+      "All11prose decisions select the independently supported key and all66pairs are task-relative distinct. The solver wording that boolean operations never return None is read in this specific all-Boolean operand context, not as a universal language rule.",
+      "The list-index pair reason includes a garbled -1/-3 versus2 parenthesis; correct distinct-value decision remains supported. Other surrounding index claims identify the actual values correctly.",
+      "Immutable final audit accepted the false execution narrative; its Boolean approval and supported declaration do not establish teaching truth."
+    ]
+  },
+  "route_and_quota": {
+    "quantitative_compiled": 0,
+    "mixed_compiled": 3,
+    "compiled_total_required": 6,
+    "quantitative_compiled_required": 4,
+    "mixed_english_prose": 1,
+    "route_note": "All5numerical-only items were authored as prose, so no compiled guarantee applies. Native union format permits either variant and the current instructions say quantitative only when it serves the objective; they do not force scope-based routing.",
+    "failed": true
+  },
+  "failed_trial": true,
+  "limitations": [
+    "No deployment/default/inventory changes.",
+    "Repeated goal scopes; fresh generations are not matched identical items or an estimate of general model accuracy.",
+    "Unsatisfiable typed input is rejected; construction does not repair a wrongly authored mathematical task."
+  ]
+}

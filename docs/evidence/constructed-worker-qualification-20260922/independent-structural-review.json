@@ -1,0 +1,502 @@
+{
+  "plan_sha256": "29ca1b56074a64c9af5306c6c3e14880a6c7d9ed53bb065c6e2d0dd22f81b87c",
+  "capture_sha256": "49833e414ec775090b3408ff6b73d5b967c401fd64b6b4294d7533f1ac8c2658",
+  "source_commit": "0e4619f1696b848073f1a4d551c364ed3fbfbeb0",
+  "source_clean": true,
+  "source_and_artifact_pins": 37,
+  "network_connections": 0,
+  "new_provider_calls": 0,
+  "replay": {
+    "real_pin_checks": 31,
+    "exact_request_replays": 11,
+    "recorded_calls": 11,
+    "mismatches": [],
+    "error": null,
+    "timing_equality_claimed": false,
+    "note": "Actual frozen run_jobs with recorded SDK responses; live deadlines assessed from capture, not replay speed."
+  },
+  "native_counts": {
+    "stop:end_turn": 11,
+    "valid_wire_and_native_calls": 11,
+    "raw_author_rows": 17,
+    "raw_prose": 13,
+    "strict_solver_items": 11,
+    "choice_judgments": 44,
+    "pair_judgments": 66,
+    "strict_audit_items": 14,
+    "audit_positive": 14,
+    "audit_negative": 0,
+    "raw_quantitative": 4
+  },
+  "calls": [
+    {
+      "ordinal": 0,
+      "job": "quantitative",
+      "stage": "question_author_constructed_v1",
+      "input_count": 5,
+      "request_sha256": "359c900581b3de86dd14d2f61b829e408f7f21ef2141bf287e3416f0b1a43992",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 4.182094,
+      "remaining_before_ms": 239929,
+      "remaining_after_ms": 235746,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 1,
+      "job": "quantitative",
+      "stage": "complete_choice_solver_v5_n5",
+      "input_count": 5,
+      "request_sha256": "3b04dc1b92e917453fdf0fe4447631f4c17e863b7e69565e7fcb9c8a8b565958",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 32.296833,
+      "remaining_before_ms": 235678,
+      "remaining_after_ms": 203380,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 2,
+      "job": "quantitative",
+      "stage": "authored_solution_reviewer_v3_n5",
+      "input_count": 5,
+      "request_sha256": "8db4148e8ca42be8a1b5d4631b10fa20ce2261d7659773ad54a928af17f472e6",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 16.728477,
+      "remaining_before_ms": 203324,
+      "remaining_after_ms": 186594,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 3,
+      "job": "python",
+      "stage": "question_author_constructed_v1",
+      "input_count": 5,
+      "request_sha256": "afdd96a19276953049ae99b9697f48d50c7e2e371681d6d7046984cf8b19c427",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 7.94966,
+      "remaining_before_ms": 239964,
+      "remaining_after_ms": 232013,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 4,
+      "job": "python",
+      "stage": "complete_choice_solver_v5_n5",
+      "input_count": 5,
+      "request_sha256": "26617402a84b243e71a7d2aae26d3be1ad3a7085c2a927680553c10af25f376b",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 31.970813,
+      "remaining_before_ms": 231943,
+      "remaining_after_ms": 199970,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 5,
+      "job": "python",
+      "stage": "authored_solution_reviewer_v3_n5",
+      "input_count": 5,
+      "request_sha256": "10339d525dcf5f185e6c7ff9a4a0189e17b521c0199505b533875f0a80e247ad",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 21.281352,
+      "remaining_before_ms": 199906,
+      "remaining_after_ms": 178622,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 6,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "input_count": 5,
+      "request_sha256": "eb25d41499bc18ed492269330035bd10c4ae0a84fe712eec25e9576bbc1668ad",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 10.797378,
+      "remaining_before_ms": 239945,
+      "remaining_after_ms": 229141,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 7,
+      "job": "mixed",
+      "stage": "complete_choice_solver_v5_n1",
+      "input_count": 1,
+      "request_sha256": "b3bff4c00e07cde4c05ba394b5e8bd3c4b49c6413d00be550d9a856ee8b0179d",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 28.537192,
+      "remaining_before_ms": 229070,
+      "remaining_after_ms": 200528,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 8,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n3",
+      "input_count": 3,
+      "request_sha256": "a71c7f7d52215e46ddfd1c288fbac8c40452d6032d0ffa174ad18971bbbd25ef",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 34.362771,
+      "remaining_before_ms": 200460,
+      "remaining_after_ms": 166093,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 9,
+      "job": "mixed",
+      "stage": "question_author_constructed_v1",
+      "input_count": 2,
+      "request_sha256": "89315e2cb2f8127d87d50d78cec90dd0dea0b064b2b0fe63002227e8ea63d182",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 5.107424,
+      "remaining_before_ms": 166032,
+      "remaining_after_ms": 160920,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    },
+    {
+      "ordinal": 10,
+      "job": "mixed",
+      "stage": "authored_solution_reviewer_v3_n1",
+      "input_count": 1,
+      "request_sha256": "787d09ec3eeca506b760809e1cc0f90629f490f60a6a8bbe7399f21939d04386",
+      "read_timeout_seconds": 100.0,
+      "elapsed_seconds": 13.131345,
+      "remaining_before_ms": 160842,
+      "remaining_after_ms": 147705,
+      "error": null,
+      "stop_reason": "end_turn",
+      "native_valid": true,
+      "local_stage_validation_valid": true
+    }
+  ],
+  "jobs": [
+    {
+      "job": "quantitative",
+      "status": "finished",
+      "requested": 5,
+      "returned": 5,
+      "provider_calls": 3,
+      "elapsed_seconds": 53.4361,
+      "within_deadline": true,
+      "passes": 1,
+      "compiled_candidates": 0,
+      "compiler_rejections": {},
+      "returned_compiled": 0,
+      "returned_prose": 5,
+      "error": null
+    },
+    {
+      "job": "python",
+      "status": "finished",
+      "requested": 5,
+      "returned": 5,
+      "provider_calls": 3,
+      "elapsed_seconds": 61.407327,
+      "within_deadline": true,
+      "passes": 1,
+      "compiled_candidates": 0,
+      "compiler_rejections": {},
+      "returned_compiled": 0,
+      "returned_prose": 5,
+      "error": null
+    },
+    {
+      "job": "mixed",
+      "status": "finished",
+      "requested": 5,
+      "returned": 4,
+      "provider_calls": 5,
+      "elapsed_seconds": 92.328774,
+      "within_deadline": true,
+      "passes": 2,
+      "compiled_candidates": 3,
+      "compiler_rejections": {
+        "no_answer": 1
+      },
+      "returned_compiled": 3,
+      "returned_prose": 1,
+      "error": null
+    }
+  ],
+  "provenance": {
+    "raw_task_to_constructed_spec_and_five_fields_replayed": 3,
+    "returned_compiled_five_fields_exact": 3,
+    "returned_prose_main_exact": 11
+  },
+  "usage": {
+    "input_tokens": 33973,
+    "output_tokens": 17322,
+    "calls_without_reported_usage": 0,
+    "missing_usage_is_not_zero": true,
+    "provider_call_seconds": 206.345339,
+    "reasoning_blocks_omitted": 8
+  },
+  "original_requested_denominator": 15,
+  "capture_summary": {
+    "planned_jobs": 3,
+    "planned_questions": 15,
+    "attempted_jobs": 3,
+    "attempted_calls": 11,
+    "returned_questions": 14,
+    "independent_content_review": "pending",
+    "qualified": false,
+    "reported_token_usage": {
+      "input_tokens": 33973,
+      "output_tokens": 17322,
+      "calls_without_reported_usage": 0,
+      "missing_usage_is_not_zero": true
+    }
+  },
+  "content_semantics_adjudicated_here": false,
+  "global_stop": null,
+  "reviewer": "choice_semantics",
+  "review_type": "independent_structural_runtime_replay",
+  "structural_checks_passed": true,
+  "full_trial_qualified": false,
+  "full_trial_failure_already_established_without_content_adjudication": [
+    "quantitative_job_compiled: 0 < 4",
+    "compiled_total: 3 < 6"
+  ],
+  "prospective_criteria_unchanged": {
+    "returned_total_of_15": 14,
+    "minimum_per_job": 4,
+    "compiled_total": 6,
+    "quantitative_job_compiled": 4,
+    "mixed_job_compiled": 2,
+    "mixed_job_english_prose": 1,
+    "all_returned_content_independently_sound": true,
+    "compiled_fields_exactly_original": true,
+    "prose_main_exactly_authored": true,
+    "prose_feedback_must_be_empty": true,
+    "all_jobs_in_denominator": true,
+    "scope_and_difficulty_required": true
+  },
+  "criteria_observations": {
+    "returned_total": {
+      "actual": 14,
+      "minimum": 14,
+      "met": true
+    },
+    "minimum_returned_per_job": {
+      "actual": 4,
+      "minimum": 4,
+      "met": true
+    },
+    "compiled_total": {
+      "actual": 3,
+      "minimum": 6,
+      "met": false
+    },
+    "quantitative_job_compiled": {
+      "actual": 0,
+      "minimum": 4,
+      "met": false
+    },
+    "mixed_job_compiled": {
+      "actual": 3,
+      "minimum": 2,
+      "met": true
+    },
+    "mixed_job_prose": {
+      "actual": 1,
+      "minimum_english": 1,
+      "english_assignment_semantics": "not adjudicated here"
+    },
+    "all_returned_semantically_sound": "separate independent content review required"
+  },
+  "native_issue_flags": {
+    "reviewed_as_typed_booleans": 84,
+    "false": 84,
+    "true": 0,
+    "semantics_adjudicated": false
+  },
+  "pass_counts": [
+    {
+      "job": "quantitative",
+      "pass": 0,
+      "raw_rows": 5,
+      "raw_kind_counts": {
+        "prose": 5
+      },
+      "prepared_positions": 5,
+      "prepared_invalid_positions": 0,
+      "compiled_candidates": 0,
+      "compiler_rejections": [],
+      "sanitized_rows": 5,
+      "verified_rows": 5
+    },
+    {
+      "job": "python",
+      "pass": 0,
+      "raw_rows": 5,
+      "raw_kind_counts": {
+        "prose": 5
+      },
+      "prepared_positions": 5,
+      "prepared_invalid_positions": 0,
+      "compiled_candidates": 0,
+      "compiler_rejections": [],
+      "sanitized_rows": 5,
+      "verified_rows": 5
+    },
+    {
+      "job": "mixed",
+      "pass": 0,
+      "raw_rows": 5,
+      "raw_kind_counts": {
+        "quantitative": 3,
+        "prose": 2
+      },
+      "prepared_positions": 5,
+      "prepared_invalid_positions": 1,
+      "compiled_candidates": 2,
+      "compiler_rejections": [
+        "no_answer"
+      ],
+      "sanitized_rows": 4,
+      "verified_rows": 3
+    },
+    {
+      "job": "mixed",
+      "pass": 1,
+      "raw_rows": 2,
+      "raw_kind_counts": {
+        "prose": 1,
+        "quantitative": 1
+      },
+      "prepared_positions": 2,
+      "prepared_invalid_positions": 0,
+      "compiled_candidates": 1,
+      "compiler_rejections": [],
+      "sanitized_rows": 1,
+      "verified_rows": 1
+    }
+  ],
+  "raw_loss_accounting": {
+    "raw_rows": 17,
+    "returned": 14,
+    "compiler_no_answer": 1,
+    "before_solver_invalid_feedback": 1,
+    "topup_duplicate_stem": 1,
+    "model_solver_veto": 0,
+    "model_auditor_veto": 0,
+    "not_an_alternative_denominator": true
+  },
+  "typed_task_outcomes": {
+    "raw_task_only_rows": 4,
+    "all_from_job": "mixed",
+    "constructed_and_released": 3,
+    "no_answer": 1,
+    "insufficient_distractors": 0,
+    "invalid_graph": 0,
+    "other_compile_rejections": 0,
+    "model_solver_used_for_compiled": false,
+    "immutable_audit_covered_all_three": true,
+    "no_answer_proof": {
+      "raw_source": [
+        "mixed",
+        0,
+        2
+      ],
+      "literal_relation": "(5 * 2 + x - 17) = 5",
+      "selection": "any_satisfying",
+      "integer_domain": [
+        1,
+        10
+      ],
+      "algebraic_solution": "12",
+      "feasible_domain_values": [],
+      "direct_exact_fraction_enumeration_verified": true,
+      "actual_constructor_error": "QuantitativeConstructionError:no_answer",
+      "interpretation": "The declared task has no feasible value; this is not a missing supplied choice. No choices were supplied."
+    }
+  },
+  "prose_routing_and_loss_observations": {
+    "quantitative_job_raw_rows_all_prose": true,
+    "quantitative_job_returned_via_solver_and_auditor": 5,
+    "route_was_native_union_schema_valid": true,
+    "compiler_provenance_not_forged_or_lost": true,
+    "invalid_main_raw_source": [
+      "mixed",
+      0,
+      4
+    ],
+    "invalid_main_sanitized_source": [
+      "mixed",
+      0,
+      3
+    ],
+    "actual_freeze_error": "AuthoredTeachingFormatError: Teaching cannot reference shuffled answer labels.",
+    "repeated_rejected_stem_raw_source": [
+      "mixed",
+      1,
+      0
+    ],
+    "repeated_stem_exact_equality_verified": true,
+    "repetition_dropped_by_sanitizer_not_restamped": true,
+    "no_claim_other_prose_content_is_sound": true
+  },
+  "budget_and_stop": {
+    "per_job_call_cap": 6,
+    "global_call_cap": 18,
+    "actual_reservations": 11,
+    "actual_dispatches": 11,
+    "reservation_ordinals_dense_per_job": true,
+    "global_stop": null,
+    "per_job_deadline_seconds": 240,
+    "all_jobs_within_deadline": true,
+    "mixed_final_remaining_call_slots": 1,
+    "minimum_new_mixed_pass_call_slots": 3,
+    "mixed_shortfall_stop": "Existing conservative new-pass budget gate; not timeout or harness stop.",
+    "total_worker_seconds_across_independent_jobs": 207.172201,
+    "read_timeout_ceiling_seconds": 100,
+    "all_observed_read_timeouts_seconds": 100,
+    "connect_timeout_seconds": 3,
+    "sdk_total_attempts": 1,
+    "reduced_read_timeout_not_exercised_in_this_capture": true,
+    "recorded_all_call_elapsed_below_read_timeout": true
+  },
+  "reproduction": {
+    "python_version": "3.12.11",
+    "python_executable": "/tmp/checkpoint-reliability-20260921-venv/bin/python",
+    "temporary_replay_script": "/tmp/checkpoint_constructed_worker_structural_replay.py",
+    "temporary_replay_script_sha256": "a526245cd6731016dff618ca004569f45668f4a31cf072aecfc6edee9a21eee2",
+    "derived_replay_data_sha256": "0cf00e9d84cce648854ac00fbcd667c234d44328cde131a779a62f61fc02a510",
+    "procedure": "Import pinned mixed_probe; run real check_plan before/after every call and completion; block socket.socket.connect; replace only SDK factory with exact recorded responses; call actual run_jobs into a temporary capture; compare every dynamic request, reservation and all per-pass/returned/provenance records. Validate serialized JSON schema, actual native adapter and local solver/auditor parsers independently. Reconstruct every compiled source from its raw task and recompile all five released fields. Verify prose main and source associations through actual replayed verifier objects.",
+    "timing_note": "Original elapsed values come from live capture; fake replay clock is not a latency replicate."
+  },
+  "limitations": [
+    "Structural validity, exact preservation and compiler provenance do not establish open-domain semantic truth, difficulty, novelty or distractor plausibility.",
+    "Visible solver labels/reasons and final flags were checked for shape/binding only; this report does not infer private reasoning.",
+    "Actual cardinalities only: author target counts 5 and 2; solver counts 5 and 1; final audit counts 5, 3 and 1. No live support claim for every configured count.",
+    "Three repeated scopes with fresh generations; not a randomized comparison, causal improvement estimate or population rate.",
+    "The existing native union permits prose rows for numerical objectives; mathematical content does not become compiler-proven merely because it passed model verification.",
+    "Source, plan, capture, prompts, gold, defaults and prior failures remain unchanged. No provider call, deployment or account action was performed for this review."
+  ]
+}

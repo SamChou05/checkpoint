@@ -1,0 +1,1358 @@
+{
+  "reviewer": "schema_reuse_review",
+  "review_kind": "independent literal-stem blind review",
+  "locked_at_utc": "2026-09-22T14:22:22.765135+00:00",
+  "blind_items_file_sha256": "b983786724754e2de10405a659ae2f5d98c415de85c9eca960b2510741f576f4",
+  "declared_capture_file_sha256": "49833e414ec775090b3408ff6b73d5b967c401fd64b6b4294d7533f1ac8c2658",
+  "blind_boundary": "Only blind-items.json was opened from this trial for this review. No capture, key, teaching, provenance, model judgment, root review or new trial source was opened. Exact arithmetic and the five displayed Python expressions were checked independently with local Fraction/Python calculations. No provider calls. The reviewer will await root authorization before unblinding.",
+  "planned_denominator": 15,
+  "returned_denominator": 14,
+  "missing_slots": 1,
+  "summary": {
+    "supported_returned_stems": 14,
+    "unique_correct_answers": 14,
+    "distinct_pair_judgments": 84,
+    "all_returned_items_in_scope": true,
+    "all_returned_difficulty_at_least2": true,
+    "learner_main_and_feedback": "not opened; pending authorized unblind",
+    "compiler_provenance_and_route_mix": "not opened; no classification inferred from stem style"
+  },
+  "items": [
+    {
+      "id": "quantitative:0",
+      "raw_stem_sha256": "ba1af7d81911e6d9cdf0cf7f087fdf051892b85c3a6526a3843138185080d75e",
+      "literal_task": "Evaluate multiplication before subtraction.",
+      "blind_answer_label": "C",
+      "blind_answer_text": "1/2",
+      "proof": "(3/4)*(8/9)=24/36=2/3; 2/3-1/6=4/6-1/6=1/2.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "7/12",
+            "2/3"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 7/12 and 2/3 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "7/12",
+            "1/2"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 7/12 and 1/2 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "7/12",
+            "5/6"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 7/12 and 5/6 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "2/3",
+            "1/2"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 2/3 and 1/2 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "2/3",
+            "5/6"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 2/3 and 5/6 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "1/2",
+            "5/6"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 1/2 and 5/6 are unequal."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "7/12 omits the multiplication by8/9;2/3 omits the subtraction;5/6 adds rather than subtracts1/6.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Exact fraction arithmetic",
+      "independent_difficulty": 3,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "quantitative:1",
+      "raw_stem_sha256": "29aacc848b6e92925f97aa85b459959a31aeecace97f429774146bb5c09dfea4",
+      "literal_task": "Evaluate division before addition using exact decimal values.",
+      "blind_answer_label": "B",
+      "blind_answer_text": "8.5",
+      "proof": "0.75=3/4 and0.125=1/8, so their quotient is6. Add2.5=5/2 to obtain17/2=8.5 exactly.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "7.25",
+            "8.5"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 29/4 and 17/2 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "7.25",
+            "6.0"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 29/4 and 6 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "7.25",
+            "9.375"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 29/4 and 75/8 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "8.5",
+            "6.0"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 17/2 and 6 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "8.5",
+            "9.375"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 17/2 and 75/8 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "6.0",
+            "9.375"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 6 and 75/8 are unequal."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "6.0 stops after division;7.25 and9.375 are distinct credible decimal-calculation alternatives. Their specific error derivations are not supplied, and I do not infer them.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Exact decimal arithmetic",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "quantitative:2",
+      "raw_stem_sha256": "c76f84f13560c5aa16e2c2b22505e93bd1d01085eb166a8c872ba5edd6f29bfe",
+      "literal_task": "Find the least integer satisfying the displayed inequality.",
+      "blind_answer_label": "D",
+      "blind_answer_text": "5",
+      "proof": "3x+7>=22 implies3x>=15, hencex>=5. Integer5 satisfies equality and all smaller integers fail.6 and7 also satisfy but are not the requested minimum;4 fails.",
+      "necessary_premises": "The stem explicitly asks for an integer extremum. The inequality supplies the relevant bound over the integers; a separate finite interval is not needed for this minimum/maximum to exist. No unstated nonnegative or other domain restriction was added.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "6",
+            "4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 6 and 4 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "6",
+            "7"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 6 and 7 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "6",
+            "5"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 6 and 5 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "4",
+            "7"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 4 and 7 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "4",
+            "5"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 4 and 5 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "7",
+            "5"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 7 and 5 are unequal."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "The choices distinguish an off-by-one failing value, the boundary minimum, and larger feasible values.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Explicit integer minimum",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "quantitative:3",
+      "raw_stem_sha256": "bfa38737b68454b32e2710a9eba4de22aac93782b4ccfafc4a12f49f6610374d",
+      "literal_task": "Apply multiplication precedence, then add fractions.",
+      "blind_answer_label": "A",
+      "blind_answer_text": "4/5",
+      "proof": "(3/4)*(8/15)=24/60=2/5; adding the first2/5 gives4/5.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "4/5",
+            "14/15"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 4/5 and 14/15 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "4/5",
+            "3/5"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 4/5 and 3/5 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "4/5",
+            "11/15"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 4/5 and 11/15 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "14/15",
+            "3/5"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 14/15 and 3/5 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "14/15",
+            "11/15"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 14/15 and 11/15 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "3/5",
+            "11/15"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 3/5 and 11/15 are unequal."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "14/15 results from omitting the3/4 factor;3/5 and11/15 are distinct plausible fraction-calculation errors.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Exact fraction arithmetic",
+      "independent_difficulty": 3,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "quantitative:4",
+      "raw_stem_sha256": "574d2fa5a002897047b31c889a263daa80c773a22898c063d9eb3d0ef07953e6",
+      "literal_task": "Find the greatest integer satisfying the strict inequality.",
+      "blind_answer_label": "B",
+      "blind_answer_text": "3",
+      "proof": "5-2x>-3 implies-2x>-8, and division by-2 reverses the inequality tox<4. The greatest integer below4 is3.2 satisfies but is smaller;4 and5 fail.",
+      "necessary_premises": "The stem explicitly asks for an integer extremum. The inequality supplies the relevant bound over the integers; a separate finite interval is not needed for this minimum/maximum to exist. No unstated nonnegative or other domain restriction was added.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "5",
+            "3"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 5 and 3 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "5",
+            "4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 5 and 4 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "5",
+            "2"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 5 and 2 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "3",
+            "4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 3 and 4 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "3",
+            "2"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 3 and 2 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "4",
+            "2"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 4 and 2 are unequal."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "The alternatives test strict versus inclusive boundary, inequality direction and choosing a feasible value instead of the maximum.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Explicit integer maximum",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "python:0",
+      "raw_stem_sha256": "519b2e30d015ddca93a5eb31f7d3165dbb7954a7b17ef957b16d0f25d6d69884",
+      "literal_task": "Evaluate the supplied Boolean expression in the stated Python3 scope.",
+      "blind_answer_label": "B",
+      "blind_answer_text": "False",
+      "proof": "5>3 and2==2 are bothTrue; their conjunction isTrue, and notTrue isFalse. The result is a bool.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "SyntaxError",
+            "False"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: SyntaxError versus False. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "SyntaxError",
+            "True"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: SyntaxError versus True. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "SyntaxError",
+            "None"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: SyntaxError versus None. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "False",
+            "True"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: False versus True. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "False",
+            "None"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: False versus None. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "True",
+            "None"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: True versus None. Boolean values are not conflated with None or exception names."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "True omits the final negation;None andSyntaxError are distinct plausible misconceptions about Boolean expressions.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Python Boolean expressions",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "python:1",
+      "raw_stem_sha256": "11a15f931e7c93d95734369f5411ba56756734b721a2d1492d794c52c042ace5",
+      "literal_task": "Evaluate the supplied list slice in Python3.",
+      "blind_answer_label": "B",
+      "blind_answer_text": "['b', 'c']",
+      "proof": "The slice starts at zero-based index1 and stops before index3. It therefore contains b at index1 and c at index2, producing the list['b', 'c'].",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "IndexError",
+            "['b', 'c']"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: IndexError versus ['b', 'c']. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "IndexError",
+            "['a', 'b', 'c']"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: IndexError versus ['a', 'b', 'c']. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "IndexError",
+            "['b', 'c', 'd']"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: IndexError versus ['b', 'c', 'd']. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "['b', 'c']",
+            "['a', 'b', 'c']"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: ['b', 'c'] versus ['a', 'b', 'c']. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "['b', 'c']",
+            "['b', 'c', 'd']"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: ['b', 'c'] versus ['b', 'c', 'd']. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "['a', 'b', 'c']",
+            "['b', 'c', 'd']"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: ['a', 'b', 'c'] versus ['b', 'c', 'd']. Boolean values are not conflated with None or exception names."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "The other lists use an incorrect start or include the excluded endpoint;IndexError mistakes a valid slice for an out-of-range access.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Python list slicing",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "python:2",
+      "raw_stem_sha256": "492c8ce0d0b1e50ded740bb53c467da70b4d58bdbde8fde2fc5ee8b7b8671d01",
+      "literal_task": "Evaluate the conditional expression using the explicit condition0.",
+      "blind_answer_label": "B",
+      "blind_answer_text": "7",
+      "proof": "The middle expression0 is false in a Boolean context, so Python chooses the else operand7. The result is the integer7.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "SyntaxError",
+            "7"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: SyntaxError versus 7. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "SyntaxError",
+            "3"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: SyntaxError versus 3. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "SyntaxError",
+            "0"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: SyntaxError versus 0. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "7",
+            "3"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: 7 versus 3. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "7",
+            "0"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: 7 versus 0. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "3",
+            "0"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: 3 versus 0. Boolean values are not conflated with None or exception names."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "3 chooses the wrong branch;0 returns the condition instead of an operand;SyntaxError rejects valid conditional-expression syntax.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Python conditional expressions",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "python:3",
+      "raw_stem_sha256": "a9ea94d1f82da404f4bf0d1957e197586bea38407a6baaca6e620f83f296beef",
+      "literal_task": "Evaluate the list access at index-1.",
+      "blind_answer_label": "A",
+      "blind_answer_text": "3",
+      "proof": "Index-1 selects the last element, which is the integer3.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "3",
+            "1"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: 3 versus 1. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "3",
+            "2"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: 3 versus 2. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "3",
+            "IndexError"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: 3 versus IndexError. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "1",
+            "2"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: 1 versus 2. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "1",
+            "IndexError"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: 1 versus IndexError. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "2",
+            "IndexError"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: 2 versus IndexError. Boolean values are not conflated with None or exception names."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "1 and2 select other positions;IndexError assumes negative indices are invalid.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Python negative list indexing",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "python:4",
+      "raw_stem_sha256": "b9f247cd56aadcc8a1a6404cc3d19c3cfaeb4a4ef8e1fd00362dd83891b16824",
+      "literal_task": "Evaluate the expression with Python operator precedence.",
+      "blind_answer_label": "A",
+      "blind_answer_text": "True",
+      "proof": "and binds more tightly than or, so the grouping isTrue or(False andFalse). That result isTrue. Python also short-circuits after the firstTrue operand.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "True",
+            "False"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: True versus False. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "True",
+            "None"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: True versus None. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "True",
+            "TypeError"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: True versus TypeError. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "False",
+            "None"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: False versus None. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "False",
+            "TypeError"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: False versus TypeError. Boolean values are not conflated with None or exception names."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "None",
+            "TypeError"
+          ],
+          "relation": "distinct",
+          "basis": "These are different explicit result values, list contents, or error categories in Python3: None versus TypeError. Boolean values are not conflated with None or exception names."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "False follows an incorrect left-to-right grouping;(True orFalse)andFalse. None andTypeError confuse a valid Boolean result with missing output or an exception.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the provided job learning target and question directive.",
+      "independent_skill": "Python Boolean precedence",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "mixed:0",
+      "raw_stem_sha256": "afd6e13bed24fce0c36718f813d1dbdf81aab5020380fe4c9fccc12157c38378",
+      "literal_task": "Evaluate the fully parenthesized fraction expression.",
+      "blind_answer_label": "A",
+      "blind_answer_text": "4/5",
+      "proof": "(3/4)*(2/5)=6/20=3/10;3/10+1/2=3/10+5/10=8/10=4/5.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "4/5",
+            "-1/5"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 4/5 and -1/5 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "4/5",
+            "3/5"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 4/5 and 3/5 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "4/5",
+            "3/20"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 4/5 and 3/20 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "-1/5",
+            "3/5"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values -1/5 and 3/5 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "-1/5",
+            "3/20"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values -1/5 and 3/20 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "3/5",
+            "3/20"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 3/5 and 3/20 are unequal."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "-1/5,3/20 and3/5 follow replacing the final addition by subtraction, multiplication or division respectively.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the assigned arithmetic skill and objective.",
+      "independent_skill": "Exact arithmetic",
+      "independent_difficulty": 3,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "mixed:1",
+      "raw_stem_sha256": "5d37ebefa36fc99ddfbdce4e294944d0ca7aea5e7a0074f52b2b68f15fe79728",
+      "literal_task": "Evaluate the two divisions and subtract exactly.",
+      "blind_answer_label": "C",
+      "blind_answer_text": "11/4",
+      "proof": "7/2=14/4;14/4-3/4=11/4.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "21/8",
+            "14/3"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 21/8 and 14/3 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "21/8",
+            "11/4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 21/8 and 11/4 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "21/8",
+            "17/4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 21/8 and 17/4 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "14/3",
+            "11/4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 14/3 and 11/4 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "14/3",
+            "17/4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 14/3 and 17/4 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "11/4",
+            "17/4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 11/4 and 17/4 are unequal."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "17/4,21/8 and14/3 follow replacing the final subtraction with addition, multiplication or division respectively.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the assigned arithmetic skill and objective.",
+      "independent_skill": "Exact arithmetic",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "mixed:2",
+      "raw_stem_sha256": "2578c19757f8610bf2ebbba66a3a1fe70b422a3ea6ad2adb94857f6b5e3dcdbd",
+      "literal_task": "Choose the complete sentence whose subject and verb agree.",
+      "blind_answer_label": "A",
+      "blind_answer_text": "The collection of rare stamps is displayed in the museum.",
+      "proof": "The head subject collection is singular; of rare stamps does not change its number. Is agrees. Are, were and have disagree with that same singular subject in the other offered sentences.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "The collection of rare stamps is displayed in the museum.",
+            "The collection of rare stamps are displayed in the museum."
+          ],
+          "relation": "distinct",
+          "basis": "The alternatives use singular present is versus plural present are; they are different grammatical forms, and only the singular agreeing form satisfies this task."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "The collection of rare stamps is displayed in the museum.",
+            "The collection of rare stamps were displayed in the museum."
+          ],
+          "relation": "distinct",
+          "basis": "The alternatives use singular present is versus plural past were; they are different grammatical forms, and only the singular agreeing form satisfies this task."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "The collection of rare stamps is displayed in the museum.",
+            "The collection of rare stamps have been displayed in the museum."
+          ],
+          "relation": "distinct",
+          "basis": "The alternatives use singular present is versus plural present-perfect auxiliary have; they are different grammatical forms, and only the singular agreeing form satisfies this task."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "The collection of rare stamps are displayed in the museum.",
+            "The collection of rare stamps were displayed in the museum."
+          ],
+          "relation": "distinct",
+          "basis": "The alternatives use plural present are versus plural past were; they are different grammatical forms, and only the singular agreeing form satisfies this task."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "The collection of rare stamps are displayed in the museum.",
+            "The collection of rare stamps have been displayed in the museum."
+          ],
+          "relation": "distinct",
+          "basis": "The alternatives use plural present are versus plural present-perfect auxiliary have; they are different grammatical forms, and only the singular agreeing form satisfies this task."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "The collection of rare stamps were displayed in the museum.",
+            "The collection of rare stamps have been displayed in the museum."
+          ],
+          "relation": "distinct",
+          "basis": "The alternatives use plural past were versus plural present-perfect auxiliary have; they are different grammatical forms, and only the singular agreeing form satisfies this task."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "The three wrong alternatives reflect agreement with the nearby plural stamps, with differing tense/aspect forms. No option changes collection to collections; there is no second grammatical revision of that kind.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the assigned standard-written-English agreement objective.",
+      "independent_skill": "Standard written English subject-verb agreement",
+      "independent_difficulty": 2,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    },
+    {
+      "id": "mixed:3",
+      "raw_stem_sha256": "50cdc7812e5ffd8c88dea04731bf9bebdfc9104ebdb3bed708b91eb5d4c5a694",
+      "literal_task": "Evaluate the parenthesized sum, then subtract one third.",
+      "blind_answer_label": "A",
+      "blind_answer_text": "5/4",
+      "proof": "5/6+3/4=10/12+9/12=19/12;19/12-1/3=19/12-4/12=15/12=5/4.",
+      "necessary_premises": "The complete expression or sentence and requested operation supply the necessary premises. Python items are interpreted under the explicitly supplied Python3 job scope.",
+      "unique_correct_offered_answer": true,
+      "all_six_choice_pairs": [
+        {
+          "displayed_labels": [
+            "A",
+            "B"
+          ],
+          "exact_choice_texts": [
+            "5/4",
+            "23/12"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 5/4 and 23/12 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "5/4",
+            "19/36"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 5/4 and 19/36 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "A",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "5/4",
+            "19/4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 5/4 and 19/4 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "C"
+          ],
+          "exact_choice_texts": [
+            "23/12",
+            "19/36"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 23/12 and 19/36 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "B",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "23/12",
+            "19/4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 23/12 and 19/4 are unequal."
+        },
+        {
+          "displayed_labels": [
+            "C",
+            "D"
+          ],
+          "exact_choice_texts": [
+            "19/36",
+            "19/4"
+          ],
+          "relation": "distinct",
+          "basis": "Exact rational values 19/36 and 19/4 are unequal."
+        }
+      ],
+      "distinct_choice_pairs": 6,
+      "plausible_distractors": true,
+      "plausibility_basis": "23/12,19/36 and19/4 follow replacing the final subtraction with addition, multiplication or division respectively.",
+      "self_contained_in_assigned_subject_context": true,
+      "scope_assignment_fit": true,
+      "scope_basis": "Matches the assigned arithmetic skill and objective.",
+      "independent_skill": "Exact arithmetic",
+      "independent_difficulty": 3,
+      "minimum_difficulty2_met": true,
+      "judgment": "supported",
+      "unresolved_content_uncertainties": []
+    }
+  ],
+  "limits": [
+    "These are blind content judgments, not a claim that the accepted keys or teaching match them.",
+    "Plausibility is a bounded human judgment. A distractor does not need a proved single-mistake derivation; the same standard used in earlier reviews is retained. The two less-diagnostic decimal alternatives are noted without inventing error derivations.",
+    "The literal minimum and maximum are well-defined over the integers even without a finite two-sided interval; no extra constraint was assumed.",
+    "The one missing planned slot remains in the15-item denominator. Yield, compiled-count criteria, runtime integrity and teaching are not adjudicated from this worksheet."
+  ]
+}

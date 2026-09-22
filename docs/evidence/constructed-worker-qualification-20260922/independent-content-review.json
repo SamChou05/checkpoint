@@ -1,0 +1,820 @@
+{
+  "status": "complete",
+  "reviewer": "schema_reuse_review",
+  "capture_sha256": "49833e414ec775090b3408ff6b73d5b967c401fd64b6b4294d7533f1ac8c2658",
+  "blind_worksheet_sha256": "b983786724754e2de10405a659ae2f5d98c415de85c9eca960b2510741f576f4",
+  "blind_review_sha256": "538f9165ef228e4b23d9287053e2aee85eb93a16aed5b4cbbe42325c3b749dcc",
+  "independence": {
+    "blind_stems_and_choices_locked_before_keys": true,
+    "initial_learner_content_locked_before_private_model_reasons_and_other_reviews": true,
+    "initial_content_canonical_sha256": "0eb335b41120a1d99b6b2f59b52bde7abaf3bae995fd29128252bf9a850d695d",
+    "other_review_files_read_before_this_artifact": false,
+    "provider_calls": 0,
+    "source_or_capture_changes": false
+  },
+  "qualification": {
+    "passed": false,
+    "original_denominator": 15,
+    "returned": 14,
+    "independently_supported_complete_content": 13,
+    "supported_of_returned": "13/14",
+    "supported_of_requested": "13/15",
+    "missing_slots": 1,
+    "failures": [
+      "Only 3 returned compiled items, below the required 6.",
+      "The quantitative job returned 0 compiled items, below the required 4.",
+      "python:4 main asserts an incorrect execution order; the all-returned-content criterion fails."
+    ],
+    "yield_threshold_pass": true,
+    "per_job_minimum_4_pass": true,
+    "compiled_total_threshold_pass": false,
+    "quantitative_compiled_threshold_pass": false,
+    "mixed_compiled_at_least_2_pass": true,
+    "mixed_english_at_least_1_pass": true,
+    "all_returned_content_sound_pass": false,
+    "source_preservation_pass": true,
+    "native_structure_and_budget_pass": true
+  },
+  "prospective_criteria": {
+    "returned_total_of_15": 14,
+    "minimum_per_job": 4,
+    "compiled_total": 6,
+    "quantitative_job_compiled": 4,
+    "mixed_job_compiled": 2,
+    "mixed_job_english_prose": 1,
+    "all_returned_content_independently_sound": true,
+    "compiled_fields_exactly_original": true,
+    "prose_main_exactly_authored": true,
+    "prose_feedback_must_be_empty": true,
+    "all_jobs_in_denominator": true,
+    "scope_and_difficulty_required": true
+  },
+  "learner_judgment_lock": {
+    "items": [
+      {
+        "id": "quantitative:0",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "(3/4)*(8/9)=24/36=2/3; 2/3-1/6=4/6-1/6=1/2.",
+        "main_sha256": "438fe5f6d31294c8e6ea2950ffb6c8b1232e2d21c07d05e72ba152d82d8fe744",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "quantitative:1",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "0.75=3/4 and0.125=1/8, so their quotient is6. Add2.5=5/2 to obtain17/2=8.5 exactly.",
+        "main_sha256": "112246274165482d40ad91d977f64634052dc7e29154ea38868f96fd1c37c489",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "quantitative:2",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "3x+7>=22 implies3x>=15, hencex>=5. Integer5 satisfies equality and all smaller integers fail.6 and7 also satisfy but are not the requested minimum;4 fails.",
+        "main_sha256": "fc4263b42c118a26596fbc8cfddcaf306c24e21d785b175854b4569745792fee",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "quantitative:3",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "(3/4)*(8/15)=24/60=2/5; adding the first2/5 gives4/5.",
+        "main_sha256": "dd403823286698eadf2fae913f01936ac65bc42871207effa437893b6daf4a99",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "quantitative:4",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "5-2x>-3 implies-2x>-8, and division by-2 reverses the inequality tox<4. The greatest integer below4 is3.2 satisfies but is smaller;4 and5 fail.",
+        "main_sha256": "dce3d88ca9d0f937677f001b7f6f73efaac4c5f16cc8e340a9f6537929028669",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "python:0",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "5>3 and2==2 are bothTrue; their conjunction isTrue, and notTrue isFalse. The result is a bool.",
+        "main_sha256": "259c8a4d9093b294988668efd693fd51c22bc1347eabe30799afb93dd2f2e94a",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "python:1",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "The slice starts at zero-based index1 and stops before index3. It therefore contains b at index1 and c at index2, producing the list['b', 'c'].",
+        "main_sha256": "77cd989922b3cf6720a6a7709d30b6c1b6b184eb707cd8df286924c963c623b0",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "python:2",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "The middle expression0 is false in a Boolean context, so Python chooses the else operand7. The result is the integer7.",
+        "main_sha256": "b1a75d4ae7e9ddb01ea76202de8e18bb15e7f6aa7c68e0b8f553708f8d6f1e32",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "python:3",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "Index-1 selects the last element, which is the integer3.",
+        "main_sha256": "cfa67ea66842e0501da08baa1ba8bf9f47040465cf22a5c3c332eda6afb9c246",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "python:4",
+        "key_matches_blind_answer": true,
+        "main_judgment": "unsupported_execution_order",
+        "main_reason": "The precedence/grouping and final True result are correct. The main nevertheless says the RHS False and False evaluates first and then invokes short-circuiting. Python first evaluates the left operand True of or and skips the RHS. A value-preserving algebraic simplification must not be presented as the actual execution sequence.",
+        "main_sha256": "cfdf4658813e97907b8e6420d0da58d8fc8743a1eef9c5221cf61702065bd18a",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": false
+      },
+      {
+        "id": "mixed:0",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "(3/4)*(2/5)=6/20=3/10;3/10+1/2=3/10+5/10=8/10=4/5.",
+        "main_sha256": "5d6d5888033d9a3343b47edfad0b02466b09916d4d5d17889a6ef4ed0f837d25",
+        "feedback_judgments": [
+          {
+            "choice": "3/5",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          },
+          {
+            "choice": "3/20",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          },
+          {
+            "choice": "4/5",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          },
+          {
+            "choice": "-1/5",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          }
+        ],
+        "empty_feedback_allowed": false,
+        "overall_content_supported": true
+      },
+      {
+        "id": "mixed:1",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "7/2=14/4;14/4-3/4=11/4.",
+        "main_sha256": "d46b9947e07c1802c08556c17edb2cc75e975706349a59819143686d1468c399",
+        "feedback_judgments": [
+          {
+            "choice": "14/3",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          },
+          {
+            "choice": "11/4",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          },
+          {
+            "choice": "17/4",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          },
+          {
+            "choice": "21/8",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          }
+        ],
+        "empty_feedback_allowed": false,
+        "overall_content_supported": true
+      },
+      {
+        "id": "mixed:2",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "The head subject collection is singular; of rare stamps does not change its number. Is agrees. Are, were and have disagree with that same singular subject in the other offered sentences.",
+        "main_sha256": "6e43d9864434f446feab7a553e347841211dd62b8837fa80525a9e1b1bf2210f",
+        "feedback_judgments": [],
+        "empty_feedback_allowed": true,
+        "overall_content_supported": true
+      },
+      {
+        "id": "mixed:3",
+        "key_matches_blind_answer": true,
+        "main_judgment": "supported",
+        "main_reason": "5/6+3/4=10/12+9/12=19/12;19/12-1/3=19/12-4/12=15/12=5/4.",
+        "main_sha256": "56ec13cec87bd4be2931d34ad64369855b2b59197febd79b50746db95ea2d077",
+        "feedback_judgments": [
+          {
+            "choice": "19/4",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          },
+          {
+            "choice": "5/4",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          },
+          {
+            "choice": "23/12",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          },
+          {
+            "choice": "19/36",
+            "judgment": "supported",
+            "reason": "The independently solved exact value matches the named result and each offered alternative is a distinct rational."
+          }
+        ],
+        "empty_feedback_allowed": false,
+        "overall_content_supported": true
+      }
+    ],
+    "supported_items": 13,
+    "returned_items": 14,
+    "planned_items": 15,
+    "supplied_feedback_statements": 12,
+    "supported_feedback_statements": 12,
+    "boundary": "Learner judgments locked before reading any private solver/audit responses or root content review."
+  },
+  "content_summary": {
+    "unique_exact_keys_correct": 14,
+    "distinct_choice_pairs": 84,
+    "supported_main_explanations": 13,
+    "unsupported_main_explanations": 1,
+    "supported_compiled_choice_feedback_fields": 12,
+    "compiled_rows_with_all_5_fields_preserved": 3,
+    "prose_rows_with_exact_main_and_empty_feedback": 11,
+    "all_returned_stems_self_contained_and_assignment_difficulty_supported": true,
+    "bounds_pass": true,
+    "maximum_main_length": 186,
+    "maximum_choice_length": 64
+  },
+  "main_defect": {
+    "id": "python:4",
+    "exact_main": "`and` has higher precedence than `or`. First `False and False` evaluates to `False`. Then `True or False` evaluates to `True` due to short-circuit evaluation.",
+    "correct_result": "True",
+    "finding": "The expression groups as True or (False and False), but or evaluates its left operand first. Because that operand is True, the entire right-hand expression is skipped. The main explicitly says First False and False evaluates and Then True or False evaluates, which misstates execution order.",
+    "standard": "This is a material claim about the supplied expression, not merely an incomplete general description. A value-preserving rewrite would not itself be an execution-order assertion; the explicit First/Then wording makes this one.",
+    "independent_local_check": "Python ast gives Or(True, And(False, False)); disassembly of the exact literal expression loads True and returns.",
+    "private_final_audit": "Call 5 row 4 nevertheless declared valid=true, explanationSupport=supported, difficulty=3, and all six issue flags false. Those declarations establish schema/local acceptance, not teaching truth."
+  },
+  "private_diagnostics": {
+    "separate_from_learner_content": true,
+    "solver_calls": 3,
+    "solver_items": 11,
+    "choice_judgments": 44,
+    "pair_relations": 66,
+    "all_choice_judgments_match_independent_answers": true,
+    "all_pair_relations_distinct_supported": true,
+    "reason_findings": [
+      {
+        "call_ordinal": 4,
+        "row": 3,
+        "field": "choicePairs.ab.reason",
+        "text": "1 (first element, index 0) vs 3 (last element, index -1/-3 vs 2) are distinct numeric values.",
+        "finding": "The distinct-value conclusion is correct. The added index fragment is garbled and not a sound index explanation: the last element 3 has indexes 2 and -1; -3 identifies 1. This is private reason-quality evidence, not a learner-field or key defect."
+      },
+      {
+        "call_ordinal": 4,
+        "row": 4,
+        "field": "choices.b/c.reason",
+        "finding": "The solver uses True or (False and False) = True or False = True as an equality calculation without a First/Then execution claim. That value equality is sound; it does not rescue the separate learner execution narrative."
+      },
+      {
+        "call_ordinal": 4,
+        "row": 4,
+        "field": "choices.a.reason",
+        "finding": "The parenthetical True or False describes the supplied boolean operands; None is indeed not returned here. It should not be reused as a universal rule that Python and/or can never return None."
+      }
+    ],
+    "other_reasons": "Reviewed all visible solver choice and pair reason strings. Their concrete arithmetic, branch, slicing and agreement claims support the recorded judgments, aside from the private garbled indexing fragment above. No hidden provider reasoning or reasoning signatures were inspected.",
+    "final_audit_records": 14,
+    "all_final_audit_records_native_and_local_valid": true,
+    "all_final_audits_declared_supported_no_issues": true,
+    "free_text_audit_reason_fields": 0
+  },
+  "local_rejections": [
+    {
+      "source": [
+        "mixed",
+        0,
+        2
+      ],
+      "kind": "compiler_no_answer",
+      "proof": "The raw scalar task equates (5*2+x)-17 to node 0, which is 5. Thus x-7=5 implies x=12, outside the explicit integer interval 1..10. Replayed constructor rejects no_answer; no row was repaired or admitted."
+    },
+    {
+      "source": [
+        "mixed",
+        0,
+        4
+      ],
+      "kind": "invalid_feedback_before_solver",
+      "proof": "Replaying freeze_authored_question rejects Teaching cannot reference shuffled answer labels. The raw main says In choice D and Choices A and B. This row never reached the solver or final audit; no semantic correctness credit is assigned to it."
+    },
+    {
+      "source": [
+        "mixed",
+        1,
+        0
+      ],
+      "kind": "duplicate_stem_before_verifier",
+      "proof": "The top-up prose uses exactly the already-seen prompt Which sentence contains an unambiguous pronoun reference? It is removed by the captured duplicate_stem path. The quantitative sibling at raw ordinal 1 survives as sanitized ordinal 0 with its own unchanged sidecar."
+    }
+  ],
+  "routing_and_resources": {
+    "returned_by_job": [
+      5,
+      5,
+      4
+    ],
+    "compiled_by_job": [
+      0,
+      0,
+      3
+    ],
+    "policy_7_prose": 11,
+    "policy_8_compiled": 3,
+    "raw_author_variants_by_pass": [
+      [
+        "quantitative",
+        0,
+        0,
+        5
+      ],
+      [
+        "python",
+        0,
+        0,
+        5
+      ],
+      [
+        "mixed",
+        0,
+        3,
+        2
+      ],
+      [
+        "mixed",
+        1,
+        1,
+        1
+      ]
+    ],
+    "variant_counts_columns": [
+      "job",
+      "pass",
+      "quantitative",
+      "prose"
+    ],
+    "calls_by_job": [
+      3,
+      3,
+      5
+    ],
+    "total_calls": 11,
+    "maximum_calls_per_job": 6,
+    "maximum_total_calls": 18,
+    "deadline_seconds_per_job": 240,
+    "all_deadlines_pass": true,
+    "elapsed_seconds_by_job": [
+      53.4361,
+      61.407327,
+      92.328774
+    ],
+    "all_calls_end_turn": true,
+    "provider_or_structural_call_failures": 0,
+    "reported_input_tokens": 33973,
+    "reported_output_tokens": 17322,
+    "missing_usage_calls": 0,
+    "mixed_stopped_with_one_call_remaining": "Normal runtime requires capacity for a worst-case three-call author pass. After five calls and four accepted returns, one remaining call cannot authorize another pass; no harness rescue occurred.",
+    "interpretation": "The quantitative prose fallback is allowed by this mixed author schema, but does not earn compiled quota credit. These 14 returned stems do not demonstrate scalar construction success; the sole raw scalar task failed locally."
+  },
+  "independent_structural_replay": {
+    "source_pins_checked": 37,
+    "runtime_modules": 27,
+    "calls": [
+      {
+        "ordinal": 0,
+        "job": "quantitative",
+        "stage": "question_author_constructed_v1",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 4.182094
+      },
+      {
+        "ordinal": 1,
+        "job": "quantitative",
+        "stage": "complete_choice_solver_v5_n5",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 32.296833
+      },
+      {
+        "ordinal": 2,
+        "job": "quantitative",
+        "stage": "authored_solution_reviewer_v3_n5",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 16.728477
+      },
+      {
+        "ordinal": 3,
+        "job": "python",
+        "stage": "question_author_constructed_v1",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 7.94966
+      },
+      {
+        "ordinal": 4,
+        "job": "python",
+        "stage": "complete_choice_solver_v5_n5",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 31.970813
+      },
+      {
+        "ordinal": 5,
+        "job": "python",
+        "stage": "authored_solution_reviewer_v3_n5",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 21.281352
+      },
+      {
+        "ordinal": 6,
+        "job": "mixed",
+        "stage": "question_author_constructed_v1",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 10.797378
+      },
+      {
+        "ordinal": 7,
+        "job": "mixed",
+        "stage": "complete_choice_solver_v5_n1",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 28.537192
+      },
+      {
+        "ordinal": 8,
+        "job": "mixed",
+        "stage": "authored_solution_reviewer_v3_n3",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 34.362771
+      },
+      {
+        "ordinal": 9,
+        "job": "mixed",
+        "stage": "question_author_constructed_v1",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 5.107424
+      },
+      {
+        "ordinal": 10,
+        "job": "mixed",
+        "stage": "authored_solution_reviewer_v3_n1",
+        "provider_native_schema_valid": true,
+        "strict_local_adaptation_valid": true,
+        "settings_exact": true,
+        "elapsed_seconds": 13.131345
+      }
+    ],
+    "jobs": [
+      {
+        "id": "quantitative",
+        "returned": 5,
+        "compiled": 0,
+        "calls": 3,
+        "reservations": 3,
+        "deadline_pass": true
+      },
+      {
+        "id": "python",
+        "returned": 5,
+        "compiled": 0,
+        "calls": 3,
+        "reservations": 3,
+        "deadline_pass": true
+      },
+      {
+        "id": "mixed",
+        "returned": 4,
+        "compiled": 3,
+        "calls": 5,
+        "reservations": 5,
+        "deadline_pass": true
+      }
+    ],
+    "bound_returns": [
+      {
+        "id": "quantitative:0",
+        "sanitized_source": [
+          "quantitative",
+          0,
+          0
+        ],
+        "raw_author_source": [
+          "quantitative",
+          0,
+          0
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 94,
+        "max_choice_length": 4
+      },
+      {
+        "id": "quantitative:1",
+        "sanitized_source": [
+          "quantitative",
+          0,
+          1
+        ],
+        "raw_author_source": [
+          "quantitative",
+          0,
+          1
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 56,
+        "max_choice_length": 5
+      },
+      {
+        "id": "quantitative:2",
+        "sanitized_source": [
+          "quantitative",
+          0,
+          2
+        ],
+        "raw_author_source": [
+          "quantitative",
+          0,
+          2
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 67,
+        "max_choice_length": 1
+      },
+      {
+        "id": "quantitative:3",
+        "sanitized_source": [
+          "quantitative",
+          0,
+          3
+        ],
+        "raw_author_source": [
+          "quantitative",
+          0,
+          3
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 72,
+        "max_choice_length": 5
+      },
+      {
+        "id": "quantitative:4",
+        "sanitized_source": [
+          "quantitative",
+          0,
+          4
+        ],
+        "raw_author_source": [
+          "quantitative",
+          0,
+          4
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 73,
+        "max_choice_length": 1
+      },
+      {
+        "id": "python:0",
+        "sanitized_source": [
+          "python",
+          0,
+          0
+        ],
+        "raw_author_source": [
+          "python",
+          0,
+          0
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 149,
+        "max_choice_length": 11
+      },
+      {
+        "id": "python:1",
+        "sanitized_source": [
+          "python",
+          0,
+          1
+        ],
+        "raw_author_source": [
+          "python",
+          0,
+          1
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 142,
+        "max_choice_length": 15
+      },
+      {
+        "id": "python:2",
+        "sanitized_source": [
+          "python",
+          0,
+          2
+        ],
+        "raw_author_source": [
+          "python",
+          0,
+          2
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 144,
+        "max_choice_length": 11
+      },
+      {
+        "id": "python:3",
+        "sanitized_source": [
+          "python",
+          0,
+          3
+        ],
+        "raw_author_source": [
+          "python",
+          0,
+          3
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 110,
+        "max_choice_length": 10
+      },
+      {
+        "id": "python:4",
+        "sanitized_source": [
+          "python",
+          0,
+          4
+        ],
+        "raw_author_source": [
+          "python",
+          0,
+          4
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 158,
+        "max_choice_length": 9
+      },
+      {
+        "id": "mixed:0",
+        "sanitized_source": [
+          "mixed",
+          0,
+          0
+        ],
+        "raw_author_source": [
+          "mixed",
+          0,
+          0
+        ],
+        "compiled": true,
+        "policy": 8,
+        "exact_source_content": true,
+        "main_length": 155,
+        "max_choice_length": 4
+      },
+      {
+        "id": "mixed:1",
+        "sanitized_source": [
+          "mixed",
+          0,
+          1
+        ],
+        "raw_author_source": [
+          "mixed",
+          0,
+          1
+        ],
+        "compiled": true,
+        "policy": 8,
+        "exact_source_content": true,
+        "main_length": 186,
+        "max_choice_length": 4
+      },
+      {
+        "id": "mixed:2",
+        "sanitized_source": [
+          "mixed",
+          0,
+          2
+        ],
+        "raw_author_source": [
+          "mixed",
+          0,
+          3
+        ],
+        "compiled": false,
+        "policy": 7,
+        "exact_source_content": true,
+        "main_length": 177,
+        "max_choice_length": 64
+      },
+      {
+        "id": "mixed:3",
+        "sanitized_source": [
+          "mixed",
+          1,
+          0
+        ],
+        "raw_author_source": [
+          "mixed",
+          1,
+          1
+        ],
+        "compiled": true,
+        "policy": 8,
+        "exact_source_content": true,
+        "main_length": 156,
+        "max_choice_length": 5
+      }
+    ],
+    "rejections": [
+      {
+        "source": [
+          "mixed",
+          0,
+          4
+        ],
+        "stage": "before_solver",
+        "error": "Teaching cannot reference shuffled answer labels."
+      }
+    ],
+    "all_checks_passed": true,
+    "dense_solver_and_audit_input_binding_checks": true,
+    "all_14_returns_have_final_audit": true,
+    "top_up_audit_history_matches_3_previous_returns": true
+  },
+  "claim_limits": "This is a failed three-job fresh-generation trial on repeated scopes, not deployment, inventory qualification, universal model correctness, or a causal comparison with older trials. Visible native fields and their local decoding are separate from semantic truth. Post-hoc replay confirms captured source associations and exact deterministic fields; it does not claim reconstruction of live Python object identity beyond the frozen harness observations."
+}
