@@ -1,0 +1,54 @@
+{
+  "plan_sha256": "8c0eaaeec121b11ea9ba6aaf6bc8acbca1d47ac441d7d42845dc8e7b441b7b09",
+  "capture_sha256": "ea422ad2447e2fab468af1457a2c043dbb0df71350bdbc3d24e0e90363fe857b",
+  "runtime_and_harness_and_evidence_bindings_match_frozen_plan": true,
+  "exact_captured_request_replayed": true,
+  "same_error_path_stop_and_all_denominators_reproduced": true,
+  "provider_calls_in_replay": 0,
+  "fake_callback_calls": 1,
+  "denominators": {
+    "calls_planned": 4,
+    "calls_attempted": 1,
+    "calls_strictly_valid": 0,
+    "calls_failed": 1,
+    "calls_unattempted": 3,
+    "items_planned": 24,
+    "items_strictly_assessed": 0,
+    "items_in_failed_batches": 6,
+    "items_unattempted": 18,
+    "reasons_planned": 144,
+    "reasons_strictly_assessed": 0,
+    "reason_semantics_independently_assessed": 0
+  },
+  "field_denominators": {
+    "tasks_planned": 24,
+    "tasks_returned": 0,
+    "answer_choices_planned": 24,
+    "answer_choices_returned": 0,
+    "feedback_labels_planned": 120,
+    "feedback_labels_returned": 0,
+    "difficulty_values_planned": 24,
+    "difficulty_values_returned": 0,
+    "reasons_planned": 144,
+    "reasons_returned": 0,
+    "reasons_not_produced_in_failed_batch": 36,
+    "reasons_unattempted": 108
+  },
+  "usage": null,
+  "usage_status": "Unavailable, not zero.",
+  "provider_elapsed_seconds": 75.167173,
+  "provider_error": {
+    "type": "ReadTimeoutError",
+    "Error": {
+      "Code": null,
+      "Message": null
+    },
+    "HTTPStatus": null,
+    "RequestId": null
+  },
+  "primary_qualification_passed": false,
+  "semantic_assessment": "No model JSON or labels/reasons were returned; no semantic credit or failure attribution is possible.",
+  "selected_originals": [],
+  "selected_payload_hash_identity": "Not exercised: no payload was selected.",
+  "no_rescue_of_previous_trials": true
+}

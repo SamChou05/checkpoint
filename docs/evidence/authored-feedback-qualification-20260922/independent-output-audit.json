@@ -1,0 +1,352 @@
+{
+  "audit_kind": "Independent exact-input, source and complete-denominator audit of a failed audit-only qualification; no model output exists to assess",
+  "plan_sha256": "8c0eaaeec121b11ea9ba6aaf6bc8acbca1d47ac441d7d42845dc8e7b441b7b09",
+  "capture_sha256": "ea422ad2447e2fab468af1457a2c043dbb0df71350bdbc3d24e0e90363fe857b",
+  "source_pin_checks": [
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/authored_feedback_audit.py",
+      "sha256": "7528b4051ee26a1aee4f64855a131d1032346aac4a9ef27acc6c509291626d22",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/authored_feedback_contract.py",
+      "sha256": "495416489ba13da1780c3cbbb2efaf72561bad9bbb9b4ed9363cc20789a81bc8",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/authored_feedback_verification.py",
+      "sha256": "75c67a12d1ee722566b375dbbddf9b9601ef81d65770b779bbfebea6ca9ad138",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/complete_question_solution.py",
+      "sha256": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/execution_evidence.py",
+      "sha256": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/generation_diagnostics.py",
+      "sha256": "944a3020cb3b173589aee066ac39066564a5c943c972bdcfc0115cdcb2e33f30",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/lambda_function.py",
+      "sha256": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/native_output_contracts.py",
+      "sha256": "ffc7d27ad12183d426c3f7008fde7ba538aa5d75a3fe15e422b269ce8428b0a1",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_bank.py",
+      "sha256": "18c2c33229331e83144dea8d922dc99c4897672ef32f3fd7ac4b51bd0b264e44",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_bank_common.py",
+      "sha256": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_bank_inventory.py",
+      "sha256": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_bank_store.py",
+      "sha256": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_bank_worker.py",
+      "sha256": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_difficulty.py",
+      "sha256": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_generation.py",
+      "sha256": "86163083d65699584c204547d1ad31af740540cc7d1c5865a959a363a947c423",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_quality.py",
+      "sha256": "bb77b2b037c7181a4a954d6d0fb59b862c4891c7679fc3ea6421ac5f79917b1c",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_rule_construction.py",
+      "sha256": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_teaching.py",
+      "sha256": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/question_verification.py",
+      "sha256": "ed6631b0eb2e8d3eb4d3a02ee4d54b9b57c7d178bbcb7f85af4d92451280a86f",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/request_contract.py",
+      "sha256": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/service_errors.py",
+      "sha256": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/skill_maps.py",
+      "sha256": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/smoke_test_backend.py",
+      "sha256": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/source_acquisition.py",
+      "sha256": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/verification_policy.py",
+      "sha256": "ec8f60fdf23e39ff737bdb88d2e12f1fb6e4b3a4f6706b23c947e25580b1683c",
+      "matches": true
+    },
+    {
+      "kind": "runtime",
+      "path": "/tmp/checkpoint-authored-feedback-integration/backend/bedrock-question-service/web_source_search.py",
+      "sha256": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+      "matches": true
+    },
+    {
+      "kind": "harness",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/authored-feedback-qualification-20260922/PLAN.md",
+      "sha256": "4e60107dfc8699ac27c2677969b0671ac75bd94f671ba65484994c165daccd44",
+      "matches": true
+    },
+    {
+      "kind": "harness",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/authored-feedback-qualification-20260922/audit_qualification.py",
+      "sha256": "59b7b01478016229649cfa29abff183f0d5af769ca41fd55e326065d85b93bfc",
+      "matches": true
+    },
+    {
+      "kind": "harness",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/authored-feedback-qualification-20260922/test_audit_qualification.py",
+      "sha256": "f7dff9d7ddc96ecffd76b51a38c8468c30cefab9dfc924a2c844116413919d74",
+      "matches": true
+    },
+    {
+      "kind": "evidence",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/final-content-audit-20260922/adversarial-plan.json",
+      "sha256": "7c9fcc97e4259758c85a2b36f0d0d508e71d97040daa41dabb0b10918f0ce315",
+      "matches": true
+    },
+    {
+      "kind": "evidence",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/authored-feedback-20260922/known-control-field-expectations-draft.json",
+      "sha256": "c86996a0720fe44ba999ee6bd938c3768829fd5f966da6c836ca92677569bce3",
+      "matches": true
+    },
+    {
+      "kind": "evidence",
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-investigation/Checkpoint/docs/evidence/authored-feedback-20260922/KNOWN_CONTROLS_REVIEW.md",
+      "sha256": "33422109429fca0b5d9f3dd3d6fef1ce1e8dbfc6f66f6affdcf3f53ec327fa4d",
+      "matches": true
+    }
+  ],
+  "all24_original_cases_and_gold_byte_equivalent_as_decoded_json": true,
+  "planned_request_input_checks": [
+    {
+      "sequence": 0,
+      "case_ids": [
+        "familiar_weighted_grade_defective",
+        "familiar_paint_defective",
+        "familiar_paint_sound",
+        "familiar_bus_sound",
+        "familiar_weighted_grade_sound",
+        "familiar_bus_defective"
+      ],
+      "exact_original_item_and_choice_order": true,
+      "exact_original_scope": true,
+      "all_30_learner_feedback_strings_preserved": true,
+      "explicit_keys_difficulty_gold_and_prior_decisions_absent": true,
+      "request_sha256": "f7f50d1715d999ffd36035c262253f8fdafa01545a17cb8a4993e50a14f6ef7c"
+    },
+    {
+      "sequence": 1,
+      "case_ids": [
+        "fresh_causal_evidence_defective",
+        "fresh_parallel_timing_sound",
+        "fresh_parallel_timing_defective",
+        "fresh_causal_evidence_sound",
+        "fresh_signed_square_sound",
+        "fresh_signed_square_defective"
+      ],
+      "exact_original_item_and_choice_order": true,
+      "exact_original_scope": true,
+      "all_30_learner_feedback_strings_preserved": true,
+      "explicit_keys_difficulty_gold_and_prior_decisions_absent": true,
+      "request_sha256": "a833baf145b1799af28e8c1eb9ff737b7f1973a125a77ff48c8694af6ef9e365"
+    },
+    {
+      "sequence": 2,
+      "case_ids": [
+        "supplement_duplicate_wrong_value_defective",
+        "supplement_semicolon_defective",
+        "supplement_duplicate_wrong_value_sound",
+        "supplement_decimal_representation_sound",
+        "supplement_semicolon_sound",
+        "supplement_decimal_representation_defective"
+      ],
+      "exact_original_item_and_choice_order": true,
+      "exact_original_scope": true,
+      "all_30_learner_feedback_strings_preserved": true,
+      "explicit_keys_difficulty_gold_and_prior_decisions_absent": true,
+      "request_sha256": "6a6e1ce95a25cf251f6a903644a0bf94c784189ba778e8d754008a5383baccdd"
+    },
+    {
+      "sequence": 3,
+      "case_ids": [
+        "rectangle_perimeter_complete",
+        "triangle_missing_perimeter",
+        "necessary_ticket_inference",
+        "text_identifier_leading_zero",
+        "even_integer_converse_error",
+        "editor_duplicate_discard_actions"
+      ],
+      "exact_original_item_and_choice_order": true,
+      "exact_original_scope": true,
+      "all_30_learner_feedback_strings_preserved": true,
+      "explicit_keys_difficulty_gold_and_prior_decisions_absent": true,
+      "request_sha256": "0281958330801964394b8a14119f9f85ce843eb186854e9184b398b4c057eeba"
+    }
+  ],
+  "observed_request_matches_frozen_first_request": true,
+  "actual_runtime_system_prompt_includes_rubric": true,
+  "native_contract": {
+    "name": "experimental_authored_feedback_audit_v2_n6",
+    "version": "2",
+    "sha256": "a61fad5fd95ee8829c390e93f7aee534babae6a6ea1e66afb71ebdcbd90089d0"
+  },
+  "failure": {
+    "stage": "First final authored-feedback audit request, for the six original familiar controls; author, solver and worker stages were not invoked by this audit-only probe.",
+    "type": "ReadTimeoutError",
+    "elapsed_seconds": 75.167173,
+    "safe_aws_error_code": null,
+    "safe_aws_error_message": null,
+    "safe_http_status": null,
+    "safe_request_id": null,
+    "model_json_returned": false,
+    "usage": null,
+    "usage_status": "unavailable, not zero",
+    "cause_limit": "SDK read timeout is observed. No response body or AWS error detail establishes whether provider computation, transport, compilation, load or another mechanism consumed the time."
+  },
+  "complete_denominators": {
+    "calls_planned": 4,
+    "calls_attempted": 1,
+    "calls_strictly_valid": 0,
+    "calls_failed": 1,
+    "calls_unattempted": 3,
+    "items_planned": 24,
+    "items_strictly_assessed": 0,
+    "items_in_failed_batches": 6,
+    "items_unattempted": 18,
+    "reasons_planned": 144,
+    "reasons_strictly_assessed": 0,
+    "reason_semantics_independently_assessed": 0
+  },
+  "complete_field_denominators": {
+    "tasks_planned": 24,
+    "tasks_returned": 0,
+    "answer_choices_planned": 24,
+    "answer_choices_returned": 0,
+    "feedback_labels_planned": 120,
+    "feedback_labels_returned": 0,
+    "difficulty_values_planned": 24,
+    "difficulty_values_returned": 0,
+    "reasons_planned": 144,
+    "reasons_returned": 0,
+    "reasons_not_produced_in_failed_batch": 36,
+    "reasons_unattempted": 108
+  },
+  "semantic_review": {
+    "dispositions_returned": 0,
+    "task_labels_returned": 0,
+    "answer_choices_returned": 0,
+    "feedback_labels_returned": 0,
+    "difficulty_values_returned": 0,
+    "visible_reasons_returned": 0,
+    "independently_auditable_content": null,
+    "statement": "Do not infer semantic correctness or semantic error from missing outputs. All24 admission and144reason denominators remain planned but unassessed."
+  },
+  "primary_prospective_qualification_passed": false,
+  "unchanged_selected_content": {
+    "selected_count": 0,
+    "hash_identity_check_exercised": false,
+    "statement": "Zero outputs is not evidence of successful immutable-content selection."
+  },
+  "no_network_replay": {
+    "file": "replay.py",
+    "sha256": "fceaa2e91b2f91ddcf416420332ad09d912986f1234835c15abeb1fc17fff4e2",
+    "summary_sha256": "95c73157f3deb2412bb21fb5306507fa61f6af4c3430608f348542da006cd2fa",
+    "exact_failure_path_and_stop_reproduced": true,
+    "fake_callback_count": 1,
+    "provider_calls": 0
+  },
+  "runtime_reconstruction": {
+    "manifest": "runtime-reconstruction.json",
+    "manifest_sha256": "90d9d4c60c4dae5bc3f26cbeb3575ec2a9607f576317c0c86d7d783ea341e132",
+    "patch_sha256": "0816aba9bd9a48ed2cad2f461ed33ff452ff2afaf58dedf8ed925ccb713c4b69",
+    "independently_verified_module_hashes": 26
+  },
+  "handoff": {
+    "capture_is_final": true,
+    "no_retry_or_resume": true,
+    "source_or_latency_followups_require_new_prospective_plan": true,
+    "no_worker_release_or_policy_promotion": true,
+    "known24_gold_and_previous_failures_unchanged": true
+  },
+  "auditor_provider_calls": 0
+}

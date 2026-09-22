@@ -19,7 +19,7 @@ Semantic results are separate: **40/40 correctness labels, 59/60 pair labels, an
 
 The remaining material error is concrete. The dispatch question binds `b` to “Cancel dispatch.” and `c` to “Send the parcel.”, and explicitly supplies those endpoints for `bc`. The model nevertheless marked `bc` equivalent and wrote a reason about **b and d**, the two cancellation alternatives. The returned slot and app decoding are correct; the model associated the wrong choices with that slot's semantic claim. It also correctly marked the actual `bd` cancellation pair equivalent, so rejecting this item remained the correct eligibility outcome. A correct gate outcome does not erase the extra false equivalence or its false reason.
 
-Private reasons also contain narrower precision or speculation concerns: two distinct-pair reasons write `3/9 = 0.333` instead of an approximation, and the pencil distractor reason makes an unsupported broad claim about “any natural misapplication.” Their final labels are correct. These solver reasons are not learner feedback, but they prevent treating structurally valid explanations as automatically accurate or fully grounded. The independent audit records all 100 visible reasons and these limitations separately.
+Private reasons also contain narrower precision or speculation concerns: two distinct-pair reasons write `3/9 = 0.333` instead of an approximation, and the pencil distractor reason makes an unsupported broad claim about “any natural misapplication.” Their final labels are correct. These solver reasons are not learner feedback, but they prevent treating structurally valid explanations as automatically accurate or fully grounded. The independent audit read all 100 visible reasons: 96 were grounded, one had the wrong pair reference and relation, two had inexact decimal equality, and one contained the uncertain generalization. These private-reason findings remain separate from the structural pass.
 
 | Call | Elapsed seconds | Input tokens | Output tokens |
 | --- | ---: | ---: | ---: |
@@ -36,5 +36,7 @@ Frozen plan SHA256: `3802a77697d39433b3dabe5f349f39c53e3a397e1a57cbc081d8c8edae5
 Frozen capture SHA256: `9764085b7222cccdd675a86a7adef34e39cf704c5ad57e31fa96e1bc292c3b5b`.
 
 Native `complete_choice_solver_v5_n5` schema SHA256: `0949077dd2f0202a8943462ef810bc305b4bb382d2abec366853e9f6db52447f`.
+
+Independent audit SHA256: `495be7e327ae05ace5d966e3aead092dc1727e849805f5755e428f4597edf748`.
 
 `replay.py` reproduces both exact requests and strict assessments without credentials or network access. `runtime-reconstruction.json` and the zero-context `runtime-source.patch` preserve all 23 pinned temporary runtime modules. Reconstruct an isolated checkout at the recorded Git base, run `git apply --unidiff-zero runtime-source.patch`, and verify every hash. The reconstruction was independently performed before handoff and matched all 23 hashes. Do not overwrite unrelated work to reproduce it.

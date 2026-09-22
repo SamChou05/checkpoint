@@ -113,8 +113,12 @@ routing or defaults. The fourth-stage code and budget tests remain isolated
 preparation. The next architecture candidate moves all five teaching fields into
 authoring, before the answer-blind solver and an immutable field-by-field review.
 That removes the unchecked last writer without adding a fourth call. The isolated
-implementation passes 1,212 backend tests; its per-field known-control trial and
-fresh end-to-end qualification remain separate from those mechanical checks.
+implementation passes 1,212 backend tests. Its first [per-field known-control
+trial](evidence/authored-feedback-qualification-20260922/RESULTS.md) timed out on
+the first six-item request at 75.167 seconds, before returning any model output.
+Three planned requests remained unattempted. This supplies no semantic result
+and does not qualify the worker. Assigned-objective context and the bounded
+latency configuration are under review before the next production candidate.
 Model agreement still does not prove truth.
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
