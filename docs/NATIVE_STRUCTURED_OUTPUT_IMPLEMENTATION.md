@@ -15,7 +15,7 @@ bugs, controlled model comparisons and answer-highlighting evidence.
 Every provider call selects its stage explicitly, including author repair,
 top-ups, configured fallback, API/worker generation and skill-map retries. The
 registry contains eleven static, closed, versioned contracts and adds count-bound
-solver and reviewer families:
+solver and reviewer families, including the opt-in immutable-main audit:
 
 | Contract | Shape and runtime use |
 | --- | --- |
@@ -25,12 +25,13 @@ solver and reviewer families:
 | `question_author_mixed_v1` | Explicit opt-in mixed author: ordinary v3 prose rows or typed numerical specs with shared, nonrecursive flat-node schema. Local compiler derives all learner fields; provider qualification remains pending. See [bounded subset and provenance](QUANTITATIVE_TASK_COMPILER.md). |
 | `skill_map_inference_v1` | Skill/objective names; server validates counts and assigns IDs. |
 | `skill_map_evolution_v1` | Successor names/objectives; server validates predecessor coverage and constructs map identity/version. |
-| `complete_choice_solver_v1` | Exact indexed choices with supported/refuted/uncertain declarations. Retained for legacy complete-choice and optional authored teaching. |
+| `complete_choice_solver_v1` | Exact indexed choices with supported/refuted/uncertain declarations. Retained for legacy complete-choice and legacy authored teaching. |
 | `complete_choice_solver_v3` | Retained historical contract: four fixed judgment slots and six fixed unordered pair slots, reasons before verdicts; free outer array/index still requires local coverage validation. |
-| `complete_choice_solver_v5_n{count}` | Native reviewer-written path: required outer object keys bind the actual validated solver input (1–40), with no model-written index. Inner v3 judgment/pair schemas and exact trusted endpoints remain unchanged. The adapter restores trusted indexes before the existing semantic gates. |
+| `complete_choice_solver_v5_n{count}` | Native reviewer-written and authored-solution paths: required outer object keys bind the actual validated solver input (1–40), with no model-written index. Inner v3 judgment/pair schemas and exact trusted endpoints remain unchanged. The adapter restores trusted indexes before the existing semantic gates. |
 | `default_reviewer_v1` | Retained explicit native contract and legacy routing identity: verdict, exact answer, assessed difficulty, main explanation and provider-only choiceFeedback rows. |
 | `default_reviewer_v2` | Inactive experiment with separate accepted/rejected union branches; failed valid-control retention. |
-| `authored_solution_reviewer_v1` | Optional authored-teaching audit; cannot replace the author's teaching. Not enabled by this work. |
+| `authored_solution_reviewer_v1` | Retained legacy authored-teaching audit; cannot replace the author's teaching. |
+| `authored_solution_reviewer_v2_n{count}` | Opt-in native authored-solution audit after the v5 pair solver: required dense count-bound review map with shared row references, key/support/difficulty/issues verdicts and no replacement teaching. Assigns policy 7 only after both gates pass; live qualification is pending. |
 | `default_reviewer_v3_n{count}` | Current native final review: required object keys bind every dense post-solver item, including rejections. Trusted count is 1–40; no model-written index. Feedback fields and admission checks remain v1-compatible. |
 
 Historical schema bytes remain stable. V3 serialization deliberately preserves
@@ -55,7 +56,9 @@ map. A trusted callback passes the number of reviewable candidates after input
 filtering, before solver judgments; it never reads request targetCount or parses
 model-authored text. All map keys and inner rows must validate before any index
 is restored. This transport version adds no provider stage or verification-policy
-revision and leaves legacy and optional authored-teaching routes unchanged.
+revision on the reviewer-written path and leaves legacy routing unchanged. The
+separate opt-in native authored-solution integration now uses this solver and the
+new v2 immutable-main audit; its retained v1 schemas/prompts remain byte-identical.
 
 V5 shares the solution, choice-judgment and pair-relation schemas through internal
 `$defs`/`$ref` references. Local validation still uses the expanded schema. For
@@ -78,9 +81,14 @@ bounds. The [reviewer-v2 failure](evidence/structured-reliability-20260921/REVIE
 remains unchanged evidence; it does not authorize switching production to v2.
 
 Public response shape and wire verification version remain 1. Legacy
-complete-choice verification earns policy 2, optional authored teaching earns 3,
-and the complete native slot/pair path followed by successful final review earns
-4. Historical stem-only evaluation stays at 1. Stored content is never upgraded
+complete-choice verification earns policy 2, legacy authored teaching earns 3,
+and the complete native slot/pair path followed by successful reviewer-written
+feedback earns 4. The compiled quantitative route earns 6; native authored
+main teaching earns 7 only after the complete pair/count gate and immutable-main
+audit. Revision minimums are freshness thresholds, not cumulative capabilities: a
+revision-7 question satisfies minimum 6 without claiming compiler provenance.
+The global default stays 4 and the client floor stays 2. Historical stem-only
+evaluation stays at 1. Stored content is never upgraded
 by changing its stamp. The client filters cached inventory by its actual required
 policy while preserving history; see the [cached inventory milestone](evidence/question-reliability-release-20260922/CACHED_INVENTORY.md).
 
@@ -90,6 +98,15 @@ Native incompatibility fails without dropping the schema. Configured fallback
 calls still carry the selected contract and consume the existing call budget.
 
 ## Verification and live evidence
+
+The opt-in native authored-main pair integration passes **1,235 backend tests**
+and a noncontainer SAM build. Its 26 service modules and pinned SDK inputs match
+all three artifacts. Artifact-isolated checks validate 131 native request shapes
+per artifact (**393 offline checks**), with no provider calls. The 91 previously
+available config/metadata/prompt families remain byte-identical; the new audit
+and changed native authored routing are not live-qualified. See the
+[immutable-main contract](QUESTION_AUTHORED_SOLUTION_CONTRACT.md) for preservation,
+scope/history, policy-7 provenance and the existing client fallback.
 
 The September 22 structural milestone passes all **1,124 backend tests**, Ruff,
 compilation, deployment-script checks, SAM lint and a noncontainer SAM build.
@@ -197,7 +214,9 @@ post-solver indexes. The count is passed directly by the verifier, rather than
 parsed from prompt text or copied from the original request. The adapter rejects
 missing, extra, duplicate, noncanonical or embedded identities before deriving
 internal indexes; it never fills or repairs a model batch. Historical schemas
-and legacy/authored-review routing remain available with their original bytes.
+and legacy routing retain their original bytes. Opt-in native authored review
+now uses its separate count-bound v2 audit; this does not change reviewer-written
+contracts or claim live qualification of the new combination.
 
 The [two-call count-five trial](evidence/reviewer-identity-20260922/RESULTS.md)
 returned all ten required identities. Production preserves that schema body and

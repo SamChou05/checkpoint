@@ -5,9 +5,9 @@ Neither a supported verdict nor this validation proves factual correctness.
 """
 
 import copy
-import re
 from typing import Any, Literal
 
+from answer_position_references import contains_answer_label_references
 from complete_question_solution import CompleteSolutionFormatError, _items_by_index
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _strict_json_object
@@ -93,7 +93,7 @@ def _validate_content(question: Any) -> None:
         type(question["choiceExplanations"]) is not dict or question["choiceExplanations"]
     ):
         raise AuthoredTeachingFormatError("Existing choice teaching cannot be removed by this mode.")
-    if re.search(r"\b(?:choice|option|answer)\s+[A-D]\b", question["explanation"], re.I):
+    if contains_answer_label_references(question["explanation"], question):
         raise AuthoredTeachingFormatError("Teaching cannot reference shuffled answer labels.")
 
 

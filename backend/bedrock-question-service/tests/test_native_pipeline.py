@@ -32,7 +32,7 @@ AUTHOR = "question_author_v3"
 SOLVER = "complete_choice_solver_v5_n1"
 LEGACY_SOLVER = "complete_choice_solver_v1"
 REVIEWER = "default_reviewer_v3_n1"
-AUTHORED_REVIEWER = "authored_solution_reviewer_v1"
+AUTHORED_REVIEWER = "authored_solution_reviewer_v2_n1"
 MODEL = "us.anthropic.claude-sonnet-4-6"
 FALLBACK = "moonshotai.kimi-k2.5"
 
@@ -410,15 +410,15 @@ class NativePipelineTests(unittest.TestCase):
             self.assertEqual(data["items"][0]["explanation"], question["explanation"])
             self.assertNotIn("expectedAnswer", data["items"][0])
             self.assertNotIn("independentSolutions", data)
-            return {"reviews": [{"index": 0, "valid": True, "answer": question["expectedAnswer"],
-                                  "difficulty": 3, "explanationSupport": "supported", "issues": []}]}
+            return {"reviews": {"0": {"valid": True, "answer": question["expectedAnswer"],
+                                  "difficulty": 3, "explanationSupport": "supported", "issues": []}}}
         client = ScriptedNativeClient((AUTHOR, author_payload(question)),
-                                      (LEGACY_SOLVER, self.solver(question)), (AUTHORED_REVIEWER, audit))
+                                      (SOLVER, self.solver(question)), (AUTHORED_REVIEWER, audit))
         with patch.dict(os.environ, {"QUESTION_FEEDBACK_CONTRACT": "authored_solution"}):
             result = generation._generate_sanitized_questions(self.request, client, generation.ProviderCallBudget(3))
         self.assertEqual(result[0]["explanation"].encode(), question["explanation"].encode())
         self.assertEqual(result[0]["choiceExplanations"], {})
-        self.assertEqual(result[0]["verificationPolicyRevision"], 3)
+        self.assertEqual(result[0]["verificationPolicyRevision"], 7)
         self.assertEqual(result[0]["verificationVersion"], 1)
 
     def test_authored_native_audit_cannot_approve_uncertain_or_issue_bearing_teaching(self):
@@ -428,7 +428,7 @@ class NativePipelineTests(unittest.TestCase):
                 record = {"index": 0, "valid": True, "answer": self.question["expectedAnswer"],
                           "difficulty": 3, "explanationSupport": "supported", "issues": [], **changes}
                 client = ScriptedNativeClient((AUTHOR, author_payload(self.question)),
-                    (LEGACY_SOLVER, self.solver(self.question)), (AUTHORED_REVIEWER, {"reviews": [record]}))
+                    (SOLVER, self.solver(self.question)), (AUTHORED_REVIEWER, {"reviews": {"0": {key: value for key, value in record.items() if key != "index"}}}))
                 with patch.dict(os.environ, {"QUESTION_FEEDBACK_CONTRACT": "authored_solution"}):
                     self.assertEqual(generation._generate_sanitized_questions(
                         self.request, client, generation.ProviderCallBudget(3),

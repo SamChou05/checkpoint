@@ -185,6 +185,13 @@ class SynchronousSmokeTests(unittest.TestCase):
         self.assertNotEqual(self.run_smoke([self.question(verificationPolicyRevision=4)], arguments=args)[0], 0)
         self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=4)])[0], 0)
 
+    def test_explicit_authored_pair_policy_and_freshness_thresholds(self):
+        args = ("--minimum-policy-revision", "7")
+        self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=7)], arguments=args)[0], 0)
+        self.assertNotEqual(self.run_smoke([self.question(verificationPolicyRevision=6)], arguments=args)[0], 0)
+        self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=7)], arguments=("--minimum-policy-revision", "6"))[0], 0)
+        self.assertEqual(self.run_smoke([self.question(verificationPolicyRevision=4)])[0], 0)
+
     def test_invalid_cli_policy_fails_without_request_or_configuration_access(self):
         for value in ("0", "-1", "true", str(MAX_SUPPORTED_VERIFICATION_POLICY_REVISION + 1)):
             with (

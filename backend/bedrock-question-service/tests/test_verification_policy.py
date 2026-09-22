@@ -18,6 +18,7 @@ from question_generation import ProviderCallBudget, _generate_sanitized_question
 from question_quality import _sanitize_questions
 from question_verification import verify_questions
 from request_contract import _normalize_request
+from verification_policy import MAX_SUPPORTED_VERIFICATION_POLICY_REVISION
 
 
 class VerificationPolicyTests(QuestionBankTestCase):
@@ -270,8 +271,8 @@ class VerificationPolicyTests(QuestionBankTestCase):
                 self.claim(bank_id, dynamo)
         self.assertEqual(raised.exception.code, "claim_conflict")
 
-    def test_explicit_compiled_minimum_claims_only_already_stamped_inventory(self):
-        for revision in (4, 6):
+    def test_explicit_minimum_six_is_freshness_not_compiled_capability(self):
+        for revision in (4, 6, 7):
             with self.subTest(revision=revision):
                 bank_id, dynamo, item, question = self.bank(revision=revision)
                 original_json = item["questionJSON"]["S"]
@@ -279,11 +280,23 @@ class VerificationPolicyTests(QuestionBankTestCase):
                     first = self.claim(bank_id, dynamo, minimum=6)
                     second = self.claim(bank_id, dynamo, minimum=6)
                 self.assertEqual(first, second)
-                self.assertEqual(first["questions"], [question] if revision == 6 else [])
+                self.assertEqual(first["questions"], [question] if revision >= 6 else [])
                 self.assertEqual(item["questionJSON"]["S"], original_json)
 
+    def test_native_authored_minimum_seven_preserves_only_eligible_claims_and_replay(self):
+        for revision in (3, 4, 6, 7):
+            with self.subTest(revision=revision):
+                bank_id, dynamo, item, question = self.bank(revision=revision)
+                before = item["questionJSON"]["S"]
+                with mock.patch.object(question_bank, "_ensure_refill"):
+                    first = self.claim(bank_id, dynamo, minimum=7)
+                    replay = self.claim(bank_id, dynamo, minimum=7)
+                self.assertEqual(first, replay)
+                self.assertEqual(first["questions"], [question] if revision == 7 else [])
+                self.assertEqual(item["questionJSON"]["S"], before)
+
     def test_minimum_policy_is_strict_integer_and_known_request_bound(self):
-        for invalid in (True, False, "1", 1.0, -1, 7, None, [], {}):
+        for invalid in (True, False, "1", 1.0, -1, MAX_SUPPORTED_VERIFICATION_POLICY_REVISION + 1, None, [], {}):
             with self.subTest(invalid=invalid):
                 bank_id, dynamo, _, _ = self.bank(revision=1)
                 with mock.patch.object(

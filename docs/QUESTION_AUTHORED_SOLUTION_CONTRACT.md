@@ -1,4 +1,4 @@
-# Authored worked explanations — September 8, 2026
+# Authored worked explanations
 
 ## Status and purpose
 
@@ -11,19 +11,60 @@ Implemented behind the server environment setting `QUESTION_FEEDBACK_CONTRACT=au
 3. The existing complete-choice solver receives the exact candidate stem and choices without the author key, explanation or difficulty. Zero or multiple supported choices, uncertainty and exact key disagreement block final review. These are enforced declarations, not proof that each model judgment is true.
 4. The final audit receives the frozen candidate and main explanation, plus goal, skill and supplied source context. It receives neither the explicit author key/difficulty nor solver judgments/reasons. Historical answers and teaching are omitted. The explanation may reveal the intended key, so this audit is not answer-blind.
 5. A strict response contains only an indexed verdict, exact answer, assessed difficulty, explanation support and issues. Unsupported or uncertain teaching, any issue, disagreement, malformed output or insufficient difficulty blocks acceptance. Replacement text and verification metadata are forbidden response fields.
-6. Acceptance preserves the frozen main exactly, returns an empty choice-feedback map and assigns policy revision 3. The audit cannot write learner-facing content. The normal three-call generation path, deadline, quota and provider-call limits remain in force.
+6. Acceptance preserves the frozen main exactly and returns an empty choice-feedback map. Legacy transport assigns policy revision 3; native transport assigns revision 7 only after the complete pair/count gate and immutable-main audit both pass. The audit cannot write learner-facing content. The normal three-call generation path, deadline, quota and provider-call limits remain in force.
 
 The iOS client already displays the main when choice-specific feedback is absent, and JSON bank storage retains the complete question. No storage migration or UI change is required for this opt-in shape.
 
 ## Provenance and limits
 
-Revision 3 identifies execution of this particular contract. It does not certify semantic correctness. The default generation contract and current request/claim policy remain revision 2; requesting a revision-3-only bank is not yet supported. Existing revision-2 inventory and claim replays remain eligible, so enabling the environment flag alone does not guarantee that every delivered bank question used this path. Old content is never relabeled.
+Revisions 3 and 7 identify the legacy and native forms of this contract; neither certifies semantic correctness. The default generation/request policy remains 4 and the current client floor remains 2. Explicit request/claim minimums through 7 are supported. Revisions are freshness thresholds, not cumulative capabilities: a minimum-6 request may return a revision-7 authored question, which does not mean it was produced by the revision-6 quantitative compiler. Existing eligible inventory and claim replays remain available, so enabling the environment flag alone does not guarantee that every delivered bank question used this path. Old content is never relabeled.
 
 The application can enforce unchanged teaching and blocking review outcomes. It cannot establish that a model's `supported` label accurately describes its reasoning. Tests deliberately preserve an example where two falsely supportive model responses still admit incorrect teaching. Neither this path nor more output tokens replaces subject evidence or independent assessment.
 
 The fresh prospective trial across non-math goals did not meet its criterion. Further qualification must inspect every raw candidate as well as returned content, measure usable yield and difficulty, and retain malformed output and rejected questions in the denominator. Passing a small trial would establish feasibility, not arbitrary-subject accuracy or full-bank release readiness.
 
-## Verification
+## Native pair/count integration — September 22, 2026
+
+With both `BEDROCK_STRUCTURED_OUTPUT_MODE=native` and
+`QUESTION_FEEDBACK_CONTRACT=authored_solution`, the existing native author is
+followed by `complete_choice_solver_v5_n{count}` and the new
+`authored_solution_reviewer_v2_n{count}` audit. Trusted counts follow sanitized
+solver inputs and dense solver survivors; the provider cannot supply indexes.
+The audit uses shared schema references and preserves the original verdict,
+exact-answer, difficulty, explanation-support and issues fields. It cannot emit
+replacement teaching or provenance. All four choice judgments and six pair
+relations must pass before the audit; equivalent or uncertain pairs veto the item.
+
+The native audit receives each survivor's assigned topic/skill/objective, goal,
+source context and the last 30 keyless history descriptors. Its instructions
+require assignment fit and reject cosmetic repeats while allowing new
+applications of the same objective. It receives neither explicit answer keys,
+author difficulty nor solver judgments. Main text passes unchanged through
+sanitization and admission; malformed, oversized or shuffle-position-dependent
+teaching is rejected rather than repaired. The existing reviewer position guard
+is shared with this route, including numeric-value and source-literal exceptions.
+
+The default feedback mode, legacy schemas/prompts, reviewer-written contracts,
+three-stage path and six-call budget remain unchanged. The client already uses
+the explicit key for highlighting and falls back to the main explanation when
+choice feedback is empty. This reduces individually generated wrong-choice
+teaching; it does not make the main explanation or model verdicts infallible.
+The native combination has offline regression coverage only and remains opt-in
+and unqualified for live rollout. The failed September 8 live trial is unchanged.
+
+Verification: all **1,235 backend tests** pass, including eleven new native
+authored-pair groups covering every pair veto, dense survivor identities, scoped
+keyless history, unchanged main bytes, forbidden replacement fields, six-call
+accounting and all 40 count schemas. Explicit minimum-7 claim/replay and
+minimum-6 acceptance of revision 7 preserve freshness semantics. Independent
+review checked 32 survivor masks and confirmed the 91 preexisting
+config/metadata/prompt families are byte-identical. Ruff and whitespace checks
+pass. A noncontainer SAM build passes; all 26 service modules, requirements and
+SDK verifier match source in all three artifacts. Artifact-isolated Python 3.12
+`-I -S` validates 131 request shapes per artifact (**393 offline checks**) using
+the packaged boto3/botocore 1.43.91. No model calls or deployment were made.
+
+## Historical verification — September 8, 2026
 
 - Twelve pure contract tests and eight integration tests cover exact preservation, malformed and replacement feedback, answer/issue/support vetoes, solver prerequisites, configuration ownership, index reconciliation and policy provenance.
 - The full backend suite passed **884 tests** with no skips on September 8 using the live-review Python environment; Ruff and `git diff --check` passed.

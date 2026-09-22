@@ -2,7 +2,6 @@
 
 import hashlib
 import json
-import re
 from typing import Any, Callable, Literal
 
 from complete_question_solution import (
@@ -12,6 +11,7 @@ from complete_question_solution import (
     validate_batch,
 )
 from generation_diagnostics import record_quality
+from answer_position_references import contains_answer_label_references as _contains_answer_label_references
 from quantitative_authoring import QuantitativeAuthoringError, checked_provenance
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _strict_json_object
@@ -27,6 +27,7 @@ from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
 from verification_policy import (
     COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION,
     AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION,
+    AUTHORED_PAIR_VERIFICATION_POLICY_REVISION,
     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION,
     DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION,
     LEGACY_VERIFICATION_POLICY_REVISION,
@@ -224,14 +225,18 @@ def verify_questions(
         raise ValueError("Unknown teaching-feedback contract.")
     complete_choices = solver_contract == "complete_choices"
     authored_solution = feedback_contract == "authored_solution"
-    if audit_choice_pairs and (not complete_choices or authored_solution or solve is None):
-        raise ValueError("Choice-pair audit requires complete solving and reviewer-written feedback.")
+    if audit_choice_pairs and (not complete_choices or solve is None):
+        raise ValueError("Choice-pair audit requires complete solving.")
     if choice_slots and not audit_choice_pairs:
         raise ValueError("Choice slots require the complete choice-pair audit.")
     if solve_with_count is not None and (not choice_slots or solve is None):
         raise ValueError("Count-bound solving requires the existing fixed-choice solver route.")
     if authored_solution and not complete_choices:
         raise ValueError("Authored teaching requires the complete-choice solver contract.")
+    if authored_solution and audit_choice_pairs and (
+        not choice_slots or solve_with_count is None or review_with_count is None
+    ):
+        raise ValueError("Authored pair audit requires count-bound fixed-slot solving and review.")
     original_count = len(questions)
     compiled_questions = checked_provenance(compiled_questions, original_count)
     if compiled_questions and not choice_slots:
@@ -524,10 +529,11 @@ def verify_questions(
             # Each path owns its revision. A legacy solver must never acquire
             # the current complete-choice policy by a constant/version bump.
             verified_question["verificationPolicyRevision"] = (
-                DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION if choice_slots else (
-                    AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION if authored_solution else (
-                    COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION if complete_choices
-                    else LEGACY_VERIFICATION_POLICY_REVISION
+                (AUTHORED_PAIR_VERIFICATION_POLICY_REVISION if choice_slots
+                 else AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION) if authored_solution else (
+                    DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION if choice_slots else (
+                        COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION if complete_choices
+                        else LEGACY_VERIFICATION_POLICY_REVISION
                     )
                 )
             )
@@ -639,48 +645,6 @@ def _has_reviewable_choices(question: dict[str, Any]) -> bool:
     # Similar wording and short final qualifiers require semantic review. They
     # are not duplicates merely because one text is a long prefix of another.
     return _has_unambiguous_choices(keys)
-
-
-def _contains_answer_label_references(text: str, question: dict[str, Any]) -> bool:
-    """Reject display positions while retaining exact quoted subject literals.
-
-    A quoted reference is not safe merely because it has quotation marks. Its
-    whole quoted content must be an offered literal or explicitly quoted in the
-    stem. No subject text, answer, or feedback is rewritten by this check.
-    """
-    quoted = re.compile(
-        r'''"([^"\n]+)"|(?<!\w)'([^'\n]+)'(?!\w)|“([^”\n]+)”|‘([^’\n]+)’|`([^`\n]+)`'''
-    )
-    literals = set(question["choices"])
-    prompt = question.get("prompt", "")
-    if isinstance(prompt, str):
-        literals.update(
-            next(group for group in match.groups() if group is not None)
-            for match in quoted.finditer(prompt)
-        )
-    bound_spans = [
-        match.span()
-        for match in quoted.finditer(text)
-        if next(group for group in match.groups() if group is not None) in literals
-    ]
-    reference = re.compile(
-        r"\b(?:choice|option|answer)\s+[A-D]\b"
-        r"|\b(?:first|second|third|fourth|last|1st|2nd|3rd|4th)[\s-]+"
-        r"(?:(?:two|three|four|[2-4])[\s-]+)?(?:choices?|options?|answers?)\b"
-        # Bare numbers can name subject values, so only the four possible
-        # display slots qualify. Preserve signed values and numeric continuations
-        # such as 1,500, 2.5, 1/2 and 2% rather than reading a slot-number prefix.
-        r"|\b(?:choices?|options?|answers?)\s+"
-        r"(?:[1-4]|1st|2nd|3rd|4th|one|two|three|four|first|second|third|fourth|last)\b(?![.,][0-9]|/|%)"
-        # An explicit display marker also makes an out-of-range index unsafe.
-        r"|\b(?:choices?|options?|answers?)(?:[\s-]+(?:number|no\.)[\s-]+|[\s-]*#\s*)"
-        r"(?:[0-9]+(?:st|nd|rd|th)?|one|two|three|four)\b",
-        re.I,
-    )
-    return any(
-        not any(start <= match.start() and match.end() <= end for start, end in bound_spans)
-        for match in reference.finditer(text)
-    )
 
 
 def _bounded_explanation(value: Any, limit: int) -> bool:

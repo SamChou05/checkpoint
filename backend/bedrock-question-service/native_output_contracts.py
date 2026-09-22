@@ -68,8 +68,23 @@ class SolverSlotContract:
         return f"complete_choice_solver_v5_n{self.count}"
 
 
-_COUNT_BOUND_CONTRACTS = (ReviewerSlotContract, SolverSlotContract)
-NativeContract = Contract | ReviewerSlotContract | SolverSlotContract
+@dataclass(frozen=True)
+class AuthoredSolutionReviewContract:
+    """Bind immutable-main audit identities to actual post-solver survivors."""
+
+    count: int
+
+    def __post_init__(self) -> None:
+        if type(self.count) is not int or not 1 <= self.count <= MAX_REVIEW_BATCH_COUNT:
+            raise ServiceConfigurationError("Native authored review count must be an integer from 1 through 40.")
+
+    @property
+    def name(self) -> str:
+        return f"authored_solution_reviewer_v2_n{self.count}"
+
+
+_COUNT_BOUND_CONTRACTS = (ReviewerSlotContract, SolverSlotContract, AuthoredSolutionReviewContract)
+NativeContract = Contract | ReviewerSlotContract | SolverSlotContract | AuthoredSolutionReviewContract
 
 _STRING = {"type": "string"}
 _INTEGER = {"type": "integer"}
@@ -211,6 +226,14 @@ def output_mode() -> str:
 
 
 def _contract_schema(contract: NativeContract) -> dict[str, Any]:
+    if isinstance(contract, AuthoredSolutionReviewContract):
+        legacy = json.loads(json.dumps(_SCHEMAS["authored_solution_reviewer_v1"], sort_keys=True))
+        row = legacy["properties"]["reviews"]["items"]
+        del row["properties"]["index"]
+        row["required"].remove("index")
+        return _object({"reviews": _object({
+            str(index): copy.deepcopy(row) for index in range(contract.count)
+        })})
     if isinstance(contract, SolverSlotContract):
         row = copy.deepcopy(_SCHEMAS["complete_choice_solver_v3"]["properties"]["solutions"]["items"])
         del row["properties"]["index"]
@@ -260,6 +283,15 @@ def native_output_config(contract: NativeContract) -> dict[str, Any]:
                         separators=(",", ":"))
     if isinstance(contract, SolverSlotContract):
         schema = json.dumps(_solver_slot_transport_schema(contract), separators=(",", ":"))
+    if isinstance(contract, AuthoredSolutionReviewContract):
+        # Share the closed row definition so larger batches do not multiply the
+        # provider grammar. The local validator uses the exact expanded schema.
+        row = _contract_schema(AuthoredSolutionReviewContract(1))["properties"]["reviews"]["properties"]["0"]
+        shared = _object({"reviews": _object({
+            str(index): {"$ref": "#/$defs/review"} for index in range(contract.count)
+        })})
+        shared["$defs"] = {"review": row}
+        schema = json.dumps(shared, separators=(",", ":"))
     if contract == "complete_choice_solver_v3":
         # V3 intentionally declares reason before the final judgment/relation.
         # Scope insertion-order serialization to this new contract so all
@@ -291,7 +323,8 @@ def contract_metadata(contract: NativeContract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
     return {"name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract,
-            "version": ("5" if isinstance(contract, SolverSlotContract) else "3"
+            "version": ("2" if isinstance(contract, AuthoredSolutionReviewContract) else
+                        "5" if isinstance(contract, SolverSlotContract) else "3"
                         if isinstance(contract, ReviewerSlotContract) else contract.rsplit("_v", 1)[1]),
             "sha256": hashlib.sha256(schema.encode()).hexdigest()}
 
@@ -305,6 +338,22 @@ def ensure_supported_model(model_id: str) -> None:
 
 
 def native_prompt(system_prompt: str, contract: NativeContract) -> str:
+    if isinstance(contract, AuthoredSolutionReviewContract):
+        keys = ", ".join(json.dumps(str(index)) for index in range(contract.count))
+        return system_prompt + "\n\n" + (
+            f"NATIVE IMMUTABLE AUDIT IDENTITY OVERRIDE ({contract.name}): Return reviews as an object, not an array. "
+            f"It must contain exactly these required keys: {keys}. Each key identifies the "
+            "supplied item with that integer index. Return one review value at every key, "
+            "including rejected items; never add an unknown key or an index field inside a value. "
+            "This replaces earlier output examples and index-field instructions. Keep exactly "
+            "valid, answer, difficulty, explanationSupport and issues. Never produce replacement "
+            "teaching or verification metadata. Preserve every unchanged question and explanation. "
+            "Return valid:true only when the item fits its supplied topic, assigned skill and "
+            "objective within the goal and provided source scope. Do not invent an assignment "
+            "or missing premises. Compare the supplied existingQuestions descriptors: reject "
+            "exact or cosmetic repeats, while allowing a fresh application of the same objective. "
+            "Report a scope or novelty defect in issues; do not rewrite the item to fix it."
+        )
     if contract == MIXED_AUTHOR_CONTRACT:
         prose_example = json.loads(_SLOT_AUTHOR_EXAMPLE)["questions"][0]
         example = json.dumps({"questions": [
@@ -413,7 +462,7 @@ def adapt_native_response(raw: str, contract: NativeContract) -> str:
         ]}
         return adapt_native_response(json.dumps(restored, ensure_ascii=False, allow_nan=False),
                                      "complete_choice_solver_v3")
-    if isinstance(contract, ReviewerSlotContract):
+    if isinstance(contract, (ReviewerSlotContract, AuthoredSolutionReviewContract)):
         # Validate the complete map first. Do not drop, fill, or renumber invalid
         # model records. Only trusted required keys can supply internal indexes.
         restored = {"reviews": [
@@ -421,7 +470,8 @@ def adapt_native_response(raw: str, contract: NativeContract) -> str:
             for index in range(contract.count)
         ]}
         return adapt_native_response(json.dumps(restored, ensure_ascii=False, allow_nan=False),
-                                     "default_reviewer_v1")
+                                     "authored_solution_reviewer_v1" if isinstance(contract, AuthoredSolutionReviewContract)
+                                     else "default_reviewer_v1")
     if contract in {"question_author_v2", "question_author_v3"}:
         adapted = copy.deepcopy(payload)
         for question in adapted["questions"]:

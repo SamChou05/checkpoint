@@ -241,7 +241,7 @@ class MixedQuantitativePipelineTests(unittest.TestCase):
 
     def test_default_policy_and_maximum_are_not_conflated(self):
         self.assertEqual(VERIFICATION_POLICY_REVISION, 4)
-        self.assertEqual(MAX_SUPPORTED_VERIFICATION_POLICY_REVISION, 6)
+        self.assertGreaterEqual(MAX_SUPPORTED_VERIFICATION_POLICY_REVISION, 6)
         self.assertEqual(COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION, 6)
 
 

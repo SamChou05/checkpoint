@@ -16,6 +16,10 @@ Revision 6 identifies the opt-in compiled quantitative route: complete-choice
 solver/reviewer vetoes remain, but all five learner fields come from revalidated
 bounded compiler data. Mathematical guarantees apply only to that closed subset;
 scope, difficulty, novelty and distractor usefulness remain model assessments.
+Revision 7 identifies native complete-pair, count-bound solving followed by an
+immutable authored-main audit. It returns no choice-specific teaching. It does
+not imply compiled provenance from revision 6; require exact revision 6 for that
+mode. Policy minimums are freshness thresholds, not cumulative capabilities.
 """
 
 from typing import Any
@@ -28,7 +32,8 @@ AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION = 3
 DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION = 4
 VERIFICATION_POLICY_REVISION = DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION
 COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION = 6
-MAX_SUPPORTED_VERIFICATION_POLICY_REVISION = COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION
+AUTHORED_PAIR_VERIFICATION_POLICY_REVISION = 7
+MAX_SUPPORTED_VERIFICATION_POLICY_REVISION = AUTHORED_PAIR_VERIFICATION_POLICY_REVISION
 
 
 def meets_verification_policy(question: dict[str, Any], minimum: int) -> bool:

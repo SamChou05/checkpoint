@@ -83,7 +83,7 @@ def reviews(items, answers, *, authored=False, native=False):
             else:
                 record["choiceExplanations"] = feedback
         records.append(record)
-    return review_map(*records) if native and not authored else {"reviews": records}
+    return review_map(*records) if native else {"reviews": records}
 
 
 class ObjectiveContextTests(unittest.TestCase):
@@ -136,7 +136,7 @@ class ObjectiveContextTests(unittest.TestCase):
                                     response = author_payload(raw) if mode == "native" else {"questions": [raw]}
                                 elif "<question_solution_json>\n" in text:
                                     tag = "question_solution_json"
-                                    use_slots = mode == "native" and not authored
+                                    use_slots = mode == "native"
                                     contract = "complete_choice_solver_v5_n1" if use_slots else "complete_choice_solver_v1"
                                     data = payload(text, tag)
                                     response = solver_map(*[
@@ -147,8 +147,8 @@ class ObjectiveContextTests(unittest.TestCase):
                                     test.assertNotIn("independentSolutions", data)
                                 else:
                                     tag = "question_review_json"
-                                    contract = ("authored_solution_reviewer_v1" if authored else
-                                                "default_reviewer_v3_n1" if mode == "native" else "default_reviewer_v1")
+                                    contract = (("authored_solution_reviewer_v2_n1" if mode == "native" else "authored_solution_reviewer_v1")
+                                                if authored else "default_reviewer_v3_n1" if mode == "native" else "default_reviewer_v1")
                                     data = payload(text, tag)
                                     response = reviews(data["items"], answers, authored=authored, native=mode == "native")
                                     test.assertEqual("independentSolutions" in data, not authored)

@@ -14,6 +14,7 @@ from native_output_contracts import (
     NativeContract,
     ReviewerSlotContract,
     SolverSlotContract,
+    AuthoredSolutionReviewContract,
     adapt_native_response,
     contract_metadata,
     ensure_supported_model,
@@ -222,7 +223,7 @@ def _generate_sanitized_questions(
     mixed_quantitative = _author_mode() == "mixed_quantitative"
     # Native fixed slots hide the sanitizer's correct-answer-first ordering and
     # make four choice judgments plus six unordered pair judgments explicit.
-    choice_slots = output_mode() == "native" and feedback_contract == "reviewer_written"
+    choice_slots = output_mode() == "native"
     target_count = request["targetCount"]
     questions: list[dict[str, Any]] = []
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
@@ -284,7 +285,8 @@ def _generate_sanitized_questions(
                     call_budget=call_budget,
                     request_metrics=request_metrics,
                     contract=(
-                        "authored_solution_reviewer_v1" if feedback_contract == "authored_solution"
+                        (AuthoredSolutionReviewContract(count) if count is not None else "authored_solution_reviewer_v1")
+                        if feedback_contract == "authored_solution"
                         else (ReviewerSlotContract(count) if count is not None else "default_reviewer_v1")
                     ),
                 )
