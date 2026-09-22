@@ -93,11 +93,34 @@ endorsed an overgeneralized punctuation rule. Native identities and unchanged
 selected content were correct even for that defective admission. Increasing model
 capability alone did not fix this observed judging error.
 
-All three final-auditor trials remain failed evidence; none changed production
-routing or defaults. A generic counterexample-checking prompt is being evaluated
-with new independently authored controls as well as the unchanged older cases.
-The fourth-stage code and budget tests remain isolated preparation. No final
-auditor or complete release configuration is qualified yet.
+The [generic counterexample prompt](evidence/final-content-audit-20260922/ADVERSARIAL_RESULTS.md)
+also failed: 22 of 24 dispositions matched gold. It accepted the ambiguous grammar
+item and equivalent wrong numerical answers written as `2` and `two`. All six
+new independent controls passed, which does not erase the two false admissions.
+One additional private reason inaccurately described the supplied distractors.
+
+A [singleton diagnostic](evidence/final-content-audit-20260922/ISOLATION_RESULTS.md)
+removed neighboring questions while retaining the original short prompt and exact
+learner content. It correctly rejected the numerical duplicates, then stopped on
+an overlong reason for the grammar item. That raw response still endorsed the
+same false rule. Four of six planned items remained unattempted. Neighboring
+context is therefore not necessary for this observed grammar error; neither this
+incomplete run nor its first correct decision qualifies a production setting.
+
+All five final-auditor trials remain failed evidence; none changed production
+routing or defaults. The fourth-stage code and budget tests remain isolated
+preparation. The next architecture candidate moves all five teaching fields into
+authoring, before the answer-blind solver and an immutable field-by-field review.
+That removes the unchecked last writer without adding a fourth call. It is a
+proposal requiring implementation and fresh end-to-end qualification, not a
+claim that model agreement proves truth.
+
+[Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
+confirmed that signed Mantle metadata requests work with the existing AWS
+session, but the queried closed models are unavailable to this account.
+Catalog presence and Bedrock Runtime availability do not establish Mantle
+inference eligibility. No access activation, API keys or inference were attempted.
+No final auditor or complete release configuration is qualified yet.
 
 A fresh [read-only deployment inspection](evidence/reviewer-release-20260922/DEPLOYMENT.md)
 at 06:18 UTC on September 22 confirmed that both API and worker still use the

@@ -1,0 +1,54 @@
+{
+  "capture_sha256": "a3dcbeba3f4922da7cace58fbb16524ab2ca45f6f2eec13c1fd5478e1c245f93",
+  "plan_sha256": "d93534641c0f43500af77fb3b407f39888ea3f59c8584ab4b1160d9433cb11b2",
+  "provider_calls_in_replay": 0,
+  "all_pinned_original_and_new_sources_inputs_dependencies_unchanged": true,
+  "source_plan_sha256": "d2a3f563f523f6ddd3f073cc33956cdef89f3cc0e0a3a8c4ac1c76322ceda245",
+  "checks": [
+    {
+      "sequence": 0,
+      "source_slot": "0",
+      "exact_request": true,
+      "strict_native_and_immutable_admission_replay": true
+    },
+    {
+      "sequence": 1,
+      "source_slot": "1",
+      "exact_request": true,
+      "same_validation_failure": true
+    }
+  ],
+  "status": "stopped_after_failure",
+  "planned_calls": 6,
+  "attempted_calls": 2,
+  "unattempted_calls": 4,
+  "planned_items": 6,
+  "strict_assessed_items": 1,
+  "failed_or_unattempted_items": 5,
+  "exact_dispositions": 1,
+  "sound_accepted_of_3": 0,
+  "defective_rejected_of_3": 1,
+  "all_accepted_content_unchanged": true,
+  "reason_before_verdict_count": 1,
+  "reason_quality_requires_independent_audit": true,
+  "input_tokens_known": 1852,
+  "output_tokens_known": 1906,
+  "usage_unknown_calls": 0,
+  "latency_seconds_sum": 42.368,
+  "latency_seconds_max": 29.651,
+  "reasoning_blocks_omitted": 2,
+  "case_results": [
+    {
+      "case_id": "supplement_duplicate_wrong_value_defective",
+      "slot": "0",
+      "source_slot": "0",
+      "verdict": "rejected",
+      "gold_verdict": "rejected",
+      "matching_disposition": true,
+      "reason": "Choices '2' and 'two' represent the same numerical value. The explanation for 'two' explicitly states it denotes 2, the same as the choice '2'. For a task asking for 'the value' of an arithmetic expression, two options that encode the identical number do not express meaningfully different proposed answers. This violates the requirement that all four options be meaningfully distinct, regardless of the fact that both are wrong.",
+      "reason_manual_audit": "pending",
+      "learner_content_sha256": "9a6d3ad67bb80670076b25d8796e5927972cd81c0487421d21a785a5e536fa1e"
+    }
+  ],
+  "independent_audit_sha256": "3805f4318645145a7553b165ac8c1eefde44cd4182e713e8f6e21da14161066d"
+}
