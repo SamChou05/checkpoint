@@ -1,4 +1,4 @@
-"""Inactive, pure compiler for a closed quantitative multiple-choice subset.
+"""Pure compiler for a closed quantitative multiple-choice subset.
 
 The specification is the problem, not evidence about a separate prose problem.
 Every learner string comes from this module; no model key, teaching, code, or
@@ -6,6 +6,7 @@ free-form scenario is accepted. No provider, routing, or policy dependencies.
 """
 
 from fractions import Fraction
+from math import lcm
 import re
 
 
@@ -101,6 +102,10 @@ def _evaluate(expression, x=None):
     if op == "variable":
         return x
     left, right = _evaluate(expression[1], x), _evaluate(expression[2], x)
+    return _calculate(op, left, right)
+
+
+def _calculate(op, left, right):
     if op == "add":
         result = left + right
     elif op == "sub":
@@ -112,6 +117,57 @@ def _evaluate(expression, x=None):
             _fail("undefined_expression")
         result = left / right
     return _bounded(result)
+
+
+def _operand(value):
+    # Preserve unary signs and fraction grouping in every displayed operation.
+    return f"({value})" if value < 0 or value.denominator != 1 else str(value)
+
+
+def _equation(terms):
+    # Omit only identical adjacent written terms, never a different calculation.
+    return " = ".join(term for i, term in enumerate(terms) if i == 0 or term != terms[i - 1])
+
+
+def _worked_steps(expression):
+    """Evaluate validated constant IR and explain each operation in postorder.
+
+    All displayed fractions are exact; unreduced numerators/denominators expose
+    the operation before Fraction's reduction. No trace is clipped to fit.
+    """
+    op = expression[0]
+    if op == "constant":
+        return expression[1], []
+    left, left_steps = _worked_steps(expression[1])
+    right, right_steps = _worked_steps(expression[2])
+    result = _calculate(op, left, right)
+    terms = [f"{_operand(left)} {OPERATORS[op]} {_operand(right)}"]
+    if op in ("add", "sub"):
+        denominator = lcm(left.denominator, right.denominator)
+        if denominator == 1:
+            label = "Add" if op == "add" else "Subtract"
+        else:
+            label = f"Common denominator {denominator}"
+            a = left.numerator * (denominator // left.denominator)
+            b = right.numerator * (denominator // right.denominator)
+            terms.append(f"({a}/{denominator}) {OPERATORS[op]} ({b}/{denominator})")
+            numerator = a + b if op == "add" else a - b
+            terms.append(f"{numerator}/{denominator}")
+    elif op == "mul":
+        label = "Multiply"
+        if left.denominator != 1 or right.denominator != 1:
+            label = "Multiply numerators and denominators"
+            terms.append(f"{left.numerator * right.numerator}/{left.denominator * right.denominator}")
+    else:
+        # _calculate already rejects zero. Fraction normalizes a negative divisor
+        # into a signed numerator with a positive denominator for the reciprocal.
+        reciprocal = 1 / right
+        label = "Multiply by the reciprocal"
+        terms.append(f"{_operand(left)} * {_operand(reciprocal)}")
+        terms.append(f"{left.numerator * reciprocal.numerator}/{left.denominator * reciprocal.denominator}")
+    terms.append(str(result))
+    step = f"{label}: {_equation(terms)}."
+    return result, left_steps + right_steps + [step]
 
 
 def _holds(left, relation, right):
@@ -200,10 +256,11 @@ def compile_question(spec):
     measure = "a unitless number" if unit == "unitless" else f"a numerical measure in {unit}"
     if kind == "exact_value":
         expression, text = _expression(spec["expression"], [0], allow_variable=False)
-        result = _evaluate(expression)
+        result, steps = _worked_steps(expression)
         answer = _unique_answer([value for value in choices if value == result])
         prompt = f"Let q be {measure}, defined by q = {text}. What is its exact value?"
-        explanation = f"The expression {text} evaluates exactly to {result}. The answer is {_quantity(answer, unit)}."
+        teaching = " ".join(steps) if steps else f"The definition directly gives q = {result}."
+        explanation = f"{teaching} The answer is {_quantity(answer, unit)}."
         feedback = {
             shown: (f"The expression evaluates exactly to {result}; {shown} is the requested value."
                     if value == answer else

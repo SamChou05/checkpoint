@@ -1,6 +1,8 @@
+import ast
 import copy
 from fractions import Fraction
 import itertools
+import operator
 import unittest
 
 from quantitative_task_compiler import (
@@ -41,6 +43,32 @@ def square_condition(*, relation="eq", choices=None, lower=-10, upper=10):
     return spec
 
 
+def arithmetic_oracle(expression):
+    """Independent source-tree result and postorder operation-result oracle."""
+    if "value" in expression:
+        return Fraction(expression["value"]), []
+    left, a = arithmetic_oracle(expression["left"])
+    right, b = arithmetic_oracle(expression["right"])
+    result = {"add": operator.add, "sub": operator.sub, "mul": operator.mul,
+              "div": operator.truediv}[expression["op"]](left, right)
+    return result, a + b + [result]
+
+
+def displayed_arithmetic(text):
+    """Parse displayed integer arithmetic only, with exact division and no eval."""
+    def visit(node):
+        if isinstance(node, ast.Constant) and type(node.value) is int:
+            return Fraction(node.value)
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
+            return -visit(node.operand)
+        if isinstance(node, ast.BinOp) and type(node.op) in operations:
+            return operations[type(node.op)](visit(node.left), visit(node.right))
+        raise AssertionError(f"Unexpected displayed arithmetic: {ast.dump(node)}")
+    operations = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul,
+                  ast.Div: operator.truediv}
+    return visit(ast.parse(text, mode="eval").body)
+
+
 class QuantitativeTaskCompilerTests(unittest.TestCase):
     def assert_rejected(self, spec, code=None):
         with self.assertRaises(QuantitativeTaskError) as caught:
@@ -60,6 +88,117 @@ class QuantitativeTaskCompilerTests(unittest.TestCase):
             *((v, 12, 280) for v in result["choiceExplanations"].values()),
         ]:
             self.assertTrue(lower <= len(text) <= upper, text)
+
+    def assert_worked_proof(self, expression):
+        expected, expected_steps = arithmetic_oracle(expression)
+        choices = [str(expected)] + [str(x) for x in (-99, -98, -97, -96) if x != expected][:3]
+        result = compile_question(exact(expression, choices))
+        self.assert_payload(result)
+        self.assertEqual(result["expectedAnswer"], str(expected))
+        sentences = result["explanation"].split(". ")
+        self.assertEqual(sentences[-1], f"The answer is {expected}.")
+        actual_steps = []
+        for sentence in sentences[:-1]:
+            _, separator, equation = sentence.partition(": ")
+            self.assertEqual(separator, ": ")
+            values = [displayed_arithmetic(term) for term in equation.split(" = ")]
+            self.assertGreaterEqual(len(values), 2)
+            self.assertTrue(all(value == values[0] for value in values), sentence)
+            actual_steps.append(values[-1])
+        self.assertEqual(actual_steps, expected_steps)
+        return result
+
+    def test_fraction_steps_expose_common_denominators_products_and_reciprocals(self):
+        cases = [
+            ("sub", "3/4", "1/6", "Common denominator 12: (3/4) - (1/6) = (9/12) - (2/12) = 7/12."),
+            ("add", "7/4", "3/5", "Common denominator 20: (7/4) + (3/5) = (35/20) + (12/20) = 47/20."),
+            ("mul", "2/3", "9/4", "Multiply numerators and denominators: (2/3) * (9/4) = 18/12 = 3/2."),
+            ("div", "5/6", "5/9", "Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (9/5) = 45/30 = 3/2."),
+        ]
+        for op, a, b, teaching in cases:
+            with self.subTest(op=op):
+                result = self.assert_worked_proof(operation(op, constant(a), constant(b)))
+                self.assertTrue(result["explanation"].startswith(teaching))
+
+    def test_worked_arithmetic_oracle_covers_all_operations_signed_and_zero_fractions(self):
+        values = ("-3", "-5/2", "-1/3", "0", "1/4", "2/3", "2", "3/2")
+        checked = 0
+        for op, a, b in itertools.product(("add", "sub", "mul", "div"), values, values):
+            expression = operation(op, constant(a), constant(b))
+            if op == "div" and Fraction(b) == 0:
+                self.assert_rejected(exact(expression), "undefined_expression")
+            else:
+                self.assert_worked_proof(expression)
+                checked += 1
+        self.assertEqual(checked, 248)
+
+    def test_nested_steps_follow_dependencies_without_merging_equal_results(self):
+        expression = operation("div", operation("sub", constant(18), constant(6)), constant(4))
+        result = self.assert_worked_proof(expression)
+        self.assertTrue(result["explanation"].startswith("Subtract: 18 - 6 = 12. Multiply by the reciprocal: 12 / 4"))
+        expression = operation("sub", operation("add", constant(1), constant(2)),
+                               operation("div", constant(6), constant(2)))
+        result = self.assert_worked_proof(expression)
+        self.assertIn("Add: 1 + 2 = 3.", result["explanation"])
+        self.assertIn("6 / 2 = 6 * (1/2) = 6/2 = 3.", result["explanation"])
+        self.assertIn("Subtract: 3 - 3 = 0.", result["explanation"])
+        # Repeated source subtrees are both taught; no unproven step is omitted.
+        repeated = operation("sub", expression, expression)
+        result = self.assert_worked_proof(repeated)
+        self.assertEqual(result["explanation"].count("Add: 1 + 2 = 3."), 2)
+
+    def test_nested_signed_operator_combinations_have_exact_displayed_equalities(self):
+        checked = 0
+        for outer, inner, side in itertools.product(("add", "sub", "mul", "div"), repeat=3):
+            expression = operation(outer,
+                                   operation(inner, constant("-2/3"), constant("3/4")),
+                                   operation(side, constant("1/5"), constant("-2")))
+            self.assert_worked_proof(expression)
+            checked += 1
+        self.assertEqual(checked, 64)
+
+    def test_negative_divisor_uses_its_signed_reciprocal_and_zero_stays_exact(self):
+        result = self.assert_worked_proof(operation("div", constant("1/2"), constant("-3/4")))
+        self.assertIn("(1/2) / (-3/4) = (1/2) * (-4/3) = -4/6 = -2/3", result["explanation"])
+        result = self.assert_worked_proof(operation("mul", constant(0), constant("-3/4")))
+        self.assertIn("0 * (-3/4) = 0/4 = 0", result["explanation"])
+        expression = operation("div", constant(1), operation("sub", constant("1/3"), constant("1/3")))
+        self.assert_rejected(exact(expression), "undefined_expression")
+
+    def test_literal_definition_has_no_invented_operation_or_unit_conversion(self):
+        result = compile_question(exact(constant("-0.5"), ["-0.5", "0", "0.5", "1"], "cm"))
+        self.assertEqual(result["explanation"], "The definition directly gives q = -1/2. The answer is -1/2 cm.")
+        self.assertEqual(result["expectedAnswer"], "-1/2 cm")
+
+    def test_complete_trace_420_char_boundary_rejects_421_without_clipping(self):
+        expression = operation("div",
+                               operation("add", constant("62/81"), constant("6/35")),
+                               operation("sub", operation("mul", constant("70/29"), constant("32/81")),
+                                         constant("-91/59")))
+        choices = ["4544416/12107165", "0", "1", "2"]
+        spec = exact(expression, choices, "m")
+        result = compile_question(spec)
+        self.assertEqual(len(result["explanation"]), 420)
+        self.assertTrue(result["explanation"].endswith("The answer is 4544416/12107165 m."))
+        self.assertLess(len(result["prompt"]), 320)
+        # Only one extra unit character makes the complete proof 421; no shortened
+        # main or answer-only fallback is allowed, and the input remains intact.
+        spec["unit"] = "cm"
+        before = copy.deepcopy(spec)
+        self.assert_rejected(spec, "learner_text_limit")
+        self.assertEqual(spec, before)
+
+    def test_worked_main_is_choice_order_independent_and_mutation_safe(self):
+        spec = exact(operation("div", constant("5/6"), constant("5/9")), ["3/2", "1/2", "2/3", "5/9"])
+        before = copy.deepcopy(spec)
+        expected = compile_question(spec)
+        for choices in itertools.permutations(spec["choices"]):
+            result = compile_question({**spec, "choices": list(choices)})
+            for field in ("prompt", "explanation", "expectedAnswer", "choiceExplanations"):
+                self.assertEqual(result[field], expected[field])
+        result["explanation"] = "changed"
+        self.assertEqual(spec, before)
+        self.assertEqual(compile_question(spec), expected)
 
     def test_exact_decimal_arithmetic_has_no_float_rounding(self):
         result = compile_question(exact(operation("add", constant("0.1"), constant("0.2")),

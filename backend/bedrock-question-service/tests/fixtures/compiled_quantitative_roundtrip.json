@@ -38,7 +38,7 @@
           "3/2"
         ],
         "expectedAnswer": "2/3",
-        "explanation": "The expression ((1/2) / (3/4)) evaluates exactly to 2/3. The answer is 2/3.",
+        "explanation": "Multiply by the reciprocal: (1/2) / (3/4) = (1/2) * (4/3) = 4/6 = 2/3. The answer is 2/3.",
         "choiceExplanations": {
           "2/3": "The expression evaluates exactly to 2/3; 2/3 is the requested value.",
           "1/24": "The expression evaluates exactly to 2/3, not 1/24. 1/24 is not the requested value.",

@@ -65,6 +65,28 @@ The main explanation gives the selected value's actual substituted comparison.
 For extrema it states the exhaustively checked smaller/larger-domain exclusion,
 or that no such domain values exist. It does not assume the condition is monotonic.
 
+Exact-value mains show a deterministic worked calculation, rather than only
+stating the result. Inner operations appear first. Fraction addition/subtraction
+shows a common denominator and converted numerators; multiplication shows the
+numerator/denominator product and reduction; division shows multiplication by
+the signed reciprocal, followed by the product and reduction. Negative operands
+and fraction operands remain grouped, and zero is handled exactly. Every step
+uses the same bounded `Fraction` arithmetic as the answer. A literal definition
+is explained directly without inventing an operation. Scalar-condition teaching,
+keys, prompts, choices and per-choice feedback are unchanged by this renderer.
+
+For example, `(5/6)/(5/9)` now teaches:
+`Multiply by the reciprocal: (5/6) / (5/9) = (5/6) * (9/5) = 45/30 = 3/2.`
+The final sentence attaches the declared unit to the answer. Repeated subtrees
+are shown in dependency order; different calculations that happen to produce the
+same value are never merged. The complete main must still fit **420 characters**.
+Longer valid expressions fail with `learner_text_limit`: no clipped proof,
+omitted operation or answer-only fallback is emitted. This can lower yield for
+large or deeply nested expressions. It does not loosen the independent solver
+or audit, and does not establish a difficulty or pedagogical-sufficiency guarantee
+for every accepted expression. Historical specs, captures and stored learner
+content are not rewritten.
+
 Units are one shared identifier from `unitless`, `m`, `cm`, `s`, `kg`, `g`, `L`,
 `USD`, `rides`. Expressions operate on numerical measures in that declared unit;
 this compiler does not derive physical equations, mix/convert units, preserve
@@ -84,6 +106,10 @@ decimal/fraction arithmetic, equivalent distractors, empty/multiple solutions,
 undefined expressions, oversized/cyclic input, and rendering bounds. Run from
 the backend directory with `python -m unittest discover -s tests -p
 test_quantitative_task_compiler.py`.
+Worked-proof tests independently parse every displayed equality with exact
+arithmetic for 248 signed/zero binary cases and 64 nested operator combinations,
+check source-operation order, reciprocal signs and reductions, and exercise the
+complete 420/421-character boundary without mocking or truncating the renderer.
 
 This guarantees the bounded mathematical task and its generated teaching, subject
 to implementation correctness. It does **not** certify distracting-error
