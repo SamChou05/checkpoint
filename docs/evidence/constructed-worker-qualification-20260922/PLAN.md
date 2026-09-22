@@ -15,12 +15,15 @@ domains, insufficient distinct wrong-option pools and overlong proofs fail
 closed; no author prose can repair the same row. Ordinary subject rows remain
 available under the existing prose shape.
 
-The initial draft uses the completed constructor integration checkout as its
-candidate source. All **27 runtime modules**, dependencies, helper bytes and
-schema configurations are pinned, including the new pure constructor. Root may
-later choose a separately qualified prose author prompt before freezing; such a
-change must be explicitly recorded and reviewed, not silently included in this
-draft's stated author-contract-only comparison.
+The selected source is the clean constructor integration checkout at commit
+`0e4619f1696b848073f1a4d551c364ed3fbfbeb0`, with its existing author prompt.
+All **27 runtime modules**, dependencies, helper bytes and schema configurations
+are pinned, including the new pure constructor. The separate prose-task
+explicitness addition failed its prospective 10/10 candidate target and is
+excluded from this worker trial. Its frozen plan, capture and failed result
+remain unchanged. This source also underlies that completed comparison and must
+not be edited. No source, prompt, model, job, criterion or harness change is
+authorized by this source-selection note.
 
 Reuse the three exact normalized requests from the completed compiled-proof
 trial, byte-identical to the original mixed-route jobs: five numerical tasks,

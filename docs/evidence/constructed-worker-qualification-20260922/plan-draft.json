@@ -1,5 +1,5 @@
 {
-  "draft_digest": "fb28535061a022153274a2765ad114e603ae999ca500a56a3ce1f09f35d4c22f",
+  "draft_digest": "bc7761c4a37072d09b2ce9d1e3742c4d095f2d87e8ec6d277a97b317adc0719b",
   "plan": {
     "state": "draft",
     "source_root": "/Users/samchou/.codex/worktrees/constructed-quantitative-authoring/Checkpoint/backend/bedrock-question-service",
@@ -199,7 +199,7 @@
       "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/compiled-proof-worker-qualification-20260922/plan.json": "703c0bb57e2c51b5226f537e592add1746c0462c259cd315b14ee341b0ae2ad4",
       "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/constructed-worker-qualification-20260922/mixed_probe.py": "41ce8b08eeb483cd970fde2c5e616fe64f6f3e2ac5903ff7645e3cdbb172a224",
       "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/constructed-worker-qualification-20260922/test_mixed_probe.py": "375a1644421571e81e0e62865c88b3f4fd5ae7fd151ae4d9f2009d6ab9fdd6db",
-      "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/constructed-worker-qualification-20260922/PLAN.md": "76db0adc3f4f699b2ec2f3f23cfc1638294b328df30dd20db1707a7ce01b8c1a",
+      "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/constructed-worker-qualification-20260922/PLAN.md": "2d8d289b9e9556983de6b817917bd312452ed242aba1d4bce20d95282317dd57",
       "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/constructed-worker-qualification-20260922/jobs-draft.json": "c96252f3e3d73cf53893410e02202b1bec3767c4edf28545a2211f82135d19cc",
       "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/constructed-worker-qualification-20260922/make_blind_review.py": "d5b41dca100aa26b1f31462b37a61027b46a29ee168b3b59609ba84f9936b8c6"
     },
