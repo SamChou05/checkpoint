@@ -22,7 +22,7 @@ from question_verification import (
     verify_questions,
 )
 from request_contract import _normalize_request
-from verification_policy import VERIFICATION_POLICY_REVISION
+from verification_policy import COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION
 
 
 def payload(prompt):
@@ -74,13 +74,13 @@ class CompleteQuestionVerificationTests(unittest.TestCase):
             for item in payload(prompt)["items"]
         ])
 
-    def test_generation_selects_complete_contract_and_current_stamp_in_three_calls(self):
+    def test_legacy_generation_retains_complete_choice_policy_in_three_calls(self):
         client = FakeBedrockClient.returning_questions(self.question)
         budget = ProviderCallBudget(3)
         accepted = _generate_sanitized_questions(self.request, client, budget)
         self.assertEqual(len(accepted), 1)
         self.assertEqual(budget.calls, 3)
-        self.assertEqual(VERIFICATION_POLICY_REVISION, 2)
+        self.assertEqual(COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION, 2)
         self.assertEqual(accepted[0]["verificationVersion"], 1)
         self.assertEqual(accepted[0]["verificationPolicyRevision"], 2)
         self.assertEqual(client.solution_calls[0]["system"][0]["text"], COMPLETE_SOLUTION_SYSTEM_PROMPT)

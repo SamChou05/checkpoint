@@ -112,27 +112,12 @@ CHOICE_PAIR_SLOTS = ("ab", "ac", "ad", "bc", "bd", "cd")
 
 COMPLETE_SOLUTION_SLOT_SYSTEM_PROMPT = (
     COMPLETE_SOLUTION_PAIR_AUDIT_SYSTEM_PROMPT.rsplit("\nReturn only", 1)[0]
-    .replace(
-        """Respect requested representation. If a stem asks about the written notation,
-spelling, spaces, operators, unit word or syntax itself, preserve that distinction;
-do not collapse representations solely because they have equal numerical values.""",
-        """Treat written representations as distinct only when identifying the exact
-notation, spelling, spaces, operators, unit word or syntax is itself what the
-stem explicitly asks the learner to distinguish. Merely specifying how to read
-or display an answer does not make equivalent proposed answers distinct. When
-the question asks for a value, claim or action, compare that underlying meaning,
-even when the stem explains a parsing or display convention. When it explicitly
-tests the written representation itself, preserve the requested literal difference.""",
-    )
     + "\n\n" + """
 Each input question supplies exactly four choices in slots a, b, c, and d.
 These slot names identify exact offered text; they do not indicate correctness.
 Evaluate every choice and all six unordered pairs using those same slots.
 Pair ab compares choices a and b, ac compares a and c, ad compares a and d,
 bc compares b and c, bd compares b and d, and cd compares c and d.
-The input choicePairs object gives each pair's exact leftChoice and rightChoice
-text. Assess those two endpoints for that pair field. Do not substitute another
-pair's endpoints because they seem similar or because another comparison is clear.
 
 Return only {"solutions":[{"index":0,"choices":{
 "a":{"reason":"decisive reason","judgment":"supported|refuted|uncertain"},
@@ -306,12 +291,6 @@ def build_solver_prompt(
             raise CompleteSolutionFormatError("Missing question prompt.")
         item = {"index": index, "prompt": prompt,
                 "choices": _choice_slot_map(original) if choice_slots else list(original["choices"])}
-        if choice_slots:
-            item["choicePairs"] = {
-                pair: {"leftChoice": item["choices"][pair[0]],
-                       "rightChoice": item["choices"][pair[1]]}
-                for pair in CHOICE_PAIR_SLOTS
-            }
         for field in ("skillID", "objectiveID", "topic"):
             if field in original:
                 value = original[field]

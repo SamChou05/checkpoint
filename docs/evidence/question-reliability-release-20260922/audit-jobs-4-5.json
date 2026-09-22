@@ -1,0 +1,149 @@
+{
+  "auditor": "choice_semantics",
+  "mode": "independent manual read-only audit; no provider calls or content changes",
+  "capture": "pipeline-capture-v2.json",
+  "capture_sha256": "0ff18c0a3de0254bd8aa5d01db04c5576cf1dc587797af01b1f933c55d6f2f25",
+  "jobs": [
+    4,
+    5
+  ],
+  "coverage": {
+    "raw_author_drafts": 12,
+    "solver_correctness_rows": 48,
+    "solver_pair_rows": 72,
+    "reviewer_rows": 11,
+    "admitted_items": 9,
+    "bounds_exact_key_and_choice_identity_pass": 9
+  },
+  "interpretation": "Manual ambiguity and feedback findings are separate from deterministic structural checks and model judgments. Ambiguity is failure under the frozen rubric, not proof of a single indisputably wrong alternative key. Numerical keys in all four accepted physics items are correct. No inference of broad error rate.",
+  "counts": {
+    "strict_pass_or_pass_with_nonblocking_note": 6,
+    "strict_fail_ambiguity": 2,
+    "strict_fail_feedback": 1
+  },
+  "accepted": [
+    {
+      "job": 4,
+      "accepted_index": 0,
+      "prompt": "A facility's access rule states: 'Personnel may enter the restricted zone only if they hold both a blue badge and a current safety certificate.' Alex holds a blue badge but their safety certificate expired last month. May Alex enter?",
+      "key": "No, because Alex lacks a current safety certificate.",
+      "status": "pass",
+      "passes_strict_frozen_criteria": true,
+      "reason": "No current safety certificate entails no entry under the explicit necessary conjunction. Only the keyed answer gives both the correct conclusion and factual reason. Badge-alone and either-credential claims differ as proposed permission rules."
+    },
+    {
+      "job": 4,
+      "accepted_index": 1,
+      "prompt": "A shipping company's rule states: 'Packages over 50 kg require special handling approval. Packages over 100 kg require both special handling approval AND a reinforced container.' A package weighs 75 kg and has special handling approval but no reinforced container. What handling applies?",
+      "key": "Special handling with approval, because weight is over 50 kg but not over 100 kg.",
+      "status": "pass_with_quality_note",
+      "passes_strict_frozen_criteria": true,
+      "reason": "75 kg exceeds50 but not100; special handling approval is the single supported keyed outcome under the stated policy. Numeric thresholds and key are consistent. Distractor “both approvals” is imprecise because only one approval and one container are named; feedback should name actual requirements."
+    },
+    {
+      "job": 4,
+      "accepted_index": 2,
+      "prompt": "A museum's evening access rule states: 'Members may enter after 6 PM if they present a valid membership card AND either a pre-booked ticket or a staff escort.' Jordan is a member with a valid card and a staff escort, but no pre-booked ticket. May Jordan enter?",
+      "key": "Yes, because the staff escort satisfies the second condition of the inclusive OR.",
+      "status": "fail_ambiguity",
+      "passes_strict_frozen_criteria": false,
+      "reason": "Contextual distractor diversity is not established: “No, because Jordan lacks a pre-booked ticket” and “No, because both a ticket and escort are required” both deny this escorted member because a ticket is mandatory. The second adds an already-satisfied escort requirement; both teach the same AND-for-OR mistake in this scenario. Solver calls them distinct based only on phrasing/focus. Under the frozen ambiguity-fails rubric this item cannot be certified meaningfully diverse."
+    },
+    {
+      "job": 4,
+      "accepted_index": 3,
+      "prompt": "A secure lab's access rule states: 'Clearance level 3 grants access to zones A and B. Clearance level 4 grants access to zones A, B, and C.' Dr. Park has clearance level 3. Which zones may Dr. Park access?",
+      "key": "Zones A and B only",
+      "status": "fail_ambiguity",
+      "passes_strict_frozen_criteria": false,
+      "reason": "The stem gives sufficient grants: level3 grants A/B, level4 grants A/B/C. It never states an exhaustive mapping or that C requires level4. The keyed “A and B only” and feedback “Zone C is only accessible at level4” add exclusivity/converse not stated. A closed-world interpretation is plausible, but is an assumption; the explicit-rule/no-unstated-policy/ambiguity-fails criterion is not met."
+    },
+    {
+      "job": 4,
+      "accepted_index": 4,
+      "prompt": "A research station's data access rule states: 'Scientists may download climate records if they have an active project ID AND their security training is current within 90 days.' Dr. Rivera has an active project ID and completed security training 45 days ago. May Dr. Rivera download the records?",
+      "key": "Yes, because both required conditions are satisfied.",
+      "status": "pass",
+      "passes_strict_frozen_criteria": true,
+      "reason": "Active project ID and45-day-old training satisfy the stated90-day conjunctive permission. Other options change the threshold, ignore the satisfied training, or attach the time window to the wrong credential. Unique correct key and consistent feedback."
+    },
+    {
+      "job": 5,
+      "accepted_index": 0,
+      "prompt": "A car travels 150 km in 2.5 hours. What is its average speed?",
+      "key": "60 km/h",
+      "status": "pass",
+      "passes_strict_frozen_criteria": true,
+      "reason": "150/2.5=60 km/h. All other numeric speeds are different and incorrect. Feedback equations are accurate."
+    },
+    {
+      "job": 5,
+      "accepted_index": 1,
+      "prompt": "A metal cube has volume 8 cm³ and mass 56 g. What is its density?",
+      "key": "7 g/cm³",
+      "status": "pass",
+      "passes_strict_frozen_criteria": true,
+      "reason": "56/8=7 g/cm³. Other values448,0.14,64 are distinct and incorrect. Feedback accurately distinguishes division, multiplication and inverted formula;64 could also arise from addition, but the stated8² equality is true."
+    },
+    {
+      "job": 5,
+      "accepted_index": 2,
+      "prompt": "A cyclist covers 30 km at 15 km/h, then stops for 30 minutes. What total time elapses from start to finish?",
+      "key": "2.5 hours",
+      "status": "pass",
+      "passes_strict_frozen_criteria": true,
+      "reason": "30/15+30/60=2.5 hours over the described ride and stop. All alternatives are distinct and wrong; feedback includes the stop and preserves units."
+    },
+    {
+      "job": 5,
+      "accepted_index": 3,
+      "prompt": "Two liquids are mixed: 200 mL of density 0.8 g/mL and 300 mL of density 1.2 g/mL. What is the total mass?",
+      "key": "520 g",
+      "status": "fail_feedback",
+      "passes_strict_frozen_criteria": false,
+      "reason": "Correct key520g and four distinct masses, but feedback says1000g is not supported by any straightforward combination of the given values. In fact(200+300)*(0.8+1.2)=1000 is a straightforward incorrect-combination distractor. The blanket claim is unjustified. Feedback for400g also invents an unexplained2.5 multiplier not supplied in this item; its arithmetic is true but pedagogically ungrounded. No key error, but the strict feedback criterion is not fully satisfied."
+    }
+  ],
+  "raw_and_stage_audit": [
+    {
+      "job": 4,
+      "author_call": 18,
+      "draft_rows": 5,
+      "keys": "All author keys are the intended b slot. Alex and shipping have supported intended keys. Library fines rationale is materially ambiguous; museum diversity and lab exclusivity remain concerns described above.",
+      "solver_call": 19,
+      "solver_assessment": "All24 correctness judgments and36 pair judgments across calls19/22 reviewed. Initial library item has uncertain fines option; correctly excluded. Lab confident support/refutations import unstated exclusivity. Museum paircd declared distinct despite contextual overlap. Other reasons and indexes map to their actual choices; no pair-reference mixup observed.",
+      "reviewer_call": 20,
+      "reviewer_assessment": "Reviewed four rows, all accepted. Reviewer retains author keys and writes exact per-choice feedback. It does not resolve museum overlap or lab exclusivity and asserts ZoneC-only-at4 as fact."
+    },
+    {
+      "job": 4,
+      "author_call": 21,
+      "draft_rows": 1,
+      "keys": "Rivera correct key Yes, both required conditions satisfied.",
+      "solver_call": 22,
+      "reviewer_call": 23,
+      "assessment": "Four correctness and six pair judgments agree with concrete facts; reviewer explanation/feedback consistent. Accepted replacement."
+    },
+    {
+      "job": 5,
+      "author_call": 24,
+      "draft_rows": 5,
+      "keys": "60km/h;500g;7g/cm³;2.5h;520g. All arithmetically correct and alternatives distinct under ordinary stated scenarios.",
+      "solver_call": 25,
+      "solver_assessment": "All20 correctness and30 pair labels agree. No label/reason contradiction or pair-reference mixup seen. Ice conservation assumes no material loss; intended elementary phase-change reading clear, but this is direct recall.",
+      "reviewer_call": 26,
+      "reviewer_assessment": "All five marked valid; ice rated difficulty1 and correctly excluded by minimum2. Remaining four accepted. Liquid distractor feedback contains the unsupported categorical claim and extraneous factor described above."
+    },
+    {
+      "job": 5,
+      "author_call": 27,
+      "draft_rows": 1,
+      "keys": "2.0kg liquid wax; correct under simple phase change.",
+      "solver_call": 28,
+      "reviewer_call": 29,
+      "assessment": "All four correctness and six pair labels correct. Reviewer again rates the phase-change recall question difficulty1, so it is excluded. Top-up repeats the earlier low-demand mechanism with wax replacing ice, explaining final4/5yield."
+    }
+  ],
+  "non_destructive_checks": "All9 accepted prompts≤320characters, choices≤140, main explanations≤420, per-choice explanations≤280, exact four feedback keys. Final key equals author selected-slot text and final choice set equals raw authored choices for every accepted item. No silent key repair observed.",
+  "recommended_local_repairs": "State access sets exhaustively or explicit if-and-only-if/only rules. Use different wrong requirements rather than duplicate ticket-required rationales. Explain1000g as wrongly multiplying totalvolume by sumofdensity; explain400g as applying0.8g/mL to all500mL. Make conservation questions apply/combine quantities instead of renaming a pure phase-change recall item. These are recommendations; captured rows remain unchanged."
+}

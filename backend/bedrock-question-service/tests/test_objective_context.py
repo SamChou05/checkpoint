@@ -16,6 +16,7 @@ from complete_question_solution import (
 from question_quality import _sanitize_questions
 from question_verification import verify_questions
 from request_contract import _normalize_request
+from test_native_pipeline import author_payload, solver_record
 
 
 MODEL = "us.anthropic.claude-sonnet-4-6"
@@ -130,12 +131,18 @@ class ObjectiveContextTests(unittest.TestCase):
                             def converse(self, **provider_request):
                                 text = provider_request["messages"][0]["content"][0]["text"]
                                 if "<generation_request_json>\n" in text:
-                                    tag, contract = "generation_request_json", "question_author_v1"
-                                    response = {"questions": [raw]}
+                                    tag = "generation_request_json"
+                                    contract = "question_author_v3" if mode == "native" else "question_author_v1"
+                                    response = author_payload(raw) if mode == "native" else {"questions": [raw]}
                                 elif "<question_solution_json>\n" in text:
-                                    tag, contract = "question_solution_json", "complete_choice_solver_v1"
+                                    tag = "question_solution_json"
+                                    use_slots = mode == "native" and not authored
+                                    contract = "complete_choice_solver_v3" if use_slots else "complete_choice_solver_v1"
                                     data = payload(text, tag)
-                                    response = solutions(data["items"], answers)
+                                    response = {"solutions": [
+                                        solver_record(item, answers[item["prompt"]])
+                                        for item in data["items"]
+                                    ]} if use_slots else solutions(data["items"], answers)
                                     test.assertNotIn("existingQuestions", data)
                                     test.assertNotIn("independentSolutions", data)
                                 else:

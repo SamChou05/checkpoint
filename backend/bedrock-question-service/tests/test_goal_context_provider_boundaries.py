@@ -21,6 +21,7 @@ from test_lambda_skill_map_evolution import (
     _evolution_payload,
     _provider_response,
 )
+from test_native_pipeline import author_payload, solver_record
 
 
 MODEL = "us.anthropic.claude-sonnet-4-6"
@@ -114,7 +115,9 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
 
                 def solve(data):
                     return {"solutions": [
-                        _complete_solution(item, question["expectedAnswer"])
+                        (solver_record if mode == "native" else _complete_solution)(
+                            item, question["expectedAnswer"],
+                        )
                         for item in data["items"]
                     ]}
 
@@ -143,8 +146,12 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
                     # Native malformed JSON fails adaptation before this repair branch.
                     steps.append(("generation_request_json", "question_author_v1", "not JSON"))
                 steps.extend([
-                    ("generation_request_json", "question_author_v1", {"questions": [question]}),
-                    ("question_solution_json", "complete_choice_solver_v1", solve),
+                    ("generation_request_json",
+                     "question_author_v3" if mode == "native" else "question_author_v1",
+                     author_payload(question) if mode == "native" else {"questions": [question]}),
+                    ("question_solution_json",
+                     "complete_choice_solver_v3" if mode == "native" else "complete_choice_solver_v1",
+                     solve),
                     ("question_review_json", "default_reviewer_v1", review),
                 ])
                 client = _ScriptedClient(self.check_request, steps)

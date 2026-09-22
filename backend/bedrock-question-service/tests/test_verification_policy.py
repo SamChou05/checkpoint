@@ -271,7 +271,7 @@ class VerificationPolicyTests(QuestionBankTestCase):
         self.assertEqual(raised.exception.code, "claim_conflict")
 
     def test_minimum_policy_is_strict_integer_and_known_request_bound(self):
-        for invalid in (True, False, "1", 1.0, -1, 3, None, [], {}):
+        for invalid in (True, False, "1", 1.0, -1, 5, None, [], {}):
             with self.subTest(invalid=invalid):
                 bank_id, dynamo, _, _ = self.bank(revision=1)
                 with mock.patch.object(
@@ -317,6 +317,40 @@ class VerificationPolicyTests(QuestionBankTestCase):
                 self.assertEqual(first["questions"], [question])
                 self.assertEqual(item["questionJSON"]["S"], original_json)
                 self.assertEqual(dynamo.claims, stored)
+
+    def test_distinct_choice_floor_replaces_older_policies_without_rewriting_content(self):
+        for revision in (1, 2, 3):
+            with self.subTest(revision=revision):
+                bank_id, dynamo, item, _ = self.bank(revision=revision)
+                original_json = item["questionJSON"]["S"]
+                with mock.patch.object(question_bank, "_ensure_refill") as refill:
+                    response = self.claim(bank_id, dynamo, minimum=4)
+                self.assertEqual(response["questions"], [])
+                self.assertEqual(item["state"], {"S": "discarded"})
+                self.assertEqual(item["questionJSON"]["S"], original_json)
+                refill.assert_called_once()
+
+    def test_distinct_choice_policy_claims_and_replays_exactly(self):
+        bank_id, dynamo, item, question = self.bank(revision=4)
+        original_json = item["questionJSON"]["S"]
+        with mock.patch.object(question_bank, "_ensure_refill"):
+            first = self.claim(bank_id, dynamo, minimum=4)
+            replay = self.claim(bank_id, dynamo, minimum=4)
+        self.assertEqual(first, replay)
+        self.assertEqual(first["questions"], [question])
+        self.assertEqual(item["questionJSON"]["S"], original_json)
+
+    def test_new_floor_cannot_replay_an_old_claim_as_newly_verified(self):
+        bank_id, dynamo, item, _ = self.bank(revision=2)
+        original_json = item["questionJSON"]["S"]
+        with mock.patch.object(question_bank, "_ensure_refill"):
+            self.claim(bank_id, dynamo, minimum=2)
+            stored = copy.deepcopy(dynamo.claims)
+            with self.assertRaises(question_bank.QuestionBankError) as raised:
+                self.claim(bank_id, dynamo, minimum=4)
+        self.assertEqual(raised.exception.code, "claim_conflict")
+        self.assertEqual(dynamo.claims, stored)
+        self.assertEqual(item["questionJSON"]["S"], original_json)
 
     def test_revision_two_refuses_a_stored_revision_one_claim_without_rewriting_it(self):
         bank_id, dynamo, item, question = self.bank(revision=1)

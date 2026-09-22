@@ -26,6 +26,7 @@ from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
 from verification_policy import (
     AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION,
     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION,
+    DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION,
     LEGACY_VERIFICATION_POLICY_REVISION,
     VERIFICATION_VERSION,
 )
@@ -203,6 +204,8 @@ def verify_questions(
     solver_contract: Literal["stem_only", "complete_choices"] = "stem_only",
     feedback_contract: Literal["reviewer_written", "authored_solution"] = "reviewer_written",
     preserve_reviewed_text: bool = False,
+    audit_choice_pairs: bool = False,
+    choice_slots: bool = False,
 ) -> list[dict[str, Any]]:
     """Review with an explicit solver contract; legacy remains the eval default.
 
@@ -216,6 +219,10 @@ def verify_questions(
         raise ValueError("Unknown teaching-feedback contract.")
     complete_choices = solver_contract == "complete_choices"
     authored_solution = feedback_contract == "authored_solution"
+    if audit_choice_pairs and (not complete_choices or authored_solution or solve is None):
+        raise ValueError("Choice-pair audit requires complete solving and reviewer-written feedback.")
+    if choice_slots and not audit_choice_pairs:
+        raise ValueError("Choice slots require the complete choice-pair audit.")
     if authored_solution and not complete_choices:
         raise ValueError("Authored teaching requires the complete-choice solver contract.")
     original_count = len(questions)
@@ -268,13 +275,19 @@ def verify_questions(
     if solve is not None:
         if complete_choices:
             try:
-                solution_system, solution_prompt = build_solver_prompt(items, request)
+                solution_system, solution_prompt = build_solver_prompt(
+                    items, request, audit_choice_pairs=audit_choice_pairs,
+                    choice_slots=choice_slots,
+                )
             except CompleteSolutionFormatError:
                 record_quality(request_metrics, "review", "invalid_solution", len(items))
                 return []
             solution_raw = solve(solution_system, solution_prompt)
             try:
-                solutions = validate_batch(solution_raw, items)
+                solutions = validate_batch(
+                    solution_raw, items, audit_choice_pairs=audit_choice_pairs,
+                    choice_slots=choice_slots,
+                )
             except CompleteSolutionFormatError:
                 solutions = None
         else:
@@ -299,10 +312,12 @@ def verify_questions(
             return []
         supported = []
         for solution in solutions:
+            question = questions[solution["index"]]
             reason = (
-                complete_solution_rejection_reason if complete_choices
-                else _solver_rejection_reason
-            )(solution, questions[solution["index"]])
+                complete_solution_rejection_reason(
+                    solution, question, audit_choice_pairs=audit_choice_pairs,
+                ) if complete_choices else _solver_rejection_reason(solution, question)
+            )
             if reason is None:
                 supported.append(solution)
             else:
@@ -325,7 +340,13 @@ def verify_questions(
             solution["index"] = new_index
         solutions = supported
         if not authored_solution:
-            data["independentSolutions"] = solutions
+            # Pair judgments decide eligibility locally. Keep the final review's
+            # existing input contract and prevent rejected pairs from becoming
+            # learner teaching or an extra model-supplied approval flag.
+            data["independentSolutions"] = [
+                {key: value for key, value in solution.items() if key != "choicePairs"}
+                for solution in solutions
+            ]
     if authored_solution:
         # The solver remains answer/feedback blind. Only dense survivors now
         # expose their already-frozen teaching for an audit that cannot rewrite it.
@@ -465,9 +486,11 @@ def verify_questions(
             # Each path owns its revision. A legacy solver must never acquire
             # the current complete-choice policy by a constant/version bump.
             verified_question["verificationPolicyRevision"] = (
-                AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION if authored_solution else (
+                DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION if choice_slots else (
+                    AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION if authored_solution else (
                     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION if complete_choices
                     else LEGACY_VERIFICATION_POLICY_REVISION
+                    )
                 )
             )
         accepted.append(verified_question)

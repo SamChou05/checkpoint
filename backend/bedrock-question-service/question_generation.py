@@ -143,6 +143,9 @@ def _generate_provider_payload(
     request_metrics: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     errors: list[ProviderError] = []
+    author_contract: Contract = (
+        "question_author_v3" if output_mode() == "native" else "question_author_v1"
+    )
     for model_id in _model_attempts():
         try:
             raw_text = _generate_with_bedrock(
@@ -151,7 +154,7 @@ def _generate_provider_payload(
                 model_id=model_id,
                 call_budget=call_budget,
                 request_metrics=request_metrics,
-                contract="question_author_v1",
+                contract=author_contract,
             )
         except (
             SafetyInterventionError,
@@ -179,7 +182,7 @@ def _generate_provider_payload(
                 user_prompt=_json_retry_prompt(request, raw_text),
                 call_budget=call_budget,
                 request_metrics=request_metrics,
-                contract="question_author_v1",
+                contract=author_contract,
             )
         except (
             SafetyInterventionError,
@@ -211,6 +214,9 @@ def _generate_sanitized_questions(
     request_metrics: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     feedback_contract = _feedback_contract()
+    # Native fixed slots hide the sanitizer's correct-answer-first ordering and
+    # make four choice judgments plus six unordered pair judgments explicit.
+    choice_slots = output_mode() == "native" and feedback_contract == "reviewer_written"
     target_count = request["targetCount"]
     questions: list[dict[str, Any]] = []
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
@@ -274,11 +280,13 @@ def _generate_sanitized_questions(
                     user_prompt=prompt,
                     call_budget=call_budget,
                     request_metrics=request_metrics,
-                    contract="complete_choice_solver_v1",
+                    contract="complete_choice_solver_v3" if choice_slots else "complete_choice_solver_v1",
                 ),
                 solver_contract="complete_choices",
                 feedback_contract=feedback_contract,
                 preserve_reviewed_text=output_mode() == "native",
+                audit_choice_pairs=choice_slots,
+                choice_slots=choice_slots,
             )
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its

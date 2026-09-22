@@ -80,7 +80,9 @@ class AuthoredSolutionIntegrationTests(unittest.TestCase):
         self.assertEqual(result[0]["choiceExplanations"], {})
         self.assertEqual(result[0]["verificationPolicyRevision"], 3)
         self.assertEqual(result[0]["verificationVersion"], 1)
-        self.assertEqual(VERIFICATION_POLICY_REVISION, 2)
+        # The optional authored-feedback path must not acquire the newer
+        # fixed-slot pair-review policy merely because the required floor rose.
+        self.assertEqual(VERIFICATION_POLICY_REVISION, 4)
         self.assertEqual(json.loads(json.dumps(result)), result)
 
     def test_configuration_and_solver_contract_cannot_be_inferred_or_downgraded(self):

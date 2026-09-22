@@ -1,0 +1,40 @@
+{
+  "scope": "Read-only Lambda settings; no invocation, bank write, or deployment. Secrets excluded.",
+  "observedUTC": "2026-09-22T04:34:56.266406+00:00",
+  "functions": [
+    {
+      "role": "CheckpointQuestionFunction",
+      "lastModified": "2026-09-11T15:35:34.000+0000",
+      "codeSha256": "YaJGqVgADEWGbtv6j1b96SYBmt8pAkcWaiYzgngMW/Y=",
+      "timeout": 30,
+      "settings": {
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_MODEL_ID": "amazon.nova-lite-v1:0",
+        "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+        "GENERATION_ATTEMPTS": "3",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6"
+      }
+    },
+    {
+      "role": "QuestionBankWorkerFunction",
+      "lastModified": "2026-09-11T15:35:34.000+0000",
+      "codeSha256": "Hh0yKkR0RJy9t5K78eZTk6e05diWNWPV86fJSve7Hyo=",
+      "timeout": 240,
+      "settings": {
+        "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+        "BEDROCK_KIMI_THINKING": "disabled",
+        "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+        "BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+        "GENERATION_ATTEMPTS": "3",
+        "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+        "BEDROCK_CLAUDE_THINKING": "disabled",
+        "QUESTION_BANK_GENERATION_CHUNK_SIZE": "5",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6"
+      }
+    }
+  ]
+}

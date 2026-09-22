@@ -1,0 +1,284 @@
+{
+  "experiment": "Real native author, independent solver and final reviewer qualification",
+  "source_revision": "e7a500c45cc0c7ca418d47601601bb82c2b39373",
+  "source_sha256": {
+    "docs/evidence/question-reliability-release-20260922/pipeline_probe.py": "9a3c8456412a25c87a1e6e93dea0d812c5498ca8561b1866ad168c26e3918f00",
+    "backend/bedrock-question-service/complete_question_solution.py": "06088bb4b1c1aee71b5092149ce67e4655a7a249ed6d2027c6d1e8979e3f9c1c",
+    "backend/bedrock-question-service/execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "backend/bedrock-question-service/generation_diagnostics.py": "944a3020cb3b173589aee066ac39066564a5c943c972bdcfc0115cdcb2e33f30",
+    "backend/bedrock-question-service/lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "backend/bedrock-question-service/native_output_contracts.py": "fe2d9a79c882708f5848c7eeab23ddb441277022bc63ee5a28eeee0ed3958151",
+    "backend/bedrock-question-service/question_bank.py": "539b51c0a7d8eee501f94a7d66f072a6b42889e96ffd72d625742efc3dfbdf83",
+    "backend/bedrock-question-service/question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "backend/bedrock-question-service/question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "backend/bedrock-question-service/question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "backend/bedrock-question-service/question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "backend/bedrock-question-service/question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "backend/bedrock-question-service/question_generation.py": "00d139e3800dff5452cf9b31fb819313568e86b92a5d3a0615ca63752186b20a",
+    "backend/bedrock-question-service/question_quality.py": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+    "backend/bedrock-question-service/question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "backend/bedrock-question-service/question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "backend/bedrock-question-service/question_verification.py": "326133b569cf0e5e5caf8b38d7c1812e55ad5e4d206cebd32d02e7ffc3a12d1a",
+    "backend/bedrock-question-service/request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "backend/bedrock-question-service/skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "backend/bedrock-question-service/smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "backend/bedrock-question-service/source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "backend/bedrock-question-service/verification_policy.py": "a1cac6b519ebcc4f3f9265a86966d90c8e990a34c4892c6ecd7f8d92f5c8345a",
+    "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d"
+  },
+  "environment": {
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "75",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "GENERATION_ATTEMPTS": "2",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+    "MAX_QUESTIONS_PER_BATCH": "20"
+  },
+  "jobs": [
+    {
+      "index": 0,
+      "request": {
+        "goal": {
+          "title": "Arithmetic decisions",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Arithmetic decisions",
+          "contentTopics": [
+            "Ratios",
+            "Percent change",
+            "Unit rates"
+          ],
+          "questionDirective": "Use explicit numbers to test everyday costs, mixtures and rates. Include all necessary facts. Create five varied self-contained application questions at difficulty 2 or 3.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      }
+    },
+    {
+      "index": 1,
+      "request": {
+        "goal": {
+          "title": "Python 3 expressions",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Python 3 expressions",
+          "contentTopics": [
+            "Boolean expressions",
+            "List indexing",
+            "Conditionals"
+          ],
+          "questionDirective": "Use complete short Python 3 expressions or correctly indented code, with explicit values. Preserve case and literal syntax. Create five varied self-contained application questions at difficulty 2 or 3.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      }
+    },
+    {
+      "index": 2,
+      "request": {
+        "goal": {
+          "title": "English usage",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "English usage",
+          "contentTopics": [
+            "Subject-verb agreement",
+            "Pronoun reference",
+            "Sentence punctuation"
+          ],
+          "questionDirective": "Use standard written American English, supply complete sentences, and make the tested grammatical distinction explicit. Create five varied self-contained application questions at difficulty 2 or 3.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      }
+    },
+    {
+      "index": 3,
+      "request": {
+        "goal": {
+          "title": "Interpreting quantitative evidence",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Interpreting quantitative evidence",
+          "contentTopics": [
+            "Proportions",
+            "Weighted averages",
+            "Comparing measurements"
+          ],
+          "questionDirective": "Supply all measurements in the stem. Ask for a conclusion justified by those data; avoid unsupported causal inferences. Create five varied self-contained application questions at difficulty 2 or 3.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      }
+    },
+    {
+      "index": 4,
+      "request": {
+        "goal": {
+          "title": "Applying fictional access rules",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Applying fictional access rules",
+          "contentTopics": [
+            "Conjunction",
+            "Inclusive boundaries",
+            "Conditional rules"
+          ],
+          "questionDirective": "State complete fictional access rules and concrete facts. Ask which single conclusion follows. Do not assume unstated real-world policies. Create five varied self-contained application questions at difficulty 2 or 3.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      }
+    },
+    {
+      "index": 5,
+      "request": {
+        "goal": {
+          "title": "Physical quantities",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Physical quantities",
+          "contentTopics": [
+            "Distance and speed",
+            "Conservation of mass",
+            "Density"
+          ],
+          "questionDirective": "Give explicit quantities and assumptions for simple physical applications. Use plain text units and complete conditions. Create five varied self-contained application questions at difficulty 2 or 3.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      }
+    }
+  ],
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.91",
+    "botocore": "1.43.91"
+  },
+  "limits": {
+    "maximum_calls": 36,
+    "maximum_calls_per_job": 6,
+    "sdk_total_max_attempts": 1,
+    "job_deadline_seconds": 240,
+    "read_timeout_seconds": 75,
+    "max_output_tokens_per_call": 6000,
+    "region": "us-east-1"
+  },
+  "prospective_criteria": {
+    "all_attempts_retained": true,
+    "no_transport_schema_or_stage_coverage_failures": true,
+    "minimum_admitted_per_job": 3,
+    "minimum_total_admitted_of_30": 27,
+    "every_admitted_item": "Exactly four distinct task-relevant proposed answers, exactly one correct answer matching the key; complete bounded prompt, explanation and per-choice feedback; no contradictory teaching or silent key repair. Independent human-agent adjudication records uncertainty as failure. All accepted bytes round-trip unchanged through application validation."
+  },
+  "failure_policy": "Run each independent job once using the actual application with at most two passes and six calls. Preserve partial yields and all rejected drafts; no replacement jobs, out-of-band retries, follow-up judging calls or after-output criteria changes. Stop all dispatches after transport or non-end_turn failure. Never write a learner question bank or deploy.",
+  "interpretation": "Six batches exercise the real route within the worker's count/token/time ceilings, not a population error-rate estimate or a proof of arbitrary factual correctness. The injected client keeps a fixed75s read timeout; unlike the real worker it cannot shrink the timeout late in a job, so deadline admission is conservative rather than byte-identical. The application may top up rejected items within its frozen budget. Independent review of all drafts and accepted outputs is retained.",
+  "registered_contracts": {
+    "question_author_v3": {
+      "name": "question_author_v3",
+      "version": "3",
+      "sha256": "94ab5d7cb7661085e66e2c8d7c860cd2378f8d9ef8f133326c49ddcffb7bfcd9"
+    },
+    "complete_choice_solver_v3": {
+      "name": "complete_choice_solver_v3",
+      "version": "3",
+      "sha256": "5747a0c1019044acd98caade2133929bb1a6c4b741c101a4665986c586c567b7"
+    },
+    "default_reviewer_v1": {
+      "name": "default_reviewer_v1",
+      "version": "1",
+      "sha256": "77c15c631555d0d83bfaa2e0ba1c19478c51d2573586220cce2ce94684bfe2fe"
+    }
+  }
+}

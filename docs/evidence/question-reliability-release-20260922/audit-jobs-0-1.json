@@ -1,0 +1,444 @@
+{
+  "audit": "Independent arithmetic and Python audit of full-pipeline diagnostic jobs 0–1",
+  "created_at": "2026-09-22T05:17:10.918524+00:00",
+  "auditor": "structured_contracts",
+  "capture_path": "docs/evidence/question-reliability-release-20260922/pipeline-capture-v2.json",
+  "pipeline_plan_sha256": "4ca5b4f1d17d3b5eb56acea6e4f9e9b7ff596bc533f24af43f75ca543c61d6df",
+  "scope": {
+    "jobs": [
+      0,
+      1
+    ],
+    "provider_calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "canonical_json_hash_definition": "SHA256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode())",
+    "six_calls_sha256": "c9c2e1f5b4a7ac83a021a15020576cf7d3aa484e3eb30ef45f4cf4e2da441807",
+    "completed_jobs_sha256": "8b78bd14120979f329a40a2d1c87cb7428656cb317edff031785820f221b008a",
+    "whole_capture_hash_omitted_because_other_jobs_were_still_running": true
+  },
+  "structural_replay": {
+    "strict_native_adapters": "6/6 pass",
+    "solver_batch_and_rejection_gate": "10/10 pass",
+    "feedback_exact_byte_preservation": "10/10 pass",
+    "policy_revision": 4
+  },
+  "summary": {
+    "admitted": 10,
+    "key_pass": 10,
+    "choice_diversity_pass": 10,
+    "pair_relations_correct": 60,
+    "feedback_pass": 9,
+    "feedback_fail": 1,
+    "complete_content_pass": 9,
+    "complete_content_fail": 1,
+    "rejected_drafts": 0,
+    "top_up_calls": 0,
+    "pipeline_all_admitted_feedback_criterion": "failed"
+  },
+  "raw_draft_notes": [
+    {
+      "job_index": 1,
+      "item_indexes": [
+        0,
+        2
+      ],
+      "note": "Author prose describes and/or as general Boolean-returning operators. For these particular Boolean operands the computed result is correct, but the general wording is too broad for Python operand-return semantics. Final feedback replaced it with correct task-specific wording, including last-evaluated-operand semantics for and; no surviving admitted defect."
+    }
+  ],
+  "items": [
+    {
+      "job_index": 0,
+      "item_index": 0,
+      "prompt": "A 500-gram bag of rice costs $4.50. What is the unit price per kilogram?",
+      "expected_answer": "$9.00",
+      "accepted_question_sha256": "a9326adfee60a3e336510079e9ea830e644521cda773791a3dbf59cb6b756618",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "4.50 / (500 / 1000) = 9.00 dollars per kilogram.",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true
+      },
+      "feedback": {
+        "verdict": "pass",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": true,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true
+      },
+      "source_stages": {
+        "author_call_index": 0,
+        "solver_call_index": 1,
+        "reviewer_call_index": 2
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "pass",
+      "material_uncertainties": []
+    },
+    {
+      "job_index": 0,
+      "item_index": 1,
+      "prompt": "A store marks up a $40 jacket by 25% for retail, then offers 20% off during a sale. What is the final price?",
+      "expected_answer": "$40",
+      "accepted_question_sha256": "610c87f5c2cde1ea4743997f2251a06c7d50e16c6215024b27462e3af8e4930d",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "40 × 1.25 × 0.80 = 40 dollars.",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true
+      },
+      "feedback": {
+        "verdict": "pass",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": true,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true
+      },
+      "source_stages": {
+        "author_call_index": 0,
+        "solver_call_index": 1,
+        "reviewer_call_index": 2
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "pass",
+      "material_uncertainties": []
+    },
+    {
+      "job_index": 0,
+      "item_index": 2,
+      "prompt": "A paint mixture requires 3 parts blue to 2 parts white. How many liters of white paint are needed for 15 liters of blue paint?",
+      "expected_answer": "10 liters",
+      "accepted_question_sha256": "a32828cb87fe68f8aa279186e944bac9a6c81685780bebe0ee55ec457bad707d",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "15 × 2/3 = 10 liters of white.",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true
+      },
+      "feedback": {
+        "verdict": "fail",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": false,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true,
+        "defect": {
+          "field": "choiceExplanations[\"9 liters\"]",
+          "observed": "9 liters would imply a 3:3 (1:1) ratio of blue to white, not the stated 3:2 ratio.",
+          "counterexample": "With the stated 15 L blue and proposed 9 L white, blue:white = 15:9 = 5:3. A 1:1 mixture would require 15 L white.",
+          "stage_origin": {
+            "earliest_observed_call_index": 1,
+            "solver_item_index": 2,
+            "solver_slot": "c",
+            "solver_reason": "9 liters would correspond to a 3:3 ratio (equal parts), not 3:2. Incorrect.",
+            "author_explanation_has_this_error": false,
+            "copied_into_reviewer_call_index": 2,
+            "copied_into_reviewer_item_index": 2,
+            "final_feedback_repeats_false_ratio": true
+          },
+          "interpretation": "Observed propagation is evidence consistent with anchoring; this single sequence does not independently establish its causal mechanism."
+        }
+      },
+      "source_stages": {
+        "author_call_index": 0,
+        "solver_call_index": 1,
+        "reviewer_call_index": 2
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "fail",
+      "material_uncertainties": []
+    },
+    {
+      "job_index": 0,
+      "item_index": 3,
+      "prompt": "A car travels 240 miles using 8 gallons of fuel. What is the fuel efficiency in miles per gallon?",
+      "expected_answer": "30 mpg",
+      "accepted_question_sha256": "ca64feb916a042b0522748aa7f7b5f0e8482f605bd9cc80aaff1dfa973ccf67f",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "240 / 8 = 30 miles per gallon.",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true
+      },
+      "feedback": {
+        "verdict": "pass",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": true,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true
+      },
+      "source_stages": {
+        "author_call_index": 0,
+        "solver_call_index": 1,
+        "reviewer_call_index": 2
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "pass",
+      "material_uncertainties": []
+    },
+    {
+      "job_index": 0,
+      "item_index": 4,
+      "prompt": "A city's population grew from 80,000 to 92,000 over five years. What is the percent increase?",
+      "expected_answer": "15%",
+      "accepted_question_sha256": "d655054fc1dd7589955caa62537e003d40515708600b568e3666077319285a20",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "(92,000 − 80,000) / 80,000 × 100 = 15 percent.",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true
+      },
+      "feedback": {
+        "verdict": "pass",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": true,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true
+      },
+      "source_stages": {
+        "author_call_index": 0,
+        "solver_call_index": 1,
+        "reviewer_call_index": 2
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "pass",
+      "material_uncertainties": []
+    },
+    {
+      "job_index": 1,
+      "item_index": 0,
+      "prompt": "What is the value of the expression `3 < 5 and 2 == 2`?",
+      "expected_answer": "True",
+      "accepted_question_sha256": "11d8d5765fb7c4f7ae414d00c45f7493bef0b123b5fa041956bbc75aa553a857",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "Python evaluated 3 < 5 and 2 == 2 as True (bool).",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true
+      },
+      "feedback": {
+        "verdict": "pass",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": true,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true
+      },
+      "source_stages": {
+        "author_call_index": 3,
+        "solver_call_index": 4,
+        "reviewer_call_index": 5
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "pass",
+      "material_uncertainties": []
+    },
+    {
+      "job_index": 1,
+      "item_index": 1,
+      "prompt": "What does `['a', 'b', 'c', 'd'][2]` evaluate to?",
+      "expected_answer": "'c'",
+      "accepted_question_sha256": "db0ac814928962f7abc545f1b8291a29a987126d00b3b0f903f9a3dae523d7d3",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "Python evaluated ['a', 'b', 'c', 'd'][2] as 'c' (str).",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true
+      },
+      "feedback": {
+        "verdict": "pass",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": true,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true
+      },
+      "source_stages": {
+        "author_call_index": 3,
+        "solver_call_index": 4,
+        "reviewer_call_index": 5
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "pass",
+      "material_uncertainties": []
+    },
+    {
+      "job_index": 1,
+      "item_index": 2,
+      "prompt": "What is the result of `not (4 > 7) or False`?",
+      "expected_answer": "True",
+      "accepted_question_sha256": "dd077f69e5329f70ad3a75a2d759cb8cde0186a05dd1b931726baf7e3e832df4",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "Python evaluated not (4 > 7) or False as True (bool).",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true
+      },
+      "feedback": {
+        "verdict": "pass",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": true,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true
+      },
+      "source_stages": {
+        "author_call_index": 3,
+        "solver_call_index": 4,
+        "reviewer_call_index": 5
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "pass",
+      "material_uncertainties": []
+    },
+    {
+      "job_index": 1,
+      "item_index": 3,
+      "prompt": "Given `x = 10`, what does `x if x > 5 else 0` evaluate to?",
+      "expected_answer": "10",
+      "accepted_question_sha256": "33146355af3b0b3b3afcb23f2ed2a60680fef7cc2a7faf9391c2117d8d3672e6",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "Python evaluated 10 if 10 > 5 else 0 as 10 (int).",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true,
+        "context_note": "0 and False denote different typed Python results in a question asking what an expression evaluates to; their equality under Python == does not make them the same displayed result."
+      },
+      "feedback": {
+        "verdict": "pass",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": true,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true
+      },
+      "source_stages": {
+        "author_call_index": 3,
+        "solver_call_index": 4,
+        "reviewer_call_index": 5
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "pass",
+      "material_uncertainties": []
+    },
+    {
+      "job_index": 1,
+      "item_index": 4,
+      "prompt": "What is the value of `[0, 1, 2, 3, 4][-1]`?",
+      "expected_answer": "4",
+      "accepted_question_sha256": "b04580f94b11813cb54ce1e0ea65d68e661e2c0df7c61cf72829c8a0887e136b",
+      "key": {
+        "verdict": "pass",
+        "independent_check": "Python evaluated [0, 1, 2, 3, 4][-1] as 4 (int).",
+        "unique_correct_offered_choice": true
+      },
+      "choice_diversity": {
+        "verdict": "pass",
+        "four_distinct_task_answers": true,
+        "six_pair_relations_correct": true
+      },
+      "feedback": {
+        "verdict": "pass",
+        "main_explanation_correct": true,
+        "all_choice_explanations_correct": true,
+        "complete_exact_coverage": true,
+        "within_420_and_280_character_bounds": true,
+        "exact_final_reviewer_bytes_preserved": true
+      },
+      "source_stages": {
+        "author_call_index": 3,
+        "solver_call_index": 4,
+        "reviewer_call_index": 5
+      },
+      "admission": {
+        "accepted": true,
+        "verification_version": 1,
+        "verification_policy_revision": 4
+      },
+      "complete_content_verdict": "pass",
+      "material_uncertainties": []
+    }
+  ],
+  "limitations": "This audits the exact ten captured questions. It is not a population guarantee. No provider calls, source changes, content repairs, or evidence edits were made."
+}

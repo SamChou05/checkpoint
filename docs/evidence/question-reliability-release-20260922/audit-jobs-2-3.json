@@ -1,0 +1,551 @@
+{
+  "audit_scope": "Independent manual audit of final pipeline-v2 jobs2and3; no output repairs or provider calls.",
+  "frozen_plan_file": "pipeline-plan-v2.json",
+  "frozen_plan_sha256": "4ca5b4f1d17d3b5eb56acea6e4f9e9b7ff596bc533f24af43f75ca543c61d6df",
+  "capture_file": "pipeline-capture-v2.json",
+  "capture_status_at_audit": "complete",
+  "component_trial": "Endpoint component trial remains a separate strict failure at116/120pair labels.",
+  "classification": "Unresolved ambiguity counts as failure. Structural exact-key membership is separate from semantic uniqueness.",
+  "jobs": [
+    {
+      "index": 2,
+      "goal": "English usage",
+      "final_admitted_count": 5,
+      "raw_author_item_count": 6,
+      "provider_calls": 6,
+      "elapsed_seconds": 77.44,
+      "input_tokens": 18527,
+      "output_tokens": 5037,
+      "quality_metrics": {
+        "sanitize": {
+          "accepted": 6
+        },
+        "review": {
+          "solver_uncertain": 1,
+          "accepted": 5
+        }
+      },
+      "scope_sha256": "740bd9e8438961a3af341e3eb91fe935316493ec1ed89f0d862fee235a0f2906",
+      "stage_checks": [
+        {
+          "call_index": 6,
+          "contract": "question_author_v3",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0
+        },
+        {
+          "call_index": 7,
+          "contract": "complete_choice_solver_v3",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0,
+          "strict_slot_decoder_index_coverage_reason_bounds": "pass"
+        },
+        {
+          "call_index": 8,
+          "contract": "default_reviewer_v1",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0
+        },
+        {
+          "call_index": 9,
+          "contract": "question_author_v3",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0
+        },
+        {
+          "call_index": 10,
+          "contract": "complete_choice_solver_v3",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0,
+          "strict_slot_decoder_index_coverage_reason_bounds": "pass"
+        },
+        {
+          "call_index": 11,
+          "contract": "default_reviewer_v1",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0
+        }
+      ],
+      "raw_author_bounds": [
+        {
+          "call_index": 6,
+          "item_index": 0,
+          "prompt_length": 59,
+          "maximum_choice_length": 67,
+          "explanation_length": 158
+        },
+        {
+          "call_index": 6,
+          "item_index": 1,
+          "prompt_length": 60,
+          "maximum_choice_length": 51,
+          "explanation_length": 141
+        },
+        {
+          "call_index": 6,
+          "item_index": 2,
+          "prompt_length": 72,
+          "maximum_choice_length": 69,
+          "explanation_length": 166
+        },
+        {
+          "call_index": 6,
+          "item_index": 3,
+          "prompt_length": 58,
+          "maximum_choice_length": 66,
+          "explanation_length": 160
+        },
+        {
+          "call_index": 6,
+          "item_index": 4,
+          "prompt_length": 98,
+          "maximum_choice_length": 69,
+          "explanation_length": 140
+        },
+        {
+          "call_index": 9,
+          "item_index": 0,
+          "prompt_length": 74,
+          "maximum_choice_length": 78,
+          "explanation_length": 288
+        }
+      ],
+      "accepted_items": [
+        {
+          "accepted_index": 0,
+          "prompt": "Which sentence demonstrates correct subject-verb agreement?",
+          "expected_answer": "The collection of rare stamps is worth thousands of dollars.",
+          "reviewer_call": 8,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 6,
+          "author_item": 0,
+          "unique_answer": "pass",
+          "teaching": "fail",
+          "quality": "fail",
+          "finding": "The key is the sole offered singular-agreement sentence. Accepted feedback falsely treats past/perfect tense as unsupported by a singular subject; subject number does not require present tense.",
+          "origin": "Author explanation only discussed agreement and was correct. Solver call7 added an unnecessary tense objection to have been. Reviewer call8 amplified it into only-present-tense teaching and an explicit false objection to the tense of were."
+        },
+        {
+          "accepted_index": 1,
+          "prompt": "Which sentence contains a pronoun with an unclear reference?",
+          "expected_answer": "Maria told Elena that her report was late.",
+          "reviewer_call": 8,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 6,
+          "author_item": 1,
+          "unique_answer": "pass",
+          "teaching": "fails_supported_client_reordering",
+          "quality": "fail",
+          "finding": "Maria/Elena is the unique ambiguous-reference sentence. Final explanation says Only the first choice, although iOS admission shuffles verified choices. It becomes false when the keyed sentence moves.",
+          "origin": "Author used an (a) label; solver named Maria/Elena without position. Reviewer call8 introduced the ordinal first choice into admitted feedback. Backend label regex misses ordinal references."
+        },
+        {
+          "accepted_index": 2,
+          "prompt": "Which sentence uses commas correctly to set off a nonrestrictive clause?",
+          "expected_answer": "The novel, which won the Pulitzer Prize, has sold millions of copies.",
+          "reviewer_call": 8,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 6,
+          "author_item": 2,
+          "unique_answer": "pass",
+          "teaching": "pass_in_supplied_relative_clause_context",
+          "quality": "pass",
+          "finding": "Only the which-clause with both commas supplies the requested nonrestrictive form. Punctuation and pronoun distinctions are the task itself; similar novel facts do not make these written forms duplicates.",
+          "origin": "Author, solver and reviewer agree on the unchanged sentence form."
+        },
+        {
+          "accepted_index": 3,
+          "prompt": "Which sentence demonstrates correct subject-verb agreement with a compound subject joined by 'or'?",
+          "expected_answer": "Neither the manager nor the employees were willing to compromise.",
+          "reviewer_call": 8,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 6,
+          "author_item": 4,
+          "unique_answer": "uncertain_for_exact_stem",
+          "teaching": "pass_for_neither_nor_rule",
+          "quality": "fail_uncertainty",
+          "finding": "The exact stem asks for a subject joined by quoted or, but every choice uses neither...nor. Were is uniquely correct under the intended proximity rule; certifying the unchanged task requires interpreting or as a broad rule-family label instead of its quoted word. Frozen uncertainty criterion fails.",
+          "origin": "Mismatch originates in author call6 item4; solver and reviewer evaluate neither...nor without acknowledging the stem mismatch."
+        },
+        {
+          "accepted_index": 4,
+          "prompt": "Which sentence uses a semicolon correctly to join two independent clauses?",
+          "expected_answer": "The conference ended at noon; however, many attendees stayed for the workshop.",
+          "reviewer_call": 11,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 9,
+          "author_item": 0,
+          "unique_answer": "fails_uniqueness_or_at_minimum_uncertain",
+          "teaching": "fail",
+          "quality": "fail",
+          "finding": "The keyed semicolon-before-however form is valid. The alternative ending its first clause with comma-however-semicolon also allows a standard reading: postponed however modifies the first clause and the semicolon joins two independent clauses. The stem does not require however to introduce the second clause. Calling that punctuation necessarily misplaced is not defensible.",
+          "origin": "Author call9, solver call10 and reviewer call11 repeat the same absolute restriction. Reviewer preserves it in admitted overall and per-choice feedback.",
+          "source": "https://cse.buffalo.edu/~rapaport/Papers/Papers.by.Others/aune01-punctuation.pdf",
+          "source_locator": "Bruce Aune, Punctuation and Syntax, printed page5 / PDF pageindex4, ruleR2 and its first-clause-final however example."
+        }
+      ],
+      "manual_quality_passes": 1,
+      "manual_quality_failures_including_uncertainty": 4
+    },
+    {
+      "index": 3,
+      "goal": "Interpreting quantitative evidence",
+      "final_admitted_count": 5,
+      "raw_author_item_count": 6,
+      "provider_calls": 6,
+      "elapsed_seconds": 61.195,
+      "input_tokens": 18416,
+      "output_tokens": 4970,
+      "quality_metrics": {
+        "sanitize": {
+          "accepted": 6
+        },
+        "review": {
+          "solver_zero_supported": 1,
+          "accepted": 5
+        }
+      },
+      "scope_sha256": "f70aa38fbe2d3a1f42084348a7c3c967c35d5573cb7559d6c628bad5433a24d6",
+      "stage_checks": [
+        {
+          "call_index": 12,
+          "contract": "question_author_v3",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0
+        },
+        {
+          "call_index": 13,
+          "contract": "complete_choice_solver_v3",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0,
+          "strict_slot_decoder_index_coverage_reason_bounds": "pass"
+        },
+        {
+          "call_index": 14,
+          "contract": "default_reviewer_v1",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0
+        },
+        {
+          "call_index": 15,
+          "contract": "question_author_v3",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0
+        },
+        {
+          "call_index": 16,
+          "contract": "complete_choice_solver_v3",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0,
+          "strict_slot_decoder_index_coverage_reason_bounds": "pass"
+        },
+        {
+          "call_index": 17,
+          "contract": "default_reviewer_v1",
+          "strict_native_adapter": "pass",
+          "stop_reason": "end_turn",
+          "sdk_retry_attempts": 0
+        }
+      ],
+      "raw_author_bounds": [
+        {
+          "call_index": 12,
+          "item_index": 0,
+          "prompt_length": 108,
+          "maximum_choice_length": 35,
+          "explanation_length": 158
+        },
+        {
+          "call_index": 12,
+          "item_index": 1,
+          "prompt_length": 143,
+          "maximum_choice_length": 4,
+          "explanation_length": 404
+        },
+        {
+          "call_index": 12,
+          "item_index": 2,
+          "prompt_length": 116,
+          "maximum_choice_length": 8,
+          "explanation_length": 98
+        },
+        {
+          "call_index": 12,
+          "item_index": 3,
+          "prompt_length": 171,
+          "maximum_choice_length": 50,
+          "explanation_length": 125
+        },
+        {
+          "call_index": 12,
+          "item_index": 4,
+          "prompt_length": 132,
+          "maximum_choice_length": 4,
+          "explanation_length": 66
+        },
+        {
+          "call_index": 15,
+          "item_index": 0,
+          "prompt_length": 208,
+          "maximum_choice_length": 5,
+          "explanation_length": 135
+        }
+      ],
+      "accepted_items": [
+        {
+          "accepted_index": 0,
+          "prompt": "A store sells apples in bags of 6 for $4.50 and bags of 10 for $7.00. Which bag offers the lower unit price?",
+          "expected_answer": "The 10-apple bag at $0.70 per apple",
+          "reviewer_call": 14,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 12,
+          "author_item": 0,
+          "unique_answer": "pass",
+          "teaching": "pass",
+          "quality": "pass",
+          "finding": "4.50/6=0.75 and7/10=0.70. Only the10-apple bag is cheaper per apple. The two6-bag options assert different task-relevant unit prices, not incidental cosmetic differences. Final feedback is correct.",
+          "origin": "Author and solver establish the correct calculation; reviewer preserves correct teaching."
+        },
+        {
+          "accepted_index": 1,
+          "prompt": "A recipe calls for 2 cups of flour to serve 6 people. How many cups are needed to serve 15 people at the same ratio?",
+          "expected_answer": "5 cups",
+          "reviewer_call": 14,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 12,
+          "author_item": 2,
+          "unique_answer": "pass",
+          "teaching": "pass",
+          "quality": "pass",
+          "finding": "2*15/6=5cups; all proposed quantities differ. Same ratio is explicit. Feedback correctly says7.5cups corresponds to3cups/6people and6cups would serve18people.",
+          "origin": "All three stages are consistent."
+        },
+        {
+          "accepted_index": 2,
+          "prompt": "Two containers of juice are compared: Container A holds 1.5 liters and costs $3.60; Container B holds 2.0 liters and costs $4.80. Which statement is supported by the data?",
+          "expected_answer": "Both containers have equal value per liter",
+          "reviewer_call": 14,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 12,
+          "author_item": 3,
+          "unique_answer": "pass_under_ordinary_monetary_unit_price_reading",
+          "teaching": "pass",
+          "quality": "pass",
+          "finding": "3.60/1.5=4.80/2=2.40perliter. A-cheaper, B-cheaper, equal-unit-value and requiring taste testing are distinct claims. The quantitative cost/volume comparison uses value as unit pricing, not equal taste or quality.",
+          "origin": "Author, solver and reviewer use the same monetary unit-price interpretation."
+        },
+        {
+          "accepted_index": 3,
+          "prompt": "A course grade combines Quiz average (30% weight, score 84) and Final exam (70% weight, score 76). What is the overall course grade?",
+          "expected_answer": "78.4",
+          "reviewer_call": 14,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 12,
+          "author_item": 4,
+          "unique_answer": "pass",
+          "teaching": "fail",
+          "quality": "fail",
+          "finding": "78.4 is uniquely correct. Reviewer falsely says82.4 results from reversed weights:0.70*84+0.30*76=81.6, absent from the choices. Its overall claim that reversing/equalizing weights produces the distractors is also false. The broad claim that79.2 corresponds to no standard weighting is unsupported;40/60 gives79.2.",
+          "origin": "Author and solver correctly calculate78.4. Solver does not claim reversed weights give82.4. Reviewer call14 invents that rationale and it survives unchanged in learner feedback."
+        },
+        {
+          "accepted_index": 4,
+          "prompt": "A survey of 120 students found 45 prefer online classes. In a second survey of 80 students, 28 prefer online classes. What is the overall proportion preferring online classes when the two groups are combined?",
+          "expected_answer": "0.365",
+          "reviewer_call": 17,
+          "checks": {
+            "exact_author_stem": true,
+            "exact_author_key": true,
+            "same_exact_choice_set": true,
+            "reviewer_answer_matches_exact_key": true,
+            "reviewer_explanation_preserved": true,
+            "reviewer_choice_feedback_preserved": true,
+            "exact_four_unique_strings": true,
+            "feedback_covers_exact_choices": true,
+            "bounded_prompt_choices_feedback": true,
+            "json_text_roundtrip": true
+          },
+          "task_relevant_distinct_choices": "pass",
+          "feedback_complete": "pass",
+          "author_call": 15,
+          "author_item": 0,
+          "unique_answer": "pass",
+          "teaching": "pass",
+          "quality": "pass",
+          "finding": "Combined73of200 gives0.365. The other distinct proportions imply75,77or80preferences, as final feedback states. Combining the two stated groups supplies the ordinary reading.",
+          "origin": "All three stages are consistent."
+        }
+      ],
+      "manual_quality_passes": 4,
+      "manual_quality_failures_including_uncertainty": 1
+    }
+  ],
+  "rejected_author_items": [
+    {
+      "job": 2,
+      "author_call": 6,
+      "author_item": 3,
+      "outcome": "Rejected by solver uncertainty; not sent to reviewer. One topup item generated inside original six-call budget.",
+      "author_defect": "Claim that their requires a plural antecedent excludes accepted singular-they usage without a restrictive style guide. Their-application and his-or-her forms do not establish a unique correct answer.",
+      "solver_detail": "Solver safely marks singular-their usage uncertain. Its additional claim that plural applications is inconsistent with each is too broad: each applicant may submit multiple applications. Rejected teaching did not reach learners.",
+      "source": "https://www.apa.org/about/apa/equity-diversity-inclusion/language-guidelines",
+      "source_support": "APA guidance endorses singular they/their for generic or hypothetical people."
+    },
+    {
+      "job": 3,
+      "author_call": 12,
+      "author_item": 1,
+      "outcome": "All four choices refuted; not sent to reviewer. One topup item generated inside original six-call budget.",
+      "author_defect": "True weighted average81.6 is absent; key84.0 is wrong. Raw explanation computes81.6, then changes72to78 only in prose, leaving the stem unchanged.",
+      "solver_detail": "All refutations use the unchanged72/88stem and correct81.6 result. No repair was credited. Oversized raw draft explanation remains in capture."
+    }
+  ],
+  "client_order_reference_check": {
+    "accepted_job": 2,
+    "accepted_index": 1,
+    "valid_choice_permutations": 24,
+    "permutations_where_key_is_not_first": 18,
+    "method": "Offline enumeration plus direct inspection of Checkpoint/Services/QuestionBatchSanitizer.swift:55 verified-question shuffle; no new UI simulation or XCTest."
+  },
+  "exact_decimal_checks": {
+    "original_exam_average": "81.6",
+    "course_grade": "78.4",
+    "course_reversed_weights": "81.6",
+    "course_40_60_weights": "79.2",
+    "combined_survey_proportion": "0.365"
+  },
+  "limitations": [
+    "Only jobs2and3 are scored; this is not a whole-plan qualification.",
+    "Native-schema, slot-decoder and JSON text checks passed; no new Swift replay of live items was executed here.",
+    "No inferred repair, re-keying, task reinterpretation or retrospective label changes are credited.",
+    "Value-per-liter is judged in the ordinary monetary unit-price sense within its quantitative cost/volume task."
+  ]
+}

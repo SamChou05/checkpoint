@@ -1,0 +1,11 @@
+{
+  "approved": true,
+  "reviewed_packet_sha256": "d6263949701e1486036aa16a09c7348f478d180349a327c08fcd973485d4e305",
+  "rubric_version": "meaningful-proposed-answer-v1",
+  "reviewed_case_count": 20,
+  "eligible_case_count": 10,
+  "defective_case_count": 10,
+  "clarification_verified": "The meeting-time stem explicitly defines times without a.m./p.m. as 24-hour notation; no gold labels changed.",
+  "scope": "Independent prospective gold/rubric approval only. No provider dispatch authorization, production qualification, or revision of prior evidence.",
+  "assessment": "INDEPENDENT_GOLD_REVIEW.md"
+}

@@ -1,6 +1,7 @@
 """Native transport through real orchestration, with synthetic provider responses."""
 
 import copy
+from itertools import combinations
 import json
 import os
 import unittest
@@ -27,12 +28,45 @@ from skill_maps import _evolve_skill_map, _infer_skill_map
 from test_lambda_skill_map_evolution import _evolution_payload, _provider_response
 
 
-AUTHOR = "question_author_v1"
-SOLVER = "complete_choice_solver_v1"
+AUTHOR = "question_author_v3"
+SOLVER = "complete_choice_solver_v3"
+LEGACY_SOLVER = "complete_choice_solver_v1"
 REVIEWER = "default_reviewer_v1"
 AUTHORED_REVIEWER = "authored_solution_reviewer_v1"
 MODEL = "us.anthropic.claude-sonnet-4-6"
 FALLBACK = "moonshotai.kimi-k2.5"
+
+
+def author_payload(*questions):
+    """Provider fixtures use real fixed slots, while public fixtures keep text keys."""
+    items = []
+    for question in questions:
+        item = copy.deepcopy(question)
+        answer = item.pop("expectedAnswer")
+        choices = item["choices"]
+        item["choices"] = dict(zip(("a", "b", "c", "d"), choices, strict=True))
+        item["correctChoice"] = ("a", "b", "c", "d")[choices.index(answer)]
+        items.append(item)
+    return {"questions": items}
+
+
+def solver_record(item, answer, mutate=None):
+    slots = item["choices"] if isinstance(item["choices"], dict) else None
+    public_item = {**item, "choices": list(slots.values())} if slots else item
+    result = _complete_solution(public_item, answer)
+    if mutate:
+        mutate(result)
+    if slots:
+        by_choice = {row["choice"]: row for row in result["choices"]}
+        result["choices"] = {
+            slot: {key: value for key, value in by_choice[choice].items() if key != "choice"}
+            for slot, choice in slots.items()
+        }
+        result["choicePairs"] = {
+            left + right: {"reason": "These complete offered answers make distinct claims.", "relation": "distinct"}
+            for left, right in combinations(("a", "b", "c", "d"), 2)
+        }
+    return result
 
 
 def task_data(request, tag):
@@ -69,7 +103,9 @@ class ScriptedNativeClient:
         contract, result = self.steps.pop(0)
         assert request["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"] == contract
         system = request["system"][0]["text"]
-        if contract == REVIEWER:
+        if contract == AUTHOR:
+            assert "NATIVE TRANSPORT OVERRIDE (question_author_v2)" in system
+        elif contract == REVIEWER:
             assert "NATIVE TRANSPORT OVERRIDE" in system
             assert "choiceFeedback" in system
         else:
@@ -113,22 +149,29 @@ class NativePipelineTests(unittest.TestCase):
             data = task_data(request, "question_solution_json")
             item = data["items"][0]
             fields = {"index", "prompt", "choices", "skillID", "objectiveID", "topic"}
+            if isinstance(item["choices"], dict):
+                fields.add("choicePairs")
+                self.assertEqual(set(item["choices"]), {"a", "b", "c", "d"})
+                self.assertEqual(item["choicePairs"], {
+                    left + right: {
+                        "leftChoice": item["choices"][left],
+                        "rightChoice": item["choices"][right],
+                    }
+                    for left, right in combinations(("a", "b", "c", "d"), 2)
+                })
             if "objective" in question:
                 fields.add("objective")
                 self.assertEqual(item["objective"], question["objective"])
             self.assertEqual(set(item), fields)
             self.assertNotIn("expectedAnswer", json.dumps(data))
             self.assertNotIn(question["explanation"], json.dumps(data))
-            result = _complete_solution(item, question["expectedAnswer"])
-            if mutate:
-                mutate(result)
-            return {"solutions": [result]}
+            return {"solutions": [solver_record(item, question["expectedAnswer"], mutate)]}
         return respond
 
     def pipeline(self, question=None, reviewer=None, mutate_solver=None):
         question = question or self.question
         return ScriptedNativeClient(
-            (AUTHOR, {"questions": [question]}),
+            (AUTHOR, author_payload(question)),
             (SOLVER, self.solver(question, mutate_solver)),
             (REVIEWER, {"reviews": [reviewer or review(question)]}),
         )
@@ -141,7 +184,7 @@ class NativePipelineTests(unittest.TestCase):
         self.assertEqual(response["statusCode"], 200)
         question = json.loads(response["body"])["questions"][0]
         self.assertEqual(question["verificationVersion"], 1)
-        self.assertEqual(question["verificationPolicyRevision"], 2)
+        self.assertEqual(question["verificationPolicyRevision"], 4)
         self.assertEqual(question["expectedAnswer"], self.question["expectedAnswer"])
         self.assertCountEqual(question["choices"], self.question["choices"])
         self.assertEqual(question["choiceExplanations"], {
@@ -201,7 +244,7 @@ class NativePipelineTests(unittest.TestCase):
         secret = "private-learner-secret-in-transient-error"
         client = ScriptedNativeClient(
             (AUTHOR, RuntimeError(secret)),
-            (AUTHOR, {"questions": [self.question]}),
+            (AUTHOR, author_payload(self.question)),
         )
         budget = generation.ProviderCallBudget(2)
         metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
@@ -245,7 +288,7 @@ class NativePipelineTests(unittest.TestCase):
         with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "2", "BEDROCK_FALLBACK_MODEL_ID": FALLBACK}):
             result = generation._generate_sanitized_questions(request, client, budget, metrics)
         self.assertEqual([question["prompt"] for question in result], [self.question["prompt"]])
-        self.assertEqual(result[0]["verificationPolicyRevision"], 2)
+        self.assertEqual(result[0]["verificationPolicyRevision"], 4)
         self.assertEqual([call["modelId"] for call in client.calls], [MODEL] * 4)
         self.assertEqual(len(client.steps), 1)
         self.assertEqual(budget.calls, 4)
@@ -288,7 +331,7 @@ class NativePipelineTests(unittest.TestCase):
         self.assertEqual(set(structure), {"mode", "name", "version", "sha256"})
         self.assertEqual(structure["mode"], "native")
         self.assertEqual(structure["name"], AUTHOR)
-        self.assertEqual(structure["version"], "1")
+        self.assertEqual(structure["version"], "3")
         self.assertRegex(structure["sha256"], r"^[0-9a-f]{64}$")
         self.assertNotIn(secret, json.dumps(metrics))
         self.assertNotIn(self.question["expectedAnswer"], json.dumps(metrics))
@@ -350,8 +393,8 @@ class NativePipelineTests(unittest.TestCase):
             self.assertNotIn("independentSolutions", data)
             return {"reviews": [{"index": 0, "valid": True, "answer": question["expectedAnswer"],
                                   "difficulty": 3, "explanationSupport": "supported", "issues": []}]}
-        client = ScriptedNativeClient((AUTHOR, {"questions": [question]}),
-                                      (SOLVER, self.solver(question)), (AUTHORED_REVIEWER, audit))
+        client = ScriptedNativeClient((AUTHOR, author_payload(question)),
+                                      (LEGACY_SOLVER, self.solver(question)), (AUTHORED_REVIEWER, audit))
         with patch.dict(os.environ, {"QUESTION_FEEDBACK_CONTRACT": "authored_solution"}):
             result = generation._generate_sanitized_questions(self.request, client, generation.ProviderCallBudget(3))
         self.assertEqual(result[0]["explanation"].encode(), question["explanation"].encode())
@@ -365,8 +408,8 @@ class NativePipelineTests(unittest.TestCase):
             with self.subTest(changes=changes):
                 record = {"index": 0, "valid": True, "answer": self.question["expectedAnswer"],
                           "difficulty": 3, "explanationSupport": "supported", "issues": [], **changes}
-                client = ScriptedNativeClient((AUTHOR, {"questions": [self.question]}),
-                    (SOLVER, self.solver(self.question)), (AUTHORED_REVIEWER, {"reviews": [record]}))
+                client = ScriptedNativeClient((AUTHOR, author_payload(self.question)),
+                    (LEGACY_SOLVER, self.solver(self.question)), (AUTHORED_REVIEWER, {"reviews": [record]}))
                 with patch.dict(os.environ, {"QUESTION_FEEDBACK_CONTRACT": "authored_solution"}):
                     self.assertEqual(generation._generate_sanitized_questions(
                         self.request, client, generation.ProviderCallBudget(3),

@@ -1,0 +1,427 @@
+{
+  "status": "DRAFT FOR INDEPENDENT GOLD REVIEW; NOT FROZEN; NO PROVIDER CALLS",
+  "rubric_version": "meaningful-proposed-answer-v1",
+  "case_count": 20,
+  "batches": [
+    [
+      "tank_irrelevant_color",
+      "meters_to_kilometers",
+      "two_switches_multiple",
+      "python_string_case",
+      "integer_solution_absent"
+    ],
+    [
+      "dispatch_paraphrase",
+      "club_age_boundary",
+      "red_ball_multiple_forms",
+      "map_scale_distance",
+      "pencil_key_mismatch"
+    ],
+    [
+      "school_notebook_budget",
+      "membrane_water_direction",
+      "verb_modifier",
+      "jacket_discount_duplicate",
+      "meeting_time_duplicate"
+    ],
+    [
+      "essay_submission_fraction",
+      "python_negative_index",
+      "sealed_reaction_mass",
+      "battery_inventory_key",
+      "readonly_multiple_permissions"
+    ]
+  ],
+  "realistic_mixed_topic_batches": [
+    2,
+    3
+  ],
+  "controls": [
+    {
+      "id": "tank_irrelevant_color",
+      "topic": "Capacity and proportions",
+      "prompt": "A tank contains 40 L at 25% of full capacity. What is its full capacity? Tank color does not affect the calculation.",
+      "choices": [
+        "160 L",
+        "80 L in a red tank",
+        "80 L in a blue tank",
+        "40 L"
+      ],
+      "expectedAnswer": "160 L",
+      "supportedChoices": [
+        "160 L"
+      ],
+      "equivalentPairs": [
+        [
+          "80 L in a red tank",
+          "80 L in a blue tank"
+        ]
+      ],
+      "expectedEligible": false,
+      "groundTruthReason": "40 / 0.25 = 160. Both wrong colored-tank options propose 80 L; color is explicitly irrelevant to the requested capacity."
+    },
+    {
+      "id": "dispatch_paraphrase",
+      "topic": "Following operational rules",
+      "prompt": "A dispatch system uses green for send, amber for hold, and red for cancel. The signal is amber. What should the operator do?",
+      "choices": [
+        "Hold the parcel.",
+        "Cancel dispatch.",
+        "Do not send the parcel; cancel it.",
+        "Send the parcel."
+      ],
+      "expectedAnswer": "Hold the parcel.",
+      "supportedChoices": [
+        "Hold the parcel."
+      ],
+      "equivalentPairs": [
+        [
+          "Cancel dispatch.",
+          "Do not send the parcel; cancel it."
+        ]
+      ],
+      "expectedEligible": false,
+      "groundTruthReason": "Amber requires holding. Both cancel options propose the same cancellation action; neither is a distinct distractor."
+    },
+    {
+      "id": "red_ball_multiple_forms",
+      "topic": "Probability",
+      "prompt": "A bag contains exactly 3 red and 9 blue balls. One ball is drawn uniformly at random. What is the probability that it is red?",
+      "choices": [
+        "1/4",
+        "25%",
+        "3/9",
+        "3/8"
+      ],
+      "expectedAnswer": "1/4",
+      "supportedChoices": [
+        "1/4",
+        "25%"
+      ],
+      "equivalentPairs": [
+        [
+          "1/4",
+          "25%"
+        ]
+      ],
+      "expectedEligible": false,
+      "groundTruthReason": "3 / 12 = 1/4 = 25%, giving two correct options. The other numerical probabilities differ."
+    },
+    {
+      "id": "two_switches_multiple",
+      "topic": "Logical statements",
+      "prompt": "Switch A is on and switch B is on. Which statement is true?",
+      "choices": [
+        "Switch A is on.",
+        "Switch B is on.",
+        "Switch A is off.",
+        "Switch B is off."
+      ],
+      "expectedAnswer": "Switch A is on.",
+      "supportedChoices": [
+        "Switch A is on.",
+        "Switch B is on."
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": false,
+      "groundTruthReason": "The first two statements are both true but concern different switches. Shared truth or falsity does not make their proposed claims equivalent."
+    },
+    {
+      "id": "integer_solution_absent",
+      "topic": "Linear equations",
+      "prompt": "Which listed integer n satisfies 3n = 12?",
+      "choices": [
+        "1",
+        "2",
+        "3",
+        "5"
+      ],
+      "expectedAnswer": "3",
+      "supportedChoices": [],
+      "equivalentPairs": [],
+      "expectedEligible": false,
+      "groundTruthReason": "The unique solution is 4, which is absent. All four offered integers are distinct wrong values."
+    },
+    {
+      "id": "pencil_key_mismatch",
+      "topic": "Multiplication",
+      "prompt": "A crate contains 6 boxes with 4 pencils in each box. How many pencils are in the crate?",
+      "choices": [
+        "24",
+        "10",
+        "2",
+        "12"
+      ],
+      "expectedAnswer": "10",
+      "supportedChoices": [
+        "24"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": false,
+      "groundTruthReason": "6 * 4 = 24. The authored key 10 is deliberately wrong and is never included in solver input; all four numerical proposals differ."
+    },
+    {
+      "id": "meters_to_kilometers",
+      "topic": "Unit conversion",
+      "prompt": "A car travels 1,500 m. How far is this in kilometers? Use 1 km = 1,000 m.",
+      "choices": [
+        "1.5 km",
+        "15 km",
+        "0.15 km",
+        "1500 km"
+      ],
+      "expectedAnswer": "1.5 km",
+      "supportedChoices": [
+        "1.5 km"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "1500 / 1000 = 1.5 km. All options use the requested unit but propose different, task-relevant distances."
+    },
+    {
+      "id": "python_string_case",
+      "topic": "Python strings",
+      "prompt": "In Python 3, what is the value of the expression \"A\" + \"b\"?",
+      "choices": [
+        "\"Ab\"",
+        "\"AB\"",
+        "\"ab\"",
+        "A SyntaxError is raised."
+      ],
+      "expectedAnswer": "\"Ab\"",
+      "supportedChoices": [
+        "\"Ab\""
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "String concatenation preserves the case of both characters. The alternative string values and exception are different observable outcomes."
+    },
+    {
+      "id": "club_age_boundary",
+      "topic": "Inequalities",
+      "prompt": "A club admits everyone aged 18 or older and nobody younger. Which condition on age exactly matches its rule?",
+      "choices": [
+        "age >= 18",
+        "age > 18",
+        "age <= 18",
+        "age < 18"
+      ],
+      "expectedAnswer": "age >= 18",
+      "supportedChoices": [
+        "age >= 18"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "The set includes 18 and every greater age. Direction and inclusion of equality distinguish the four proposed admission sets."
+    },
+    {
+      "id": "map_scale_distance",
+      "topic": "Map scale",
+      "prompt": "A map uses 1 cm to represent 5 km. Two towns are 3 cm apart on the map. What distance does the map indicate between them?",
+      "choices": [
+        "15 km",
+        "8 km",
+        "5/3 km",
+        "0.6 km"
+      ],
+      "expectedAnswer": "15 km",
+      "supportedChoices": [
+        "15 km"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "3 * 5 = 15 km. The other proposed distances represent addition, reversed division, or inverse scaling, not paraphrases of one result."
+    },
+    {
+      "id": "school_notebook_budget",
+      "topic": "Practical arithmetic",
+      "prompt": "A school has $120 for supplies and buys 8 notebooks at $7 each. How much money remains?",
+      "choices": [
+        "$64",
+        "$56",
+        "$113",
+        "$176"
+      ],
+      "expectedAnswer": "$64",
+      "supportedChoices": [
+        "$64"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "Spending is 8 * 7 = 56 and the remainder is 120 - 56 = 64. Wrong options represent spent money, one-book subtraction, and adding the cost."
+    },
+    {
+      "id": "membrane_water_direction",
+      "topic": "Biology",
+      "prompt": "A membrane lets water pass but blocks salt. In this model, net water flow goes from lower to higher salt concentration. Side A is 2% salt and side B is 5%. What happens?",
+      "choices": [
+        "Net water flows from A to B.",
+        "Net water flows from B to A.",
+        "There is no net water flow.",
+        "Only salt moves from A to B."
+      ],
+      "expectedAnswer": "Net water flows from A to B.",
+      "supportedChoices": [
+        "Net water flows from A to B."
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "The stated model sends water from 2% to 5%. Reverse flow, no flow, and salt transport are different predictions; the membrane explicitly blocks salt."
+    },
+    {
+      "id": "verb_modifier",
+      "topic": "English grammar",
+      "prompt": "In the sentence \"The anxious passenger waited quietly,\" which word modifies the verb \"waited\"?",
+      "choices": [
+        "quietly",
+        "anxious",
+        "passenger",
+        "The"
+      ],
+      "expectedAnswer": "quietly",
+      "supportedChoices": [
+        "quietly"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "Quietly modifies how the passenger waited. The other choices are an adjective modifying passenger, the subject noun, and an article."
+    },
+    {
+      "id": "jacket_discount_duplicate",
+      "topic": "Shopping arithmetic",
+      "prompt": "An $80 jacket is discounted by 25%. What is its price after the discount?",
+      "choices": [
+        "$60",
+        "$20",
+        "20 dollars",
+        "$100"
+      ],
+      "expectedAnswer": "$60",
+      "supportedChoices": [
+        "$60"
+      ],
+      "equivalentPairs": [
+        [
+          "$20",
+          "20 dollars"
+        ]
+      ],
+      "expectedEligible": false,
+      "groundTruthReason": "The discount is $20 and the sale price is $60. $20 and 20 dollars are the same wrong proposed price."
+    },
+    {
+      "id": "meeting_time_duplicate",
+      "topic": "Time arithmetic",
+      "prompt": "A meeting starts at 9:10 a.m. and lasts 35 minutes. At what time does it end? A time without a.m. or p.m. uses the 24-hour clock.",
+      "choices": [
+        "9:45 a.m.",
+        "09:35",
+        "9:35 a.m.",
+        "10:45 a.m."
+      ],
+      "expectedAnswer": "9:45 a.m.",
+      "supportedChoices": [
+        "9:45 a.m."
+      ],
+      "equivalentPairs": [
+        [
+          "09:35",
+          "9:35 a.m."
+        ]
+      ],
+      "expectedEligible": false,
+      "groundTruthReason": "9:10 plus 35 minutes is 9:45 a.m. Under the explicitly stated 24-hour convention, 09:35 and 9:35 a.m. denote the same wrong time."
+    },
+    {
+      "id": "essay_submission_fraction",
+      "topic": "Fractions",
+      "prompt": "In a class of 24 students, 18 submitted an essay. What fraction of the class submitted an essay?",
+      "choices": [
+        "3/4",
+        "1/4",
+        "2/3",
+        "4/3"
+      ],
+      "expectedAnswer": "3/4",
+      "supportedChoices": [
+        "3/4"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "18/24 simplifies to 3/4. The other fractions are distinct numerical claims and include the nonsubmitted fraction, a wrong simplification, and the reciprocal."
+    },
+    {
+      "id": "python_negative_index",
+      "topic": "Python lists",
+      "prompt": "In Python 3, items = [10, 20, 30]. What does items[-2] evaluate to?",
+      "choices": [
+        "20",
+        "30",
+        "10",
+        "An IndexError is raised."
+      ],
+      "expectedAnswer": "20",
+      "supportedChoices": [
+        "20"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "Index -2 selects the second item from the end, 20. Last, first, and an exception are different outcomes; none is a paraphrase of another."
+    },
+    {
+      "id": "sealed_reaction_mass",
+      "topic": "Conservation of mass",
+      "prompt": "A sealed container holds 12 g of reactants. They react completely, with no matter entering or leaving. Using conservation of mass, what is the total mass of the products?",
+      "choices": [
+        "12 g",
+        "0 g",
+        "6 g",
+        "24 g"
+      ],
+      "expectedAnswer": "12 g",
+      "supportedChoices": [
+        "12 g"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": true,
+      "groundTruthReason": "Conservation of mass in the sealed system preserves the 12 g total. The other proposed masses represent disappearance, halving, and doubling."
+    },
+    {
+      "id": "battery_inventory_key",
+      "topic": "Inventory arithmetic",
+      "prompt": "A store starts with 18 batteries, sells 7, and receives 5 more. How many batteries does it then have?",
+      "choices": [
+        "16",
+        "6",
+        "20",
+        "30"
+      ],
+      "expectedAnswer": "20",
+      "supportedChoices": [
+        "16"
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": false,
+      "groundTruthReason": "18 - 7 + 5 = 16. The authored key 20 is deliberately wrong and withheld from the solver. The four offered counts are distinct."
+    },
+    {
+      "id": "readonly_multiple_permissions",
+      "topic": "Software permissions",
+      "prompt": "A policy permits read-only users to view and download reports, but never edit or delete them. Which action is permitted for a read-only user?",
+      "choices": [
+        "View a report.",
+        "Download a report.",
+        "Edit a report.",
+        "Delete a report."
+      ],
+      "expectedAnswer": "View a report.",
+      "supportedChoices": [
+        "View a report.",
+        "Download a report."
+      ],
+      "equivalentPairs": [],
+      "expectedEligible": false,
+      "groundTruthReason": "Viewing and downloading are both explicitly permitted, so the question has two correct answers. They are different actions, not synonymous options."
+    }
+  ]
+}

@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from jsonschema import Draft202012Validator
 
-from lambda_test_support import FakeBedrockClient, _complete_solution, _raw_question, _request_payload
+from lambda_test_support import FakeBedrockClient, _raw_question, _request_payload
 from native_output_contracts import (
     _validate_schema_value,
     adapt_native_response,
@@ -20,7 +20,7 @@ from question_verification import verify_questions
 from request_contract import _normalize_request
 from service_errors import ProviderError
 from test_native_output_contracts import Client
-from test_native_pipeline import AUTHOR, REVIEWER, SOLVER, ScriptedNativeClient, review, task_data
+from test_native_pipeline import AUTHOR, REVIEWER, SOLVER, ScriptedNativeClient, author_payload, review, solver_record, task_data
 
 
 # Exact rejected row from native-reviewer-capture.json, call 3, item 2. Its
@@ -155,10 +155,10 @@ class NativeReviewerV2Tests(unittest.TestCase):
 
         def solve(request):
             items = task_data(request, "question_solution_json")["items"]
-            return {"solutions": [_complete_solution(item, answers[item["prompt"]]) for item in items]}
+            return {"solutions": [solver_record(item, answers[item["prompt"]]) for item in items]}
 
         client = ScriptedNativeClient(
-            (AUTHOR, {"questions": [self.question, self.other]}),
+            (AUTHOR, author_payload(self.question, self.other)),
             (SOLVER, solve),
             (REVIEWER, {"reviews": [self.accepted, {
                 **self.rejected, "answer": "", "difficulty": 0, "explanation": "", "choiceFeedback": [],
@@ -179,7 +179,7 @@ class NativeReviewerV2Tests(unittest.TestCase):
         self.assertEqual(metrics["QuestionQuality"]["review"]["rejected_by_model"], 1)
         self.assertEqual(client.calls[-1]["outputConfig"], native_output_config("default_reviewer_v1"))
         self.assertEqual(metrics["ProviderObservations"][-1]["structuredOutput"]["version"], "1")
-        self.assertEqual(accepted[0]["verificationPolicyRevision"], 2)
+        self.assertEqual(accepted[0]["verificationPolicyRevision"], 4)
 
     def test_explicit_v2_stage_adapts_mixed_feedback_without_promoting_rejections(self):
         client = Client({"reviews": [self.accepted, self.rejected]})

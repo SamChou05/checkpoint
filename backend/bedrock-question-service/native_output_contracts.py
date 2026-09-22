@@ -15,9 +15,12 @@ from service_errors import ProviderError, ServiceConfigurationError
 
 Contract = Literal[
     "question_author_v1",
+    "question_author_v2",
+    "question_author_v3",
     "skill_map_inference_v1",
     "skill_map_evolution_v1",
     "complete_choice_solver_v1",
+    "complete_choice_solver_v3",
     "default_reviewer_v1",
     "default_reviewer_v2",
     "authored_solution_reviewer_v1",
@@ -46,6 +49,20 @@ _SCHEMAS: dict[Contract, dict[str, Any]] = {
             "skillID": _STRING, "objectiveID": _STRING, "objective": _STRING,
         }, ["prompt", "choices", "expectedAnswer", "explanation", "topic", "difficulty", "format"])}
     }),
+    # Fixed slots constrain the choice count and key membership without schema
+    # array bounds or a model-authored answer string. Distinctness and factual
+    # correctness still require application admission checks. Retain v2's sorted
+    # serialization for explicit compatibility and frozen comparison replays.
+    "question_author_v2": _object({
+        "questions": {"type": "array", "items": _object({
+            "prompt": _STRING,
+            "choices": _object(dict.fromkeys(("a", "b", "c", "d"), _STRING)),
+            "correctChoice": {"type": "string", "enum": ["a", "b", "c", "d"]},
+            "explanation": _STRING, "topic": _STRING, "difficulty": _INTEGER,
+            "format": {"type": "string", "enum": ["Multiple Choice"]},
+            "skillID": _STRING, "objectiveID": _STRING, "objective": _STRING,
+        }, ["prompt", "choices", "correctChoice", "explanation", "topic", "difficulty", "format"])}
+    }),
     "skill_map_inference_v1": _object({
         "skills": {"type": "array", "items": _object({
             "name": _STRING,
@@ -70,6 +87,22 @@ _SCHEMAS: dict[Contract, dict[str, Any]] = {
                 "judgment": {"type": "string", "enum": ["supported", "refuted", "uncertain"]},
                 "reason": _STRING,
             })},
+        })}
+    }),
+    # Fixed identifiers bind every judgment and unordered pair to input slots.
+    # No model-authored choice text or array length can create self/extra pairs.
+    # Exact batch/index coverage and semantic truth still require local checks.
+    "complete_choice_solver_v3": _object({
+        "solutions": {"type": "array", "items": _object({
+            "index": _INTEGER,
+            "choices": _object({slot: _object({
+                "reason": _STRING,
+                "judgment": {"type": "string", "enum": ["supported", "refuted", "uncertain"]},
+            }) for slot in ("a", "b", "c", "d")}),
+            "choicePairs": _object({slot: _object({
+                "reason": _STRING,
+                "relation": {"type": "string", "enum": ["equivalent", "distinct", "uncertain"]},
+            }) for slot in ("ab", "ac", "ad", "bc", "bd", "cd")}),
         })}
     }),
     # A uniform negative representation avoids a provider-hostile nullable enum:
@@ -111,6 +144,14 @@ _SCHEMAS: dict[Contract, dict[str, Any]] = {
     }),
 }
 
+# V3 has the same semantic shape as v2. Only its serialized question-property
+# order changes, matching the qualified ordering experiment byte for byte.
+_SCHEMAS["question_author_v3"] = copy.deepcopy(_SCHEMAS["question_author_v2"])
+_AUTHOR_V3_PROPERTY_ORDER = (
+    "prompt", "choices", "explanation", "correctChoice", "topic", "difficulty",
+    "format", "skillID", "objectiveID", "objective",
+)
+
 
 def output_mode() -> str:
     mode = os.getenv("BEDROCK_STRUCTURED_OUTPUT_MODE", "legacy").strip().lower()
@@ -124,6 +165,22 @@ def output_mode() -> str:
 def native_output_config(contract: Contract) -> dict[str, Any]:
     """Return an independent wrapper with stable schema serialization."""
     schema = json.dumps(_SCHEMAS[contract], sort_keys=True, separators=(",", ":"))
+    if contract == "complete_choice_solver_v3":
+        # V3 intentionally declares reason before the final judgment/relation.
+        # Scope insertion-order serialization to this new contract so all
+        # historical schema bytes and author-v3 qualified ordering stay intact.
+        schema = json.dumps(_SCHEMAS[contract], separators=(",", ":"))
+    if contract == "question_author_v3":
+        # Preserve the canonical ordering of every other mapping and required
+        # array. This changes exactly the property-order treatment tested live;
+        # a global sort removal would also rewrite historical schema hashes.
+        ordered = json.loads(schema)
+        question = ordered["properties"]["questions"]["items"]
+        properties = question["properties"]
+        if set(properties) != set(_AUTHOR_V3_PROPERTY_ORDER):
+            raise ServiceConfigurationError("Author v3 property ordering needs qualification.")
+        question["properties"] = {key: properties[key] for key in _AUTHOR_V3_PROPERTY_ORDER}
+        schema = json.dumps(ordered, separators=(",", ":"))
     return {"textFormat": {"type": "json_schema", "structure": {"jsonSchema": {
         "name": contract, "schema": schema,
     }}}}
@@ -145,6 +202,21 @@ def ensure_supported_model(model_id: str) -> None:
 
 
 def native_prompt(system_prompt: str, contract: Contract) -> str:
+    if contract in {"question_author_v2", "question_author_v3"}:
+        # Keep the tested slot-transport wording byte-identical. The v2 label
+        # identifies this representation; v3 changes ordering, not these rules.
+        return system_prompt + """
+
+NATIVE TRANSPORT OVERRIDE (question_author_v2): Return choices as an object
+with exactly four string slots named a, b, c, and d. Return correctChoice as
+exactly one of "a", "b", "c", or "d", identifying the slot containing the
+correct answer. Do not return expectedAnswer or a choices array. Slot names
+are transport fields only; do not add slot labels to the choice text. Preserve
+the requested question content and all other required and optional metadata.
+This replaces the earlier output example's choices and answer representation.
+Do not add fields. The application derives the answer text from the selected
+slot; the explanation must not select or replace that answer.
+"""
     if contract == "default_reviewer_v2":
         return system_prompt + """
 
@@ -181,6 +253,13 @@ def adapt_native_response(raw: str, contract: Contract) -> str:
         _validate_schema_value(payload, _SCHEMAS[contract])
     except ValueError as error:
         raise ProviderError("Native stage response violates its contract.") from error
+    if contract in {"question_author_v2", "question_author_v3"}:
+        adapted = copy.deepcopy(payload)
+        for question in adapted["questions"]:
+            slots = question["choices"]
+            question["choices"] = [slots[key] for key in ("a", "b", "c", "d")]
+            question["expectedAnswer"] = slots[question.pop("correctChoice")]
+        return json.dumps(adapted, ensure_ascii=False, allow_nan=False)
     if contract not in {"default_reviewer_v1", "default_reviewer_v2"}:
         return raw
     if type(payload) is not dict or set(payload) != {"reviews"} or type(payload["reviews"]) is not list:

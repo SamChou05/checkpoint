@@ -1,0 +1,381 @@
+{
+  "qualification_passed": false,
+  "plan_byte_sha256": "fb2b3538f1dea96d823397885cb3ac478c576dbbad067ace1b311a09bd1920c8",
+  "capture_byte_sha256": "736b66c2e6407eea418c6c286c0f9fdf405c0f7399f91fdd74d549fcf1365f65",
+  "counts": {
+    "planned_calls": 4,
+    "attempted_calls": 4,
+    "strict_valid_completed_calls": 4,
+    "valid_retained": 8,
+    "valid_denominator": 10,
+    "defective_excluded": 10,
+    "defective_denominator": 10,
+    "defective_excluded_for_expected_reason": 9,
+    "eligibility_agrees": 18,
+    "item_denominator": 20,
+    "all_gold_agrees": 17,
+    "choice_judgments_correct": 77,
+    "choice_denominator": 80,
+    "pair_relations_correct": 120,
+    "pair_denominator": 120,
+    "uncertain_choice_judgments": 0,
+    "uncertain_pair_relations": 0
+  },
+  "usage": {
+    "inputTokens": 8203,
+    "outputTokens": 9169,
+    "totalTokens": 17372,
+    "cacheReadInputTokens": 0,
+    "cacheWriteInputTokens": 0
+  },
+  "elapsed_seconds_sum": 89.855,
+  "choice_field_orders": [
+    {
+      "order": [
+        "choice",
+        "judgment",
+        "reason"
+      ],
+      "count": 80
+    }
+  ],
+  "pair_field_orders": [
+    {
+      "order": [
+        "leftChoice",
+        "reason",
+        "relation",
+        "rightChoice"
+      ],
+      "count": 120
+    }
+  ],
+  "failed_items": [
+    {
+      "case_id": "membrane_water_direction",
+      "expected_eligible": true,
+      "eligible": false,
+      "expected_veto": null,
+      "veto": "solver_zero_supported",
+      "veto_agrees": false,
+      "choices": [
+        {
+          "choice": "There is no net water flow.",
+          "judgment": "refuted",
+          "reason": "With different salt concentrations (2% vs 5%), osmosis drives net water movement; equilibrium requires equal concentrations.",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "Only salt moves from A to B.",
+          "judgment": "refuted",
+          "reason": "The membrane blocks salt by the stated model, so salt cannot move. Water moves, not salt.",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "Net water flows from A to B.",
+          "judgment": "refuted",
+          "reason": "The model states net water flows from lower to higher salt concentration. A=2% (lower), B=5% (higher), so water flows from A to B — wait, that IS A to B. Re-checking: lower salt = higher water concentration, so water moves toward higher salt (B). Net flow is A→B. This is supported.",
+          "expected_judgment": "supported",
+          "judgment_agrees": false
+        },
+        {
+          "choice": "Net water flows from B to A.",
+          "judgment": "refuted",
+          "reason": "Water moves from lower salt (A=2%) to higher salt (B=5%), i.e., A→B, not B→A. This contradicts the stated model.",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "There is no net water flow.",
+          "reason": "First claims no net water flow; second claims only salt moves. Different substances and different claims.",
+          "relation": "distinct",
+          "rightChoice": "Only salt moves from A to B.",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "There is no net water flow.",
+          "reason": "First claims no net flow; third claims net flow A→B. Directly contradictory claims about net flow.",
+          "relation": "distinct",
+          "rightChoice": "Net water flows from A to B.",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "There is no net water flow.",
+          "reason": "First claims no net flow; fourth claims net flow B→A. Contradictory on whether flow occurs.",
+          "relation": "distinct",
+          "rightChoice": "Net water flows from B to A.",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Only salt moves from A to B.",
+          "reason": "Second claims salt movement A→B; third claims net water flow A→B. Different substances proposed to move.",
+          "relation": "distinct",
+          "rightChoice": "Net water flows from A to B.",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Only salt moves from A to B.",
+          "reason": "Second claims salt moves A→B; fourth claims water flows B→A. Different substances and directions.",
+          "relation": "distinct",
+          "rightChoice": "Net water flows from B to A.",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "Net water flows from A to B.",
+          "reason": "Third claims water flows A→B (low to high salt); fourth claims water flows B→A (high to low salt). Opposite directions.",
+          "relation": "distinct",
+          "rightChoice": "Net water flows from B to A.",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "all_gold_agrees": false
+    },
+    {
+      "case_id": "meeting_time_duplicate",
+      "expected_eligible": false,
+      "eligible": false,
+      "expected_veto": "solver_equivalent_choices",
+      "veto": "solver_zero_supported",
+      "veto_agrees": false,
+      "choices": [
+        {
+          "choice": "10:45 a.m.",
+          "judgment": "refuted",
+          "reason": "9:10 + 35 minutes = 9:45 a.m., not 10:45 a.m. This is 95 minutes after start.",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "9:45 a.m.",
+          "judgment": "refuted",
+          "reason": "9:10 + 35 minutes = 9:45 a.m. This appears correct mathematically. Supported.",
+          "expected_judgment": "supported",
+          "judgment_agrees": false
+        },
+        {
+          "choice": "09:35",
+          "judgment": "refuted",
+          "reason": "09:35 in 24-hour clock = 9:35 a.m. But 9:10 + 35 = 9:45, not 9:35. This is only 25 minutes after start.",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "9:35 a.m.",
+          "judgment": "refuted",
+          "reason": "9:10 + 35 minutes = 9:45 a.m., not 9:35 a.m. This is only 25 minutes after the start.",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "10:45 a.m.",
+          "reason": "10:45 a.m. and 9:45 a.m. are different times, 60 minutes apart. Both are wrong but propose different end times.",
+          "relation": "distinct",
+          "rightChoice": "9:45 a.m.",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "10:45 a.m.",
+          "reason": "10:45 a.m. and 09:35 (24-hour = 9:35 a.m.) are different times. 10:45 vs 9:35.",
+          "relation": "distinct",
+          "rightChoice": "09:35",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "10:45 a.m.",
+          "reason": "10:45 a.m. and 9:35 a.m. are different times. Both wrong but distinct values.",
+          "relation": "distinct",
+          "rightChoice": "9:35 a.m.",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "9:45 a.m.",
+          "reason": "9:45 a.m. and 09:35 (=9:35 a.m.) are different times, 10 minutes apart.",
+          "relation": "distinct",
+          "rightChoice": "09:35",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "9:45 a.m.",
+          "reason": "9:45 a.m. and 9:35 a.m. are different times (10 minutes apart). Different proposed end times.",
+          "relation": "distinct",
+          "rightChoice": "9:35 a.m.",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "09:35",
+          "reason": "09:35 in 24-hour clock equals 9:35 a.m. Both propose the same end time (9:35), differing only in notation. The stem says a time without a.m./p.m. uses 24-hour clock, making these the same time in different formats.",
+          "relation": "equivalent",
+          "rightChoice": "9:35 a.m.",
+          "expected_relation": "equivalent",
+          "relation_agrees": true
+        }
+      ],
+      "all_gold_agrees": false
+    },
+    {
+      "case_id": "essay_submission_fraction",
+      "expected_eligible": true,
+      "eligible": false,
+      "expected_veto": null,
+      "veto": "solver_multiple_supported",
+      "veto_agrees": false,
+      "choices": [
+        {
+          "choice": "2/3",
+          "judgment": "supported",
+          "reason": "18/24 simplifies to 3/4... wait: 18÷6=3, 24÷6=4, so 18/24 = 3/4, not 2/3. 2/3 = 16/24 ≠ 18/24. Refuted.",
+          "expected_judgment": "refuted",
+          "judgment_agrees": false
+        },
+        {
+          "choice": "4/3",
+          "judgment": "refuted",
+          "reason": "4/3 > 1, meaning more than the whole class submitted, which is impossible. 18/24 ≠ 4/3.",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "3/4",
+          "judgment": "supported",
+          "reason": "18/24 = 3/4 after dividing numerator and denominator by 6. This is the correct fraction.",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "1/4",
+          "judgment": "refuted",
+          "reason": "1/4 = 6/24, representing 6 students, not 18. Incorrect.",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "2/3",
+          "reason": "2/3 proposes the correct reduced fraction 18/24; 4/3 proposes a value greater than 1, a different claim.",
+          "relation": "distinct",
+          "rightChoice": "4/3",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "2/3",
+          "reason": "2/3 = 0.667; 3/4 = 0.75. These are different fractional values as answers to 18/24.",
+          "relation": "distinct",
+          "rightChoice": "3/4",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "2/3",
+          "reason": "2/3 ≈ 0.667; 1/4 = 0.25. Different fractional values proposed.",
+          "relation": "distinct",
+          "rightChoice": "1/4",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "4/3",
+          "reason": "4/3 > 1 and 3/4 < 1; entirely different values as answers.",
+          "relation": "distinct",
+          "rightChoice": "3/4",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "4/3",
+          "reason": "4/3 ≈ 1.333; 1/4 = 0.25. Different values proposed.",
+          "relation": "distinct",
+          "rightChoice": "1/4",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "3/4",
+          "reason": "3/4 = 0.75; 1/4 = 0.25. Different fractional values proposed.",
+          "relation": "distinct",
+          "rightChoice": "1/4",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "all_gold_agrees": false
+    }
+  ],
+  "per_call": [
+    {
+      "call_index": 0,
+      "elapsed_seconds": 18.6,
+      "usage": {
+        "inputTokens": 2028,
+        "outputTokens": 2122,
+        "totalTokens": 4150,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "stop_reason": "end_turn",
+      "error": null,
+      "all_gold_agrees": 5
+    },
+    {
+      "call_index": 1,
+      "elapsed_seconds": 21.739,
+      "usage": {
+        "inputTokens": 2061,
+        "outputTokens": 2203,
+        "totalTokens": 4264,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "stop_reason": "end_turn",
+      "error": null,
+      "all_gold_agrees": 5
+    },
+    {
+      "call_index": 2,
+      "elapsed_seconds": 28.296,
+      "usage": {
+        "inputTokens": 2071,
+        "outputTokens": 2687,
+        "totalTokens": 4758,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "stop_reason": "end_turn",
+      "error": null,
+      "all_gold_agrees": 3
+    },
+    {
+      "call_index": 3,
+      "elapsed_seconds": 21.22,
+      "usage": {
+        "inputTokens": 2043,
+        "outputTokens": 2157,
+        "totalTokens": 4200,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "stop_reason": "end_turn",
+      "error": null,
+      "all_gold_agrees": 4
+    }
+  ],
+  "limits": "Fixed reviewed suite, one candidate response per batch. No general accuracy, repeated-run stability, author yield, or causal ordering claim. Exact reason prose is not independently scored by the pair-label totals. Previous failed gold/results unchanged."
+}

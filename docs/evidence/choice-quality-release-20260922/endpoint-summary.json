@@ -1,0 +1,384 @@
+{
+  "plan_byte_sha256": "83e2864a79cc3d4f346a6afdc3fada56c14a85306bf7d334227c73e70d14f11b",
+  "capture_byte_sha256": "bbeb1d8bf3dcd04b2a42f9fa075062216b4504d933d4e8f0ab6eb691b1873e88",
+  "source_sha256": {
+    "backend/bedrock-question-service/complete_question_solution.py": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+    "backend/bedrock-question-service/native_output_contracts.py": "fe2d9a79c882708f5848c7eeab23ddb441277022bc63ee5a28eeee0ed3958151",
+    "backend/bedrock-question-service/question_quality.py": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+    "backend/bedrock-question-service/request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+    "backend/bedrock-question-service/generation_diagnostics.py": "944a3020cb3b173589aee066ac39066564a5c943c972bdcfc0115cdcb2e33f30",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "docs/evidence/choice-quality-release-20260922/qualify_pair_solver.py": "dc9e2ef1d54b8a7bb8b892e707c9adfc7c7a234ae0171b2563d4d540ca757f76",
+    "docs/evidence/choice-reliability-followup-20260921/candidate_complete_question_solution.py": "9473291262cdf0aee9068a93138c1487e80252cbf9efbdce839840dc68b56d87",
+    "docs/evidence/choice-quality-release-20260922/slot_original_complete_question_solution.py": "06088bb4b1c1aee71b5092149ce67e4655a7a249ed6d2027c6d1e8979e3f9c1c"
+  },
+  "status": "complete",
+  "counts": {
+    "planned_calls": 4,
+    "attempted_calls": 4,
+    "completed_valid_calls": 4,
+    "valid_retained": 10,
+    "valid_denominator": 10,
+    "defective_excluded": 10,
+    "defective_denominator": 10,
+    "defective_expected_veto": 10,
+    "all_gold_agrees": 17,
+    "item_denominator": 20,
+    "choice_correct": 80,
+    "choice_scored": 80,
+    "choice_denominator": 80,
+    "pair_correct": 116,
+    "pair_scored": 120,
+    "pair_denominator": 120,
+    "uncertain_choices": 0,
+    "uncertain_pairs": 0,
+    "choice_reason_before_judgment_rows": 80,
+    "pair_reason_before_relation_rows": 120
+  },
+  "criteria_checks": {
+    "completed_calls": true,
+    "valid_retained": true,
+    "defective_expected_veto": true,
+    "correctness": true,
+    "pair_labels": false,
+    "reason_order": true,
+    "no_uncertainty": true
+  },
+  "qualified_on_fixed_suite": false,
+  "usage": {
+    "inputTokens": 16841,
+    "outputTokens": 7219,
+    "totalTokens": 24060,
+    "cacheReadInputTokens": 0,
+    "cacheWriteInputTokens": 0
+  },
+  "elapsed_seconds_sum": 72.782,
+  "failed_items": [
+    {
+      "case_id": "tank_irrelevant_color",
+      "expected_eligible": false,
+      "eligible": false,
+      "expected_veto": "solver_equivalent_choices",
+      "veto": "solver_equivalent_choices",
+      "veto_agrees": true,
+      "choices": [
+        {
+          "choice": "80 L in a red tank",
+          "reason": "Same as c: 80 L is incorrect (would imply 50% not 25%). The red tank qualifier is irrelevant per the stem.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "80 L in a blue tank",
+          "reason": "80 L would mean 40 is 50% of capacity, not 25%. The blue tank qualifier is irrelevant per the stem. The numerical value 80 is wrong.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "40 L",
+          "reason": "40 L is the current amount, not the full capacity. 40 / 0.25 = 160, not 40.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "160 L",
+          "reason": "40 L is 25% of full capacity. Full = 40 / 0.25 = 160 L. This matches choice a.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "80 L in a red tank",
+          "rightChoice": "80 L in a blue tank",
+          "reason": "Both propose 80 L as full capacity, differing only in tank color which the stem says does not affect the calculation — same proposed answer.",
+          "relation": "equivalent",
+          "expected_relation": "equivalent",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "80 L in a red tank",
+          "rightChoice": "40 L",
+          "reason": "Both propose 80 L as the full capacity; tank color is irrelevant per the stem, so the underlying claim is identical.",
+          "relation": "equivalent",
+          "expected_relation": "distinct",
+          "relation_agrees": false
+        },
+        {
+          "leftChoice": "80 L in a red tank",
+          "rightChoice": "160 L",
+          "reason": "160 L vs 80 L (red tank) propose different numerical capacities.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "80 L in a blue tank",
+          "rightChoice": "40 L",
+          "reason": "Both propose 80 L as the full capacity; the tank color qualifier is stated irrelevant, so the underlying capacity claim is the same.",
+          "relation": "equivalent",
+          "expected_relation": "distinct",
+          "relation_agrees": false
+        },
+        {
+          "leftChoice": "80 L in a blue tank",
+          "rightChoice": "160 L",
+          "reason": "160 L vs 80 L (blue tank) propose different numerical capacities.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "40 L",
+          "rightChoice": "160 L",
+          "reason": "160 L vs 40 L are different numerical values for full capacity.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "all_gold_agrees": false
+    },
+    {
+      "case_id": "jacket_discount_duplicate",
+      "expected_eligible": false,
+      "eligible": false,
+      "expected_veto": "solver_equivalent_choices",
+      "veto": "solver_equivalent_choices",
+      "veto_agrees": true,
+      "choices": [
+        {
+          "choice": "$60",
+          "reason": "25% of $80=$20; $80-$20=$60. This is the correct discounted price. Supported.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "$20",
+          "reason": "$20 is the discount amount (25% of $80), not the price after discount. Refuted.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "20 dollars",
+          "reason": "'20 dollars' equals $20, which is the discount amount, not the final price. Refuted.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "$100",
+          "reason": "$100 would be a 25% increase, not a 25% discount. 25% of $80=$20; $80-$20=$60. Refuted.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "$60",
+          "rightChoice": "$20",
+          "reason": "Both '$20' and '20 dollars' represent the same monetary value ($20) as the proposed discounted price. Different notation, same amount.",
+          "relation": "equivalent",
+          "expected_relation": "distinct",
+          "relation_agrees": false
+        },
+        {
+          "leftChoice": "$60",
+          "rightChoice": "20 dollars",
+          "reason": "$60 vs '20 dollars' ($20) propose different dollar amounts as the discounted price.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "$60",
+          "rightChoice": "$100",
+          "reason": "$100 vs $60 propose different dollar amounts as the discounted price.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "$20",
+          "rightChoice": "20 dollars",
+          "reason": "'$20' and '20 dollars' represent the same monetary value. The question asks for a price value, not a specific notation format.",
+          "relation": "equivalent",
+          "expected_relation": "equivalent",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "$20",
+          "rightChoice": "$100",
+          "reason": "$100 vs $20 propose different dollar amounts as the discounted price.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "20 dollars",
+          "rightChoice": "$100",
+          "reason": "$100 vs '20 dollars' propose different dollar amounts as the discounted price.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        }
+      ],
+      "all_gold_agrees": false
+    },
+    {
+      "case_id": "meeting_time_duplicate",
+      "expected_eligible": false,
+      "eligible": false,
+      "expected_veto": "solver_equivalent_choices",
+      "veto": "solver_equivalent_choices",
+      "veto_agrees": true,
+      "choices": [
+        {
+          "choice": "10:45 a.m.",
+          "reason": "9:10+35 min=9:45, not 10:45. This is off by one hour. Refuted.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "9:45 a.m.",
+          "reason": "9:10 a.m. + 35 minutes = 9:45 a.m. Correct end time. Supported.",
+          "judgment": "supported",
+          "expected_judgment": "supported",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "09:35",
+          "reason": "09:35 in 24-hour clock equals 9:35 a.m. 9:10+35 min=9:45, not 9:35. Refuted.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        },
+        {
+          "choice": "9:35 a.m.",
+          "reason": "9:35 a.m. would be only 25 minutes after 9:10, not 35. Refuted.",
+          "judgment": "refuted",
+          "expected_judgment": "refuted",
+          "judgment_agrees": true
+        }
+      ],
+      "pairs": [
+        {
+          "leftChoice": "10:45 a.m.",
+          "rightChoice": "9:45 a.m.",
+          "reason": "10:45 a.m. vs 9:45 a.m. propose different times (one hour apart) as the meeting end time.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "10:45 a.m.",
+          "rightChoice": "09:35",
+          "reason": "10:45 a.m. vs 09:35 (=9:35 a.m.) propose different times as the meeting end time.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "10:45 a.m.",
+          "rightChoice": "9:35 a.m.",
+          "reason": "10:45 a.m. vs 9:35 a.m. propose different times as the meeting end time.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "9:45 a.m.",
+          "rightChoice": "09:35",
+          "reason": "09:35 in 24-hour clock equals 9:35 a.m. Both propose the same time (9:35 a.m.) in different notations; the stem's convention makes them the same value.",
+          "relation": "equivalent",
+          "expected_relation": "distinct",
+          "relation_agrees": false
+        },
+        {
+          "leftChoice": "9:45 a.m.",
+          "rightChoice": "9:35 a.m.",
+          "reason": "9:45 a.m. vs 9:35 a.m. propose different times (10 minutes apart) as the meeting end time.",
+          "relation": "distinct",
+          "expected_relation": "distinct",
+          "relation_agrees": true
+        },
+        {
+          "leftChoice": "09:35",
+          "rightChoice": "9:35 a.m.",
+          "reason": "09:35 (24-hour) = 9:35 a.m. Both propose the same time value as the meeting end time, just in different notations.",
+          "relation": "equivalent",
+          "expected_relation": "equivalent",
+          "relation_agrees": true
+        }
+      ],
+      "all_gold_agrees": false
+    }
+  ],
+  "per_call": [
+    {
+      "call_index": 0,
+      "stop_reason": "end_turn",
+      "error": null,
+      "elapsed_seconds": 16.923,
+      "usage": {
+        "inputTokens": 4217,
+        "outputTokens": 1790,
+        "totalTokens": 6007,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "all_gold_agrees": 4
+    },
+    {
+      "call_index": 1,
+      "stop_reason": "end_turn",
+      "error": null,
+      "elapsed_seconds": 18.165,
+      "usage": {
+        "inputTokens": 4229,
+        "outputTokens": 1728,
+        "totalTokens": 5957,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "all_gold_agrees": 5
+    },
+    {
+      "call_index": 2,
+      "stop_reason": "end_turn",
+      "error": null,
+      "elapsed_seconds": 20.194,
+      "usage": {
+        "inputTokens": 4237,
+        "outputTokens": 2004,
+        "totalTokens": 6241,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "all_gold_agrees": 3
+    },
+    {
+      "call_index": 3,
+      "stop_reason": "end_turn",
+      "error": null,
+      "elapsed_seconds": 17.5,
+      "usage": {
+        "inputTokens": 4158,
+        "outputTokens": 1697,
+        "totalTokens": 5855,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "all_gold_agrees": 5
+    }
+  ],
+  "limits": "One sample per batch on 20 reused reviewed cases. Joint trusted pair endpoints and requested-meaning intervention with unchanged fixed-slot schema, not a causal isolation or general accuracy/determinism result. Earlier failures unchanged."
+}

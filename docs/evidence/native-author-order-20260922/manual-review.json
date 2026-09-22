@@ -1,0 +1,261 @@
+{
+  "capture_sha256": "d04c094b0f2f61314631ecc923afbcb02e94062c4c4c43971ca55e97342d605c",
+  "method": "Two independent agent reviews of all20 unchanged items plus direct exact arithmetic and Python checks; no provider judge, repair, selection, or additional model call.",
+  "counts": {
+    "sorted": {
+      "items": 10,
+      "supported_keys": 7,
+      "unsupported_keys": 3,
+      "additional_incorrect_explanation": 1
+    },
+    "ordered": {
+      "items": 10,
+      "supported_unambiguous_keys": 9,
+      "ambiguous_recipe_key": 1,
+      "keys_match_under_usual_proportional_recipe_assumption": 10,
+      "minor_explanation_grouping_imprecision": 1
+    }
+  },
+  "items": [
+    {
+      "call_index": 0,
+      "item_index": 0,
+      "arm": "sorted",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "$1.80",
+      "key_assessment": "supported",
+      "computed_answer": "$1.80",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "15*(2/3)=10 cups of juice; 10*$0.18=$1.80."
+    },
+    {
+      "call_index": 0,
+      "item_index": 1,
+      "arm": "sorted",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "$9.60",
+      "key_assessment": "supported",
+      "computed_answer": "$9.60",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "$12*0.8=$9.60."
+    },
+    {
+      "call_index": 0,
+      "item_index": 2,
+      "arm": "sorted",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "$54",
+      "key_assessment": "supported",
+      "computed_answer": "$54",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "$36/3=$12 per hour; 4.5*$12=$54."
+    },
+    {
+      "call_index": 0,
+      "item_index": 3,
+      "arm": "sorted",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "Only on Wednesday",
+      "key_assessment": "supported",
+      "computed_answer": "Only on Wednesday",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "Only Wednesday meets both stated purchase and member-card conditions under the stated store-policy reading."
+    },
+    {
+      "call_index": 0,
+      "item_index": 4,
+      "arm": "sorted",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "15",
+      "key_assessment": "unsupported",
+      "computed_answer": "9 under the intended disjoint-group reading; no offered option",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "contradicts_key",
+      "basis": "8/0.4=20 total; 12 remaining; 12*0.75=9. The authored key15 is unsupported and explanation itself computes9. Band/sports overlap is not explicitly excluded, adding ambiguity to an exact total."
+    },
+    {
+      "call_index": 1,
+      "item_index": 0,
+      "arm": "ordered",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "Large at $0.35 per ounce",
+      "key_assessment": "supported",
+      "computed_answer": "Large at $0.35 per ounce",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "Small costs4.8/12=$0.40/oz; large costs7/20=$0.35/oz. Different size/cost claims make the full choice statements distinct."
+    },
+    {
+      "call_index": 1,
+      "item_index": 1,
+      "arm": "ordered",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "$135",
+      "key_assessment": "supported",
+      "computed_answer": "$135",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "200*0.75*0.90=135."
+    },
+    {
+      "call_index": 1,
+      "item_index": 2,
+      "arm": "ordered",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "120 miles",
+      "key_assessment": "supported",
+      "computed_answer": "120 miles",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "2*45=90 fixed; (120-90)/0.25=120 miles."
+    },
+    {
+      "call_index": 1,
+      "item_index": 3,
+      "arm": "ordered",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "15 servings",
+      "key_assessment": "ambiguous",
+      "computed_answer": "15 servings if proportional scaling and fractional eggs are allowed",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "assumption_not_explicit",
+      "basis": "Flour permits5/2*6=15 servings, eggs9/3*6=18. Fifteen requires7.5eggs; scalable portions/fractional eggs are not explicit. Full6-serving batches would permit12. Do not count this as an unambiguous pass."
+    },
+    {
+      "call_index": 1,
+      "item_index": 4,
+      "arm": "ordered",
+      "goal_id": "applied_arithmetic_logic",
+      "authored_key": "10%",
+      "key_assessment": "supported",
+      "computed_answer": "10%",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "(12*50-540)/(12*50)=0.10."
+    },
+    {
+      "call_index": 2,
+      "item_index": 0,
+      "arm": "ordered",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "15",
+      "key_assessment": "supported",
+      "computed_answer": "15",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "5+3*(2**2)-(4//2)=5+12-2=15."
+    },
+    {
+      "call_index": 2,
+      "item_index": 1,
+      "arm": "ordered",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "7",
+      "key_assessment": "supported",
+      "computed_answer": "7",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "minor_grouping_imprecision",
+      "basis": "Python parses ((not0)and7)or(2and0); left side7 is truthy and skips the entire right side. Explanation abbreviates this as7or2, but its short-circuit result7 is correct."
+    },
+    {
+      "call_index": 2,
+      "item_index": 2,
+      "arm": "ordered",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "B",
+      "key_assessment": "supported",
+      "computed_answer": "B",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "8%3=2, so first conditionfalse; 8%2=0, so elif printsB."
+    },
+    {
+      "call_index": 2,
+      "item_index": 3,
+      "arm": "ordered",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "9",
+      "key_assessment": "supported",
+      "computed_answer": "9",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "range(1,6,2) is1,3,5, whose sum is9."
+    },
+    {
+      "call_index": 2,
+      "item_index": 4,
+      "arm": "ordered",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "'Pyththn'",
+      "key_assessment": "supported",
+      "computed_answer": "'Pyththn'",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "'th'*2='thth'; 'on'[1]='n'; 'Py'+'thth'+'n'='Pyththn'."
+    },
+    {
+      "call_index": 3,
+      "item_index": 0,
+      "arm": "sorted",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "False",
+      "key_assessment": "supported",
+      "computed_answer": "False",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "'abc'<'def' and5>3 aretrue, thennot yieldsFalse."
+    },
+    {
+      "call_index": 3,
+      "item_index": 1,
+      "arm": "sorted",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "2",
+      "key_assessment": "unsupported",
+      "computed_answer": "3",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "contradicts_key",
+      "basis": "Loop executes fori=0,1,2 and incrementscount three times. Key2 is wrong; explanation itself says3."
+    },
+    {
+      "call_index": 3,
+      "item_index": 2,
+      "arm": "sorted",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "6",
+      "key_assessment": "unsupported",
+      "computed_answer": "8",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "wrong_expression",
+      "basis": "(0or3)=3; (3and5)=5; total8. Key6 is wrong and explanation evaluates different operands."
+    },
+    {
+      "call_index": 3,
+      "item_index": 3,
+      "arm": "sorted",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "14",
+      "key_assessment": "supported",
+      "computed_answer": "14",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "incorrect_counterfactual",
+      "basis": "4+2*3+4=14 agrees with key. Explanation additionally claims parentheses around4+2 would yield18, but(4+2)*3+4=22."
+    },
+    {
+      "call_index": 3,
+      "item_index": 4,
+      "arm": "sorted",
+      "goal_id": "python_expressions_control_flow",
+      "authored_key": "0",
+      "key_assessment": "supported",
+      "computed_answer": "0",
+      "choice_meanings": "No equivalent answer-choice pairs found under each complete stem; correctness/ambiguity issues are recorded separately.",
+      "explanation_assessment": "coherent",
+      "basis": "5<3 isfalse, soelse setsresult0."
+    }
+  ]
+}

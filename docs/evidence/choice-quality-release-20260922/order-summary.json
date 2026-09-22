@@ -1,0 +1,356 @@
+{
+  "plan_byte_sha256": "4b5b4dccaaa44d0659de97ca1f744febf14a14adb209b5b53227a39474216342",
+  "capture_byte_sha256": "041dfaee87f998cf04dfca9e9adcc2ae7508cfa1b5eeac71f9a2e96d9a1f629a",
+  "status": "stopped_after_failure",
+  "arms": {
+    "baseline": {
+      "planned_calls": 4,
+      "attempted_calls": 1,
+      "completed_valid_calls": 1,
+      "valid_retained": 2,
+      "valid_denominator": 10,
+      "defective_excluded": 3,
+      "defective_denominator": 10,
+      "defective_expected_veto": 3,
+      "eligibility_agrees": 5,
+      "all_gold_agrees": 5,
+      "item_denominator": 20,
+      "choice_correct": 20,
+      "choice_scored": 20,
+      "choice_denominator": 80,
+      "pair_correct": 30,
+      "pair_scored": 30,
+      "pair_denominator": 120,
+      "uncertain_choices": 0,
+      "uncertain_pairs": 0,
+      "reason_before_judgment_rows": 0,
+      "choice_rows_with_observed_order": 20,
+      "choice_field_orders": [
+        {
+          "order": [
+            "choice",
+            "judgment",
+            "reason"
+          ],
+          "count": 20
+        }
+      ],
+      "pair_field_orders": [
+        {
+          "order": [
+            "leftChoice",
+            "reason",
+            "relation",
+            "rightChoice"
+          ],
+          "count": 30
+        }
+      ],
+      "usage": {
+        "inputTokens": 2028,
+        "outputTokens": 2127,
+        "totalTokens": 4155,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds_sum": 18.501,
+      "failed_items": [],
+      "calls": [
+        {
+          "call_index": 0,
+          "batch_index": 0,
+          "stop_reason": "end_turn",
+          "error": null,
+          "elapsed_seconds": 18.501,
+          "usage": {
+            "inputTokens": 2028,
+            "outputTokens": 2127,
+            "totalTokens": 4155,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "all_gold_agrees": 5
+        }
+      ]
+    },
+    "reason_first": {
+      "planned_calls": 4,
+      "attempted_calls": 2,
+      "completed_valid_calls": 1,
+      "valid_retained": 2,
+      "valid_denominator": 10,
+      "defective_excluded": 3,
+      "defective_denominator": 10,
+      "defective_expected_veto": 3,
+      "eligibility_agrees": 5,
+      "all_gold_agrees": 5,
+      "item_denominator": 20,
+      "choice_correct": 20,
+      "choice_scored": 20,
+      "choice_denominator": 80,
+      "pair_correct": 30,
+      "pair_scored": 30,
+      "pair_denominator": 120,
+      "uncertain_choices": 0,
+      "uncertain_pairs": 0,
+      "reason_before_judgment_rows": 40,
+      "choice_rows_with_observed_order": 40,
+      "choice_field_orders": [
+        {
+          "order": [
+            "choice",
+            "reason",
+            "judgment"
+          ],
+          "count": 40
+        }
+      ],
+      "pair_field_orders": [
+        {
+          "order": [
+            "leftChoice",
+            "reason",
+            "relation",
+            "rightChoice"
+          ],
+          "count": 61
+        }
+      ],
+      "usage": {
+        "inputTokens": 4089,
+        "outputTokens": 4333,
+        "totalTokens": 8422,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "elapsed_seconds_sum": 41.159,
+      "failed_items": [],
+      "calls": [
+        {
+          "call_index": 1,
+          "batch_index": 0,
+          "stop_reason": "end_turn",
+          "error": null,
+          "elapsed_seconds": 21.706,
+          "usage": {
+            "inputTokens": 2028,
+            "outputTokens": 2200,
+            "totalTokens": 4228,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "all_gold_agrees": 5
+        },
+        {
+          "call_index": 2,
+          "batch_index": 1,
+          "stop_reason": "end_turn",
+          "error": "Expected all six choice pairs.",
+          "elapsed_seconds": 19.453,
+          "usage": {
+            "inputTokens": 2061,
+            "outputTokens": 2133,
+            "totalTokens": 4194,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "all_gold_agrees": 0
+        }
+      ]
+    }
+  },
+  "prospective_candidate_checks": {
+    "all_four_candidate_calls_valid": false,
+    "all_80_choices_reason_before_judgment": false,
+    "all_ten_valid_retained": false,
+    "all_ten_defective_expected_veto": false,
+    "all_80_choice_judgments_correct": false,
+    "all_120_pair_relations_correct": false,
+    "no_uncertain_judgments": true
+  },
+  "candidate_qualified_on_fixed_suite": false,
+  "narrow_hypothesis_supported_on_fixed_suite": false,
+  "paired_comparisons": [
+    {
+      "case_id": "tank_irrelevant_color",
+      "expected_eligible": false,
+      "baseline": {
+        "eligible": false,
+        "veto": "solver_equivalent_choices",
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      },
+      "reason_first": {
+        "eligible": false,
+        "veto": "solver_equivalent_choices",
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      }
+    },
+    {
+      "case_id": "dispatch_paraphrase",
+      "expected_eligible": false,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "red_ball_multiple_forms",
+      "expected_eligible": false,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "two_switches_multiple",
+      "expected_eligible": false,
+      "baseline": {
+        "eligible": false,
+        "veto": "solver_multiple_supported",
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      },
+      "reason_first": {
+        "eligible": false,
+        "veto": "solver_multiple_supported",
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      }
+    },
+    {
+      "case_id": "integer_solution_absent",
+      "expected_eligible": false,
+      "baseline": {
+        "eligible": false,
+        "veto": "solver_zero_supported",
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      },
+      "reason_first": {
+        "eligible": false,
+        "veto": "solver_zero_supported",
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      }
+    },
+    {
+      "case_id": "pencil_key_mismatch",
+      "expected_eligible": false,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "meters_to_kilometers",
+      "expected_eligible": true,
+      "baseline": {
+        "eligible": true,
+        "veto": null,
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      },
+      "reason_first": {
+        "eligible": true,
+        "veto": null,
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      }
+    },
+    {
+      "case_id": "python_string_case",
+      "expected_eligible": true,
+      "baseline": {
+        "eligible": true,
+        "veto": null,
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      },
+      "reason_first": {
+        "eligible": true,
+        "veto": null,
+        "all_gold_agrees": true,
+        "choice_correct": 4,
+        "pair_correct": 6
+      }
+    },
+    {
+      "case_id": "club_age_boundary",
+      "expected_eligible": true,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "map_scale_distance",
+      "expected_eligible": true,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "school_notebook_budget",
+      "expected_eligible": true,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "membrane_water_direction",
+      "expected_eligible": true,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "verb_modifier",
+      "expected_eligible": true,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "jacket_discount_duplicate",
+      "expected_eligible": false,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "meeting_time_duplicate",
+      "expected_eligible": false,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "essay_submission_fraction",
+      "expected_eligible": true,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "python_negative_index",
+      "expected_eligible": true,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "sealed_reaction_mass",
+      "expected_eligible": true,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "battery_inventory_key",
+      "expected_eligible": false,
+      "baseline": null,
+      "reason_first": null
+    },
+    {
+      "case_id": "readonly_multiple_permissions",
+      "expected_eligible": false,
+      "baseline": null,
+      "reason_first": null
+    }
+  ],
+  "limits": "One sample per variant/batch on twenty reused reviewed controls. No statistical significance, general accuracy, determinism or independent fresh-author yield claim. Earlier four-call failure stays separate and unchanged."
+}
