@@ -1,0 +1,16 @@
+{
+  "goal": {
+    "title": "English sentence revision",
+    "category": "Language",
+    "learningTarget": "Apply agreement, pronoun reference, and verb tense in standard written American English.",
+    "focusAreas": "Subject-verb agreement; unambiguous pronoun reference; verb tense.",
+    "currentLevel": "Practicing sentence-level application rather than terminology recall.",
+    "contentTopics": ["Standard written English"],
+    "questionDirective": "Create exactly five varied sentence-revision application questions in standard written American English: two testing subject-verb agreement, two testing unambiguous pronoun reference, and one testing verb tense. Use five distinct everyday or school/work situations, with difficulty 2 or 3. Supply each complete sentence and make the tested distinction explicit. Avoid discretionary style preferences, collective-noun agreement variation, and questions that only ask for a grammatical label.",
+    "needsSkillMap": false
+  },
+  "targetCount": 5,
+  "minimumDifficulty": 2,
+  "existingPrompts": [],
+  "sourceDocuments": []
+}

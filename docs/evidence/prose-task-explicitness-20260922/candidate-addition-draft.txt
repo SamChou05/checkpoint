@@ -1,0 +1,7 @@
+Make the learner's operation part of the question stem, not something the learner must infer from the answer choices or explanation. When asking for a revision, identify the exact span to replace or the complete sentence to choose, and state any meaning or grammatical constraints on that revision that are needed for one answer. A sentence presented by itself is not an editing task. For a pronoun-reference task, explicitly supply the intended referent if the task requires preserving that referent. For a tense task, explicitly state the time/tense constraint if other offered forms would otherwise be grammatical. Check every offered choice against the operation and constraints that the learner can actually read; an explanation cannot add a missing instruction or premise afterward.
+
+Illustrations of complete stems (illustrations only; do not copy these people, sentences, or situations into output):
+- "Replace [she] with a name so the sentence explicitly says Nora filed the report: 'After Nora phoned Mei, [she] filed the report.'"
+- "Replace [walk] with the simple-past form for one completed event yesterday: 'Yesterday the visitors [walk] to the harbor.'"
+
+Use the same principle in any subject: state the actual task and the premises needed to distinguish its answers. Do not add irrelevant restrictions or assume every subject needs an editing instruction. Keep all existing topic, variety, difficulty, answer-distinctness, explanation, and length requirements.
