@@ -1,0 +1,126 @@
+{
+  "method": "Root manually solved the blinded packet before opening author keys, main explanations or compiler assessments. Teaching review remains separate.",
+  "blind_packet_sha256": "981f55d0247f93060e76264e2a7a1c7d32e30b39d0769a31b2a569621379d66a",
+  "items": [
+    {
+      "source": "quantitative:0",
+      "exact_supported_answer": "19/12",
+      "reason": "3/4 + 5/6 = 9/12 + 10/12.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "quantitative:1",
+      "exact_supported_answer": "3",
+      "reason": "1.2 * 2.5 = 3 exactly.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "quantitative:2",
+      "exact_supported_answer": "5/6",
+      "reason": "(5/8)/(3/4) = (5/8)*(4/3).",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "quantitative:3",
+      "exact_supported_answer": "4/9",
+      "reason": "7/9 - 1/3 = 7/9 - 3/9.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "quantitative:4",
+      "exact_supported_answer": "7",
+      "reason": "3x > 20 means x > 20/3; minimum integer in stated interval is 7.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "python:0",
+      "exact_supported_answer": "True",
+      "reason": "and binds more tightly than or: False or True.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "python:1",
+      "exact_supported_answer": "40",
+      "reason": "Index -2 selects the second-last element.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "python:2",
+      "exact_supported_answer": "\"small\"",
+      "reason": "4 < 10 is true, selecting the first conditional expression.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "python:3",
+      "exact_supported_answer": "\"hello\"",
+      "reason": "0 is false; or returns its second operand.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "python:4",
+      "exact_supported_answer": "[15, 20]",
+      "reason": "Slice includes positions 2 and 3, excluding stop 4.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "mixed:0",
+      "exact_supported_answer": "3",
+      "reason": "(18 - 6)/4 = 12/4.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "mixed:1",
+      "exact_supported_answer": "12",
+      "reason": "3/4 of 16 equals 12.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "mixed:2",
+      "exact_supported_answer": "14",
+      "reason": "3x > 40 means x > 40/3; minimum stated-domain integer is 14.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "mixed:3",
+      "exact_supported_answer": "are",
+      "reason": "Under the requested standard American convention, agreement follows the nearer plural subject players.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    },
+    {
+      "source": "mixed:4",
+      "exact_supported_answer": "David handed the package to Kevin, who signed for it immediately.",
+      "reason": "The relative pronoun attaches to Kevin and it refers to the package; other alternatives allow two ordinary antecedents.",
+      "distinct_choices": true,
+      "sufficient_premises_in_requested_scope": true,
+      "independent_difficulty": 2
+    }
+  ]
+}

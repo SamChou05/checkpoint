@@ -1,0 +1,2085 @@
+{
+  "reviewer": "choice_semantics",
+  "state": "complete_independent_component_review",
+  "plan_sha256": "fe2284b6e1436d99d287241a51aa65f1fd34a23f73fc9949335b45621ed5ef27",
+  "capture_sha256": "d834f30fd54b444fda37e84c4543b3be239a69172b726a7652ba0594d8715402",
+  "blind_items_sha256": "981f55d0247f93060e76264e2a7a1c7d32e30b39d0769a31b2a569621379d66a",
+  "locked_blind_review_sha256": "9bb34e03e8deac38eaac330a33036b771e3d7d091f995bfbf8a7a8be87bc9e31",
+  "boundary": "Blinded task answers and ambiguity were written/hash-locked before reading output keys, teaching, compiler judgments or other reviews; this review adds teaching and operational assessment only. No provider calls. No other review narrative was read. After the first teaching assessment, parent identified a prior analogous contextual judgment; this review then inspected that prior capture item and explicitly records the consistency issue.",
+  "runtime_and_request_binding": {
+    "frozen_pins_checked": 36,
+    "captured_requests_equal_frozen_requests": 3,
+    "native_schema_replays": 3,
+    "assessment_replays": 3,
+    "source_ordinals": 15,
+    "raw_and_adapted_payloads_match": true,
+    "compiled_exact_five_field_replays": 8,
+    "blind_projection_matches_original_raw_data": 15,
+    "all_original_artifacts_unchanged": true
+  },
+  "calls": [
+    {
+      "job": "quantitative",
+      "exact_frozen_request": true,
+      "native_schema_replay": true,
+      "exact_original_positions": true,
+      "rows": 5,
+      "elapsed_seconds": 76.761433,
+      "read_timeout": 100,
+      "connect_timeout": 3,
+      "sdk_attempts": 1,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 5365,
+        "outputTokens": 5829,
+        "totalTokens": 11194,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_blocks_omitted": 1
+    },
+    {
+      "job": "python",
+      "exact_frozen_request": true,
+      "native_schema_replay": true,
+      "exact_original_positions": true,
+      "rows": 5,
+      "elapsed_seconds": 28.762637,
+      "read_timeout": 100,
+      "connect_timeout": 3,
+      "sdk_attempts": 1,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 5327,
+        "outputTokens": 2737,
+        "totalTokens": 8064,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_blocks_omitted": 1
+    },
+    {
+      "job": "mixed",
+      "exact_frozen_request": true,
+      "native_schema_replay": true,
+      "exact_original_positions": true,
+      "rows": 5,
+      "elapsed_seconds": 64.909085,
+      "read_timeout": 100,
+      "connect_timeout": 3,
+      "sdk_attempts": 1,
+      "stop_reason": "end_turn",
+      "usage": {
+        "inputTokens": 5620,
+        "outputTokens": 7327,
+        "totalTokens": 12947,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_blocks_omitted": 1
+    }
+  ],
+  "summary": {
+    "original_requested_slots": 15,
+    "attempted_calls": 3,
+    "unattempted_slots": 0,
+    "raw_slots_observed": 15,
+    "normal_bounded_native_exact5_calls": 3,
+    "typed_compiler_valid": 8,
+    "typed_compiler_rejected": 0,
+    "prose_drafts": 7,
+    "task_choices_blinded_unique": 14,
+    "teaching_fields_read": 47,
+    "main_fields_read": 15,
+    "choice_feedback_fields_read": 32,
+    "factual_supported_fields": 45,
+    "factual_unsupported_fields": 0,
+    "factual_uncertain_fields": 2,
+    "all_runtime_lengths_pass": true,
+    "prose_author_320_instruction_deviations": 0,
+    "raw_mixed_allocation": {
+      "arithmetic": 3,
+      "english": 2
+    },
+    "counted_usable_by_job": {
+      "quantitative": 5,
+      "python": 4,
+      "mixed": 4
+    },
+    "counted_usable_total": 13,
+    "required_usable_total": 14,
+    "all_jobs_minimum4_usable": true,
+    "usable_compiled_by_job": {
+      "quantitative": 5,
+      "mixed": 3
+    },
+    "usable_mixed_english": 1,
+    "shuffle_safe_items": 14,
+    "exact_key_identity_orders_checked": 360,
+    "known_output_tokens": 15893,
+    "known_input_tokens": 16312,
+    "unknown_usage_calls": 0,
+    "total_author_call_seconds": 170.433155,
+    "component_qualified": false,
+    "qualification_failure": "Conservative 13/15 usable is below the prospective 14/15 minimum: mixed:4 fails and python:3 remains a material interpretation-consistency uncertainty. The same contextual standard used for the prior analogous explanation yields 14/15 and would pass this component.",
+    "usable_total_under_prior_contextual_standard": 14,
+    "component_qualified_under_prior_contextual_standard": true
+  },
+  "pedagogical_limitations": [
+    "The six exact-value compiler mains repeat the full expression and correct result, without intermediate arithmetic instruction. They are factually supported and accepted as concise operation/result solutions in this component review, but their teaching depth is limited. This is not a model-authored explanation failure.",
+    "Some distractors are weaker than others as fixed in the blinded review; no unobserved learner error histories are inferred."
+  ],
+  "claim_limits": [
+    "Author-only component, not three-stage worker or deployed release qualification.",
+    "Model and reasoning configuration changed together relative to priorKimi evidence; no causal model-only claim.",
+    "No solver/reviewer ran and no actual application release or verification stamp was created.",
+    "Reported output token counts include the provider combined output budget; reasoning text/signatures were omitted.",
+    "Future full-worker latency must be measured against its real240-second deadline; these three independent author calls do not establish remaining verification time.",
+    "The Python explanation result is interpretation-sensitive and must not be compared as a model quality regression under inconsistent adjudication standards."
+  ],
+  "primary_sources": {
+    "python_expressions": "https://docs.python.org/3/reference/expressions.html",
+    "python_types": "https://docs.python.org/3/library/stdtypes.html",
+    "agreement": "https://owl.purdue.edu/owl/general_writing/grammar/subject_verb_agreement.html",
+    "pronoun_clarity": "https://owl.purdue.edu/owl/general_writing/grammar/pronouns/index.html",
+    "relative_pronouns": "https://owl.purdue.edu/owl/general_writing/grammar/relative_pronouns/defining_vs_non_defining.html"
+  },
+  "items": [
+    {
+      "source": "quantitative:0",
+      "source_row_sha256": "55efa67c5176de88c9573788ab5c0f4a5df5e306ed877ac4eb15b045ae4ee521",
+      "kind": "quantitative",
+      "content_sha256": "cb4f05c26965f6dd50df11981fc8a3744c69888ffffa78c6d379a2591d92e2f3",
+      "blind_item_sha256": "6d003e6dcd9fab0540a2cfdcfd54b3a4f310435b6b91505a9d8242545520fdfd",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": true,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 88,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 83,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 5,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 3,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 3,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 4,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "feedback_a": {
+            "characters": 72,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_b": {
+            "characters": 83,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_c": {
+            "characters": 83,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_d": {
+            "characters": 85,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": null,
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "The 4/5 option matches componentwise numerator/denominator addition. The remaining fractions are distinct but less diagnostic arithmetic distractors; 9/10 is relatively weak. Overall adequate, with a quality caveat."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "The expression ((3 / 4) + (5 / 6)) evaluates exactly to 19/12. The answer is 19/12.",
+          "text_sha256": "e07b996424e81c36d518db724dae14e9734bf098d943049e80f8251af4030335",
+          "characters": 83,
+          "factual_status": "supported",
+          "independent_assessment": "The displayed expression and exact equality agree with the independent blinded rational evaluation. The main states the complete operation and its result, but does not explain intermediate arithmetic; terse pedagogical presentation is recorded separately from factual correctness.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"19/12\"]",
+          "text": "The expression evaluates exactly to 19/12; 19/12 is the requested value.",
+          "text_sha256": "1a9ef5fb66bafd260ee93981a124f1bd99759383929901a8f8057a2293bb87ce",
+          "characters": 72,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"4/5\"]",
+          "text": "The expression evaluates exactly to 19/12, not 4/5. 4/5 is not the requested value.",
+          "text_sha256": "1e31e0b070375479f4c2e9ec5204c326dbfd4c506f7f3c3da5995784e20acd34",
+          "characters": 83,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"3/2\"]",
+          "text": "The expression evaluates exactly to 19/12, not 3/2. 3/2 is not the requested value.",
+          "text_sha256": "58a37284fde6f56f919ea1590af1e905db35dd280b39280ee66936d44d38dff3",
+          "characters": 83,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"9/10\"]",
+          "text": "The expression evaluates exactly to 19/12, not 9/10. 9/10 is not the requested value.",
+          "text_sha256": "dc9aa98481a517f18aff6ec29c2c6aec928aba80d058bf1c6c6c4cdbcd0ed5a9",
+          "characters": 85,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "quantitative:1",
+      "source_row_sha256": "daa73f7e9584031d036f705720958c0cb14c9863a8445ecf48fd9c6bab3acd7b",
+      "kind": "quantitative",
+      "content_sha256": "1534198ebd25a11a0527a80e19085088a879fdec3695ebd890d5212e0fd206dc",
+      "blind_item_sha256": "02d45fd2aec280bb18098a3bd268e70a94722ea442266ba951e12c2375faf1bb",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": true,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 84,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 71,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 5,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 5,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "feedback_a": {
+            "characters": 64,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_b": {
+            "characters": 83,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_c": {
+            "characters": 77,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_d": {
+            "characters": 83,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": null,
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "30 tests decimal placement and 3.7 tests using addition. 2.7 is a nearby arithmetic slip, less diagnostic but still a plausible numerical alternative."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "The expression ((6/5) * (5/2)) evaluates exactly to 3. The answer is 3.",
+          "text_sha256": "ae51f845081fc54c7a0fe431a12a203174b82a2d2121cf72fe7a73c0b39b199a",
+          "characters": 71,
+          "factual_status": "supported",
+          "independent_assessment": "The displayed expression and exact equality agree with the independent blinded rational evaluation. The main states the complete operation and its result, but does not explain intermediate arithmetic; terse pedagogical presentation is recorded separately from factual correctness.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"3\"]",
+          "text": "The expression evaluates exactly to 3; 3 is the requested value.",
+          "text_sha256": "cd1114f2973631c0c9b22967f30fc9f20dbfbdfc474c18c7950c913f2cb645fe",
+          "characters": 64,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"27/10\"]",
+          "text": "The expression evaluates exactly to 3, not 27/10. 27/10 is not the requested value.",
+          "text_sha256": "a831eb7636ff5484732387feb135c44d0551ba28c8c36cf86269991a73e5b887",
+          "characters": 83,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"30\"]",
+          "text": "The expression evaluates exactly to 3, not 30. 30 is not the requested value.",
+          "text_sha256": "9fad8d6a672a2f2f1d70c97eef85ee448143fc1950d4e698caccd6630433fbe2",
+          "characters": 77,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"37/10\"]",
+          "text": "The expression evaluates exactly to 3, not 37/10. 37/10 is not the requested value.",
+          "text_sha256": "d36be0ed68f60d4e4cfe82171fe3078f676717f60ebd44377d9b303bd4b5fef7",
+          "characters": 83,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "quantitative:2",
+      "source_row_sha256": "032bba1c89c1cc1441193838fec42deb84a9d2f49c077efcdbd07a391d8256d8",
+      "kind": "quantitative",
+      "content_sha256": "db598251da337c36c95ca5796c01a097804e17ad296cb989e74e368f8afbf23a",
+      "blind_item_sha256": "2e46e3d25287b93b18aed06867a95c9ea95a5fe09545a88262df6de1d3e1ce66",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": true,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 88,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 79,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 5,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 3,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 3,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 3,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "feedback_a": {
+            "characters": 85,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_b": {
+            "characters": 68,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_c": {
+            "characters": 81,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_d": {
+            "characters": 81,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": null,
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate",
+        "assessment": "15/32 is multiplication without reciprocating; 6/5 reverses the result. 2/3 is a distinct nearby fraction. Adequate."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "The expression ((5 / 8) / (3 / 4)) evaluates exactly to 5/6. The answer is 5/6.",
+          "text_sha256": "17bd167e3ba5f3c8d6aebcf945b3cc9bb1ba9add188c24e162a3069f19a7cd1a",
+          "characters": 79,
+          "factual_status": "supported",
+          "independent_assessment": "The displayed expression and exact equality agree with the independent blinded rational evaluation. The main states the complete operation and its result, but does not explain intermediate arithmetic; terse pedagogical presentation is recorded separately from factual correctness.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"15/32\"]",
+          "text": "The expression evaluates exactly to 5/6, not 15/32. 15/32 is not the requested value.",
+          "text_sha256": "cd0041ceac4d5331a6a17030743490cf60f9bba878e1b40ccb22d35f1156ea2f",
+          "characters": 85,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"5/6\"]",
+          "text": "The expression evaluates exactly to 5/6; 5/6 is the requested value.",
+          "text_sha256": "1dc92e65750a879a1f45bc2512a087f6dd414c0822ad37997ad3d6fa301d6194",
+          "characters": 68,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"6/5\"]",
+          "text": "The expression evaluates exactly to 5/6, not 6/5. 6/5 is not the requested value.",
+          "text_sha256": "6159d8e7403ad91a09ab6b17564e300fd58dcba747f04c3e4c53673639be1ce1",
+          "characters": 81,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"2/3\"]",
+          "text": "The expression evaluates exactly to 5/6, not 2/3. 2/3 is not the requested value.",
+          "text_sha256": "acedef89abdcd20bc46ddfe2fe4767d4566ea8b5d27ab5be41278bac4809c97c",
+          "characters": 81,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "quantitative:3",
+      "source_row_sha256": "e6dfaa87e3521ea1e7a282f58ca73f1b1cd048d2cd7a21252c6e896a7378101e",
+      "kind": "quantitative",
+      "content_sha256": "eebd232b038a00b36bf2b38e171ee0a8e7082412ef5a74e1aaaadccbcbece64d",
+      "blind_item_sha256": "fe250ff74dd7b6fd630fbbd4196b6f81e7b5a2fbc4917a1c931d711ee5c3f063",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": true,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 88,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 79,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 3,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 4,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 3,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "feedback_a": {
+            "characters": 81,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_b": {
+            "characters": 77,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_c": {
+            "characters": 83,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_d": {
+            "characters": 68,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": null,
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate",
+        "assessment": "2/3 results from subtracting numerators without correctly converting 1/3; 1 is componentwise subtraction; 10/9 is addition. These are meaningful distinct errors."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "The expression ((7 / 9) - (1 / 3)) evaluates exactly to 4/9. The answer is 4/9.",
+          "text_sha256": "e9e1ef335f647c369e4b65826085d7809a8b98d348de5fedef65ba4b7211592a",
+          "characters": 79,
+          "factual_status": "supported",
+          "independent_assessment": "The displayed expression and exact equality agree with the independent blinded rational evaluation. The main states the complete operation and its result, but does not explain intermediate arithmetic; terse pedagogical presentation is recorded separately from factual correctness.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"2/3\"]",
+          "text": "The expression evaluates exactly to 4/9, not 2/3. 2/3 is not the requested value.",
+          "text_sha256": "979872d13b7fff8f86c3d424de402ba3b2ec5979a353603d8cd15bebf3847a35",
+          "characters": 81,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"1\"]",
+          "text": "The expression evaluates exactly to 4/9, not 1. 1 is not the requested value.",
+          "text_sha256": "338f776adf0b99ab6b4775c2c28725d2823178d45bb410175713914957e25b84",
+          "characters": 77,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"10/9\"]",
+          "text": "The expression evaluates exactly to 4/9, not 10/9. 10/9 is not the requested value.",
+          "text_sha256": "30d5d98601e9dea466a9bac7615c459812f094e370b9da3dbf0c5cfbbfd20e59",
+          "characters": 83,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"4/9\"]",
+          "text": "The expression evaluates exactly to 4/9; 4/9 is the requested value.",
+          "text_sha256": "cd99c22715662e4451bcc55e345ed3f22eef2b098ca26c6789580d43aa620d2e",
+          "characters": 68,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "quantitative:4",
+      "source_row_sha256": "d40dc75cc469eb945fd092f32e235721f551e359adab93a2e430c10f64274889",
+      "kind": "quantitative",
+      "content_sha256": "d7331c9b0a8336865e57a38629ddbfaccb940ed8b37dcc41a82c9deb2fad6416",
+      "blind_item_sha256": "9cb62301cd1eac5f6a5754bea29399c641145d9d8362b4dc747838fbb56bd079",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": true,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 168,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 152,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "feedback_a": {
+            "characters": 70,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_b": {
+            "characters": 93,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_c": {
+            "characters": 78,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_d": {
+            "characters": 78,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": null,
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate",
+        "assessment": "6 is the boundary-side error; 8 and9 satisfy the inequality but fail the explicit minimum request. They are distinct proposed answers, not duplicate wrong meanings."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "At x = 7, 21 > 20 is true. 7 is the minimum value satisfying the condition in this domain. Every smaller value in the stated domain fails the condition.",
+          "text_sha256": "84184f16e23b47607cf30e1d05710d384635a0dfd6eaa7c33fd51e3ccc21bc1b",
+          "characters": 152,
+          "factual_status": "supported",
+          "independent_assessment": "The explicit substituted comparison is true at the selected minimum. The independently enumerated bounded domain confirms every smaller permitted value fails; no unstated minimum or monotonicity premise is introduced.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"6\"]",
+          "text": "At x = 6, 18 > 20 is false. This value does not satisfy the condition.",
+          "text_sha256": "f989e2bdacb2fb1dadf33739de222a5585b5c85ac5f2f58808de6a89471e0fed",
+          "characters": 70,
+          "factual_status": "supported",
+          "independent_assessment": "Substitution into the declared inequality and the truth value are correct. A larger satisfying value is rejected solely because the stem explicitly requests the minimum.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"7\"]",
+          "text": "At x = 7, 21 > 20 is true. This is the minimum value satisfying the condition in this domain.",
+          "text_sha256": "e519d2e7089f70addc581b4f5b99f94e9196e0d57a80e5b67c70f88751674f21",
+          "characters": 93,
+          "factual_status": "supported",
+          "independent_assessment": "Substitution into the declared inequality and the truth value are correct. A larger satisfying value is rejected solely because the stem explicitly requests the minimum.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"8\"]",
+          "text": "At x = 8, 24 > 20 is true. The question asks for the minimum; that value is 7.",
+          "text_sha256": "d6a57b2995ef5d588114700f1c35710e8f62f699fa006bf2737d688220810f77",
+          "characters": 78,
+          "factual_status": "supported",
+          "independent_assessment": "Substitution into the declared inequality and the truth value are correct. A larger satisfying value is rejected solely because the stem explicitly requests the minimum.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"9\"]",
+          "text": "At x = 9, 27 > 20 is true. The question asks for the minimum; that value is 7.",
+          "text_sha256": "e40895c569f3dfb2fe08082b93eb732fef4d8db724105eec5030d5009d9494c4",
+          "characters": 78,
+          "factual_status": "supported",
+          "independent_assessment": "Substitution into the declared inequality and the truth value are correct. A larger satisfying value is rejected solely because the stem explicitly requests the minimum.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "python:0",
+      "source_row_sha256": "8a217414722f2851fcc53cc7e9d6690b89a6d90633e649337bc9fcf4644746f5",
+      "kind": "prose",
+      "content_sha256": "b3153e0ee0091748ad169b36b903239497a4d03f95ef3643ad5e487d90b40490",
+      "blind_item_sha256": "13c4f4eb9f6502ab9d52d9969ff5175e98f6b103f9433cb66e390b9d4af2f3bf",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": false,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 74,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 137,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 4,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 5,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 4,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 11,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": {
+          "explanation_maximum": 320,
+          "explanation_within_maximum": true
+        },
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "False is a plausible incomplete evaluation. SyntaxError and None are weaker beginner distractors but represent different concrete outcomes, not paraphrases. Adequate with weak-choice caveat."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "The 'and' operator has higher precedence than 'or', so this evaluates as (True and False) or True, which is False or True, which is True.",
+          "text_sha256": "ae6f6562b8816ba44e7c92be75b66d58a0aea44df566350b9e20223b81cc4ae1",
+          "characters": 137,
+          "factual_status": "supported",
+          "independent_assessment": "The precedence, parenthesized evaluation, intermediate False, and final True all match Python semantics. Parentheses describe the expression, not shuffled answer labels.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "python:1",
+      "source_row_sha256": "c739c8eaeeab69248f0cf0e9a3e4cab4baf6c41237d171f7d3bdc9027578df44",
+      "kind": "prose",
+      "content_sha256": "fadb9def9a5f4de3a7147f7c97ff3a34e1c5826814340f3b0cd1b3ecc4446b4c",
+      "blind_item_sha256": "9d9ead1e38af9c0593e431ecb433083c2bd8fb3eb5a43d0a743f8cd6874e2d1a",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": false,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 61,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 120,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": {
+          "explanation_maximum": 320,
+          "explanation_within_maximum": true
+        },
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate",
+        "assessment": "50 is off by one from the end;20 mistakes the negative index for positive1;30 is another indexing offset. All distinct and adequate."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "Negative indices count from the end of the list. nums[-1] is 50, so nums[-2] is the second-to-last element, which is 40.",
+          "text_sha256": "273c00c322157a86267bbdeece752b05e26b9fff001b05da40e4181d5fd929fd",
+          "characters": 120,
+          "factual_status": "supported",
+          "independent_assessment": "Negative indexing, the -1 example, and the -2 result40 are correct. Second-to-last describes the fixed input list, not answer-option position.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "python:2",
+      "source_row_sha256": "d7c0aacc7e879522074504161f3d92598cb1a6f57a28434bb4521b51d7ed0199",
+      "kind": "prose",
+      "content_sha256": "7e1c021a40dc8dab08da79da67880ebd85e349c35c7208681904e636e0b97894",
+      "blind_item_sha256": "acb048244a2bbe080cc0cf28b54c6662ea9610be9e3dcc609c12d62e433ec66d",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": false,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 94,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 127,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 7,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 7,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 4,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": {
+          "explanation_maximum": 320,
+          "explanation_within_maximum": true
+        },
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate",
+        "assessment": "The other branch, the condition Boolean, and the input integer are distinct misconceptions about what the expression assigns. Adequate."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "The condition x < 10 is 4 < 10, which is True, so the conditional expression returns the value before 'else', which is \"small\".",
+          "text_sha256": "6f4496c2f6fadee2a1df2b205f57df4cd223a7cfc718436996ad3e4a170aee54",
+          "characters": 127,
+          "factual_status": "supported",
+          "independent_assessment": "The true condition and selected string are correct. Value before else is slightly imprecise syntax wording but context clearly identifies the first result expression; it does not reference display order.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "python:3",
+      "source_row_sha256": "e4bbfcc5e30fdff69b38e30ca5fe5ebd378a799d6c79723cdd019e9f0e7779d0",
+      "kind": "prose",
+      "content_sha256": "b4f9e26ab7985f2f12ab9186b115c1235a6ebadac820b282d274dc532073b326",
+      "blind_item_sha256": "0da8eabba90a08fb6ef1f631c1e458ca483c22d69e443080533d1e0339d6b729",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": false,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 64,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 137,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 4,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 5,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 7,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": {
+          "explanation_maximum": 320,
+          "explanation_within_maximum": true
+        },
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate",
+        "assessment": "0 corresponds to selecting the first operand; True and False treat the result as a Boolean. False equals0 under numeric equality but these are different exact Python objects/types and representations in an evaluation question. No contextual duplicate."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "Python's 'or' returns the first truthy operand, not a boolean. 0 is falsy, so evaluation continues and \"hello\" is returned as the result.",
+          "text_sha256": "c8e9fabfec22c996947bbbd6090780e9f489d217cab76c1f30d904b77b0442bc",
+          "characters": 137,
+          "factual_status": "uncertain",
+          "independent_assessment": "The concrete result hello is correct. As an unqualified universal rule, first truthy operand/not a boolean is false: 0 or False returns False, and True or 0 returns True. In the actual expression, however, the first truthy operand is hello, and not a boolean can describe returning that operand without Boolean coercion. A prior materially similar explanation was accepted contextually. This reviewer records unresolved interpretation consistency and conservatively withholds credit, rather than treating this as an uncontested factual failure.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": false
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": false,
+      "failures": [
+        "unresolved_material_interpretation_of_general_rule_in_main"
+      ],
+      "contextual_reading_counted_usable": true
+    },
+    {
+      "source": "python:4",
+      "source_row_sha256": "a81b931f770337d029c03474d0085bf02cf65364bc321ec9df946f315b472ce2",
+      "kind": "prose",
+      "content_sha256": "b35c9e53c0d391a91fcb66051c8b5c5151f157dc6332a738142a1ca5a5199c8a",
+      "blind_item_sha256": "1ae3d29f8e4d2a1f7d36915b6e1b2c74434ec37102aa6d788423c44eda65c09e",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": false,
+      "scope_fit": true,
+      "assignment": {
+        "required": false,
+        "resolved_metadata": null,
+        "metadata_matches_known_assignment": null,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 61,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 109,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 8,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 12,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 8,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 12,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": {
+          "explanation_maximum": 320,
+          "explanation_within_maximum": true
+        },
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate",
+        "assessment": "The three alternatives test inclusive-stop and one-based/offset interpretations. They are different sequences and adequate."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "A slice [2:4] includes indices 2 and 3 but not 4. data[2] is 15 and data[3] is 20, so the result is [15, 20].",
+          "text_sha256": "0bdf68a585136da66fb332a2dc133331246490163a260a0b3c8253be8eadc3f3",
+          "characters": 109,
+          "factual_status": "supported",
+          "independent_assessment": "Slice bounds and both retrieved elements agree with independent execution. Index numbers refer to the fixed input list, not answer positions.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "mixed:0",
+      "source_row_sha256": "b28f76ae858ab497893caa145df4e20c1a21d75c483ff53bde2ed85a57dd1209",
+      "kind": "quantitative",
+      "content_sha256": "033131f1d607ab4bc1f956f5609926ddf70c87b367576b5157d4f8299afc0729",
+      "blind_item_sha256": "919b5bc3747106de04038b8926f83a8bbcef9ade6d1d2f5058fa1841a9322b4d",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": true,
+      "scope_fit": true,
+      "assignment": {
+        "required": true,
+        "resolved_metadata": {
+          "skillID": "11111111-1111-4111-8111-111111111111",
+          "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+          "objective": "Evaluate an exact rational expression or explicit bounded condition",
+          "topic": "Exact arithmetic"
+        },
+        "metadata_matches_known_assignment": true,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 83,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 70,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "feedback_a": {
+            "characters": 64,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_b": {
+            "characters": 75,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_c": {
+            "characters": 75,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_d": {
+            "characters": 75,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": null,
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "6 results from replacing subtraction with addition.2 and4 are nearby values but do not have equally clear standard error paths. Adequate numerical range with weaker alternatives noted."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "The expression ((18 - 6) / 4) evaluates exactly to 3. The answer is 3.",
+          "text_sha256": "bab57d21f5a19a7646dbcfe6418c413d7fad71a5b3d7e6717c02d7b461635a58",
+          "characters": 70,
+          "factual_status": "supported",
+          "independent_assessment": "The displayed expression and exact equality agree with the independent blinded rational evaluation. The main states the complete operation and its result, but does not explain intermediate arithmetic; terse pedagogical presentation is recorded separately from factual correctness.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"3\"]",
+          "text": "The expression evaluates exactly to 3; 3 is the requested value.",
+          "text_sha256": "cd1114f2973631c0c9b22967f30fc9f20dbfbdfc474c18c7950c913f2cb645fe",
+          "characters": 64,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"6\"]",
+          "text": "The expression evaluates exactly to 3, not 6. 6 is not the requested value.",
+          "text_sha256": "4d2d2c061be245d67d838365438cbd13f7f465404d78dbab992c137d2fa8b359",
+          "characters": 75,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"2\"]",
+          "text": "The expression evaluates exactly to 3, not 2. 2 is not the requested value.",
+          "text_sha256": "7118ae648b4c7055bac84f00b746374e58d381aae484c44df51cf75f393612d6",
+          "characters": 75,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"4\"]",
+          "text": "The expression evaluates exactly to 3, not 4. 4 is not the requested value.",
+          "text_sha256": "e6f5a34676fa6576de77ccf1fd70a3751fdcf50b95b953286dd96666175d6996",
+          "characters": 75,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "mixed:1",
+      "source_row_sha256": "3d00596d72334d4ea0f7e45587800f353ef87bb62939a87045ce0c9e99e666e2",
+      "kind": "quantitative",
+      "content_sha256": "bf4d9b567c59976daa6651339133f502545400c869295d6611d04df4a6cf1736",
+      "blind_item_sha256": "cb4603c75374014138f5a594ea64472441a8df44e6341054887dc972048cb9b3",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": true,
+      "scope_fit": true,
+      "assignment": {
+        "required": true,
+        "resolved_metadata": {
+          "skillID": "11111111-1111-4111-8111-111111111111",
+          "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+          "objective": "Evaluate an exact rational expression or explicit bounded condition",
+          "topic": "Exact arithmetic"
+        },
+        "metadata_matches_known_assignment": true,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 81,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 70,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 1,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "feedback_a": {
+            "characters": 66,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_b": {
+            "characters": 76,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_c": {
+            "characters": 76,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_d": {
+            "characters": 78,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": null,
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "4 omits multiplication by3;48 omits division by4;9 is a less diagnostic arithmetic alternative. Adequate overall."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "The expression ((3/4) * 16) evaluates exactly to 12. The answer is 12.",
+          "text_sha256": "bba84c968372c9cc27750b8956283554143f1439b94b4e0b636a1e180c076826",
+          "characters": 70,
+          "factual_status": "supported",
+          "independent_assessment": "The displayed expression and exact equality agree with the independent blinded rational evaluation. The main states the complete operation and its result, but does not explain intermediate arithmetic; terse pedagogical presentation is recorded separately from factual correctness.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"12\"]",
+          "text": "The expression evaluates exactly to 12; 12 is the requested value.",
+          "text_sha256": "617f6fd0971f8e582052abf12c7da4c1799a17bd4061b9033da869a8830c24d7",
+          "characters": 66,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"9\"]",
+          "text": "The expression evaluates exactly to 12, not 9. 9 is not the requested value.",
+          "text_sha256": "00ad0047d21b4d15d023eb98be3f7a34c898a32565fa7a0cf6731541fab2090d",
+          "characters": 76,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"4\"]",
+          "text": "The expression evaluates exactly to 12, not 4. 4 is not the requested value.",
+          "text_sha256": "710e0a22cb103b062c390fc958d995e0903df2fbd38112b94ac4c51ec05d26c4",
+          "characters": 76,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"48\"]",
+          "text": "The expression evaluates exactly to 12, not 48. 48 is not the requested value.",
+          "text_sha256": "a688a2e330e9f6a29e2c221775076c559a78d92be53cd79d9b29c2b384f0b1f6",
+          "characters": 78,
+          "factual_status": "supported",
+          "independent_assessment": "The exact result matches blinded arithmetic; this exact offered value is correctly distinguished from the result. No speculative misconception cause is asserted.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "mixed:2",
+      "source_row_sha256": "6fd74b6025ecda33f3af80e54ead8b20ac75897dd0e4cca211f2a382c8eb62e7",
+      "kind": "quantitative",
+      "content_sha256": "248f0ea58c0385911f48f1bc5ef968f2bd3b5b067747b5e39de2e0254cb3e3a7",
+      "blind_item_sha256": "19f9ddf194b9964a501d7ccff15693d1f50a547a40f782c985bb8cc720d1f158",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": true,
+      "scope_fit": true,
+      "assignment": {
+        "required": true,
+        "resolved_metadata": {
+          "skillID": "11111111-1111-4111-8111-111111111111",
+          "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+          "objective": "Evaluate an exact rational expression or explicit bounded condition",
+          "topic": "Exact arithmetic"
+        },
+        "metadata_matches_known_assignment": true,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 168,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 154,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "feedback_a": {
+            "characters": 94,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_b": {
+            "characters": 71,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_c": {
+            "characters": 80,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          },
+          "feedback_d": {
+            "characters": 71,
+            "minimum": 12,
+            "maximum": 280,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": null,
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate",
+        "assessment": "13 tests rounding down,15 is satisfying but not minimal, and11 is a distinct wrong boundary estimate. Adequate."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "At x = 14, 42 > 40 is true. 14 is the minimum value satisfying the condition in this domain. Every smaller value in the stated domain fails the condition.",
+          "text_sha256": "d6e42f4f88316d378c6a9247535814f8f0ed0fbfcc8d8689fd8316a072f3ef9f",
+          "characters": 154,
+          "factual_status": "supported",
+          "independent_assessment": "The explicit substituted comparison is true at the selected minimum. The independently enumerated bounded domain confirms every smaller permitted value fails; no unstated minimum or monotonicity premise is introduced.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"14\"]",
+          "text": "At x = 14, 42 > 40 is true. This is the minimum value satisfying the condition in this domain.",
+          "text_sha256": "fd92c5acdbd19b571121d0f63a335ad7f46d23c966957fc31cb35812b51d5bdd",
+          "characters": 94,
+          "factual_status": "supported",
+          "independent_assessment": "Substitution into the declared inequality and the truth value are correct. A larger satisfying value is rejected solely because the stem explicitly requests the minimum.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"13\"]",
+          "text": "At x = 13, 39 > 40 is false. This value does not satisfy the condition.",
+          "text_sha256": "6dad1794d07c6432f25a690a1d30536cd6389df090351986d4f8744f457543b7",
+          "characters": 71,
+          "factual_status": "supported",
+          "independent_assessment": "Substitution into the declared inequality and the truth value are correct. A larger satisfying value is rejected solely because the stem explicitly requests the minimum.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"15\"]",
+          "text": "At x = 15, 45 > 40 is true. The question asks for the minimum; that value is 14.",
+          "text_sha256": "d7b4003dc46f5cda2edb1bc88575feb34a7b992f12a0472ee6cb51774e1038bb",
+          "characters": 80,
+          "factual_status": "supported",
+          "independent_assessment": "Substitution into the declared inequality and the truth value are correct. A larger satisfying value is rejected solely because the stem explicitly requests the minimum.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        },
+        {
+          "field": "choiceExplanations[\"11\"]",
+          "text": "At x = 11, 33 > 40 is false. This value does not satisfy the condition.",
+          "text_sha256": "cb29c76732b59a32d65d19ea0b513e37436d78fc1b05bc81e294fd2a2fae1030",
+          "characters": 71,
+          "factual_status": "supported",
+          "independent_assessment": "Substitution into the declared inequality and the truth value are correct. A larger satisfying value is rejected solely because the stem explicitly requests the minimum.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "mixed:3",
+      "source_row_sha256": "48ffc7c68762874fcfc4d7d0e653dc374f125e27b44c376627ae9e92a01b0aa6",
+      "kind": "prose",
+      "content_sha256": "3ec4607d4fa5ef38504c1cdb9ec6ce4655b923a886c8f21e5a9025d2228c96e6",
+      "blind_item_sha256": "a9cc101a35405f54348aa93348a1762bdf6184e5f99a11ba3a43888d760f60cf",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "unique",
+      "blinded_verdict_preserved": "pass",
+      "compiled_five_fields_replayed_exactly": false,
+      "scope_fit": true,
+      "assignment": {
+        "required": true,
+        "resolved_metadata": {
+          "skillID": "22222222-2222-4222-8222-222222222222",
+          "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+          "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+          "topic": "Standard written English"
+        },
+        "metadata_matches_known_assignment": true,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 120,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 139,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 3,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 2,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 3,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 8,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": {
+          "explanation_maximum": 320,
+          "explanation_within_maximum": true
+        },
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "adequate",
+        "assessment": "is, was and has been are different verb forms/tenses/aspects, not equivalent answers merely because all fail agreement. They plausibly attract agreement with coach/neither; adequate."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "When 'neither...nor' joins two subjects, the verb agrees with the subject nearest to it. 'Players' is plural, so 'are' is the correct form.",
+          "text_sha256": "eec22354b668a21267fe3dbc2626eb6a24dab20a881d1987cb00c9391bca47da",
+          "characters": 139,
+          "factual_status": "supported",
+          "independent_assessment": "The stated proximity agreement rule correctly selects the plural form are for players in the supplied standard-American-English sentence.",
+          "shuffle_safe": true,
+          "complete_teaching_for_this_task": true
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 24,
+      "counted_usable": true,
+      "failures": []
+    },
+    {
+      "source": "mixed:4",
+      "source_row_sha256": "a1e10d64692cbc11eb8bdc83b6f8503615e2c0e89c3791f809f19d5f709bc8e2",
+      "kind": "prose",
+      "content_sha256": "8513fe2411008a1bc4fab5848e77f9b2e2232f20bbb8f5fca2c1e6229932b296",
+      "blind_item_sha256": "a78c6cbeaefe990a252b8c700aaaf7512df626aed7795612ca616794cd87b81d",
+      "declared_key_matches_locked_supported_answer": true,
+      "uniqueness": "uncertain",
+      "blinded_verdict_preserved": "uncertain_fail",
+      "compiled_five_fields_replayed_exactly": false,
+      "scope_fit": true,
+      "assignment": {
+        "required": true,
+        "resolved_metadata": {
+          "skillID": "22222222-2222-4222-8222-222222222222",
+          "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+          "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+          "topic": "Standard written English"
+        },
+        "metadata_matches_known_assignment": true,
+        "actual_topic_fit": "pending_independent_review"
+      },
+      "difficulty": {
+        "author": 2,
+        "independent": 2,
+        "minimum": 2,
+        "passes": true
+      },
+      "length_diagnostic": {
+        "fields": {
+          "prompt": {
+            "characters": 53,
+            "minimum": 12,
+            "maximum": 320,
+            "within_bounds": true
+          },
+          "explanation": {
+            "characters": 180,
+            "minimum": 12,
+            "maximum": 420,
+            "within_bounds": true
+          },
+          "choice_a": {
+            "characters": 67,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_b": {
+            "characters": 65,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_c": {
+            "characters": 52,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          },
+          "choice_d": {
+            "characters": 54,
+            "minimum": 1,
+            "maximum": 140,
+            "within_bounds": true
+          }
+        },
+        "all_within_bounds": true,
+        "bound_basis": "runtime_content_limits",
+        "prose_author_instruction": {
+          "explanation_maximum": 320,
+          "explanation_within_maximum": true
+        },
+        "semantic_validity": "not_assessed"
+      },
+      "distractor_assessment_preserved": {
+        "verdict": "uncertain_fail",
+        "assessment": "Lena/coworker and lamp/vase each have two ordinary same-number candidate referents. The crew/repairs alternative is interpretation-dependent, so it is not a reliably refuted distractor. All four sentences otherwise propose distinct linguistic examples."
+      },
+      "teaching_fields": [
+        {
+          "field": "explanation",
+          "text": "In (b), 'who' unambiguously refers to Kevin and 'it' unambiguously refers to the package. In the other options, the pronoun could refer to either of two previously mentioned nouns.",
+          "text_sha256": "c0f1481b895509ec59386a2494711b86a57eeb041b71f1efdfc9a54a0d17bfe8",
+          "characters": 180,
+          "factual_status": "uncertain",
+          "independent_assessment": "The David/Kevin/package reference is supported. The blanket rejection of every alternative remains interpretation-dependent for crew/repairs, as locked before unblinding. In(b) additionally binds the claim to native slotb and misidentifies it in18of24 answer orders.",
+          "shuffle_safe": false,
+          "complete_teaching_for_this_task": false
+        }
+      ],
+      "choice_orders_checked": 24,
+      "shuffle_safe_orders": 6,
+      "counted_usable": false,
+      "failures": [
+        "locked_uncertain_unique_answer",
+        "interpretation_dependent_distractor_exclusion",
+        "shuffle_dependent_answer_label_in_main"
+      ]
+    }
+  ],
+  "adjudication_consistency": {
+    "case": "python:3",
+    "current_exact_main": "Python's 'or' returns the first truthy operand, not a boolean. 0 is falsy, so evaluation continues and \"hello\" is returned as the result.",
+    "prior_capture_sha256": "5a918fb1293e59488a6cbf912529f8268a270641704edb3e38b82ef63691ec73",
+    "prior_location": "python returned item with prompt What is the result of `[] or [0] or False` in Python 3?",
+    "prior_exact_main": "Python's or returns the first truthy value, not a boolean. [] is falsy; [0] is truthy because it is non-empty, so [0] is returned.",
+    "prior_adjudication": "Parent reports the prior independent review treated its main as supported in the specific item context. This reviewer verified the exact prior capture text, not the other reviewer narrative.",
+    "strict_general_rule_reading": {
+      "status": "unsupported",
+      "reason": "Taken without a context restriction, or can return the final falsey operand and can return a Boolean operand.",
+      "counterexamples": [
+        "0 or False -> False",
+        "True or 0 -> True"
+      ]
+    },
+    "specific_expression_reading": {
+      "status": "supported",
+      "reason": "In both supplied expressions an encountered truthy operand is non-Boolean; or returns that operand rather than converting it to True. The worked example correctly identifies the result. The statement need not claim a different outcome for all-falsey or Boolean operands."
+    },
+    "consistent_standard_required": "Do not claim a Sonnet-specific regression from accepting the contextual reading earlier but demanding an exception-complete universal rule here. The frozen all-material-claims criterion is unchanged; this record makes the interpretation sensitivity explicit. No prior review or count is revised.",
+    "conservative_unresolved_result": {
+      "usable": 13,
+      "by_job": {
+        "quantitative": 5,
+        "python": 4,
+        "mixed": 4
+      },
+      "component_qualified": false
+    },
+    "prior_contextual_standard_result": {
+      "usable": 14,
+      "by_job": {
+        "quantitative": 5,
+        "python": 5,
+        "mixed": 4
+      },
+      "component_qualified": true
+    },
+    "fixed_across_both_readings": "mixed:4 remains excluded for locked uniqueness uncertainty plus shuffle-dependent teaching. Every operational, length, allocation and compiled-correctness result is unchanged.",
+    "current_review_policy": "Until the material interpretation is resolved consistently, retain the conservative 13/15 count under the prospective uncertainty-fails rule. Do not silently tighten the criterion or assert that the contextual interpretation is false.",
+    "other_independent_contextual_assessment": {
+      "source": "Parent message after schema reviewer independently reread both exact Python examples.",
+      "reviewers": [
+        "schema_reuse_review",
+        "root"
+      ],
+      "determination": "Both examples are supported in their specific item context with the same generalization caveat. A truthy non-Boolean operand exists, the exact result and stopping point are right, and not a boolean naturally contrasts operand return with Boolean coercion.",
+      "effect": "Their consistent contextual adjudication counts python:3 usable and yields 14/15. This artifact retains choice_semantics conservative unresolved interpretation and 13/15, showing the disagreement rather than rewriting the initial concern. mixed:4 remains unusable in both outcomes."
+    },
+    "initial_unblinded_judgment_retained": "Initially classified the Python main as unsupported under its unqualified general-rule reading. The report now separates that original reading from the supported contextual reading and external consistency assessment; no factual counterexample, locked blind judgment or previous trial artifact is removed."
+  }
+}

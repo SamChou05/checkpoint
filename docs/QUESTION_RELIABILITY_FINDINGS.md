@@ -19,6 +19,7 @@ against the stored key. Each boundary needs its own invariant.
 | Different strings can propose the same answer; checking which choice is correct does not check whether two wrong choices duplicate one another. | [Twenty reviewed controls](evidence/choice-quality-release-20260922/INDEPENDENT_GOLD_REVIEW.md) include equivalent values, unit conversions, paraphrases and representation-sensitive tasks. | Pair judgments are a separate admission condition. Declared equivalence or uncertainty vetoes an item, in addition to exact agreement on one supported answer. |
 | Legacy client code inferred correctness from prose. The substring `correct` also occurs in `incorrect`, so distractor feedback could overwrite the explicit answer key. | [Highlighting reproduction and permutation tests](evidence/answer-highlighting-20260921.md). | The explicit structured key is authoritative. Explanation text cannot replace it. Text-based grading preserves the key across all 24 display orders. |
 | Old inventory and position-dependent feedback could outlive the assumptions used when generated. | [Cached inventory audit](evidence/question-reliability-release-20260922/CACHED_INVENTORY.md); the fresh English capture contained “Only the first choice” despite app shuffling. | All practice tiers require the current verification policy. Old history is preserved. Final review rejects display-position references, while retaining quoted subject literals and ordinary numeric values. |
+| Parenthesized display labels escaped the existing feedback guard. | The fresh Sonnet author trial emitted “In (b),” for an answer that moves after shuffling. | The shared guard now rejects unbound parenthesized choice references in authored and reviewer teaching. Regression tests preserve actual stem subparts, exact quoted literals and mathematical variables. |
 
 These changes make structure, key membership, exact identity and admission rules
 deterministic. They do not make a model's factual statements deterministic or
@@ -55,8 +56,8 @@ automatically improve quality.
 
 ## Current release boundary
 
-The tested structural changes are on main. Backend verification passes 1,235
-tests after native immutable-main integration. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
+The tested structural changes are on main. Backend verification passes 1,255
+tests after combined compiler/immutable-main integration and the parenthesized-label fix. All 26 runtime modules match each of three SAM artifacts, with 393 packaged SDK configuration checks. The latest full iOS suite completed 1,054 tests with three existing skips and no failures;
 answer-key/shuffle coverage includes four answer types across all 24 orders.
 The worker-only Claude-thinking override keeps the synchronous API's shorter
 deadline independent of a background-worker reasoning rollout.
@@ -213,6 +214,26 @@ identical. The source passes 1,235 backend tests, independent filtering/provenan
 review, SAM build and 393 packaged SDK configuration checks across three artifacts.
 Native immutable-main provider acceptance and fresh worker quality remain to be
 tested; prior failed authored-main experiments are not reclassified as passing.
+
+The two opt-in routes now compose: `mixed_quantitative` authoring can use
+`authored_solution` review. Code-derived numerical questions retain all five
+compiled teaching fields and policy 6; prose retains its exact authored main,
+empty optional choice feedback and policy 7. Sidecars remain bound through both
+filters, and tampered fields or fabricated provenance cannot acquire compiler
+status. The same three stages and six-call job budget apply. Defaults are unchanged.
+
+The [Sonnet author-only diagnostic](evidence/sonnet-mixed-author-diagnostic-20260922/RESULT.md)
+returned all 15 requested native-valid drafts in three calls, including eight
+valid compiled specifications. Root adjudication found 14/15 usable drafts,
+meeting the component criterion; the independent review preserves a 13/15
+sensitivity because it reads one correct Python `or` explanation as an overly
+broad rule. Root and the prior assessor apply the same contextual interpretation
+to that wording in both trials. The English pronoun item remains excluded under
+either reading: its alternatives allow a defensible second interpretation, and
+its explanation refers to display slot `(b)`. The label fix closes that observed
+shuffle gap; it does not resolve arbitrary linguistic ambiguity. This author-only
+result does not measure actual solver/auditor rejection, worker yield or deployed
+behavior. The combined actual-runtime qualification remains a separate experiment.
 
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)

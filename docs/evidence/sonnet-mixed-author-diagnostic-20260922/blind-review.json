@@ -1,0 +1,536 @@
+{
+  "reviewer": "choice_semantics",
+  "state": "blinded_determinations_before_unblinding",
+  "blind_items_sha256": "981f55d0247f93060e76264e2a7a1c7d32e30b39d0769a31b2a569621379d66a",
+  "capture_sha256_as_declared_by_blind_packet_only": "d834f30fd54b444fda37e84c4543b3be239a69172b726a7652ba0594d8715402",
+  "read_boundary": {
+    "read_blind_items": true,
+    "read_capture": false,
+    "read_author_keys_or_teaching": false,
+    "read_compiler_assessment": false,
+    "read_other_reviews": false,
+    "provider_calls": 0
+  },
+  "method": "Manual solving; independent Fraction DAG arithmetic and inspected literal Python3 expressions, without importing project compiler/runtime. Primary Python and Purdue references checked separately. No author-key or explanation agreement is assumed.",
+  "summary": {
+    "requested_and_reviewed": 15,
+    "numerical_tasks": 8,
+    "python_tasks": 5,
+    "english_tasks": 2,
+    "unique_answers_without_material_ambiguity": 14,
+    "uncertain_uniqueness": 1,
+    "detected_equivalent_choice_pairs": 0,
+    "task_choice_only_pass": 14,
+    "task_choice_only_uncertain_fail": 1,
+    "teaching_not_yet_reviewed": 15,
+    "qualification_decision": "not_assessed_blind_stage_only"
+  },
+  "batch_scope": {
+    "quantitative": "Five direct arithmetic/condition tasks; all four arithmetic operations represented.",
+    "python": "Boolean chaining, negative indexing, conditional expression, operand-returning or, and slicing are distinct applications.",
+    "mixed": "Three arithmetic/condition tasks and two English applications. Actual author assignment metadata remains hidden.",
+    "novelty": "No duplicate task within any job. The two minimum-condition tasks reuse a linear-inequality pattern across separate independent jobs; their requests have no shared prior-history constraint.",
+    "plausibility_limit": "Some numerical and Python distractors are weaker than the best alternatives. The review does not invent factual claims about how any learner obtained them."
+  },
+  "primary_sources": {
+    "python_expressions": "https://docs.python.org/3/reference/expressions.html",
+    "python_types": "https://docs.python.org/3/library/stdtypes.html",
+    "agreement": "https://owl.purdue.edu/owl/general_writing/grammar/subject_verb_agreement.html",
+    "pronoun_clarity": "https://owl.purdue.edu/owl/general_writing/grammar/pronouns/index.html",
+    "relative_pronouns": "https://owl.purdue.edu/owl/general_writing/grammar/relative_pronouns/defining_vs_non_defining.html"
+  },
+  "items": [
+    {
+      "source": "quantitative:0",
+      "blind_item_sha256": "6d003e6dcd9fab0540a2cfdcfd54b3a4f310435b6b91505a9d8242545520fdfd",
+      "supported_answers": [
+        "19/12"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "3/4 + 5/6 = 9/12 + 10/12 = 19/12. All four offered fractions have different exact values.",
+      "independent_local_check": {
+        "independent_exact_value": "19/12"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "The 4/5 option matches componentwise numerator/denominator addition. The remaining fractions are distinct but less diagnostic arithmetic distractors; 9/10 is relatively weak. Overall adequate, with a quality caveat."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": []
+    },
+    {
+      "source": "quantitative:1",
+      "blind_item_sha256": "02d45fd2aec280bb18098a3bd268e70a94722ea442266ba951e12c2375faf1bb",
+      "supported_answers": [
+        "3"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "1.2 times 2.5 = (12/10)(25/10) = 300/100 = 3.",
+      "independent_local_check": {
+        "independent_exact_value": "3"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "30 tests decimal placement and 3.7 tests using addition. 2.7 is a nearby arithmetic slip, less diagnostic but still a plausible numerical alternative."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": []
+    },
+    {
+      "source": "quantitative:2",
+      "blind_item_sha256": "2e46e3d25287b93b18aed06867a95c9ea95a5fe09545a88262df6de1d3e1ce66",
+      "supported_answers": [
+        "5/6"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "(5/8)/(3/4) = (5/8)(4/3) = 20/24 = 5/6.",
+      "independent_local_check": {
+        "independent_exact_value": "5/6"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate",
+        "assessment": "15/32 is multiplication without reciprocating; 6/5 reverses the result. 2/3 is a distinct nearby fraction. Adequate."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": []
+    },
+    {
+      "source": "quantitative:3",
+      "blind_item_sha256": "fe250ff74dd7b6fd630fbbd4196b6f81e7b5a2fbc4917a1c931d711ee5c3f063",
+      "supported_answers": [
+        "4/9"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "7/9 - 1/3 = 7/9 - 3/9 = 4/9.",
+      "independent_local_check": {
+        "independent_exact_value": "4/9"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate",
+        "assessment": "2/3 results from subtracting numerators without correctly converting 1/3; 1 is componentwise subtraction; 10/9 is addition. These are meaningful distinct errors."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": []
+    },
+    {
+      "source": "quantitative:4",
+      "blind_item_sha256": "9cb62301cd1eac5f6a5754bea29399c641145d9d8362b4dc747838fbb56bd079",
+      "supported_answers": [
+        "7"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "The declared task requests the minimum integer in 1..10 satisfying 3x > 20. At 6 the left side is18; at7 it is21. The satisfying domain is7,8,9,10, whose minimum is7.",
+      "independent_local_check": {
+        "independently_satisfying_domain": [
+          7,
+          8,
+          9,
+          10
+        ],
+        "explicit_selection": "minimum",
+        "selected": 7
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate",
+        "assessment": "6 is the boundary-side error; 8 and9 satisfy the inequality but fail the explicit minimum request. They are distinct proposed answers, not duplicate wrong meanings."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": []
+    },
+    {
+      "source": "python:0",
+      "blind_item_sha256": "13c4f4eb9f6502ab9d52d9969ff5175e98f6b103f9433cb66e390b9d4af2f3bf",
+      "supported_answers": [
+        "True"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "True and False is False, and False or True is True. This is valid Python syntax and does not return None.",
+      "independent_local_check": {
+        "inspected_literal_execution_result": "True",
+        "python_type": "bool",
+        "version": "3.12.11"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "False is a plausible incomplete evaluation. SyntaxError and None are weaker beginner distractors but represent different concrete outcomes, not paraphrases. Adequate with weak-choice caveat."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": [
+        "python_expressions"
+      ]
+    },
+    {
+      "source": "python:1",
+      "blind_item_sha256": "9d9ead1e38af9c0593e431ecb433083c2bd8fb3eb5a43d0a743f8cd6874e2d1a",
+      "supported_answers": [
+        "40"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "Index -2 selects the second-last member of the five-element list,40.",
+      "independent_local_check": {
+        "inspected_literal_execution_result": "40",
+        "python_type": "int",
+        "version": "3.12.11"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate",
+        "assessment": "50 is off by one from the end;20 mistakes the negative index for positive1;30 is another indexing offset. All distinct and adequate."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": [
+        "python_expressions"
+      ]
+    },
+    {
+      "source": "python:2",
+      "blind_item_sha256": "acb048244a2bbe080cc0cf28b54c6662ea9610be9e3dcc609c12d62e433ec66d",
+      "supported_answers": [
+        "\"small\""
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "4 < 10 is True, so the conditional expression selects the string small and assigns it to label.",
+      "independent_local_check": {
+        "inspected_literal_execution_result": "'small'",
+        "python_type": "str",
+        "version": "3.12.11"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate",
+        "assessment": "The other branch, the condition Boolean, and the input integer are distinct misconceptions about what the expression assigns. Adequate."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": [
+        "python_expressions"
+      ]
+    },
+    {
+      "source": "python:3",
+      "blind_item_sha256": "0da8eabba90a08fb6ef1f631c1e458ca483c22d69e443080533d1e0339d6b729",
+      "supported_answers": [
+        "\"hello\""
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "0 is falsey, so or returns its second operand, the string hello. It does not coerce the result to a Boolean.",
+      "independent_local_check": {
+        "inspected_literal_execution_result": "'hello'",
+        "python_type": "str",
+        "version": "3.12.11"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate",
+        "assessment": "0 corresponds to selecting the first operand; True and False treat the result as a Boolean. False equals0 under numeric equality but these are different exact Python objects/types and representations in an evaluation question. No contextual duplicate."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": [
+        "python_expressions",
+        "python_types"
+      ]
+    },
+    {
+      "source": "python:4",
+      "blind_item_sha256": "1ae3d29f8e4d2a1f7d36915b6e1b2c74434ec37102aa6d788423c44eda65c09e",
+      "supported_answers": [
+        "[15, 20]"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "The slice includes indices2 and3 and excludes stop index4, producing[15,20].",
+      "independent_local_check": {
+        "inspected_literal_execution_result": "[15, 20]",
+        "python_type": "list",
+        "version": "3.12.11"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate",
+        "assessment": "The three alternatives test inclusive-stop and one-based/offset interpretations. They are different sequences and adequate."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": [
+        "python_expressions"
+      ]
+    },
+    {
+      "source": "mixed:0",
+      "blind_item_sha256": "919b5bc3747106de04038b8926f83a8bbcef9ade6d1d2f5058fa1841a9322b4d",
+      "supported_answers": [
+        "3"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "The task is (18-6)/4, so12/4=3. Parentheses are provided by the node structure, not inferred.",
+      "independent_local_check": {
+        "independent_exact_value": "3"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "6 results from replacing subtraction with addition.2 and4 are nearby values but do not have equally clear standard error paths. Adequate numerical range with weaker alternatives noted."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": []
+    },
+    {
+      "source": "mixed:1",
+      "blind_item_sha256": "cb4603c75374014138f5a594ea64472441a8df44e6341054887dc972048cb9b3",
+      "supported_answers": [
+        "12"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "(3/4) times16 = (3 times16)/4 =48/4=12.",
+      "independent_local_check": {
+        "independent_exact_value": "12"
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate_with_noted_limitations",
+        "assessment": "4 omits multiplication by3;48 omits division by4;9 is a less diagnostic arithmetic alternative. Adequate overall."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": []
+    },
+    {
+      "source": "mixed:2",
+      "blind_item_sha256": "19f9ddf194b9964a501d7ccff15693d1f50a547a40f782c985bb8cc720d1f158",
+      "supported_answers": [
+        "14"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "The declared task requests the minimum integer in1..20 satisfying3x>40. At13 the left side is39; at14 it is42. Satisfying values are14..20, so the minimum is14.",
+      "independent_local_check": {
+        "independently_satisfying_domain": [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "explicit_selection": "minimum",
+        "selected": 14
+      },
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate",
+        "assessment": "13 tests rounding down,15 is satisfying but not minimal, and11 is a distinct wrong boundary estimate. Adequate."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": []
+    },
+    {
+      "source": "mixed:3",
+      "blind_item_sha256": "a9cc101a35405f54348aa93348a1762bdf6184e5f99a11ba3a43888d760f60cf",
+      "supported_answers": [
+        "are"
+      ],
+      "possible_additional_supported_answers": [],
+      "answer_uniqueness": "unique",
+      "ambiguity": null,
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "For a singular/plural subject joined with nor, standard written agreement follows the nearer subject, players, so the plural are fits. The three offered singular forms do not agree with players.",
+      "independent_local_check": null,
+      "premises_sufficient": true,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "adequate",
+        "assessment": "is, was and has been are different verb forms/tenses/aspects, not equivalent answers merely because all fail agreement. They plausibly attract agreement with coach/neither; adequate."
+      },
+      "task_choice_only_verdict": "pass",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": [
+        "agreement"
+      ]
+    },
+    {
+      "source": "mixed:4",
+      "blind_item_sha256": "a78c6cbeaefe990a252b8c700aaaf7512df626aed7795612ca616794cd87b81d",
+      "supported_answers": [
+        "David handed the package to Kevin, who signed for it immediately."
+      ],
+      "possible_additional_supported_answers": [
+        "The crew finished the repairs, and they looked excellent afterward."
+      ],
+      "answer_uniqueness": "uncertain",
+      "ambiguity": "A second option is defensible under a standard American number-agreement reading; rejecting it needs an unstated notional-plural convention.",
+      "equivalent_choice_pairs": [],
+      "pairwise_distinctness": {
+        "pairs_inspected": 6,
+        "verdict": "distinct_in_task_context"
+      },
+      "proof": "The nonrestrictive relative clause attaches to Kevin; who denotes that person and it denotes the package. However, the crew/repairs sentence has a defensible clear reading under standard American singular collective-noun agreement: plural they then refers to repairs. Treating crew as its individual members instead creates the intended ambiguity. The stem does not specify an agreement convention that rules out the clear repairs reading. I cannot certify a unique answer.",
+      "independent_local_check": null,
+      "premises_sufficient": false,
+      "scope_fit": true,
+      "assessed_difficulty": 2,
+      "difficulty_reason": "Direct application of familiar rules to the supplied concrete values or sentences; not mere rule-name recall.",
+      "distractor_plausibility": {
+        "verdict": "uncertain_fail",
+        "assessment": "Lena/coworker and lamp/vase each have two ordinary same-number candidate referents. The crew/repairs alternative is interpretation-dependent, so it is not a reliably refuted distractor. All four sentences otherwise propose distinct linguistic examples."
+      },
+      "task_choice_only_verdict": "uncertain_fail",
+      "author_key_and_teaching_assessed": false,
+      "primary_source_refs": [
+        "agreement",
+        "pronoun_clarity",
+        "relative_pronouns"
+      ]
+    }
+  ]
+}

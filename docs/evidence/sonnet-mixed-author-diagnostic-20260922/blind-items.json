@@ -1,0 +1,513 @@
+{
+  "capture_sha256": "d834f30fd54b444fda37e84c4543b3be239a69172b726a7652ba0594d8715402",
+  "method": "Author keys, explanations, difficulty labels, compiler results and rejections are hidden. Choices rotated from source ID alone, independently of key. Original capture unchanged.",
+  "scopes": {
+    "quantitative": {
+      "goal": {
+        "title": "Exact rational arithmetic and bounded conditions",
+        "category": "",
+        "focusAreas": "",
+        "currentLevel": "",
+        "learningTarget": "Exact rational arithmetic and bounded conditions",
+        "contentTopics": [
+          "Fraction and decimal arithmetic",
+          "Explicit minimum and maximum conditions"
+        ],
+        "questionDirective": "Evaluate exact expressions using addition, subtraction, multiplication and division, or solve an explicitly stated bounded integer condition. Vary the operations. Preserve the distinction between any satisfying value and an explicitly requested minimum or maximum. Use complete numerical tasks without stories or unstated physical assumptions. Aim for difficulty 2 or 3.",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "minimumDifficulty": 2
+    },
+    "python": {
+      "goal": {
+        "title": "Python 3 expressions",
+        "category": "",
+        "focusAreas": "",
+        "currentLevel": "",
+        "learningTarget": "Python 3 expressions",
+        "contentTopics": [
+          "Boolean expressions",
+          "List indexing",
+          "Conditionals"
+        ],
+        "questionDirective": "Use complete short Python 3 expressions or correctly indented code, with explicit values. Preserve case and literal syntax. Vary the expressions and test application of Python semantics at difficulty 2 or 3. The subject is Python behavior, not arithmetic alone.",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "minimumDifficulty": 2
+    },
+    "mixed": {
+      "goal": {
+        "title": "Arithmetic and English application practice",
+        "category": "",
+        "focusAreas": "",
+        "currentLevel": "",
+        "learningTarget": "Arithmetic and English application practice",
+        "contentTopics": [
+          "Exact arithmetic",
+          "Standard written English"
+        ],
+        "questionDirective": "Cover both assigned skills with self-contained application questions at difficulty 2 or 3. Arithmetic questions use complete exact expressions or explicitly bounded integer conditions. English questions supply complete sentences in standard written American English and make the tested agreement or pronoun-reference distinction explicit.",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "sourceDocuments": [],
+      "minimumDifficulty": 2,
+      "skillMap": {
+        "version": 1,
+        "skills": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Exact arithmetic",
+            "objectives": [
+              {
+                "id": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+                "name": "Evaluate an exact rational expression or explicit bounded condition"
+              }
+            ]
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Standard written English",
+            "objectives": [
+              {
+                "id": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+                "name": "Apply subject-verb agreement or unambiguous pronoun reference"
+              }
+            ]
+          }
+        ]
+      },
+      "requestedSkillAllocation": {
+        "11111111-1111-4111-8111-111111111111": 3,
+        "22222222-2222-4222-8222-222222222222": 2
+      }
+    }
+  },
+  "items": [
+    {
+      "source": "quantitative:0",
+      "kind": "quantitative",
+      "formal_task_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "3"
+          },
+          {
+            "kind": "literal",
+            "value": "4"
+          },
+          {
+            "kind": "literal",
+            "value": "5"
+          },
+          {
+            "kind": "literal",
+            "value": "6"
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 2,
+            "right": 3
+          },
+          {
+            "kind": "binary",
+            "op": "add",
+            "left": 4,
+            "right": 5
+          }
+        ],
+        "root": 6
+      },
+      "displayed_choices": [
+        "4/5",
+        "3/2",
+        "9/10",
+        "19/12"
+      ]
+    },
+    {
+      "source": "quantitative:1",
+      "kind": "quantitative",
+      "formal_task_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "1.2"
+          },
+          {
+            "kind": "literal",
+            "value": "2.5"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 0,
+            "right": 1
+          }
+        ],
+        "root": 2
+      },
+      "displayed_choices": [
+        "30",
+        "3.7",
+        "3",
+        "2.7"
+      ]
+    },
+    {
+      "source": "quantitative:2",
+      "kind": "quantitative",
+      "formal_task_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "5"
+          },
+          {
+            "kind": "literal",
+            "value": "8"
+          },
+          {
+            "kind": "literal",
+            "value": "3"
+          },
+          {
+            "kind": "literal",
+            "value": "4"
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 2,
+            "right": 3
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 4,
+            "right": 5
+          }
+        ],
+        "root": 6
+      },
+      "displayed_choices": [
+        "15/32",
+        "5/6",
+        "6/5",
+        "2/3"
+      ]
+    },
+    {
+      "source": "quantitative:3",
+      "kind": "quantitative",
+      "formal_task_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "7"
+          },
+          {
+            "kind": "literal",
+            "value": "9"
+          },
+          {
+            "kind": "literal",
+            "value": "1"
+          },
+          {
+            "kind": "literal",
+            "value": "3"
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 2,
+            "right": 3
+          },
+          {
+            "kind": "binary",
+            "op": "sub",
+            "left": 4,
+            "right": 5
+          }
+        ],
+        "root": 6
+      },
+      "displayed_choices": [
+        "2/3",
+        "1",
+        "10/9",
+        "4/9"
+      ]
+    },
+    {
+      "source": "quantitative:4",
+      "kind": "quantitative",
+      "formal_task_without_choices": {
+        "kind": "scalar_condition",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "3"
+          },
+          {
+            "kind": "variable"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "literal",
+            "value": "20"
+          }
+        ],
+        "condition": {
+          "left": 2,
+          "relation": "gt",
+          "right": 3
+        },
+        "selection": "minimum",
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 1,
+          "upper": 10
+        }
+      },
+      "displayed_choices": [
+        "9",
+        "6",
+        "7",
+        "8"
+      ]
+    },
+    {
+      "source": "python:0",
+      "kind": "prose",
+      "prompt": "What does the expression  True and False or True  evaluate to in Python 3?",
+      "displayed_choices": [
+        "SyntaxError",
+        "True",
+        "False",
+        "None"
+      ]
+    },
+    {
+      "source": "python:1",
+      "kind": "prose",
+      "prompt": "nums = [10, 20, 30, 40, 50]\nprint(nums[-2])\n\nWhat is printed?",
+      "displayed_choices": [
+        "50",
+        "20",
+        "30",
+        "40"
+      ]
+    },
+    {
+      "source": "python:2",
+      "kind": "prose",
+      "prompt": "x = 4\nlabel = \"small\" if x < 10 else \"large\"\n\nWhat is the value of label after this code runs?",
+      "displayed_choices": [
+        "\"large\"",
+        "\"small\"",
+        "True",
+        "4"
+      ]
+    },
+    {
+      "source": "python:3",
+      "kind": "prose",
+      "prompt": "What does the expression  0 or \"hello\"  evaluate to in Python 3?",
+      "displayed_choices": [
+        "False",
+        "0",
+        "\"hello\"",
+        "True"
+      ]
+    },
+    {
+      "source": "python:4",
+      "kind": "prose",
+      "prompt": "data = [5, 10, 15, 20, 25]\nprint(data[2:4])\n\nWhat is printed?",
+      "displayed_choices": [
+        "[15, 20]",
+        "[10, 15, 20]",
+        "[10, 15]",
+        "[15, 20, 25]"
+      ]
+    },
+    {
+      "source": "mixed:0",
+      "kind": "quantitative",
+      "formal_task_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "18"
+          },
+          {
+            "kind": "literal",
+            "value": "6"
+          },
+          {
+            "kind": "binary",
+            "op": "sub",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "literal",
+            "value": "4"
+          },
+          {
+            "kind": "binary",
+            "op": "div",
+            "left": 2,
+            "right": 3
+          }
+        ],
+        "root": 4
+      },
+      "displayed_choices": [
+        "6",
+        "2",
+        "4",
+        "3"
+      ]
+    },
+    {
+      "source": "mixed:1",
+      "kind": "quantitative",
+      "formal_task_without_choices": {
+        "kind": "exact_value",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "literal",
+            "value": "3/4"
+          },
+          {
+            "kind": "literal",
+            "value": "16"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 0,
+            "right": 1
+          }
+        ],
+        "root": 2
+      },
+      "displayed_choices": [
+        "12",
+        "9",
+        "4",
+        "48"
+      ]
+    },
+    {
+      "source": "mixed:2",
+      "kind": "quantitative",
+      "formal_task_without_choices": {
+        "kind": "scalar_condition",
+        "unit": "unitless",
+        "nodes": [
+          {
+            "kind": "variable"
+          },
+          {
+            "kind": "literal",
+            "value": "3"
+          },
+          {
+            "kind": "binary",
+            "op": "mul",
+            "left": 0,
+            "right": 1
+          },
+          {
+            "kind": "literal",
+            "value": "40"
+          }
+        ],
+        "condition": {
+          "left": 2,
+          "relation": "gt",
+          "right": 3
+        },
+        "selection": "minimum",
+        "domain": {
+          "kind": "integer_interval",
+          "lower": 1,
+          "upper": 20
+        }
+      },
+      "displayed_choices": [
+        "15",
+        "11",
+        "14",
+        "13"
+      ]
+    },
+    {
+      "source": "mixed:3",
+      "kind": "prose",
+      "prompt": "In the sentence 'Neither the coach nor the players _____ ready for practice,' which verb form correctly fills the blank?",
+      "displayed_choices": [
+        "are",
+        "has been",
+        "was",
+        "is"
+      ]
+    },
+    {
+      "source": "mixed:4",
+      "kind": "prose",
+      "prompt": "Which sentence uses an unambiguous pronoun reference?",
+      "displayed_choices": [
+        "The crew finished the repairs, and they looked excellent afterward.",
+        "David handed the package to Kevin, who signed for it immediately.",
+        "When the lamp hit the vase, it shattered completely.",
+        "Lena told her coworker that she needed to leave early."
+      ]
+    }
+  ]
+}
