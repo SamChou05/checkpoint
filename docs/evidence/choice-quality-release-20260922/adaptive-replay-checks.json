@@ -1,0 +1,11 @@
+{
+  "provider_calls_during_replay": 0,
+  "captured_calls_replayed": 4,
+  "all_gold_items_replayed": 20,
+  "choice_labels": 80,
+  "pair_labels": 120,
+  "actual_runtime_request_and_budget_recheck_passed": true,
+  "gold_and_sources_unchanged": true,
+  "secret_pattern_scan": "No credential/private-key patterns found; no secret values printed.",
+  "capture_sha256": "52b04a1adb4aabee1d5958a3a09558af151b50bf6e3e0e283351d4ba2389b3d4"
+}

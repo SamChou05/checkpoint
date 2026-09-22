@@ -1,0 +1,161 @@
+{
+  "plan_byte_sha256": "bb44d41a7f5414b741343c0f3de3f1e80c437062c7c9b83b26684e73297de946",
+  "capture_byte_sha256": "52b04a1adb4aabee1d5958a3a09558af151b50bf6e3e0e283351d4ba2389b3d4",
+  "source_sha256": {
+    "backend/bedrock-question-service/complete_question_solution.py": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+    "backend/bedrock-question-service/native_output_contracts.py": "fe2d9a79c882708f5848c7eeab23ddb441277022bc63ee5a28eeee0ed3958151",
+    "backend/bedrock-question-service/question_quality.py": "ab8e680514e6a1623169820ab4e3eb116b1c29c71f9873848b7e9d62e7d655fd",
+    "backend/bedrock-question-service/request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+    "backend/bedrock-question-service/generation_diagnostics.py": "944a3020cb3b173589aee066ac39066564a5c943c972bdcfc0115cdcb2e33f30",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "docs/evidence/choice-quality-release-20260922/qualify_pair_solver.py": "dc9e2ef1d54b8a7bb8b892e707c9adfc7c7a234ae0171b2563d4d540ca757f76",
+    "docs/evidence/choice-reliability-followup-20260921/candidate_complete_question_solution.py": "9473291262cdf0aee9068a93138c1487e80252cbf9efbdce839840dc68b56d87",
+    "docs/evidence/choice-quality-release-20260922/slot_original_complete_question_solution.py": "06088bb4b1c1aee71b5092149ce67e4655a7a249ed6d2027c6d1e8979e3f9c1c",
+    "backend/bedrock-question-service/question_generation.py": "00d139e3800dff5452cf9b31fb819313568e86b92a5d3a0615ca63752186b20a",
+    "docs/evidence/choice-quality-release-20260922/endpoint_experiment.py": "057f5399c7ba694847232660122f0b3de7de5726e474b9eb0a34be32422ffb45"
+  },
+  "status": "complete",
+  "counts": {
+    "planned_calls": 4,
+    "attempted_calls": 4,
+    "completed_valid_calls": 4,
+    "valid_retained": 10,
+    "valid_denominator": 10,
+    "defective_excluded": 10,
+    "defective_denominator": 10,
+    "defective_expected_veto": 10,
+    "all_gold_agrees": 20,
+    "item_denominator": 20,
+    "choice_correct": 80,
+    "choice_scored": 80,
+    "choice_denominator": 80,
+    "pair_correct": 120,
+    "pair_scored": 120,
+    "pair_denominator": 120,
+    "uncertain_choices": 0,
+    "uncertain_pairs": 0,
+    "choice_reason_before_judgment_rows": 80,
+    "pair_reason_before_relation_rows": 120
+  },
+  "criteria_checks": {
+    "completed_calls": true,
+    "valid_retained": true,
+    "defective_expected_veto": true,
+    "correctness": true,
+    "pair_labels": true,
+    "reason_order": true,
+    "no_uncertainty": true
+  },
+  "qualified_on_fixed_suite": true,
+  "usage": {
+    "inputTokens": 16841,
+    "outputTokens": 13237,
+    "totalTokens": 30078,
+    "cacheReadInputTokens": 0,
+    "cacheWriteInputTokens": 0
+  },
+  "elapsed_seconds_sum": 146.621,
+  "maximum_call_seconds": 49.392,
+  "reasoning_content_block_count": 4,
+  "provider_budget_calls": 4,
+  "failed_items": [],
+  "per_call": [
+    {
+      "call_index": 0,
+      "stop_reason": "end_turn",
+      "error": null,
+      "elapsed_seconds": 49.392,
+      "usage": {
+        "inputTokens": 4217,
+        "outputTokens": 3223,
+        "totalTokens": 7440,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "all_gold_agrees": 5
+    },
+    {
+      "call_index": 1,
+      "stop_reason": "end_turn",
+      "error": null,
+      "elapsed_seconds": 30.715,
+      "usage": {
+        "inputTokens": 4229,
+        "outputTokens": 3187,
+        "totalTokens": 7416,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "all_gold_agrees": 5
+    },
+    {
+      "call_index": 2,
+      "stop_reason": "end_turn",
+      "error": null,
+      "elapsed_seconds": 42.834,
+      "usage": {
+        "inputTokens": 4237,
+        "outputTokens": 4095,
+        "totalTokens": 8332,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "all_gold_agrees": 5
+    },
+    {
+      "call_index": 3,
+      "stop_reason": "end_turn",
+      "error": null,
+      "elapsed_seconds": 23.68,
+      "usage": {
+        "inputTokens": 4158,
+        "outputTokens": 2732,
+        "totalTokens": 6890,
+        "cacheReadInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "reasoning_content_block_count": 1,
+      "all_gold_agrees": 5
+    }
+  ],
+  "limits": "One sample per batch on 20 reused reviewed cases. Adaptive/high reasoning with runtime-required sampling/output-cap changes; unchanged endpoint input, prompt and schema, not a causal isolation or general accuracy/determinism result. Earlier failures unchanged.",
+  "historical_disabled_comparison": {
+    "paired_causal_comparison": false,
+    "disabled_counts": {
+      "planned_calls": 4,
+      "attempted_calls": 4,
+      "completed_valid_calls": 4,
+      "valid_retained": 10,
+      "valid_denominator": 10,
+      "defective_excluded": 10,
+      "defective_denominator": 10,
+      "defective_expected_veto": 10,
+      "all_gold_agrees": 17,
+      "item_denominator": 20,
+      "choice_correct": 80,
+      "choice_scored": 80,
+      "choice_denominator": 80,
+      "pair_correct": 116,
+      "pair_scored": 120,
+      "pair_denominator": 120,
+      "uncertain_choices": 0,
+      "uncertain_pairs": 0,
+      "choice_reason_before_judgment_rows": 80,
+      "pair_reason_before_relation_rows": 120
+    },
+    "disabled_usage": {
+      "inputTokens": 16841,
+      "outputTokens": 7219,
+      "totalTokens": 24060,
+      "cacheReadInputTokens": 0,
+      "cacheWriteInputTokens": 0
+    },
+    "disabled_elapsed_seconds_sum": 72.782,
+    "disabled_maximum_call_seconds": 20.194,
+    "elapsed_seconds_sum_ratio": 2.014522821576764,
+    "output_tokens_ratio": 1.8336334672392298
+  }
+}
