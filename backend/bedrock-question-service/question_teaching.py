@@ -9,6 +9,7 @@ from typing import Any, Literal
 
 from answer_position_references import contains_answer_label_references
 from complete_question_solution import CompleteSolutionFormatError, _items_by_index
+from quantitative_authoring import CompiledCandidate
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _strict_json_object
 from request_contract import _has_unambiguous_choices
@@ -97,14 +98,31 @@ def _validate_content(question: Any) -> None:
         raise AuthoredTeachingFormatError("Teaching cannot reference shuffled answer labels.")
 
 
-def freeze_authored_question(question: dict[str, Any]) -> dict[str, Any]:
+def freeze_authored_question(
+    question: dict[str, Any], *, compiled_candidate: CompiledCandidate | None = None,
+) -> dict[str, Any]:
     """Validate and deep-copy exact content; do not normalize or mint approval.
 
     Extra metadata remains data. The caller owns provenance and admission; this
-    helper does not interpret or assign verification fields. Existing per-choice
-    teaching is rejected, never silently deleted or replaced.
+    helper does not interpret or assign verification fields. Model-supplied
+    choice teaching is rejected. Only a private compiler sidecar revalidating
+    all five exact learner fields permits existing derived choice teaching;
+    it remains in the frozen question and is not sent to the main-only audit.
     """
-    _validate_content(question)
+    if type(question) is not dict:
+        raise AuthoredTeachingFormatError("Question must be an object.")
+    content_view = question
+    if compiled_candidate is not None:
+        if type(compiled_candidate) is not CompiledCandidate:
+            raise AuthoredTeachingFormatError("Compiled teaching requires a real private sidecar.")
+        try:
+            compiled_candidate.content(question)
+        except (ValueError, TypeError, KeyError) as error:
+            raise AuthoredTeachingFormatError("Compiled learner content changed.") from error
+        # Validate the same main/choice bounds and shuffle safety. This view is
+        # never returned; the immutable result retains every compiled field.
+        content_view = {**question, "choiceExplanations": {}}
+    _validate_content(content_view)
     answer = question.get("expectedAnswer")
     if type(answer) is not str or answer not in question["choices"]:
         raise AuthoredTeachingFormatError("The key must be an exact offered choice.")
@@ -162,14 +180,15 @@ def validate_authored_reviews(raw: str, items: list[dict[str, Any]]) -> list[dic
 
 
 def authored_review_rejection_reason(
-    review: dict[str, Any], question: dict[str, Any],
+    review: dict[str, Any], question: dict[str, Any], *,
+    compiled_candidate: CompiledCandidate | None = None,
 ) -> RejectionReason | None:
     """Enforce declared support/issues/key agreement, not semantic truth.
 
     Difficulty admission belongs to the caller. A false supported declaration
     with no issues can still pass; there is no natural-language truth oracle.
     """
-    question = freeze_authored_question(question)
+    question = freeze_authored_question(question, compiled_candidate=compiled_candidate)
     review = _validated_review(review, question["choices"])
     if review["explanationSupport"] == "unsupported":
         return "unsupported_authored_explanation"

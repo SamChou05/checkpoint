@@ -232,7 +232,7 @@ class MixedQuantitativePipelineTests(unittest.TestCase):
             generation._generate_provider_payload(self.request(1), client, generation.ProviderCallBudget(1))
             self.assertNotIn(MIXED_AUTHOR_CONTRACT, client.calls[0]["system"][0]["text"])
         for settings in ({"BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy"},
-                         {"QUESTION_FEEDBACK_CONTRACT": "authored_solution"}, {"QUESTION_AUTHOR_MODE": "unknown"}):
+                         {"QUESTION_AUTHOR_MODE": "unknown"}):
             with patch.dict(os.environ, settings):
                 client = Mock()
                 with self.assertRaises(ServiceConfigurationError):

@@ -166,7 +166,7 @@ def _sanitize_questions(
         return []
 
     compiled_candidates = checked_provenance(compiled_candidates, len(raw_questions))
-    if compiled_candidates and (preserve_authored_explanation or type(compiled_output) is not dict or compiled_output):
+    if compiled_candidates and (type(compiled_output) is not dict or compiled_output):
         raise QuantitativeAuthoringError("Compiled sanitization requires an empty trusted output sidecar.")
 
     requested_objective_allocation = _requested_objective_allocation_limits(request)

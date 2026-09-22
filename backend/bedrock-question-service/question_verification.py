@@ -260,13 +260,13 @@ def verify_questions(
         trusted_compiled.append(provenance)
     if authored_solution:
         frozen = []
-        for question in questions:
+        for question, provenance in zip(questions, trusted_compiled, strict=True):
             try:
-                frozen.append(freeze_authored_question(question))
+                frozen.append((freeze_authored_question(question, compiled_candidate=provenance), provenance))
             except AuthoredTeachingFormatError:
                 record_quality(request_metrics, "review", "invalid_feedback")
-        questions = frozen
-        trusted_compiled = [None] * len(questions)
+        questions = [question for question, _ in frozen]
+        trusted_compiled = [provenance for _, provenance in frozen]
     if not questions:
         return []
     if complete_choices and solve is None:
@@ -447,7 +447,7 @@ def verify_questions(
     for index, question in enumerate(questions):
         item = by_index[index]
         if authored_solution:
-            reason = authored_review_rejection_reason(item, question)
+            reason = authored_review_rejection_reason(item, question, compiled_candidate=trusted_compiled[index])
             if reason is not None:
                 record_quality(request_metrics, "review", reason)
                 continue

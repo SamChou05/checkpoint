@@ -267,6 +267,7 @@ def _generate_sanitized_questions(
                     record_quality(request_metrics, "compile", reason)
                 record_quality(request_metrics, "compile", "accepted", len(compiled_candidates))
                 candidates = _sanitize_questions(raw_questions, current_request, request_metrics,
+                                                 preserve_authored_explanation=feedback_contract == "authored_solution",
                                                  compiled_candidates=compiled_candidates,
                                                  compiled_output=compiled_output)
             else:
@@ -700,8 +701,8 @@ def _feedback_contract() -> str:
 
 def _author_mode() -> str:
     mode = _model_setting("QUESTION_AUTHOR_MODE", "prose", {"prose", "mixed_quantitative"})
-    if mode == "mixed_quantitative" and (output_mode() != "native" or _feedback_contract() != "reviewer_written"):
-        raise ServiceConfigurationError("Mixed quantitative authoring requires native reviewer-written mode.")
+    if mode == "mixed_quantitative" and output_mode() != "native":
+        raise ServiceConfigurationError("Mixed quantitative authoring requires native mode.")
     return mode
 
 

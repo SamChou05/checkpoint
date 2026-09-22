@@ -7,11 +7,11 @@ Implemented behind the server environment setting `QUESTION_FEEDBACK_CONTRACT=au
 ## Runtime contract
 
 1. The author creates the question, four choices, key and a complete main worked explanation. It must apply the stated facts and explain the decisive reasoning. The existing author prompt instructs a 320-character main limit; runtime validation permits up to 420 characters. This mode does not widen either bound. Choice explanations are not requested in this construction mode.
-2. Sanitization rejects malformed or oversized main explanations instead of cleaning or clipping them. A supplied nonempty or malformed `choiceExplanations` value is a rejection, never permission to discard existing teaching. Normal stem and choice sanitization still occurs before the candidate is frozen.
+2. Sanitization rejects malformed or oversized main explanations instead of cleaning or clipping them. A model-supplied nonempty or malformed `choiceExplanations` value is a rejection, never permission to discard existing teaching. The mixed quantitative route separately admits only exact compiler-owned feedback bound by a revalidated private sidecar. Normal stem and choice sanitization still occurs before the candidate is frozen.
 3. The existing complete-choice solver receives the exact candidate stem and choices without the author key, explanation or difficulty. Zero or multiple supported choices, uncertainty and exact key disagreement block final review. These are enforced declarations, not proof that each model judgment is true.
 4. The final audit receives the frozen candidate and main explanation, plus goal, skill and supplied source context. It receives neither the explicit author key/difficulty nor solver judgments/reasons. Historical answers and teaching are omitted. The explanation may reveal the intended key, so this audit is not answer-blind.
 5. A strict response contains only an indexed verdict, exact answer, assessed difficulty, explanation support and issues. Unsupported or uncertain teaching, any issue, disagreement, malformed output or insufficient difficulty blocks acceptance. Replacement text and verification metadata are forbidden response fields.
-6. Acceptance preserves the frozen main exactly and returns an empty choice-feedback map. Legacy transport assigns policy revision 3; native transport assigns revision 7 only after the complete pair/count gate and immutable-main audit both pass. The audit cannot write learner-facing content. The normal three-call generation path, deadline, quota and provider-call limits remain in force.
+6. Acceptance preserves ordinary prose main text exactly and returns an empty choice-feedback map. Legacy transport assigns policy revision 3; native transport assigns revision 7 only after the complete pair/count gate and immutable-main audit both pass. The audit cannot write learner-facing content. The normal three-call generation path, deadline, quota and provider-call limits remain in force.
 
 The iOS client already displays the main when choice-specific feedback is absent, and JSON bank storage retains the complete question. No storage migration or UI change is required for this opt-in shape.
 
@@ -63,6 +63,35 @@ pass. A noncontainer SAM build passes; all 26 service modules, requirements and
 SDK verifier match source in all three artifacts. Artifact-isolated Python 3.12
 `-I -S` validates 131 request shapes per artifact (**393 offline checks**) using
 the packaged boto3/botocore 1.43.91. No model calls or deployment were made.
+
+## Mixed quantitative compatibility
+
+The native `mixed_quantitative` author can also use this immutable-main audit.
+Both ordinary and compiled rows share the existing v5 solver and v2 audit, with
+no extra schema, call, setting or policy floor. Ordinary rows preserve exact main
+text and return empty choice feedback with policy 7. Compiled rows retain all five
+exact compiler-owned learner fields and policy 6. Their nonempty feedback is
+accepted only through the server-created `CompiledCandidate`, freshly recompiled
+before freezing and release. The audit sees main text only; private provenance,
+explicit keys, difficulty labels, solver judgments and choice feedback stay hidden.
+
+Sanitization and every subsequent filter retain questions and private sidecars
+together. Provider-supplied feedback or approval flags cannot create that trust.
+The final auditor still vetoes wrong keys, unsupported/uncertain main teaching,
+issues and inadequate difficulty for both variants. Partial top-ups use the same
+six-call budget, preserve already verified work and propagate durable refusals.
+This combination remains opt-in and has not received live qualification.
+
+Compatibility verification: **1,247 backend tests** pass, including twelve new
+groups for interleaved sanitizer/freeze/solver/reviewer drops, all five compiler
+field mutations, forged sidecars and provider feedback, exact deep copies, every
+pair veto, main-audit vetoes, partial top-ups, deadline exhaustion and durable
+reservation refusal. Independent review checked sixteen additional survivor
+masks and swapped provenance. Schemas, compiler, policy constants, templates and
+defaults are unchanged from the native authored-main milestone. Ruff and staged
+whitespace/secret checks pass. SAM builds all three functions; all 26 modules
+plus requirements and SDK verifier match source in each artifact, and the same
+**393 artifact-isolated request checks** pass. No inference or deployment ran.
 
 ## Historical verification — September 8, 2026
 

@@ -94,9 +94,9 @@ depends on fallible model judgments.
 
 ## Opt-in route and exact source binding
 
-Set `QUESTION_AUTHOR_MODE=mixed_quantitative` only with native transport and
-`QUESTION_FEEDBACK_CONTRACT=reviewer_written`; incompatible combinations fail
-before dispatch. `prose` remains the default and keeps the existing native-v3 or
+Set `QUESTION_AUTHOR_MODE=mixed_quantitative` only with native transport. Both
+`QUESTION_FEEDBACK_CONTRACT=reviewer_written` and the opt-in `authored_solution`
+main-only audit are supported; legacy transport fails before dispatch. `prose` remains the default and keeps the existing native-v3 or
 legacy-v1 author contract. SAM exposes `QuestionAuthorMode` (default `prose`)
 and `QuestionBankWorkerAuthorMode` (default `inherit`); the corresponding deploy
 variables are `QUESTION_AUTHOR_MODE` and `QUESTION_BANK_WORKER_AUTHOR_MODE`.
@@ -133,27 +133,41 @@ may author fresh questions within the same existing provider budget.
 
 Only successful local compilation creates a private `CompiledCandidate` with
 immutable specification and learner snapshots. A trusted ordinal sidecar follows
-source rows through sanitization, duplicate removal, solver filtering and dense
+source rows through sanitization, duplicate removal, immutable freezing, solver filtering and dense
 review reindexing. No prompt, content digest, normalized answer or model identity
 is used to join provenance. The sanitizer checks all five fields against a fresh
 compilation and preserves exact choice order, main and per-choice feedback.
 The existing answer-blind fixed-slot solver still vetoes incorrect/duplicate
 choices; the reviewer still vetoes, agrees with the exact key and assesses
 requested difficulty, scope and novelty. These stages may falsely reject sound
-compiled questions. Reviewer feedback remains structurally checked under the
-existing contract but is discarded for compiled rows.
+compiled questions. In reviewer-written mode, generated reviewer feedback is
+structurally checked but discarded for compiled rows. In authored-solution mode,
+the count-bound immutable-main audit receives the exact compiled or authored
+main explanation, without keys, solver judgments or choice feedback. It cannot
+produce replacement teaching. All four compiler-derived choice explanations
+remain protected by exact local recompilation.
 
 Immediately before release, the same trusted specification is recompiled and
 all five learner fields must still match. Those exact compiler fields replace
-the unused reviewer prose; only this route assigns policy revision **6**.
-Ordinary native rows retain revision 4. Maximum explicitly requestable policy is
-6, while the current server default remains 4 and the client minimum remains 2.
+any intermediate content; only this route assigns policy revision **6**. This
+guarantee is exact compiler-owned content plus the existing independent gates,
+not the unused model-written feedback. Ordinary native rows receive revision 4
+with reviewer-written feedback, or revision 7 with an unchanged authored main
+and empty choice feedback. Maximum explicitly requestable policy is 7, while
+the current server default remains 4 and the client minimum remains 2.
 Stored legacy inventory is never promoted or relabeled. Revision 6 identifies
 this bounded mathematical guarantee plus existing model gates; it does not
 certify that a generated item teaches a requested nonmathematical objective.
 
+Only a real private `CompiledCandidate` whose freshly generated five fields
+match may carry nonempty choice feedback through immutable freezing. Prose
+feedback is rejected, including provider flags pretending it was compiled. The
+question and its sidecar are filtered together; a rejected row cannot lend its
+provenance to a following prose row. Ordinary main text is preserved rather than
+normalized or clipped. The final audit can veto either type but cannot rewrite it.
+
 One complete pass still has exactly three provider stages: mixed author, existing
-solver, existing reviewer. The worker still has six calls total and its existing
+v5 solver, and the selected count-bound reviewer or immutable-main audit. The worker still has six calls total and its existing
 deadline. No new model, reviewer stage, fallback permission, quota or global
 quality floor is introduced. Unsupported subjects use the prose variant; typed
 spec failures do not authorize reuse of an invalid task's content as prose.
