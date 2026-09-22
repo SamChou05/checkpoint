@@ -1,0 +1,2985 @@
+{
+  "audit_kind": "Independent source-bound read of every available short reason and original learner admission; no inference calls",
+  "source_sha256": {
+    "plan.json": "8d8a35f2f4f93c69faa05a32216ae4115623c38ba63605b8012ba12b3ae0d71f",
+    "capture.json": "d6c70bc9590ba0f1c8e48b2c7beb5443970405f622db2257c127862085d0d653",
+    "replay.py": "bf475a9e09fb11c88e4bf3d15c9895e1d20706dd339b41c719f21a98f4e46204",
+    "replay-summary.json": "b91bfdbd9f60e6f6214b2e91de1990142e1ca3f4fd5dedeb8be5c5344abcf783",
+    "docs/evidence/final-content-audit-20260922/adversarial-plan.json": "7c9fcc97e4259758c85a2b36f0d0d508e71d97040daa41dabb0b10918f0ce315",
+    "docs/evidence/authored-feedback-20260922/known-control-field-expectations-draft.json": "c86996a0720fe44ba999ee6bd938c3768829fd5f966da6c836ca92677569bce3"
+  },
+  "primary_verdict": "FAILED: ordinary deadline/local-format failures and two defective original admissions. Do not promote this configuration from this trial.",
+  "denominators": {
+    "batches_planned": 5,
+    "batches_attempted": 5,
+    "batches_completed": 3,
+    "items_planned": 24,
+    "items_scored": 15,
+    "items_in_failed_batches": 9,
+    "items_unattempted": 0,
+    "maximum_calls": 10,
+    "calls_dispatched": 10,
+    "sound_gold": 12,
+    "defective_gold": 12,
+    "solver_records_available": 24,
+    "solver_choice_labels_available": 96,
+    "solver_pair_labels_available": 144,
+    "solver_reasons_available_and_read": 240,
+    "audit_survivors_requested": 17,
+    "audit_model_rows_available": 12,
+    "audit_model_rows_missing_due_timeout": 5,
+    "audit_rows_passing_local_validation": 10,
+    "audit_rows_invalidated_by_whole_batch_reason_bound": 2,
+    "controls_skipped_by_solver": 7,
+    "audit_short_reasons_available_and_read": 72,
+    "audit_short_reasons_locally_valid": 60,
+    "audit_short_reasons_in_failed_batch_read_without_semantic_credit": 12,
+    "audit_short_reasons_missing_after_timeout": 30,
+    "audit_reason_positions_not_requested_after_solver_veto": 42,
+    "all_raw_short_reasons_read": 312
+  },
+  "mechanical_admission": {
+    "admission_decisions_correct": 13,
+    "sound_retained": 7,
+    "defective_excluded": 6,
+    "primary_mechanical_pass": false,
+    "all_private_stage_reasons_require_independent_audit": true
+  },
+  "structural_and_transport": {
+    "planned_and_actual_calls": 10,
+    "native_valid_responses": 9,
+    "local_valid_stage_responses": 8,
+    "provider_timeout_responses_without_model_text": 1,
+    "complete_batches": 3,
+    "failed_batches": 2,
+    "all_returned_stop_reasons": "end_turn",
+    "usage_on_timeout": "unavailable, not zero",
+    "failed_batch_0": "Audit of5 survivors timed out100.151874s. No output, no credit for its5 controls.",
+    "failed_batch_4": "Audit of2 survivors returned valid native JSON at40.727995s, but task.reason for review0 is253 characters against240 local max; entire batch receives no credit."
+  },
+  "unsafe_original_admissions": [
+    {
+      "case_id": "familiar_bus_defective",
+      "proof": "25 rides cost62.50 and26 cost65, both above the60 pass price. The stem never asks minimum. Both stages import that preference, wrongly declare one answer, and release the unchanged defective question."
+    },
+    {
+      "case_id": "supplement_semicolon_defective",
+      "proof": "Semicolon-before-however and comma-however-semicolon are defensible independent-clause constructions under the unrestricted stem. Both stages treat the former as mandatory; the final audit also approves false main/C learner teaching."
+    }
+  ],
+  "solver_label_diagnostics": {
+    "exact_matches_to_approved_draft_choices": 90,
+    "choice_denominator": 96,
+    "choice_nonmatches_with_definite_expectations": 5,
+    "choice_nonmatches_with_uncertain_expectation": 1,
+    "exact_matches_pairs": 143,
+    "pair_denominator": 144,
+    "notes": "Triangle6/8/10 are mathematically possible but not determined; multiple-supported still vetoes it. Editor Discard/Rename relation is wrongly equivalent because the reason describes another pair, while the actual duplicate pair correctly vetoes it. Bus and semicolon choice errors propagate to admission."
+  },
+  "audit_raw_label_diagnostics": {
+    "raw_rows": 12,
+    "task_answer_and_feedback_label_positions": 84,
+    "exact_matches_to_draft": 75,
+    "mismatches": [
+      {
+        "case_id": "familiar_bus_defective",
+        "field": "task",
+        "expected": "unsupported",
+        "observed": "supported",
+        "expectation_is_uncertain": false
+      },
+      {
+        "case_id": "familiar_bus_defective",
+        "field": "answerChoice",
+        "expected": "multiple",
+        "observed": "b",
+        "expectation_is_uncertain": false
+      },
+      {
+        "case_id": "familiar_bus_defective",
+        "field": "feedback.a",
+        "expected": "uncertain",
+        "observed": "supported",
+        "expectation_is_uncertain": true
+      },
+      {
+        "case_id": "fresh_parallel_timing_defective",
+        "field": "task",
+        "expected": "supported",
+        "observed": "unsupported",
+        "expectation_is_uncertain": false
+      },
+      {
+        "case_id": "supplement_semicolon_defective",
+        "field": "task",
+        "expected": "unsupported",
+        "observed": "supported",
+        "expectation_is_uncertain": false
+      },
+      {
+        "case_id": "supplement_semicolon_defective",
+        "field": "answerChoice",
+        "expected": "multiple",
+        "observed": "b",
+        "expectation_is_uncertain": false
+      },
+      {
+        "case_id": "supplement_semicolon_defective",
+        "field": "feedback.main",
+        "expected": "unsupported",
+        "observed": "supported",
+        "expectation_is_uncertain": false
+      },
+      {
+        "case_id": "supplement_semicolon_defective",
+        "field": "feedback.c",
+        "expected": "unsupported",
+        "observed": "supported",
+        "expectation_is_uncertain": false
+      },
+      {
+        "case_id": "supplement_semicolon_defective",
+        "field": "feedback.d",
+        "expected": "uncertain",
+        "observed": "supported",
+        "expectation_is_uncertain": true
+      }
+    ],
+    "strictly_locally_valid_rows": 10,
+    "caveat": "The final2 rows are raw diagnostic observations only, not a completed/accepted batch. Two source field expectations remain uncertain; they are not relabeled to force binary agreement. Difficulty is separate."
+  },
+  "short_reason_review": {
+    "counts_by_assessment": {
+      "grounded": 284,
+      "unsupported_generalization": 2,
+      "incorrect_task_interpretation": 1,
+      "unsupported_task_framing": 5,
+      "false_unique_answer_claim": 2,
+      "unjustified_best_answer_claim": 1,
+      "false_arithmetic_generalization": 2,
+      "contextual_duplicate_veto": 1,
+      "false_necessity_rule": 3,
+      "unsupported_categorical_style_rule": 1,
+      "false_or_overbroad_punctuation_claim": 4,
+      "style_uncertainty_not_resolved": 1,
+      "true_possibility_not_entailed_answer": 3,
+      "incorrect_fact_correct_relation": 1,
+      "wrong_pair_endpoints": 1
+    },
+    "counts_by_stage": {
+      "solver": 240,
+      "audit": 72
+    },
+    "interpretation": "Non-grounded buckets distinguish demonstrably false claims, overbroad wording, true possibility with an inappropriate label, and companion-context behavior. They are not an aggregate new private-reason-perfection admission criterion."
+  },
+  "preservation_and_isolation": {
+    "actual_provider_requests_recreated_exactly": true,
+    "all10_recorded_dispatches_replayed_without_network": true,
+    "all_frozen_runtime_harness_source_pins_verified": true,
+    "whole24_original_gold_unchanged": true,
+    "all24_original_learner_payload_hashes_unchanged": true,
+    "all9_selected_learners_exact_originals": true,
+    "no_explicit_author_key_difficulty_or_prior_approvals_sent_to_solver_or_audit": true,
+    "teaching_absent_from_solver_but_present_in_audit": true,
+    "provider_reasoning_text_or_signature_stored": false,
+    "source_scope_and_prospective_null_scope": {
+      "original": {
+        "goal": {
+          "title": "Educational questions using stated facts and rules",
+          "questionDirective": "Use each question's exact stated facts and requested result."
+        },
+        "skillMap": [],
+        "sourceDocuments": []
+      },
+      "original_sha256": "6d5f44c5e05aed873a638d7bed3a84e19a88aad2f77e191e21d5e83f1a3ca8c8",
+      "runtime": {
+        "goal": {
+          "title": "Educational questions using stated facts and rules",
+          "questionDirective": "Use each question's exact stated facts and requested result."
+        },
+        "skillMap": null,
+        "sourceDocuments": []
+      },
+      "runtime_sha256": "c21733be582b9640f4930eecacffadfb88777a142d28e65918b8f1d760e4af18",
+      "sole_transformation": "skillMap: [] becomes null, the actual runtime representation of no skill map; all goal/source text is unchanged."
+    },
+    "regrouping": "Original order5+5+5+5+4; companion context changed prospectively, no causal comparison or rescue of older trials."
+  },
+  "limitations": [
+    "Known diagnostic controls and paired repairs, not fresh worker generation.",
+    "Batch0 and4 cannot earn correct exclusion credit merely because no learner was released.",
+    "Private short-reason failures remain distinct from learner-facing payload soundness; no new semantic criterion replaces frozen primary admission criteria.",
+    "No worker yield, production release or deterministic universal semantic guarantee is established."
+  ],
+  "case_reviews": [
+    {
+      "case_id": "familiar_weighted_grade_defective",
+      "batch": 0,
+      "batch_status": "batch_failure",
+      "learner_content_sha256": "ddab3a1601897327f7021beb4eb12398e560d7c5f10175f4a82932280d79e12d",
+      "whole_original_gold_sha256": "d217748a05c9cf65545f1c2a20e32823583a160ee6323f9cb21937735c85fdab",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": null,
+      "admission_assessment": "no_batch_credit",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "f97a469daca687fb620e6506cd7aa6e4d40cd4230639292ab5bea5b70f8325a7",
+          "reason_characters": 158,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "5aabe7193aceb8bb2d06c1ae354539c7298b1fd3c270bf190268ba521a9a9cf1",
+          "reason_characters": 168,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "4eb6832c9c4e8b7df0c5bf18924b20b57e9b8a16f1d3b21afde237decfc08a9f",
+          "reason_characters": 94,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "a34b6fa59851bb2f70c2d30c270506fd26961f0e570a51522908b24590b2c055",
+          "reason_characters": 131,
+          "assessment": "unsupported_generalization",
+          "proof_or_limit": "79.2 is not the stated weighted answer, but the assertion that no other combination yields it is too broad: 0.40×84+0.60×76=79.2. Correct refuted label; no learner output is created here."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "b79d5eedb9e35ad264df7231d9653f6fc8574c395736309f585ba79478bb0606",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "7314cc4db4b2a46580cde9a1d66fecfa4e25b04a1c9e413e630b03c6cc75b2d7",
+          "reason_characters": 118,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "11029647d6cb34929872694804fa8c7c9199dfcb8dd1d68a8d8d6815befbdb89",
+          "reason_characters": 77,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "9717f0bafb608000a00ad7f2e2b20960ac25856eb3bebb5d43f6542e2edae303",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "cb946cfc29f2ebbd7fb5f73f4c53d32ecaac2d45182bcfe54e53e65a1309c7c0",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "b929d342f34ae0fffae331514c9f8fecbaa507d5c93a472e13210418008cae97",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "provider_timeout_no_model_text",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "familiar_paint_defective",
+      "batch": 0,
+      "batch_status": "batch_failure",
+      "learner_content_sha256": "99b9397bacebdc0d6fed449cbe595b1cf21ee8ad736eb384f807680c9d6d103d",
+      "whole_original_gold_sha256": "4583be3b76a722ec52debc8dc4edc8ac73442120d114be2fb165603a0c510a83",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": null,
+      "admission_assessment": "no_batch_credit",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "73e562f9f18a1e654194a6fc5fcd10666ab80b5ad720155d93c93dddd628163e",
+          "reason_characters": 90,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "1a231f886901cf6a9651ee06657185442e526c9e74587f4d366abde88f4581e7",
+          "reason_characters": 112,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "727988788444d320c5422abb84f1ecc57f0456fa07c224f91706abfd239c8492",
+          "reason_characters": 128,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "c5486aac60f345e7df39c370dd9553b5bcb7d75e70981db902c95eaebf198d06",
+          "reason_characters": 106,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "276f166b10da3cca690ab5d31fbb6b7ebc66666ce50712e997fa0f5b14e44906",
+          "reason_characters": 83,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "88553a82d50f7435dfa83915b16313c6ddf57939803068b3a2090ecf408b689a",
+          "reason_characters": 82,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "7b18f4c8f803e2a187b533e131fa52c1e8d50317d7efa8c7109617daa595ead5",
+          "reason_characters": 85,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "c01912dd39790fa40807ed145a001179b378cdba11d1214136eb5583804e9a53",
+          "reason_characters": 83,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "a55bdb400404f4a9401a238f07b59a90282073c0aa637b2f0812887f160a4c1e",
+          "reason_characters": 86,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "aff6bdb30c62c0846faf48ce49297d18ae9c11d5ded6f5561222b283ba9fd32b",
+          "reason_characters": 85,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "provider_timeout_no_model_text",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "familiar_paint_sound",
+      "batch": 0,
+      "batch_status": "batch_failure",
+      "learner_content_sha256": "2024e8cd039b70a27b4920bf5072f84937629eba828b805a9be0304195b810ae",
+      "whole_original_gold_sha256": "dd1d266d754f25332c08fa13185942b2e854d9d5571a04aeba2c8ccbd8d16568",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": false,
+      "primary_decision_credit": null,
+      "admission_assessment": "no_batch_credit",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "73e562f9f18a1e654194a6fc5fcd10666ab80b5ad720155d93c93dddd628163e",
+          "reason_characters": 90,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "1a231f886901cf6a9651ee06657185442e526c9e74587f4d366abde88f4581e7",
+          "reason_characters": 112,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "727988788444d320c5422abb84f1ecc57f0456fa07c224f91706abfd239c8492",
+          "reason_characters": 128,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "c5486aac60f345e7df39c370dd9553b5bcb7d75e70981db902c95eaebf198d06",
+          "reason_characters": 106,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "276f166b10da3cca690ab5d31fbb6b7ebc66666ce50712e997fa0f5b14e44906",
+          "reason_characters": 83,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "88553a82d50f7435dfa83915b16313c6ddf57939803068b3a2090ecf408b689a",
+          "reason_characters": 82,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "7b18f4c8f803e2a187b533e131fa52c1e8d50317d7efa8c7109617daa595ead5",
+          "reason_characters": 85,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "c01912dd39790fa40807ed145a001179b378cdba11d1214136eb5583804e9a53",
+          "reason_characters": 83,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "a55bdb400404f4a9401a238f07b59a90282073c0aa637b2f0812887f160a4c1e",
+          "reason_characters": 86,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "aff6bdb30c62c0846faf48ce49297d18ae9c11d5ded6f5561222b283ba9fd32b",
+          "reason_characters": 85,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "provider_timeout_no_model_text",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "familiar_bus_sound",
+      "batch": 0,
+      "batch_status": "batch_failure",
+      "learner_content_sha256": "f4625554acd27e5c40d6e3df774a283c991defa42c3b5c15ef2417c6af7b9902",
+      "whole_original_gold_sha256": "eff0ce3e0aa7c33a41260eb1899cace9cca39e482aafc0e525512912683b04f2",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": false,
+      "primary_decision_credit": null,
+      "admission_assessment": "no_batch_credit",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "45c597f335248e2fae33c4ef003ce5900ff736f302a3a09a43c6b1bfe5651c72",
+          "reason_characters": 116,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "c595e597316b42b50565b22dfbfc7999396cc5a7299ccd4ecbf6a0e8ba8406ce",
+          "reason_characters": 156,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "633df9f49fa35961ef68dabfe1a534b9053de72b90622e2bda1eef592f2a9695",
+          "reason_characters": 103,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "5d0a751b653bcff195fe347a3c245515afc7aa1f58edd27c8851a01236400c5e",
+          "reason_characters": 142,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "1f924a0dde88a16aa4c14aec0eb7cf90bba0d2c92ef3419eaa4a4e903bcdf89a",
+          "reason_characters": 80,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "3723f6e2d9cdb683ab55d1e466ca3062e5aef57d703c5aa76fdb3fcf8ec408b0",
+          "reason_characters": 83,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "e683ee2e8fd378484c60505afa4340aeba1f9fd036dbbca4ea3a0c878f11d931",
+          "reason_characters": 81,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "f6ee2626d0325fb68096d434f15315e0acbba9fce353c344df3f1d7c1d46e4cd",
+          "reason_characters": 81,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "44668a98f464562a94d4a36a5ef3c17ca9cd330dc446633a2c6cddcb874645a0",
+          "reason_characters": 80,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "0d799b08621e656d0003c8160e99d1707c564819a24feb9a203c3dbc98030d00",
+          "reason_characters": 80,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "provider_timeout_no_model_text",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "familiar_weighted_grade_sound",
+      "batch": 0,
+      "batch_status": "batch_failure",
+      "learner_content_sha256": "833b12b19a422a112be6c4c4da8cbaa671f48aa89428f814898ea079989ae27c",
+      "whole_original_gold_sha256": "a092d144ac8a690d139ad59a31fe1b71818cf58c7d22819d6d90361908c01af9",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": false,
+      "primary_decision_credit": null,
+      "admission_assessment": "no_batch_credit",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "f97a469daca687fb620e6506cd7aa6e4d40cd4230639292ab5bea5b70f8325a7",
+          "reason_characters": 158,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "5aabe7193aceb8bb2d06c1ae354539c7298b1fd3c270bf190268ba521a9a9cf1",
+          "reason_characters": 168,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "4eb6832c9c4e8b7df0c5bf18924b20b57e9b8a16f1d3b21afde237decfc08a9f",
+          "reason_characters": 94,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "a34b6fa59851bb2f70c2d30c270506fd26961f0e570a51522908b24590b2c055",
+          "reason_characters": 131,
+          "assessment": "unsupported_generalization",
+          "proof_or_limit": "79.2 is not the stated weighted answer, but the assertion that no other combination yields it is too broad: 0.40×84+0.60×76=79.2. Correct refuted label; no learner output is created here."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "b79d5eedb9e35ad264df7231d9653f6fc8574c395736309f585ba79478bb0606",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "7314cc4db4b2a46580cde9a1d66fecfa4e25b04a1c9e413e630b03c6cc75b2d7",
+          "reason_characters": 118,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "11029647d6cb34929872694804fa8c7c9199dfcb8dd1d68a8d8d6815befbdb89",
+          "reason_characters": 77,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "9717f0bafb608000a00ad7f2e2b20960ac25856eb3bebb5d43f6542e2edae303",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "cb946cfc29f2ebbd7fb5f73f4c53d32ecaac2d45182bcfe54e53e65a1309c7c0",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "b929d342f34ae0fffae331514c9f8fecbaa507d5c93a472e13210418008cae97",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "provider_timeout_no_model_text",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "familiar_bus_defective",
+      "batch": 1,
+      "batch_status": "complete",
+      "learner_content_sha256": "81878d8dc6f9047c20478bbb5827a1bfc74da669079561e09c2b53324915881a",
+      "whole_original_gold_sha256": "a348ba10c2449fd28c1baf344979960e6093fadf3e8dc16efaa797d11d2babfd",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": true,
+      "primary_decision_credit": false,
+      "admission_assessment": "unsafe_unchanged_defective_original",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "50c2306197c1850496c4e973069b5d6aee553b05a6f08248cf493fb83c366e65",
+          "reason_characters": 208,
+          "assessment": "incorrect_task_interpretation",
+          "proof_or_limit": "26×2.50=65>60 satisfies the literal cheaper condition. The stem does not ask minimum; adding that condition wrongly excludes a second valid choice."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "91f29f282af048c4f40bf4ce620713fd253943cdcb9050198376922e6e37408a",
+          "reason_characters": 187,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "ed74ef456be2a5070ee3c026c34a176428c76dcdec4080c59b0afa72bdb876c2",
+          "reason_characters": 138,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "22007593f6410c20c0bdfeae3365d29cc242f3de2cbe705f3aec3984dbd0f5c4",
+          "reason_characters": 153,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "f4548d59c4d686f1bae50b21304235c83adbcc48766479b4014fafff33d7e68b",
+          "reason_characters": 67,
+          "assessment": "unsupported_task_framing",
+          "proof_or_limit": "Different counts are indeed distinct, but describing these as competing thresholds imports the same absent minimum/threshold requirement. The pair relation remains correct."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "c159ad77f384e2ef22cc61422dc2d21ba88e21c2bb33aae3fd8654c91e15bda1",
+          "reason_characters": 67,
+          "assessment": "unsupported_task_framing",
+          "proof_or_limit": "Different counts are indeed distinct, but describing these as competing thresholds imports the same absent minimum/threshold requirement. The pair relation remains correct."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "5bbedc2c726a590a538ffe61e68bf022a602688b9ca57bc0e94e921fc861a28c",
+          "reason_characters": 67,
+          "assessment": "unsupported_task_framing",
+          "proof_or_limit": "Different counts are indeed distinct, but describing these as competing thresholds imports the same absent minimum/threshold requirement. The pair relation remains correct."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "c4faba47006a4f1a85b77d1ed11b32193708a0786990a68b0441d125acf2128e",
+          "reason_characters": 67,
+          "assessment": "unsupported_task_framing",
+          "proof_or_limit": "Different counts are indeed distinct, but describing these as competing thresholds imports the same absent minimum/threshold requirement. The pair relation remains correct."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "dc7dc887a6c73742659225f90f8616cb36133c4b8cd438c0fa1838e2e656e4b0",
+          "reason_characters": 100,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "54b581ae7de353932dac58608dfe93f991f9f54565381d0971cffc1d85d6cd2f",
+          "reason_characters": 67,
+          "assessment": "unsupported_task_framing",
+          "proof_or_limit": "Different counts are indeed distinct, but describing these as competing thresholds imports the same absent minimum/threshold requirement. The pair relation remains correct."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "b",
+        "raw_difficulty": 2,
+        "label_mismatches": [
+          {
+            "field": "task",
+            "expected": "unsupported",
+            "observed": "supported",
+            "expectation_is_uncertain": false
+          },
+          {
+            "field": "answerChoice",
+            "expected": "multiple",
+            "observed": "b",
+            "expectation_is_uncertain": false
+          },
+          {
+            "field": "feedback.a",
+            "expected": "uncertain",
+            "observed": "supported",
+            "expectation_is_uncertain": true
+          }
+        ],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "db5286a7e81b14c9cdc13cb88065d8016d74691e78cc0f8914a32c27e8530d56",
+          "reason_characters": 132,
+          "assessment": "false_unique_answer_claim",
+          "proof_or_limit": "Both25 and26 satisfy the literal inequality, so this clear-one-answer claim is false. This combines with the answerChoice=b error to admit the defective original."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "b540d208c761f3c84c9760e17fe46d2c3d709ebaeff49ac543a73bb7136e3a10",
+          "reason_characters": 139,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "84cf28c3b9f493bc8f0d342da88a63511e3d9f374b74b2e96f53275a22892c85",
+          "reason_characters": 128,
+          "assessment": "unjustified_best_answer_claim",
+          "proof_or_limit": "The mathematical facts about25 and26 are true. Calling26 not the best answer adds an unstated minimum preference. The diagnostic source field is explicitly uncertain about implied exclusion; no gold relabeling."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "f3244689d5cca11000a1cf4b60c0415a5ca39bb8020f195528f790c2e0632935",
+          "reason_characters": 101,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "77f726a61c71b6ddc56a7598531061f8ca0705b8ddce5aedb48f0ebf37015a48",
+          "reason_characters": 108,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "fc63b9a78950b5d7b5a7a19fd34130b228e9dae86fbcb182442410a351e1ae0d",
+          "reason_characters": 80,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "fresh_causal_evidence_defective",
+      "batch": 1,
+      "batch_status": "complete",
+      "learner_content_sha256": "d479051714e340874c20208769f41909a125a64a15cb20f001f9405ed8e70142",
+      "whole_original_gold_sha256": "e6019a27adbb6fb39ea3f596a23c3968cf81c9788c986ffbfb761e2ab722d37b",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": "solver_zero_supported",
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "de6d117e3414f7c08277275ccf22eeca68ffb6f84ccf9064ef84d790e44835ac",
+          "reason_characters": 193,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "436de526139b97f90137a0cbcf576a8787a1a50a9e2e9f632fac6132d66a3f22",
+          "reason_characters": 166,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "a5ab24fbf7220f19d803321bbb3523910a92f7f935640376cfa60530d039f714",
+          "reason_characters": 152,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "70d6f7df29701d816f00824983d7b565114f6166797d069f03d86b82b7df834f",
+          "reason_characters": 177,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "41da0cc7a0af8df6802654a96d02a9fbdc9b223b8ee8a803846e2a95db1cd70f",
+          "reason_characters": 135,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "e0834fe6444601e342505a1a0f06bb9ee322cc951d512ce79f6975e4cd497aca",
+          "reason_characters": 126,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "f7121862e03c1674ca3c8345d58a6207dc53819f9f0de6175f5dabb791386db5",
+          "reason_characters": 137,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "b68aff1ae6e89f3864ba860ed885076d393f1970e9db3fb4089c7cc76dd088b1",
+          "reason_characters": 125,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "c642b83c372770bef004922ab279e84152198997d6d72d576199bdd632ce7af2",
+          "reason_characters": 136,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "ea09754035a044da4395f693ddd8da477f5e21b9760cb81352c0d99f0fe68543",
+          "reason_characters": 127,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "skipped_after_solver_veto",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "fresh_parallel_timing_sound",
+      "batch": 1,
+      "batch_status": "complete",
+      "learner_content_sha256": "e3db68fe9d9957479f402a7469bacdd191638ee52cec5ba729415476e8875941",
+      "whole_original_gold_sha256": "e7ed9576b033cfaa09e2f768e3a6740c2d4afd90ec1a7438c6686b4e6f6d7ed4",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": true,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "e14b6d093326af51827ce98d763636c5c2b7b561fa0b5f4a320be388984779ea",
+          "reason_characters": 141,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "1fd23411a1fbc177b47d1d1d9217708dab07549554eac8e686906827cdfc8c1b",
+          "reason_characters": 135,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "4d9b8235388a8258a3e31aaa7f488aebca84a1abae5cab84b1f09d6a8c276f44",
+          "reason_characters": 110,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "ae44f29ef405fc7eb18070f3f35cb2e7a23c98fa2776ceeebbb53a2a5e10aa0a",
+          "reason_characters": 142,
+          "assessment": "false_arithmetic_generalization",
+          "proof_or_limit": "The answer14 is refuted for the parallel schedule, but the claim that no arithmetic path from the given values yields14 is false: 4+7+3=14, the sequential error."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "30a511e7b74ff507ade3f4052aa982bae9a327a8db1950b6bdcb4740e434a79b",
+          "reason_characters": 107,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "17252e3d1e99622a083c5737ced424cd2a55a2c1d782ff88ae0de7f7b6683589",
+          "reason_characters": 73,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "e46d3e6061bc313ab1536631daa183c251c967c1f413e22ece1fd3e404efb35b",
+          "reason_characters": 73,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "5cdabdb10abd750d8cc8da8b31c6ec29c62a8969caa25274a050317f67c8e0cd",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "c8f0bf5b6351e59f142ccb80d2d94842d106db08fa409819baaa6b00ecf26bfd",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "cece529c3e3ce122176c41830c77eb1689e3da60deaf6e719cf58b1d60d7febe",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "b",
+        "raw_difficulty": 3,
+        "label_mismatches": [],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "64ed1f1cd439c5a0445d79c46606a30e59b17f39b773d9aed3c825c4b2b9b6c6",
+          "reason_characters": 144,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "ec801255e1ed4be6bda6c565e3cd2fad4280845d1d2b1ba0bfdc391323dbd84e",
+          "reason_characters": 48,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "6b298c7aef1c887dcd26038b2514dd6cfef1ab94ab63f195075872f85d51d8e1",
+          "reason_characters": 87,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "d43c88f3c17f11f6f199fdf136979f0fb35554d730a5425642695989d96116f2",
+          "reason_characters": 58,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "6b8dc2bcede4cb00a352e6e7fe20151687e5db9adb1b0f35922ae70679001338",
+          "reason_characters": 161,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "3ea9398f7b788d0112ef87dc17a482c22aa22527bec6c296de0158e2757fa054",
+          "reason_characters": 83,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "fresh_parallel_timing_defective",
+      "batch": 1,
+      "batch_status": "complete",
+      "learner_content_sha256": "44a51f21b04b8183d803cd4ffa30b474bc22d10fb1615adfd087510923000369",
+      "whole_original_gold_sha256": "db8177d35997a5b76f5b5954e60d56571a989f8aff03ea574c40a631f9a2196a",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "e14b6d093326af51827ce98d763636c5c2b7b561fa0b5f4a320be388984779ea",
+          "reason_characters": 141,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "1fd23411a1fbc177b47d1d1d9217708dab07549554eac8e686906827cdfc8c1b",
+          "reason_characters": 135,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "e82426d937018cb162bc4d9d3bdbd0dbd87ff4b6408e4a4951e4e44dfdc40b58",
+          "reason_characters": 93,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "ae44f29ef405fc7eb18070f3f35cb2e7a23c98fa2776ceeebbb53a2a5e10aa0a",
+          "reason_characters": 142,
+          "assessment": "false_arithmetic_generalization",
+          "proof_or_limit": "The answer14 is refuted for the parallel schedule, but the claim that no arithmetic path from the given values yields14 is false: 4+7+3=14, the sequential error."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "30a511e7b74ff507ade3f4052aa982bae9a327a8db1950b6bdcb4740e434a79b",
+          "reason_characters": 107,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "17252e3d1e99622a083c5737ced424cd2a55a2c1d782ff88ae0de7f7b6683589",
+          "reason_characters": 73,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "e46d3e6061bc313ab1536631daa183c251c967c1f413e22ece1fd3e404efb35b",
+          "reason_characters": 73,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "5cdabdb10abd750d8cc8da8b31c6ec29c62a8969caa25274a050317f67c8e0cd",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "c8f0bf5b6351e59f142ccb80d2d94842d106db08fa409819baaa6b00ecf26bfd",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "cece529c3e3ce122176c41830c77eb1689e3da60deaf6e719cf58b1d60d7febe",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "b",
+        "raw_difficulty": 3,
+        "label_mismatches": [
+          {
+            "field": "task",
+            "expected": "supported",
+            "observed": "unsupported",
+            "expectation_is_uncertain": false
+          }
+        ],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "8d793d7f18a5da592e38126e42a9881c8dc14b401dc5dcd6137141c46785bbfc",
+          "reason_characters": 156,
+          "assessment": "contextual_duplicate_veto",
+          "proof_or_limit": "The prompt and choices really duplicate the paired sound item in this batch; existingQuestionCoverage is empty. The source per-item task expectation remains supported, so this is a companion-context veto rather than the demonstrated learner defect. Its independent feedback.c rejection correctly catches11=4+7+3."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "0ec30a4f7dc61e60af659c245a0eb9f0dac01afe7f43ec6810259dd2d886be58",
+          "reason_characters": 29,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "e18bcffdf42e6daf420c2ba21a9f3e5eb568c944b8be2aa708da6ba401b0d57d",
+          "reason_characters": 63,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "61752ce031cf0a972352e03c848d8415d5a7c3cf8c18c7b30339f4f3bfcc2b0e",
+          "reason_characters": 24,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "6cc35f0912493560693790efe674f2f88edac82dab34eb0e3a2249c303e631d5",
+          "reason_characters": 120,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "28ef276592d78adf4bf30d4e1285eeca2cd6f1a8f61cd26cf5073d212c7cc81e",
+          "reason_characters": 100,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "fresh_causal_evidence_sound",
+      "batch": 1,
+      "batch_status": "complete",
+      "learner_content_sha256": "2743280dc1f34069b3e40ea0c52d60f1f413d617904f8ecb458c66fc5d5117aa",
+      "whole_original_gold_sha256": "a5e90e44abe04877bf18cccb8adcf980b3aa1c6f66af65b6ad4ab90c08051dbb",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": true,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "d49d2c2b7f8b20ae36d11f24323e4fb2257c61ed91165cf618c600eb6a4c9efa",
+          "reason_characters": 165,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "0f4b6e94aa9921ddec34f9fe19999cba8c9bf18e5a89f052e24cec754597b4e4",
+          "reason_characters": 152,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "a5ab24fbf7220f19d803321bbb3523910a92f7f935640376cfa60530d039f714",
+          "reason_characters": 152,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "92e919d24d46fb37948d34bd75fcaa9fb7a2e61246989e1c236ebb8ef7d1354a",
+          "reason_characters": 160,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "22ea89aaff741a4c975e20b8967218e90f3488061618668fa31c6fc1a19d9718",
+          "reason_characters": 129,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "b141c9e0ed6a4b4007d8d3ccbc4ff4f47edbd848eca530e55c19df188a2ca35d",
+          "reason_characters": 120,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "573e9ec15702ac413c2f7647f00ad87c973ffc290b2e5cb38c6f8d735c61a8d4",
+          "reason_characters": 179,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "167b64cc58469f9cd0fd6d04ed3597b74ac5270712e20546643f5b1148ae02b2",
+          "reason_characters": 125,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "ed261682acbbf09c3a377af2ce1234b8e025d21d83b4aafde3cdaded8d1925cb",
+          "reason_characters": 136,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "0e4dd9d9478ebfa0bb3ddf960baee6c09b5cc4a6329e02c795a46dadae793cc0",
+          "reason_characters": 127,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "a",
+        "raw_difficulty": 3,
+        "label_mismatches": [],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "83621f2b24a1e5f98ee8d3c4abc62a8777f714ab3d3f8bed0d3792759f01d382",
+          "reason_characters": 175,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "a93fb2b0ad9baf077cf891c94b05885d4583541a80374e5f24e9367f8beb2234",
+          "reason_characters": 114,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "1ae84c184cfd6c25f76f27d6cf30c9aa929548d78979247161fe3645d8d0d9d9",
+          "reason_characters": 91,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "b13bfc7383069e289c41a52cd3e457fdd63093f91f9af004fe10374f781847be",
+          "reason_characters": 76,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "858f9bdb02768abc70e6fd120c6e7f6f1f40a139a005f054c9f8e597cf3b6bc6",
+          "reason_characters": 67,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "ca8e5bb28a97331a75d7e69c3da0c7ddab164bc01ead6df70ccfbb3253f62330",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "fresh_signed_square_sound",
+      "batch": 2,
+      "batch_status": "complete",
+      "learner_content_sha256": "707852b5b28f205edf6fb83558784e2c33035b92e17171cba9a8873bcf45034c",
+      "whole_original_gold_sha256": "0a82da01cc06ee9d5b567895d942e84c79e1e5f1902fca283a623fca5c2b1959",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": true,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "f31e9378ec05637d6bc78bb3ee51ab8795e8eec613464aff1b1c697a352b2c05",
+          "reason_characters": 57,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "0704c9ca6a4dfb84fc7c8f5eba4c08bca876dff721b05c43c8cb15191ea617c2",
+          "reason_characters": 89,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "4a263b8decb8df4d936dc55575ceccb12ad3aacd98a5ebffa006565138b717b0",
+          "reason_characters": 48,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "dd8e453e75a85d49511f8425ab770ac850f93494c1751f1e251e218ecaf26b30",
+          "reason_characters": 52,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "e446c3d1a4abfccabda7a58107319bdb80c5b9d7fc7d51f63048fbd6671a36ef",
+          "reason_characters": 60,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "ec3125535245c6179bb8918540c58f476392e8811ab68ec199e85862279195a3",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "2fa2925b6e8b03df770047b4c1c7d73cd992190dd27f15fe457cfb90cb52d479",
+          "reason_characters": 39,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "5b644256b7be7f61b700461d437c68dd1a93019c0ca16f979ea25a851dbb12d6",
+          "reason_characters": 39,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "e43a7d6748341dbcc3aae1195c8117e891cc8f9759daf340c0e19140558e7447",
+          "reason_characters": 40,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "0e14ce9b89ee1bf51e48a8090c25abe5ac05c8fa279fda34033a43b06f26c4c2",
+          "reason_characters": 39,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "a",
+        "raw_difficulty": 2,
+        "label_mismatches": [],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "7cf6cff5e1d2234cf2954b20fcc31e59191ad18728931af525a9f277fa47f739",
+          "reason_characters": 189,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "c65c5d9622889048b9b75da0fd59778357470e626277eda63d5a115ef8224665",
+          "reason_characters": 141,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "b0b952a00b1b4bb6a80573b62a4cbec2853bd02ed5cb51e177145c2652b26201",
+          "reason_characters": 74,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "a2a13ef8c520db7ca179c11ba9e37698f7f6de3a9b0876b3ce06f7eb2578c71e",
+          "reason_characters": 89,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "9eee3a34db2168c94812ff07547406de6431a0a14ea760247cbf7a04bd88ae60",
+          "reason_characters": 41,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "055da3ce2574821925db5ed35d7f4b1a55ca35c971f31bb96535a4c286a0ae89",
+          "reason_characters": 44,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "fresh_signed_square_defective",
+      "batch": 2,
+      "batch_status": "complete",
+      "learner_content_sha256": "03cb3d2ec33ed01a1b542dd1d81b92e9c4d92f83f8d5bb129bd45ada877a7faa",
+      "whole_original_gold_sha256": "59a45d3af639beb0cb988c3b9e8f15f5c45d88ad4b45b26c9f853253599914ca",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": "solver_multiple_supported",
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "26e590f459287cfeb3e55f90ee9526ccd5ac5855cfc2af9be167a040c3ce03c3",
+          "reason_characters": 54,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "943940a555ef3bfad51a927e6609bef42ac07b8545d4305399d3de14dbd51ba9",
+          "reason_characters": 76,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "4a263b8decb8df4d936dc55575ceccb12ad3aacd98a5ebffa006565138b717b0",
+          "reason_characters": 48,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "dd8e453e75a85d49511f8425ab770ac850f93494c1751f1e251e218ecaf26b30",
+          "reason_characters": 52,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "6758ac3a56c3c7fc58465686951f66212a7b5d0c23f801d81752a237941e57ea",
+          "reason_characters": 94,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "5ef8ea958ba6887e5b03a69f2f52e16c2e18b75c9586f6cae08b7d8b6e0c7cd9",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "7e01e1fb325b2f5d93fcd36533bd4f2defb9a18bd2d1846ff14acc44235b923a",
+          "reason_characters": 39,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "5b644256b7be7f61b700461d437c68dd1a93019c0ca16f979ea25a851dbb12d6",
+          "reason_characters": 39,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "02f04944b7cb85d862dc024fd184883726f8d30eaf3fb2847c97f5bb4a59ae78",
+          "reason_characters": 68,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "0e14ce9b89ee1bf51e48a8090c25abe5ac05c8fa279fda34033a43b06f26c4c2",
+          "reason_characters": 39,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "skipped_after_solver_veto",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_defective",
+      "batch": 2,
+      "batch_status": "complete",
+      "learner_content_sha256": "9a6d3ad67bb80670076b25d8796e5927972cd81c0487421d21a785a5e536fa1e",
+      "whole_original_gold_sha256": "903246ef07c8b910d0b2e52d081d8549639069acdd37d1f9e5ad4054d6d996b9",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": "solver_equivalent_choices",
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "cef1bb69630a6ebc0f13330226c1667cfc9cb3629be0087fea8dbfe7efdf00c2",
+          "reason_characters": 22,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "873ed7bd84ea8f0ea8a62a33c9a2c57b753ec5f07972b96c8fd6e359cd219fb9",
+          "reason_characters": 34,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "d932eabc5a0646b75b3490e9ef12ee73556f2c68960c4d8c0413d08e30d543b0",
+          "reason_characters": 55,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "22b4b510f0a9a494fa08299560e971ee20f8936f3197aa51d32f5914c0b9bb1d",
+          "reason_characters": 34,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "7cd0d4bc977e6ac8d5a36a3be0ab300c60482437f5bd0017a05e8e6086dd0e0a",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "9ea2447ad889f58c2652bc346cdcac9d505c0956ec47f11ae1f52e2f751ba78d",
+          "reason_characters": 47,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "5a47af09fb533795af09555385d0bd932b03ecea7ee6ec5cf79ea721ca87637e",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "f3ec29aad1b59221119868e2dcb0a731e302c1a0c4664dd19e577c13d660fc70",
+          "reason_characters": 129,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "733b961fd40ab3695b3ccd0261c50e91acbacda77095711e5941af8ee2da8519",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "855a0459396ad1112e35a2c3b85879327e46dcbff5d2fd606b1cbcfc05a68787",
+          "reason_characters": 47,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "skipped_after_solver_veto",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "supplement_semicolon_defective",
+      "batch": 2,
+      "batch_status": "complete",
+      "learner_content_sha256": "266eb655db29ef65e0c823e97f8ad11fa56b4a74f9c38378c42e37e12b0402aa",
+      "whole_original_gold_sha256": "1a42736d1bdbf32c857a39a59b5558b2d2e6aea3fa214b24744b2f65baf50c64",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": true,
+      "primary_decision_credit": false,
+      "admission_assessment": "unsafe_unchanged_defective_original",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "e6f52227c6515c2f1a977053ab5b631c1c2da19c2c8e90986c111d70ce2383b1",
+          "reason_characters": 101,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "75171abc6db808709e56d0719a398af1f2239a8a8c6a9cc447722ad925c444df",
+          "reason_characters": 134,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "d80502bdd0c5e0e51eab1bcc84d250d01ef57fb723c619688f08c09ef36c38a5",
+          "reason_characters": 128,
+          "assessment": "false_necessity_rule",
+          "proof_or_limit": "The comma-however-semicolon sentence is defensible with however attached to the first clause. The source stem does not require second-clause however. A semicolon need not universally precede however."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "153d964fb3fd50ad2a96425d1475241326223895f46805ceefeed9cc38f0c93f",
+          "reason_characters": 131,
+          "assessment": "unsupported_categorical_style_rule",
+          "proof_or_limit": "An absolute rule that semicolons cannot precede coordinating conjunctions is too broad. The field expectation deliberately leaves this offered construction uncertain; B/C already establish rejection."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "e503d392e8eb2a0d4015dafc5481448282cc24c62700935b4022284dbaf24a7c",
+          "reason_characters": 92,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "904e059317d339e4606f7369eab101cf8c31fccacb613866ea2dfad8ae004b8d",
+          "reason_characters": 115,
+          "assessment": "false_or_overbroad_punctuation_claim",
+          "proof_or_limit": "These written alternatives are distinct, but calling first-clause however inherently misplaced and/or categorical semicolon-before-and misuse adds a false or style-sensitive prohibition. Correct pair relation does not validate that claim."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "dca80e07600b45929bece6c30d95829cca0a3a313f19846295e60b6ddb30e463",
+          "reason_characters": 126,
+          "assessment": "false_or_overbroad_punctuation_claim",
+          "proof_or_limit": "These written alternatives are distinct, but calling first-clause however inherently misplaced and/or categorical semicolon-before-and misuse adds a false or style-sensitive prohibition. Correct pair relation does not validate that claim."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "d47fb32ef88896738b710078a3a6254adb0655ccb436cde3824321c2af755526",
+          "reason_characters": 146,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "cbf04edec7525cf91240fed7d4017b2d08db41a11db75a53c52428c8365c018b",
+          "reason_characters": 139,
+          "assessment": "false_or_overbroad_punctuation_claim",
+          "proof_or_limit": "These written alternatives are distinct, but calling first-clause however inherently misplaced and/or categorical semicolon-before-and misuse adds a false or style-sensitive prohibition. Correct pair relation does not validate that claim."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "cfb0974383b9dc5b6359273798e4e148224660013a2f14863e1998189f76d603",
+          "reason_characters": 124,
+          "assessment": "false_or_overbroad_punctuation_claim",
+          "proof_or_limit": "These written alternatives are distinct, but calling first-clause however inherently misplaced and/or categorical semicolon-before-and misuse adds a false or style-sensitive prohibition. Correct pair relation does not validate that claim."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "b",
+        "raw_difficulty": 2,
+        "label_mismatches": [
+          {
+            "field": "task",
+            "expected": "unsupported",
+            "observed": "supported",
+            "expectation_is_uncertain": false
+          },
+          {
+            "field": "answerChoice",
+            "expected": "multiple",
+            "observed": "b",
+            "expectation_is_uncertain": false
+          },
+          {
+            "field": "feedback.main",
+            "expected": "unsupported",
+            "observed": "supported",
+            "expectation_is_uncertain": false
+          },
+          {
+            "field": "feedback.c",
+            "expected": "unsupported",
+            "observed": "supported",
+            "expectation_is_uncertain": false
+          },
+          {
+            "field": "feedback.d",
+            "expected": "uncertain",
+            "observed": "supported",
+            "expectation_is_uncertain": true
+          }
+        ],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "f357801591a4ed881e0fc236dad1873d0445ce330066f4253c2984c3bb87e797",
+          "reason_characters": 196,
+          "assessment": "false_unique_answer_claim",
+          "proof_or_limit": "B andC are both defensible under the unrestricted source stem; the one-standard-answer assertion is false."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "bb7dc86adada7fb53a4df9a55bf008801facc229ddd8207081919c7f2b36b71e",
+          "reason_characters": 128,
+          "assessment": "false_necessity_rule",
+          "proof_or_limit": "The reason endorses the false claim that the semicolon must precede however and that the first-clause however alternative is misplaced. The learner main/C explanations are false under the original unrestricted stem."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "87cd18bc32539e6777badee410586e1e0d67c424c5a3f2aa41d0a1e8f0ced2f1",
+          "reason_characters": 85,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "18f8db483a78cafce2ae4599d22aa2abfc59993a7ac6710e5a08982ec648361b",
+          "reason_characters": 83,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "a3f2845d752fb0ad1b8236a77b94363fb5a7e210190b325aa060c174e564a8f0",
+          "reason_characters": 95,
+          "assessment": "false_necessity_rule",
+          "proof_or_limit": "The reason endorses the false claim that the semicolon must precede however and that the first-clause however alternative is misplaced. The learner main/C explanations are false under the original unrestricted stem."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "f0af01f4cd085015913144c1b90ffb44f005ce225c6a2c7fac4c7e6f0ca85831",
+          "reason_characters": 162,
+          "assessment": "style_uncertainty_not_resolved",
+          "proof_or_limit": "The source field deliberately leaves this offered coordinating-conjunction construction uncertain. The reason asserts a mainstream-prescriptive preference without resolving the construction-specific uncertainty. B/C suffice to establish the defective admission."
+        }
+      ]
+    },
+    {
+      "case_id": "supplement_duplicate_wrong_value_sound",
+      "batch": 2,
+      "batch_status": "complete",
+      "learner_content_sha256": "98b78749c08b5f43493b49e360b9ce4584aa05cde7466ad5063e252eb8f30acc",
+      "whole_original_gold_sha256": "8d9091ae95498cf0285fc922b03c9db406fcf7543f0aada2ff9c1f43533f4f80",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": true,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "cef1bb69630a6ebc0f13330226c1667cfc9cb3629be0087fea8dbfe7efdf00c2",
+          "reason_characters": 22,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "873ed7bd84ea8f0ea8a62a33c9a2c57b753ec5f07972b96c8fd6e359cd219fb9",
+          "reason_characters": 34,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "94b74320b3eac7feaefc0f30ed449d64af19e1f10f13eb75047aa5a8a1f4ae60",
+          "reason_characters": 34,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "22b4b510f0a9a494fa08299560e971ee20f8936f3197aa51d32f5914c0b9bb1d",
+          "reason_characters": 34,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "7cd0d4bc977e6ac8d5a36a3be0ab300c60482437f5bd0017a05e8e6086dd0e0a",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "9398a5a7bc513e98e6ca98e174b17796d72524d7d58e7bf35f23fa3a63f2ec21",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "5a47af09fb533795af09555385d0bd932b03ecea7ee6ec5cf79ea721ca87637e",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "26aa0de1edb0426cb922ef88e9469a98d601ff53540c055c74d9ecfc8ac8f100",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "733b961fd40ab3695b3ccd0261c50e91acbacda77095711e5941af8ee2da8519",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "674d74c9a98e446c137a42e985f103d342fa861dc0c019532a509842701161f2",
+          "reason_characters": 38,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "a",
+        "raw_difficulty": 1,
+        "label_mismatches": [],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "f098a96216baec94fa83b061fa5f2a4cf6c25bfb9a2bff75b092279397db1e69",
+          "reason_characters": 144,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "ddc0da00845991f6b92966c7c3f73e16cbff1043012f23671b1e246805b7c48c",
+          "reason_characters": 24,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "b5851ea3ed46c673512b34169ac36aa37b0098b2d0f4b9254c024c1434bfc20a",
+          "reason_characters": 35,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "96eba56d2bb8d793387d184a2abaf3f375a4df20fd04bc0dcd6225e58516db47",
+          "reason_characters": 57,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "03a0a832ac5ff1bea7a610e5c29a657ee3410a0c0c148d50466901fa80c79b21",
+          "reason_characters": 64,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "6aabf0fc3c4bff3aa1c236a9eb812d1e78d374b6d7ff0fac37771395c6d31bc5",
+          "reason_characters": 64,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "supplement_decimal_representation_sound",
+      "batch": 3,
+      "batch_status": "complete",
+      "learner_content_sha256": "18e8f38b5d955c7fa71343745bb46e46bda94e4e827e5c346af54d5d30d9fb28",
+      "whole_original_gold_sha256": "3259d6d1b33dd24b682c12305025ac0ae060fe4f322e22bf183eaaca7f1e3ff1",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": true,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "665791c1c0b0b2886e65a53b6037be084c9b50902f10c519d64746e5161aa543",
+          "reason_characters": 158,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "010d3388d09334572aca97f2e7b4b4f0c750504d4299bf013ff54bc220f8e293",
+          "reason_characters": 91,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "3de95d10c5acaecbd9d09480439a1dde57891f139d5fedcc13189b537a0e1239",
+          "reason_characters": 91,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "b3f4785bc259369531cdec09dbc5b6f70f195dd417e5e4e971fd8759ff6a4078",
+          "reason_characters": 177,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "05d3c14a2683b95ecc05e8a8db862d5119480c111363326ea2547223ff600725",
+          "reason_characters": 128,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "e142d80da8cbcc07c892a1f73ae02e832d7634062974e9271c1596dc53c95ded",
+          "reason_characters": 103,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "b1aa217b455d018d36ae94e4586b430bc74db8f36140a09c9a7b0842bace8f39",
+          "reason_characters": 98,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "ee15339204712649572daf05d9e2512c7195e6e288d3cbf060b3916e7d0aaa0c",
+          "reason_characters": 135,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "0365c744d9df6be9f6e857d0ab2c84f2a839c2ca3ab8ede132a29ca2a77ac137",
+          "reason_characters": 118,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "ef645c34665f548d45b64a37957a4efbe36429f15983d0637881fb4e9e334130",
+          "reason_characters": 102,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "a",
+        "raw_difficulty": 1,
+        "label_mismatches": [],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "7d7f8b1b98133e60dd169ab30ddedfe3d6062b58c1367cf18f32a8d253c03427",
+          "reason_characters": 219,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "deeab4c0aea79d897ae8996f207ec0015f2d0f7312f8dfb8261a8f8a1250413b",
+          "reason_characters": 112,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "bf9999f783f4677ff720c2012a70acc13967eb4958ff42148e6bbff732f08f8d",
+          "reason_characters": 92,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "1ef0ecbc2ea8ed04c1a9f14ced1edf136ebd6d61ccb1402d5c4011450fb1dfd8",
+          "reason_characters": 83,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "aa4a5928efe6702a09e8e66a1eb8a9e28cbfd23b8961f4b8979110b76c1babc0",
+          "reason_characters": 84,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "207fc1ec22b1ee7a86b7544f7fba3983c4c6061ac17bac3557d0407aae818401",
+          "reason_characters": 95,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "supplement_semicolon_sound",
+      "batch": 3,
+      "batch_status": "complete",
+      "learner_content_sha256": "ce977f680e94fd9b1a448e1e55cd841d5376d420d7e6404202ef55d47934d936",
+      "whole_original_gold_sha256": "b67829496fed67ef0279f2fa50b6dad7b49cd9218428d9fffe834463ccd3eec7",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": true,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "b59d3ca7da588a0f49c4de1c46d9dcc302a5cab91a9c90cfeab2ddcda851452d",
+          "reason_characters": 104,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "c4b4c580a4ee72a8a06c2fd19f39a733bab2ae49ef69e1f87ceac0a8a5f292e0",
+          "reason_characters": 169,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "188815258da22303d177e99a66f40a2f7c5ce6c80f4787c199d1e90544b16429",
+          "reason_characters": 150,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "ebdda953430241bb550f0c649f09312dc7e19c49477e9566fb4d47e48fc18792",
+          "reason_characters": 172,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "81695c96013ec47f73be117e5e51374970f0648e3fd54b8de40a42666d6c1061",
+          "reason_characters": 156,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "f42293b00eb6dc9e62882d276cf8196c908dc52a3e965a13a278229aff89f14b",
+          "reason_characters": 92,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "2d598d4ff58a160865d71af7cc00ff43c83c608d592f6dd4c8cbf197d6d2f9a0",
+          "reason_characters": 89,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "80237106fe56cd60d5d100a15926492775d0391f63fe50b9499d9f101691bff8",
+          "reason_characters": 152,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "11b1722d74a37e6d142973e34622138772f2a105b5f81cfd7182f03ec45032b1",
+          "reason_characters": 99,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "515756ab4f77a88ab07993f63213f4175c2cc97b087a76b7db1312efeb3782aa",
+          "reason_characters": 114,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "b",
+        "raw_difficulty": 2,
+        "label_mismatches": [],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "898d218b5bde57fb9140f2f9aa604b6d187295c4067be270d72be0cd75175aff",
+          "reason_characters": 189,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "9fad57783da84d268ef2d8167e0fff559ca9f50c935ecd0ccd909356e03cd03a",
+          "reason_characters": 117,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "a6ffe87eadcbfc3c526a6d214afa924f944c399a174411987c13c00377da0604",
+          "reason_characters": 81,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "255a698b1cc398c0fa165d5e7af9957f566117f3a14fbbeaee3774f388f0e9ab",
+          "reason_characters": 107,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "8567e80d25795b8dadd149ec48a010048120c88cc6cfdbaa93d43520f56646f8",
+          "reason_characters": 121,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "da2ac35e44c3e15978b861b6cd8d47e1e7113deb12141e8558894de4e1f47baa",
+          "reason_characters": 94,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "supplement_decimal_representation_defective",
+      "batch": 3,
+      "batch_status": "complete",
+      "learner_content_sha256": "9b18c49f30302fd80ce00aa0055ae8ce5c24b3b423dca984616062f40a3a5895",
+      "whole_original_gold_sha256": "7c7dfec6d7b696031116bff7f17e45a358ecd9ec380d351d093c109f6b894b3c",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": "solver_multiple_supported",
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "0a8ff8a05c58a7b7117461c1f07a67813956a138bcc08131a88bdb7773eefeac",
+          "reason_characters": 44,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "74d0ce0a9161e3aa3e966970f4390f8f4ac022d57a4c040b8b3ff650ff0a62fe",
+          "reason_characters": 45,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "18b6c7ec52b86af758f32e2d57fe9b79e775df6f84b2718049d5863388f2b7a0",
+          "reason_characters": 47,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "b61e575a2a0db6e5c569922465f9088642c0b2659e27f4d320b44e0d932b9b16",
+          "reason_characters": 30,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "b121745d3fa8101138adcc6c82339f5f4a6573d4f1e662a587b425fe11c5e8ef",
+          "reason_characters": 116,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "c8a1c7eaec01649d1a4984126409e90a10df9359d11a06ade42e703a7c6c370f",
+          "reason_characters": 97,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "5867c6100effcf874a4ba5c0fe363ffcef690883947ac3130811ac8b23097aa5",
+          "reason_characters": 59,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "7f7c789ac9c9d21398130f1927c2fae9bce86b8e7a01738fbc7a145823ac37f2",
+          "reason_characters": 95,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "5a7724d48fbe23a1b45417241fa096af4b536bd639bbb25577396fd6bcba3eed",
+          "reason_characters": 49,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "fef8ec39f90d4b5be8d7bc43b6e6990022dfa91b10156fc9510e1c704f153ab7",
+          "reason_characters": 46,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "skipped_after_solver_veto",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "rectangle_perimeter_complete",
+      "batch": 3,
+      "batch_status": "complete",
+      "learner_content_sha256": "ccf69d0bf618bd74355c7cfaee92a5ed419c563ca0033d2e74de9d28f17b7228",
+      "whole_original_gold_sha256": "64c902ddaff301ceb8d7485bbcca8e5c97bd8abcb2097d5648b071955444415f",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": true,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "513049dae5f10622cf46fabba18544a2451ddabeb7cf77720ba2d5e5a1334534",
+          "reason_characters": 76,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "3144e1fcf8403d58c474f0fc9c3a0db55e9c15660d2c80de398588b5aa76160b",
+          "reason_characters": 76,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "f080b8f5ecbf88c77a03fbdb536e9e497b55cd5471a3281f32ce31446e4b43ac",
+          "reason_characters": 102,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "91d95a4ad06235fc4d7ccfe0fedb5191cf21f2fe2f5b7af12f19b2db9f3dcdeb",
+          "reason_characters": 95,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "87aa78f1ab5b9adb4310faff652ea70baffd4066b90b239741c7ebffc58e8d2a",
+          "reason_characters": 47,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "bba3394a675189a4d1680ccca3b4ecfeca3e9f5838eacedac5c99a30c374c149",
+          "reason_characters": 106,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "5a5294c1b1f7db3b677e72da2ec9270b1a8358f47eb6caa72279a1d204645b58",
+          "reason_characters": 47,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "94bf3160d1f0046af268edd364ccbb9eeb5d7f785411ce5927cfb4dad925292a",
+          "reason_characters": 47,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "34505e8d2a74142485c07e7935e46bb28f096fd0dc52f5475950c20180cdbd31",
+          "reason_characters": 65,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "f836c9d6f8164767c560a0f60c1047a254ee19a4a1afe6fc4bd415b5d70dc7eb",
+          "reason_characters": 47,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "locally_valid",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "a",
+        "raw_difficulty": 2,
+        "label_mismatches": [],
+        "earns_batch_semantic_credit": true,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "d7ed1c9371ab37c26d62b5be8d7e6cc727ce444d0e1502a460d56177ec546967",
+          "reason_characters": 170,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "e3985a68032c5702130098b23b3783da0223cfe8afd65ac9a3f05ff47bc7753c",
+          "reason_characters": 56,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "305e9c84caed7c0cbec8a683bd27d2401f1a16ad499c791dfb04255dfe2d367e",
+          "reason_characters": 60,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "515a2747a30f1d6bcc587374c9e8cd451065432ad1feca1a0df1af10e82a285f",
+          "reason_characters": 69,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "93a6cea3e9d8867e5ee44ce0344a05368004da21737e3c206da0f92f7a859526",
+          "reason_characters": 70,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "cd09eb647614d3aea8331b6835c5337d6fca798ccbae91efd3c3c2a0e205eab7",
+          "reason_characters": 95,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "triangle_missing_perimeter",
+      "batch": 3,
+      "batch_status": "complete",
+      "learner_content_sha256": "cda77b8cbceee01a37b6c4ac5e55c06ae8e0196da46e13445517c8eef6b5aa60",
+      "whole_original_gold_sha256": "08cfbbc3803376e621f2b825bd7d7457530c2c2597553c3adff7a984b2e9d667",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": true,
+      "admission_assessment": "matches_original_gold",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": "solver_multiple_supported",
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "bf79b7ba4f833fb8c8dad8a13c441751daa147ce91bba9ab81c3c7036dadd78c",
+          "reason_characters": 184,
+          "assessment": "true_possibility_not_entailed_answer",
+          "proof_or_limit": "The inequality2<x<12 and possibility of6/8/10 are correct. They do not determine the actual third side asked for. Field gold remains none entailed; multiple-supported still vetoes the defective item."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "5bb14617baf9d1e3b27bf0022cffa7a3069a78cc36e1251e0175833920ee1c90",
+          "reason_characters": 92,
+          "assessment": "true_possibility_not_entailed_answer",
+          "proof_or_limit": "The inequality2<x<12 and possibility of6/8/10 are correct. They do not determine the actual third side asked for. Field gold remains none entailed; multiple-supported still vetoes the defective item."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "f841a2e00742ccc347d2f834564be104ebf38ddcaf6e471bc6c506fa3245dce2",
+          "reason_characters": 95,
+          "assessment": "true_possibility_not_entailed_answer",
+          "proof_or_limit": "The inequality2<x<12 and possibility of6/8/10 are correct. They do not determine the actual third side asked for. Field gold remains none entailed; multiple-supported still vetoes the defective item."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "b24e1aad519866d0001d4d217b1026eafb69fc8fd886f56b4d3bb93dff42ec9e",
+          "reason_characters": 159,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "cae0bc46378924fc9f706fe85de9592533184159f84f20e110f08c3ce2df51fb",
+          "reason_characters": 87,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "efc53f430d1f4d4cdf54ca7ab59780ca3fff5b3baa4d0d9a1e531969e18f5080",
+          "reason_characters": 102,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "c5e20c327bb7bad7132f6c14108d5fd74a26567caa1473abe0123e4e7118e05d",
+          "reason_characters": 96,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "4691fabfef7f19274182392a71c4e3268ae315b9d95e81ec86a7aca082642725",
+          "reason_characters": 88,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "6b3eef9feae154ae6a62655fcd6b4724ecefa9cfd920140350e263fd973bf183",
+          "reason_characters": 59,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "78641882f8d4576a7124bdeaab6311ccd1927f863bb9ef4d7cdb6ab87d198a93",
+          "reason_characters": 60,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "skipped_after_solver_veto",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "necessary_ticket_inference",
+      "batch": 4,
+      "batch_status": "batch_failure",
+      "learner_content_sha256": "425ce3b969be8bed2b5ee1bd6cb33836a511d0aa785a0bd9dc6365078c7d58c2",
+      "whole_original_gold_sha256": "fa1d25b16dea1a7ab173418b530e4b6ac9ea38b96ded1c1102826568087645a5",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": false,
+      "primary_decision_credit": null,
+      "admission_assessment": "no_batch_credit",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "ef83aaa1824e830a9079f8b2827ac3ba1c915164169c53182a15ddb1ea5b41b4",
+          "reason_characters": 212,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "813189f8ff4aaababb281905b5731affc7da64e4e7ddb5eec0b39f1da4c62237",
+          "reason_characters": 183,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "cc3600984455785f8b6ed96a2e05bec588c05bca9ada0e2dbdd57cbbf5846ea5",
+          "reason_characters": 181,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "e2b99a96d62ee264d8a0f939f05c1ac3be9e94d7b986e289db6065afa21b7f65",
+          "reason_characters": 196,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "ff84452df5c425a2b3d3dbb5d6214b88c62bd8d75e2c6994d8c9419670ebf052",
+          "reason_characters": 148,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "46078f21a50916c55d3e1fca656ee542d376118540cf5fbac8d7b8ab69aaf73c",
+          "reason_characters": 114,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "96fd8839a48b87b1ff58e127400d05eea4e4a6b71276004019cf69d091e1f4ca",
+          "reason_characters": 151,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "2e13e7aa51d3f8a9abd0cdcab4e720de7358766ae8b7d0aff741e00ccde598c0",
+          "reason_characters": 133,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "dd54fd0a7b8212ba3fe8912ded9801f9340bcfff4b738b7811386744ae53e839",
+          "reason_characters": 141,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "6a2f19a5f5698a7c3eff21eec3c6b6df8c555dd2104f25de12759031ec2da26a",
+          "reason_characters": 151,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "raw_assessments_in_failed_batch",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "a",
+        "raw_difficulty": 2,
+        "label_mismatches": [],
+        "earns_batch_semantic_credit": false,
+        "reason_bound_violations": [
+          "task"
+        ]
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "282fc4042d90c67617002817c5cf462bec96ffc7e0159bf8ef7c2af5c58c1cd3",
+          "reason_characters": 253,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "80337e1751b4668cce09152c42520e20e18d6010526f7d101652e4d21571adc0",
+          "reason_characters": 120,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "4ee4aa51754510fc3f928c4538b614f3dddb4497cf727b4a5b9cd390aa42b8b3",
+          "reason_characters": 88,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "da582f309d7333c65fc0a4d3b5b0df75e1e46546345b36f1bb7057df5170ad94",
+          "reason_characters": 104,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "f84b9155c9fb783b92dbfa6289aadbb378dec4f0a9cdce0e1e43b13bff0ebfbf",
+          "reason_characters": 96,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "665d05a440362b60e10fa68125162073dd16d224b82bd3764c30859e6e06f14f",
+          "reason_characters": 148,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "text_identifier_leading_zero",
+      "batch": 4,
+      "batch_status": "batch_failure",
+      "learner_content_sha256": "581b451a18e9220921ebef241bfbae0816ae068021dd3f99baf28b58f4d17c83",
+      "whole_original_gold_sha256": "e8f80cad6013d1e86ad437fae27bb33e7dd28648cba3ca59f2ba076db7037d2d",
+      "original_required_gate_decision": "accept",
+      "runtime_admitted": false,
+      "primary_decision_credit": null,
+      "admission_assessment": "no_batch_credit",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": null,
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "076d7be3bc7989b2d757ed532c2286c70d230ddfce265f698a2d06db2d17d1f4",
+          "reason_characters": 142,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "13f481749b8ffa7fa2efaa0b52ea74f24a6d1e5aba506bf8b4916484581f0d2f",
+          "reason_characters": 128,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "dc1273280616d05ae2590c1ad4529dc503298ec8ffb47ed44dafb09c0f0a5fb0",
+          "reason_characters": 155,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "d68bbd76332aae0817a825621419064681bb5179b8a73c27f3ee202cc5dff15c",
+          "reason_characters": 100,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "d186e60641b54828a0371c1061bef353c444446206e031ea7a08ac19d6d15c92",
+          "reason_characters": 145,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "f714a270b7b563ee2d5e336f79626f8b44eb8d306c93ecead61dc0ecac2077e9",
+          "reason_characters": 104,
+          "assessment": "incorrect_fact_correct_relation",
+          "proof_or_limit": "042 and024 are distinct, but the reason says both differ from the stored ID042. The first exactly matches it. The relation remains correct."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "49678ae60c354e80fe5c8b6d33d1045ff67992f2c6a16b95b17e78b2a153940a",
+          "reason_characters": 119,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "3a6d33bf755dd74098b2e3f07e47bd3f0a7f01a1b00cb05ee376cd6d3a5095e9",
+          "reason_characters": 115,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "726097f7a467306d0ab76977a1260fe1f9d5d3fb1fd73936f97531bc2275b70a",
+          "reason_characters": 130,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "95bf107c2399667c9606f74e46b9c8042347ec3fa8eb47362975b0eaf246bd4f",
+          "reason_characters": 73,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "raw_assessments_in_failed_batch",
+      "audit_raw_diagnostics": {
+        "raw_answerChoice": "a",
+        "raw_difficulty": 2,
+        "label_mismatches": [],
+        "earns_batch_semantic_credit": false,
+        "reason_bound_violations": []
+      },
+      "audit_reasons_reviewed": [
+        {
+          "field": "task",
+          "reason_sha256": "1ea02f778a2e5232b401c15e1d579588e579ef60c714b6d21272efd98b5d9fec",
+          "reason_characters": 200,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.main",
+          "reason_sha256": "505661d3ccbecc96f7f44f6fb93165b7d524cbb2fc45f6fa67dd84b235ec8ab2",
+          "reason_characters": 118,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.a",
+          "reason_sha256": "73919689d429655c0d342d3df41f19b1052d6e04658d193e4f17f998720dbeda",
+          "reason_characters": 77,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.b",
+          "reason_sha256": "94b1fc29f867da9a8c53adb26a93fdf8837f8c876f6a6d26de5d75c119676e5a",
+          "reason_characters": 88,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.c",
+          "reason_sha256": "4b9eb0805543d39a34f246e5fb7f8e7c099d2bd58a361457454f7043f24b39fc",
+          "reason_characters": 143,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "feedback.d",
+          "reason_sha256": "a05daf53f315056df4c927fb2cbf9a2339f8ae2ab58cf2d7e75de7fd5202ca22",
+          "reason_characters": 84,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ]
+    },
+    {
+      "case_id": "even_integer_converse_error",
+      "batch": 4,
+      "batch_status": "batch_failure",
+      "learner_content_sha256": "d58de264a0d0bcf8ffe3f89fa97fcd4f519314612fbe285c1aa479cd93a7c383",
+      "whole_original_gold_sha256": "9b489ed6398b79eb45af5cf6621d0717aebf2945d27c72189d4f6d3dbf6925e3",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": null,
+      "admission_assessment": "no_batch_credit",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": "answer_disagreement",
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "f3d794ae7b6327a18ef23cbe79f744f41987c33348228f171c83206c1f5e4d4a",
+          "reason_characters": 158,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "e2dbbb0075518a2a5ac8c525f7243b891bf2a38cafdccd58a3e48521dd304974",
+          "reason_characters": 130,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "fe42a98b83c71f7e35a86d46715f6c7364f1466cd40d6c020493d3e9c83c9955",
+          "reason_characters": 107,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "03315f2dfcf26ff4881705bc7634d7c6d8967ffe1b3e921253e5fcc5e4c018db",
+          "reason_characters": 146,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "c81c6560d0421c76a0eb479e582a4b1e30c6d0274f483255c5ecc72c61635cdb",
+          "reason_characters": 123,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "ff0ab15350499a2f0e5109fc05b7e7d0dab347944f7916f0198a98f311c4859a",
+          "reason_characters": 95,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "ead64f5d16dfb13f36e5b7a9bb25a39e285b18f18d834401ebd010f4bb4f9013",
+          "reason_characters": 103,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "57b6d089a2d569b45f23ae8d7ff02424d71c202525ab11730e4a4214884a1624",
+          "reason_characters": 110,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "7ebe25225070af9b2334a59f6d58bdd629ae0acce2ef1d848570f8a999c5a489",
+          "reason_characters": 130,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "2efd8855c2ba8f620fbc825b0d3a170efdf7a02641d61198c936d1c080230779",
+          "reason_characters": 115,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "skipped_after_solver_veto",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    },
+    {
+      "case_id": "editor_duplicate_discard_actions",
+      "batch": 4,
+      "batch_status": "batch_failure",
+      "learner_content_sha256": "cceddf0d71484c414ce0264906105620b0176641df3812e7a572d1d953609c73",
+      "whole_original_gold_sha256": "c476d2f4a6c8e8817f2dca50b5e181a5881df562cefe63756963b1cb6dcb17ad",
+      "original_required_gate_decision": "reject",
+      "runtime_admitted": false,
+      "primary_decision_credit": null,
+      "admission_assessment": "no_batch_credit",
+      "learner_content_review": "Original full learner payload and gold retained. Previously established soundness/defect proof is source-bound; no teaching rewrite or retrospective label change.",
+      "solver_veto": "solver_equivalent_choices",
+      "solver_reasons_reviewed": [
+        {
+          "field": "choice.a",
+          "reason_sha256": "f6bc9455ef584265099fa842d801f0602224d7695ce35d850c64d9dc322f5344",
+          "reason_characters": 133,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.b",
+          "reason_sha256": "d991f012662e0efe33913608114a3f62f8ad14741710644dac2db34a404350d9",
+          "reason_characters": 119,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.c",
+          "reason_sha256": "a89d9f6e3210a77ab055d71773a3fb0d9482e47f898ad9db6604edf265f47c7a",
+          "reason_characters": 167,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "choice.d",
+          "reason_sha256": "ecdda9260cc19d1e89f0ef36dbd9e46d5381a59d7e562e8c6c3375b07df808ae",
+          "reason_characters": 83,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ab",
+          "reason_sha256": "f9da2f8c8adfeb08893ece7461527d37a51588a5c542b93f2f2e1e866e333fbf",
+          "reason_characters": 125,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ac",
+          "reason_sha256": "4bb59538b34dade55d654d4ad31e0871aef38d69389604a4cb7d7044693d5d8e",
+          "reason_characters": 143,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.ad",
+          "reason_sha256": "b4db18cd54479e87b92a0c174de29a6889dd311c069ec2a921230572e780dc36",
+          "reason_characters": 111,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bc",
+          "reason_sha256": "545d30dba86a03553f36903056390cc29614bd26ccf9b5d29d6a9505def52e32",
+          "reason_characters": 190,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        },
+        {
+          "field": "pair.bd",
+          "reason_sha256": "7d57dd7701840fe00f0db9195ec8a7e0b5fca220c79c9715780070e5b8f7a768",
+          "reason_characters": 206,
+          "assessment": "wrong_pair_endpoints",
+          "proof_or_limit": "Actual endpoints are Discard all unsaved changes and Rename the file. The reason instead describes solver slots b/d, the two Discard paraphrases; actual queried solver slots b/c are distinct. Another correctly equivalent pair already vetoes this item."
+        },
+        {
+          "field": "pair.cd",
+          "reason_sha256": "e7ba297433aab446ae112d12694d50f0c597c3001d66c213cca50203c3ca14bd",
+          "reason_characters": 138,
+          "assessment": "grounded",
+          "proof_or_limit": "Checked against the exact source stem, choices, relevant arithmetic or rule, and supplied teaching where present."
+        }
+      ],
+      "audit_status": "skipped_after_solver_veto",
+      "audit_raw_diagnostics": null,
+      "audit_reasons_reviewed": []
+    }
+  ],
+  "runtime_reconstruction": {
+    "manifest": "docs/evidence/authored-feedback-scoped-qualification-20260922/runtime-reconstruction.json",
+    "manifest_sha256": "6d897a2095679496df2a12e922837b9c52404d5fdcc870225e8fb6432667e2e9",
+    "patch": "docs/evidence/authored-feedback-scoped-qualification-20260922/runtime-source.patch",
+    "patch_sha256": "121a1505671fbd30ede522eb0d1abc03466cc1567624abbb5d15e8054eff357e",
+    "git_base_revision": "8cad9d3c19b114c9fe2e0730e1445aacf4271c27",
+    "exact_runtime_pin_maps_match": true,
+    "matching_modules": 26,
+    "instruction": "Reuse this existing reconstruction with git apply --unidiff-zero; no duplicate patch is needed."
+  }
+}

@@ -1,0 +1,570 @@
+{
+  "plan_sha256": "8d8a35f2f4f93c69faa05a32216ae4115623c38ba63605b8012ba12b3ae0d71f",
+  "capture_sha256": "d6c70bc9590ba0f1c8e48b2c7beb5443970405f622db2257c127862085d0d653",
+  "replay_source_sha256": "bf475a9e09fb11c88e4bf3d15c9895e1d20706dd339b41c719f21a98f4e46204",
+  "network_calls": 0,
+  "all_frozen_source_pins_match": true,
+  "actual_production_requests_and_admission_replayed": true,
+  "recorded_provider_calls_replayed": 10,
+  "batch_reports": [
+    {
+      "batch": 0,
+      "recorded_status": "batch_failure",
+      "stages": [
+        {
+          "stage": "solver",
+          "count": 5,
+          "source_case_ids": [
+            "familiar_weighted_grade_defective",
+            "familiar_paint_defective",
+            "familiar_paint_sound",
+            "familiar_bus_sound",
+            "familiar_weighted_grade_sound"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": true,
+          "elapsed_seconds": 28.945859,
+          "usage": {
+            "inputTokens": 3784,
+            "outputTokens": 3202,
+            "totalTokens": 6986,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "stop_reason": "end_turn",
+          "provider_error": null,
+          "native_adapter_valid": true,
+          "choice_labels_matching_draft": 20,
+          "choice_labels_returned": 20,
+          "pair_labels_matching_draft": 30,
+          "pair_labels_returned": 30,
+          "label_mismatches": []
+        },
+        {
+          "stage": "audit",
+          "count": 5,
+          "source_case_ids": [
+            "familiar_weighted_grade_defective",
+            "familiar_paint_defective",
+            "familiar_paint_sound",
+            "familiar_bus_sound",
+            "familiar_weighted_grade_sound"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": false,
+          "elapsed_seconds": 100.151874,
+          "usage": null,
+          "stop_reason": null,
+          "provider_error": {
+            "type": "ReadTimeoutError",
+            "code": null,
+            "message": null,
+            "request_id": null,
+            "http_status": null
+          }
+        }
+      ],
+      "failed_batch_has_no_semantic_credit": true,
+      "replay_failure_type": "ProviderError"
+    },
+    {
+      "batch": 1,
+      "recorded_status": "complete",
+      "stages": [
+        {
+          "stage": "solver",
+          "count": 5,
+          "source_case_ids": [
+            "familiar_bus_defective",
+            "fresh_causal_evidence_defective",
+            "fresh_parallel_timing_sound",
+            "fresh_parallel_timing_defective",
+            "fresh_causal_evidence_sound"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": true,
+          "elapsed_seconds": 37.987834,
+          "usage": {
+            "inputTokens": 3981,
+            "outputTokens": 4007,
+            "totalTokens": 7988,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "stop_reason": "end_turn",
+          "provider_error": null,
+          "native_adapter_valid": true,
+          "choice_labels_matching_draft": 19,
+          "choice_labels_returned": 20,
+          "pair_labels_matching_draft": 30,
+          "pair_labels_returned": 30,
+          "label_mismatches": [
+            {
+              "case_id": "familiar_bus_defective",
+              "field": "choice",
+              "exact_choice": "26 rides",
+              "expected": "supported",
+              "observed": "refuted"
+            }
+          ]
+        },
+        {
+          "stage": "audit",
+          "count": 4,
+          "source_case_ids": [
+            "familiar_bus_defective",
+            "fresh_parallel_timing_sound",
+            "fresh_parallel_timing_defective",
+            "fresh_causal_evidence_sound"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": true,
+          "elapsed_seconds": 74.004708,
+          "usage": {
+            "inputTokens": 2487,
+            "outputTokens": 4481,
+            "totalTokens": 6968,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "stop_reason": "end_turn",
+          "provider_error": null,
+          "native_adapter_valid": true,
+          "label_mismatches": [
+            {
+              "case_id": "familiar_bus_defective",
+              "field": "task",
+              "expected": "unsupported",
+              "observed": "supported",
+              "expectation_uncertain": false
+            },
+            {
+              "case_id": "familiar_bus_defective",
+              "field": "answerChoice",
+              "expected": "multiple",
+              "observed": "b",
+              "expectation_uncertain": false
+            },
+            {
+              "case_id": "familiar_bus_defective",
+              "field": "feedback.a",
+              "expected": "uncertain",
+              "observed": "supported",
+              "expectation_uncertain": true
+            },
+            {
+              "case_id": "fresh_parallel_timing_defective",
+              "field": "task",
+              "expected": "supported",
+              "observed": "unsupported",
+              "expectation_uncertain": false
+            }
+          ],
+          "audit_items_assessed": 4,
+          "short_reasons_returned": 24
+        }
+      ],
+      "failed_batch_has_no_semantic_credit": false,
+      "replay_failure_type": null,
+      "exact_original_selected_hashes": [
+        "81878d8dc6f9047c20478bbb5827a1bfc74da669079561e09c2b53324915881a",
+        "e3db68fe9d9957479f402a7469bacdd191638ee52cec5ba729415476e8875941",
+        "2743280dc1f34069b3e40ea0c52d60f1f413d617904f8ecb458c66fc5d5117aa"
+      ],
+      "decisions": [
+        {
+          "case_id": "familiar_bus_defective",
+          "accepted": true,
+          "expected_accept": false,
+          "matches_gold": false
+        },
+        {
+          "case_id": "fresh_causal_evidence_defective",
+          "accepted": false,
+          "expected_accept": false,
+          "matches_gold": true
+        },
+        {
+          "case_id": "fresh_parallel_timing_sound",
+          "accepted": true,
+          "expected_accept": true,
+          "matches_gold": true
+        },
+        {
+          "case_id": "fresh_parallel_timing_defective",
+          "accepted": false,
+          "expected_accept": false,
+          "matches_gold": true
+        },
+        {
+          "case_id": "fresh_causal_evidence_sound",
+          "accepted": true,
+          "expected_accept": true,
+          "matches_gold": true
+        }
+      ]
+    },
+    {
+      "batch": 2,
+      "recorded_status": "complete",
+      "stages": [
+        {
+          "stage": "solver",
+          "count": 5,
+          "source_case_ids": [
+            "fresh_signed_square_sound",
+            "fresh_signed_square_defective",
+            "supplement_duplicate_wrong_value_defective",
+            "supplement_semicolon_defective",
+            "supplement_duplicate_wrong_value_sound"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": true,
+          "elapsed_seconds": 28.135934,
+          "usage": {
+            "inputTokens": 3697,
+            "outputTokens": 3135,
+            "totalTokens": 6832,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "stop_reason": "end_turn",
+          "provider_error": null,
+          "native_adapter_valid": true,
+          "choice_labels_matching_draft": 18,
+          "choice_labels_returned": 20,
+          "pair_labels_matching_draft": 30,
+          "pair_labels_returned": 30,
+          "label_mismatches": [
+            {
+              "case_id": "supplement_semicolon_defective",
+              "field": "choice",
+              "exact_choice": "The conference ended at noon, however; many attendees stayed for the workshop.",
+              "expected": "supported",
+              "observed": "refuted"
+            },
+            {
+              "case_id": "supplement_semicolon_defective",
+              "field": "choice",
+              "exact_choice": "The conference ended at noon; and many attendees stayed for the workshop.",
+              "expected": "uncertain",
+              "observed": "refuted"
+            }
+          ]
+        },
+        {
+          "stage": "audit",
+          "count": 3,
+          "source_case_ids": [
+            "fresh_signed_square_sound",
+            "supplement_semicolon_defective",
+            "supplement_duplicate_wrong_value_sound"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": true,
+          "elapsed_seconds": 50.491797,
+          "usage": {
+            "inputTokens": 2059,
+            "outputTokens": 2683,
+            "totalTokens": 4742,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "stop_reason": "end_turn",
+          "provider_error": null,
+          "native_adapter_valid": true,
+          "label_mismatches": [
+            {
+              "case_id": "supplement_semicolon_defective",
+              "field": "task",
+              "expected": "unsupported",
+              "observed": "supported",
+              "expectation_uncertain": false
+            },
+            {
+              "case_id": "supplement_semicolon_defective",
+              "field": "answerChoice",
+              "expected": "multiple",
+              "observed": "b",
+              "expectation_uncertain": false
+            },
+            {
+              "case_id": "supplement_semicolon_defective",
+              "field": "feedback.main",
+              "expected": "unsupported",
+              "observed": "supported",
+              "expectation_uncertain": false
+            },
+            {
+              "case_id": "supplement_semicolon_defective",
+              "field": "feedback.c",
+              "expected": "unsupported",
+              "observed": "supported",
+              "expectation_uncertain": false
+            },
+            {
+              "case_id": "supplement_semicolon_defective",
+              "field": "feedback.d",
+              "expected": "uncertain",
+              "observed": "supported",
+              "expectation_uncertain": true
+            }
+          ],
+          "audit_items_assessed": 3,
+          "short_reasons_returned": 18
+        }
+      ],
+      "failed_batch_has_no_semantic_credit": false,
+      "replay_failure_type": null,
+      "exact_original_selected_hashes": [
+        "707852b5b28f205edf6fb83558784e2c33035b92e17171cba9a8873bcf45034c",
+        "266eb655db29ef65e0c823e97f8ad11fa56b4a74f9c38378c42e37e12b0402aa",
+        "98b78749c08b5f43493b49e360b9ce4584aa05cde7466ad5063e252eb8f30acc"
+      ],
+      "decisions": [
+        {
+          "case_id": "fresh_signed_square_sound",
+          "accepted": true,
+          "expected_accept": true,
+          "matches_gold": true
+        },
+        {
+          "case_id": "fresh_signed_square_defective",
+          "accepted": false,
+          "expected_accept": false,
+          "matches_gold": true
+        },
+        {
+          "case_id": "supplement_duplicate_wrong_value_defective",
+          "accepted": false,
+          "expected_accept": false,
+          "matches_gold": true
+        },
+        {
+          "case_id": "supplement_semicolon_defective",
+          "accepted": true,
+          "expected_accept": false,
+          "matches_gold": false
+        },
+        {
+          "case_id": "supplement_duplicate_wrong_value_sound",
+          "accepted": true,
+          "expected_accept": true,
+          "matches_gold": true
+        }
+      ]
+    },
+    {
+      "batch": 3,
+      "recorded_status": "complete",
+      "stages": [
+        {
+          "stage": "solver",
+          "count": 5,
+          "source_case_ids": [
+            "supplement_decimal_representation_sound",
+            "supplement_semicolon_sound",
+            "supplement_decimal_representation_defective",
+            "rectangle_perimeter_complete",
+            "triangle_missing_perimeter"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": true,
+          "elapsed_seconds": 60.293591,
+          "usage": {
+            "inputTokens": 3845,
+            "outputTokens": 5926,
+            "totalTokens": 9771,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "stop_reason": "end_turn",
+          "provider_error": null,
+          "native_adapter_valid": true,
+          "choice_labels_matching_draft": 17,
+          "choice_labels_returned": 20,
+          "pair_labels_matching_draft": 30,
+          "pair_labels_returned": 30,
+          "label_mismatches": [
+            {
+              "case_id": "triangle_missing_perimeter",
+              "field": "choice",
+              "exact_choice": "6 cm",
+              "expected": "refuted",
+              "observed": "supported"
+            },
+            {
+              "case_id": "triangle_missing_perimeter",
+              "field": "choice",
+              "exact_choice": "8 cm",
+              "expected": "refuted",
+              "observed": "supported"
+            },
+            {
+              "case_id": "triangle_missing_perimeter",
+              "field": "choice",
+              "exact_choice": "10 cm",
+              "expected": "refuted",
+              "observed": "supported"
+            }
+          ]
+        },
+        {
+          "stage": "audit",
+          "count": 3,
+          "source_case_ids": [
+            "supplement_decimal_representation_sound",
+            "supplement_semicolon_sound",
+            "rectangle_perimeter_complete"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": true,
+          "elapsed_seconds": 19.514536,
+          "usage": {
+            "inputTokens": 2127,
+            "outputTokens": 1901,
+            "totalTokens": 4028,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "stop_reason": "end_turn",
+          "provider_error": null,
+          "native_adapter_valid": true,
+          "label_mismatches": [],
+          "audit_items_assessed": 3,
+          "short_reasons_returned": 18
+        }
+      ],
+      "failed_batch_has_no_semantic_credit": false,
+      "replay_failure_type": null,
+      "exact_original_selected_hashes": [
+        "18e8f38b5d955c7fa71343745bb46e46bda94e4e827e5c346af54d5d30d9fb28",
+        "ce977f680e94fd9b1a448e1e55cd841d5376d420d7e6404202ef55d47934d936",
+        "ccf69d0bf618bd74355c7cfaee92a5ed419c563ca0033d2e74de9d28f17b7228"
+      ],
+      "decisions": [
+        {
+          "case_id": "supplement_decimal_representation_sound",
+          "accepted": true,
+          "expected_accept": true,
+          "matches_gold": true
+        },
+        {
+          "case_id": "supplement_semicolon_sound",
+          "accepted": true,
+          "expected_accept": true,
+          "matches_gold": true
+        },
+        {
+          "case_id": "supplement_decimal_representation_defective",
+          "accepted": false,
+          "expected_accept": false,
+          "matches_gold": true
+        },
+        {
+          "case_id": "rectangle_perimeter_complete",
+          "accepted": true,
+          "expected_accept": true,
+          "matches_gold": true
+        },
+        {
+          "case_id": "triangle_missing_perimeter",
+          "accepted": false,
+          "expected_accept": false,
+          "matches_gold": true
+        }
+      ]
+    },
+    {
+      "batch": 4,
+      "recorded_status": "batch_failure",
+      "stages": [
+        {
+          "stage": "solver",
+          "count": 4,
+          "source_case_ids": [
+            "necessary_ticket_inference",
+            "text_identifier_leading_zero",
+            "even_integer_converse_error",
+            "editor_duplicate_discard_actions"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": true,
+          "elapsed_seconds": 64.996396,
+          "usage": {
+            "inputTokens": 3664,
+            "outputTokens": 3066,
+            "totalTokens": 6730,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "stop_reason": "end_turn",
+          "provider_error": null,
+          "native_adapter_valid": true,
+          "choice_labels_matching_draft": 16,
+          "choice_labels_returned": 16,
+          "pair_labels_matching_draft": 23,
+          "pair_labels_returned": 24,
+          "label_mismatches": [
+            {
+              "case_id": "editor_duplicate_discard_actions",
+              "field": "pair",
+              "exact_choices": [
+                "Discard all unsaved changes.",
+                "Rename the file."
+              ],
+              "expected": "distinct",
+              "observed": "equivalent"
+            }
+          ]
+        },
+        {
+          "stage": "audit",
+          "count": 2,
+          "source_case_ids": [
+            "necessary_ticket_inference",
+            "text_identifier_leading_zero"
+          ],
+          "actual_request_recreated_exactly": true,
+          "native_and_local_valid": false,
+          "elapsed_seconds": 40.727995,
+          "usage": {
+            "inputTokens": 1797,
+            "outputTokens": 1714,
+            "totalTokens": 3511,
+            "cacheReadInputTokens": 0,
+            "cacheWriteInputTokens": 0
+          },
+          "stop_reason": "end_turn",
+          "provider_error": null,
+          "native_adapter_valid": true,
+          "local_validation_failure_type": "AuthoredFeedbackAuditError",
+          "raw_native_valid_items_without_batch_credit": 2
+        }
+      ],
+      "failed_batch_has_no_semantic_credit": true,
+      "replay_failure_type": "AuthoredFeedbackAuditError"
+    }
+  ],
+  "original_denominators_unchanged": {
+    "batches_planned": 5,
+    "batches_attempted": 5,
+    "batches_completed": 3,
+    "items_planned": 24,
+    "items_scored": 15,
+    "items_in_failed_batches": 9,
+    "items_unattempted": 0,
+    "maximum_calls": 10,
+    "calls_dispatched": 10,
+    "sound_gold": 12,
+    "defective_gold": 12
+  },
+  "original_mechanical_results_unchanged": {
+    "admission_decisions_correct": 13,
+    "sound_retained": 7,
+    "defective_excluded": 6,
+    "primary_mechanical_pass": false,
+    "all_private_stage_reasons_require_independent_audit": true
+  },
+  "limits": "Independent short-reason/content audit remains separate. No missing assessment earns credit. This replay neither retries nor rescues failed trials."
+}

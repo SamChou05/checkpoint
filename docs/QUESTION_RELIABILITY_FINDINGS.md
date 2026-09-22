@@ -129,10 +129,31 @@ feedback claims endorsed, despite those items being rejected on other grounds.
 True but incomplete mathematical statements and interpretation-dependent
 exclusions are recorded separately from false claims. The controls have empty
 assignments/history, so this does not qualify nonempty context behavior, fresh
-content, or worker yield. The next measurements exercise the actual solver plus
-audit at the worker's maximum batch size of five and the complete fresh generation
-route within its unchanged 240-second, six-call job budget. Model agreement still
-does not prove truth.
+content, or worker yield.
+
+The [actual combined solver → audit trial](evidence/authored-feedback-combined-controls-20260922/RESULTS.md)
+then exercised all 24 unchanged controls in worker-sized batches of 5+5+5+5+4.
+All ten bounded stage calls ran, but only three batches completed: 15 items were
+scored and 13/24 planned admission decisions were correct. It retained seven sound
+originals and correctly excluded six defective originals with batch credit.
+The other nine items earned no credit: the five-survivor audit timed out at
+100.152 seconds, and a two-survivor audit returned a 253-character reason against
+the 240-character local limit, invalidating its entire batch. Native JSON shape
+alone did not ensure bounded usable output.
+
+Two defective originals were admitted unchanged. Both solver and audit added an
+unstated minimum requirement to the bus question, excluding a second valid ride
+count. Both also treated one conventional semicolon/however placement as the only
+valid placement, endorsing false learner feedback. Other explicit solver vetoes
+worked, including equivalent wrong numerical choices, multiple square roots and
+a converse-rule wrong key, but they did not prevent these shared interpretation
+errors. All ten production requests and actual admissions replay exactly without
+network access; unchanged learner hashes do not establish content correctness.
+
+The high-effort fresh-worker draft stayed unfrozen and unrun because this exact
+verifier configuration failed admission qualification. No fresh generation or
+worker-yield result is claimed, and no timeout extension or later measurement
+rescues these failures. Model agreement still does not prove truth.
 
 [Read-only OpenAI model access checks](evidence/final-content-audit-20260922/MANTLE_AVAILABILITY.md)
 confirmed that signed Mantle metadata requests work with the existing AWS

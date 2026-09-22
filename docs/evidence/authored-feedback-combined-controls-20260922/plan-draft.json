@@ -1,0 +1,417 @@
+{
+  "plan_state": "draft_unapproved",
+  "experiment": "Composed actual blind solver and immutable audit on24 unchanged known learner controls",
+  "runtime_source_sha256": {
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/authored_feedback_audit.py": "cdbb7c5d444618bbc9c749de97eef2353461d2d05bb8ba7828999602c560497e",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/authored_feedback_contract.py": "495416489ba13da1780c3cbbb2efaf72561bad9bbb9b4ed9363cc20789a81bc8",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/authored_feedback_verification.py": "076d1a953f11755ee12f5071afc0be8f3a5aa67215e309cfcb94d6ea294a7c60",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/complete_question_solution.py": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/generation_diagnostics.py": "944a3020cb3b173589aee066ac39066564a5c943c972bdcfc0115cdcb2e33f30",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/native_output_contracts.py": "c1863881bde41072d5e7a623c61c4446b47c22822316187a8c0abae7f81dbcc9",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_bank.py": "18c2c33229331e83144dea8d922dc99c4897672ef32f3fd7ac4b51bd0b264e44",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_generation.py": "86163083d65699584c204547d1ad31af740540cc7d1c5865a959a363a947c423",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_quality.py": "bb77b2b037c7181a4a954d6d0fb59b862c4891c7679fc3ea6421ac5f79917b1c",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_teaching.py": "fb1c1789cc94486bae3fe6601bb33aa67f0436362116fab97be346c69efe9301",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/question_verification.py": "ed6631b0eb2e8d3eb4d3a02ee4d54b9b57c7d178bbcb7f85af4d92451280a86f",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/request_contract.py": "11a019281801a7cc17537ec9de871b2e7feb2266b1bb00b5e716929850c4a649",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/smoke_test_backend.py": "142138457d80d4cd5531e95785a1f3e7bd33abd6b68169659fedf6e9b5c57399",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/verification_policy.py": "ec8f60fdf23e39ff737bdb88d2e12f1fb6e4b3a4f6706b23c947e25580b1683c",
+    "/tmp/checkpoint-authored-feedback-scope/backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d"
+  },
+  "harness_sha256": {
+    "PLAN.md": "7d6b0bdf8c8dc7b523a9310d0ce085a4bb6ff5e08e13976c04dbded7c572bed1",
+    "combined_probe.py": "183e68e5e61922207d7f318b3fa182596ed8e9ab526976e543e3e56f33adced2",
+    "test_combined_probe.py": "98534409cbb1d0d46a732371217ec9b960050d9a951c621eecd29571a7bd5062"
+  },
+  "control_sources_sha256": {
+    "docs/evidence/final-content-audit-20260922/adversarial-plan.json": "7c9fcc97e4259758c85a2b36f0d0d508e71d97040daa41dabb0b10918f0ce315",
+    "docs/evidence/authored-feedback-20260922/known-control-field-expectations-draft.json": "c86996a0720fe44ba999ee6bd938c3768829fd5f966da6c836ca92677569bce3"
+  },
+  "dependencies": {
+    "python": "3.12.11",
+    "boto3": "1.43.91",
+    "botocore": "1.43.91",
+    "jsonschema_offline_only": "4.25.1"
+  },
+  "environment": {
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "QUESTION_FEEDBACK_CONTRACT": "authored_feedback",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "16000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "100",
+    "GENERATION_ATTEMPTS": "1",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+    "BEDROCK_TEMPERATURE": "0.2"
+  },
+  "batches": [
+    {
+      "batch": 0,
+      "scope": {
+        "goal": {
+          "title": "Educational questions using stated facts and rules",
+          "questionDirective": "Use each question's exact stated facts and requested result."
+        },
+        "skillMap": null,
+        "sourceDocuments": []
+      },
+      "controls": [
+        {
+          "case_id": "familiar_weighted_grade_defective",
+          "source_case_index": 0,
+          "source_original_batch": 0,
+          "learner_sha256": "ddab3a1601897327f7021beb4eb12398e560d7c5f10175f4a82932280d79e12d",
+          "whole_gold_sha256": "d217748a05c9cf65545f1c2a20e32823583a160ee6323f9cb21937735c85fdab",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "familiar_paint_defective",
+          "source_case_index": 1,
+          "source_original_batch": 0,
+          "learner_sha256": "99b9397bacebdc0d6fed449cbe595b1cf21ee8ad736eb384f807680c9d6d103d",
+          "whole_gold_sha256": "4583be3b76a722ec52debc8dc4edc8ac73442120d114be2fb165603a0c510a83",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "familiar_paint_sound",
+          "source_case_index": 2,
+          "source_original_batch": 0,
+          "learner_sha256": "2024e8cd039b70a27b4920bf5072f84937629eba828b805a9be0304195b810ae",
+          "whole_gold_sha256": "dd1d266d754f25332c08fa13185942b2e854d9d5571a04aeba2c8ccbd8d16568",
+          "required_gate_decision": "accept"
+        },
+        {
+          "case_id": "familiar_bus_sound",
+          "source_case_index": 3,
+          "source_original_batch": 0,
+          "learner_sha256": "f4625554acd27e5c40d6e3df774a283c991defa42c3b5c15ef2417c6af7b9902",
+          "whole_gold_sha256": "eff0ce3e0aa7c33a41260eb1899cace9cca39e482aafc0e525512912683b04f2",
+          "required_gate_decision": "accept"
+        },
+        {
+          "case_id": "familiar_weighted_grade_sound",
+          "source_case_index": 4,
+          "source_original_batch": 0,
+          "learner_sha256": "833b12b19a422a112be6c4c4da8cbaa671f48aa89428f814898ea079989ae27c",
+          "whole_gold_sha256": "a092d144ac8a690d139ad59a31fe1b71818cf58c7d22819d6d90361908c01af9",
+          "required_gate_decision": "accept"
+        }
+      ]
+    },
+    {
+      "batch": 1,
+      "scope": {
+        "goal": {
+          "title": "Educational questions using stated facts and rules",
+          "questionDirective": "Use each question's exact stated facts and requested result."
+        },
+        "skillMap": null,
+        "sourceDocuments": []
+      },
+      "controls": [
+        {
+          "case_id": "familiar_bus_defective",
+          "source_case_index": 5,
+          "source_original_batch": 0,
+          "learner_sha256": "81878d8dc6f9047c20478bbb5827a1bfc74da669079561e09c2b53324915881a",
+          "whole_gold_sha256": "a348ba10c2449fd28c1baf344979960e6093fadf3e8dc16efaa797d11d2babfd",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "fresh_causal_evidence_defective",
+          "source_case_index": 6,
+          "source_original_batch": 1,
+          "learner_sha256": "d479051714e340874c20208769f41909a125a64a15cb20f001f9405ed8e70142",
+          "whole_gold_sha256": "e6019a27adbb6fb39ea3f596a23c3968cf81c9788c986ffbfb761e2ab722d37b",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "fresh_parallel_timing_sound",
+          "source_case_index": 7,
+          "source_original_batch": 1,
+          "learner_sha256": "e3db68fe9d9957479f402a7469bacdd191638ee52cec5ba729415476e8875941",
+          "whole_gold_sha256": "e7ed9576b033cfaa09e2f768e3a6740c2d4afd90ec1a7438c6686b4e6f6d7ed4",
+          "required_gate_decision": "accept"
+        },
+        {
+          "case_id": "fresh_parallel_timing_defective",
+          "source_case_index": 8,
+          "source_original_batch": 1,
+          "learner_sha256": "44a51f21b04b8183d803cd4ffa30b474bc22d10fb1615adfd087510923000369",
+          "whole_gold_sha256": "db8177d35997a5b76f5b5954e60d56571a989f8aff03ea574c40a631f9a2196a",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "fresh_causal_evidence_sound",
+          "source_case_index": 9,
+          "source_original_batch": 1,
+          "learner_sha256": "2743280dc1f34069b3e40ea0c52d60f1f413d617904f8ecb458c66fc5d5117aa",
+          "whole_gold_sha256": "a5e90e44abe04877bf18cccb8adcf980b3aa1c6f66af65b6ad4ab90c08051dbb",
+          "required_gate_decision": "accept"
+        }
+      ]
+    },
+    {
+      "batch": 2,
+      "scope": {
+        "goal": {
+          "title": "Educational questions using stated facts and rules",
+          "questionDirective": "Use each question's exact stated facts and requested result."
+        },
+        "skillMap": null,
+        "sourceDocuments": []
+      },
+      "controls": [
+        {
+          "case_id": "fresh_signed_square_sound",
+          "source_case_index": 10,
+          "source_original_batch": 1,
+          "learner_sha256": "707852b5b28f205edf6fb83558784e2c33035b92e17171cba9a8873bcf45034c",
+          "whole_gold_sha256": "0a82da01cc06ee9d5b567895d942e84c79e1e5f1902fca283a623fca5c2b1959",
+          "required_gate_decision": "accept"
+        },
+        {
+          "case_id": "fresh_signed_square_defective",
+          "source_case_index": 11,
+          "source_original_batch": 1,
+          "learner_sha256": "03cb3d2ec33ed01a1b542dd1d81b92e9c4d92f83f8d5bb129bd45ada877a7faa",
+          "whole_gold_sha256": "59a45d3af639beb0cb988c3b9e8f15f5c45d88ad4b45b26c9f853253599914ca",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "supplement_duplicate_wrong_value_defective",
+          "source_case_index": 12,
+          "source_original_batch": 2,
+          "learner_sha256": "9a6d3ad67bb80670076b25d8796e5927972cd81c0487421d21a785a5e536fa1e",
+          "whole_gold_sha256": "903246ef07c8b910d0b2e52d081d8549639069acdd37d1f9e5ad4054d6d996b9",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "supplement_semicolon_defective",
+          "source_case_index": 13,
+          "source_original_batch": 2,
+          "learner_sha256": "266eb655db29ef65e0c823e97f8ad11fa56b4a74f9c38378c42e37e12b0402aa",
+          "whole_gold_sha256": "1a42736d1bdbf32c857a39a59b5558b2d2e6aea3fa214b24744b2f65baf50c64",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "supplement_duplicate_wrong_value_sound",
+          "source_case_index": 14,
+          "source_original_batch": 2,
+          "learner_sha256": "98b78749c08b5f43493b49e360b9ce4584aa05cde7466ad5063e252eb8f30acc",
+          "whole_gold_sha256": "8d9091ae95498cf0285fc922b03c9db406fcf7543f0aada2ff9c1f43533f4f80",
+          "required_gate_decision": "accept"
+        }
+      ]
+    },
+    {
+      "batch": 3,
+      "scope": {
+        "goal": {
+          "title": "Educational questions using stated facts and rules",
+          "questionDirective": "Use each question's exact stated facts and requested result."
+        },
+        "skillMap": null,
+        "sourceDocuments": []
+      },
+      "controls": [
+        {
+          "case_id": "supplement_decimal_representation_sound",
+          "source_case_index": 15,
+          "source_original_batch": 2,
+          "learner_sha256": "18e8f38b5d955c7fa71343745bb46e46bda94e4e827e5c346af54d5d30d9fb28",
+          "whole_gold_sha256": "3259d6d1b33dd24b682c12305025ac0ae060fe4f322e22bf183eaaca7f1e3ff1",
+          "required_gate_decision": "accept"
+        },
+        {
+          "case_id": "supplement_semicolon_sound",
+          "source_case_index": 16,
+          "source_original_batch": 2,
+          "learner_sha256": "ce977f680e94fd9b1a448e1e55cd841d5376d420d7e6404202ef55d47934d936",
+          "whole_gold_sha256": "b67829496fed67ef0279f2fa50b6dad7b49cd9218428d9fffe834463ccd3eec7",
+          "required_gate_decision": "accept"
+        },
+        {
+          "case_id": "supplement_decimal_representation_defective",
+          "source_case_index": 17,
+          "source_original_batch": 2,
+          "learner_sha256": "9b18c49f30302fd80ce00aa0055ae8ce5c24b3b423dca984616062f40a3a5895",
+          "whole_gold_sha256": "7c7dfec6d7b696031116bff7f17e45a358ecd9ec380d351d093c109f6b894b3c",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "rectangle_perimeter_complete",
+          "source_case_index": 18,
+          "source_original_batch": 3,
+          "learner_sha256": "ccf69d0bf618bd74355c7cfaee92a5ed419c563ca0033d2e74de9d28f17b7228",
+          "whole_gold_sha256": "64c902ddaff301ceb8d7485bbcca8e5c97bd8abcb2097d5648b071955444415f",
+          "required_gate_decision": "accept"
+        },
+        {
+          "case_id": "triangle_missing_perimeter",
+          "source_case_index": 19,
+          "source_original_batch": 3,
+          "learner_sha256": "cda77b8cbceee01a37b6c4ac5e55c06ae8e0196da46e13445517c8eef6b5aa60",
+          "whole_gold_sha256": "08cfbbc3803376e621f2b825bd7d7457530c2c2597553c3adff7a984b2e9d667",
+          "required_gate_decision": "reject"
+        }
+      ]
+    },
+    {
+      "batch": 4,
+      "scope": {
+        "goal": {
+          "title": "Educational questions using stated facts and rules",
+          "questionDirective": "Use each question's exact stated facts and requested result."
+        },
+        "skillMap": null,
+        "sourceDocuments": []
+      },
+      "controls": [
+        {
+          "case_id": "necessary_ticket_inference",
+          "source_case_index": 20,
+          "source_original_batch": 3,
+          "learner_sha256": "425ce3b969be8bed2b5ee1bd6cb33836a511d0aa785a0bd9dc6365078c7d58c2",
+          "whole_gold_sha256": "fa1d25b16dea1a7ab173418b530e4b6ac9ea38b96ded1c1102826568087645a5",
+          "required_gate_decision": "accept"
+        },
+        {
+          "case_id": "text_identifier_leading_zero",
+          "source_case_index": 21,
+          "source_original_batch": 3,
+          "learner_sha256": "581b451a18e9220921ebef241bfbae0816ae068021dd3f99baf28b58f4d17c83",
+          "whole_gold_sha256": "e8f80cad6013d1e86ad437fae27bb33e7dd28648cba3ca59f2ba076db7037d2d",
+          "required_gate_decision": "accept"
+        },
+        {
+          "case_id": "even_integer_converse_error",
+          "source_case_index": 22,
+          "source_original_batch": 3,
+          "learner_sha256": "d58de264a0d0bcf8ffe3f89fa97fcd4f519314612fbe285c1aa479cd93a7c383",
+          "whole_gold_sha256": "9b489ed6398b79eb45af5cf6621d0717aebf2945d27c72189d4f6d3dbf6925e3",
+          "required_gate_decision": "reject"
+        },
+        {
+          "case_id": "editor_duplicate_discard_actions",
+          "source_case_index": 23,
+          "source_original_batch": 3,
+          "learner_sha256": "cceddf0d71484c414ce0264906105620b0176641df3812e7a572d1d953609c73",
+          "whole_gold_sha256": "c476d2f4a6c8e8817f2dca50b5e181a5881df562cefe63756963b1cb6dcb17ad",
+          "required_gate_decision": "reject"
+        }
+      ]
+    }
+  ],
+  "scope_representation": {
+    "original": {
+      "goal": {
+        "title": "Educational questions using stated facts and rules",
+        "questionDirective": "Use each question's exact stated facts and requested result."
+      },
+      "skillMap": [],
+      "sourceDocuments": []
+    },
+    "original_sha256": "6d5f44c5e05aed873a638d7bed3a84e19a88aad2f77e191e21d5e83f1a3ca8c8",
+    "runtime": {
+      "goal": {
+        "title": "Educational questions using stated facts and rules",
+        "questionDirective": "Use each question's exact stated facts and requested result."
+      },
+      "skillMap": null,
+      "sourceDocuments": []
+    },
+    "runtime_sha256": "c21733be582b9640f4930eecacffadfb88777a142d28e65918b8f1d760e4af18",
+    "sole_transformation": "skillMap: [] becomes null, the actual runtime representation of no skill map; all goal/source text is unchanged."
+  },
+  "contracts": {
+    "solver_counts": {
+      "4": {
+        "name": "complete_choice_solver_v5_n4",
+        "version": "5",
+        "sha256": "e63719b2f95df1a36bd9f781cd1488462c7eef92ae3b6360ff3c8172595a883b"
+      },
+      "5": {
+        "name": "complete_choice_solver_v5_n5",
+        "version": "5",
+        "sha256": "0949077dd2f0202a8943462ef810bc305b4bb382d2abec366853e9f6db52447f"
+      }
+    },
+    "audit_survivor_counts": {
+      "1": {
+        "name": "experimental_authored_feedback_audit_v3_n1",
+        "version": "3",
+        "sha256": "542ed718864607c3f4a5926626b740b8c0ccd85372b827564e04939d05dfb666"
+      },
+      "2": {
+        "name": "experimental_authored_feedback_audit_v3_n2",
+        "version": "3",
+        "sha256": "2dd7f9b2af7cd23418fbcfa07888ab67b27ef2e94537508c815e1ead0a638751"
+      },
+      "3": {
+        "name": "experimental_authored_feedback_audit_v3_n3",
+        "version": "3",
+        "sha256": "334d6a8ad621ac2859f264cbdc1b02fcf19df5c8ecdc9eb86c3b27c6e9d0f254"
+      },
+      "4": {
+        "name": "experimental_authored_feedback_audit_v3_n4",
+        "version": "3",
+        "sha256": "c3d270571141c21ef561f9a6c69d49441bda48036de002129c511d2bc0e56512"
+      },
+      "5": {
+        "name": "experimental_authored_feedback_audit_v3_n5",
+        "version": "3",
+        "sha256": "6b53136b5fc9236783bdd20c38d56aa41867b11d71624d8b6a15f764c7347b80"
+      }
+    }
+  },
+  "limits": {
+    "fixed_batches": 5,
+    "originals_per_batch": [
+      5,
+      5,
+      5,
+      5,
+      4
+    ],
+    "maximum_provider_calls_per_batch": 2,
+    "maximum_provider_calls_total": 10,
+    "context_milliseconds_per_batch": 240000,
+    "connect_timeout_seconds": 3,
+    "read_timeout_ceiling_seconds": 100,
+    "sdk_total_max_attempts": 1
+  },
+  "primary_criteria": {
+    "all_five_batches_complete_normally": true,
+    "all24_admission_decisions_correct": true,
+    "sound_retained": 12,
+    "defective_excluded": 12,
+    "all_selected_learner_fields_exactly_original": true,
+    "each_dispatched_stage_end_turn": true,
+    "all_actual_transport_and_batch_deadlines_met": true
+  },
+  "difficulty_policy": "minimumDifficulty1 and no adaptive targets; all valid1..5 assessments pass content gating. Difficulty is diagnostic, not a failure rescue.",
+  "procedure": "Treat originals as frozen trusted author outputs without author inference. Call actual verify_authored_feedback with production _generate_with_bedrock solver/audit closures. Keep actual _bedrock_client and ProviderCallBudget; recording wrapper observes their SDK calls. Dense audit survivors and zero-survivor audit skipping are determined only by the actual runtime. No retry or top-up.",
+  "failure_policy": "Ordinary provider, malformed model output, stop-reason or deadline failure ends only that fixed batch; continue the next independent batch without replacement. Such batches earn no semantic credit. Global credentials/access/setup or source/config/settings/binding/content/budget-integrity failures stop all remaining work. Recheck every runtime, harness and source-artifact pin before and after every actual dispatch. Never resume an existing capture.",
+  "diagnostics": "Preserve every dispatched stage request, safe response JSON, adapted rows, task/choice/pair/feedback labels, short reasons, difficulty, usage if available, actual SDK timeouts and240s remaining time. No provider reasoning text/signature. No missing audit field is counted correct merely because the solver vetoed its item.",
+  "claim_limits": "Repeated known controls regrouped in original source order5+5+5+5+4 to match worker maximum5. Original scope is identical for every source batch. Only empty skillMap [] is represented as null for actual runtime compatibility, prospectively and identically in both stages. Regrouping changes companion context and is not a causal comparison. This combined test cannot rescue prior standalone failures, qualify fresh author generation or worker yield, establish causal architecture improvement or promise deterministic semantic correctness. No question-bank writes or deployment. Full original gold is referenced by hash rather than duplicated."
+}
