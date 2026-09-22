@@ -15,7 +15,7 @@ from question_teaching import AuthoredTeachingFormatError, freeze_authored_quest
 from service_errors import DurableProviderCallBudgetExceededError, ProviderError, ServiceConfigurationError
 from request_contract import _normalize_request
 from test_mixed_quantitative_pipeline import prose_row
-from test_native_pipeline import MODEL, ScriptedNativeClient, solver_map, solver_record, task_data
+from test_native_pipeline import MODEL, ScriptedNativeClient, authored_issue_flags, solver_map, solver_record, task_data
 from test_quantitative_authoring import exact_task, quantitative_row, scalar_task
 
 
@@ -71,7 +71,7 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
                     self.assertNotIn(forbidden, item)
                 self.assertEqual(item["explanation"].encode(), question["explanation"].encode())
                 record = {"valid": True, "answer": question["expectedAnswer"], "difficulty": 2,
-                          "explanationSupport": "supported", "issues": []}
+                          "explanationSupport": "supported", "issueFlags": authored_issue_flags()}
                 if review_change:
                     review_change(record, item)
                 reviews[str(item["index"])] = record
@@ -80,14 +80,22 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
         return ScriptedNativeClient(
             (MIXED_AUTHOR_CONTRACT, {"questions": rows}),
             (f"complete_choice_solver_v5_n{solver_count}", solve),
-            (f"authored_solution_reviewer_v2_n{solver_count - len(solver_reject)}", audit),
+            (f"authored_solution_reviewer_v3_n{solver_count - len(solver_reject)}", audit),
         )
 
     def run_pipeline(self, rows, **kwargs):
         client = self.client(rows, **kwargs)
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
-        result = generation._generate_sanitized_questions(self.request(len(rows)), client, budget)
+        self.last_metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
+        result = generation._generate_sanitized_questions(self.request(len(rows)), client, budget, self.last_metrics)
+        self.assertEqual(self.last_metrics["ProviderCalls"], budget.calls)
+        self.assertEqual(len(self.last_metrics["ProviderObservations"]), len(client.calls))
+        for observation, call in zip(self.last_metrics["ProviderObservations"], client.calls, strict=True):
+            schema = call["outputConfig"]["textFormat"]["structure"]["jsonSchema"]
+            self.assertEqual(observation["structuredOutput"]["name"], schema["name"])
+            if schema["name"].startswith("authored_solution_reviewer_v3_n"):
+                self.assertEqual(observation["structuredOutput"]["version"], "3")
         self.assertEqual(reserve.call_count, budget.calls)
         return result, client, budget
 
@@ -177,7 +185,7 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
         for quantitative in (False, True):
             row = quantitative_row() if quantitative else prose_row(self.prose)
             for change in ({"valid": False}, {"answer": ""}, {"difficulty": 1}, {"explanationSupport": "unsupported"},
-                           {"explanationSupport": "uncertain"}, {"issues": ["The supplied objective does not fit."]}):
+                           {"explanationSupport": "uncertain"}, *({"issueFlags": authored_issue_flags(flag)} for flag in authored_issue_flags())):
                 def veto(record, _item):
                     record.update(change)
                     if "answer" in change:
@@ -186,10 +194,23 @@ class MixedAuthoredSolutionPipelineTests(unittest.TestCase):
                     result, _, budget = self.run_pipeline([row], review_change=veto)
                     self.assertEqual(result, [])
                     self.assertEqual(budget.calls, 3)
+                    if "issueFlags" in change:
+                        self.assertEqual(self.last_metrics["QuestionQuality"]["review"]["reported_issues"], 1)
             def replace_feedback(record, _item):
                 record["explanation"] = "An unauthorized replacement from the final auditor."
             with self.assertRaises(ProviderError):
                 self.run_pipeline([row], review_change=replace_feedback)
+
+    def test_malformed_flags_fail_the_native_stage_with_diagnostics(self):
+        for flags in ({}, {**authored_issue_flags(), "novelty": "false"}, {**authored_issue_flags(), "extra": False}):
+            for quantitative in (False, True):
+                row = quantitative_row() if quantitative else prose_row(self.prose)
+                with self.subTest(flags=flags, quantitative=quantitative), self.assertRaises(ProviderError):
+                    self.run_pipeline([row], review_change=lambda record, _item: record.update(issueFlags=flags))
+                self.assertEqual(self.last_metrics["ProviderCalls"], 3)
+                self.assertEqual(self.last_metrics["QuestionQuality"]["provider"]["native_contract_invalid"], 1)
+                self.assertEqual(self.last_metrics["ProviderObservations"][-1]["structuredOutput"]["name"],
+                                 "authored_solution_reviewer_v3_n1")
 
     def test_every_pair_veto_stops_both_variants_before_audit(self):
         for relation in ("equivalent", "uncertain"):

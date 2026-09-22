@@ -14,7 +14,7 @@ from native_output_contracts import (
     NativeContract,
     ReviewerSlotContract,
     SolverSlotContract,
-    AuthoredSolutionReviewContract,
+    AuthoredSolutionFlagReviewContract,
     adapt_native_response,
     contract_metadata,
     ensure_supported_model,
@@ -286,7 +286,7 @@ def _generate_sanitized_questions(
                     call_budget=call_budget,
                     request_metrics=request_metrics,
                     contract=(
-                        (AuthoredSolutionReviewContract(count) if count is not None else "authored_solution_reviewer_v1")
+                        (AuthoredSolutionFlagReviewContract(count) if count is not None else "authored_solution_reviewer_v1")
                         if feedback_contract == "authored_solution"
                         else (ReviewerSlotContract(count) if count is not None else "default_reviewer_v1")
                     ),

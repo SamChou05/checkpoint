@@ -15,7 +15,7 @@ from question_teaching import AuthoredTeachingFormatError, freeze_authored_quest
 from question_verification import verify_questions
 from request_contract import _normalize_request
 from service_errors import ProviderError, ServiceConfigurationError
-from test_native_pipeline import AUTHOR, MODEL, ScriptedNativeClient, author_payload, solver_map, solver_record, task_data
+from test_native_pipeline import AUTHOR, MODEL, ScriptedNativeClient, author_payload, authored_issue_flags, solver_map, solver_record, task_data
 from verification_policy import AUTHORED_PAIR_VERIFICATION_POLICY_REVISION, VERIFICATION_POLICY_REVISION
 
 
@@ -72,7 +72,8 @@ class NativeAuthoredSolutionPairTests(unittest.TestCase):
                 self.assertNotIn("difficulty", item)
                 self.assertNotIn("choiceExplanations", item)
                 self.assertEqual(item["explanation"].encode(), original["explanation"].encode())
-                rows[str(item["index"])] = audit(original)
+                rows[str(item["index"])] = {key: value for key, value in audit(original).items() if key != "issues"}
+                rows[str(item["index"])]["issueFlags"] = authored_issue_flags()
             response = {"reviews": rows}
             return review_change(response) if review_change else response
 
@@ -80,7 +81,7 @@ class NativeAuthoredSolutionPairTests(unittest.TestCase):
         return ScriptedNativeClient(
             (AUTHOR, author_payload(*questions)),
             (native.SolverSlotContract(count).name, solve),
-            (native.AuthoredSolutionReviewContract(count - len(rejected)).name, review),
+            (native.AuthoredSolutionFlagReviewContract(count - len(rejected)).name, review),
         )
 
     def run_pipeline(self, questions=None, **kwargs):
@@ -88,7 +89,15 @@ class NativeAuthoredSolutionPairTests(unittest.TestCase):
         client = self.client(questions, **kwargs)
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
-        result = generation._generate_sanitized_questions(self.request(len(questions)), client, budget)
+        self.last_metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
+        result = generation._generate_sanitized_questions(self.request(len(questions)), client, budget, self.last_metrics)
+        self.assertEqual(self.last_metrics["ProviderCalls"], budget.calls)
+        self.assertEqual(len(self.last_metrics["ProviderObservations"]), len(client.calls))
+        for observation, call in zip(self.last_metrics["ProviderObservations"], client.calls, strict=True):
+            schema = call["outputConfig"]["textFormat"]["structure"]["jsonSchema"]
+            self.assertEqual(observation["structuredOutput"]["name"], schema["name"])
+            if schema["name"].startswith("authored_solution_reviewer_v3_n"):
+                self.assertEqual(observation["structuredOutput"]["version"], "3")
         self.assertEqual(reserve.call_count, budget.calls)
         return result, client, budget
 
@@ -151,7 +160,7 @@ class NativeAuthoredSolutionPairTests(unittest.TestCase):
     def test_main_audit_support_key_difficulty_issues_and_verdict_still_veto(self):
         for change in ({"valid": False}, {"answer": self.questions[0]["choices"][1]}, {"difficulty": 2},
                        {"explanationSupport": "unsupported"}, {"explanationSupport": "uncertain"},
-                       {"issues": ["The explanation assumes a missing condition."]}):
+                       *({"issueFlags": authored_issue_flags(flag)} for flag in authored_issue_flags())):
             def amend(payload):
                 payload["reviews"]["0"].update(change)
                 return payload
@@ -159,6 +168,8 @@ class NativeAuthoredSolutionPairTests(unittest.TestCase):
                 result, _, budget = self.run_pipeline(review_change=amend)
                 self.assertEqual(result, [])
                 self.assertEqual(budget.calls, 3)
+                if "issueFlags" in change:
+                    self.assertEqual(self.last_metrics["QuestionQuality"]["review"]["reported_issues"], 1)
 
     def test_replacement_teaching_and_forged_provenance_fail_whole_native_audit(self):
         for field in ("explanation", "choiceExplanations", "verificationPolicyRevision"):

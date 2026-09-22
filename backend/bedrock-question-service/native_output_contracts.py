@@ -83,8 +83,31 @@ class AuthoredSolutionReviewContract:
         return f"authored_solution_reviewer_v2_n{self.count}"
 
 
-_COUNT_BOUND_CONTRACTS = (ReviewerSlotContract, SolverSlotContract, AuthoredSolutionReviewContract)
-NativeContract = Contract | ReviewerSlotContract | SolverSlotContract | AuthoredSolutionReviewContract
+@dataclass(frozen=True)
+class AuthoredSolutionFlagReviewContract:
+    """Bound immutable audits with explicit defect flags, not free-text issues."""
+
+    count: int
+
+    def __post_init__(self) -> None:
+        if type(self.count) is not int or not 1 <= self.count <= MAX_REVIEW_BATCH_COUNT:
+            raise ServiceConfigurationError("Native authored review count must be an integer from 1 through 40.")
+
+    @property
+    def name(self) -> str:
+        return f"authored_solution_reviewer_v3_n{self.count}"
+
+
+AUTHORED_ISSUE_FLAGS = (
+    "answer_or_ambiguity", "explanation", "distractors", "scope_assignment", "novelty", "other",
+)
+
+_COUNT_BOUND_CONTRACTS = (
+    ReviewerSlotContract, SolverSlotContract, AuthoredSolutionReviewContract, AuthoredSolutionFlagReviewContract,
+)
+NativeContract = (
+    Contract | ReviewerSlotContract | SolverSlotContract | AuthoredSolutionReviewContract | AuthoredSolutionFlagReviewContract
+)
 
 _STRING = {"type": "string"}
 _INTEGER = {"type": "integer"}
@@ -226,6 +249,16 @@ def output_mode() -> str:
 
 
 def _contract_schema(contract: NativeContract) -> dict[str, Any]:
+    if isinstance(contract, AuthoredSolutionFlagReviewContract):
+        row = _object({
+            "valid": _BOOLEAN, "answer": _STRING,
+            "difficulty": {"type": "integer", "enum": [1, 2, 3, 4, 5]},
+            "explanationSupport": {"type": "string", "enum": ["supported", "unsupported", "uncertain"]},
+            "issueFlags": _object({flag: _BOOLEAN for flag in AUTHORED_ISSUE_FLAGS}),
+        })
+        return _object({"reviews": _object({
+            str(index): copy.deepcopy(row) for index in range(contract.count)
+        })})
     if isinstance(contract, AuthoredSolutionReviewContract):
         legacy = json.loads(json.dumps(_SCHEMAS["authored_solution_reviewer_v1"], sort_keys=True))
         row = legacy["properties"]["reviews"]["items"]
@@ -283,10 +316,10 @@ def native_output_config(contract: NativeContract) -> dict[str, Any]:
                         separators=(",", ":"))
     if isinstance(contract, SolverSlotContract):
         schema = json.dumps(_solver_slot_transport_schema(contract), separators=(",", ":"))
-    if isinstance(contract, AuthoredSolutionReviewContract):
+    if isinstance(contract, (AuthoredSolutionReviewContract, AuthoredSolutionFlagReviewContract)):
         # Share the closed row definition so larger batches do not multiply the
         # provider grammar. The local validator uses the exact expanded schema.
-        row = _contract_schema(AuthoredSolutionReviewContract(1))["properties"]["reviews"]["properties"]["0"]
+        row = _contract_schema(type(contract)(1))["properties"]["reviews"]["properties"]["0"]
         shared = _object({"reviews": _object({
             str(index): {"$ref": "#/$defs/review"} for index in range(contract.count)
         })})
@@ -323,7 +356,8 @@ def contract_metadata(contract: NativeContract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
     return {"name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract,
-            "version": ("2" if isinstance(contract, AuthoredSolutionReviewContract) else
+            "version": ("3" if isinstance(contract, AuthoredSolutionFlagReviewContract) else
+                        "2" if isinstance(contract, AuthoredSolutionReviewContract) else
                         "5" if isinstance(contract, SolverSlotContract) else "3"
                         if isinstance(contract, ReviewerSlotContract) else contract.rsplit("_v", 1)[1]),
             "sha256": hashlib.sha256(schema.encode()).hexdigest()}
@@ -337,7 +371,54 @@ def ensure_supported_model(model_id: str) -> None:
         )
 
 
+_LEGACY_AUTHORED_REVIEW_OUTPUT = """Report material defects or unresolved
+obstacles as concise issues. Aim for at most 240 characters per issue; the hard
+limit is 600, with at most 8 issues. Do not add issues merely to praise an item.
+
+Return only {"reviews":[{"index":0,"valid":true,"answer":"exact offered choice",
+"difficulty":3,"explanationSupport":"supported|unsupported|uncertain","issues":[]}]}.
+Return exactly one record for every supplied index, with those exact fields and
+no others. Never rewrite the stem, choices or explanation, produce replacement
+teaching, or assign verification metadata. This is a fallible review declaration,
+not a correctness certificate. The application rejects any unsupported/uncertain
+explanation or reported issue even if valid is true."""
+
+
+def _authored_flag_review_prompt(system_prompt: str, contract: AuthoredSolutionFlagReviewContract) -> str:
+    row = {"valid": True, "answer": "exact offered choice", "difficulty": 3,
+           "explanationSupport": "supported", "issueFlags": dict.fromkeys(AUTHORED_ISSUE_FLAGS, False)}
+    example = json.dumps({"reviews": {str(index): row for index in range(contract.count)}}, separators=(",", ":"))
+    instructions = (
+        "Report material defects or unresolved obstacles using issueFlags. Set each flag to true "
+        "when its category applies: answer_or_ambiguity for an incorrect, nonunique or unresolved answer; "
+        "explanation for unsupported or unresolved teaching; distractors for inadequate alternatives; "
+        "scope_assignment for goal, source, topic, assigned skill or objective mismatch; novelty for "
+        "an exact or cosmetic repeat; other for any remaining material defect or unresolved obstacle. "
+        "Set a flag to false only when that category has no defect or unresolved obstacle. "
+        "Multiple flags may be true. Do not flag an item merely to praise it. "
+        "Return valid:true only when the item fits its supplied topic, assigned skill and objective "
+        "within the goal and provided source scope. Do not invent an assignment or missing premises. "
+        "Compare the supplied existingQuestions descriptors: reject exact or cosmetic repeats, "
+        "while allowing a fresh application of the same objective. Never rewrite an item to fix it.\n\n"
+        f"NATIVE IMMUTABLE AUDIT ({contract.name}). Return only this JSON shape: {example}.\n"
+        "Return exactly the shown required reviews keys, each bound to the supplied item with that "
+        "integer index, including rejected items. Never add an unknown key or an index field inside "
+        "a review. Keep exactly valid, answer, difficulty, explanationSupport and issueFlags; include "
+        "all six boolean issueFlags and no other fields. Use the rubric to choose an integer difficulty "
+        "from 1 through 5. explanationSupport must be supported, unsupported or uncertain. The example "
+        "illustrates shape, not the verdicts for the supplied items. Never rewrite the stem, choices "
+        "or explanation, produce replacement teaching, or assign verification metadata. This is a "
+        "fallible review declaration, not a correctness certificate. The application rejects any "
+        "unsupported/uncertain explanation or true issue flag even if valid is true."
+    )
+    if system_prompt.count(_LEGACY_AUTHORED_REVIEW_OUTPUT) != 1:
+        raise ServiceConfigurationError("Native authored flag review requires its owned output instructions.")
+    return system_prompt.replace(_LEGACY_AUTHORED_REVIEW_OUTPUT, instructions, 1)
+
+
 def native_prompt(system_prompt: str, contract: NativeContract) -> str:
+    if isinstance(contract, AuthoredSolutionFlagReviewContract):
+        return _authored_flag_review_prompt(system_prompt, contract)
     if isinstance(contract, AuthoredSolutionReviewContract):
         keys = ", ".join(json.dumps(str(index)) for index in range(contract.count))
         return system_prompt + "\n\n" + (
@@ -462,6 +543,17 @@ def adapt_native_response(raw: str, contract: NativeContract) -> str:
         ]}
         return adapt_native_response(json.dumps(restored, ensure_ascii=False, allow_nan=False),
                                      "complete_choice_solver_v3")
+    if isinstance(contract, AuthoredSolutionFlagReviewContract):
+        # Validate every flag and identity before mapping declarations to the
+        # unchanged local issue veto. False flags never bypass other gates.
+        reviews = []
+        for index in range(contract.count):
+            row = payload["reviews"][str(index)]
+            flags = row.pop("issueFlags")
+            reviews.append({"index": index, **row,
+                            "issues": [flag for flag in AUTHORED_ISSUE_FLAGS if flags[flag]]})
+        return adapt_native_response(json.dumps({"reviews": reviews}, ensure_ascii=False, allow_nan=False),
+                                     "authored_solution_reviewer_v1")
     if isinstance(contract, (ReviewerSlotContract, AuthoredSolutionReviewContract)):
         # Validate the complete map first. Do not drop, fill, or renumber invalid
         # model records. Only trusted required keys can supply internal indexes.

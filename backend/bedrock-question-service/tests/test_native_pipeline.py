@@ -9,6 +9,7 @@ from unittest.mock import Mock, patch
 
 import lambda_function
 import question_generation as generation
+from native_output_contracts import AuthoredSolutionFlagReviewContract, adapt_native_response
 from lambda_test_support import (
     FakeBedrockClient,
     FakeLambdaContext,
@@ -32,9 +33,15 @@ AUTHOR = "question_author_v3"
 SOLVER = "complete_choice_solver_v5_n1"
 LEGACY_SOLVER = "complete_choice_solver_v1"
 REVIEWER = "default_reviewer_v3_n1"
-AUTHORED_REVIEWER = "authored_solution_reviewer_v2_n1"
+AUTHORED_REVIEWER = "authored_solution_reviewer_v3_n1"
 MODEL = "us.anthropic.claude-sonnet-4-6"
 FALLBACK = "moonshotai.kimi-k2.5"
+
+
+def authored_issue_flags(*defects):
+    return {name: name in defects for name in (
+        "answer_or_ambiguity", "explanation", "distractors", "scope_assignment", "novelty", "other",
+    )}
 
 
 def author_payload(*questions):
@@ -121,6 +128,12 @@ class ScriptedNativeClient:
         elif contract.startswith("default_reviewer_v3_n"):
             assert "REVIEW IDENTITY OVERRIDE" in system
             assert "choiceFeedback" in system
+        elif contract.startswith("authored_solution_reviewer_v3_n"):
+            assert contract in system
+            assert system.count("Return only") == 1
+            assert '"issues"' not in system and '"reviews":[' not in system
+            example, _ = json.JSONDecoder().raw_decode(system.split("Return only this JSON shape: ", 1)[1])
+            adapt_native_response(json.dumps(example), AuthoredSolutionFlagReviewContract(int(contract.rsplit("_n", 1)[1])))
         else:
             assert contract in system
         if isinstance(result, Exception):
@@ -411,7 +424,7 @@ class NativePipelineTests(unittest.TestCase):
             self.assertNotIn("expectedAnswer", data["items"][0])
             self.assertNotIn("independentSolutions", data)
             return {"reviews": {"0": {"valid": True, "answer": question["expectedAnswer"],
-                                  "difficulty": 3, "explanationSupport": "supported", "issues": []}}}
+                                  "difficulty": 3, "explanationSupport": "supported", "issueFlags": authored_issue_flags()}}}
         client = ScriptedNativeClient((AUTHOR, author_payload(question)),
                                       (SOLVER, self.solver(question)), (AUTHORED_REVIEWER, audit))
         with patch.dict(os.environ, {"QUESTION_FEEDBACK_CONTRACT": "authored_solution"}):
@@ -423,10 +436,10 @@ class NativePipelineTests(unittest.TestCase):
 
     def test_authored_native_audit_cannot_approve_uncertain_or_issue_bearing_teaching(self):
         for changes in ({"explanationSupport": "uncertain"}, {"explanationSupport": "unsupported"},
-                        {"valid": False, "answer": ""}, {"issues": ["The explanation assumes unstated facts."]}):
+                        {"valid": False, "answer": ""}, {"issueFlags": authored_issue_flags("explanation")}):
             with self.subTest(changes=changes):
                 record = {"index": 0, "valid": True, "answer": self.question["expectedAnswer"],
-                          "difficulty": 3, "explanationSupport": "supported", "issues": [], **changes}
+                          "difficulty": 3, "explanationSupport": "supported", "issueFlags": authored_issue_flags(), **changes}
                 client = ScriptedNativeClient((AUTHOR, author_payload(self.question)),
                     (SOLVER, self.solver(self.question)), (AUTHORED_REVIEWER, {"reviews": {"0": {key: value for key, value in record.items() if key != "index"}}}))
                 with patch.dict(os.environ, {"QUESTION_FEEDBACK_CONTRACT": "authored_solution"}):

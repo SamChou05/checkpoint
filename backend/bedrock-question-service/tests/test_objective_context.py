@@ -16,7 +16,7 @@ from complete_question_solution import (
 from question_quality import _sanitize_questions
 from question_verification import verify_questions
 from request_contract import _normalize_request
-from test_native_pipeline import author_payload, review_map, solver_map, solver_record
+from test_native_pipeline import author_payload, authored_issue_flags, review_map, solver_map, solver_record
 
 
 MODEL = "us.anthropic.claude-sonnet-4-6"
@@ -74,7 +74,8 @@ def reviews(items, answers, *, authored=False, native=False):
         record = {"index": item["index"], "valid": True,
                   "answer": answers[item["prompt"]], "difficulty": 3}
         if authored:
-            record.update(explanationSupport="supported", issues=[])
+            record["explanationSupport"] = "supported"
+            record["issueFlags" if native else "issues"] = authored_issue_flags() if native else []
         else:
             record["explanation"] = "The given universal rule applies to this token."
             feedback = {choice: "Compare this claim with the given implication and token." for choice in item["choices"]}
@@ -147,7 +148,7 @@ class ObjectiveContextTests(unittest.TestCase):
                                     test.assertNotIn("independentSolutions", data)
                                 else:
                                     tag = "question_review_json"
-                                    contract = (("authored_solution_reviewer_v2_n1" if mode == "native" else "authored_solution_reviewer_v1")
+                                    contract = (("authored_solution_reviewer_v3_n1" if mode == "native" else "authored_solution_reviewer_v1")
                                                 if authored else "default_reviewer_v3_n1" if mode == "native" else "default_reviewer_v1")
                                     data = payload(text, tag)
                                     response = reviews(data["items"], answers, authored=authored, native=mode == "native")
