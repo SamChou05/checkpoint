@@ -24,6 +24,7 @@ ROOT = HERE.parents[2]
 SERVICE = ROOT / "backend/bedrock-question-service"
 sys.path.insert(0, str(SERVICE))
 SOURCE_REVISION = "99cd50a3ed7ee8babe98ec9e8763cdd9f9edff53"
+STS_ENDPOINT_URL = "https://sts.us-east-1.amazonaws.com"
 
 from native_output_contracts import (  # noqa: E402
     AuthorSlotContract, adapt_native_response, contract_metadata, native_output_config,
@@ -173,6 +174,7 @@ def prepare():
         "python_version": list(sys.version_info[:3]),
         "region": fixed["region"], "model_id": fixed["model_id"],
         "endpoint_url": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "sts_endpoint_url": STS_ENDPOINT_URL,
         "capture_path": str((HERE / "capture.json").relative_to(ROOT)),
         "credential_pin": {"profile": "default", "account_id": "239342516379",
                            "provider_method": "login"},
@@ -202,6 +204,8 @@ def prepare():
             "blind_projection": {"version": 3, "prose_requested_slots": PAIRS * 2 * SLOTS_PER_ARM,
                                  "choice_rotation": "cryptographic_random_cyclic",
                                  "opaque_id_hex_characters": 24,
+                                 "required_independent_reviews": 2,
+                                 "joint_blind_lock_version": 2,
                                  "all_projected_items_require_locked_blind_answer": True,
                                  "choice_judgment_keys": list(CHOICE_LABELS),
                                  "pair_relation_keys": list(PAIR_LABELS),
@@ -394,6 +398,12 @@ def check_frozen(plan, provided_hash):
         raise RuntimeError("Only a reviewed frozen plan with completed credential pins may execute.")
     if plan["source_revision"] != SOURCE_REVISION:
         raise RuntimeError("Frozen plan source revision differs from the pinned starting commit.")
+    if plan.get("sts_endpoint_url") != STS_ENDPOINT_URL:
+        raise RuntimeError("Frozen STS endpoint differs from the reviewed regional endpoint.")
+    blind_criteria = plan.get("criteria", {}).get("blind_projection", {})
+    if (blind_criteria.get("required_independent_reviews") != 2
+            or blind_criteria.get("joint_blind_lock_version") != 2):
+        raise RuntimeError("Frozen plan does not require the two-review blind lock.")
     if len(plan["jobs"]) != MAX_CALLS or plan["limits"]["maximum_bedrock_author_calls"] != MAX_CALLS:
         raise RuntimeError("Live call ceiling drifted.")
     if plan["limits"]["maximum_visible_response_bytes"] != MAX_VISIBLE_BYTES:
@@ -544,6 +554,9 @@ def execute(provided_hash, capture_path):
     try:
         if any(os.getenv(key) for key in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN")):
             raise RuntimeError("Ambient exported AWS credentials are prohibited.")
+        if any(os.getenv(key) for key in ("AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_STS",
+                                          "AWS_ENDPOINT_URL_BEDROCK_RUNTIME")):
+            raise RuntimeError("Ambient AWS endpoint overrides are prohibited.")
         import boto3
         import botocore
         from botocore.config import Config
@@ -555,8 +568,11 @@ def execute(provided_hash, capture_path):
         frozen_credentials = credentials.get_frozen_credentials()
         signing_session = static_session_for_snapshot(boto3, frozen_credentials, plan["region"])
         # STS verifies the exact static signing snapshot used by Bedrock.
-        identity = signing_session.client("sts", config=Config(connect_timeout=3, read_timeout=10,
-                                                               retries={"total_max_attempts": 1})).get_caller_identity()
+        sts_client = signing_session.client("sts", config=Config(connect_timeout=3, read_timeout=10,
+                                                                 retries={"total_max_attempts": 1}))
+        if sts_client.meta.endpoint_url != plan["sts_endpoint_url"]:
+            raise RuntimeError("STS endpoint differs from reviewed pin.")
+        identity = sts_client.get_caller_identity()
         if (not isinstance(identity.get("Account"), str)
                 or re.fullmatch(r"[0-9]{12}", identity["Account"]) is None
                 or identity["Account"] != plan["credential_pin"]["account_id"]):
@@ -628,7 +644,9 @@ def check_projection_plan(plan_path, capture_path):
         raise RuntimeError("Blind assessment requires the matching frozen capture plan.")
     if (plan.get("harness_sha256") != file_hash(Path(__file__))
             or plan.get("plan_document_sha256") != file_hash(HERE / "PLAN.md")
-            or plan.get("criteria", {}).get("blind_projection", {}).get("version") != 3):
+            or plan.get("criteria", {}).get("blind_projection", {}).get("version") != 3
+            or plan.get("criteria", {}).get("blind_projection", {}).get("required_independent_reviews") != 2
+            or plan.get("criteria", {}).get("blind_projection", {}).get("joint_blind_lock_version") != 2):
         raise RuntimeError("Blind projection code or prospective criteria drifted.")
     return plan, capture
 
@@ -829,71 +847,96 @@ def validate_blind_answers(items, answers):
                            for value in answer["pair_relations"].values())
                     or (chosen == "unavailable" and (not answer["uncertain"]
                                                      or answer["premise_sufficiency"] == "sufficient"))
-                    or (chosen in CHOICE_LABELS and not answer["uncertain"]
-                        and answer["choice_judgments"][chosen] != "correct")):
+                    or (chosen in CHOICE_LABELS
+                        and (answer["premise_sufficiency"] != "sufficient"
+                             or [label for label, verdict in answer["choice_judgments"].items()
+                                 if verdict == "correct"] != [chosen]
+                             or any(verdict != "incorrect"
+                                    for label, verdict in answer["choice_judgments"].items()
+                                    if label != chosen)
+                             or set(answer["pair_relations"].values()) != {"distinct"}))):
                 raise RuntimeError("Blind review contains an invalid available-row judgment.")
 
 
-def lock_blind_review(capture_path, plan_path, worksheet_path, private_path, review_path, lock_path,
-                      expected_private_hash):
+def lock_blind_reviews(capture_path, plan_path, worksheet_path, private_path,
+                       review_a_path, review_b_path, lock_path, expected_private_hash):
     if lock_path.exists():
         raise RuntimeError("Blind review lock exists; no overwrite is allowed.")
     if not isinstance(expected_private_hash, str) or file_hash(private_path) != expected_private_hash:
         raise RuntimeError("Blind lock requires the exact out-of-band private-map SHA-256.")
+    if (not review_a_path.is_file() or not review_b_path.is_file()
+            or review_a_path.resolve() == review_b_path.resolve()):
+        raise RuntimeError("Two separate blind review files are required.")
     plan, capture = check_projection_plan(plan_path, capture_path)
-    review_hash = file_hash(review_path)
+    review_hashes = {"a": file_hash(review_a_path), "b": file_hash(review_b_path)}
+    if review_hashes["a"] == review_hashes["b"]:
+        raise RuntimeError("Two distinct blind reviews are required before unblinding.")
     worksheet = json.loads(worksheet_path.read_text())
     private = json.loads(private_path.read_text())
-    review = json.loads(review_path.read_text())
+    reviews = {"a": json.loads(review_a_path.read_text()),
+               "b": json.loads(review_b_path.read_text())}
     if (worksheet["capture_sha256"] != file_hash(capture_path)
             or worksheet["plan_sha256"] != file_hash(plan_path)
             or private["worksheet_sha256"] != file_hash(worksheet_path)
             or private["capture_sha256"] != worksheet["capture_sha256"]):
         raise RuntimeError("Blind worksheet or capture changed before lock.")
     verify_private_provenance(plan, capture, worksheet, private)
-    validate_blind_answers(worksheet["items"], review.get("answers"))
+    for review in reviews.values():
+        validate_blind_answers(worksheet["items"], review.get("answers"))
     if (file_hash(capture_path) != worksheet["capture_sha256"]
             or file_hash(plan_path) != worksheet["plan_sha256"]
             or file_hash(worksheet_path) != private["worksheet_sha256"]
             or file_hash(private_path) != expected_private_hash
-            or file_hash(review_path) != review_hash):
+            or file_hash(review_a_path) != review_hashes["a"]
+            or file_hash(review_b_path) != review_hashes["b"]):
         raise RuntimeError("Blind evidence changed during lock validation.")
-    lock = {"version": 1, "capture_sha256": worksheet["capture_sha256"],
+    lock = {"version": 2, "capture_sha256": worksheet["capture_sha256"],
             "worksheet_sha256": file_hash(worksheet_path),
             "private_map_sha256": expected_private_hash,
-            "blind_review_sha256": review_hash,
+            "blind_review_sha256": review_hashes,
             "locked_at_utc": datetime.now(timezone.utc).isoformat()}
     return write_exclusive_json(lock_path, lock)
 
 
-def unblind_review(capture_path, plan_path, worksheet_path, private_path, review_path, lock_path,
-                   approved_lock_hash, output_path):
+def unblind_review(capture_path, plan_path, worksheet_path, private_path,
+                   review_a_path, review_b_path, lock_path, approved_lock_hash, output_path):
     if output_path.exists() or file_hash(lock_path) != approved_lock_hash:
         raise RuntimeError("Unblinding requires the exact saved blind-lock hash and unused output path.")
     plan, capture = check_projection_plan(plan_path, capture_path)
     lock = json.loads(lock_path.read_text())
-    if (file_hash(capture_path) != lock["capture_sha256"]
+    if (lock.get("version") != 2
+            or set(lock.get("blind_review_sha256", {})) != {"a", "b"}
+            or lock["blind_review_sha256"]["a"] == lock["blind_review_sha256"]["b"]
+            or not review_a_path.is_file() or not review_b_path.is_file()
+            or review_a_path.resolve() == review_b_path.resolve()
+            or file_hash(capture_path) != lock["capture_sha256"]
             or file_hash(worksheet_path) != lock["worksheet_sha256"]
             or file_hash(private_path) != lock["private_map_sha256"]
-            or file_hash(review_path) != lock["blind_review_sha256"]):
+            or file_hash(review_a_path) != lock["blind_review_sha256"]["a"]
+            or file_hash(review_b_path) != lock["blind_review_sha256"]["b"]):
         raise RuntimeError("Blind artifacts changed after lock.")
     worksheet = json.loads(worksheet_path.read_text())
     private = json.loads(private_path.read_text())
-    review = json.loads(review_path.read_text())
+    reviews = {"a": json.loads(review_a_path.read_text()),
+               "b": json.loads(review_b_path.read_text())}
     if private["worksheet_sha256"] != lock["worksheet_sha256"]:
         raise RuntimeError("Private mapping does not match locked worksheet.")
     verify_private_provenance(plan, capture, worksheet, private)
-    validate_blind_answers(worksheet["items"], review.get("answers"))
-    combined = {"version": 1, "blind_lock_sha256": approved_lock_hash, "items": []}
+    for review in reviews.values():
+        validate_blind_answers(worksheet["items"], review.get("answers"))
+    combined = {"version": 2, "blind_lock_sha256": approved_lock_hash, "items": []}
     for item in worksheet["items"]:
         source = private["mapping"][item["id"]]
-        combined["items"].append({**item, "blind_review": review["answers"][item["id"]],
+        combined["items"].append({**item, "blind_reviews": {
+                                      assessor: review["answers"][item["id"]]
+                                      for assessor, review in reviews.items()},
                                   "source": source})
     if (file_hash(capture_path) != lock["capture_sha256"]
             or file_hash(plan_path) != worksheet["plan_sha256"]
             or file_hash(worksheet_path) != lock["worksheet_sha256"]
             or file_hash(private_path) != lock["private_map_sha256"]
-            or file_hash(review_path) != lock["blind_review_sha256"]):
+            or file_hash(review_a_path) != lock["blind_review_sha256"]["a"]
+            or file_hash(review_b_path) != lock["blind_review_sha256"]["b"]):
         raise RuntimeError("Blind evidence changed during unblinding.")
     return write_exclusive_json(output_path, combined)
 
@@ -904,15 +947,16 @@ def main():
     mode.add_argument("--prepare", action="store_true", help="write non-executable plan candidate using fake dispatches")
     mode.add_argument("--execute", action="store_true", help="execute separately frozen, reviewed plan")
     mode.add_argument("--blind-project", action="store_true", help="make keyless prose worksheet")
-    mode.add_argument("--lock-blind", action="store_true", help="lock independent blind answers")
-    mode.add_argument("--unblind", action="store_true", help="unblind only after exact review lock")
+    mode.add_argument("--lock-blind", action="store_true", help="lock both independent blind reviews")
+    mode.add_argument("--unblind", action="store_true", help="unblind only after exact two-review lock")
     parser.add_argument("--plan-sha256", help="out-of-band approved exact frozen plan hash")
     parser.add_argument("--capture", type=Path, default=HERE / "capture.json")
     parser.add_argument("--capture-sha256", help="exact capture hash printed by execution")
     parser.add_argument("--worksheet", type=Path, default=HERE / "blind-worksheet.json")
     parser.add_argument("--private-map", type=Path, default=HERE / "blind-private-map.json")
     parser.add_argument("--private-map-sha256", help="exact map hash printed by blind projection")
-    parser.add_argument("--review", type=Path, default=HERE / "blind-review.json")
+    parser.add_argument("--review-a", type=Path, default=HERE / "blind-review-a.json")
+    parser.add_argument("--review-b", type=Path, default=HERE / "blind-review-b.json")
     parser.add_argument("--lock", type=Path, default=HERE / "blind-lock.json")
     parser.add_argument("--lock-sha256")
     parser.add_argument("--unblinded", type=Path, default=HERE / "unblinded-review.json")
@@ -934,13 +978,14 @@ def main():
     elif args.lock_blind:
         if not args.private_map_sha256:
             parser.error("Blind lock requires --private-map-sha256 from projection.")
-        print(f"blind_lock_sha256={lock_blind_review(args.capture, HERE / 'plan.json', args.worksheet, args.private_map,
-                                                     args.review, args.lock, args.private_map_sha256)}")
+        print(f"blind_lock_sha256={lock_blind_reviews(args.capture, HERE / 'plan.json', args.worksheet, args.private_map,
+                                                      args.review_a, args.review_b, args.lock,
+                                                      args.private_map_sha256)}")
     else:
         if not args.lock_sha256:
             parser.error("Unblinding requires --lock-sha256.")
         print(f"unblinded_sha256={unblind_review(args.capture, HERE / 'plan.json', args.worksheet, args.private_map,
-                                                 args.review, args.lock, args.lock_sha256,
+                                                 args.review_a, args.review_b, args.lock, args.lock_sha256,
                                                  args.unblinded)}")
 
 

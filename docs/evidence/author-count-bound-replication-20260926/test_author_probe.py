@@ -259,7 +259,9 @@ class AuthorProbeTests(unittest.TestCase):
 
                 def client(self, name, **kwargs):
                     if name == "sts":
-                        return SimpleNamespace(get_caller_identity=lambda: {"Account": "000000000000"})
+                        return SimpleNamespace(
+                            meta=SimpleNamespace(endpoint_url=plan["sts_endpoint_url"]),
+                            get_caller_identity=lambda: {"Account": "000000000000"})
                     return runtime
 
             def session_factory(**kwargs):
@@ -284,6 +286,69 @@ class AuthorProbeTests(unittest.TestCase):
             self.assertEqual(saved["jobs"][0]["runtime_outcome"], "ProviderCallBudgetExceededError")
             self.assertEqual(saved["jobs"][0]["dispatch_status"], "completed")
             self.assertTrue(saved["jobs"][0]["transport"]["visible_text_blocks"])
+
+    def test_sts_endpoint_mismatch_blocks_identity_request(self):
+        with tempfile.TemporaryDirectory() as directory:
+            location = Path(directory)
+            plan = json.loads(probe.prepare().read_text())
+            capture = location / "capture.json"
+            plan["capture_path"] = str(capture)
+            plan["status"] = "frozen"
+            (location / "plan.json").write_text(json.dumps(plan))
+            frozen = SimpleNamespace(access_key="fake-access", secret_key="fake-secret",
+                                     token="fake-token")
+            identity_calls = []
+
+            class ProfileSession:
+                def get_credentials(self):
+                    return SimpleNamespace(method="login", get_frozen_credentials=lambda: frozen)
+
+            class StaticSession:
+                def get_credentials(self):
+                    return SimpleNamespace(method="explicit", get_frozen_credentials=lambda: frozen)
+
+                def client(self, name, **kwargs):
+                    self_outer.assertEqual(name, "sts")
+                    return SimpleNamespace(
+                        meta=SimpleNamespace(endpoint_url="https://unreviewed.example"),
+                        get_caller_identity=lambda: identity_calls.append(True))
+
+            self_outer = self
+            def session_factory(**kwargs):
+                return ProfileSession() if "profile_name" in kwargs else StaticSession()
+
+            with patch.dict(probe.os.environ, {}, clear=True), patch.object(probe, "HERE", location), \
+                    patch.object(probe, "check_frozen"), patch("boto3.Session", side_effect=session_factory):
+                with self.assertRaisesRegex(RuntimeError, "STS endpoint differs from reviewed pin"):
+                    probe.execute("reviewed", capture)
+            self.assertEqual(identity_calls, [])
+            saved = json.loads(capture.read_text())
+            self.assertEqual(saved["preflight_status"], "failed")
+            self.assertEqual(saved["jobs"], [])
+
+    def test_ambient_sts_endpoint_override_refused_before_credentials(self):
+        with tempfile.TemporaryDirectory() as directory:
+            location = Path(directory)
+            plan = json.loads(probe.prepare().read_text())
+            capture = location / "capture.json"
+            plan["capture_path"] = str(capture)
+            (location / "plan.json").write_text(json.dumps(plan))
+            with patch.dict(probe.os.environ, {"AWS_ENDPOINT_URL_STS": "https://unreviewed.example"}, clear=True), \
+                    patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                    patch("boto3.Session", side_effect=AssertionError("credentials must not load")):
+                with self.assertRaisesRegex(RuntimeError, "endpoint overrides are prohibited"):
+                    probe.execute("reviewed", capture)
+            self.assertEqual(json.loads(capture.read_text())["jobs"], [])
+
+    def test_pinned_sts_endpoint_matches_offline_sdk_client(self):
+        import boto3
+
+        with patch.dict(probe.os.environ, {}, clear=True):
+            session = boto3.Session(aws_access_key_id="fake-access",
+                                    aws_secret_access_key="fake-secret",
+                                    region_name="us-east-1")
+            self.assertEqual(session.client("sts").meta.endpoint_url,
+                             probe.STS_ENDPOINT_URL)
 
     def test_static_signing_snapshot_equals_scanned_credentials(self):
         frozen = SimpleNamespace(access_key="fake-access", secret_key="fake-secret", token="fake-token")
@@ -362,8 +427,9 @@ class AuthorProbeTests(unittest.TestCase):
             self.assertNotIn("explanation", worksheet_path.read_text())
             self.assertNotIn("archive_circulation_array_n5", worksheet_path.read_text())
             self.assertEqual(hashes["worksheet_sha256"], probe.file_hash(worksheet_path))
-            review_path = location / "blind-review.json"
-            review_path.write_text(json.dumps({"answers": {
+            review_a_path = location / "blind-review-a.json"
+            review_b_path = location / "blind-review-b.json"
+            review_a_path.write_text(json.dumps({"answers": {
                 item["id"]: {"independent_answer": "A", "reasoning": "Solved the stated rule independently.",
                              "uncertain": False, "premise_sufficiency": "sufficient",
                              "choice_judgments": {"A": "correct", "B": "incorrect",
@@ -372,35 +438,63 @@ class AuthorProbeTests(unittest.TestCase):
                 for item in worksheet["items"]
             }}))
             lock_path = location / "blind-lock.json"
-            incomplete_review = json.loads(review_path.read_text())
+            with self.assertRaisesRegex(RuntimeError, "Two separate blind review files"):
+                probe.lock_blind_reviews(capture_path, plan_path, worksheet_path, private_path,
+                                         review_a_path, review_b_path, lock_path,
+                                         hashes["private_map_sha256"])
+            review_b_path.write_bytes(review_a_path.read_bytes())
+            with self.assertRaisesRegex(RuntimeError, "Two distinct blind reviews"):
+                probe.lock_blind_reviews(capture_path, plan_path, worksheet_path, private_path,
+                                         review_a_path, review_b_path, lock_path,
+                                         hashes["private_map_sha256"])
+            second_review = json.loads(review_b_path.read_text())
+            for response in second_review["answers"].values():
+                response["reasoning"] = "A separate independent judgment of this synthetic item."
+            review_b_path.write_text(json.dumps(second_review))
+            incomplete_review = json.loads(review_a_path.read_text())
             first_id = worksheet["items"][0]["id"]
-            ambiguous = json.loads(review_path.read_text())
+            ambiguous = json.loads(review_a_path.read_text())
             ambiguous["answers"][first_id]["independent_answer"] = "unavailable"
             ambiguous["answers"][first_id]["premise_sufficiency"] = "insufficient"
             ambiguous["answers"][first_id]["uncertain"] = True
+            ambiguous["answers"][first_id]["choice_judgments"]["B"] = "correct"
+            ambiguous["answers"][first_id]["pair_relations"]["AB"] = "equivalent"
             probe.validate_blind_answers(worksheet["items"], ambiguous["answers"])
             ambiguous["answers"][first_id]["uncertain"] = False
             with self.assertRaisesRegex(RuntimeError, "invalid available-row judgment"):
                 probe.validate_blind_answers(worksheet["items"], ambiguous["answers"])
+            original_review = json.loads(review_a_path.read_text())
+            for field, value in (("premise_sufficiency", "insufficient"),
+                                 ("second_correct", True), ("equivalent_pair", True)):
+                contradictory = json.loads(json.dumps(original_review))
+                answer = contradictory["answers"][first_id]
+                if field == "second_correct":
+                    answer["choice_judgments"]["B"] = "correct"
+                elif field == "equivalent_pair":
+                    answer["pair_relations"]["AB"] = "equivalent"
+                else:
+                    answer[field] = value
+                with self.assertRaisesRegex(RuntimeError, "invalid available-row judgment"):
+                    probe.validate_blind_answers(worksheet["items"], contradictory["answers"])
             del incomplete_review["answers"][first_id]["pair_relations"]["AB"]
-            review_path.write_text(json.dumps(incomplete_review))
+            review_a_path.write_text(json.dumps(incomplete_review))
             with self.assertRaisesRegex(RuntimeError, "exact choice and pair judgments"):
-                probe.lock_blind_review(capture_path, plan_path, worksheet_path, private_path,
-                                        review_path, lock_path, hashes["private_map_sha256"])
+                probe.lock_blind_reviews(capture_path, plan_path, worksheet_path, private_path,
+                                        review_a_path, review_b_path, lock_path, hashes["private_map_sha256"])
             incomplete_review["answers"][first_id]["pair_relations"]["AB"] = "distinct"
             del incomplete_review["answers"][first_id]["choice_judgments"]["D"]
-            review_path.write_text(json.dumps(incomplete_review))
+            review_a_path.write_text(json.dumps(incomplete_review))
             with self.assertRaisesRegex(RuntimeError, "exact choice and pair judgments"):
-                probe.lock_blind_review(capture_path, plan_path, worksheet_path, private_path,
-                                        review_path, lock_path, hashes["private_map_sha256"])
+                probe.lock_blind_reviews(capture_path, plan_path, worksheet_path, private_path,
+                                        review_a_path, review_b_path, lock_path, hashes["private_map_sha256"])
             incomplete_review["answers"][first_id]["choice_judgments"]["D"] = "incorrect"
             del incomplete_review["answers"][first_id]["premise_sufficiency"]
-            review_path.write_text(json.dumps(incomplete_review))
+            review_a_path.write_text(json.dumps(incomplete_review))
             with self.assertRaisesRegex(RuntimeError, "exact choice and pair judgments"):
-                probe.lock_blind_review(capture_path, plan_path, worksheet_path, private_path,
-                                        review_path, lock_path, hashes["private_map_sha256"])
+                probe.lock_blind_reviews(capture_path, plan_path, worksheet_path, private_path,
+                                        review_a_path, review_b_path, lock_path, hashes["private_map_sha256"])
             incomplete_review["answers"][first_id]["premise_sufficiency"] = "sufficient"
-            review_path.write_text(json.dumps(incomplete_review))
+            review_a_path.write_text(json.dumps(incomplete_review))
             original_private = private_path.read_bytes()
             for tampered_field, replacement in (("author_key", "b"),
                                                  ("author_explanation", "altered teaching"),
@@ -410,21 +504,30 @@ class AuthorProbeTests(unittest.TestCase):
                 tampered["mapping"][first_id][tampered_field] = replacement
                 private_path.write_text(json.dumps(tampered))
                 with self.assertRaisesRegex(RuntimeError, "out-of-band private-map SHA-256"):
-                    probe.lock_blind_review(capture_path, plan_path, worksheet_path, private_path,
-                                            review_path, lock_path, hashes["private_map_sha256"])
+                    probe.lock_blind_reviews(capture_path, plan_path, worksheet_path, private_path,
+                                            review_a_path, review_b_path, lock_path, hashes["private_map_sha256"])
                 with self.assertRaisesRegex(RuntimeError, "differs from capture"):
-                    probe.lock_blind_review(capture_path, plan_path, worksheet_path, private_path,
-                                            review_path, lock_path, probe.file_hash(private_path))
+                    probe.lock_blind_reviews(capture_path, plan_path, worksheet_path, private_path,
+                                            review_a_path, review_b_path, lock_path, probe.file_hash(private_path))
                 private_path.write_bytes(original_private)
-            lock_hash = probe.lock_blind_review(capture_path, plan_path, worksheet_path, private_path,
-                                                review_path, lock_path, hashes["private_map_sha256"])
+            lock_hash = probe.lock_blind_reviews(capture_path, plan_path, worksheet_path, private_path,
+                                                review_a_path, review_b_path, lock_path, hashes["private_map_sha256"])
             unblinded = location / "unblinded.json"
             with self.assertRaisesRegex(RuntimeError, "exact saved blind-lock hash"):
-                probe.unblind_review(capture_path, plan_path, worksheet_path, private_path, review_path,
+                probe.unblind_review(capture_path, plan_path, worksheet_path, private_path, review_a_path, review_b_path,
                                      lock_path, "wrong", unblinded)
-            probe.unblind_review(capture_path, plan_path, worksheet_path, private_path, review_path,
+            original_b = review_b_path.read_bytes()
+            second_review["answers"][first_id]["reasoning"] = "Changed after the joint lock."
+            review_b_path.write_text(json.dumps(second_review))
+            with self.assertRaisesRegex(RuntimeError, "Blind artifacts changed after lock"):
+                probe.unblind_review(capture_path, plan_path, worksheet_path, private_path,
+                                     review_a_path, review_b_path, lock_path, lock_hash, unblinded)
+            review_b_path.write_bytes(original_b)
+            probe.unblind_review(capture_path, plan_path, worksheet_path, private_path, review_a_path, review_b_path,
                                  lock_path, lock_hash, unblinded)
-            self.assertEqual(len(json.loads(unblinded.read_text())["items"]), 20)
+            joined = json.loads(unblinded.read_text())
+            self.assertEqual(len(joined["items"]), 20)
+            self.assertTrue(all(set(item["blind_reviews"]) == {"a", "b"} for item in joined["items"]))
 
     def test_blind_projection_preserves_missing_and_extra_map_keys(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -516,10 +619,12 @@ class AuthorProbeTests(unittest.TestCase):
     def test_frozen_proposal_passes_all_offline_pins(self):
         proposal_path = HERE / "plan-frozen-proposal.json"
         proposal = json.loads(proposal_path.read_text())
-        expected_hash = "7654fc9e2fc9038b62deeaf9da534337ea7d1004ec6b676e9cba290012f1f3bf"
+        expected_hash = "7599074d82324d8394f584dfb9dd15ac5577d1111a6f41d4f978e1b3a546aeca"
         self.assertEqual(probe.file_hash(proposal_path), expected_hash)
         self.assertEqual(proposal["status"], "frozen")
         self.assertEqual(proposal["source_revision"], probe.SOURCE_REVISION)
+        self.assertEqual(proposal["sts_endpoint_url"], probe.STS_ENDPOINT_URL)
+        self.assertEqual(proposal["criteria"]["blind_projection"]["required_independent_reviews"], 2)
         self.assertEqual({**json.loads(probe.prepare().read_text()), "status": "frozen"}, proposal)
         self.assertEqual(proposal["criteria"]["prose_replication"]["candidate_followup_minimum_usable_total"], 8)
         self.assertEqual(proposal["criteria"]["prose_replication"]["candidate_followup_minimum_pairs_not_below_baseline"], 2)

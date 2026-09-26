@@ -34,9 +34,9 @@
     "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
     "backend/bedrock-question-service/requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67"
   },
-  "plan_document_sha256": "beadece97be4535da21a2b243112072381a7fcd24a71249253b6db9700b098b2",
+  "plan_document_sha256": "10ec5d2441b3b7cb34c893a0ff76b5b3c5fde26835f15af3e883a68915ac4340",
   "fixed_requests_sha256": "951481d96818de3d9915d94b5cf738ffb44c91d0ea6e1dbe1fdc56c8bf6d2b56",
-  "harness_sha256": "74390a9055d2194c58060297f2033d7509cd096e79ad625c1cdcf258cca3ca26",
+  "harness_sha256": "9f8c979ba6d71095900cfaf235cd6625c39e224215368d676c433ca20886a9f0",
   "sdk_versions": {
     "boto3": "1.43.91",
     "botocore": "1.43.91",
@@ -50,6 +50,7 @@
   "region": "us-east-1",
   "model_id": "moonshotai.kimi-k2.5",
   "endpoint_url": "https://bedrock-runtime.us-east-1.amazonaws.com",
+  "sts_endpoint_url": "https://sts.us-east-1.amazonaws.com",
   "capture_path": "docs/evidence/author-count-bound-replication-20260926/capture.json",
   "credential_pin": {
     "profile": "default",
@@ -100,6 +101,8 @@
       "prose_requested_slots": 20,
       "choice_rotation": "cryptographic_random_cyclic",
       "opaque_id_hex_characters": 24,
+      "required_independent_reviews": 2,
+      "joint_blind_lock_version": 2,
       "all_projected_items_require_locked_blind_answer": true,
       "choice_judgment_keys": [
         "A",
