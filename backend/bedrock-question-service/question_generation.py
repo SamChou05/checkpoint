@@ -399,6 +399,7 @@ def _constructed_author_batch_size(request: dict[str, Any], author_mode: str) ->
         ))
         or request.get("adaptiveSkillPlans")
         or request.get("requiresFullObjectiveCoverage")
+        or request.get("goal", {}).get("needsSkillMap")
     ):
         return target_count
     return min(
