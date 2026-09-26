@@ -10,10 +10,11 @@ Current source verification passes **1,361 backend tests** and the latest full
 iOS suite completed **1,058 tests with three existing skips** after the optional
 timeout, fraction-distractor, compiled-surplus, scalar-explanation,
 author-cardinality, numeric-choice and saved-inventory improvements. The latest
-[full-worker trial](evidence/constructed-sonnet-long-read-qualification-20260922/RESULTS.md)
-still fails qualification at 13/15 returns and three numerical compiled items
-where four were required. Its frozen source excludes the newer fraction-priority
-change. Verified improvements are on main; the last inspected deployment remains
+[current-source full-worker trial](evidence/current-source-worker-successor-qualification-20260926/RESULTS.md)
+fails qualification at 9/15 returns and three compiled items where six were
+required. Both independent blind reviews and post-lock teaching audits found all
+nine returned items usable, but the numerical author exhausted its 16,000-token
+allowance and returned no decodable batch. Verified improvements are on main; the last inspected deployment remains
 the September 11 legacy package. No deployment or inventory transition has occurred.
 
 ## Findings and verified fixes
@@ -34,6 +35,7 @@ the September 11 legacy package. No deployment or inventory transition has occur
 | A required-key author schema can force five rows without making all five correct or teachable. | [Frozen count-bound trial](evidence/author-count-bound-qualification-20260926/RESULTS.md): both prose arms were structurally complete; the candidate had five one-answer rows but one false explanation, while two baseline rows had multiple valid choices. Five constructed typed rows included two compiler rejections. | Count-bound remains worker-only opt-in. Existing exact compiler rejects invalid typed tasks; semantic authoring still needs independent assessment. No default or deployment change followed the trial. |
 | The exact-five author contract also failed a blinded replication on two assignments. | [Replicated trial](evidence/author-count-bound-replication-successor-20260926/RESULTS.md): all four calls produced five schema-valid rows, but independent reviewers credited 4/10 fixed-count items against 6/10 array items. Seven archive stems exceeded the active 320-character limit; the fixed-count arm also omitted premises, made false teaching claims, and offered two equivalent actions in one question. | Keep fixed-count authoring opt-in. The active sanitizer rejects overlong stems, and answer checking still needs semantic review. The contract alone cannot make a question correct, distinct, or short enough. |
 | A correct Python answer can carry a false generic Boolean rule in its authored explanation. | The [frozen prose trial](evidence/prose-semantic-guidance-qualification-20260926/RESULTS.md) had three explanations saying `or` returns the first truthy operand or `and` the first falsy operand without the no-trigger final-operand case. | A bounded authored-prose guard now rejects those unqualified generic claims before they consume a batch slot and rechecks them at immutable teaching freeze. [Offline replay](evidence/prose-semantic-guidance-qualification-20260926/BOOLEAN_GUARD_REPLAY.md) caught all three labeled cases and none of the other 17 explanations. Complete or case-specific rules remain eligible; other semantic claims still need review. |
+| Native schema validity cannot prevent a model from exhausting its reasoning/output budget before completing a batch. | The [current-source worker capture](evidence/current-source-worker-successor-qualification-20260926/RESULTS.md) shows the numerical author stopping at `max_tokens` after 16,000 output tokens and 188.839 seconds, with visible JSON truncated. Python returned 5/5 and mixed returned 4/5; all nine returned items passed independent content review, but the full run failed yield and compiled-count gates. | The runtime rejects the truncated batch and preserves already verified partial returns after a later mixed reviewer timeout. The high-reasoning, five-item author route remains unqualified for rollout; smaller requests or a stage-specific reasoning setting need a separately reviewed trial before promotion. |
 
 These changes make structure, key membership, exact identity and admission rules
 deterministic. They do not make a model's factual statements deterministic or
