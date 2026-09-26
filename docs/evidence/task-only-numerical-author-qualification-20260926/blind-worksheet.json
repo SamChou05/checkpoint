@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "plan_sha256": "4fe1782059cf7d27339b406e426f642423599b43f70937f25676a2484e2d8f92",
+  "capture_sha256": "6524fec050e8402ef13d149aec1bd1421ed8593953c7febfb71be140b373e4ab",
+  "items": [
+    {
+      "id": "f7c7f86e4b74c5bf9d9206d2",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = ((3 / 4) + (5 / 6)). What is its exact value?",
+      "choices": {
+        "A": "19/12",
+        "B": "4/5",
+        "C": "2/3",
+        "D": "3/4"
+      }
+    },
+    {
+      "id": "4b571f40004620bd17a31d54",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = ((7/8) / (3/4)). What is its exact value?",
+      "choices": {
+        "A": "7/6",
+        "B": "21/32",
+        "C": "32/21",
+        "D": "6/7"
+      }
+    },
+    {
+      "id": "3b19006a2d4a48b931712e57",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = ((5/6) - (3/8)). What is its exact value?",
+      "choices": {
+        "A": "5/6",
+        "B": "-1",
+        "C": "11/24",
+        "D": "1/12"
+      }
+    },
+    {
+      "id": "56f9bcdf26f9ec3560c56c85",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: ((3 * x) - 1) > 25. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "9",
+        "B": "8",
+        "C": "7",
+        "D": "10"
+      }
+    },
+    {
+      "id": "d7ef87bfe21ba8254bf96ae1",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: ((4 * x) + 1) <= 25. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "7",
+        "B": "4",
+        "C": "5",
+        "D": "6"
+      }
+    }
+  ]
+}
