@@ -1,0 +1,97 @@
+{
+  "assessor": "B",
+  "worksheet_sha256": "a040f798a9cc29b4579acf0cfe46ac1dacf25e9f3eb9114bb158e08b9959c11b",
+  "method": "Independent assessment using only the blinded worksheet. A pair's answer indicates whether either member of that pair correctly answers the original stem.",
+  "items": [
+    {
+      "id": "8eee427487cb7cd7a1ac68eb",
+      "status": "assessed",
+      "score": 1,
+      "solution": "5/6 - 1/4 = 10/12 - 3/12 = 7/12, already in lowest terms.",
+      "choices": {
+        "A": { "correct": false, "reason": "1/6 is not 7/12." },
+        "B": { "correct": false, "reason": "2 is not 7/12." },
+        "C": { "correct": false, "reason": "13/12 is not 7/12; it is the sum of the two fractions." },
+        "D": { "correct": true, "reason": "7/12 equals the computed difference in lowest terms." }
+      },
+      "pair_meanings": {
+        "A-B": "Neither: 1/6 and 2 both differ from 7/12.",
+        "A-C": "Neither: 1/6 and 13/12 both differ from 7/12.",
+        "A-D": "D only: 7/12 is correct; 1/6 is not.",
+        "B-C": "Neither: 2 and 13/12 both differ from 7/12.",
+        "B-D": "D only: 7/12 is correct; 2 is not.",
+        "C-D": "D only: 7/12 is correct; 13/12 is not."
+      },
+      "unique_answer": "D",
+      "uncertain": false,
+      "missing_premises": [],
+      "rationale": "The stem specifies subtraction and lowest terms. Exactly one listed choice equals the resulting fraction; no extra assumption is needed."
+    },
+    {
+      "id": "c92dfacf4e14cf1be1209f96",
+      "status": "assessed",
+      "score": 1,
+      "solution": "4n < 50 implies n < 12.5. The largest integer satisfying this and 1 <= n <= 30 is 12: 4(12) = 48 < 50, while 4(13) = 52 is not < 50.",
+      "choices": {
+        "A": { "correct": false, "reason": "11 satisfies the constraints but is not the maximum." },
+        "B": { "correct": false, "reason": "10 satisfies the constraints but is not the maximum." },
+        "C": { "correct": true, "reason": "12 satisfies both constraints and is the maximum integer." },
+        "D": { "correct": false, "reason": "13 violates 4n < 50 because 52 > 50." }
+      },
+      "pair_meanings": {
+        "A-B": "Neither: 11 and 10 are feasible, but neither is the maximum.",
+        "A-C": "C only: 12 is the maximum; 11 is merely feasible.",
+        "A-D": "Neither: 11 is below the maximum and 13 is infeasible.",
+        "B-C": "C only: 12 is the maximum; 10 is merely feasible.",
+        "B-D": "Neither: 10 is below the maximum and 13 is infeasible.",
+        "C-D": "C only: 12 is the maximum; 13 is infeasible."
+      },
+      "unique_answer": "C",
+      "uncertain": false,
+      "missing_premises": [],
+      "rationale": "The bound is strict, and the stem asks for the maximum rather than any feasible integer. The finite range and inequality determine one answer."
+    },
+    {
+      "id": "d5c15d08d67e789fa99709a2",
+      "status": "unavailable",
+      "score": 0,
+      "uncertain": true,
+      "unique_answer": null,
+      "missing_premises": ["Stem and choices are unavailable."],
+      "rationale": "No item content is present in the blinded worksheet, so correctness and pair meanings cannot be assessed."
+    },
+    {
+      "id": "2990fa97d94a16eda1ba8a9f",
+      "status": "unavailable",
+      "score": 0,
+      "uncertain": true,
+      "unique_answer": null,
+      "missing_premises": ["Stem and choices are unavailable."],
+      "rationale": "No item content is present in the blinded worksheet, so correctness and pair meanings cannot be assessed."
+    },
+    {
+      "id": "fc6dad6bfd5c40c729d83c9b",
+      "status": "assessed",
+      "score": 1,
+      "solution": "(5/6) × (3/10) = 15/60 = 1/4 in lowest terms.",
+      "choices": {
+        "A": { "correct": true, "reason": "1/4 equals the product in lowest terms." },
+        "B": { "correct": false, "reason": "17/15 is not 1/4; it equals 5/6 + 3/10." },
+        "C": { "correct": false, "reason": "1/2 is not 1/4." },
+        "D": { "correct": false, "reason": "25/9 is not 1/4." }
+      },
+      "pair_meanings": {
+        "A-B": "A only: 1/4 is the product; 17/15 is not.",
+        "A-C": "A only: 1/4 is the product; 1/2 is not.",
+        "A-D": "A only: 1/4 is the product; 25/9 is not.",
+        "B-C": "Neither: 17/15 and 1/2 both differ from 1/4.",
+        "B-D": "Neither: 17/15 and 25/9 both differ from 1/4.",
+        "C-D": "Neither: 1/2 and 25/9 both differ from 1/4."
+      },
+      "unique_answer": "A",
+      "uncertain": false,
+      "missing_premises": [],
+      "rationale": "The multiplication and reduction are unambiguous. Exactly one choice equals the product; no extra assumption is needed."
+    }
+  ]
+}

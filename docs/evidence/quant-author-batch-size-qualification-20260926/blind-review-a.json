@@ -1,0 +1,102 @@
+{
+  "reviewer": "blind-assessor-a",
+  "worksheet_sha256": "a040f798a9cc29b4579acf0cfe46ac1dacf25e9f3eb9114bb158e08b9959c11b",
+  "items": [
+    {
+      "id": "8eee427487cb7cd7a1ac68eb",
+      "available": true,
+      "solution": "5/6 - 1/4 = 10/12 - 3/12 = 7/12, already in lowest terms.",
+      "choice_judgments": {
+        "A": { "correct": false, "meaning": "1/6; does not equal the difference." },
+        "B": { "correct": false, "meaning": "2; does not equal the difference." },
+        "C": { "correct": false, "meaning": "13/12; this is 5/6 + 1/4, the sum rather than the difference." },
+        "D": { "correct": true, "meaning": "7/12; the requested difference in lowest terms." }
+      },
+      "unordered_pair_judgments": [
+        { "pair": "A-B", "meaning": "1/6 versus 2; distinct wrong values, neither equals 7/12." },
+        { "pair": "A-C", "meaning": "1/6 versus the addition result 13/12; distinct wrong values, neither equals 7/12." },
+        { "pair": "A-D", "meaning": "1/6 is wrong; 7/12 is the requested difference." },
+        { "pair": "B-C", "meaning": "2 versus the addition result 13/12; distinct wrong values, neither equals 7/12." },
+        { "pair": "B-D", "meaning": "2 is wrong; 7/12 is the requested difference." },
+        { "pair": "C-D", "meaning": "13/12 is the sum; 7/12 is the requested difference." }
+      ],
+      "unique_answer": "D",
+      "uncertain": false,
+      "confidence": 1,
+      "missing_premises": [],
+      "rationale": "A common denominator of 12 gives 10/12 - 3/12 = 7/12. The four options have different values, and only D matches."
+    },
+    {
+      "id": "c92dfacf4e14cf1be1209f96",
+      "available": true,
+      "solution": "4n < 50 implies n < 12.5. The greatest integer within 1 <= n <= 30 that meets this inequality is 12.",
+      "choice_judgments": {
+        "A": { "correct": false, "meaning": "11 satisfies the inequalities but is not the maximum." },
+        "B": { "correct": false, "meaning": "10 satisfies the inequalities but is not the maximum." },
+        "C": { "correct": true, "meaning": "12 satisfies 4n < 50 and is the maximum eligible integer." },
+        "D": { "correct": false, "meaning": "13 violates 4n < 50 because 4 times 13 is 52." }
+      },
+      "unordered_pair_judgments": [
+        { "pair": "A-B", "meaning": "11 and 10 are distinct feasible integers; neither is the maximum." },
+        { "pair": "A-C", "meaning": "11 is feasible but submaximal; 12 is the maximum." },
+        { "pair": "A-D", "meaning": "11 is feasible but submaximal; 13 is infeasible." },
+        { "pair": "B-C", "meaning": "10 is feasible but submaximal; 12 is the maximum." },
+        { "pair": "B-D", "meaning": "10 is feasible but submaximal; 13 is infeasible." },
+        { "pair": "C-D", "meaning": "12 is the maximum feasible integer; 13 is infeasible." }
+      ],
+      "unique_answer": "C",
+      "uncertain": false,
+      "confidence": 1,
+      "missing_premises": [],
+      "rationale": "The upper bound n <= 30 does not constrain the optimum beyond n < 12.5. Among the choices, only C gives the greatest feasible integer."
+    },
+    {
+      "id": "d5c15d08d67e789fa99709a2",
+      "available": false,
+      "solution": null,
+      "choice_judgments": { "A": null, "B": null, "C": null, "D": null },
+      "unordered_pair_judgments": [],
+      "unique_answer": null,
+      "uncertain": true,
+      "confidence": 0,
+      "missing_premises": ["Stem and answer choices are unavailable."],
+      "rationale": "No substantive judgment is possible from this worksheet slot."
+    },
+    {
+      "id": "2990fa97d94a16eda1ba8a9f",
+      "available": false,
+      "solution": null,
+      "choice_judgments": { "A": null, "B": null, "C": null, "D": null },
+      "unordered_pair_judgments": [],
+      "unique_answer": null,
+      "uncertain": true,
+      "confidence": 0,
+      "missing_premises": ["Stem and answer choices are unavailable."],
+      "rationale": "No substantive judgment is possible from this worksheet slot."
+    },
+    {
+      "id": "fc6dad6bfd5c40c729d83c9b",
+      "available": true,
+      "solution": "(5/6) × (3/10) = 15/60 = 1/4 in lowest terms.",
+      "choice_judgments": {
+        "A": { "correct": true, "meaning": "1/4; the requested product in lowest terms." },
+        "B": { "correct": false, "meaning": "17/15; this is 5/6 + 3/10, the sum rather than the product." },
+        "C": { "correct": false, "meaning": "1/2; does not equal the product." },
+        "D": { "correct": false, "meaning": "25/9; this is (5/6) divided by (3/10), the quotient rather than the product." }
+      },
+      "unordered_pair_judgments": [
+        { "pair": "A-B", "meaning": "1/4 is the product; 17/15 is the sum." },
+        { "pair": "A-C", "meaning": "1/4 is the product; 1/2 is a distinct wrong value." },
+        { "pair": "A-D", "meaning": "1/4 is the product; 25/9 is the quotient." },
+        { "pair": "B-C", "meaning": "17/15 is the sum; 1/2 is a distinct wrong value. Neither is the product." },
+        { "pair": "B-D", "meaning": "17/15 is the sum; 25/9 is the quotient. Neither is the product." },
+        { "pair": "C-D", "meaning": "1/2 is a wrong value; 25/9 is the quotient. Neither is the product." }
+      ],
+      "unique_answer": "A",
+      "uncertain": false,
+      "confidence": 1,
+      "missing_premises": [],
+      "rationale": "Multiplying numerators and denominators produces 15/60, which reduces to 1/4. The other three answer choices have distinct values."
+    }
+  ]
+}
