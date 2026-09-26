@@ -218,7 +218,17 @@
     "aws_cli_version": "2.33.15",
     "aws_cli_path": "/opt/homebrew/Cellar/awscli/2.33.15/libexec/bin/aws",
     "cli_ignores_configured_endpoints": true,
-    "minimum_credential_lifetime_seconds": 780
+    "minimum_credential_lifetime_seconds": 780,
+    "config_path": "/Users/samchou/.aws/config",
+    "config_sha256": "7f70246298d2f2897d39ee3a99a7353bfa9b83255ef95ba0db5f3a5623ea5f3d",
+    "default_profile_keys": [
+      "login_session",
+      "region"
+    ],
+    "login_session_sha256": "8731d91a75118f0c6e502e84b95a999bbf68e2c825830881788660d6ee32e1f2",
+    "region": "us-east-1",
+    "shared_credentials_path": "/Users/samchou/.aws/credentials",
+    "shared_credentials_default_section": "absent"
   },
   "limits": {
     "jobs": 3,
@@ -256,7 +266,7 @@
   "capture_protocol": [
     "At freeze, pin the exact executable harness, tests, 29 runtime modules, requirements, template, bounded capture helper, initial author prompt bytes and every native contract before acquiring credentials.",
     "Create an exclusive no-resume capture with three original jobs, fifteen question slots and eighteen unattempted call slots before credential acquisition. Fsync the capture file and parent directory after initial creation and each atomic replacement, including every reservation and exact request before Converse.",
-    "Use one explicit default-profile credential export through the pinned AWS CLI 2.33.15 executable for a single boto3 session. Pass an explicit child environment with every AWS_ENDPOINT_URL* variable removed and AWS_IGNORE_CONFIGURED_ENDPOINT_URLS=true, preserving default profile configuration and login cache while neutralizing profile services endpoint overrides during any Signin refresh. Require a parsed, timezone-aware expiration at least 780 seconds after export (three 240-second job windows plus 60 seconds for setup/inter-job overhead), and recheck remaining snapshot lifetime against the dispatch read plus connect timeout and safety margin immediately before every Converse. Reject wrong profiles, validate the resolved exact STS endpoint before a signed identity request, require account 239342516379, then use that same session for Bedrock. A failed identity check leaves all original slots unattempted.",
+    "Use one explicit default-profile credential export through the pinned AWS CLI 2.33.15 executable for a single boto3 session. Before export, reject AWS_CONFIG_FILE and AWS_SHARED_CREDENTIALS_FILE overrides; verify the exact reviewed ~/.aws/config path and SHA-256, its default profile with only login_session and us-east-1 region (login-session value retained only as a SHA-256 fingerprint), and no shared-credentials default section. The child process receives the pinned HOME/config/credentials paths, keeps the login cache, removes inherited AWS credential-source and AWS_ENDPOINT_URL* variables, and sets AWS_IGNORE_CONFIGURED_ENDPOINT_URLS=true to neutralize service endpoint overrides during any Signin refresh. Require a parsed, timezone-aware expiration at least 780 seconds after export (three 240-second job windows plus 60 seconds for setup/inter-job overhead), and recheck remaining snapshot lifetime against the dispatch read plus connect timeout and safety margin immediately before every Converse. Reject wrong profiles, validate the resolved exact STS endpoint before a signed identity request, require account 239342516379, then use that same session for Bedrock. A failed identity check leaves all original slots unattempted.",
     "Record job/pass/raw-row/source-order/compiled-spec/sanitized/verified/returned provenance; retain extra rows only as diagnostics and never replace a planned slot.",
     "At each dispatch verify source, request, model, native schema, endpoint, us-east-1 region, three-second connect ceiling, deadline-clamped read timeout at most 200 seconds, and exactly one SDK attempt. Recheck the remaining deadline after all pin and capture writes immediately before the underlying Converse call.",
     "Bound response capture, remove reasoning and signatures, scan raw visible and decoded duplicate JSON members for credential echo before persistence, and save only safe error type/code.",
@@ -292,14 +302,14 @@
       "test_python_boolean_teaching.py": 4,
       "test_native_output_contracts.py": 16,
       "test_provider_deadlines.py": 12,
-      "test_mixed_probe.py": 47
+      "test_mixed_probe.py": 48
     },
     "awscrt_version": "0.36.0"
   },
   "preflight_artifact_sha256": {
-    "docs/evidence/current-source-worker-qualification-20260926/mixed_probe.py": "899854bd00f69eb17a442088bf2b162c5b12f3dd881cf5975b85604e97d92e9e",
-    "docs/evidence/current-source-worker-qualification-20260926/test_mixed_probe.py": "b00cc73945ebf302d1b04443a46ef7fa7eb07bcd50a07a09f56d0a94abb0f681",
+    "docs/evidence/current-source-worker-qualification-20260926/mixed_probe.py": "2f910f567fde3ccf9bd9966f65bea8f33aa10948417a86f0650eb46eca8b36a9",
+    "docs/evidence/current-source-worker-qualification-20260926/test_mixed_probe.py": "5334f8689ed3b4399dc3612eb79ac39e32eb461990ec5844b62e8944e3ae4dc9",
     "docs/evidence/current-source-worker-qualification-20260926/jobs-draft.json": "c96252f3e3d73cf53893410e02202b1bec3767c4edf28545a2211f82135d19cc",
-    "docs/evidence/current-source-worker-qualification-20260926/PLAN.md": "07daa71c1e717432c5d6fe8cbe7dcb4af9072e078e74e16ec6c77ec709e248f4"
+    "docs/evidence/current-source-worker-qualification-20260926/PLAN.md": "9e4ffd24ee061c3cab4f058bb38a9ed8ae1c0d7c660e90f47a7f4658679f03f4"
   }
 }

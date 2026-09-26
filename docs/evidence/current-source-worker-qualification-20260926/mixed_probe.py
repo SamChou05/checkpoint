@@ -1,6 +1,7 @@
 """Current-source worker-route probe; import and preflight make no provider calls."""
 
 import argparse
+import configparser
 import copy
 from datetime import datetime, timezone
 import hashlib
@@ -8,6 +9,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import pwd
 import shutil
 import subprocess
 import sys
@@ -49,6 +51,23 @@ EXPECTED_PROFILE = "default"
 EXPECTED_AWS_CLI_VERSION = "2.33.15"
 AWS_CLI_PATH = Path(shutil.which("aws") or "/__missing_aws_cli__/aws").resolve()
 MIN_CREDENTIAL_LIFETIME_SECONDS = 780
+FROZEN_HOME = Path("/Users/samchou")
+FROZEN_CONFIG_PATH = FROZEN_HOME / ".aws/config"
+FROZEN_CREDENTIALS_PATH = FROZEN_HOME / ".aws/credentials"
+FROZEN_CONFIG_SHA256 = "7f70246298d2f2897d39ee3a99a7353bfa9b83255ef95ba0db5f3a5623ea5f3d"
+FROZEN_LOGIN_SESSION_SHA256 = "8731d91a75118f0c6e502e84b95a999bbf68e2c825830881788660d6ee32e1f2"
+FROZEN_PROFILE_KEYS = frozenset({"login_session", "region"})
+FROZEN_PROFILE_REGION = "us-east-1"
+CLI_CREDENTIAL_ENV_NAMES = frozenset({
+    "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN", "AWS_SECURITY_TOKEN",
+    "AWS_ROLE_ARN", "AWS_ROLE_SESSION_NAME", "AWS_WEB_IDENTITY_TOKEN_FILE",
+    "AWS_CONTAINER_CREDENTIALS_FULL_URI", "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI",
+    "AWS_CONTAINER_AUTHORIZATION_TOKEN", "AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE",
+})
+SHARED_CREDENTIAL_DEFAULT_KEYS = frozenset({
+    "aws_access_key_id", "aws_secret_access_key", "aws_session_token",
+    "credential_process", "role_arn", "source_profile", "web_identity_token_file",
+})
 ENVIRONMENT = copy.deepcopy(DRAFT_DATA["trial_environment"])
 AUTHOR_MODEL = ENVIRONMENT["BEDROCK_MODEL_ID"]
 LIMITS = copy.deepcopy(DRAFT_DATA["limits"])
@@ -150,13 +169,55 @@ def validate_identity_environment(environment=None):
                 "AWS identity profile differs from the frozen default profile.")
     for name in ("AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_STS"):
         require(not environment.get(name), "An AWS endpoint override is present.")
+    for name in ("AWS_CONFIG_FILE", "AWS_SHARED_CREDENTIALS_FILE"):
+        require(not environment.get(name), "An AWS profile file path override is present.")
+
+
+def check_profile_files(config_path, credentials_path, config_sha256, login_session_sha256):
+    """Accept only the reviewed login-backed default profile as CLI input."""
+    require(config_path.is_file() and not config_path.is_symlink()
+            and file_hash(config_path) == config_sha256,
+            "The default AWS profile configuration changed.")
+    try:
+        config = configparser.ConfigParser(interpolation=None, strict=True)
+        config.read_string(config_path.read_text(encoding="utf-8"))
+        require(config.has_section("default") and not config.has_section("profile default")
+                and set(config["default"]) == FROZEN_PROFILE_KEYS,
+                "The default AWS profile is not the reviewed login profile.")
+        require(config["default"]["region"] == FROZEN_PROFILE_REGION
+                and hashlib.sha256(config["default"]["login_session"].encode()).hexdigest()
+                == login_session_sha256,
+                "The default AWS login session or region changed.")
+        if credentials_path.exists():
+            require(credentials_path.is_file() and not credentials_path.is_symlink(),
+                    "The shared AWS credentials path changed.")
+            credentials = configparser.ConfigParser(interpolation=None, strict=True)
+            credentials.read_string(credentials_path.read_text(encoding="utf-8"))
+            require(not credentials.has_section("default")
+                    and not credentials.has_section("profile default")
+                    and not (set(credentials.defaults()) & SHARED_CREDENTIAL_DEFAULT_KEYS),
+                    "Shared credentials provide a default identity.")
+    except (OSError, UnicodeError, configparser.Error):
+        raise IntegrityError("AWS profile files could not be validated.") from None
+
+
+def check_default_profile():
+    validate_identity_environment()
+    require(Path(pwd.getpwuid(os.getuid()).pw_dir) == FROZEN_HOME,
+            "The current user's home differs from the reviewed AWS profile.")
+    check_profile_files(FROZEN_CONFIG_PATH, FROZEN_CREDENTIALS_PATH,
+                        FROZEN_CONFIG_SHA256, FROZEN_LOGIN_SESSION_SHA256)
 
 
 def controlled_cli_environment(environment=None):
     """Keep the profile and login cache while excluding inherited endpoint settings."""
     source = os.environ if environment is None else environment
     child = {key: value for key, value in source.items()
-             if not key.upper().startswith("AWS_ENDPOINT_URL")}
+             if not key.upper().startswith("AWS_ENDPOINT_URL")
+             and key.upper() not in CLI_CREDENTIAL_ENV_NAMES}
+    child["HOME"] = str(FROZEN_HOME)
+    child["AWS_CONFIG_FILE"] = str(FROZEN_CONFIG_PATH)
+    child["AWS_SHARED_CREDENTIALS_FILE"] = str(FROZEN_CREDENTIALS_PATH)
     child["AWS_PROFILE"] = EXPECTED_PROFILE
     child["AWS_DEFAULT_PROFILE"] = EXPECTED_PROFILE
     child["AWS_IGNORE_CONFIGURED_ENDPOINT_URLS"] = "true"
@@ -199,7 +260,7 @@ def validate_credential_lifetime(raw, now=None):
 
 def default_profile_session():
     """Export one explicit default-profile credential set for STS and Bedrock."""
-    validate_identity_environment()
+    check_default_profile()
     check_aws_cli()
     command = (str(AWS_CLI_PATH), "configure", "export-credentials", "--profile", EXPECTED_PROFILE,
                "--format", "process")
@@ -208,6 +269,7 @@ def default_profile_session():
     def spawn(actual, **kwargs):
         require(tuple(actual) == command and "env" not in kwargs,
                 "Credential export command or subprocess environment changed.")
+        check_default_profile()
         return subprocess.Popen(actual, env=child_environment, **kwargs)
 
     original_export = safe.export_credentials
@@ -329,8 +391,16 @@ def build_plan():
                                  "aws_cli_version": EXPECTED_AWS_CLI_VERSION,
                                  "aws_cli_path": str(AWS_CLI_PATH),
                                  "cli_ignores_configured_endpoints": True,
-                                 "minimum_credential_lifetime_seconds": MIN_CREDENTIAL_LIFETIME_SECONDS},
+                                 "minimum_credential_lifetime_seconds": MIN_CREDENTIAL_LIFETIME_SECONDS,
+                                 "config_path": str(FROZEN_CONFIG_PATH),
+                                 "config_sha256": FROZEN_CONFIG_SHA256,
+                                 "default_profile_keys": sorted(FROZEN_PROFILE_KEYS),
+                                 "login_session_sha256": FROZEN_LOGIN_SESSION_SHA256,
+                                 "region": FROZEN_PROFILE_REGION,
+                                 "shared_credentials_path": str(FROZEN_CREDENTIALS_PATH),
+                                 "shared_credentials_default_section": "absent"},
             "Intended AWS identity or CLI changed.")
+    check_default_profile()
     require(AWS_CLI_PATH.is_file() and os.access(AWS_CLI_PATH, os.X_OK),
             "Pinned AWS CLI executable is missing.")
     dependencies = {"python": sys.version.split()[0], "boto3": boto3.__version__,
@@ -683,6 +753,7 @@ def finish(capture):
 
 
 def preflight():
+    check_default_profile()
     check_aws_cli()
     result = subprocess.run([sys.executable, "-B", "-m", "unittest", "discover", "-s", str(HERE),
                              "-p", "test_mixed_probe.py", "-q"], capture_output=True, text=True)

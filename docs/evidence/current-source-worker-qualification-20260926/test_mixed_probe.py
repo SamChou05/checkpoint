@@ -2,6 +2,7 @@
 
 import copy
 from datetime import datetime, timedelta, timezone
+import hashlib
 import importlib.util
 import json
 import os
@@ -203,6 +204,13 @@ class MixedProbeTests(unittest.TestCase):
         config = Path(self.directory.name) / "config"
         config.write_text("[default]\nlogin_session = test-session\nservices = redirected\n"
                           "[services redirected]\nsignin =\n  endpoint_url = https://signin.invalid\n")
+        with self.assertRaises(probe.IntegrityError):
+            probe.check_profile_files(config, Path(self.directory.name) / "missing-credentials",
+                                      probe.file_hash(config), hashlib.sha256(b"test-session").hexdigest())
+        config.write_text("[default]\nlogin_session = test-session\nregion = us-east-1\n"
+                          "[services redirected]\nsignin =\n  endpoint_url = https://signin.invalid\n")
+        probe.check_profile_files(config, Path(self.directory.name) / "missing-credentials",
+                                  probe.file_hash(config), hashlib.sha256(b"test-session").hexdigest())
         marker = object()
 
         def inspect_export():
@@ -213,11 +221,14 @@ class MixedProbeTests(unittest.TestCase):
             return process, ()
 
         with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_DEFAULT_PROFILE": "",
-                                  "AWS_CONFIG_FILE": str(config), "HOME": self.directory.name,
+                                  "HOME": self.directory.name,
                                   "AWS_ENDPOINT_URL": "", "AWS_ENDPOINT_URL_STS": "",
                                   "AWS_ENDPOINT_URL_SIGNIN": "https://env-signin.invalid",
                                   "AWS_ENDPOINT_URL_S3": "https://env-s3.invalid",
-                                  "AWS_IGNORE_CONFIGURED_ENDPOINT_URLS": "false"}), \
+                                  "AWS_IGNORE_CONFIGURED_ENDPOINT_URLS": "false",
+                                  "AWS_LOGIN_CACHE_DIRECTORY": self.directory.name,
+                                  "AWS_ROLE_ARN": "synthetic-role",
+                                  "AWS_WEB_IDENTITY_TOKEN_FILE": "/synthetic/token"}), \
                 patch.object(probe, "check_aws_cli"), \
                 patch.object(probe.subprocess, "Popen", return_value=marker) as popen, \
                 patch.object(probe.safe, "export_credentials", return_value=fake_export()), \
@@ -231,10 +242,50 @@ class MixedProbeTests(unittest.TestCase):
         self.assertEqual(child["AWS_IGNORE_CONFIGURED_ENDPOINT_URLS"], "true")
         self.assertEqual(child["AWS_PROFILE"], "default")
         self.assertEqual(child["AWS_DEFAULT_PROFILE"], "default")
-        self.assertEqual(child["AWS_CONFIG_FILE"], str(config))
-        self.assertEqual(child["HOME"], self.directory.name)
+        self.assertEqual(child["AWS_CONFIG_FILE"], str(probe.FROZEN_CONFIG_PATH))
+        self.assertEqual(child["AWS_SHARED_CREDENTIALS_FILE"], str(probe.FROZEN_CREDENTIALS_PATH))
+        self.assertEqual(child["HOME"], str(probe.FROZEN_HOME))
+        self.assertEqual(child["AWS_LOGIN_CACHE_DIRECTORY"], self.directory.name)
         self.assertFalse(any(key.upper().startswith("AWS_ENDPOINT_URL") for key in child))
+        self.assertNotIn("AWS_ROLE_ARN", child)
+        self.assertNotIn("AWS_WEB_IDENTITY_TOKEN_FILE", child)
         self.assertIn("endpoint_url = https://signin.invalid", config.read_text())
+
+    def test_profile_path_overrides_and_mutations_stop_before_credential_export(self):
+        with patch.object(probe, "check_aws_cli") as cli, \
+                patch.object(probe.safe, "credential_session") as export:
+            for variable in ("AWS_CONFIG_FILE", "AWS_SHARED_CREDENTIALS_FILE"):
+                with self.subTest(variable=variable), patch.dict(os.environ, {variable: "/alternate/aws-file"}):
+                    with self.assertRaises(probe.IntegrityError):
+                        probe.default_profile_session()
+            cli.assert_not_called()
+            export.assert_not_called()
+
+        config = Path(self.directory.name) / "config"
+        credentials = Path(self.directory.name) / "credentials"
+        base = "[default]\nlogin_session = test-session\nregion = us-east-1\n"
+        login_hash = hashlib.sha256(b"test-session").hexdigest()
+        config.write_text(base)
+        probe.check_profile_files(config, credentials, probe.file_hash(config), login_hash)
+        for changed in (base + "credential_process = synthetic-helper\n",
+                        base + "role_arn = synthetic-role\nsource_profile = other\n",
+                        base + "web_identity_token_file = /synthetic/token\n",
+                        base.replace("us-east-1", "us-west-2"),
+                        base.replace("test-session", "other-session"),
+                        base + "[profile default]\ncredential_process = synthetic-helper\n"):
+            config.write_text(changed)
+            with self.subTest(changed=hashlib.sha256(changed.encode()).hexdigest()), \
+                    self.assertRaises(probe.IntegrityError):
+                probe.check_profile_files(config, credentials, probe.file_hash(config), login_hash)
+        config.write_text(base)
+        credentials.write_text("[other]\naws_access_key_id = SYNTHETIC_OTHER\n")
+        probe.check_profile_files(config, credentials, probe.file_hash(config), login_hash)
+        credentials.write_text("[default]\naws_access_key_id = SYNTHETIC_DEFAULT\n")
+        with self.assertRaises(probe.IntegrityError):
+            probe.check_profile_files(config, credentials, probe.file_hash(config), login_hash)
+        credentials.unlink()
+        with self.assertRaises(probe.IntegrityError):
+            probe.check_profile_files(config, credentials, "0" * 64, login_hash)
 
     def test_short_or_unbounded_credential_snapshot_stops_before_session_use(self):
         with self.assertRaises(probe.IntegrityError):
