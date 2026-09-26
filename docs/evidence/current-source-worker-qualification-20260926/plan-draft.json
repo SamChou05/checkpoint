@@ -214,7 +214,11 @@
   "identity": {
     "profile": "default",
     "account": "239342516379",
-    "sts_endpoint": "https://sts.us-east-1.amazonaws.com"
+    "sts_endpoint": "https://sts.us-east-1.amazonaws.com",
+    "aws_cli_version": "2.33.15",
+    "aws_cli_path": "/opt/homebrew/Cellar/awscli/2.33.15/libexec/bin/aws",
+    "cli_ignores_configured_endpoints": true,
+    "minimum_credential_lifetime_seconds": 780
   },
   "limits": {
     "jobs": 3,
@@ -252,7 +256,7 @@
   "capture_protocol": [
     "At freeze, pin the exact executable harness, tests, 29 runtime modules, requirements, template, bounded capture helper, initial author prompt bytes and every native contract before acquiring credentials.",
     "Create an exclusive no-resume capture with three original jobs, fifteen question slots and eighteen unattempted call slots before credential acquisition. Fsync the capture file and parent directory after initial creation and each atomic replacement, including every reservation and exact request before Converse.",
-    "Use one explicit default-profile credential export for a single boto3 session. Reject profile or STS endpoint overrides, validate the resolved exact STS endpoint before a signed identity request, require account 239342516379, then use that same session for Bedrock. A failed identity check leaves all original slots unattempted.",
+    "Use one explicit default-profile credential export through the pinned AWS CLI 2.33.15 executable for a single boto3 session. Pass an explicit child environment with every AWS_ENDPOINT_URL* variable removed and AWS_IGNORE_CONFIGURED_ENDPOINT_URLS=true, preserving default profile configuration and login cache while neutralizing profile services endpoint overrides during any Signin refresh. Require a parsed, timezone-aware expiration at least 780 seconds after export (three 240-second job windows plus 60 seconds for setup/inter-job overhead), and recheck remaining snapshot lifetime against the dispatch read plus connect timeout and safety margin immediately before every Converse. Reject wrong profiles, validate the resolved exact STS endpoint before a signed identity request, require account 239342516379, then use that same session for Bedrock. A failed identity check leaves all original slots unattempted.",
     "Record job/pass/raw-row/source-order/compiled-spec/sanitized/verified/returned provenance; retain extra rows only as diagnostics and never replace a planned slot.",
     "At each dispatch verify source, request, model, native schema, endpoint, us-east-1 region, three-second connect ceiling, deadline-clamped read timeout at most 200 seconds, and exactly one SDK attempt. Recheck the remaining deadline after all pin and capture writes immediately before the underlying Converse call.",
     "Bound response capture, remove reasoning and signatures, scan raw visible and decoded duplicate JSON members for credential echo before persistence, and save only safe error type/code.",
@@ -268,7 +272,7 @@
   "offline_prerequisites": [
     "Use the pinned Python 3.12.11 interpreter and dependency search path recorded in offline_validation_environment; do not use the system default Python 3.9.",
     "Independently review the ported mixed_probe.py, its offline fake-provider tests, exact source/evidence pins, fixed requests, and current native contracts.",
-    "Confirm the harness tests and the 4 Boolean, 16 native-contract, and 12 provider-deadline tests still pass offline after any change; preflight requires Python 3.12.11, boto3/botocore 1.43.91 and awscrt 0.36.0.",
+    "Confirm the harness tests and the 4 Boolean, 16 native-contract, and 12 provider-deadline tests still pass offline after any change; preflight requires Python 3.12.11, boto3/botocore 1.43.91, awscrt 0.36.0 and AWS CLI 2.33.15. The CLI version command is offline; fake subprocess tests never refresh login credentials or contact AWS.",
     "Review the generated executable draft digest and make a separate exact frozen plan before any provider dispatch."
   ],
   "estimated_calls": {
@@ -288,14 +292,14 @@
       "test_python_boolean_teaching.py": 4,
       "test_native_output_contracts.py": 16,
       "test_provider_deadlines.py": 12,
-      "test_mixed_probe.py": 43
+      "test_mixed_probe.py": 47
     },
     "awscrt_version": "0.36.0"
   },
   "preflight_artifact_sha256": {
-    "docs/evidence/current-source-worker-qualification-20260926/mixed_probe.py": "69071cfe0f3b6c3ffd4e8bc1837c9e8cf44bf5e189dcba98887f5043d82ea6fd",
-    "docs/evidence/current-source-worker-qualification-20260926/test_mixed_probe.py": "e7e686204b21ee862939967a36447b27f46720841aa46d7bf4aa840ac974edf7",
+    "docs/evidence/current-source-worker-qualification-20260926/mixed_probe.py": "899854bd00f69eb17a442088bf2b162c5b12f3dd881cf5975b85604e97d92e9e",
+    "docs/evidence/current-source-worker-qualification-20260926/test_mixed_probe.py": "b00cc73945ebf302d1b04443a46ef7fa7eb07bcd50a07a09f56d0a94abb0f681",
     "docs/evidence/current-source-worker-qualification-20260926/jobs-draft.json": "c96252f3e3d73cf53893410e02202b1bec3767c4edf28545a2211f82135d19cc",
-    "docs/evidence/current-source-worker-qualification-20260926/PLAN.md": "8ce58119ffcbf9a60b8cfac21b6c7eb66e1310e26617e5a1521c7e3dd1cbfe7c"
+    "docs/evidence/current-source-worker-qualification-20260926/PLAN.md": "07daa71c1e717432c5d6fe8cbe7dcb4af9072e078e74e16ec6c77ec709e248f4"
   }
 }
