@@ -6,16 +6,20 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,361 backend tests** and the latest full
+Current source verification passes **1,373 backend tests** and the latest full
 iOS suite completed **1,058 tests with three existing skips** after the optional
 timeout, fraction-distractor, compiled-surplus, scalar-explanation,
-author-cardinality, numeric-choice and saved-inventory improvements. The latest
+author-cardinality, task-only numerical, numeric-choice and saved-inventory improvements. The latest
 [current-source full-worker trial](evidence/current-source-worker-successor-qualification-20260926/RESULTS.md)
 fails qualification at 9/15 returns and three compiled items where six were
 required. Both independent blind reviews and post-lock teaching audits found all
 nine returned items usable, but the numerical author exhausted its 16,000-token
-allowance and returned no decodable batch. Verified improvements are on main; the last inspected deployment remains
-the September 11 legacy package. No deployment or inventory transition has occurred.
+allowance and returned no decodable batch. A later one-job
+[task-only numerical pilot](evidence/task-only-numerical-author-qualification-20260926/RESULTS.md)
+passed at 5/5 compiler-proven returns; the full three-topic route remains unqualified.
+Verified improvements are on main, while the [fresh September 26 deployment check](evidence/deployment-refresh-20260926/RESULTS.md)
+still finds the September 11 legacy API and worker packages. No deployment or
+inventory transition has occurred.
 
 ## Findings and verified fixes
 
