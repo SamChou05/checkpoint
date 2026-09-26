@@ -6,8 +6,8 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,318 backend tests** after the optional
-timeout and fraction-distractor improvements. The latest
+Current source verification passes **1,332 backend tests** after the optional
+timeout, fraction-distractor, compiled-surplus and scalar-explanation improvements. The latest
 [full-worker trial](evidence/constructed-sonnet-long-read-qualification-20260922/RESULTS.md)
 still fails qualification at 13/15 returns and three numerical compiled items
 where four were required. Its frozen source excludes the newer fraction-priority
@@ -324,3 +324,7 @@ A separate [verified timeout improvement](evidence/worker-response-timeout-200-2
 The completed [longer-read trial](evidence/constructed-sonnet-long-read-qualification-20260922/RESULTS.md) returned 13/15 within deadline. Its first author took 161.843 seconds, so the larger ceiling was used; a later solver still timed out under a 6.396-second remaining allowance. Twelve received responses were native-valid. All eight typed drafts constructed, but only six released and only three were in the numerical job. Four raw mains referenced shuffled answer labels, one compiled surplus was capped behind a prose row, and one mathematically sound scalar main received an unexplained uncertainty veto. Both independent reviewers preserve the same English ambiguity and Boolean-rule sensitivities; no reading qualifies the original criteria.
 
 A separate [fraction-pool improvement](evidence/fraction-distractor-priority-20260922/RESULTS.md) now prioritizes bounded fraction-procedure mistakes over generic operator swaps. It preserves exact keys, distinct values, final compilation and all audit vetoes. Verification covers 1,318 backend tests, 885 signed cases with twenty constructibility gains and no losses, all 288 nested cases, and the three packaged artifacts. These deterministic checks do not establish novice distractor plausibility or full-worker qualification. The earlier frozen trials remain unchanged.
+
+The constructed author now prefers privately proven compiled rows over prose rows only within the same resolved skill and objective positions when surplus rows compete for a requested slot. Original source ordinals and all sanitizer and final audit gates remain binding. This addresses the observed surplus-order loss without claiming the failed trial would have returned another item: its later solver had little time left. The deterministic scalar compiler also lists the exact false comparisons for every more-extreme domain value when the set is small and the proof fits the learner explanation limit; longer cases retain the prior wording. This makes a previously terse proof explicit, but the earlier unexplained model veto cannot be causally reclassified. The integrated backend suite passes 1,332 tests.
+
+A separately reviewed [shuffle-instruction comparison](evidence/shuffled-choice-author-instruction-20260922/RESULTS.md) ended before model dispatch because AWS credentials had expired. The exact frozen record has zero calls and all 20 slots unattempted. The proposed author prompt remains isolated; there is no evidence for promoting it. Independent preflight caught and resolved a malformed-response capture issue before that attempt. An offline schema investigation also confirmed the current author `questions` array accepts different raw counts for a five-item request. A count-bound author contract is being developed separately; even an exact raw count would not guarantee five usable questions or resolve semantic ambiguity.
