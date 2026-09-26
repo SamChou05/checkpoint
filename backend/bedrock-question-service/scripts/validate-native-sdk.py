@@ -66,6 +66,9 @@ def main() -> None:
                        for count in range(1, native_output_contracts.MAX_REVIEW_BATCH_COUNT + 1))
     contracts += tuple(native_output_contracts.AuthoredSolutionFlagReviewContract(count)
                        for count in range(1, native_output_contracts.MAX_REVIEW_BATCH_COUNT + 1))
+    contracts += tuple(native_output_contracts.AuthorSlotContract(count, mode)
+                       for mode in ("prose", "mixed_quantitative", "constructed_quantitative")
+                       for count in range(1, native_output_contracts.MAX_AUTHOR_BATCH_COUNT + 1))
     for contract in contracts:
         request = {
             "modelId": "us.anthropic.claude-sonnet-4-6",

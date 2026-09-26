@@ -121,8 +121,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 62 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 62"
+[[ "${#sam_arguments[@]}" -eq 63 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 63"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -145,7 +145,7 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
-for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerFeedbackContract=reviewer_written; do
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerAuthorCardinalityContract=array QuestionBankWorkerFeedbackContract=reviewer_written; do
   [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
 done
 for argument in "${sam_arguments[@]:11}"; do
@@ -269,6 +269,49 @@ for checked_script in validate-deployment-config.sh deploy-sam.sh; do
     [[ " ${sam_arguments[*]} " == *" BedrockStructuredOutputMode=legacy "* ]] || fail "constructed worker changed API transport"
     [[ " ${sam_arguments[*]} " == *" QuestionAuthorMode=prose "* ]] || fail "constructed worker changed API author"
   fi
+done
+
+for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+  for worker_mode in inherit legacy native; do
+    rm -f "$sam_capture"
+    if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" BEDROCK_STRUCTURED_OUTPUT_MODE=legacy \
+      "QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=$worker_mode" \
+      QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT=count_bound \
+      "$script_dir/$checked_script" >"$test_directory/cardinality-error" 2>&1; then
+      if [[ "$worker_mode" != native ]]; then
+        fail "$checked_script accepted count-bound authoring with legacy worker transport"
+      fi
+    elif [[ "$worker_mode" == native ]]; then
+      fail "$checked_script rejected count-bound authoring with native worker transport"
+    fi
+    if [[ "$worker_mode" != native ]]; then
+      [[ ! -e "$sam_capture" ]] || fail "SAM ran for incompatible count-bound authoring"
+      [[ "$(cat "$test_directory/cardinality-error")" == *"QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT"* ]] || \
+        fail "count-bound rejection did not identify its setting"
+    elif [[ "$checked_script" == deploy-sam.sh ]]; then
+      mapfile -d '' -t cardinality_arguments < "$sam_capture"
+      [[ " ${cardinality_arguments[*]} " == *" QuestionBankWorkerAuthorCardinalityContract=count_bound "* ]] || \
+        fail "count-bound worker authoring was not forwarded"
+      [[ " ${cardinality_arguments[*]} " == *" BedrockStructuredOutputMode=legacy "* ]] || \
+        fail "count-bound worker authoring changed API transport"
+    fi
+  done
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" BEDROCK_STRUCTURED_OUTPUT_MODE=native \
+    QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=inherit \
+    QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT=count_bound \
+    "$script_dir/$checked_script"
+  for invalid_cardinality in invalid prose; do
+    rm -f "$sam_capture"
+    if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native \
+      "QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT=$invalid_cardinality" \
+      "$script_dir/$checked_script" >"$test_directory/cardinality-error" 2>&1; then
+      fail "$checked_script accepted invalid worker author cardinality $invalid_cardinality"
+    fi
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid worker author cardinality"
+  done
 done
 
 for feedback in reviewer_written authored_solution; do

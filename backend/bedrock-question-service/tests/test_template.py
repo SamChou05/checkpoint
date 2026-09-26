@@ -160,6 +160,29 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
         self.assertIn("QUESTION_BANK_WORKER_FEEDBACK_CONTRACT || 'reviewer_written'", self.deploy_workflow)
         self.assertIn('"QuestionBankWorkerFeedbackContract=${QUESTION_BANK_WORKER_FEEDBACK_CONTRACT:-reviewer_written}"', self.deploy_script)
 
+    def test_count_bound_author_is_worker_only_and_defaults_to_array(self):
+        parameter = _indented_block(self.template, "QuestionBankWorkerAuthorCardinalityContract")
+        self.assertIn("Default: array", parameter)
+        self.assertIn("AllowedValues: [array, count_bound]", parameter)
+        api = _indented_block(self.template, "CheckpointQuestionFunction")
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
+        self.assertNotIn("QUESTION_AUTHOR_CARDINALITY_CONTRACT", api)
+        self.assertIn(
+            "QUESTION_AUTHOR_CARDINALITY_CONTRACT: !Ref QuestionBankWorkerAuthorCardinalityContract",
+            worker,
+        )
+        self.assertEqual(self.template.count("QUESTION_AUTHOR_CARDINALITY_CONTRACT:"), 1)
+        self.assertIn("QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT || 'array'", self.deploy_workflow)
+        self.assertIn(
+            '"QuestionBankWorkerAuthorCardinalityContract=${QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT:-array}"',
+            self.deploy_script,
+        )
+        rule = _indented_block(self.template, "WorkerCountBoundRequiresNativeTransport")
+        self.assertIn("RuleCondition: !Equals [!Ref QuestionBankWorkerAuthorCardinalityContract, count_bound]", rule)
+        self.assertIn("!Equals [!Ref QuestionBankWorkerStructuredOutputMode, native]", rule)
+        self.assertIn("!Equals [!Ref QuestionBankWorkerStructuredOutputMode, inherit]", rule)
+        self.assertIn("!Equals [!Ref BedrockStructuredOutputMode, native]", rule)
+
     def test_optional_skill_map_override_binds_model_and_iam_only_on_api(self):
         for parameter in ("SkillMapModelArn", "SkillMapInvokeResourceArns"):
             self.assertIn('Default: ""', _indented_block(self.template, parameter))

@@ -16,6 +16,17 @@ validate_native_output_models() {
     *) echo "QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE must be inherit, legacy, or native." >&2; return 1 ;;
   esac
 
+  case "${QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT:-array}" in
+    array) ;;
+    count_bound)
+      if [[ "$worker_mode" != native ]]; then
+        echo "QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT=count_bound requires native worker transport." >&2
+        return 1
+      fi
+      ;;
+    *) echo "QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT must be array or count_bound." >&2; return 1 ;;
+  esac
+
   case "${QUESTION_BANK_WORKER_FEEDBACK_CONTRACT:-reviewer_written}" in
     reviewer_written|authored_solution) ;;
     *) echo "QUESTION_BANK_WORKER_FEEDBACK_CONTRACT must be reviewer_written or authored_solution." >&2; return 1 ;;

@@ -31,6 +31,7 @@ Important guided values:
 - `DeploymentEnvironment`: use `testflight` for internal distribution; selecting `production` does not make bearer auth App Store-safe
 - `BedrockStructuredOutputMode`: defaults to `legacy`; controls the API and the worker when its override is `inherit`. `native` is an explicit post-qualification rollout.
 - `QuestionBankWorkerStructuredOutputMode`: defaults to `inherit`, preserving the global mode. Explicit `legacy` or `native` overrides only the asynchronous worker. The deploy workflow variable is `QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE`.
+- `QuestionBankWorkerAuthorCardinalityContract`: defaults to `array`; experimental `count_bound` requires effective native worker transport and is controlled by `QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT`. The synchronous API stays on its existing array author contract. This parameter exposes an opt-in for later qualification; it does not qualify or enable it by default.
 - `QuestionBankWorkerFeedbackContract`: defaults to `reviewer_written`; opt-in `authored_solution` selects the immutable-main audit only for the worker. Configure `QUESTION_BANK_WORKER_FEEDBACK_CONTRACT` in the deployment environment. The API keeps its existing reviewer-written default. Enabling this parameter requires qualification of the selected model/transport/author combination; adding the parameter does not enable or deploy it.
 - `QuestionBankWorkerClaudeThinking`: defaults to `inherit`; `adaptive` or `disabled` overrides Claude thinking only in the worker. Configure `QUESTION_BANK_WORKER_CLAUDE_THINKING` in the deployment environment. The API retains `BedrockClaudeThinking`, so worker reasoning trials do not consume its shorter request deadline. Keep effort and token limits consistent with the evaluated candidate.
 - `QuestionBankTTLSeconds`: defaults to 30 days; choose and publish the production retention period before launch
@@ -71,8 +72,8 @@ acceptance, latency, or application quality. Opaque application profiles that th
 runtime cannot identify fail closed and need explicit reviewed support.
 
 `requirements.txt` packages boto3 and botocore 1.43.91 in each Lambda artifact.
-After building, validate the delivered SDK and all ten registered native request
-shapes, including retained historical versions and experimental reviewer v2:
+After building, validate the delivered SDK and all registered native request
+shapes, including the count-bound prose, mixed, and constructed author families:
 
 ```bash
 sam validate --lint --template-file template.yaml
