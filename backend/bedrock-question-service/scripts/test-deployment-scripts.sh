@@ -19,6 +19,8 @@ backend_token=checkpoint-backend-token-at-least-32-characters
 quota_secret=checkpoint-quota-secret-at-least-32-characters
 api_model=arn:aws:bedrock:us-east-1::foundation-model/moonshotai.kimi-k2.5
 worker_model=arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-sonnet-4-6
+scope_hash=afad55f2475381992d1355945ef521da72d3170f06d6ea83670f07ee868c46f0
+other_scope_hash=497824fdd8fd85389f03d435d44e44147260c9d600fca3538e0a515dacdb53e5
 deployment_environment=(
   "AWS_DEPLOY_ROLE_ARN=arn:aws:iam::123456789012:role/checkpoint-deploy"
   "AWS_REGION=us-east-1"
@@ -121,8 +123,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 63 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 63"
+[[ "${#sam_arguments[@]}" -eq 66 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 66"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -145,8 +147,65 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
-for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerAuthorCardinalityContract=array QuestionBankWorkerFeedbackContract=reviewer_written; do
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerAuthorCardinalityContract=array QuestionBankWorkerFeedbackContract=reviewer_written QuestionBankWorkerTaskOnlyNumericalGoalSHA256= QuestionBankWorkerConstructedAuthorBatchSize=0 QuestionBankWorkerConstructedAuthorBatchGoalSHA256=; do
   [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
+done
+
+# Both deployment entry points reject malformed or incompatible exact-goal
+# settings before any SAM invocation; only the explicit worker route may opt in.
+for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" \
+    QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native \
+    QUESTION_BANK_WORKER_AUTHOR_MODE=constructed_quantitative \
+    QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=authored_solution \
+    "QUESTION_BANK_WORKER_TASK_ONLY_NUMERICAL_GOAL_SHA256=$scope_hash" \
+    QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE=3 \
+    "QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256=$scope_hash" \
+    "$script_dir/$checked_script"
+  if [[ "$checked_script" == deploy-sam.sh ]]; then
+    mapfile -d '' -t scope_arguments < "$sam_capture"
+    for setting in "QuestionBankWorkerTaskOnlyNumericalGoalSHA256=$scope_hash" \
+      QuestionBankWorkerConstructedAuthorBatchSize=3 \
+      "QuestionBankWorkerConstructedAuthorBatchGoalSHA256=$scope_hash" \
+      BedrockStructuredOutputMode=legacy QuestionAuthorMode=prose; do
+      [[ " ${scope_arguments[*]} " == *" $setting "* ]] || fail "worker scope setting $setting was not forwarded"
+    done
+  fi
+  for case_name in malformed_task malformed_batch missing_batch_scope orphan_batch_scope mismatched_scope \
+    inherited_native legacy_worker prose_worker reviewer_feedback count_bound noninteger_batch \
+    unqualified_batch oversized_batch; do
+    case_settings=(
+      QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native
+      QUESTION_BANK_WORKER_AUTHOR_MODE=constructed_quantitative
+      QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=authored_solution
+      "QUESTION_BANK_WORKER_TASK_ONLY_NUMERICAL_GOAL_SHA256=$scope_hash"
+      QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE=3
+      "QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256=$scope_hash"
+    )
+    case "$case_name" in
+      malformed_task) case_settings+=(QUESTION_BANK_WORKER_TASK_ONLY_NUMERICAL_GOAL_SHA256=BAD) ;;
+      malformed_batch) case_settings+=(QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256=BAD) ;;
+      missing_batch_scope) case_settings+=(QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256=) ;;
+      orphan_batch_scope) case_settings+=(QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE=0) ;;
+      mismatched_scope) case_settings+=("QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256=$other_scope_hash") ;;
+      inherited_native) case_settings+=(QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=inherit) ;;
+      legacy_worker) case_settings+=(QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=legacy) ;;
+      prose_worker) case_settings+=(QUESTION_BANK_WORKER_AUTHOR_MODE=prose) ;;
+      reviewer_feedback) case_settings+=(QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=reviewer_written) ;;
+      count_bound) case_settings+=(QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT=count_bound) ;;
+      noninteger_batch) case_settings+=(QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE=3.5) ;;
+      unqualified_batch) case_settings+=(QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE=2) ;;
+      oversized_batch) case_settings+=(QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE=6) ;;
+    esac
+    rm -f "$sam_capture"
+    if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" "${case_settings[@]}" \
+      "$script_dir/$checked_script" >"$test_directory/scope-error" 2>&1; then
+      fail "$checked_script accepted invalid worker scope case $case_name"
+    fi
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid worker scope case $case_name"
+  done
 done
 for argument in "${sam_arguments[@]:11}"; do
   [[ "$argument" == *=* && "$argument" != *'$'* ]] || \

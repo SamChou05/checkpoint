@@ -335,6 +335,29 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             self.deploy_script,
         )
 
+    def test_exact_goal_author_flags_are_worker_only_and_disabled_by_default(self):
+        api = _indented_block(self.template, "CheckpointQuestionFunction")
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
+        for parameter, variable, workflow_variable, disabled in (
+            ("QuestionBankWorkerTaskOnlyNumericalGoalSHA256", "QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256",
+             "QUESTION_BANK_WORKER_TASK_ONLY_NUMERICAL_GOAL_SHA256", '""'),
+            ("QuestionBankWorkerConstructedAuthorBatchSize", "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE",
+             "QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE", "0"),
+            ("QuestionBankWorkerConstructedAuthorBatchGoalSHA256", "QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256",
+             "QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256", '""'),
+        ):
+            with self.subTest(parameter=parameter):
+                self.assertIn(f"Default: {disabled}", _indented_block(self.template, parameter))
+                self.assertNotIn(variable + ":", api)
+                self.assertIn(variable + ": !If [HasWorker", worker)
+                self.assertIn(f"vars.{workflow_variable}", self.deploy_workflow)
+                self.assertIn(f'"{parameter}=${{{workflow_variable}:-', self.deploy_script)
+        self.assertIn("AllowedPattern: '^$|^[0-9a-f]{64}$'", self.template)
+        self.assertIn("AllowedValues: [0, 3]", _indented_block(self.template, "QuestionBankWorkerConstructedAuthorBatchSize"))
+        for rule in ("WorkerTaskOnlyRequiresQualifiedRoute", "WorkerConstructedBatchRequiresExactScope",
+                     "WorkerTaskOnlyAndBatchScopesMatch"):
+            self.assertIn("  " + rule + ":", self.template)
+
     def test_worker_generation_chunk_size_defaults_to_one_checkpoint(self):
         parameter = self.template.split(
             "  QuestionBankGenerationChunkSize:", maxsplit=1

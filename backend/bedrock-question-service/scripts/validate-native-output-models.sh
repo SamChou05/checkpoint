@@ -115,6 +115,43 @@ validate_worker_read_timeout() {
   fi
 }
 
+validate_worker_exact_goal_scopes() {
+  local task_goal="${QUESTION_BANK_WORKER_TASK_ONLY_NUMERICAL_GOAL_SHA256:-}"
+  local batch_size="${QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE:-0}"
+  local batch_goal="${QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256:-}"
+  local name digest
+  for name in QUESTION_BANK_WORKER_TASK_ONLY_NUMERICAL_GOAL_SHA256 QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256; do
+    digest="${!name:-}"
+    if [[ -n "$digest" && ! "$digest" =~ ^[0-9a-f]{64}$ ]]; then
+      echo "$name must be an exact lowercase 64-character SHA-256 digest." >&2
+      return 1
+    fi
+  done
+  if [[ ! "$batch_size" =~ ^(0|3)$ ]]; then
+    echo "QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE must be 0 or the trialed three-item cap 3." >&2
+    return 1
+  fi
+  if [[ "$batch_size" == 0 && -n "$batch_goal" ]] ||
+     [[ "$batch_size" != 0 && -z "$batch_goal" ]]; then
+    echo "QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE and its exact GOAL_SHA256 must be enabled together." >&2
+    return 1
+  fi
+  if [[ -n "$task_goal" || "$batch_size" != 0 ]]; then
+    if [[ "${QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE:-inherit}" != native ||
+          "${QUESTION_BANK_WORKER_AUTHOR_MODE:-inherit}" != constructed_quantitative ||
+          "${QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT:-array}" != array ||
+          "${QUESTION_BANK_WORKER_FEEDBACK_CONTRACT:-reviewer_written}" != authored_solution ]]; then
+      echo "Worker exact-goal authoring requires explicit native constructed_quantitative array mode and authored_solution feedback." >&2
+      return 1
+    fi
+  fi
+  if [[ -n "$task_goal" && -n "$batch_goal" && "$task_goal" != "$batch_goal" ]]; then
+    echo "Task-only and constructed-author batch goal SHA-256 values must match." >&2
+    return 1
+  fi
+}
+
 validate_worker_read_timeout
 validate_skill_map_override
 validate_native_output_models
+validate_worker_exact_goal_scopes

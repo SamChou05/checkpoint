@@ -33,6 +33,8 @@ Important guided values:
 - `QuestionBankWorkerStructuredOutputMode`: defaults to `inherit`, preserving the global mode. Explicit `legacy` or `native` overrides only the asynchronous worker. The deploy workflow variable is `QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE`.
 - `QuestionBankWorkerAuthorCardinalityContract`: defaults to `array`; experimental `count_bound` requires effective native worker transport and is controlled by `QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT`. The synchronous API stays on its existing array author contract. This parameter exposes an opt-in for later qualification; it does not qualify or enable it by default.
 - `QuestionBankWorkerFeedbackContract`: defaults to `reviewer_written`; opt-in `authored_solution` selects the immutable-main audit only for the worker. Configure `QUESTION_BANK_WORKER_FEEDBACK_CONTRACT` in the deployment environment. The API keeps its existing reviewer-written default. Enabling this parameter requires qualification of the selected model/transport/author combination; adding the parameter does not enable or deploy it.
+- `QuestionBankWorkerTaskOnlyNumericalGoalSHA256`: empty by default. A lowercase SHA-256 of the exact normalized goal selects task-only constructed authoring for that worker goal; every other goal retains the ordinary constructed author contract. Configure `QUESTION_BANK_WORKER_TASK_ONLY_NUMERICAL_GOAL_SHA256` only with explicit worker `native`, `constructed_quantitative`, `array`, and `authored_solution` settings.
+- `QuestionBankWorkerConstructedAuthorBatchSize` and `QuestionBankWorkerConstructedAuthorBatchGoalSHA256`: default to `0` and empty, so neither runtime flag is set. The sole exposed opt-in cap is the trialed three-item value, with a lowercase SHA-256 of the exact normalized goal, explicit native constructed array authoring, and authored-solution feedback. Configure `QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE` and `QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256` together; when task-only authoring is enabled, the two hashes must match. Both deployment scripts reject malformed, missing, mismatched, or incompatible settings before SAM is invoked; the workflow performs this check before configuring AWS credentials. CloudFormation rules provide a second check.
 - `QuestionBankWorkerClaudeThinking`: defaults to `inherit`; `adaptive` or `disabled` overrides Claude thinking only in the worker. Configure `QUESTION_BANK_WORKER_CLAUDE_THINKING` in the deployment environment. The API retains `BedrockClaudeThinking`, so worker reasoning trials do not consume its shorter request deadline. Keep effort and token limits consistent with the evaluated candidate.
 - `QuestionBankTTLSeconds`: defaults to 30 days; choose and publish the production retention period before launch
 - `QuestionBankWorkerReservedConcurrency`: defaults to 2 and independently caps asynchronous Bedrock work
@@ -62,6 +64,40 @@ worker independently, keep `BedrockStructuredOutputMode=legacy` and set
 question generation and skill maps in legacy mode. Qualify every model/stage
 used by the function being enabled, including its configured fallback; this
 override does not replace a model or relax runtime capability checks.
+
+A reviewable candidate for the exact numerical goal used in the task-only
+qualification sets the following protected deployment variables **only after
+the full worker route qualifies**. The digest below is the SHA-256 of that
+request's normalized goal, not of its title or raw app request:
+
+```text
+BEDROCK_STRUCTURED_OUTPUT_MODE=legacy
+QUESTION_AUTHOR_MODE=prose
+QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native
+QUESTION_BANK_WORKER_AUTHOR_MODE=constructed_quantitative
+QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT=array
+QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=authored_solution
+QUESTION_BANK_WORKER_TASK_ONLY_NUMERICAL_GOAL_SHA256=afad55f2475381992d1355945ef521da72d3170f06d6ea83670f07ee868c46f0
+QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_SIZE=3
+QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256=afad55f2475381992d1355945ef521da72d3170f06d6ea83670f07ee868c46f0
+QUESTION_BANK_WORKER_CLAUDE_THINKING=adaptive
+QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS=200
+BEDROCK_THINKING_MAX_TOKENS=16000
+BEDROCK_CLAUDE_EFFORT=high
+GENERATION_ATTEMPTS=3
+MAX_PROVIDER_CALLS_PER_REQUEST=6
+```
+
+Keep the existing exact Nova Lite `BEDROCK_MODEL_ARN`, API invoke resources,
+and global `BedrockClaudeThinking=disabled`; set the worker and verifier model
+ARNs and invocation resource lists to the **exact** Sonnet 4.6 profile and
+destinations that pass the full-worker review. The existing worker-only model
+ARN and read-timeout parameters carry those values. The synchronous API keeps
+its 20-second runtime read timeout and legacy prose/reviewer-written route.
+`QuestionBankWorkerFunction` has a 240-second Lambda deadline, so a 200-second
+read value is a ceiling that the runtime must shrink to the time remaining at
+each call. This candidate is configuration plumbing, not a deployment or a
+claim of worker qualification.
 
 The runtime allowlist recognizes the documented Kimi K2.5 and Claude Sonnet 4.6
 capabilities. It is not a record of live qualification. Resolve each exact author,

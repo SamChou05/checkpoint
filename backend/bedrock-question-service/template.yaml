@@ -65,6 +65,21 @@ Parameters:
     Default: reviewer_written
     AllowedValues: [reviewer_written, authored_solution]
     Description: Worker-only teaching contract. Authored solution audits immutable main text; qualify the selected route before enabling.
+  QuestionBankWorkerTaskOnlyNumericalGoalSHA256:
+    Type: String
+    Default: ""
+    AllowedPattern: '^$|^[0-9a-f]{64}$'
+    Description: Optional exact normalized-goal SHA-256 for worker-only task-only constructed authoring. Empty omits the runtime flag.
+  QuestionBankWorkerConstructedAuthorBatchSize:
+    Type: Number
+    Default: 0
+    AllowedValues: [0, 3]
+    Description: Optional worker-only three-item constructed author cap. Zero omits the runtime flag; three requires an exact scoped goal.
+  QuestionBankWorkerConstructedAuthorBatchGoalSHA256:
+    Type: String
+    Default: ""
+    AllowedPattern: '^$|^[0-9a-f]{64}$'
+    Description: Exact normalized-goal SHA-256 for a nonzero worker constructed author batch cap. Empty omits the runtime flag.
   BedrockReasoningEffort:
     Type: String
     Default: ""
@@ -262,6 +277,36 @@ Parameters:
     MinValue: 1
 
 Rules:
+  WorkerTaskOnlyRequiresQualifiedRoute:
+    RuleCondition: !Not [!Equals [!Ref QuestionBankWorkerTaskOnlyNumericalGoalSHA256, ""]]
+    Assertions:
+      - Assert: !And
+          - !Equals [!Ref QuestionBankWorkerStructuredOutputMode, native]
+          - !Equals [!Ref QuestionBankWorkerAuthorMode, constructed_quantitative]
+          - !Equals [!Ref QuestionBankWorkerAuthorCardinalityContract, array]
+          - !Equals [!Ref QuestionBankWorkerFeedbackContract, authored_solution]
+        AssertDescription: Task-only worker scope requires explicit native constructed array authoring and authored-solution feedback.
+  WorkerConstructedBatchRequiresExactScope:
+    Assertions:
+      - Assert: !Or
+          - !And
+            - !Equals [!Ref QuestionBankWorkerConstructedAuthorBatchSize, 0]
+            - !Equals [!Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256, ""]
+          - !And
+            - !Not [!Equals [!Ref QuestionBankWorkerConstructedAuthorBatchSize, 0]]
+            - !Not [!Equals [!Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256, ""]]
+            - !Equals [!Ref QuestionBankWorkerStructuredOutputMode, native]
+            - !Equals [!Ref QuestionBankWorkerAuthorMode, constructed_quantitative]
+            - !Equals [!Ref QuestionBankWorkerAuthorCardinalityContract, array]
+            - !Equals [!Ref QuestionBankWorkerFeedbackContract, authored_solution]
+        AssertDescription: A worker constructed-author batch cap requires an exact scoped goal and explicit native constructed array authoring with authored-solution feedback.
+  WorkerTaskOnlyAndBatchScopesMatch:
+    RuleCondition: !And
+      - !Not [!Equals [!Ref QuestionBankWorkerTaskOnlyNumericalGoalSHA256, ""]]
+      - !Not [!Equals [!Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256, ""]]
+    Assertions:
+      - Assert: !Equals [!Ref QuestionBankWorkerTaskOnlyNumericalGoalSHA256, !Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256]
+        AssertDescription: Task-only and constructed-author batch scopes must be the same exact normalized-goal SHA-256.
   WorkerCountBoundRequiresNativeTransport:
     RuleCondition: !Equals [!Ref QuestionBankWorkerAuthorCardinalityContract, count_bound]
     Assertions:
@@ -312,6 +357,9 @@ Conditions:
   WorkerAuthorModeInheritsGlobal: !Equals [!Ref QuestionBankWorkerAuthorMode, inherit]
   WorkerClaudeThinkingInheritsGlobal: !Equals [!Ref QuestionBankWorkerClaudeThinking, inherit]
   WorkerStructuredOutputInheritsGlobal: !Equals [!Ref QuestionBankWorkerStructuredOutputMode, inherit]
+  HasWorkerTaskOnlyNumericalGoal: !Not [!Equals [!Ref QuestionBankWorkerTaskOnlyNumericalGoalSHA256, ""]]
+  HasWorkerConstructedAuthorBatch: !Not [!Equals [!Ref QuestionBankWorkerConstructedAuthorBatchSize, 0]]
+  HasWorkerConstructedAuthorBatchGoal: !Not [!Equals [!Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256, ""]]
   HasGuardrailArn: !Not [!Equals [!Ref BedrockGuardrailArn, ""]]
   HasAlertEmail: !Not [!Equals [!Ref AlertEmail, ""]]
   HasBudgetEmail: !Not [!Equals [!Ref BudgetAlertEmail, ""]]
@@ -534,6 +582,9 @@ Resources:
           QUESTION_AUTHOR_MODE: !If [WorkerAuthorModeInheritsGlobal, !Ref QuestionAuthorMode, !Ref QuestionBankWorkerAuthorMode]
           QUESTION_AUTHOR_CARDINALITY_CONTRACT: !Ref QuestionBankWorkerAuthorCardinalityContract
           QUESTION_FEEDBACK_CONTRACT: !Ref QuestionBankWorkerFeedbackContract
+          QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256: !If [HasWorkerTaskOnlyNumericalGoal, !Ref QuestionBankWorkerTaskOnlyNumericalGoalSHA256, !Ref "AWS::NoValue"]
+          QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE: !If [HasWorkerConstructedAuthorBatch, !Ref QuestionBankWorkerConstructedAuthorBatchSize, !Ref "AWS::NoValue"]
+          QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256: !If [HasWorkerConstructedAuthorBatchGoal, !Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256, !Ref "AWS::NoValue"]
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
           BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens
