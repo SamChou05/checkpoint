@@ -6,7 +6,7 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,342 backend tests** after the optional
+Current source verification passes **1,351 backend tests** after the optional
 timeout, fraction-distractor, compiled-surplus, scalar-explanation and author-cardinality improvements. The latest
 [full-worker trial](evidence/constructed-sonnet-long-read-qualification-20260922/RESULTS.md)
 still fails qualification at 13/15 returns and three numerical compiled items
@@ -328,3 +328,14 @@ A separate [fraction-pool improvement](evidence/fraction-distractor-priority-202
 The constructed author now prefers privately proven compiled rows over prose rows only within the same resolved skill and objective positions when surplus rows compete for a requested slot. Original source ordinals and all sanitizer and final audit gates remain binding. This addresses the observed surplus-order loss without claiming the failed trial would have returned another item: its later solver had little time left. The deterministic scalar compiler also lists the exact false comparisons for every more-extreme domain value when the set is small and the proof fits the learner explanation limit; longer cases retain the prior wording. This makes a previously terse proof explicit, but the earlier unexplained model veto cannot be causally reclassified. The integrated backend suite passes 1,332 tests.
 
 A separately reviewed [shuffle-instruction comparison](evidence/shuffled-choice-author-instruction-20260922/RESULTS.md) ended before model dispatch because AWS credentials had expired. The exact frozen record has zero calls and all 20 slots unattempted. The proposed author prompt remains isolated; there is no evidence for promoting it. Independent preflight caught and resolved a malformed-response capture issue before that attempt. An offline schema investigation also confirmed the default author `questions` array accepts different raw counts for a five-item request. New opt-in count-bound author schemas on main require dense closed question keys for each pass, including top-ups. Independent source review and 1,342 integrated backend tests cover local validation and the unchanged array default. Bedrock acceptance, latency and usable survivor yield remain unmeasured; exact raw count cannot guarantee five usable questions or resolve semantic ambiguity.
+
+An eval-only [source claim challenge](QUESTION_SOURCE_CLAIM_CHALLENGE.md) now
+freezes exact stem and teaching partitions, assigns server-owned identities to
+premises, choices, six choice pairs and teaching claims, and binds declared
+evidence to captured source units. Missing judgments, conditions, unresolved
+premises, equivalent choices and unsupported teaching veto the unchanged item.
+This makes omissions and disagreement auditable; it is not a production gate or
+a truth certificate. An adversarial test deliberately remains eligible when a
+model cites an irrelevant but correctly identified source unit, demonstrating
+that identity binding cannot establish entailment. The change passed 1,351
+backend tests and Ruff; no provider call or deployment occurred.
