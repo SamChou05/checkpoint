@@ -1,0 +1,34 @@
+# Post-lock content review: mixed job
+
+The four returned mixed items pass the frozen content checks within this job: three compiled exact-arithmetic questions and one authored standard-English question have unique literal answers, correct keys, distinct choices, and sound learner explanations. Both locked blind reviews agree on every returned item: **zero answer disagreements, zero choice-judgment disagreements, zero pair-meaning disagreements, and zero uncertainty**. The job returned **4/5** original slots (three arithmetic, one English), meeting its per-job return, compiled, and English-prose floors. The fifth mixed slot remains unfilled and receives no content credit. This does not repair the full run's failed **9/15** yield gate or the numerical job's **0/5** return.
+
+## Evidence boundary and locked join
+
+I checked `blind-lock.json` against the on-disk SHA-256 values of `plan.json`, `capture.json`, `blind-worksheet.json`, and both blind reviews; all five pins match. The unblinded join pins that locked record at SHA-256 `f92435f722e6162f4cd56ac4d27a914ca12a7767e7b8bcbbd7c30256df7fad6b`. All **45** files in the frozen plan's source/evidence hash list match their pins. I used the private map only after those checks to connect opaque worksheet IDs to captured source positions. No AWS, provider, or model call was made, and no source or capture file was edited.
+
+| Mixed source slot | Opaque ID | Blind A / B displayed answer | Returned answer | Main chars | Provenance |
+| --- | --- | --- | --- | ---: | --- |
+| 0 | `4121b142f542af9b32a10f49` | D / D | `19/12` | 191 | compiled, policy 8 |
+| 1 | `d3c230cda931f7c78f08a246` | A / A | `3/2` | 191 | compiled, policy 8 |
+| 2 | `582c97c6c223d277c71082f4` | C / C | `4` | 152 | compiled, policy 8 |
+| 3 | `7a4b2699b9004396b7edad3c` | B / B | `were` | 261 | authored prose, policy 7 |
+| 4 | `8b03beb29794b1a7d32af17d` | uncertain / uncertain | unavailable | — | unfilled |
+
+For the four readable items, each reviewer marked exactly one of four choices true and the other three false: **16/16** choice judgments agree between reviewers. Each marked all six choice pairs per item as having different meanings: **24/24** pair judgments agree after normalizing the reviews' pair-key spelling (`A-B` versus `AB`). All four displayed blind answers match the explicit returned keys after reversing the private rotations. There are no missing premises in these four stems. The unfilled fifth mixed slot was uncertain in both locked reviews and is not rescored here.
+
+## Literal answers and teaching
+
+1. **Addition of fractions:** `3/4 + 5/6 = 9/12 + 10/12 = 19/12`. The other values `4/5`, `2/3`, and `3/4` are numerically different. The main's intermediate equalities and common-denominator step are correct. Its initial “multiply by the reciprocal” wording expands each division as multiplication by `1/4` or `1/6`; this is mathematically correct, though more elaborate than needed. All four choice-feedback statements correctly identify the result or rule out a different value.
+2. **Multiplication of fractions:** `(2/3) × (9/4) = 18/12 = 3/2`. The other values `9/2`, `8/27`, and `6` are distinct and wrong. The main's two reciprocal expansions and product reduction are correct. Its four choice-feedback statements are accurate, if terse.
+3. **Bounded condition:** The stated domain is the integers 1 through 20. Solving `2x + 3 = 11` gives `x = 4`. All offered values are in the domain; they produce left sides `13`, `7`, `11`, and `9` in returned choice order. The main says the other offered values are outside the domain **or** fail the condition; here they all fail, so the disjunction is true. Each choice-feedback evaluation is correct.
+4. **Agreement:** In “Neither the coach nor the players ___ satisfied with the final score,” the nearer subject `players` is plural, so `were` is the fitting form. `was`, `is`, and `has been` are singular and do not fit that subject. The authored main states this proximity rule and applies it correctly. Its final sentence identifies the singular alternatives' necessary subject-number condition; tense and aspect would still depend on context. The returned prose item has no per-choice teaching claims because `choiceExplanations` is `{}`.
+
+The two fraction items use the same stem shell but require different operations and yield different exact values; the bounded condition and English agreement item test different decisions. The frozen mixed request has empty existing, reported, and blocked-prompt lists, so no duplicate or near-duplicate is apparent in this evidence. This is a comparison within the captured request and returns, not an external bank search.
+
+## Compiler, assignment, and bounds
+
+I reconstructed the mixed author payload through the pinned local `prepare_mixed_rows(..., construct_choices=True)` path. It produced five prepared rows, three compiled sidecars, and zero compiler rejections. For all three compiled returns, the reconstructed spec equals the captured sidecar spec; recompiling that spec reproduces **all five learner fields** (`prompt`, `choices`, `expectedAnswer`, `explanation`, `choiceExplanations`) exactly. Each returned object carries policy revision 8. The English returned main is byte-for-byte identical to the authored main, has empty choice feedback, and carries policy revision 7. Its authored difficulty was 2 and the verified return records 3; the task applies one familiar agreement rule and meets the request's minimum difficulty 2 even if 3 is a generous rating.
+
+The mixed assignment requested three exact-arithmetic and two standard-English slots. The returned mix is three arithmetic and one English; the unfilled fifth slot accounts for the shortfall. Each returned item's topic, skill ID, objective ID, and objective text match its assigned skill, and each stem is complete without an unstated numerical or grammatical premise. The arithmetic items fit difficulty 2; the English item fits at least difficulty 2. All four returned stems are under 320 characters (88, 88, 161, and 134), and all returned mains are under 420 characters (191, 191, 152, and 261). The only returned authored-prose main is **261/320** characters at author time and remains **261/420** at runtime. Compiled mains are locally generated and have no authored-prose main to measure against 320. All displayed choices and compiled choice-feedback strings also fit their respective limits.
+
+Five original numerical-job slots were separately unavailable to both blind reviewers. They remain missing with zero content credit; this mixed review does not infer answers or rescore them. Across the full run, six original slots are unavailable: those five numerical slots and the one mixed slot above. No content uncertainty remains among the four returned mixed items, but this evidence cannot establish how an unreturned item would have taught or scored.
