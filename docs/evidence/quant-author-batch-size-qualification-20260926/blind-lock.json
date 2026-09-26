@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "status": "both_independent_blind_reviews_locked_before_unblinding",
+  "plan_sha256": "c0774eff26fa5d7d785fd0649483694408e7d9cb9f83468002053be6b7e1df6a",
+  "capture_sha256": "3fd74b140c2137278f72e54101cf67f102f5c710e7cd9c1626e2e020d462a155",
+  "worksheet_sha256": "a040f798a9cc29b4579acf0cfe46ac1dacf25e9f3eb9114bb158e08b9959c11b",
+  "review_a_sha256": "460f45ed1b402e96a512917c104baa033e4ffe4760956bdebf507cfbde31a063",
+  "review_b_sha256": "fba5d4ced4781b16d6af67c498164d92d956d661b39a535755235fa475db279f",
+  "original_slots": 5,
+  "readable_slots": 3,
+  "unavailable_slots": 2,
+  "slot_ids": [
+    "8eee427487cb7cd7a1ac68eb",
+    "c92dfacf4e14cf1be1209f96",
+    "d5c15d08d67e789fa99709a2",
+    "2990fa97d94a16eda1ba8a9f",
+    "fc6dad6bfd5c40c729d83c9b"
+  ]
+}

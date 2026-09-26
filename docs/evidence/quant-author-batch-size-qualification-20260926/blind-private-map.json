@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "plan_sha256": "c0774eff26fa5d7d785fd0649483694408e7d9cb9f83468002053be6b7e1df6a",
+  "capture_sha256": "3fd74b140c2137278f72e54101cf67f102f5c710e7cd9c1626e2e020d462a155",
+  "worksheet_sha256": "a040f798a9cc29b4579acf0cfe46ac1dacf25e9f3eb9114bb158e08b9959c11b",
+  "mapping": {
+    "8eee427487cb7cd7a1ac68eb": {
+      "job_id": "quantitative",
+      "original_slot_ordinal": 0,
+      "returned_row_index": 0,
+      "display_to_source_choice_index": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "captured_slot_status": "returned"
+    },
+    "fc6dad6bfd5c40c729d83c9b": {
+      "job_id": "quantitative",
+      "original_slot_ordinal": 1,
+      "returned_row_index": 1,
+      "display_to_source_choice_index": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "captured_slot_status": "returned"
+    },
+    "c92dfacf4e14cf1be1209f96": {
+      "job_id": "quantitative",
+      "original_slot_ordinal": 2,
+      "returned_row_index": 2,
+      "display_to_source_choice_index": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "captured_slot_status": "returned"
+    },
+    "d5c15d08d67e789fa99709a2": {
+      "job_id": "quantitative",
+      "original_slot_ordinal": 3,
+      "returned_row_index": null,
+      "display_to_source_choice_index": null,
+      "captured_slot_status": "unfilled"
+    },
+    "2990fa97d94a16eda1ba8a9f": {
+      "job_id": "quantitative",
+      "original_slot_ordinal": 4,
+      "returned_row_index": null,
+      "display_to_source_choice_index": null,
+      "captured_slot_status": "unfilled"
+    }
+  }
+}
