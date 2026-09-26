@@ -1,0 +1,323 @@
+{
+  "version": 1,
+  "reviewer": "independent_blind_reviewer_a",
+  "worksheet_sha256": "e54530bfd579fda94abe65e7aff8cc49382eb51db9fc4c02affb084ca3143a08",
+  "judgment_basis": "Literal premises in the keyless worksheet only. Choice truth means correctness under the stem. Pair equivalence means identical substantive answer or result, not merely the same correctness label. Every readable pair is distinct; unavailable slots are uncertain and receive no credit.",
+  "slots": [
+    {
+      "id": "4a59bf3f33f67ec368d88b8a",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "uncertain",
+        "A-C": "uncertain",
+        "A-D": "uncertain",
+        "B-C": "uncertain",
+        "B-D": "uncertain",
+        "C-D": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [],
+      "rationale": "Original requested slot is unavailable; no stem or offered answers were supplied for independent judgment."
+    },
+    {
+      "id": "825daa6274c721dab6736722",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "true",
+        "B": "false",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "A",
+      "missing_premises": [],
+      "rationale": "An empty list is falsy, so Python or returns the right operand, the string \"default\". The empty list and booleans are different returned values; this is a direct Python expression at suitable difficulty."
+    },
+    {
+      "id": "ff63c91abbd73366da1ec975",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "false",
+        "C": "false",
+        "D": "true"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "D",
+      "missing_premises": [],
+      "rationale": "2x + 5 >= 13 gives x >= 4, and 4 is the minimum integer in the stated domain. The four numeric values differ; this is an explicit bounded-condition application."
+    },
+    {
+      "id": "d33995916fd8b832f8575b5c",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "true",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "B",
+      "missing_premises": [],
+      "rationale": "3/4 - 2/5 = 15/20 - 8/20 = 7/20. All four rational choices have different exact values; the arithmetic is directly solvable."
+    },
+    {
+      "id": "4253af18f84742537ec367fc",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "true",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "B",
+      "missing_premises": [],
+      "rationale": "The score 55 fails the >= 60 condition, so the conditional expression assigns the string \"fail\". The numeric, string, and Boolean choices are distinct Python values."
+    },
+    {
+      "id": "363d57dfca79b7c14162540f",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "false",
+        "C": "true",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "C",
+      "missing_premises": [],
+      "rationale": "2/5 + 3/10 = 4/10 + 3/10 = 7/10. The other fractions have different values; this is a self-contained exact-arithmetic item."
+    },
+    {
+      "id": "edbfa25d8dc2e2ae443a3541",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "true",
+        "B": "false",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "A",
+      "missing_premises": [],
+      "rationale": "3x - 1 <= 20 implies x <= 7, and 7 is the maximum integer allowed by the domain. Each offered integer differs; the maximum wording removes ambiguity."
+    },
+    {
+      "id": "0855d01c6f5cb06e03d69b12",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "false",
+        "C": "false",
+        "D": "true"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "D",
+      "missing_premises": [],
+      "rationale": "(3/4) / (2/3) = (3/4)(3/2) = 9/8. Each other fraction denotes a different rational number; the exact-value task is complete."
+    },
+    {
+      "id": "746576cd9dd084a7ac901366",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "true",
+        "B": "false",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "A",
+      "missing_premises": [],
+      "rationale": "Index -1 selects the final list element, the string \"blue\". Red, green, blue, and an exception are four distinct outcomes; the indexing task is unambiguous."
+    },
+    {
+      "id": "a355b0d7db9c0f4875ca9569",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "uncertain",
+        "A-C": "uncertain",
+        "A-D": "uncertain",
+        "B-C": "uncertain",
+        "B-D": "uncertain",
+        "C-D": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [],
+      "rationale": "Original requested slot is unavailable; no stem or offered answers were supplied for independent judgment."
+    },
+    {
+      "id": "f3cc5d75ac69e1b822af26e5",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "uncertain",
+        "A-C": "uncertain",
+        "A-D": "uncertain",
+        "B-C": "uncertain",
+        "B-D": "uncertain",
+        "C-D": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [],
+      "rationale": "Original requested slot is unavailable; no stem or offered answers were supplied for independent judgment."
+    },
+    {
+      "id": "cc6c9d9416950fc46d5cd4a7",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "false",
+        "C": "false",
+        "D": "true"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "D",
+      "missing_premises": [],
+      "rationale": "Python slice [1:4] includes indices 1, 2, and 3 and excludes 4, producing [20, 30, 40]. The four lists differ in elements or length."
+    },
+    {
+      "id": "32ac3d411c754362decaba3e",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "true",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "false",
+        "A-C": "false",
+        "A-D": "false",
+        "B-C": "false",
+        "B-D": "false",
+        "C-D": "false"
+      },
+      "unique_correct_choice": "B",
+      "missing_premises": [],
+      "rationale": "The nonempty string is truthy, so and evaluates and returns the final operand 42, not a Boolean. False, True, 42, and the string \"hello\" are distinct outputs."
+    },
+    {
+      "id": "26b2ba16ad2f19e927c6d67b",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "uncertain",
+        "A-C": "uncertain",
+        "A-D": "uncertain",
+        "B-C": "uncertain",
+        "B-D": "uncertain",
+        "C-D": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [],
+      "rationale": "Original requested slot is unavailable; no stem or offered answers were supplied for independent judgment."
+    },
+    {
+      "id": "45dcbfd104a5a01671618e86",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "A-B": "uncertain",
+        "A-C": "uncertain",
+        "A-D": "uncertain",
+        "B-C": "uncertain",
+        "B-D": "uncertain",
+        "C-D": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [],
+      "rationale": "Original requested slot is unavailable; no stem or offered answers were supplied for independent judgment."
+    }
+  ]
+}

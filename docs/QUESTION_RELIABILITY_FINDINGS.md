@@ -6,17 +6,19 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,374 backend tests** and the latest full
+Current source verification passes **1,375 backend tests** and the latest full
 iOS suite completed **1,058 tests with three existing skips** after the optional
 timeout, fraction-distractor, compiled-surplus, scalar-explanation,
 author-cardinality, task-only numerical, numeric-choice and saved-inventory improvements. The latest
 [current-source full-worker trial](evidence/current-source-worker-successor-qualification-20260926/RESULTS.md)
-fails qualification at 9/15 returns and three compiled items where six were
-required. Both independent blind reviews and post-lock teaching audits found all
-nine returned items usable, but the numerical author exhausted its 16,000-token
-allowance and returned no decodable batch. A later one-job
+failed qualification at 9/15 returns and three compiled items where six were
+required. Its numerical author exhausted 16,000 output tokens. A later one-job
 [task-only numerical pilot](evidence/task-only-numerical-author-qualification-20260926/RESULTS.md)
-passed at 5/5 compiler-proven returns; the full three-topic route remains unqualified.
+passed at 5/5 compiler-proven returns. The subsequent
+[three-topic successor](evidence/task-only-full-worker-qualification-20260926/RESULTS.md)
+returned 10/15: numerical and Python returned five sound items each, but the
+mixed author emitted 37 complete rows toward a request for five and exhausted
+its 16,000-token allowance before closing JSON. The full worker remains unqualified.
 Verified improvements are on main, while the [fresh September 26 deployment check](evidence/deployment-refresh-20260926/RESULTS.md)
 still finds the September 11 legacy API and worker packages. No deployment or
 inventory transition has occurred.
@@ -42,7 +44,8 @@ inventory transition has occurred.
 | Native schema validity cannot prevent a model from exhausting its reasoning/output budget before completing a batch. | The [current-source worker capture](evidence/current-source-worker-successor-qualification-20260926/RESULTS.md) shows the numerical author stopping at `max_tokens` after 16,000 output tokens and 188.839 seconds, with visible JSON truncated. Python returned 5/5 and mixed returned 4/5; all nine returned items passed independent content review, but the full run failed yield and compiled-count gates. | The runtime rejects the truncated batch and preserves already verified partial returns after a later mixed reviewer timeout. The high-reasoning, five-item author route remains unqualified for rollout; smaller requests or a stage-specific reasoning setting need a separately reviewed trial before promotion. |
 | Reducing the numerical author batch to three did not ensure compiled tasks. | The [locked three-item pilot](evidence/quant-author-batch-size-qualification-20260926/RESULTS.md) used the same five-slot numerical request, six-call and 240-second limits, with only the batch cap changed. Both author calls returned prose; the worker returned 3/5 sound items but **0/5 compiler-proven** items. Three earlier prose rows failed the immutable teaching-format check because they referred to shuffled answer labels. | Keep the batch cap opt-in and off the production configuration. Exact request size and native JSON shape alone cannot require the model to use the mathematical task branch or make teaching safe after shuffling. |
 | A versioned task-only numerical contract removed the model's prose escape path for one exact goal. | The [one-shot task-only pilot](evidence/task-only-numerical-author-qualification-20260926/RESULTS.md) returned **5/5 sound, compiler-proven** questions in four native calls and 127.684 seconds. Two answer-blind reviewers selected all five captured keys and independently found all 30 choice pairs distinct; every learner field recompiled exactly. One otherwise sound decimal task was still vetoed by a fallible model scope review, and the bounded top-up filled its slot. | Keep the goal-hash-gated author and three-item batch cap opt-in. This passes the prespecified numerical pilot, not a multi-topic reliability or deployment gate. The compiler makes the released numerical answer and choices exact; model judgments and model-written prose in other topics remain fallible. |
-| A global three-item batch cap would also alter unallocated Python generation when applied to a shared worker. | The frozen three-topic request has an unallocated Python job; the previous batch-cap selector returned three for both that job and the numerical job. Offline goal-hash controls now return numerical 3, Python 5, and mapped mixed 5, while rejecting missing, blank, malformed, or conflicting scope when task-only mode and a cap are combined. | A separate opt-in `QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256` scopes the cap to the exact normalized goal. The older global cap remains available outside task-only mode. Full-worker model throughput under this combined setting still needs qualification. |
+| A global three-item batch cap would also alter unallocated Python generation when applied to a shared worker. | The frozen three-topic request has an unallocated Python job; the previous batch-cap selector returned three for both that job and the numerical job. Offline goal-hash controls now return numerical 3, Python 5, and mapped mixed 5, while rejecting missing, blank, malformed, or conflicting scope when task-only mode and a cap are combined. | A separate opt-in `QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256` scopes the cap to the exact normalized goal. The older global cap remains available outside task-only mode. The later full-worker trial using this scope failed on the separate mapped mixed author. |
+| The mapped mixed author can ignore the requested five-item count even with native JSON schema, exhausting the output budget before yielding any parseable batch. | The [one-shot three-topic trial](evidence/task-only-full-worker-qualification-20260926/RESULTS.md) returned 5/5 compiled numerical and 5/5 Python items, but 0/5 mixed items. Its mixed author completed 37 top-level rows, began a 38th, then stopped at `max_tokens` with invalid JSON. Two locked blind reviewers chose all ten captured keys and found all 60 pairs distinct; the job-yield gate still failed. | Preserve rejection of truncated output and partial returns from other jobs. Keep the route opt-in while a bounded, allocation-preserving mixed-author contract is evaluated. Worker-only deployment variables now expose the exact tested numerical scope without altering the API defaults; they are configuration preparation, not a rollout. |
 
 These changes make structure, key membership, exact identity and admission rules
 deterministic. They do not make a model's factual statements deterministic or

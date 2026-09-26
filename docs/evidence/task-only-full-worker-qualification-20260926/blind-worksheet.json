@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "capture_sha256": "5278562961290acc3fac998a5429797aba55c100a3e9cc6a59a58b62692007f4",
+  "plan_sha256": "a8e9e39470704e3a83ec96febe6b402acb0df40fbbdb114de267265725bdf393",
+  "requested_slots": 15,
+  "items": [
+    {
+      "id": "4a59bf3f33f67ec368d88b8a",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "825daa6274c721dab6736722",
+      "requested_slot": true,
+      "stem": "What does the following expression evaluate to in Python 3?\n\n[] or \"default\"",
+      "choices": {
+        "A": "\"default\"",
+        "B": "[]",
+        "C": "True",
+        "D": "False"
+      }
+    },
+    {
+      "id": "ff63c91abbd73366da1ec975",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 10, inclusive. Condition: ((2 * x) + 5) >= 13. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "2",
+        "B": "5",
+        "C": "3",
+        "D": "4"
+      }
+    },
+    {
+      "id": "d33995916fd8b832f8575b5c",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = ((3/4) - (2/5)). What is its exact value?",
+      "choices": {
+        "A": "3/4",
+        "B": "7/20",
+        "C": "1/20",
+        "D": "-1"
+      }
+    },
+    {
+      "id": "4253af18f84742537ec367fc",
+      "requested_slot": true,
+      "stem": "What value does `result` hold after these lines execute?\n\nscore = 55\nresult = \"pass\" if score >= 60 else \"fail\"",
+      "choices": {
+        "A": "55",
+        "B": "\"fail\"",
+        "C": "\"pass\"",
+        "D": "True"
+      }
+    },
+    {
+      "id": "363d57dfca79b7c14162540f",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = ((2/5) + (3/10)). What is its exact value?",
+      "choices": {
+        "A": "1/2",
+        "B": "2/5",
+        "C": "7/10",
+        "D": "1/3"
+      }
+    },
+    {
+      "id": "edbfa25d8dc2e2ae443a3541",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 10, inclusive. Condition: ((3 * x) - 1) <= 20. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "7",
+        "B": "8",
+        "C": "5",
+        "D": "6"
+      }
+    },
+    {
+      "id": "0855d01c6f5cb06e03d69b12",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = ((3 / 4) / (2 / 3)). What is its exact value?",
+      "choices": {
+        "A": "1/2",
+        "B": "8/9",
+        "C": "2",
+        "D": "9/8"
+      }
+    },
+    {
+      "id": "746576cd9dd084a7ac901366",
+      "requested_slot": true,
+      "stem": "What does the following expression evaluate to?\n\ncolors = [\"red\", \"green\", \"blue\"]\ncolors[-1]",
+      "choices": {
+        "A": "\"blue\"",
+        "B": "\"red\"",
+        "C": "\"green\"",
+        "D": "IndexError"
+      }
+    },
+    {
+      "id": "a355b0d7db9c0f4875ca9569",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "f3cc5d75ac69e1b822af26e5",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "cc6c9d9416950fc46d5cd4a7",
+      "requested_slot": true,
+      "stem": "What does the following expression evaluate to?\n\ndata = [10, 20, 30, 40, 50]\ndata[1:4]",
+      "choices": {
+        "A": "[10, 20, 30, 40]",
+        "B": "[20, 30, 40, 50]",
+        "C": "[10, 20, 30]",
+        "D": "[20, 30, 40]"
+      }
+    },
+    {
+      "id": "32ac3d411c754362decaba3e",
+      "requested_slot": true,
+      "stem": "What does the expression `\"hello\" and 42` evaluate to in Python 3?",
+      "choices": {
+        "A": "False",
+        "B": "42",
+        "C": "True",
+        "D": "\"hello\""
+      }
+    },
+    {
+      "id": "26b2ba16ad2f19e927c6d67b",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "45dcbfd104a5a01671618e86",
+      "requested_slot": true,
+      "unavailable": true
+    }
+  ]
+}

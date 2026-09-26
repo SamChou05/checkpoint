@@ -1,0 +1,300 @@
+{
+  "blind_lock_sha256": "8acf7c4e24f3d7c8bc086461a5ea01246a0be533e5a3e3088bbf806dfdc22457",
+  "capture_sha256": "5278562961290acc3fac998a5429797aba55c100a3e9cc6a59a58b62692007f4",
+  "items": [
+    {
+      "id": "4a59bf3f33f67ec368d88b8a",
+      "job_id": "mixed",
+      "original_slot_ordinal": 1,
+      "unavailable": true
+    },
+    {
+      "captured_key": "\"default\"",
+      "expected_display_letter": "A",
+      "id": "825daa6274c721dab6736722",
+      "job_id": "python",
+      "original_slot_ordinal": 0,
+      "returned_row_index": 0,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "A"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "A"
+        }
+      },
+      "verification_policy_revision": 7
+    },
+    {
+      "captured_key": "4",
+      "expected_display_letter": "D",
+      "id": "ff63c91abbd73366da1ec975",
+      "job_id": "quantitative",
+      "original_slot_ordinal": 4,
+      "returned_row_index": 4,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "D"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "D"
+        }
+      },
+      "verification_policy_revision": 8
+    },
+    {
+      "captured_key": "7/20",
+      "expected_display_letter": "B",
+      "id": "d33995916fd8b832f8575b5c",
+      "job_id": "quantitative",
+      "original_slot_ordinal": 3,
+      "returned_row_index": 3,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "B"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "B"
+        }
+      },
+      "verification_policy_revision": 8
+    },
+    {
+      "captured_key": "\"fail\"",
+      "expected_display_letter": "B",
+      "id": "4253af18f84742537ec367fc",
+      "job_id": "python",
+      "original_slot_ordinal": 2,
+      "returned_row_index": 2,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "B"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "B"
+        }
+      },
+      "verification_policy_revision": 7
+    },
+    {
+      "captured_key": "7/10",
+      "expected_display_letter": "C",
+      "id": "363d57dfca79b7c14162540f",
+      "job_id": "quantitative",
+      "original_slot_ordinal": 2,
+      "returned_row_index": 2,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "C"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "C"
+        }
+      },
+      "verification_policy_revision": 8
+    },
+    {
+      "captured_key": "7",
+      "expected_display_letter": "A",
+      "id": "edbfa25d8dc2e2ae443a3541",
+      "job_id": "quantitative",
+      "original_slot_ordinal": 1,
+      "returned_row_index": 1,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "A"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "A"
+        }
+      },
+      "verification_policy_revision": 8
+    },
+    {
+      "captured_key": "9/8",
+      "expected_display_letter": "D",
+      "id": "0855d01c6f5cb06e03d69b12",
+      "job_id": "quantitative",
+      "original_slot_ordinal": 0,
+      "returned_row_index": 0,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "D"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "D"
+        }
+      },
+      "verification_policy_revision": 8
+    },
+    {
+      "captured_key": "\"blue\"",
+      "expected_display_letter": "A",
+      "id": "746576cd9dd084a7ac901366",
+      "job_id": "python",
+      "original_slot_ordinal": 1,
+      "returned_row_index": 1,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "A"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "A"
+        }
+      },
+      "verification_policy_revision": 7
+    },
+    {
+      "id": "a355b0d7db9c0f4875ca9569",
+      "job_id": "mixed",
+      "original_slot_ordinal": 4,
+      "unavailable": true
+    },
+    {
+      "id": "f3cc5d75ac69e1b822af26e5",
+      "job_id": "mixed",
+      "original_slot_ordinal": 0,
+      "unavailable": true
+    },
+    {
+      "captured_key": "[20, 30, 40]",
+      "expected_display_letter": "D",
+      "id": "cc6c9d9416950fc46d5cd4a7",
+      "job_id": "python",
+      "original_slot_ordinal": 4,
+      "returned_row_index": 4,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "D"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "D"
+        }
+      },
+      "verification_policy_revision": 7
+    },
+    {
+      "captured_key": "42",
+      "expected_display_letter": "B",
+      "id": "32ac3d411c754362decaba3e",
+      "job_id": "python",
+      "original_slot_ordinal": 3,
+      "returned_row_index": 3,
+      "reviewers": {
+        "a": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "B"
+        },
+        "b": {
+          "all_pairs_distinct": true,
+          "matches_captured_key": true,
+          "pair_judgments": 6,
+          "selected_letter": "B"
+        }
+      },
+      "verification_policy_revision": 7
+    },
+    {
+      "id": "26b2ba16ad2f19e927c6d67b",
+      "job_id": "mixed",
+      "original_slot_ordinal": 3,
+      "unavailable": true
+    },
+    {
+      "id": "45dcbfd104a5a01671618e86",
+      "job_id": "mixed",
+      "original_slot_ordinal": 2,
+      "unavailable": true
+    }
+  ],
+  "summary": {
+    "by_job": {
+      "mixed": {
+        "requested": 5,
+        "returned": 0,
+        "reviewer_a_correct": 0,
+        "reviewer_b_correct": 0,
+        "unavailable": 5
+      },
+      "python": {
+        "requested": 5,
+        "returned": 5,
+        "reviewer_a_correct": 5,
+        "reviewer_b_correct": 5,
+        "unavailable": 0
+      },
+      "quantitative": {
+        "requested": 5,
+        "returned": 5,
+        "reviewer_a_correct": 5,
+        "reviewer_b_correct": 5,
+        "unavailable": 0
+      }
+    },
+    "requested": 15,
+    "returned": 10,
+    "reviewer_a_all_pairs_distinct": 10,
+    "reviewer_a_correct": 10,
+    "reviewer_b_all_pairs_distinct": 10,
+    "reviewer_b_correct": 10,
+    "unavailable": 5
+  },
+  "version": 1,
+  "worksheet_sha256": "e54530bfd579fda94abe65e7aff8cc49382eb51db9fc4c02affb084ca3143a08"
+}

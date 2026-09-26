@@ -1,0 +1,393 @@
+{
+  "reviewer": "independent-blind-B",
+  "worksheet_sha256": "e54530bfd579fda94abe65e7aff8cc49382eb51db9fc4c02affb084ca3143a08",
+  "created_at_utc": "2026-09-26T23:36:54.330987+00:00",
+  "items": [
+    {
+      "id": "4a59bf3f33f67ec368d88b8a",
+      "unavailable": true,
+      "selected_letter": null,
+      "answer_reason": "No question or choices were returned for this original slot; cannot judge an answer.",
+      "choice_pairs": {},
+      "scope_and_difficulty": "Unavailable; cannot assess.",
+      "uncertain": true
+    },
+    {
+      "id": "825daa6274c721dab6736722",
+      "unavailable": false,
+      "selected_letter": "A",
+      "answer_reason": "In Python, the empty list is falsey, so or returns its second operand, the string \"default\", rather than a Boolean.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the string \"default\" whereas B denotes an empty list; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the string \"default\" whereas C denotes the Boolean True; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the string \"default\" whereas D denotes the Boolean False; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes an empty list whereas C denotes the Boolean True; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes an empty list whereas D denotes the Boolean False; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes the Boolean True whereas D denotes the Boolean False; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Python 3 operand-return behavior of or; introductory/intermediate and in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "ff63c91abbd73366da1ec975",
+      "unavailable": false,
+      "selected_letter": "D",
+      "answer_reason": "2x + 5 >= 13 simplifies to x >= 4. The smallest integer in 1 through 10 satisfying it is 4.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the integer 2 whereas B denotes the integer 5; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the integer 2 whereas C denotes the integer 3; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the integer 2 whereas D denotes the integer 4; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the integer 5 whereas C denotes the integer 3; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the integer 5 whereas D denotes the integer 4; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes the integer 3 whereas D denotes the integer 4; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Bounded linear-inequality minimum; straightforward numerical item in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "d33995916fd8b832f8575b5c",
+      "unavailable": false,
+      "selected_letter": "B",
+      "answer_reason": "3/4 - 2/5 = 15/20 - 8/20 = 7/20.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes 3/4 = 15/20 whereas B denotes 7/20; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes 3/4 = 15/20 whereas C denotes 1/20; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes 3/4 = 15/20 whereas D denotes -1; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes 7/20 whereas C denotes 1/20; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes 7/20 whereas D denotes -1; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes 1/20 whereas D denotes -1; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Exact fraction subtraction; straightforward numerical item in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "4253af18f84742537ec367fc",
+      "unavailable": false,
+      "selected_letter": "B",
+      "answer_reason": "55 is below 60, so the conditional expression takes its else branch and assigns the string \"fail\" to result.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the integer 55 whereas B denotes the string \"fail\"; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the integer 55 whereas C denotes the string \"pass\"; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the integer 55 whereas D denotes the Boolean True; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the string \"fail\" whereas C denotes the string \"pass\"; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the string \"fail\" whereas D denotes the Boolean True; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes the string \"pass\" whereas D denotes the Boolean True; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Python conditional expression; introductory and in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "363d57dfca79b7c14162540f",
+      "unavailable": false,
+      "selected_letter": "C",
+      "answer_reason": "2/5 + 3/10 = 4/10 + 3/10 = 7/10.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes 1/2 = 5/10 whereas B denotes 2/5 = 4/10; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes 1/2 = 5/10 whereas C denotes 7/10; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes 1/2 = 5/10 whereas D denotes 1/3; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes 2/5 = 4/10 whereas C denotes 7/10; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes 2/5 = 4/10 whereas D denotes 1/3; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes 7/10 whereas D denotes 1/3; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Exact fraction addition; straightforward numerical item in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "edbfa25d8dc2e2ae443a3541",
+      "unavailable": false,
+      "selected_letter": "A",
+      "answer_reason": "3x - 1 <= 20 simplifies to x <= 7. The largest integer in 1 through 10 satisfying it is 7.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the integer 7 whereas B denotes the integer 8; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the integer 7 whereas C denotes the integer 5; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the integer 7 whereas D denotes the integer 6; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the integer 8 whereas C denotes the integer 5; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the integer 8 whereas D denotes the integer 6; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes the integer 5 whereas D denotes the integer 6; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Bounded linear-inequality maximum; straightforward numerical item in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "0855d01c6f5cb06e03d69b12",
+      "unavailable": false,
+      "selected_letter": "D",
+      "answer_reason": "Dividing 3/4 by 2/3 multiplies by its reciprocal: (3/4)(3/2) = 9/8.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes 1/2 whereas B denotes 8/9; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes 1/2 whereas C denotes 2; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes 1/2 whereas D denotes 9/8; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes 8/9 whereas C denotes 2; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes 8/9 whereas D denotes 9/8; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes 2 whereas D denotes 9/8; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Exact fraction division; straightforward numerical item in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "746576cd9dd084a7ac901366",
+      "unavailable": false,
+      "selected_letter": "A",
+      "answer_reason": "Index -1 selects the last list element, the string \"blue\".",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the string \"blue\" whereas B denotes the string \"red\"; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the string \"blue\" whereas C denotes the string \"green\"; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the string \"blue\" whereas D denotes an IndexError exception, not a returned string; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the string \"red\" whereas C denotes the string \"green\"; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the string \"red\" whereas D denotes an IndexError exception, not a returned string; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes the string \"green\" whereas D denotes an IndexError exception, not a returned string; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Python negative list indexing; introductory and in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "a355b0d7db9c0f4875ca9569",
+      "unavailable": true,
+      "selected_letter": null,
+      "answer_reason": "No question or choices were returned for this original slot; cannot judge an answer.",
+      "choice_pairs": {},
+      "scope_and_difficulty": "Unavailable; cannot assess.",
+      "uncertain": true
+    },
+    {
+      "id": "f3cc5d75ac69e1b822af26e5",
+      "unavailable": true,
+      "selected_letter": null,
+      "answer_reason": "No question or choices were returned for this original slot; cannot judge an answer.",
+      "choice_pairs": {},
+      "scope_and_difficulty": "Unavailable; cannot assess.",
+      "uncertain": true
+    },
+    {
+      "id": "cc6c9d9416950fc46d5cd4a7",
+      "unavailable": false,
+      "selected_letter": "D",
+      "answer_reason": "Slice [1:4] includes indices 1, 2, and 3 but excludes index 4, giving [20, 30, 40].",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the list [10, 20, 30, 40] whereas B denotes the list [20, 30, 40, 50]; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the list [10, 20, 30, 40] whereas C denotes the list [10, 20, 30]; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the list [10, 20, 30, 40] whereas D denotes the list [20, 30, 40]; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the list [20, 30, 40, 50] whereas C denotes the list [10, 20, 30]; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the list [20, 30, 40, 50] whereas D denotes the list [20, 30, 40]; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes the list [10, 20, 30] whereas D denotes the list [20, 30, 40]; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Python list slice boundaries; introductory and in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "32ac3d411c754362decaba3e",
+      "unavailable": false,
+      "selected_letter": "B",
+      "answer_reason": "The nonempty string is truthy, so Python and evaluates and returns the second operand, the integer 42.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the Boolean False whereas B denotes the integer 42; these are different offered outcomes."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the Boolean False whereas C denotes the Boolean True; these are different offered outcomes."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "For this exact question, A denotes the Boolean False whereas D denotes the string \"hello\"; these are different offered outcomes."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the integer 42 whereas C denotes the Boolean True; these are different offered outcomes."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "For this exact question, B denotes the integer 42 whereas D denotes the string \"hello\"; these are different offered outcomes."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "For this exact question, C denotes the Boolean True whereas D denotes the string \"hello\"; these are different offered outcomes."
+        }
+      },
+      "scope_and_difficulty": "Python 3 operand-return behavior of and; introductory/intermediate and in scope.",
+      "uncertain": false
+    },
+    {
+      "id": "26b2ba16ad2f19e927c6d67b",
+      "unavailable": true,
+      "selected_letter": null,
+      "answer_reason": "No question or choices were returned for this original slot; cannot judge an answer.",
+      "choice_pairs": {},
+      "scope_and_difficulty": "Unavailable; cannot assess.",
+      "uncertain": true
+    },
+    {
+      "id": "45dcbfd104a5a01671618e86",
+      "unavailable": true,
+      "selected_letter": null,
+      "answer_reason": "No question or choices were returned for this original slot; cannot judge an answer.",
+      "choice_pairs": {},
+      "scope_and_difficulty": "Unavailable; cannot assess.",
+      "uncertain": true
+    }
+  ],
+  "source": "Independent reasoning from the frozen keyless worksheet only; no capture, key map, teaching, or other reviewer consulted."
+}

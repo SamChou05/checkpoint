@@ -1,0 +1,27 @@
+{
+  "answer_keys_unblinded": false,
+  "available_slots": 10,
+  "capture_sha256": "5278562961290acc3fac998a5429797aba55c100a3e9cc6a59a58b62692007f4",
+  "requested_slots": 15,
+  "reviews": [
+    {
+      "available_reviewed": 10,
+      "file": "blind-review-a.json",
+      "pair_judgments": 60,
+      "reviewer": "a",
+      "sha256": "da2901b18ccf1f0b746c3f00a174ede7cfad58b4feecb87add1d3078ed7e019e",
+      "unavailable_recorded": 5
+    },
+    {
+      "available_reviewed": 10,
+      "file": "blind-review-b.json",
+      "pair_judgments": 60,
+      "reviewer": "b",
+      "sha256": "2bbd2957ba7ff4eb19cf993a08c06b73ef7039543f58e048d00f877b2c639351",
+      "unavailable_recorded": 5
+    }
+  ],
+  "unavailable_slots": 5,
+  "version": 1,
+  "worksheet_sha256": "e54530bfd579fda94abe65e7aff8cc49382eb51db9fc4c02affb084ca3143a08"
+}
