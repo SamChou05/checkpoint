@@ -15,6 +15,7 @@ from service_errors import ProviderError, ServiceConfigurationError
 from quantitative_authoring import (
     MIXED_AUTHOR_CONTRACT, MIXED_AUTHOR_INSTRUCTIONS, mixed_author_schema,
     CONSTRUCTED_AUTHOR_CONTRACT, CONSTRUCTED_AUTHOR_INSTRUCTIONS, constructed_author_schema,
+    TASK_ONLY_AUTHOR_CONTRACT, TASK_ONLY_AUTHOR_INSTRUCTIONS, task_only_author_schema,
 )
 
 
@@ -32,6 +33,7 @@ Contract = Literal[
     "default_reviewer_v2",
     "authored_solution_reviewer_v1",
 ]
+TaskOnlyContract = Literal["question_author_tasks_v1"]
 
 MAX_REVIEW_BATCH_COUNT = 40
 MAX_AUTHOR_BATCH_COUNT = 40
@@ -143,7 +145,7 @@ _COUNT_BOUND_CONTRACTS = (
     AuthoredSolutionFlagReviewContract,
 )
 NativeContract = (
-    Contract | AuthorSlotContract | ReviewerSlotContract | SolverSlotContract |
+    Contract | TaskOnlyContract | AuthorSlotContract | ReviewerSlotContract | SolverSlotContract |
     AuthoredSolutionReviewContract | AuthoredSolutionFlagReviewContract
 )
 
@@ -161,7 +163,7 @@ def _object(properties: dict[str, Any], required: list[str] | None = None) -> di
     }
 
 
-_SCHEMAS: dict[Contract, dict[str, Any]] = {
+_SCHEMAS: dict[Contract | TaskOnlyContract, dict[str, Any]] = {
     "question_author_v1": _object({
         "questions": {"type": "array", "items": _object({
             "prompt": _STRING, "choices": {"type": "array", "items": _STRING},
@@ -276,6 +278,9 @@ _SCHEMAS[MIXED_AUTHOR_CONTRACT] = mixed_author_schema(
     _SCHEMAS["question_author_v3"]["properties"]["questions"]["items"]
 )
 _SCHEMAS[CONSTRUCTED_AUTHOR_CONTRACT] = constructed_author_schema(
+    _SCHEMAS["question_author_v3"]["properties"]["questions"]["items"]
+)
+_SCHEMAS[TASK_ONLY_AUTHOR_CONTRACT] = task_only_author_schema(
     _SCHEMAS["question_author_v3"]["properties"]["questions"]["items"]
 )
 
@@ -411,6 +416,10 @@ def native_output_config(contract: NativeContract) -> dict[str, Any]:
         prose = json.loads(native_output_config("question_author_v3")["textFormat"]["structure"]["jsonSchema"]["schema"])
         schema = json.dumps(constructed_author_schema(prose["properties"]["questions"]["items"], shared=True),
                             separators=(",", ":"))
+    if contract == TASK_ONLY_AUTHOR_CONTRACT:
+        prose = json.loads(native_output_config("question_author_v3")["textFormat"]["structure"]["jsonSchema"]["schema"])
+        schema = json.dumps(task_only_author_schema(prose["properties"]["questions"]["items"], shared=True),
+                            separators=(",", ":"))
     return {"textFormat": {"type": "json_schema", "structure": {"jsonSchema": {
         "name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract, "schema": schema,
     }}}}
@@ -537,6 +546,12 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
             "exact or cosmetic repeats, while allowing a fresh application of the same objective. "
             "Report a scope or novelty defect in issues; do not rewrite the item to fix it."
         )
+    if contract == TASK_ONLY_AUTHOR_CONTRACT:
+        marker = "\n\nReturn only one JSON object:"
+        if system_prompt.count(marker) != 1 or system_prompt.count(_LEGACY_AUTHOR_EXAMPLE) != 1:
+            raise ServiceConfigurationError("Task-only author requires the owned base security prompt.")
+        security = system_prompt.split(marker, 1)[0]
+        return security + "\n\n" + TASK_ONLY_AUTHOR_INSTRUCTIONS
     if contract == CONSTRUCTED_AUTHOR_CONTRACT:
         prose_example = json.loads(_SLOT_AUTHOR_EXAMPLE)["questions"][0]
         example = json.dumps({"questions": [
@@ -695,6 +710,10 @@ def adapt_native_response(raw: str, contract: NativeContract) -> str:
             question["choices"] = [slots[key] for key in ("a", "b", "c", "d")]
             question["expectedAnswer"] = slots[question.pop("correctChoice")]
         return json.dumps(adapted, ensure_ascii=False, allow_nan=False)
+    if contract == TASK_ONLY_AUTHOR_CONTRACT:
+        # The closed local schema has already excluded prose, keys, choices and
+        # teaching. Re-serialize only validated typed rows for the compiler.
+        return json.dumps(payload, ensure_ascii=False, allow_nan=False)
     if contract not in {"default_reviewer_v1", "default_reviewer_v2"}:
         return raw
     if type(payload) is not dict or set(payload) != {"reviews"} or type(payload["reviews"]) is not list:

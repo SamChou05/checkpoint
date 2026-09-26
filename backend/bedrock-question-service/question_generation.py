@@ -57,6 +57,7 @@ from service_errors import (
 from question_verification import NEGATIVE_ANSWER_GUIDANCE, verify_questions
 from quantitative_authoring import (
     CONSTRUCTED_AUTHOR_CONTRACT, MIXED_AUTHOR_CONTRACT,
+    TASK_ONLY_AUTHOR_CONTRACT,
     QuantitativeAuthoringError, prepare_mixed_rows,
 )
 
@@ -153,7 +154,10 @@ def _generate_provider_payload(
     errors: list[ProviderError] = []
     author_mode = _author_mode()
     cardinality_mode = _author_cardinality_mode()
-    if output_mode() != "native":
+    task_only = _task_only_numerical_author(request, author_mode, cardinality_mode)
+    if task_only:
+        author_contract: NativeContract = TASK_ONLY_AUTHOR_CONTRACT
+    elif output_mode() != "native":
         author_contract: NativeContract = "question_author_v1"
     elif cardinality_mode == "count_bound":
         author_contract = AuthorSlotContract(request["targetCount"], author_mode)
@@ -729,6 +733,39 @@ def _author_cardinality_mode() -> str:
     if mode == "count_bound" and output_mode() != "native":
         raise ServiceConfigurationError("Count-bound authoring requires native mode.")
     return mode
+
+
+def _task_only_numerical_author(
+    request: dict[str, Any], author_mode: str, cardinality_mode: str,
+) -> bool:
+    """Select task-only transport only for one trusted, exact numerical goal."""
+    configured = os.getenv("QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256", "").strip().lower()
+    if not configured:
+        return False
+    if len(configured) != 64 or any(character not in "0123456789abcdef" for character in configured):
+        raise ServiceConfigurationError("QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256 is invalid.")
+    goal = request.get("goal")
+    if type(goal) is not dict:
+        raise ServiceConfigurationError("Task-only author requires a normalized goal.")
+    digest = hashlib.sha256(json.dumps(goal, sort_keys=True, separators=(",", ":"),
+                                       ensure_ascii=True, allow_nan=False).encode()).hexdigest()
+    if digest != configured:
+        return False
+    if output_mode() != "native" or author_mode != "constructed_quantitative" or cardinality_mode != "array":
+        raise ServiceConfigurationError("Task-only author requires native constructed array mode.")
+    if (
+        goal.get("needsSkillMap")
+        or any(key in request for key in (
+            "skillMap", "desiredSkillAllocation", "requestedSkillAllocation",
+            "requestedObjectiveAllocation",
+        ))
+        or request.get("adaptiveSkillPlans")
+        or request.get("requiresFullObjectiveCoverage")
+        or request.get("sourceDocuments")
+        or request.get("competencies")
+    ):
+        raise ServiceConfigurationError("Task-only author cannot serve mapped or source-bound requests.")
+    return True
 
 
 def _conversation_prompt(user_prompt: str, system_prompt: str | None = None) -> str:
