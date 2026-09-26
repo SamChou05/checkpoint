@@ -159,6 +159,32 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
         self.assertEqual((len(result), budget.calls, reserve.call_count), (3, 3, 3))
         self.assertEqual([q["verificationPolicyRevision"] for q in result], [8] * 3)
 
+    def test_opt_in_array_contract_three_then_two_preserves_exact_compiled_learner_fields(self):
+        batches = [[row(task(str(value))) for value in values] for values in ((8, 10, 12), (14, 16))]
+        client = ScriptedNativeClient()
+        expected = []
+        for batch in batches:
+            steps = self.client(batch).steps
+            steps[0] = (CONTRACT, steps[0][1])
+            client.steps.extend(steps)
+            _, sidecars, failures = author.prepare_mixed_rows({"questions": batch}, construct_choices=True)
+            self.assertEqual(failures, [])
+            for provenance in sidecars.values():
+                compiled = compile_question(json.loads(provenance.spec_json))
+                self.assertEqual(compiled, provenance.content())
+                expected.append(compiled)
+        reserve = Mock()
+        budget = generation.ProviderCallBudget(6, reserve_call=reserve)
+        with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "3", "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3",
+                                  "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "array"}):
+            result = generation._generate_sanitized_questions(self.request(5), client, budget)
+        self.assertEqual((len(result), budget.calls, reserve.call_count), (5, 4, 4))
+        self.assertEqual([learner(question) for question in result], expected)
+        self.assertEqual([question["verificationPolicyRevision"] for question in result], [8] * 5)
+        self.assertEqual([task_data(call, "generation_request_json")["targetCount"] for call in (client.calls[0], client.calls[2])], [3, 2])
+        self.assertEqual([client.calls[i]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"]
+                          for i in (0, 2)], [CONTRACT, CONTRACT])
+
     def test_opt_in_batch_does_not_change_mapped_skill_or_objective_assignments(self):
         request = self.request(5)
         skill_id = "11111111-1111-4111-8111-111111111111"
@@ -179,6 +205,9 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
                                  "requestedObjectiveAllocation": [{"skillID": skill_id, "objectiveID": objective_id, "count": 5}]}
             self.assertEqual(generation._constructed_author_batch_size(objective_request, "constructed_quantitative"), 5)
             self.assertEqual(generation._constructed_author_batch_size(self.request(5), "prose"), 5)
+            inferred = self.request(5)
+            inferred["goal"]["needsSkillMap"] = True
+            self.assertEqual(generation._constructed_author_batch_size(inferred, "constructed_quantitative"), 5)
             for field, value in (("skillMap", None), ("desiredSkillAllocation", {}),
                                  ("requestedSkillAllocation", {}), ("requestedObjectiveAllocation", []),
                                  ("adaptiveSkillPlans", [{"skillID": "skill", "targetDifficulty": 3}]),
