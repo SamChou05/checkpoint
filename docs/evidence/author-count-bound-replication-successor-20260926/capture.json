@@ -1,0 +1,463 @@
+{
+  "experiment": "author-count-bound-replication-successor-20260926",
+  "plan_sha256": "72b2fdb2b0f762ceed8ea6c01db6c849a9085730f816a8dde7100ff466c9669f",
+  "source_revision": "99cd50a3ed7ee8babe98ec9e8763cdd9f9edff53",
+  "account_id": "239342516379",
+  "credential_profile": "default",
+  "credential_provider_method": "login",
+  "created_at_utc": "2026-09-26T21:21:53.021482+00:00",
+  "preflight_status": "passed",
+  "jobs": [
+    {
+      "id": "archive_circulation_array_n5",
+      "arm": "array",
+      "provider_request_sha256": "ff4521610f9f60104dbbc8a07e3b6ad977b57e788ef8ba5f413a7c8d3d344d04",
+      "dispatch_status": "completed",
+      "reserved_at_utc": "2026-09-26T21:21:53.396701+00:00",
+      "transport": {
+        "outcome": "response",
+        "elapsed_seconds": 25.125,
+        "stop_reason": "end_turn",
+        "stop_reason_valid": true,
+        "usage": {
+          "inputTokens": 2059,
+          "outputTokens": 936,
+          "totalTokens": 2995
+        },
+        "usage_valid": true,
+        "visible_text_blocks": [
+          " {\"questions\":[{\"prompt\":\"Under the Meridian Archive rules: Standard loans last 14 days; Scholar members may renew once for 7 days if no holds exist. Dr. Voss, a Scholar, borrowed a folio on Day 1. On Day 10, a Reader placed a hold. On Day 15, Dr. Voss requests renewal. What occurs?\",\"choices\":{\"a\":\"Renewal denied; hold exists\",\"b\":\"7-day renewal granted\",\"c\":\"14-day renewal granted\",\"d\":\"Item recalled immediately\"},\"explanation\":\"Renewal requires no holds and Scholar status. The hold was placed Day 10, before the Day 15 renewal request, so condition fails. Scholar status and 14-day window are irrelevant once hold exists.\",\"correctChoice\":\"a\",\"topic\":\"Renewal eligibility\",\"difficulty\":2,\"format\":\"Multiple Choice\"},{\"prompt\":\"Under the Vesper Archive rules: Items loan for 21 days; renewal adds 14 days if borrower has no overdue items and no holds queue. Member Chen has no overdues. On Day 18, a hold is placed on Chen's borrowed atlas. On Day 22, Chen requests renewal. What is the outcome?\",\"choices\":{\"a\":\"Renewal denied; hold exists\",\"b\":\"14-day extension granted\",\"c\":\"7-day extension granted\",\"d\":\"Renewal granted; hold ignored until due date\"},\"explanation\":\"Vesper rules require both no overdues AND no holds for renewal. The hold on Day 18 precedes the Day 22 request, blocking renewal. No overdue status is insufficient alone.\",\"correctChoice\":\"a\",\"topic\":\"Renewal eligibility\",\"difficulty\":2,\"format\":\"Multiple Choice\"},{\"prompt\":\"Under the Nocturne Archive rules: Loan period is 10 days. Hold precedence: when an item is returned, it goes to the earliest hold requester who is eligible to borrow. Member A (Day 3 hold, Standard member) and Member B (Day 5 hold, Extended member) both request the same journal. Extended members may borrow journals; Standard members may not. The item returns on Day 12. Who receives it?\",\"choices\":{\"a\":\"Member A; earlier hold date\",\"b\":\"Member B; only eligible borrower\",\"c\":\"Held for Member A until membership upgrade\",\"d\":\"Returned to shelves; no valid recipient\"},\"explanation\":\"Hold precedence applies only among eligible borrowers. Member A's earlier hold is void due to ineligibility. Member B, though later, is the sole eligible hold requester and receives the item.\",\"correctChoice\":\"b\",\"topic\":\"Hold precedence\",\"difficulty\":2,\"format\":\"Multiple Choice\"},{\"prompt\":\"Under the Aether Archive rules: Loan window for rare materials is 7 days, non-renewable. Hold precedence uses timestamp only; eligibility is checked at hold placement, not at fulfillment. Member X (eligible, Day 2 hold) and Member Y (eligible, Day 4 hold) both hold the same codex. Member X's account is suspended for overdue fines on Day 5. The codex returns Day 8. Who receives it?\",\"choices\":{\"a\":\"Member Y; earlier eligible hold at fulfillment\",\"b\":\"Member X; hold precedence locked at placement\",\"c\":\"Member Y; X's suspension voids their hold\",\"d\":\"Held for X until account cleared\"},\"explanation\":\"Aether rules check eligibility only at hold placement, not fulfillment. Member X was eligible when holding; suspension later does not void the hold. Timestamp precedence gives X the item despite current suspension.\",\"correctChoice\":\"b\",\"topic\":\"Hold precedence\",\"difficulty\":2,\"format\":\"Multiple Choice\"},{\"prompt\":\"Under the Prism Archive rules: Standard loan is 30 days. Renewal allowed once for 14 days if: (a) request is before due date, (b) no holds exist, AND (c) borrower has fewer than 3 current renewals. Member Park has 2 prior renewals on other items, no holds on her borrowed manuscript due Day 30. She requests renewal on Day 31. What occurs?\",\"choices\":{\"a\":\"Renewal denied; request after due date\",\"b\":\"14-day renewal granted; under renewal limit\",\"c\":\"Renewal denied; renewal limit reached\",\"d\":\"7-day grace renewal granted\"},\"explanation\":\"Prism rules require request BEFORE due date. Day 31 request fails condition (a) regardless of holds or renewal count. Other conditions are satisfied but insufficient.\",\"correctChoice\":\"a\",\"topic\":\"Loan windows\",\"difficulty\":2,\"format\":\"Multiple Choice\"}]}"
+        ],
+        "capture_redaction": null,
+        "reasoning_content_block_count": 0
+      },
+      "adapted_count": 5,
+      "adapted_payload": {
+        "questions": [
+          {
+            "prompt": "Under the Meridian Archive rules: Standard loans last 14 days; Scholar members may renew once for 7 days if no holds exist. Dr. Voss, a Scholar, borrowed a folio on Day 1. On Day 10, a Reader placed a hold. On Day 15, Dr. Voss requests renewal. What occurs?",
+            "choices": [
+              "Renewal denied; hold exists",
+              "7-day renewal granted",
+              "14-day renewal granted",
+              "Item recalled immediately"
+            ],
+            "explanation": "Renewal requires no holds and Scholar status. The hold was placed Day 10, before the Day 15 renewal request, so condition fails. Scholar status and 14-day window are irrelevant once hold exists.",
+            "topic": "Renewal eligibility",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Renewal denied; hold exists"
+          },
+          {
+            "prompt": "Under the Vesper Archive rules: Items loan for 21 days; renewal adds 14 days if borrower has no overdue items and no holds queue. Member Chen has no overdues. On Day 18, a hold is placed on Chen's borrowed atlas. On Day 22, Chen requests renewal. What is the outcome?",
+            "choices": [
+              "Renewal denied; hold exists",
+              "14-day extension granted",
+              "7-day extension granted",
+              "Renewal granted; hold ignored until due date"
+            ],
+            "explanation": "Vesper rules require both no overdues AND no holds for renewal. The hold on Day 18 precedes the Day 22 request, blocking renewal. No overdue status is insufficient alone.",
+            "topic": "Renewal eligibility",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Renewal denied; hold exists"
+          },
+          {
+            "prompt": "Under the Nocturne Archive rules: Loan period is 10 days. Hold precedence: when an item is returned, it goes to the earliest hold requester who is eligible to borrow. Member A (Day 3 hold, Standard member) and Member B (Day 5 hold, Extended member) both request the same journal. Extended members may borrow journals; Standard members may not. The item returns on Day 12. Who receives it?",
+            "choices": [
+              "Member A; earlier hold date",
+              "Member B; only eligible borrower",
+              "Held for Member A until membership upgrade",
+              "Returned to shelves; no valid recipient"
+            ],
+            "explanation": "Hold precedence applies only among eligible borrowers. Member A's earlier hold is void due to ineligibility. Member B, though later, is the sole eligible hold requester and receives the item.",
+            "topic": "Hold precedence",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Member B; only eligible borrower"
+          },
+          {
+            "prompt": "Under the Aether Archive rules: Loan window for rare materials is 7 days, non-renewable. Hold precedence uses timestamp only; eligibility is checked at hold placement, not at fulfillment. Member X (eligible, Day 2 hold) and Member Y (eligible, Day 4 hold) both hold the same codex. Member X's account is suspended for overdue fines on Day 5. The codex returns Day 8. Who receives it?",
+            "choices": [
+              "Member Y; earlier eligible hold at fulfillment",
+              "Member X; hold precedence locked at placement",
+              "Member Y; X's suspension voids their hold",
+              "Held for X until account cleared"
+            ],
+            "explanation": "Aether rules check eligibility only at hold placement, not fulfillment. Member X was eligible when holding; suspension later does not void the hold. Timestamp precedence gives X the item despite current suspension.",
+            "topic": "Hold precedence",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Member X; hold precedence locked at placement"
+          },
+          {
+            "prompt": "Under the Prism Archive rules: Standard loan is 30 days. Renewal allowed once for 14 days if: (a) request is before due date, (b) no holds exist, AND (c) borrower has fewer than 3 current renewals. Member Park has 2 prior renewals on other items, no holds on her borrowed manuscript due Day 30. She requests renewal on Day 31. What occurs?",
+            "choices": [
+              "Renewal denied; request after due date",
+              "14-day renewal granted; under renewal limit",
+              "Renewal denied; renewal limit reached",
+              "7-day grace renewal granted"
+            ],
+            "explanation": "Prism rules require request BEFORE due date. Day 31 request fails condition (a) regardless of holds or renewal count. Other conditions are satisfied but insufficient.",
+            "topic": "Loan windows",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Renewal denied; request after due date"
+          }
+        ]
+      },
+      "provider_calls": 1,
+      "structure": {
+        "eligible": true,
+        "reason": "valid",
+        "raw_count": 5,
+        "schema_error_count": 0,
+        "adapter_valid": true,
+        "typed_row_count": 0,
+        "raw_question_keys": null
+      }
+    },
+    {
+      "id": "archive_circulation_count_bound_n5",
+      "arm": "count_bound",
+      "provider_request_sha256": "33312b87d83b73bed32885b8d99559b6728f8648f328cb111f446efabbe972d5",
+      "dispatch_status": "completed",
+      "reserved_at_utc": "2026-09-26T21:22:18.580637+00:00",
+      "transport": {
+        "outcome": "response",
+        "elapsed_seconds": 11.219,
+        "stop_reason": "end_turn",
+        "stop_reason_valid": true,
+        "usage": {
+          "inputTokens": 2193,
+          "outputTokens": 1159,
+          "totalTokens": 3352
+        },
+        "usage_valid": true,
+        "visible_text_blocks": [
+          " {\"questions\":{\"0\":{\"prompt\":\"In the Meridian Archive, a Standard member may borrow items for 14 days and renew once for 7 additional days. A Premium member may borrow for 28 days with one 14-day renewal. On Day 1, a Standard member borrows a journal. On Day 10, a Premium member places a hold on that same journal. The Standard member requests renewal on Day 14. What is the outcome?\",\"choices\":{\"a\":\"Renewal denied; the item must be returned by Day 14 due to the active hold.\",\"b\":\"Renewal granted; the loan extends to Day 21, and the Premium member's hold activates on Day 21.\",\"c\":\"Renewal granted; the loan extends to Day 28, matching Premium member terms.\",\"d\":\"Renewal denied; Standard members may not renew items held by Premium members.\"},\"explanation\":\"The Standard member's 7-day renewal is permitted because holds only block renewal if placed before the renewal request. The hold was placed on Day 10, before the Day 14 renewal request, so the renewal should be blocked. However, Meridian rules specify holds block renewal only if placed before the original loan expires. Since the hold preceded the renewal request, the renewal is denied and return is due Day 14.\",\"correctChoice\":\"a\",\"topic\":\"Loan windows\",\"difficulty\":2,\"format\":\"Multiple Choice\"},\"1\":{\"prompt\":\"At the Cascade Repository, any member may renew an item exactly once if: (a) no hold exists, and (b) the renewal is requested before the original due date. Due dates are calculated from the renewal request date, not the original due date. A member borrows a map on March 1 with a 21-day loan. On March 20, they request renewal. No holds exist. What is the new due date?\",\"choices\":{\"a\":\"March 21\",\"b\":\"April 10\",\"c\":\"March 28\",\"d\":\"April 11\"},\"explanation\":\"The original loan runs March 1–22 (21 days). The March 20 renewal request meets both conditions: before due date and no holds. The new 21-day period runs from March 20, making the new due date April 10.\",\"correctChoice\":\"b\",\"topic\":\"Renewal eligibility\",\"difficulty\":2,\"format\":\"Multiple Choice\"},\"2\":{\"prompt\":\"The Horizon Archive uses this hold precedence: (1) Institutional members outrank Individual members; (2) among equal ranks, earlier request dates prevail; (3) a member may not borrow an item they already hold. An Institutional member requested Item X on June 1. An Individual member currently borrowing Item X requested a hold on June 3. The Individual member returns Item X on June 5. Who receives it?\",\"choices\":{\"a\":\"The Institutional member; their June 1 request has precedence.\",\"b\":\"The Individual member; their active hold while borrowing converts to immediate re-loan.\",\"c\":\"The Individual member; returning triggers automatic renewal instead of hold fulfillment.\",\"d\":\"Neither; the Individual member's existing loan blocks all holds.\"},\"explanation\":\"The Individual member's June 3 hold is invalid under rule (3)—they cannot hold what they borrow. Only the valid Institutional hold exists. Upon return June 5, the Institutional member receives the item.\",\"correctChoice\":\"a\",\"topic\":\"Hold precedence\",\"difficulty\":2,\"format\":\"Multiple Choice\"},\"3\":{\"prompt\":\"In the Vale Library system, loan periods are: Student (7 days), Faculty (56 days). Renewals: Students may renew once for 7 days; Faculty may renew twice for 14 days each. A Faculty member borrows a rare manuscript on September 1. They renew on September 30 and again on October 20. When is the final due date?\",\"choices\":{\"a\":\"November 3\",\"b\":\"October 27\",\"c\":\"November 17\",\"d\":\"December 4\"},\"explanation\":\"First loan: September 1–October 27 (56 days). First renewal September 30: new 14-day period runs September 30–October 14. Second renewal October 20: invalid because October 20 is after the October 14 due date. Renewal requests must precede the current due date. Only one renewal applies; final due date is October 27.\",\"correctChoice\":\"b\",\"topic\":\"Renewal eligibility\",\"difficulty\":2,\"format\":\"Multiple Choice\"},\"4\":{\"prompt\":\"The Sterling Archives operate on rolling midnight deadlines: loans expire at 11:59 PM on the due date. The grace period for return without penalty is 24 hours after expiry. A member borrows equipment at 2:00 PM Monday for 3 days. They attempt renewal at 10:00 PM Thursday. The renewal rule requires the request occur before expiry. What is the outcome?\",\"choices\":{\"a\":\"Renewal granted; the grace period extends the effective expiry to Friday 11:59 PM.\",\"b\":\"Renewal denied; the loan expired Thursday 11:59 PM, before the 10:00 PM request.\",\"c\":\"Renewal granted; the request at 10:00 PM Thursday precedes midnight expiry.\",\"d\":\"Renewal denied; equipment loans prohibit renewal regardless of timing.\"},\"explanation\":\"The 3-day loan from Monday 2:00 PM expires Thursday 11:59 PM. The 10:00 PM Thursday request occurs before expiry. The grace period applies only to returns, not renewal eligibility. Renewal is granted.\",\"correctChoice\":\"c\",\"topic\":\"Loan windows\",\"difficulty\":2,\"format\":\"Multiple Choice\"}}}"
+        ],
+        "capture_redaction": null,
+        "reasoning_content_block_count": 0
+      },
+      "adapted_count": 5,
+      "adapted_payload": {
+        "questions": [
+          {
+            "prompt": "In the Meridian Archive, a Standard member may borrow items for 14 days and renew once for 7 additional days. A Premium member may borrow for 28 days with one 14-day renewal. On Day 1, a Standard member borrows a journal. On Day 10, a Premium member places a hold on that same journal. The Standard member requests renewal on Day 14. What is the outcome?",
+            "choices": [
+              "Renewal denied; the item must be returned by Day 14 due to the active hold.",
+              "Renewal granted; the loan extends to Day 21, and the Premium member's hold activates on Day 21.",
+              "Renewal granted; the loan extends to Day 28, matching Premium member terms.",
+              "Renewal denied; Standard members may not renew items held by Premium members."
+            ],
+            "explanation": "The Standard member's 7-day renewal is permitted because holds only block renewal if placed before the renewal request. The hold was placed on Day 10, before the Day 14 renewal request, so the renewal should be blocked. However, Meridian rules specify holds block renewal only if placed before the original loan expires. Since the hold preceded the renewal request, the renewal is denied and return is due Day 14.",
+            "topic": "Loan windows",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Renewal denied; the item must be returned by Day 14 due to the active hold."
+          },
+          {
+            "prompt": "At the Cascade Repository, any member may renew an item exactly once if: (a) no hold exists, and (b) the renewal is requested before the original due date. Due dates are calculated from the renewal request date, not the original due date. A member borrows a map on March 1 with a 21-day loan. On March 20, they request renewal. No holds exist. What is the new due date?",
+            "choices": [
+              "March 21",
+              "April 10",
+              "March 28",
+              "April 11"
+            ],
+            "explanation": "The original loan runs March 1–22 (21 days). The March 20 renewal request meets both conditions: before due date and no holds. The new 21-day period runs from March 20, making the new due date April 10.",
+            "topic": "Renewal eligibility",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "April 10"
+          },
+          {
+            "prompt": "The Horizon Archive uses this hold precedence: (1) Institutional members outrank Individual members; (2) among equal ranks, earlier request dates prevail; (3) a member may not borrow an item they already hold. An Institutional member requested Item X on June 1. An Individual member currently borrowing Item X requested a hold on June 3. The Individual member returns Item X on June 5. Who receives it?",
+            "choices": [
+              "The Institutional member; their June 1 request has precedence.",
+              "The Individual member; their active hold while borrowing converts to immediate re-loan.",
+              "The Individual member; returning triggers automatic renewal instead of hold fulfillment.",
+              "Neither; the Individual member's existing loan blocks all holds."
+            ],
+            "explanation": "The Individual member's June 3 hold is invalid under rule (3)—they cannot hold what they borrow. Only the valid Institutional hold exists. Upon return June 5, the Institutional member receives the item.",
+            "topic": "Hold precedence",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "The Institutional member; their June 1 request has precedence."
+          },
+          {
+            "prompt": "In the Vale Library system, loan periods are: Student (7 days), Faculty (56 days). Renewals: Students may renew once for 7 days; Faculty may renew twice for 14 days each. A Faculty member borrows a rare manuscript on September 1. They renew on September 30 and again on October 20. When is the final due date?",
+            "choices": [
+              "November 3",
+              "October 27",
+              "November 17",
+              "December 4"
+            ],
+            "explanation": "First loan: September 1–October 27 (56 days). First renewal September 30: new 14-day period runs September 30–October 14. Second renewal October 20: invalid because October 20 is after the October 14 due date. Renewal requests must precede the current due date. Only one renewal applies; final due date is October 27.",
+            "topic": "Renewal eligibility",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "October 27"
+          },
+          {
+            "prompt": "The Sterling Archives operate on rolling midnight deadlines: loans expire at 11:59 PM on the due date. The grace period for return without penalty is 24 hours after expiry. A member borrows equipment at 2:00 PM Monday for 3 days. They attempt renewal at 10:00 PM Thursday. The renewal rule requires the request occur before expiry. What is the outcome?",
+            "choices": [
+              "Renewal granted; the grace period extends the effective expiry to Friday 11:59 PM.",
+              "Renewal denied; the loan expired Thursday 11:59 PM, before the 10:00 PM request.",
+              "Renewal granted; the request at 10:00 PM Thursday precedes midnight expiry.",
+              "Renewal denied; equipment loans prohibit renewal regardless of timing."
+            ],
+            "explanation": "The 3-day loan from Monday 2:00 PM expires Thursday 11:59 PM. The 10:00 PM Thursday request occurs before expiry. The grace period applies only to returns, not renewal eligibility. Renewal is granted.",
+            "topic": "Loan windows",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Renewal granted; the request at 10:00 PM Thursday precedes midnight expiry."
+          }
+        ]
+      },
+      "provider_calls": 1,
+      "structure": {
+        "eligible": true,
+        "reason": "valid",
+        "raw_count": 5,
+        "schema_error_count": 0,
+        "adapter_valid": true,
+        "typed_row_count": 0,
+        "raw_question_keys": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4"
+        ]
+      }
+    },
+    {
+      "id": "greenhouse_alerts_count_bound_n5",
+      "arm": "count_bound",
+      "provider_request_sha256": "4a25b79bd1057cf62e69055538e73668af1d03004aed3d472627b437f9995a28",
+      "dispatch_status": "completed",
+      "reserved_at_utc": "2026-09-26T21:22:29.862815+00:00",
+      "transport": {
+        "outcome": "response",
+        "elapsed_seconds": 12.654,
+        "stop_reason": "end_turn",
+        "stop_reason_valid": true,
+        "usage": {
+          "inputTokens": 2198,
+          "outputTokens": 939,
+          "totalTokens": 3137
+        },
+        "usage_valid": true,
+        "visible_text_blocks": [
+          " {\"questions\":{\"0\":{\"prompt\":\"A greenhouse sensor reads 28°C. Policy states: Alert if temperature exceeds 25°C for more than 10 minutes within any 15-minute observation window. The reading has persisted for 8 minutes so far. What action is required?\",\"choices\":{\"a\":\"No alert; duration has not reached the 10-minute threshold\",\"b\":\"Immediate alert; temperature exceeds 25°C\",\"c\":\"Alert in 2 minutes when the window closes\",\"d\":\"Alert only if temperature drops below 25°C first\"},\"explanation\":\"The 25°C threshold is exceeded, but the required 10-minute duration within a 15-minute window has not been met (only 8 minutes elapsed). Choice b ignores the duration rule; c invents a window-closing trigger; d contradicts the policy logic.\",\"correctChoice\":\"a\",\"topic\":\"Threshold decisions\",\"difficulty\":2,\"format\":\"Multiple Choice\"},\"1\":{\"prompt\":\"Humidity sensor shows 85% for 12 minutes. Policy: Alert if humidity exceeds 80% for at least 15 continuous minutes. A maintenance override flag is active, which pauses all humidity alerts. What action is required?\",\"choices\":{\"a\":\"No alert; the maintenance override takes precedence\",\"b\":\"Alert; the threshold condition will soon be satisfied\",\"c\":\"Alert; the override does not apply to 85% readings\",\"d\":\"No alert; the observation window has not closed\"},\"explanation\":\"The override explicitly pauses humidity alerts regardless of sensor values or duration progress. Choice b ignores the override; c invents an exception; d confuses window closure with the override rule.\",\"correctChoice\":\"a\",\"topic\":\"Override precedence\",\"difficulty\":2,\"format\":\"Multiple Choice\"},\"2\":{\"prompt\":\"CO2 reads 1200 ppm. Policy: Alert if CO2 exceeds 1000 ppm for more than 5 minutes within a 20-minute observation window. The reading has been 1200 ppm for exactly 6 minutes. What action is required?\",\"choices\":{\"a\":\"Immediate alert; threshold exceeded for required duration within window\",\"b\":\"No alert; wait until 20 minutes elapse\",\"c\":\"No alert; 1200 ppm is within acceptable variance\",\"d\":\"Alert only if CO2 drops below 1000 ppm first\"},\"explanation\":\"1200 ppm exceeds 1000 ppm, and the 6-minute duration exceeds the 5-minute minimum within the 20-minute window. Choice b misinterprets the window as a waiting period; c invents a variance rule; d reverses the threshold logic.\",\"correctChoice\":\"a\",\"topic\":\"Observation windows\",\"difficulty\":2,\"format\":\"Multiple Choice\"},\"3\":{\"prompt\":\"Temperature is 22°C (threshold: 25°C). Humidity is 75% (threshold: 80%). A manual override states: \\\"If temperature is below threshold, ignore humidity alerts.\\\" Humidity has exceeded 80% for 20 minutes. What action is required?\",\"choices\":{\"a\":\"No alert; the temperature condition triggers the override\",\"b\":\"Immediate humidity alert; duration threshold satisfied\",\"c\":\"Temperature alert; humidity is near threshold\",\"d\":\"Both alerts; overrides apply separately to each sensor\"},\"explanation\":\"The override explicitly conditions humidity alert suppression on temperature being below threshold, which is true (22°C < 25°C). Choice b ignores the override; c invents a temperature alert; d misreads the override scope.\",\"correctChoice\":\"a\",\"topic\":\"Override precedence\",\"difficulty\":2,\"format\":\"Multiple Choice\"},\"4\":{\"prompt\":\"Light sensor reads 450 lux. Policy: Alert if light falls below 500 lux for more than 8 minutes within any 12-minute observation window. The reading has been 450 lux for 9 minutes. A scheduled override for \\\"low light alerts\\\" is active from 06:00-08:00; current time is 07:30. What action is required?\",\"choices\":{\"a\":\"No alert; the scheduled override is active\",\"b\":\"Immediate alert; threshold and duration conditions met\",\"c\":\"Alert at 08:00 when override expires\",\"d\":\"No alert; the observation window has not closed\"},\"explanation\":\"The scheduled override for low light alerts is currently active (07:30 falls within 06:00-08:00), taking precedence over the threshold/duration conditions. Choice b ignores the time-bound override; c invents a delayed alert rule; d misinterprets the window mechanism.\",\"correctChoice\":\"a\",\"topic\":\"Override precedence\",\"difficulty\":2,\"format\":\"Multiple Choice\"}}}"
+        ],
+        "capture_redaction": null,
+        "reasoning_content_block_count": 0
+      },
+      "adapted_count": 5,
+      "adapted_payload": {
+        "questions": [
+          {
+            "prompt": "A greenhouse sensor reads 28°C. Policy states: Alert if temperature exceeds 25°C for more than 10 minutes within any 15-minute observation window. The reading has persisted for 8 minutes so far. What action is required?",
+            "choices": [
+              "No alert; duration has not reached the 10-minute threshold",
+              "Immediate alert; temperature exceeds 25°C",
+              "Alert in 2 minutes when the window closes",
+              "Alert only if temperature drops below 25°C first"
+            ],
+            "explanation": "The 25°C threshold is exceeded, but the required 10-minute duration within a 15-minute window has not been met (only 8 minutes elapsed). Choice b ignores the duration rule; c invents a window-closing trigger; d contradicts the policy logic.",
+            "topic": "Threshold decisions",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "No alert; duration has not reached the 10-minute threshold"
+          },
+          {
+            "prompt": "Humidity sensor shows 85% for 12 minutes. Policy: Alert if humidity exceeds 80% for at least 15 continuous minutes. A maintenance override flag is active, which pauses all humidity alerts. What action is required?",
+            "choices": [
+              "No alert; the maintenance override takes precedence",
+              "Alert; the threshold condition will soon be satisfied",
+              "Alert; the override does not apply to 85% readings",
+              "No alert; the observation window has not closed"
+            ],
+            "explanation": "The override explicitly pauses humidity alerts regardless of sensor values or duration progress. Choice b ignores the override; c invents an exception; d confuses window closure with the override rule.",
+            "topic": "Override precedence",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "No alert; the maintenance override takes precedence"
+          },
+          {
+            "prompt": "CO2 reads 1200 ppm. Policy: Alert if CO2 exceeds 1000 ppm for more than 5 minutes within a 20-minute observation window. The reading has been 1200 ppm for exactly 6 minutes. What action is required?",
+            "choices": [
+              "Immediate alert; threshold exceeded for required duration within window",
+              "No alert; wait until 20 minutes elapse",
+              "No alert; 1200 ppm is within acceptable variance",
+              "Alert only if CO2 drops below 1000 ppm first"
+            ],
+            "explanation": "1200 ppm exceeds 1000 ppm, and the 6-minute duration exceeds the 5-minute minimum within the 20-minute window. Choice b misinterprets the window as a waiting period; c invents a variance rule; d reverses the threshold logic.",
+            "topic": "Observation windows",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Immediate alert; threshold exceeded for required duration within window"
+          },
+          {
+            "prompt": "Temperature is 22°C (threshold: 25°C). Humidity is 75% (threshold: 80%). A manual override states: \"If temperature is below threshold, ignore humidity alerts.\" Humidity has exceeded 80% for 20 minutes. What action is required?",
+            "choices": [
+              "No alert; the temperature condition triggers the override",
+              "Immediate humidity alert; duration threshold satisfied",
+              "Temperature alert; humidity is near threshold",
+              "Both alerts; overrides apply separately to each sensor"
+            ],
+            "explanation": "The override explicitly conditions humidity alert suppression on temperature being below threshold, which is true (22°C < 25°C). Choice b ignores the override; c invents a temperature alert; d misreads the override scope.",
+            "topic": "Override precedence",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "No alert; the temperature condition triggers the override"
+          },
+          {
+            "prompt": "Light sensor reads 450 lux. Policy: Alert if light falls below 500 lux for more than 8 minutes within any 12-minute observation window. The reading has been 450 lux for 9 minutes. A scheduled override for \"low light alerts\" is active from 06:00-08:00; current time is 07:30. What action is required?",
+            "choices": [
+              "No alert; the scheduled override is active",
+              "Immediate alert; threshold and duration conditions met",
+              "Alert at 08:00 when override expires",
+              "No alert; the observation window has not closed"
+            ],
+            "explanation": "The scheduled override for low light alerts is currently active (07:30 falls within 06:00-08:00), taking precedence over the threshold/duration conditions. Choice b ignores the time-bound override; c invents a delayed alert rule; d misinterprets the window mechanism.",
+            "topic": "Override precedence",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "No alert; the scheduled override is active"
+          }
+        ]
+      },
+      "provider_calls": 1,
+      "structure": {
+        "eligible": true,
+        "reason": "valid",
+        "raw_count": 5,
+        "schema_error_count": 0,
+        "adapter_valid": true,
+        "typed_row_count": 0,
+        "raw_question_keys": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4"
+        ]
+      }
+    },
+    {
+      "id": "greenhouse_alerts_array_n5",
+      "arm": "array",
+      "provider_request_sha256": "87c7ab46b443953c518e8ee4e3534b5dcf1b85f3cf36766451304896417ed5ac",
+      "dispatch_status": "completed",
+      "reserved_at_utc": "2026-09-26T21:22:42.581927+00:00",
+      "transport": {
+        "outcome": "response",
+        "elapsed_seconds": 7.198,
+        "stop_reason": "end_turn",
+        "stop_reason_valid": true,
+        "usage": {
+          "inputTokens": 2064,
+          "outputTokens": 976,
+          "totalTokens": 3040
+        },
+        "usage_valid": true,
+        "visible_text_blocks": [
+          " {\"questions\":[{\"prompt\":\"Greenhouse Policy Rule: If soil moisture falls below 15% for any reading, trigger Irrigation Alert. Exception: if outside temperature is below 5°C, suppress Irrigation Alert and trigger Frost Alert instead. Current readings: soil moisture 12%, outside temperature 3°C. What alert is required?\",\"choices\":{\"a\":\"Irrigation Alert\",\"b\":\"Frost Alert\",\"c\":\"Both Irrigation Alert and Frost Alert\",\"d\":\"No alert\"},\"explanation\":\"Soil moisture 12% is below 15%, which would normally trigger Irrigation Alert. However, the temperature 3°C is below 5°C, so the Frost Alert override applies and suppresses the Irrigation Alert. Choice a ignores the override. Choice c violates the suppression rule. Choice d ignores that the moisture threshold was breached.\",\"correctChoice\":\"b\",\"topic\":\"Threshold decisions\",\"difficulty\":2,\"format\":\"Multiple Choice\"},{\"prompt\":\"Greenhouse Policy Rule: Trigger Humidity Alert if relative humidity exceeds 80% for two consecutive 10-minute readings. Current readings at 9:00, 9:10, 9:20: 78%, 82%, 79%. What is required?\",\"choices\":{\"a\":\"Humidity Alert now\",\"b\":\"Humidity Alert at 9:30 if next reading also exceeds 80%\",\"c\":\"No Humidity Alert based on current data\",\"d\":\"Humidity Alert delayed until three consecutive readings exceed 80%\"},\"explanation\":\"The rule requires two consecutive readings above 80%. Only 9:10 at 82% exceeds 80%; 9:00 was 78% and 9:20 was 79%, so no consecutive pair qualifies. Choice a misapplies the single reading at 9:10. Choice b invents a future condition not in the rules. Choice d changes the threshold to three readings.\",\"correctChoice\":\"c\",\"topic\":\"Observation windows\",\"difficulty\":2,\"format\":\"Multiple Choice\"},{\"prompt\":\"Greenhouse Policy Rule: CO2 Alert triggers if CO2 exceeds 1200 ppm. Manual Override Rule: If operator sets 'Ventilation Active' flag, CO2 Alert is suppressed regardless of level. Current: CO2 at 1350 ppm, 'Ventilation Active' flag is set. What action?\",\"choices\":{\"a\":\"Trigger CO2 Alert immediately\",\"b\":\"Suppress CO2 Alert due to override\",\"c\":\"Trigger CO2 Alert and clear the flag\",\"d\":\"Wait 5 minutes then reassess\"},\"explanation\":\"CO2 at 1350 ppm exceeds 1200 ppm threshold, but the Manual Override Rule explicitly suppresses CO2 Alert when 'Ventilation Active' is set. Choice a ignores the override. Choice c violates the suppression instruction. Choice d invents a timing rule not stated.\",\"correctChoice\":\"b\",\"topic\":\"Override precedence\",\"difficulty\":2,\"format\":\"Multiple Choice\"},{\"prompt\":\"Greenhouse Policy Rule: Light Alert triggers if PAR (photosynthetically active radiation) is below 200 µmol/m²/s for 30 continuous minutes. Current PAR readings each minute for 35 minutes: 25 minutes at 180, then 10 minutes at 220. What is required?\",\"choices\":{\"a\":\"Light Alert now\",\"b\":\"Light Alert in 5 more minutes if PAR stays low\",\"c\":\"No Light Alert based on current data\",\"d\":\"Light Alert triggered at minute 30\"},\"explanation\":\"The rule requires 30 continuous minutes below 200. The longest stretch below 200 was 25 minutes, broken when PAR rose to 220. No 30-minute continuous window was satisfied. Choice a misreads the duration. Choice b assumes future data. Choice d incorrectly treats minute 30 as sufficient without checking continuity.\",\"correctChoice\":\"c\",\"topic\":\"Observation windows\",\"difficulty\":2,\"format\":\"Multiple Choice\"},{\"prompt\":\"Greenhouse Policy Rule: Temperature Alert triggers if air temperature exceeds 30°C. Emergency Override Rule: If 'Fire Suppression' mode is active, all temperature alerts are disabled and 'Emergency Evacuation' alert triggers instead. Current: air temperature 32°C, 'Fire Suppression' mode is inactive. What alert?\",\"choices\":{\"a\":\"Temperature Alert\",\"b\":\"Emergency Evacuation alert\",\"c\":\"Both Temperature Alert and Emergency Evacuation\",\"d\":\"No alert; wait for Fire Suppression activation\"},\"explanation\":\"Temperature 32°C exceeds 30°C threshold. 'Fire Suppression' is inactive, so the Emergency Override does not apply. Standard Temperature Alert triggers. Choice b applies the override incorrectly. Choice c doubles the alerts against rules. Choice d invents a waiting condition not in policy.\",\"correctChoice\":\"a\",\"topic\":\"Override precedence\",\"difficulty\":2,\"format\":\"Multiple Choice\"}]}"
+        ],
+        "capture_redaction": null,
+        "reasoning_content_block_count": 0
+      },
+      "adapted_count": 5,
+      "adapted_payload": {
+        "questions": [
+          {
+            "prompt": "Greenhouse Policy Rule: If soil moisture falls below 15% for any reading, trigger Irrigation Alert. Exception: if outside temperature is below 5°C, suppress Irrigation Alert and trigger Frost Alert instead. Current readings: soil moisture 12%, outside temperature 3°C. What alert is required?",
+            "choices": [
+              "Irrigation Alert",
+              "Frost Alert",
+              "Both Irrigation Alert and Frost Alert",
+              "No alert"
+            ],
+            "explanation": "Soil moisture 12% is below 15%, which would normally trigger Irrigation Alert. However, the temperature 3°C is below 5°C, so the Frost Alert override applies and suppresses the Irrigation Alert. Choice a ignores the override. Choice c violates the suppression rule. Choice d ignores that the moisture threshold was breached.",
+            "topic": "Threshold decisions",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Frost Alert"
+          },
+          {
+            "prompt": "Greenhouse Policy Rule: Trigger Humidity Alert if relative humidity exceeds 80% for two consecutive 10-minute readings. Current readings at 9:00, 9:10, 9:20: 78%, 82%, 79%. What is required?",
+            "choices": [
+              "Humidity Alert now",
+              "Humidity Alert at 9:30 if next reading also exceeds 80%",
+              "No Humidity Alert based on current data",
+              "Humidity Alert delayed until three consecutive readings exceed 80%"
+            ],
+            "explanation": "The rule requires two consecutive readings above 80%. Only 9:10 at 82% exceeds 80%; 9:00 was 78% and 9:20 was 79%, so no consecutive pair qualifies. Choice a misapplies the single reading at 9:10. Choice b invents a future condition not in the rules. Choice d changes the threshold to three readings.",
+            "topic": "Observation windows",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "No Humidity Alert based on current data"
+          },
+          {
+            "prompt": "Greenhouse Policy Rule: CO2 Alert triggers if CO2 exceeds 1200 ppm. Manual Override Rule: If operator sets 'Ventilation Active' flag, CO2 Alert is suppressed regardless of level. Current: CO2 at 1350 ppm, 'Ventilation Active' flag is set. What action?",
+            "choices": [
+              "Trigger CO2 Alert immediately",
+              "Suppress CO2 Alert due to override",
+              "Trigger CO2 Alert and clear the flag",
+              "Wait 5 minutes then reassess"
+            ],
+            "explanation": "CO2 at 1350 ppm exceeds 1200 ppm threshold, but the Manual Override Rule explicitly suppresses CO2 Alert when 'Ventilation Active' is set. Choice a ignores the override. Choice c violates the suppression instruction. Choice d invents a timing rule not stated.",
+            "topic": "Override precedence",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Suppress CO2 Alert due to override"
+          },
+          {
+            "prompt": "Greenhouse Policy Rule: Light Alert triggers if PAR (photosynthetically active radiation) is below 200 µmol/m²/s for 30 continuous minutes. Current PAR readings each minute for 35 minutes: 25 minutes at 180, then 10 minutes at 220. What is required?",
+            "choices": [
+              "Light Alert now",
+              "Light Alert in 5 more minutes if PAR stays low",
+              "No Light Alert based on current data",
+              "Light Alert triggered at minute 30"
+            ],
+            "explanation": "The rule requires 30 continuous minutes below 200. The longest stretch below 200 was 25 minutes, broken when PAR rose to 220. No 30-minute continuous window was satisfied. Choice a misreads the duration. Choice b assumes future data. Choice d incorrectly treats minute 30 as sufficient without checking continuity.",
+            "topic": "Observation windows",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "No Light Alert based on current data"
+          },
+          {
+            "prompt": "Greenhouse Policy Rule: Temperature Alert triggers if air temperature exceeds 30°C. Emergency Override Rule: If 'Fire Suppression' mode is active, all temperature alerts are disabled and 'Emergency Evacuation' alert triggers instead. Current: air temperature 32°C, 'Fire Suppression' mode is inactive. What alert?",
+            "choices": [
+              "Temperature Alert",
+              "Emergency Evacuation alert",
+              "Both Temperature Alert and Emergency Evacuation",
+              "No alert; wait for Fire Suppression activation"
+            ],
+            "explanation": "Temperature 32°C exceeds 30°C threshold. 'Fire Suppression' is inactive, so the Emergency Override does not apply. Standard Temperature Alert triggers. Choice b applies the override incorrectly. Choice c doubles the alerts against rules. Choice d invents a waiting condition not in policy.",
+            "topic": "Override precedence",
+            "difficulty": 2,
+            "format": "Multiple Choice",
+            "expectedAnswer": "Temperature Alert"
+          }
+        ]
+      },
+      "provider_calls": 1,
+      "structure": {
+        "eligible": true,
+        "reason": "valid",
+        "raw_count": 5,
+        "schema_error_count": 0,
+        "adapter_valid": true,
+        "typed_row_count": 0,
+        "raw_question_keys": null
+      }
+    }
+  ],
+  "bedrock_signer_source": "static_frozen_named_profile_snapshot",
+  "boto3_version": "1.43.91",
+  "botocore_version": "1.43.91"
+}

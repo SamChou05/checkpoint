@@ -1,0 +1,404 @@
+{
+  "answers": {
+    "07afe051df86eb7e14e8d299": {
+      "independent_answer": "B",
+      "reasoning": "The request occurs on Day 31, after the Day 30 due date. The before-due condition fails even though there is no hold and Park has fewer than three current renewals.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "ca6f23c08289679eb53754c3": {
+      "independent_answer": "unavailable",
+      "reasoning": "September 1 plus the 56-day faculty loan is October 27 under ordinary elapsed-day counting. Two 14-day renewals added to that due date give November 24, which is not listed. The rule also does not say whether a renewal is measured from the old due date or its request date, so none of the offered dates is securely derivable.",
+      "uncertain": true,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "uncertain"
+    },
+    "5d0aecfd0f6bb4943ef79cad": {
+      "independent_answer": "A",
+      "reasoning": "A hold was placed on the atlas on Day 18 and still exists when Chen requests renewal on Day 22. The no-holds condition therefore fails.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "c6361ca17a27e6312abde488": {
+      "independent_answer": "D",
+      "reasoning": "The March 20 request precedes the original due date and there are no holds. A renewed 21-day loan measured from March 20 reaches April 10.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "b1edece9b20d8bb295fdc75a": {
+      "independent_answer": "B",
+      "reasoning": "The Institutional request ranks above the Individual request and was also earlier. Returning the item ends the Individual member’s loan, so the Institutional member receives it.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "90a4006b1dff4cad2a24ff13": {
+      "independent_answer": "B",
+      "reasoning": "CO2 is above 1000 ppm and has remained there for six minutes, which is more than the required five minutes within the 20-minute window.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "30fd58607553a8737ac9d99a": {
+      "independent_answer": "A",
+      "reasoning": "Only the 9:10 reading exceeds 80%; both adjacent readings are below it. There are no two consecutive qualifying readings.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "3affaca9bdc60332ac986448": {
+      "independent_answer": "B",
+      "reasoning": "The temperature is above 25°C, but it has persisted for only eight minutes. The rule requires more than ten minutes.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "0c3224e0e2070a21f9354dfa": {
+      "independent_answer": "B",
+      "reasoning": "Soil moisture is below 15%, but the outside temperature is below 5°C. The exception suppresses the Irrigation Alert and requires a Frost Alert.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "d97701f7cf8ff842182f3589": {
+      "independent_answer": "A",
+      "reasoning": "The Reader’s hold exists before Dr. Voss requests renewal. The no-holds condition for a Scholar renewal therefore fails.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "760b8c26f30912e96017393a": {
+      "independent_answer": "B",
+      "reasoning": "Although 1350 ppm exceeds the CO2 threshold, the Ventilation Active flag expressly suppresses the CO2 Alert regardless of level.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "bc78ae57d620e891fd279939": {
+      "independent_answer": "B",
+      "reasoning": "A three-day loan begun Monday has a Thursday due date under the stated midnight-deadline convention. Thursday 10:00 PM precedes Thursday 11:59 PM expiry, so the request is timely.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "a0b9160cd52f0894fbfb3ac8": {
+      "independent_answer": "D",
+      "reasoning": "The earliest requester, Member A, cannot borrow journals. Member B is the earliest eligible hold requester and receives the returned journal.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "79065ebab34650aceb7cc809": {
+      "independent_answer": "C",
+      "reasoning": "The light threshold and duration would otherwise call for an alert, but 07:30 falls inside the active low-light alert override interval.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "correct",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "4e48213f6fea83b4fc2711f1": {
+      "independent_answer": "unavailable",
+      "reasoning": "The stated membership terms give the Standard borrower one seven-day renewal but say nothing about whether a Premium member’s hold blocks it or whether a request on the due date is timely. A assumes the hold can wait until Day 21, while C and D assume an unstated hold restriction. The hold was placed on Day 10, so A’s phrase that it activates on Day 21 is also unclear.",
+      "uncertain": true,
+      "choice_judgments": {
+        "A": "uncertain",
+        "B": "incorrect",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "equivalent"
+      },
+      "premise_sufficiency": "insufficient"
+    },
+    "fd7cd5a8cf07f3e2924521ce": {
+      "independent_answer": "unavailable",
+      "reasoning": "No humidity alert is required both because only 12 of the required 15 continuous minutes have elapsed and because the active maintenance override pauses all humidity alerts. C gives the explicit override rationale. B is also a plausible no-alert response if its undefined “observation window” is read as the 15-minute duration, leaving more than one defensible answer.",
+      "uncertain": true,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "uncertain",
+        "C": "correct",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "uncertain"
+    },
+    "2138e0cee64e486612f0c1b6": {
+      "independent_answer": "D",
+      "reasoning": "Air temperature exceeds 30°C. Fire Suppression mode is inactive, so its replacement alert rule does not apply.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "f885a43c7cbb6089398f3d81": {
+      "independent_answer": "D",
+      "reasoning": "The current temperature is below its threshold, which activates the instruction to ignore humidity alerts. The current 75% humidity is also below its threshold; the prior high-humidity period does not override the manual rule.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "25dccff8a304c2461d2ce890": {
+      "independent_answer": "D",
+      "reasoning": "X was eligible when the earlier Day 2 hold was placed. Eligibility is checked at placement, and timestamp alone determines precedence, so the later suspension does not displace X.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    },
+    "ca272793547f4468849277ec": {
+      "independent_answer": "A",
+      "reasoning": "PAR remained below 200 for only 25 continuous minutes before rising to 220. It never met the required 30 continuous minutes.",
+      "uncertain": false,
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient"
+    }
+  }
+}

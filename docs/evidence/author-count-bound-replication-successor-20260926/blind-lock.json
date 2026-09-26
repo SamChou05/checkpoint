@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "capture_sha256": "af50f8e640f859b5e7140aa15be1cb9b026e269a9e0e8d8085f888f7a3dd3c7b",
+  "worksheet_sha256": "ae1abbc4d2598d490aca36699e00ce02655fbac28d95b76fa16c4f189266e598",
+  "private_map_sha256": "d9ffaf035ea91c69fad50655604da49f00649445face2a7ca80209920648d243",
+  "blind_review_sha256": {
+    "a": "cc9b226414d7a8d1dde25edbbc983ed4ae649a88627afca2986cfbab6ec80b3f",
+    "b": "44defdf68d50ba1ed1541fd0aa52d800a86a47c1ba2ca5585fa1cada5a8df62a"
+  },
+  "locked_at_utc": "2026-09-26T21:26:30.417381+00:00"
+}

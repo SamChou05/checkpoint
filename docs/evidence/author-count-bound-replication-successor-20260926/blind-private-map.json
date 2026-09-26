@@ -1,0 +1,323 @@
+{
+  "version": 3,
+  "worksheet_sha256": "ae1abbc4d2598d490aca36699e00ce02655fbac28d95b76fa16c4f189266e598",
+  "capture_sha256": "af50f8e640f859b5e7140aa15be1cb9b026e269a9e0e8d8085f888f7a3dd3c7b",
+  "mapping": {
+    "d97701f7cf8ff842182f3589": {
+      "job_id": "archive_circulation_array_n5",
+      "original_row_position": 0,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "author_key": "a",
+      "author_explanation": "Renewal requires no holds and Scholar status. The hold was placed Day 10, before the Day 15 renewal request, so condition fails. Scholar status and 14-day window are irrelevant once hold exists."
+    },
+    "5d0aecfd0f6bb4943ef79cad": {
+      "job_id": "archive_circulation_array_n5",
+      "original_row_position": 1,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "author_key": "a",
+      "author_explanation": "Vesper rules require both no overdues AND no holds for renewal. The hold on Day 18 precedes the Day 22 request, blocking renewal. No overdue status is insufficient alone."
+    },
+    "a0b9160cd52f0894fbfb3ac8": {
+      "job_id": "archive_circulation_array_n5",
+      "original_row_position": 2,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "b",
+      "author_explanation": "Hold precedence applies only among eligible borrowers. Member A's earlier hold is void due to ineligibility. Member B, though later, is the sole eligible hold requester and receives the item."
+    },
+    "25dccff8a304c2461d2ce890": {
+      "job_id": "archive_circulation_array_n5",
+      "original_row_position": 3,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "b",
+      "author_explanation": "Aether rules check eligibility only at hold placement, not fulfillment. Member X was eligible when holding; suspension later does not void the hold. Timestamp precedence gives X the item despite current suspension."
+    },
+    "07afe051df86eb7e14e8d299": {
+      "job_id": "archive_circulation_array_n5",
+      "original_row_position": 4,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "d",
+        "a",
+        "b",
+        "c"
+      ],
+      "author_key": "a",
+      "author_explanation": "Prism rules require request BEFORE due date. Day 31 request fails condition (a) regardless of holds or renewal count. Other conditions are satisfied but insufficient."
+    },
+    "4e48213f6fea83b4fc2711f1": {
+      "job_id": "archive_circulation_count_bound_n5",
+      "original_row_position": 0,
+      "raw_question_key": "0",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "b",
+        "c",
+        "d",
+        "a"
+      ],
+      "author_key": "a",
+      "author_explanation": "The Standard member's 7-day renewal is permitted because holds only block renewal if placed before the renewal request. The hold was placed on Day 10, before the Day 14 renewal request, so the renewal should be blocked. However, Meridian rules specify holds block renewal only if placed before the original loan expires. Since the hold preceded the renewal request, the renewal is denied and return is due Day 14."
+    },
+    "c6361ca17a27e6312abde488": {
+      "job_id": "archive_circulation_count_bound_n5",
+      "original_row_position": 1,
+      "raw_question_key": "1",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "b",
+      "author_explanation": "The original loan runs March 1–22 (21 days). The March 20 renewal request meets both conditions: before due date and no holds. The new 21-day period runs from March 20, making the new due date April 10."
+    },
+    "b1edece9b20d8bb295fdc75a": {
+      "job_id": "archive_circulation_count_bound_n5",
+      "original_row_position": 2,
+      "raw_question_key": "2",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "d",
+        "a",
+        "b",
+        "c"
+      ],
+      "author_key": "a",
+      "author_explanation": "The Individual member's June 3 hold is invalid under rule (3)—they cannot hold what they borrow. Only the valid Institutional hold exists. Upon return June 5, the Institutional member receives the item."
+    },
+    "ca6f23c08289679eb53754c3": {
+      "job_id": "archive_circulation_count_bound_n5",
+      "original_row_position": 3,
+      "raw_question_key": "3",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "author_key": "b",
+      "author_explanation": "First loan: September 1–October 27 (56 days). First renewal September 30: new 14-day period runs September 30–October 14. Second renewal October 20: invalid because October 20 is after the October 14 due date. Renewal requests must precede the current due date. Only one renewal applies; final due date is October 27."
+    },
+    "bc78ae57d620e891fd279939": {
+      "job_id": "archive_circulation_count_bound_n5",
+      "original_row_position": 4,
+      "raw_question_key": "4",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "b",
+        "c",
+        "d",
+        "a"
+      ],
+      "author_key": "c",
+      "author_explanation": "The 3-day loan from Monday 2:00 PM expires Thursday 11:59 PM. The 10:00 PM Thursday request occurs before expiry. The grace period applies only to returns, not renewal eligibility. Renewal is granted."
+    },
+    "3affaca9bdc60332ac986448": {
+      "job_id": "greenhouse_alerts_count_bound_n5",
+      "original_row_position": 0,
+      "raw_question_key": "0",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "d",
+        "a",
+        "b",
+        "c"
+      ],
+      "author_key": "a",
+      "author_explanation": "The 25°C threshold is exceeded, but the required 10-minute duration within a 15-minute window has not been met (only 8 minutes elapsed). Choice b ignores the duration rule; c invents a window-closing trigger; d contradicts the policy logic."
+    },
+    "fd7cd5a8cf07f3e2924521ce": {
+      "job_id": "greenhouse_alerts_count_bound_n5",
+      "original_row_position": 1,
+      "raw_question_key": "1",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "a",
+      "author_explanation": "The override explicitly pauses humidity alerts regardless of sensor values or duration progress. Choice b ignores the override; c invents an exception; d confuses window closure with the override rule."
+    },
+    "90a4006b1dff4cad2a24ff13": {
+      "job_id": "greenhouse_alerts_count_bound_n5",
+      "original_row_position": 2,
+      "raw_question_key": "2",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "d",
+        "a",
+        "b",
+        "c"
+      ],
+      "author_key": "a",
+      "author_explanation": "1200 ppm exceeds 1000 ppm, and the 6-minute duration exceeds the 5-minute minimum within the 20-minute window. Choice b misinterprets the window as a waiting period; c invents a variance rule; d reverses the threshold logic."
+    },
+    "f885a43c7cbb6089398f3d81": {
+      "job_id": "greenhouse_alerts_count_bound_n5",
+      "original_row_position": 3,
+      "raw_question_key": "3",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "b",
+        "c",
+        "d",
+        "a"
+      ],
+      "author_key": "a",
+      "author_explanation": "The override explicitly conditions humidity alert suppression on temperature being below threshold, which is true (22°C < 25°C). Choice b ignores the override; c invents a temperature alert; d misreads the override scope."
+    },
+    "79065ebab34650aceb7cc809": {
+      "job_id": "greenhouse_alerts_count_bound_n5",
+      "original_row_position": 4,
+      "raw_question_key": "4",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "a",
+      "author_explanation": "The scheduled override for low light alerts is currently active (07:30 falls within 06:00-08:00), taking precedence over the threshold/duration conditions. Choice b ignores the time-bound override; c invents a delayed alert rule; d misinterprets the window mechanism."
+    },
+    "0c3224e0e2070a21f9354dfa": {
+      "job_id": "greenhouse_alerts_array_n5",
+      "original_row_position": 0,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "author_key": "b",
+      "author_explanation": "Soil moisture 12% is below 15%, which would normally trigger Irrigation Alert. However, the temperature 3°C is below 5°C, so the Frost Alert override applies and suppresses the Irrigation Alert. Choice a ignores the override. Choice c violates the suppression rule. Choice d ignores that the moisture threshold was breached."
+    },
+    "30fd58607553a8737ac9d99a": {
+      "job_id": "greenhouse_alerts_array_n5",
+      "original_row_position": 1,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "c",
+      "author_explanation": "The rule requires two consecutive readings above 80%. Only 9:10 at 82% exceeds 80%; 9:00 was 78% and 9:20 was 79%, so no consecutive pair qualifies. Choice a misapplies the single reading at 9:10. Choice b invents a future condition not in the rules. Choice d changes the threshold to three readings."
+    },
+    "760b8c26f30912e96017393a": {
+      "job_id": "greenhouse_alerts_array_n5",
+      "original_row_position": 2,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "author_key": "b",
+      "author_explanation": "CO2 at 1350 ppm exceeds 1200 ppm threshold, but the Manual Override Rule explicitly suppresses CO2 Alert when 'Ventilation Active' is set. Choice a ignores the override. Choice c violates the suppression instruction. Choice d invents a timing rule not stated."
+    },
+    "ca272793547f4468849277ec": {
+      "job_id": "greenhouse_alerts_array_n5",
+      "original_row_position": 3,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "c",
+      "author_explanation": "The rule requires 30 continuous minutes below 200. The longest stretch below 200 was 25 minutes, broken when PAR rose to 220. No 30-minute continuous window was satisfied. Choice a misreads the duration. Choice b assumes future data. Choice d incorrectly treats minute 30 as sufficient without checking continuity."
+    },
+    "2138e0cee64e486612f0c1b6": {
+      "job_id": "greenhouse_alerts_array_n5",
+      "original_row_position": 4,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "b",
+        "c",
+        "d",
+        "a"
+      ],
+      "author_key": "a",
+      "author_explanation": "Temperature 32°C exceeds 30°C threshold. 'Fire Suppression' is inactive, so the Emergency Override does not apply. Standard Temperature Alert triggers. Choice b applies the override incorrectly. Choice c doubles the alerts against rules. Choice d invents a waiting condition not in policy."
+    }
+  },
+  "raw_shape_diagnostics": {
+    "archive_circulation_array_n5": {
+      "raw_count": 5,
+      "surplus_positions": [],
+      "missing_positions": []
+    },
+    "archive_circulation_count_bound_n5": {
+      "raw_count": 5,
+      "raw_question_keys": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "missing_keys": [],
+      "extra_keys": []
+    },
+    "greenhouse_alerts_count_bound_n5": {
+      "raw_count": 5,
+      "raw_question_keys": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "missing_keys": [],
+      "extra_keys": []
+    },
+    "greenhouse_alerts_array_n5": {
+      "raw_count": 5,
+      "surplus_positions": [],
+      "missing_positions": []
+    }
+  }
+}
