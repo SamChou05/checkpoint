@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "blind_lock_sha256": "ebadb87554f156868d50a4fd5d57d59cf2ff4e5af5a12cf616fe61aa17a36f02",
+  "capture_sha256": "6524fec050e8402ef13d149aec1bd1421ed8593953c7febfb71be140b373e4ab",
+  "worksheet_sha256": "fe570cb8868d6a670730441488609dec7339781949996af98acdd2fcad217125",
+  "items": [
+    {
+      "id": "f7c7f86e4b74c5bf9d9206d2",
+      "original_slot_ordinal": 0,
+      "returned_row_index": 0,
+      "expected_display_letter": "A",
+      "captured_key": "19/12",
+      "reviewers": {
+        "a": {
+          "selected_letter": "A",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        },
+        "b": {
+          "selected_letter": "A",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        }
+      }
+    },
+    {
+      "id": "4b571f40004620bd17a31d54",
+      "original_slot_ordinal": 3,
+      "returned_row_index": 3,
+      "expected_display_letter": "A",
+      "captured_key": "7/6",
+      "reviewers": {
+        "a": {
+          "selected_letter": "A",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        },
+        "b": {
+          "selected_letter": "A",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        }
+      }
+    },
+    {
+      "id": "3b19006a2d4a48b931712e57",
+      "original_slot_ordinal": 2,
+      "returned_row_index": 2,
+      "expected_display_letter": "C",
+      "captured_key": "11/24",
+      "reviewers": {
+        "a": {
+          "selected_letter": "C",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        },
+        "b": {
+          "selected_letter": "C",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        }
+      }
+    },
+    {
+      "id": "56f9bcdf26f9ec3560c56c85",
+      "original_slot_ordinal": 1,
+      "returned_row_index": 1,
+      "expected_display_letter": "A",
+      "captured_key": "9",
+      "reviewers": {
+        "a": {
+          "selected_letter": "A",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        },
+        "b": {
+          "selected_letter": "A",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        }
+      }
+    },
+    {
+      "id": "d7ef87bfe21ba8254bf96ae1",
+      "original_slot_ordinal": 4,
+      "returned_row_index": 4,
+      "expected_display_letter": "D",
+      "captured_key": "6",
+      "reviewers": {
+        "a": {
+          "selected_letter": "D",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        },
+        "b": {
+          "selected_letter": "D",
+          "matches_captured_key": true,
+          "all_pairs_distinct": true,
+          "pair_judgments": {
+            "AB": "distinct",
+            "AC": "distinct",
+            "AD": "distinct",
+            "BC": "distinct",
+            "BD": "distinct",
+            "CD": "distinct"
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "returned": 5,
+    "reviewer_a_correct": 5,
+    "reviewer_b_correct": 5,
+    "reviewer_a_all_pairs_distinct": 5,
+    "reviewer_b_all_pairs_distinct": 5
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "status": "technical_go",
+  "capture_sha256": "6524fec050e8402ef13d149aec1bd1421ed8593953c7febfb71be140b373e4ab",
+  "plan_sha256": "4fe1782059cf7d27339b406e426f642423599b43f70937f25676a2484e2d8f92",
+  "blind_lock_sha256": "ebadb87554f156868d50a4fd5d57d59cf2ff4e5af5a12cf616fe61aa17a36f02",
+  "source_files_hash_checked": 41,
+  "returned_original_slots": 5,
+  "verified_compiled_policy8_returns": 5,
+  "learner_fields_exact_recompilations": 5,
+  "worksheet_private_map_links_checked": 5,
+  "passes": [
+    {
+      "authored": 3,
+      "compiled": 3,
+      "sanitized": 3,
+      "verified": 2,
+      "compiler_rejections": 0
+    },
+    {
+      "authored": 3,
+      "compiled": 3,
+      "sanitized": 3,
+      "verified": 3,
+      "compiler_rejections": 0
+    }
+  ],
+  "provider_calls": 4,
+  "durable_reservations": 4,
+  "call_slots_unattempted": 2,
+  "stages": [
+    "question_author_tasks_v1",
+    "authored_solution_reviewer_v3_n3",
+    "question_author_tasks_v1",
+    "authored_solution_reviewer_v3_n3"
+  ],
+  "all_native_responses_end_turn_and_locally_valid": true,
+  "all_calls_single_sdk_attempt_no_fallback": true,
+  "job_elapsed_seconds": 127.684467,
+  "job_deadline_seconds": 240,
+  "pretrial_sts_requests": 1,
+  "execution_identity_status": "verified",
+  "pretrial_credential_seconds_at_capture_start": 872.372,
+  "credential_remaining_before_calls_ms": [
+    871285,
+    828382,
+    800399,
+    769160
+  ],
+  "review_boundary": "This report checks provenance, transport and release linkage, not independent teaching/scope judgments. CLI SignIn refresh count is recorded as unobserved 0-1 in the frozen precheck."
+}
