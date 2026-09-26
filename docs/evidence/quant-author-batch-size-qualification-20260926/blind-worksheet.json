@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "plan_sha256": "c0774eff26fa5d7d785fd0649483694408e7d9cb9f83468002053be6b7e1df6a",
+  "capture_sha256": "3fd74b140c2137278f72e54101cf67f102f5c710e7cd9c1626e2e020d462a155",
+  "items": [
+    {
+      "id": "8eee427487cb7cd7a1ac68eb",
+      "requested_slot": true,
+      "stem": "What is 5/6 - 1/4? Express the answer as a fraction in lowest terms.",
+      "choices": {
+        "A": "1/6",
+        "B": "2",
+        "C": "13/12",
+        "D": "7/12"
+      }
+    },
+    {
+      "id": "c92dfacf4e14cf1be1209f96",
+      "requested_slot": true,
+      "stem": "What is the maximum integer n satisfying 1 <= n <= 30 and 4n < 50?",
+      "choices": {
+        "A": "11",
+        "B": "10",
+        "C": "12",
+        "D": "13"
+      }
+    },
+    {
+      "id": "d5c15d08d67e789fa99709a2",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "2990fa97d94a16eda1ba8a9f",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "fc6dad6bfd5c40c729d83c9b",
+      "requested_slot": true,
+      "stem": "What is (5/6) \u00d7 (3/10)? Express the answer as a fraction in lowest terms.",
+      "choices": {
+        "A": "1/4",
+        "B": "17/15",
+        "C": "1/2",
+        "D": "25/9"
+      }
+    }
+  ]
+}
