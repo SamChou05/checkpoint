@@ -26,7 +26,8 @@ SERVICE = ROOT / "backend/bedrock-question-service"
 sys.path.insert(0, str(SERVICE))
 SOURCE_REVISION = "99cd50a3ed7ee8babe98ec9e8763cdd9f9edff53"
 STS_ENDPOINT_URL = "https://sts.us-east-1.amazonaws.com"
-MIN_CACHED_CREDENTIAL_SECONDS = 35 * 60
+MIN_CACHED_CREDENTIAL_SECONDS = 14 * 60
+MIN_DISPATCH_REMAINING_SECONDS = 210
 BOTOCORE_ADVISORY_REFRESH_SECONDS = 15 * 60
 BOTOCORE_MANDATORY_REFRESH_SECONDS = 10 * 60
 LAUNCH_PYTHONPATH = ("/tmp/checkpoint-count-crt-deps:"
@@ -66,6 +67,10 @@ def encode(value):
 
 def file_hash(path):
     return sha(path.read_bytes())
+
+
+def current_utc():
+    return datetime.now(timezone.utc)
 
 
 def source_hashes():
@@ -223,6 +228,7 @@ def prepare():
         "credential_pin": {"profile": "default", "account_id": "239342516379",
                            "provider_method": "login",
                            "minimum_cached_seconds": MIN_CACHED_CREDENTIAL_SECONDS,
+                           "minimum_dispatch_seconds": MIN_DISPATCH_REMAINING_SECONDS,
                            "advisory_refresh_seconds": BOTOCORE_ADVISORY_REFRESH_SECONDS},
         "limits": {"maximum_bedrock_author_calls": MAX_CALLS, "maximum_calls_per_job": 1,
                    "sdk_total_max_attempts": 1, "connect_timeout_seconds": 3,
@@ -274,6 +280,7 @@ class RecordingClient:
         self.before_dispatch = before_dispatch
         self.after_response = after_response
         self.calls = 0
+        self.dispatch_window_closed = False
         self.meta = getattr(client, "meta", None)
         self.observation = None
 
@@ -281,7 +288,11 @@ class RecordingClient:
         if self.calls or sha(encode(request)) != self.job["provider_request_sha256"]:
             raise RuntimeError("Unexpected or repeated provider request.")
         if self.before_dispatch is not None:
-            self.before_dispatch()
+            try:
+                self.before_dispatch()
+            except CredentialWindowClosed:
+                self.dispatch_window_closed = True
+                raise
         self.calls += 1
         started = time.monotonic()
         try:
@@ -447,6 +458,7 @@ def check_frozen(plan, provided_hash):
     if plan.get("launch_environment") is None:
         raise RuntimeError("Frozen plan lacks the reviewed launch environment and AWS CRT pin.")
     if (plan.get("credential_pin", {}).get("minimum_cached_seconds") != MIN_CACHED_CREDENTIAL_SECONDS
+            or plan["credential_pin"].get("minimum_dispatch_seconds") != MIN_DISPATCH_REMAINING_SECONDS
             or plan["credential_pin"].get("advisory_refresh_seconds") != BOTOCORE_ADVISORY_REFRESH_SECONDS):
         raise RuntimeError("Frozen cached credential lifetime or refresh pin differs.")
     if plan.get("sts_endpoint_url") != STS_ENDPOINT_URL:
@@ -589,9 +601,9 @@ def static_session_for_snapshot(boto3_module, frozen_credentials, region):
     return session
 
 
-def freeze_cached_login_credentials(credentials, credential_pin):
-    """Read pinned botocore login cache state without invoking a refresh hook."""
-    from botocore.credentials import RefreshableCredentials, _local_now
+def read_cached_login_snapshot(credentials, credential_pin):
+    """Inspect botocore's immutable login cache snapshot without refreshing."""
+    from botocore.credentials import ReadOnlyCredentials, RefreshableCredentials, _local_now
 
     if type(credentials) is not RefreshableCredentials or credentials.method != "login":
         raise RuntimeError("Login credentials are not inspectable pinned RefreshableCredentials.")
@@ -609,12 +621,26 @@ def freeze_cached_login_credentials(credentials, credential_pin):
     if remaining <= credential_pin["minimum_cached_seconds"]:
         raise RuntimeError("Cached login credentials cannot cover the frozen no-refresh trial window.")
     cached_snapshot = credentials.__dict__.get("_frozen_credentials")
-    if cached_snapshot is None:
-        raise RuntimeError("Cached login credential snapshot is uninspectable.")
-    frozen = credentials.get_frozen_credentials()
-    if (frozen is not cached_snapshot or credentials.__dict__.get("_expiry_time") != expiry):
-        raise RuntimeError("Login credentials refreshed despite the frozen lifetime preflight.")
-    return frozen
+    if (type(cached_snapshot) is not ReadOnlyCredentials
+            or any(not isinstance(value, str) or not value
+                   for value in (cached_snapshot.access_key, cached_snapshot.secret_key,
+                                 cached_snapshot.token))
+            or cached_snapshot.account_id != credential_pin["account_id"]
+            or (cached_snapshot.access_key, cached_snapshot.secret_key,
+                cached_snapshot.token, cached_snapshot.account_id) != (
+                credentials.__dict__.get("_access_key"), credentials.__dict__.get("_secret_key"),
+                credentials.__dict__.get("_token"), credentials.__dict__.get("_account_id"))):
+        raise RuntimeError("Cached immutable login snapshot has missing or inconsistent fields.")
+    return cached_snapshot, expiry
+
+
+class CredentialWindowClosed(RuntimeError):
+    pass
+
+
+def check_dispatch_credential_window(expiry, minimum_seconds):
+    if (expiry - current_utc()).total_seconds() <= minimum_seconds:
+        raise CredentialWindowClosed("Cached signing snapshot is too near expiry for another author call.")
 
 
 def execute(provided_hash, capture_path):
@@ -645,7 +671,7 @@ def execute(provided_hash, capture_path):
         credentials = profile_session.get_credentials()
         if credentials is None or credentials.method != plan["credential_pin"]["provider_method"]:
             raise RuntimeError("Credential provider source differs from reviewed pin.")
-        frozen_credentials = freeze_cached_login_credentials(credentials, plan["credential_pin"])
+        frozen_credentials, cached_expiry = read_cached_login_snapshot(credentials, plan["credential_pin"])
         signing_session = static_session_for_snapshot(boto3, frozen_credentials, plan["region"])
         # STS verifies the exact static signing snapshot used by Bedrock.
         sts_client = signing_session.client("sts", config=Config(connect_timeout=3, read_timeout=10,
@@ -674,7 +700,21 @@ def execute(provided_hash, capture_path):
         raise
     for job in plan["jobs"]:
         def before_dispatch(job=job):
+            check_dispatch_credential_window(
+                cached_expiry, plan["credential_pin"]["minimum_dispatch_seconds"])
             journal.reserve(job, plan, provided_hash)
+            try:
+                # This final check follows the fsynced reservation and runs
+                # immediately before the underlying client's Converse call.
+                check_dispatch_credential_window(
+                    cached_expiry, plan["credential_pin"]["minimum_dispatch_seconds"])
+            except CredentialWindowClosed:
+                entry = journal.capture["jobs"][journal.active_index]
+                entry["dispatch_status"] = "aborted_before_converse_credential_window"
+                entry["provider_calls"] = 0
+                entry["runtime_outcome"] = "CredentialWindowClosed"
+                journal.update()
+                raise
 
         recorder = RecordingClient(client, job, (
             frozen_credentials.access_key, frozen_credentials.secret_key,
@@ -694,6 +734,11 @@ def execute(provided_hash, capture_path):
                 budget_overrun = True
             except Exception as error:
                 outcome["runtime_outcome"] = type(error).__name__
+        if recorder.dispatch_window_closed:
+            journal.capture["dispatch_stop"] = {"reason": "credential_window_closed",
+                                                "next_job_id": job["id"]}
+            journal.update()
+            raise CredentialWindowClosed("Cached signing snapshot closed before author dispatch.")
         finalize_author_job(journal, job, recorder, outcome, plan, provided_hash)
         if budget_overrun:
             raise RuntimeError("Author call budget overrun attempt; later jobs remain unattempted.")

@@ -196,6 +196,7 @@ class AuthorProbeTests(unittest.TestCase):
                 access_key="cached-access", secret_key="cached-secret", token="cached-token",
                 expiry_time=datetime.now(timezone.utc) + timedelta(minutes=10),
                 refresh_using=lambda: refresh_calls.append("signin"), method="login",
+                account_id=plan["credential_pin"]["account_id"],
             )
 
             class ProfileSession:
@@ -211,6 +212,8 @@ class AuthorProbeTests(unittest.TestCase):
                 return ProfileSession()
 
             with patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                    patch.object(RefreshableCredentials, "get_frozen_credentials",
+                                 side_effect=AssertionError("login refresh path must not be called")), \
                     patch("boto3.Session", side_effect=session_factory):
                 with self.assertRaisesRegex(RuntimeError, "cannot cover the frozen no-refresh trial window"):
                     probe.execute("reviewed", capture)
@@ -219,29 +222,26 @@ class AuthorProbeTests(unittest.TestCase):
             self.assertEqual(saved["preflight_status"], "failed")
             self.assertEqual(saved["jobs"], [])
 
-    def test_normal_cached_login_snapshot_freezes_exactly_once(self):
+    def test_fresh_fifteen_minute_cache_reads_snapshot_without_refresh(self):
         from botocore.credentials import RefreshableCredentials
 
         refresh_calls = []
         credentials = RefreshableCredentials(
             access_key="cached-access", secret_key="cached-secret", token="cached-token",
-            expiry_time=datetime.now(timezone.utc) + timedelta(minutes=40),
+            expiry_time=datetime.now(timezone.utc) + timedelta(minutes=14, seconds=55),
             refresh_using=lambda: refresh_calls.append("signin"), method="login",
+            account_id="239342516379",
         )
-        original = RefreshableCredentials.get_frozen_credentials
-        freeze_calls = []
-
-        def counted_freeze(self):
-            freeze_calls.append(True)
-            return original(self)
-
-        with patch.object(RefreshableCredentials, "get_frozen_credentials", counted_freeze):
-            frozen = probe.freeze_cached_login_credentials(credentials, {
+        with patch.object(RefreshableCredentials, "get_frozen_credentials",
+                          side_effect=AssertionError("login refresh path must not be called")):
+            frozen, expiry = probe.read_cached_login_snapshot(credentials, {
                 "minimum_cached_seconds": probe.MIN_CACHED_CREDENTIAL_SECONDS,
                 "advisory_refresh_seconds": probe.BOTOCORE_ADVISORY_REFRESH_SECONDS,
+                "account_id": "239342516379",
             })
-        self.assertEqual(len(freeze_calls), 1)
         self.assertEqual(refresh_calls, [])
+        self.assertIs(frozen, credentials._frozen_credentials)
+        self.assertEqual(expiry, credentials._expiry_time)
         self.assertEqual((frozen.access_key, frozen.secret_key, frozen.token),
                          ("cached-access", "cached-secret", "cached-token"))
 
@@ -251,16 +251,139 @@ class AuthorProbeTests(unittest.TestCase):
         refresh_calls = []
         credentials = RefreshableCredentials(
             access_key="cached-access", secret_key="cached-secret", token="cached-token",
-            expiry_time=datetime.now(timezone.utc) + timedelta(minutes=40),
+            expiry_time=datetime.now(timezone.utc) + timedelta(minutes=14, seconds=55),
             refresh_using=lambda: refresh_calls.append("signin"), method="login",
+            account_id="239342516379",
         )
         credentials._expiry_time = None
         with self.assertRaisesRegex(RuntimeError, "uninspectable or changed"):
-            probe.freeze_cached_login_credentials(credentials, {
+            probe.read_cached_login_snapshot(credentials, {
                 "minimum_cached_seconds": probe.MIN_CACHED_CREDENTIAL_SECONDS,
                 "advisory_refresh_seconds": probe.BOTOCORE_ADVISORY_REFRESH_SECONDS,
+                "account_id": "239342516379",
             })
         self.assertEqual(refresh_calls, [])
+
+    def test_cached_snapshot_field_mismatch_fails_without_refresh(self):
+        from botocore.credentials import RefreshableCredentials
+
+        credentials = RefreshableCredentials(
+            access_key="cached-access", secret_key="cached-secret", token="cached-token",
+            expiry_time=datetime.now(timezone.utc) + timedelta(minutes=14, seconds=55),
+            refresh_using=lambda: self.fail("signin refresh must not run"), method="login",
+            account_id="239342516379",
+        )
+        credentials._frozen_credentials = credentials._frozen_credentials._replace(token="different-token")
+        with patch.object(RefreshableCredentials, "get_frozen_credentials",
+                          side_effect=AssertionError("login refresh path must not be called")):
+            with self.assertRaisesRegex(RuntimeError, "missing or inconsistent fields"):
+                probe.read_cached_login_snapshot(credentials, {
+                    "minimum_cached_seconds": probe.MIN_CACHED_CREDENTIAL_SECONDS,
+                    "advisory_refresh_seconds": probe.BOTOCORE_ADVISORY_REFRESH_SECONDS,
+                    "account_id": "239342516379",
+                })
+
+    def test_late_dispatch_stops_without_reservation_or_provider_call(self):
+        with tempfile.TemporaryDirectory() as directory:
+            location = Path(directory)
+            plan = json.loads(probe.prepare().read_text())
+            capture = location / "capture.json"
+            plan["capture_path"] = str(capture)
+            (location / "plan.json").write_text(json.dumps(plan))
+            frozen = SimpleNamespace(access_key="cached-access", secret_key="cached-secret",
+                                     token="cached-token")
+            provider_calls = []
+
+            class RuntimeClient:
+                meta = SimpleNamespace(endpoint_url=plan["endpoint_url"])
+
+                def converse(self, **request):
+                    provider_calls.append(request)
+                    raise AssertionError("late author request must not be sent")
+
+            class ProfileSession:
+                def get_credentials(self):
+                    return SimpleNamespace(method="login")
+
+            class StaticSession:
+                def get_credentials(self):
+                    return SimpleNamespace(method="explicit", get_frozen_credentials=lambda: frozen)
+
+                def client(self, name, **kwargs):
+                    if name == "sts":
+                        return SimpleNamespace(
+                            meta=SimpleNamespace(endpoint_url=plan["sts_endpoint_url"]),
+                            get_caller_identity=lambda: {"Account": "239342516379"})
+                    return RuntimeClient()
+
+            def session_factory(**kwargs):
+                return ProfileSession() if "profile_name" in kwargs else StaticSession()
+
+            with patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                    patch.object(probe, "read_cached_login_snapshot", return_value=(
+                        frozen, datetime.now(timezone.utc) + timedelta(seconds=209))), \
+                    patch("boto3.Session", side_effect=session_factory):
+                with self.assertRaises(probe.CredentialWindowClosed):
+                    probe.execute("reviewed", capture)
+            saved = json.loads(capture.read_text())
+            self.assertEqual(provider_calls, [])
+            self.assertEqual(saved["preflight_status"], "passed")
+            self.assertEqual(saved["jobs"], [])
+            self.assertEqual(saved["dispatch_stop"], {
+                "reason": "credential_window_closed", "next_job_id": plan["jobs"][0]["id"]})
+
+    def test_fake_clock_crosses_expiry_floor_after_reservation_before_converse(self):
+        with tempfile.TemporaryDirectory() as directory:
+            location = Path(directory)
+            plan = json.loads(probe.prepare().read_text())
+            capture = location / "capture.json"
+            plan["capture_path"] = str(capture)
+            (location / "plan.json").write_text(json.dumps(plan))
+            frozen = SimpleNamespace(access_key="cached-access", secret_key="cached-secret",
+                                     token="cached-token")
+            fake_now = datetime(2026, 9, 26, 19, 0, tzinfo=timezone.utc)
+            expiry = fake_now + timedelta(seconds=211)
+            provider_calls = []
+
+            class RuntimeClient:
+                meta = SimpleNamespace(endpoint_url=plan["endpoint_url"])
+
+                def converse(self, **request):
+                    provider_calls.append(request)
+                    raise AssertionError("expired snapshot must not sign Converse")
+
+            class ProfileSession:
+                def get_credentials(self):
+                    return SimpleNamespace(method="login")
+
+            class StaticSession:
+                def get_credentials(self):
+                    return SimpleNamespace(method="explicit", get_frozen_credentials=lambda: frozen)
+
+                def client(self, name, **kwargs):
+                    if name == "sts":
+                        return SimpleNamespace(
+                            meta=SimpleNamespace(endpoint_url=plan["sts_endpoint_url"]),
+                            get_caller_identity=lambda: {"Account": "239342516379"})
+                    return RuntimeClient()
+
+            def session_factory(**kwargs):
+                return ProfileSession() if "profile_name" in kwargs else StaticSession()
+
+            with patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                    patch.object(probe, "read_cached_login_snapshot", return_value=(frozen, expiry)), \
+                    patch.object(probe, "current_utc", side_effect=[fake_now, fake_now + timedelta(seconds=2)]), \
+                    patch("boto3.Session", side_effect=session_factory):
+                with self.assertRaises(probe.CredentialWindowClosed):
+                    probe.execute("reviewed", capture)
+            saved = json.loads(capture.read_text())
+            self.assertEqual(provider_calls, [])
+            self.assertEqual(len(saved["jobs"]), 1)
+            self.assertEqual(saved["jobs"][0]["dispatch_status"],
+                             "aborted_before_converse_credential_window")
+            self.assertEqual(saved["jobs"][0]["provider_calls"], 0)
+            self.assertEqual(saved["dispatch_stop"], {
+                "reason": "credential_window_closed", "next_job_id": plan["jobs"][0]["id"]})
 
     def test_durable_reservation_and_capture_tamper_stop_next_dispatch(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -351,8 +474,8 @@ class AuthorProbeTests(unittest.TestCase):
             capture = location / "capture.json"
             plan["capture_path"] = str(capture)
             plan["status"] = "frozen"
-            plan["credential_pin"] = {"profile": "synthetic", "account_id": "000000000000",
-                                      "provider_method": "synthetic"}
+            plan["credential_pin"].update({"profile": "synthetic", "account_id": "000000000000",
+                                           "provider_method": "synthetic"})
             (location / "plan.json").write_text(json.dumps(plan))
             frozen = SimpleNamespace(access_key="synthetic-access", secret_key="synthetic-secret",
                                      token="synthetic-token")
@@ -394,7 +517,8 @@ class AuthorProbeTests(unittest.TestCase):
                 raise probe.ProviderCallBudgetExceededError("synthetic retry denied")
 
             with patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
-                    patch.object(probe, "freeze_cached_login_credentials", return_value=frozen), \
+                    patch.object(probe, "read_cached_login_snapshot",
+                                 return_value=(frozen, datetime.now(timezone.utc) + timedelta(minutes=15))), \
                     patch.object(probe, "_generate_provider_payload", side_effect=attempted_retry), \
                     patch("boto3.Session", side_effect=session_factory):
                 with self.assertRaisesRegex(RuntimeError, "budget overrun attempt"):
@@ -439,7 +563,8 @@ class AuthorProbeTests(unittest.TestCase):
 
             with patch.dict(probe.os.environ, {}, clear=True), patch.object(probe, "HERE", location), \
                     patch.object(probe, "check_frozen"), patch.object(probe, "check_launch_environment"), \
-                    patch.object(probe, "freeze_cached_login_credentials", return_value=frozen), \
+                    patch.object(probe, "read_cached_login_snapshot",
+                                 return_value=(frozen, datetime.now(timezone.utc) + timedelta(minutes=15))), \
                     patch("boto3.Session", side_effect=session_factory):
                 with self.assertRaisesRegex(RuntimeError, "STS endpoint differs from reviewed pin"):
                     probe.execute("reviewed", capture)
@@ -733,7 +858,8 @@ class AuthorProbeTests(unittest.TestCase):
         self.assertEqual(draft["limits"]["maximum_bedrock_author_calls"], 4)
         self.assertEqual(draft["credential_pin"], {"profile": "default", "account_id": "239342516379",
                                                     "provider_method": "login",
-                                                    "minimum_cached_seconds": 2100,
+                                                    "minimum_cached_seconds": 840,
+                                                    "minimum_dispatch_seconds": 210,
                                                     "advisory_refresh_seconds": 900})
         self.assertEqual(draft["criteria"]["prose_replication"]["primary_novelty_scope"],
                          "within_each_five_row_arm_only")
@@ -745,7 +871,7 @@ class AuthorProbeTests(unittest.TestCase):
     def test_frozen_proposal_passes_all_offline_pins(self):
         proposal_path = HERE / "plan-frozen-proposal.json"
         proposal = json.loads(proposal_path.read_text())
-        expected_hash = "391df0cac6341c7711d6352ccb7acd965a6c23099c5025ac5825590070787f3f"
+        expected_hash = "ac24a20d0eaf70e5a8b35b9d052fa1121fa4bc3e27ec3dc773fb02173c16d0ce"
         self.assertEqual(probe.file_hash(proposal_path), expected_hash)
         self.assertEqual(proposal["status"], "frozen")
         self.assertEqual(proposal["source_revision"], probe.SOURCE_REVISION)
