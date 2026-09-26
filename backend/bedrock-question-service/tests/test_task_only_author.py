@@ -141,6 +141,67 @@ class TaskOnlyAuthorTests(unittest.TestCase):
             self.assertEqual({field: question[field] for field in LEARNER_FIELDS}, expected)
             self.assertEqual(question["verificationPolicyRevision"], 8)
 
+    def test_task_only_three_then_two_uses_four_calls_and_exact_compiler_fields(self):
+        batches = [[row(task(str(value))) for value in values] for values in ((8, 10, 12), (14, 16))]
+        expected, by_prompt = [], {}
+        for batch in batches:
+            prepared, sidecars, failures = prepare_mixed_rows({"questions": batch}, construct_choices=True)
+            self.assertEqual(failures, [])
+            by_prompt.update({question["prompt"]: question for question in prepared})
+            expected.extend(compile_question(json.loads(sidecar.spec_json)) for sidecar in sidecars.values())
+
+        def audit(request):
+            items = task_data(request, "question_review_json")["items"]
+            return {"reviews": {str(item["index"]): {
+                "valid": True, "answer": by_prompt[item["prompt"]]["expectedAnswer"], "difficulty": 2,
+                "explanationSupport": "supported", "issueFlags": authored_issue_flags(),
+            } for item in items}}
+
+        client = ScriptedNativeClient(
+            (TASK_ONLY_AUTHOR_CONTRACT, {"questions": batches[0]}),
+            ("authored_solution_reviewer_v3_n3", audit),
+            (TASK_ONLY_AUTHOR_CONTRACT, {"questions": batches[1]}),
+            ("authored_solution_reviewer_v3_n2", audit),
+        )
+        request = {**self.request, "targetCount": 5}
+        reserve = Mock()
+        budget = generation.ProviderCallBudget(6, reserve_call=reserve)
+        with patch.dict(os.environ, {"QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256": self.goal_hash,
+                                  "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3", "GENERATION_ATTEMPTS": "3"}):
+            result = generation._generate_sanitized_questions(request, client, budget)
+        self.assertEqual((len(result), budget.calls, reserve.call_count), (5, 4, 4))
+        self.assertEqual([task_data(client.calls[i], "generation_request_json")["targetCount"] for i in (0, 2)], [3, 2])
+        self.assertEqual([client.calls[i]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"]
+                          for i in (0, 2)], [TASK_ONLY_AUTHOR_CONTRACT] * 2)
+        self.assertEqual([{field: question[field] for field in LEARNER_FIELDS} for question in result], expected)
+        self.assertEqual([question["verificationPolicyRevision"] for question in result], [8] * 5)
+
+    def test_task_only_second_author_failure_retains_verified_first_batch(self):
+        first = [row(task(str(value))) for value in (8, 10, 12)]
+        prepared, _, failures = prepare_mixed_rows({"questions": first}, construct_choices=True)
+        self.assertEqual(failures, [])
+        by_prompt = {question["prompt"]: question for question in prepared}
+
+        def audit(request):
+            items = task_data(request, "question_review_json")["items"]
+            return {"reviews": {str(item["index"]): {
+                "valid": True, "answer": by_prompt[item["prompt"]]["expectedAnswer"], "difficulty": 2,
+                "explanationSupport": "supported", "issueFlags": authored_issue_flags(),
+            } for item in items}}
+
+        client = ScriptedNativeClient(
+            (TASK_ONLY_AUTHOR_CONTRACT, {"questions": first}),
+            ("authored_solution_reviewer_v3_n3", audit),
+            (TASK_ONLY_AUTHOR_CONTRACT, ProviderError("synthetic second-author failure")),
+        )
+        reserve = Mock()
+        budget = generation.ProviderCallBudget(6, reserve_call=reserve)
+        with patch.dict(os.environ, {"QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256": self.goal_hash,
+                                  "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3", "GENERATION_ATTEMPTS": "3"}):
+            result = generation._generate_sanitized_questions({**self.request, "targetCount": 5}, client, budget)
+        self.assertEqual((len(result), budget.calls, reserve.call_count), (3, 3, 3))
+        self.assertEqual([question["verificationPolicyRevision"] for question in result], [8] * 3)
+
     def test_prose_response_fails_closed_before_compiler_or_audit(self):
         client = ScriptedNativeClient((TASK_ONLY_AUTHOR_CONTRACT, {"questions": [
             {"kind": "prose", "question": {"prompt": "invalid"}},
