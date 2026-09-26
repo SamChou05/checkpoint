@@ -1,0 +1,43 @@
+{
+  "review": "independent_preflight",
+  "reviewed_commit": "0e3f84410ea6adf07a69b8f85dfc20426435fa2b",
+  "reviewed_draft_sha256": "73ca4f78e219ae759ee631e3366610e63188087492175ae0523d65a290ee2423",
+  "status": "go_for_root_freeze_only",
+  "provider_calls_made_by_reviewer": 0,
+  "source_and_requests": {
+    "source_pins_checked": 36,
+    "missing_or_mismatched_pins": 0,
+    "request_hashes_valid": 4,
+    "within_scope_request_pairs_differ_only_by_final_system_append": true,
+    "candidate_append_characters": 660,
+    "job_order": ["baseline-mixed", "candidate-mixed", "candidate-english", "baseline-english"],
+    "requested_slots_per_arm": 10,
+    "runtime_diff": "Only the constructed-author instruction has the appended shuffle paragraph; native schemas, parser, routing, and other author modes are unchanged."
+  },
+  "resolved_findings": [
+    {
+      "id": "capture-malformed-escaped-credential",
+      "file": "author_probe.py",
+      "lines": [234, 249, 436, 439],
+      "finding": "decoded_credential_echo returns false whenever JSON parsing fails. A malformed visible response containing a Unicode-escaped credential then passes to safe_response, which preserves the exact visible text; contains_credential checks for the literal secret and cannot detect its escaped form. The escaped credential is written to capture before the native adapter fails.",
+      "offline_reproduction": "Executed the exact decoded_credential_echo function AST with a synthetic secret and no provider/network call. Valid JSON with the escaped secret returned true; appending malformed ', BAD' to the same JSON returned false while retaining the escaped secret in visible text.",
+      "resolution": "The detector now raises ProviderError on malformed JSON before safe_response or any raw response retention. That call fails five slots and the fixed later calls continue. A new socket-blocked test asserts four calls, no global stop, no response or raw rows for the malformed call, and no literal or escaped synthetic secret in the final capture. The rebuilt draft pins the changed runner and test; all 36 pins match.",
+      "reviewer_recheck": "Executed the exact revised detector function AST: valid JSON with an escaped synthetic secret returns true; malformed JSON with the same secret raises ProviderError. Both changed Python files parse."
+    }
+  ],
+  "other_reviewed_gates": {
+    "four_call_budget_and_per_call_reservation": "present",
+    "single_attempt_sdk_read_and_connect_limits": "present",
+    "source_request_and_capture_drift_checks": "present",
+    "failure_denominator_and_extra_row_retention": "present",
+    "blind_projection_and_separate_unblind_mapping": "present",
+    "component_and_whole_content_criteria_separate": true,
+    "english_coverage_required": {"mixed": 2, "english": 5},
+    "semantic_credit": "manual independent review only; no automatic grant",
+    "existing_29_probe_test_groups": "reviewed as code; root separately reported passing execution with pinned Python and SDK versions",
+    "changed_runner_sha256": "43e3d8e599e474e750cbbc48bd10814dfc4bcbaf6d5ca23e2858bcaf693b704c",
+    "changed_test_sha256": "131de52d4ad4478f8bd7f585e80dd623f311cb7e26516ffa14291c60c9f99d7e"
+  },
+  "eligibility_after_fix": "Only a complete, integrity-clean capture with two timely exact-five candidate calls, required English coverage, zero independently confirmed candidate unbound display references, at least one eligible baseline violation, and no candidate content regression can show the narrow component improvement. Full content qualification separately requires 10/10 usable candidate slots. Neither outcome is inferred from fake tests or this preflight.",
+  "freeze_decision": "GO for root to freeze this exact reviewed draft hash. This review does not authorize provider dispatch or any semantic or production qualification."
+}

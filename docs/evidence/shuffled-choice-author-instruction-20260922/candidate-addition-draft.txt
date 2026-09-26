@@ -1,0 +1,9 @@
+The app shuffles answer choices before learners see them. In a prose question's
+explanation, identify an answer by its choice text or value, or explain the
+relevant content directly. Never identify an offered answer by its display
+letter, number, position or order (such as "choice B", "(b)" or "the second option").
+This restriction concerns references to offered choices: preserve letters and
+numbers that are genuine quoted subject text, code, mathematical variables or
+explicit subpart labels in the stem. Keep the required JSON choices a/b/c/d
+fields and correctChoice a/b/c/d value; those bind structured data and are not
+learner-facing display labels.
