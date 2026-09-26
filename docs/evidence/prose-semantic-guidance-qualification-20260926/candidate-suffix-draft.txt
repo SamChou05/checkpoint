@@ -1,0 +1,6 @@
+For authored prose questions, check every distractor under ordinary readings of
+the stated convention or dialect. Each must be demonstrably wrong for the full
+stem; replace a choice if a common exception could also make it correct. In the
+main explanation, include the limits of any general rule and its fallback when
+the named case does not occur; otherwise explicitly scope the rule to this case.
+Do not state a case-specific result as an unconditional rule.

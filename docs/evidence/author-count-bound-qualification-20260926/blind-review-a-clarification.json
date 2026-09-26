@@ -1,0 +1,45 @@
+{
+  "premise_sufficiency_interpretation": "Sufficient means that the displayed premises and choices warrant exactly one answer to the singular question. Both items permit determinate judgments for every choice but lack a unique warranted selection: two choices qualify in one item and all four qualify in the other. Accordingly, insufficient records failure of uniqueness, while every substantive answer and choice judgment is preserved.",
+  "answers": {
+    "812cbcbead7101f2679d0851": {
+      "independent_answer": "unavailable",
+      "reasoning": "Both A and D are impossible under consecutive 90-minute slots. Two slots starting at 15:00 end at 18:00, not 17:30; three slots starting at 10:30 end at 15:00, not 14:30. B is the final permitted one-slot reservation, and C is two complete morning slots. The rules suffice to classify each distinct option, but two options answer the singular question.",
+      "uncertain": true,
+      "premise_sufficiency": "insufficient",
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "d3edfed02f79e0501f1fb039": {
+      "independent_answer": "unavailable",
+      "reasoning": "All four reservations fit 10:00-18:00. B lasts only 2 hours and needs no advance notice. A, C, and D exceed 3 hours, but a request at 09:00 today gives at least 25 hours of notice even for the earliest listed tomorrow start (D at 10:00); their later starts give still more. All four distinct options are accepted, so the singular question has no unique answer.",
+      "uncertain": true,
+      "premise_sufficiency": "insufficient",
+      "choice_judgments": {
+        "A": "correct",
+        "B": "correct",
+        "C": "correct",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    }
+  }
+}

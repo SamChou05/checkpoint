@@ -1,0 +1,48 @@
+{
+  "status": "draft_unfrozen_no_provider_calls",
+  "jobs": [
+    {
+      "id": "python_boolean",
+      "request": {
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "existingPrompts": [
+          "What does the following expression evaluate to in Python 3?\n\n0 or \"hello\" or 99",
+          "What does the following expression evaluate to in Python 3?\n\n[] and 1/0"
+        ],
+        "sourceDocuments": [],
+        "goal": {
+          "title": "Python Boolean expression behavior",
+          "category": "Programming",
+          "learningTarget": "Predict exact Python 3 expression values and which operands are evaluated.",
+          "focusAreas": "Operand-return behavior of and/or, truthiness, and short-circuit evaluation.",
+          "currentLevel": "Apply familiar rules to concrete code at difficulty 2 or 3.",
+          "contentTopics": ["Python 3 Boolean expressions"],
+          "questionDirective": "Create five distinct self-contained Python 3 expression questions with exact result choices. Three must test and/or operand-return behavior: include a multi-operand expression that returns its final operand and another where a later operand is skipped. The remaining two test truthiness or a conditional expression. Show valid code and enough context for exactly one result. Use fresh values and variable names. Explain the selected value and evaluation order without diagnosing a learner.",
+          "needsSkillMap": false
+        }
+      }
+    },
+    {
+      "id": "american_english",
+      "request": {
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "existingPrompts": [
+          "Which sentence uses correct subject-verb agreement in standard written American English?"
+        ],
+        "sourceDocuments": [],
+        "goal": {
+          "title": "Agreement and clear reference in American English",
+          "category": "Language",
+          "learningTarget": "Choose or edit complete sentences for standard written American English agreement and unambiguous pronoun reference.",
+          "focusAreas": "Subject-verb agreement, including collective nouns; pronoun reference.",
+          "currentLevel": "Apply grammar rules to complete contexts at difficulty 2 or 3.",
+          "contentTopics": ["Standard written American English"],
+          "questionDirective": "Create five distinct self-contained sentence-level application questions. Three test subject-verb agreement, including one collective-noun case; two test unambiguous pronoun reference. Give the full sentence or short context and the exact selection or editing task. Use fresh situations and complete context, with one warranted answer under standard written American English. Avoid mere terminology recall and discretionary style preferences.",
+          "needsSkillMap": false
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+diff --git a/backend/bedrock-question-service/question_generation.py b/backend/bedrock-question-service/question_generation.py
+index ab3e58f..0fa5e93 100644
+--- a/backend/bedrock-question-service/question_generation.py
++++ b/backend/bedrock-question-service/question_generation.py
+@@ -1033,7 +1033,15 @@ for correctness and plausibility. An unsupported_authored_explanation,
+ uncertain_authored_explanation, or reported_issues rejection requires a new
+ complete, supported teaching item.
+ """.rstrip()
+-        base_prompt += teaching
++        base_prompt += teaching + """
++
++For authored prose questions, check every distractor under ordinary readings of
++the stated convention or dialect. Each must be demonstrably wrong for the full
++stem; replace a choice if a common exception could also make it correct. In the
++main explanation, include the limits of any general rule and its fallback when
++the named case does not occur; otherwise explicitly scope the rule to this case.
++Do not state a case-specific result as an unconditional rule.
++""".rstrip()
+     variant_instructions = _prompt_variant_instructions()
+     if variant_instructions:
+         return f"{base_prompt}\n\n{variant_instructions}"
+diff --git a/backend/bedrock-question-service/tests/test_authored_prose_semantic_prompt.py b/backend/bedrock-question-service/tests/test_authored_prose_semantic_prompt.py
+new file mode 100644
+index 0000000..24d75b8
+--- /dev/null
++++ b/backend/bedrock-question-service/tests/test_authored_prose_semantic_prompt.py
+@@ -0,0 +1,69 @@
++"""Author prompt placement for prose teaching and distractor checks; no provider calls."""
++
++import os
++import unittest
++from unittest.mock import patch
++
++from native_output_contracts import native_prompt
++from quantitative_authoring import CONSTRUCTED_AUTHOR_CONTRACT, CONSTRUCTED_AUTHOR_INSTRUCTIONS
++from question_generation import _system_prompt
++
++
++DISTRACTOR_CHECK = "Each must be demonstrably wrong for the full"
++RULE_CHECK = "include the limits of any general rule and its fallback"
++
++
++class AuthoredProseSemanticPromptTests(unittest.TestCase):
++    def prompt(self, *, feedback="authored_solution", variant="balanced"):
++        with patch.dict(os.environ, {
++            "QUESTION_FEEDBACK_CONTRACT": feedback,
++            "CHECKPOINT_PROMPT_VARIANT": variant,
++        }):
++            return _system_prompt()
++
++    def test_prose_and_constructed_native_authors_keep_checks_in_teaching(self):
++        prose = native_prompt(self.prompt(), "question_author_v3")
++        constructed = native_prompt(self.prompt(), CONSTRUCTED_AUTHOR_CONTRACT)
++        for prompt in (prose, constructed):
++            with self.subTest(contract="constructed" if prompt is constructed else "prose"):
++                self.assertEqual(prompt.count(DISTRACTOR_CHECK), 1)
++                self.assertEqual(prompt.count(RULE_CHECK), 1)
++                self.assertLess(prompt.index("The main explanation is the complete worked solution"),
++                                prompt.index(DISTRACTOR_CHECK))
++                self.assertLess(prompt.index(DISTRACTOR_CHECK), prompt.index(RULE_CHECK))
++                self.assertIn("explicitly scope the rule to this case", prompt)
++                self.assertIn("replace a choice if a common exception", prompt)
++        self.assertNotIn(CONSTRUCTED_AUTHOR_INSTRUCTIONS, prose)
++        self.assertTrue(constructed.endswith(CONSTRUCTED_AUTHOR_INSTRUCTIONS))
++        self.assertLess(constructed.index(RULE_CHECK),
++                        constructed.index(CONSTRUCTED_AUTHOR_INSTRUCTIONS))
++
++    def test_historical_variants_keep_their_own_instructions(self):
++        variants = {
++            "balanced": None,
++            "focused_application": "Joint outcomes are appropriate",
++            "checklist": "Prompt experiment variant: checklist",
++            "method-first": "Prompt experiment variant: checklist",
++            "compact": "Prompt experiment variant: compact",
++        }
++        for variant, marker in variants.items():
++            with self.subTest(variant=variant):
++                prompt = self.prompt(variant=variant)
++                self.assertEqual(prompt.count(DISTRACTOR_CHECK), 1)
++                self.assertEqual(prompt.count(RULE_CHECK), 1)
++                if marker:
++                    self.assertIn(marker, prompt)
++                if variant in {"checklist", "method-first", "compact"}:
++                    self.assertLess(prompt.index(RULE_CHECK), prompt.index(marker))
++                if variant == "focused_application":
++                    self.assertIn("several reasoning steps can establish one precisely asked result", prompt)
++
++    def test_reviewer_written_prompt_does_not_acquire_authored_prose_checks(self):
++        prompt = self.prompt(feedback="reviewer_written")
++        self.assertNotIn(DISTRACTOR_CHECK, prompt)
++        self.assertNotIn(RULE_CHECK, prompt)
++        self.assertNotIn("The main explanation is the complete worked solution", prompt)
++
++
++if __name__ == "__main__":
++    unittest.main()

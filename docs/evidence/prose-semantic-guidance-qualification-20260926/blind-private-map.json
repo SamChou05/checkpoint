@@ -1,0 +1,165 @@
+{
+  "capture_sha256": "70eb44f09e5e47a52d46d69e81db9da8feb3db5d1acd92b1ab0f29a387ba8b41",
+  "items": [
+    {
+      "id": "04f2dfbf87fea8a3",
+      "call_index": 0,
+      "raw_ordinal": 4,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "rotation": 3
+    },
+    {
+      "id": "0bd5475589a31413",
+      "call_index": 3,
+      "raw_ordinal": 1,
+      "arm": "baseline",
+      "scope": "american_english",
+      "rotation": 1
+    },
+    {
+      "id": "2bdcbf392444eb8c",
+      "call_index": 1,
+      "raw_ordinal": 0,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "rotation": 1
+    },
+    {
+      "id": "2c1708a6b666f103",
+      "call_index": 1,
+      "raw_ordinal": 1,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "rotation": 2
+    },
+    {
+      "id": "40da57479ec1d624",
+      "call_index": 3,
+      "raw_ordinal": 4,
+      "arm": "baseline",
+      "scope": "american_english",
+      "rotation": 3
+    },
+    {
+      "id": "4b0f2023411f09fd",
+      "call_index": 2,
+      "raw_ordinal": 1,
+      "arm": "candidate",
+      "scope": "american_english",
+      "rotation": 3
+    },
+    {
+      "id": "5144289266879764",
+      "call_index": 2,
+      "raw_ordinal": 0,
+      "arm": "candidate",
+      "scope": "american_english",
+      "rotation": 2
+    },
+    {
+      "id": "77c4d6de7377c492",
+      "call_index": 0,
+      "raw_ordinal": 3,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "rotation": 2
+    },
+    {
+      "id": "809cbbb01437a413",
+      "call_index": 1,
+      "raw_ordinal": 4,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "rotation": 0
+    },
+    {
+      "id": "8a3f978034c17d4f",
+      "call_index": 2,
+      "raw_ordinal": 4,
+      "arm": "candidate",
+      "scope": "american_english",
+      "rotation": 0
+    },
+    {
+      "id": "ab2758d2a9e04669",
+      "call_index": 0,
+      "raw_ordinal": 0,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "rotation": 2
+    },
+    {
+      "id": "b396430b3b44e7c7",
+      "call_index": 0,
+      "raw_ordinal": 2,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "rotation": 3
+    },
+    {
+      "id": "bbf2073da4882bd6",
+      "call_index": 1,
+      "raw_ordinal": 3,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "rotation": 1
+    },
+    {
+      "id": "c30999770f82d56b",
+      "call_index": 3,
+      "raw_ordinal": 3,
+      "arm": "baseline",
+      "scope": "american_english",
+      "rotation": 3
+    },
+    {
+      "id": "c53e9503937bb462",
+      "call_index": 3,
+      "raw_ordinal": 0,
+      "arm": "baseline",
+      "scope": "american_english",
+      "rotation": 3
+    },
+    {
+      "id": "d558acd0104eb506",
+      "call_index": 1,
+      "raw_ordinal": 2,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "rotation": 0
+    },
+    {
+      "id": "ebf5c1bc8b29a4e8",
+      "call_index": 3,
+      "raw_ordinal": 2,
+      "arm": "baseline",
+      "scope": "american_english",
+      "rotation": 0
+    },
+    {
+      "id": "eda925a91e4ec487",
+      "call_index": 2,
+      "raw_ordinal": 2,
+      "arm": "candidate",
+      "scope": "american_english",
+      "rotation": 1
+    },
+    {
+      "id": "edca6a1c88539d59",
+      "call_index": 0,
+      "raw_ordinal": 1,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "rotation": 0
+    },
+    {
+      "id": "fa499be1bd3e1b81",
+      "call_index": 2,
+      "raw_ordinal": 3,
+      "arm": "candidate",
+      "scope": "american_english",
+      "rotation": 1
+    }
+  ]
+}

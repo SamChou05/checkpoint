@@ -1,0 +1,742 @@
+{
+  "version": 1,
+  "kind": "independent_post_unblind_semantic_assessment_b",
+  "evidence_sha256": {
+    "plan.json": "a3207520e2c38e914f50a7f552a815a37f5618bcceaf723bf4479aa22c54b3cf",
+    "capture.json": "29883bdbd2be23afe15527adc6a9f199a0cb79c13c6a0203adfb903ddd38ab1a",
+    "blind-private-map.json": "7878cbfaa29162fdbeca67e71a5caaa5f60aa354f4b12a8ab4f3b01ec571cb6f",
+    "blind-lock.json": "b38b67a9272a52def9716c9a5bce8656e738dfdead17c828cbd2592c8034bcd4",
+    "blind-adjudication.json": "271edfb47e77dd0d246f37534ab1d3421211bcd960e1afdd06824ff3f67c4802",
+    "blind-worksheet.json": "611d7a52a624448451031b8b07574e6057c125304847e92aacf9a06b0345d53d",
+    "blind-review-a.json": "864993b1cd721e14aa25b06d492639768f7d85cd8e0657428219378dee6ef29b",
+    "blind-review-b.json": "a3ec6f7701220b108300fcfd8663fdbdb2ca7f5dac7094ceb047726d5259d4a3"
+  },
+  "source_hashes_match_frozen_plan": true,
+  "source_hash_count": 34,
+  "method": "Original raw rows in fixed source order, mapped to locked opaque IDs. Exact author keys and unedited main explanations checked against keyless adjudication and literal source rules. No new model calls or source edits.",
+  "interpretation": "Usable requires a unique literal answer, supported authored key, accurate complete main explanation within the author bound, scope fit, and difficulty at least 2. A false unqualified rule fails explanation support even when its worked example is right. Candidate coverage gates count independently usable items.",
+  "items": {
+    "ab2758d2a9e04669": {
+      "call_index": 0,
+      "raw_ordinal": 0,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "authored_key": "d",
+      "authored_key_in_blind_order": "B",
+      "locked_literal_answer": "B",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "`and` evaluates left to right and returns the first falsy operand, or the last operand if all are truthy. 3 is truthy, \"go\" is truthy, and [1, 2] is truthy, so evaluation reaches the final operand and returns it: [1, 2].",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The stated and-rule includes its all-truthy final-operand fallback. Each operand is truthy, so the list is the exact result; no choice duplicates it."
+      ],
+      "defects": [],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 82,
+        "main_explanation": 220,
+        "longest_choice": 6
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "and_or_final",
+      "independently_usable": true,
+      "blind_diversity_note": null
+    },
+    "edca6a1c88539d59": {
+      "call_index": 0,
+      "raw_ordinal": 1,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "authored_key": "c",
+      "authored_key_in_blind_order": "C",
+      "locked_literal_answer": "C",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "`or` evaluates left to right and returns the first truthy operand without evaluating the rest. \"ready\" is a non-empty string and therefore truthy, so it is returned immediately. The operands [] and 42 are never evaluated.",
+      "explanation_supported": false,
+      "claim_findings": [
+        "The local evaluation is correct: the nonempty first string is returned, and the later list and integer are not evaluated.",
+        "The opening unqualified rule says or returns the first truthy operand. Counterexample: 0 or None or \"\" returns the final empty string when there is no truthy operand. The explanation omits this necessary fallback."
+      ],
+      "defects": [
+        "false_universal_or_rule"
+      ],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 80,
+        "main_explanation": 221,
+        "longest_choice": 7
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "and_or_skipped",
+      "independently_usable": false,
+      "blind_diversity_note": null
+    },
+    "b396430b3b44e7c7": {
+      "call_index": 0,
+      "raw_ordinal": 2,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "authored_key": "d",
+      "authored_key_in_blind_order": "A",
+      "locked_literal_answer": "A",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "`or` returns the first truthy operand, or the last operand when all are falsy. 0 is falsy, None is falsy, and \"\" is falsy, so no truthy value is found. `or` returns the final operand, which is \"\".",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The or-rule explicitly includes its all-falsy final-operand fallback. All three operands are falsy, so the exact result is the final empty string, distinct from 0, None and Boolean False."
+      ],
+      "defects": [],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 76,
+        "main_explanation": 196,
+        "longest_choice": 5
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "and_or_final",
+      "independently_usable": true,
+      "blind_diversity_note": null
+    },
+    "77c4d6de7377c492": {
+      "call_index": 0,
+      "raw_ordinal": 3,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "authored_key": "d",
+      "authored_key_in_blind_order": "B",
+      "locked_literal_answer": "B",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "`bool()` on a list tests only whether the list is non-empty, not the truthiness of its elements. [0, False, \"\"] contains three items, so the list itself is non-empty and truthy, and bool() returns True.",
+      "explanation_supported": true,
+      "claim_findings": [
+        "bool of a list depends on whether the list is empty. The three listed elements make it truthy despite their individual falsiness, so the explanation and key are supported."
+      ],
+      "defects": [],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 81,
+        "main_explanation": 202,
+        "longest_choice": 5
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "truthiness",
+      "independently_usable": true,
+      "blind_diversity_note": null
+    },
+    "04f2dfbf87fea8a3": {
+      "call_index": 0,
+      "raw_ordinal": 4,
+      "arm": "baseline",
+      "scope": "python_boolean",
+      "authored_key": "d",
+      "authored_key_in_blind_order": "A",
+      "locked_literal_answer": "A",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "A conditional expression evaluates to its first operand when the condition is True and to its second operand when the condition is False. 4 > 6 is False, so the else branch is taken and label is assigned \"low\".",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The conditional expression rule correctly distinguishes the true and false branches. 4 > 6 is false and the selected else string is the authored answer."
+      ],
+      "defects": [],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 98,
+        "main_explanation": 210,
+        "longest_choice": 6
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "conditional",
+      "independently_usable": true,
+      "blind_diversity_note": null
+    },
+    "2bdcbf392444eb8c": {
+      "call_index": 1,
+      "raw_ordinal": 0,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "authored_key": "d",
+      "authored_key_in_blind_order": "C",
+      "locked_literal_answer": "C",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "`and` evaluates left to right and returns the first falsy operand, or the last operand if all are truthy. 1 is truthy, \"yes\" is truthy, so evaluation reaches 42 and returns it.",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The and-rule includes its all-truthy final-operand fallback. Both earlier operands are truthy, so the final integer is returned rather than Boolean True."
+      ],
+      "defects": [],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 79,
+        "main_explanation": 176,
+        "longest_choice": 5
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "and_or_final",
+      "independently_usable": true,
+      "blind_diversity_note": null
+    },
+    "2c1708a6b666f103": {
+      "call_index": 1,
+      "raw_ordinal": 1,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "authored_key": "a",
+      "authored_key_in_blind_order": "C",
+      "locked_literal_answer": "C",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "`or` returns the first truthy operand without evaluating the rest. \"go\" is truthy, so the expression short-circuits and returns \"go\"; `10 // 0` is never executed.",
+      "explanation_supported": false,
+      "claim_findings": [
+        "The local result and short-circuit are right: the first string is truthy and division by zero is not evaluated.",
+        "The unqualified opening rule says or returns the first truthy operand. Counterexample: 0 or None or \"\" returns the final falsy operand, because no truthy operand exists. The needed fallback is absent."
+      ],
+      "defects": [
+        "false_universal_or_rule"
+      ],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 78,
+        "main_explanation": 162,
+        "longest_choice": 27
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "and_or_skipped",
+      "independently_usable": false,
+      "blind_diversity_note": null
+    },
+    "d558acd0104eb506": {
+      "call_index": 1,
+      "raw_ordinal": 2,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "authored_key": "c",
+      "authored_key_in_blind_order": "C",
+      "locked_literal_answer": "C",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "`and` returns the first falsy operand. 5 is truthy, so evaluation continues. 0 is falsy, so `and` returns 0 immediately; \"skip\" is never evaluated.",
+      "explanation_supported": false,
+      "claim_findings": [
+        "The local evaluation is right: 5 is truthy, 0 is the first falsy operand, and the last string is skipped.",
+        "The unqualified opening rule says and returns the first falsy operand. Counterexample: 1 and \"yes\" and 42 returns the final truthy operand 42; there is no falsy operand. The needed fallback is absent."
+      ],
+      "defects": [
+        "false_universal_and_rule"
+      ],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 79,
+        "main_explanation": 147,
+        "longest_choice": 6
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "and_or_skipped",
+      "independently_usable": false,
+      "blind_diversity_note": null
+    },
+    "bbf2073da4882bd6": {
+      "call_index": 1,
+      "raw_ordinal": 3,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "authored_key": "c",
+      "authored_key_in_blind_order": "B",
+      "locked_literal_answer": "B",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "A list is truthy in Python if it is non-empty, regardless of its contents. [0] has one element (the integer 0), making it non-empty and therefore truthy; bool([0]) returns True.",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The nonempty-list rule is stated with its condition. [0] has one element, so bool([0]) is exactly Boolean True, regardless of the falsy element."
+      ],
+      "defects": [],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 44,
+        "main_explanation": 177,
+        "longest_choice": 5
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "truthiness",
+      "independently_usable": true,
+      "blind_diversity_note": null
+    },
+    "809cbbb01437a413": {
+      "call_index": 1,
+      "raw_ordinal": 4,
+      "arm": "candidate",
+      "scope": "python_boolean",
+      "authored_key": "d",
+      "authored_key_in_blind_order": "D",
+      "locked_literal_answer": "D",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "The conditional expression tests x as a boolean. x is \"\" (empty string), which is falsy, so the else branch is taken and y is assigned \"empty\".",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The empty string has a false truth value; the conditional expression selects its else operand, assigning the exact string \"empty\"."
+      ],
+      "defects": [],
+      "topic": "Python 3 Boolean expressions",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 98,
+        "main_explanation": 143,
+        "longest_choice": 7
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "conditional",
+      "independently_usable": true,
+      "blind_diversity_note": null
+    },
+    "5144289266879764": {
+      "call_index": 2,
+      "raw_ordinal": 0,
+      "arm": "candidate",
+      "scope": "american_english",
+      "authored_key": "c",
+      "authored_key_in_blind_order": "A",
+      "locked_literal_answer": "A",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "The subject is 'stack' (singular); 'of old newspapers' is a prepositional phrase modifying the subject without changing its number. A singular subject requires a singular verb, so 'is blocking' agrees correctly with 'stack.'",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The singular head is stack; the of-phrase does not control verb number. Is blocking has singular agreement, and the three plural auxiliaries are wrong under the stated standard-written convention."
+      ],
+      "defects": [],
+      "topic": "Subject-verb agreement",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 120,
+        "main_explanation": 224,
+        "longest_choice": 9
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "agreement",
+      "independently_usable": true,
+      "blind_diversity_note": "AC express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer."
+    },
+    "4b0f2023411f09fd": {
+      "call_index": 2,
+      "raw_ordinal": 1,
+      "arm": "candidate",
+      "scope": "american_english",
+      "authored_key": "b",
+      "authored_key_in_blind_order": "C",
+      "locked_literal_answer": "C",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "With neither...nor, the verb agrees with the subject nearer to it. 'Store manager' (singular) is closer to the verb, so 'has' is correct. If the plural noun were closer—e.g., 'neither the manager nor the cashiers'—'have' would be used instead.",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The nearer noun in neither–nor is singular store manager, so has seen is the standard form. The reversed-order example correctly places plural cashiers next to the verb and takes have."
+      ],
+      "defects": [],
+      "topic": "Subject-verb agreement",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 109,
+        "main_explanation": 243,
+        "longest_choice": 4
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "agreement",
+      "independently_usable": true,
+      "blind_diversity_note": "BC express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer."
+    },
+    "eda925a91e4ec487": {
+      "call_index": 2,
+      "raw_ordinal": 2,
+      "arm": "candidate",
+      "scope": "american_english",
+      "authored_key": "d",
+      "authored_key_in_blind_order": "C",
+      "locked_literal_answer": "unavailable",
+      "key_unique": false,
+      "all_wrong_choices_excluded": false,
+      "main_explanation": "In standard written American English, collective nouns like 'jury' take a singular verb when the group acts as a unit. The jury deliberating together as a single body is treated as one entity, so 'is' is correct. British English permits a plural verb here, but American English does not.",
+      "explanation_supported": false,
+      "claim_findings": [
+        "Is can be grammatical if jury is construed as a unit, but the stem never states that construal. It also omits a time frame: is deliberating for six hours can describe a planned duration, while have been deliberating can describe elapsed duration.",
+        "The explanation supplies the unit reading only after the stem and asserts that American English does not permit the plural here. American notional plural with a collective noun is recognized when members are salient, so the British-only exclusion is too broad. The blind review correctly withheld a unique answer."
+      ],
+      "defects": [
+        "missing_unit_or_member_premise",
+        "false_universal_american_collective_rule",
+        "unexcluded_plural_alternatives"
+      ],
+      "topic": "Subject-verb agreement – collective nouns",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 139,
+        "main_explanation": 287,
+        "longest_choice": 9
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "collective_agreement",
+      "independently_usable": false,
+      "blind_diversity_note": null
+    },
+    "fa499be1bd3e1b81": {
+      "call_index": 2,
+      "raw_ordinal": 3,
+      "arm": "candidate",
+      "scope": "american_english",
+      "authored_key": "c",
+      "authored_key_in_blind_order": "B",
+      "locked_literal_answer": "B",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "In option c, 'it' refers unambiguously to 'the report'—the only noun being archived. In option a, 'she' could mean the teacher or the student; in b, 'he' could mean Tom or his brother; in d, 'it' could mean the box or the shelf.",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The report is the available earlier object for it in the authored correct sentence. The personal pronouns in the other two person-pair sentences and it after box/shelf have plausible competing antecedents."
+      ],
+      "defects": [],
+      "topic": "Pronoun reference",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 67,
+        "main_explanation": 228,
+        "longest_choice": 70
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "reference",
+      "independently_usable": true,
+      "blind_diversity_note": null
+    },
+    "8a3f978034c17d4f": {
+      "call_index": 2,
+      "raw_ordinal": 4,
+      "arm": "candidate",
+      "scope": "american_english",
+      "authored_key": "a",
+      "authored_key_in_blind_order": "A",
+      "locked_literal_answer": "A",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "Replacing 'his' with 'the assistant's' names the intended referent explicitly. Option b substitutes 'their,' which is still unclear about whose presentation is meant. Options c and d both retain 'his,' leaving the director and the assistant as competing referents.",
+      "explanation_supported": true,
+      "claim_findings": [
+        "Naming the assistant as possessor removes the pronoun ambiguity. Their can refer to either person as singular they, and both his revisions leave the director and assistant as competing antecedents. The explanation’s “intended” wording selects a possible referent rather than a fact supplied by the original, but the selected revision is valid."
+      ],
+      "defects": [],
+      "topic": "Pronoun reference",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 151,
+        "main_explanation": 264,
+        "longest_choice": 79
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "reference",
+      "independently_usable": true,
+      "blind_diversity_note": null
+    },
+    "c53e9503937bb462": {
+      "call_index": 3,
+      "raw_ordinal": 0,
+      "arm": "baseline",
+      "scope": "american_english",
+      "authored_key": "b",
+      "authored_key_in_blind_order": "C",
+      "locked_literal_answer": "C",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "With \"neither...nor,\" the verb agrees with the subject closest to it. \"Interns\" (plural) is the closer subject, so the plural \"have\" is correct. The singular \"supervisor\" is farther from the verb and does not govern agreement here.",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The nearer noun in neither–nor is plural interns, so have completed has standard agreement; the singular supervisor farther away does not govern this verb."
+      ],
+      "defects": [],
+      "topic": "Standard written American English",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 166,
+        "main_explanation": 231,
+        "longest_choice": 4
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "agreement",
+      "independently_usable": true,
+      "blind_diversity_note": "BC express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer."
+    },
+    "0bd5475589a31413": {
+      "call_index": 3,
+      "raw_ordinal": 1,
+      "arm": "baseline",
+      "scope": "american_english",
+      "authored_key": "b",
+      "authored_key_in_blind_order": "A",
+      "locked_literal_answer": "A",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "The subject is \"stack\" (singular), not \"reports.\" A prepositional phrase between the subject and verb does not affect agreement. Only option b pairs a singular verb (\"needs\") with the singular head noun \"stack.\" Options a, c, and d each apply a plural verb form to that singular subject.",
+      "explanation_supported": true,
+      "claim_findings": [
+        "The singular head stack controls agreement despite intervening plural nouns. Needs is the only standard agreeing choice. One distractor expresses a similar proposition with wrong inflection, a diversity weakness recorded in blind adjudication but not a second correct answer."
+      ],
+      "defects": [],
+      "topic": "Standard written American English",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 95,
+        "main_explanation": 287,
+        "longest_choice": 69
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "agreement",
+      "independently_usable": true,
+      "blind_diversity_note": "AD express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer."
+    },
+    "ebf5c1bc8b29a4e8": {
+      "call_index": 3,
+      "raw_ordinal": 2,
+      "arm": "baseline",
+      "scope": "american_english",
+      "authored_key": "b",
+      "authored_key_in_blind_order": "B",
+      "locked_literal_answer": "B",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "In standard written American English, collective nouns like \"jury\" take singular verbs when the group acts as a unit. \"The jury was\" uses the singular \"was,\" which is the required American English form. Options a, c, and d use plural verbs, following British English conventions rather than American.",
+      "explanation_supported": false,
+      "claim_findings": [
+        "The stem expressly asks for a collective noun acting as one unit; was is the singular American form on that reading and the authored key is unique.",
+        "The explanation says the plural choices follow British English conventions rather than American, without limiting that dialect claim to this stipulated unit reading. American English also permits notional plural agreement when collective members are salient. The blanket national exclusion is inaccurate, even though the distractors fail this stem’s unit condition."
+      ],
+      "defects": [
+        "overbroad_american_collective_claim"
+      ],
+      "topic": "Standard written American English",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 126,
+        "main_explanation": 300,
+        "longest_choice": 87
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "collective_agreement",
+      "independently_usable": false,
+      "blind_diversity_note": "AB express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer."
+    },
+    "c30999770f82d56b": {
+      "call_index": 3,
+      "raw_ordinal": 3,
+      "arm": "baseline",
+      "scope": "american_english",
+      "authored_key": "a",
+      "authored_key_in_blind_order": "B",
+      "locked_literal_answer": "B",
+      "key_unique": true,
+      "all_wrong_choices_excluded": true,
+      "main_explanation": "\"He\" could refer to either Marcus or the client. Replacing the pronoun with the noun \"Marcus\" removes all ambiguity. Option b changes the meaning to suggest both parties had questions. Options c and d still contain an ambiguous \"he.\"",
+      "explanation_supported": false,
+      "claim_findings": [
+        "Replacing he with Marcus explicitly identifies the questioner; the authored key is unique. The alternatives retain unclear personal reference or omit the named referent.",
+        "The explanation says they in a distractor suggests both parties had questions. Singular they may refer to either Marcus or the client; plurality is not forced. This material distractor diagnosis is false."
+      ],
+      "defects": [
+        "false_singular_they_exclusion"
+      ],
+      "topic": "Standard written American English",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 161,
+        "main_explanation": 233,
+        "longest_choice": 84
+      },
+      "author_length_pass": true,
+      "runtime_explanation_length_pass": true,
+      "coverage": "reference",
+      "independently_usable": false,
+      "blind_diversity_note": null
+    },
+    "40da57479ec1d624": {
+      "call_index": 3,
+      "raw_ordinal": 4,
+      "arm": "baseline",
+      "scope": "american_english",
+      "authored_key": "a",
+      "authored_key_in_blind_order": "B",
+      "locked_literal_answer": "unavailable",
+      "key_unique": false,
+      "all_wrong_choices_excluded": false,
+      "main_explanation": "\"This\" with no clear noun antecedent leaves the reference vague. Option a adds the noun \"events\" to form \"These events,\" which explicitly names both the resignation and the cancellation as the referent. Option b keeps the vague \"this.\" Option c changes the causal meaning. Option d introduces a new pronoun ambiguity with \"They.\"",
+      "explanation_supported": false,
+      "claim_findings": [
+        "The authored choice explicitly names both events, but the other revision placing this directly after the sole resignation event also makes its reference unambiguous while adding a causal claim. The stem asks only for reference clarity and does not require preservation of causal meaning.",
+        "The explanation correctly says the alternative changes causation, but treats that as disqualifying without a stated constraint. Its claim of one qualifying revision is unsupported. The exact main explanation is 329 characters, over the author limit of 320 (though below runtime 420)."
+      ],
+      "defects": [
+        "multiple_unambiguous_revisions",
+        "author_explanation_over_320"
+      ],
+      "topic": "Standard written American English",
+      "topic_and_scope_fit": true,
+      "authored_difficulty": 2,
+      "independent_difficulty": 2,
+      "difficulty_at_least_2": true,
+      "length_characters": {
+        "prompt": 193,
+        "main_explanation": 329,
+        "longest_choice": 109
+      },
+      "author_length_pass": false,
+      "runtime_explanation_length_pass": true,
+      "coverage": "reference",
+      "independently_usable": false,
+      "blind_diversity_note": null
+    }
+  },
+  "summary": {
+    "candidate": {
+      "requested": 10,
+      "raw_rows": 10,
+      "usable": 7,
+      "python_usable": 3,
+      "english_usable": 4,
+      "python_and_or_authored": 3,
+      "python_and_or_usable": 1,
+      "python_final_authored": 1,
+      "python_final_usable": 1,
+      "python_skipped_authored": 2,
+      "python_skipped_usable": 0,
+      "english_agreement_authored": 3,
+      "english_agreement_usable": 2,
+      "english_collective_authored": 1,
+      "english_collective_usable": 0,
+      "english_reference_authored": 2,
+      "english_reference_usable": 2,
+      "false_universal_or_ambiguous_distractor_items": 3
+    },
+    "baseline": {
+      "requested": 10,
+      "raw_rows": 10,
+      "usable": 6,
+      "python_usable": 4,
+      "english_usable": 2,
+      "targeted_defect_ids": [
+        "edca6a1c88539d59",
+        "ebf5c1bc8b29a4e8",
+        "c30999770f82d56b",
+        "40da57479ec1d624"
+      ]
+    },
+    "gates": {
+      "candidate_normal_native_endturn_calls": true,
+      "exact_five_rows_per_call": true,
+      "candidate_usable_of_10": false,
+      "candidate_usable_per_scope": false,
+      "candidate_python_and_or_items": false,
+      "candidate_python_final_operand_items": true,
+      "candidate_python_skipped_operand_items": false,
+      "candidate_english_agreement_items": false,
+      "candidate_english_collective_items": false,
+      "candidate_english_reference_items": true,
+      "candidate_targeted_false_rule_or_ambiguous_distractor_count": false,
+      "observed_improvement_requires_baseline_targeted_defect": false,
+      "candidate_usable_not_below_baseline_total_or_either_scope": false,
+      "no_other_material_content_regression": false,
+      "blind_literal_choice_and_pair_lock_before_key_or_main": true,
+      "uncertainty_fails_item": true,
+      "model_agreement_is_not_semantic_credit": true,
+      "author_main_maximum": true,
+      "runtime_main_maximum": true
+    },
+    "overall_frozen_acceptance_met": false,
+    "claim_limit": "The four calls are fresh independent batches, so differences are descriptive only; no same-item causal or worker qualification claim follows."
+  }
+}

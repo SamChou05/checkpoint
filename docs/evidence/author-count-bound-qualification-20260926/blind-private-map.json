@@ -1,0 +1,166 @@
+{
+  "version": 2,
+  "worksheet_sha256": "1ec32d561d3ceeb7b3614e9a2721a91f13b8324c976f1cb8a9bf9163a35328bc",
+  "capture_sha256": "21b6cce98529136db6632cb511380c8a90c630282b0047427fda1e10b238cdd4",
+  "mapping": {
+    "b9b8e66e75ce4bef532ce5d3": {
+      "job_id": "prose_array_n5",
+      "original_row_position": 0,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "d",
+        "a",
+        "b",
+        "c"
+      ],
+      "author_key": "a",
+      "author_explanation": "The 30-minute buffer requires ending by 16:30, and the 4-hour limit applies. Only option A satisfies both: 09:00 to 13:00 is exactly 4 hours and ends before 16:30."
+    },
+    "d3edfed02f79e0501f1fb039": {
+      "job_id": "prose_array_n5",
+      "original_row_position": 1,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "d",
+        "a",
+        "b",
+        "c"
+      ],
+      "author_key": "c",
+      "author_explanation": "The 24-hour notice is satisfied for tomorrow. The 4-hour reservation in option C fits within 10:00-18:00 and has proper notice. Option B violates the closing time (no buffer mentioned but 18:00 is exact closing), and D exceeds 3 hours without the explicit notice being for a long reservation."
+    },
+    "4ae9e9a68f388d49ed28cb1b": {
+      "job_id": "prose_array_n5",
+      "original_row_position": 2,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "d",
+        "a",
+        "b",
+        "c"
+      ],
+      "author_key": "d",
+      "author_explanation": "Room B is blocked 09:00-12:00 due to Room A's booking. A 2-hour reservation must avoid this window. Option D (12:00-14:00) starts exactly when the block ends and fits within 08:00-16:00."
+    },
+    "380fdc1175ebf9f1a1fe064f": {
+      "job_id": "prose_array_n5",
+      "original_row_position": 3,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "b",
+        "c",
+        "d",
+        "a"
+      ],
+      "author_key": "a",
+      "author_explanation": "As a non-member, morning slots are unavailable. The earliest possible is 13:00, which triggers the afternoon guide fee requirement. Option A correctly combines both constraints."
+    },
+    "812cbcbead7101f2679d0851": {
+      "job_id": "prose_array_n5",
+      "original_row_position": 4,
+      "raw_question_key": null,
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "c",
+      "author_explanation": "Slots are 09:00-10:30, 10:30-12:00, 12:00-13:30, 13:30-15:00, 15:00-16:30, 16:30-18:00. Option C (15:00-17:30) requires a slot starting at 16:30 to continue, but 16:30-18:00 is only 90 minutes; 15:00-17:30 is 150 minutes needing a non-existent 15:00-16:30 plus 16:30-18:00, but 15:00-16:30 exists. Rechecking: 15:00-16:30 and 16:30-18:00 gives exactly 15:00-18:00, not 17:30. Actually 15:00-17:30 cannot be formed from consecutive 90-minute slots. The last slot starts at 16:30, so 16:30-18:00 is valid. Option C's end time 17:30 doesn't align with slot boundaries."
+    },
+    "9ad65361a62900d50a7a7bc7": {
+      "job_id": "prose_count_bound_n5",
+      "original_row_position": 0,
+      "raw_question_key": "0",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "a",
+      "author_explanation": "The wing closes at 17:00, so reservations must end by 16:30. The 4-hour limit means 09:00-14:00 exceeds duration. 13:00-17:00 ends at closing time, violating the 30-minute buffer. 12:30-16:45 ends after 16:30. Only 10:00-14:00 fits both constraints."
+    },
+    "30fbc88ce6419eca77cac493": {
+      "job_id": "prose_count_bound_n5",
+      "original_row_position": 1,
+      "raw_question_key": "1",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "c",
+      "author_explanation": "Standard members are restricted to slots starting at or after 12:00. 08:00-10:00 starts too early. 11:30-13:30 starts before 12:00. 20:00-22:00 exceeds the gallery's 20:00 closing. Only 12:00-14:00 satisfies the standard member rule and operates within hours."
+    },
+    "383a02030f3ae19a1131afe4": {
+      "job_id": "prose_count_bound_n5",
+      "original_row_position": 2,
+      "raw_question_key": "2",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "author_key": "b",
+      "author_explanation": "Starting before 14:00 allows 3 hours maximum; 11:00-14:30 exceeds this. Starting at or after 14:00 allows 2 hours maximum; 14:00-16:30 exceeds this, and 15:00-17:30 also exceeds this. 13:00-16:00 is exactly 3 hours, permitted for pre-14:00 starts."
+    },
+    "d59c1932fc40ca072745ea89": {
+      "job_id": "prose_count_bound_n5",
+      "original_row_position": 3,
+      "raw_question_key": "3",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "author_key": "b",
+      "author_explanation": "11:00-13:00 overlaps 10:00-12:00. 13:00-15:00 overlaps 14:00-16:00. 15:00-17:00 overlaps 14:00-16:00. 12:00-14:00 touches but does not overlap either confirmed reservation, so it is accepted."
+    },
+    "afbb61415601fa823615197d": {
+      "job_id": "prose_count_bound_n5",
+      "original_row_position": 4,
+      "raw_question_key": "4",
+      "requested_slot": true,
+      "display_to_source_choice": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "author_key": "b",
+      "author_explanation": "Public time is limited to 5 hours. Option A has 6 hours public time. Option C starts setup at 08:00 but chamber opens at 08:00, so setup cannot begin then. Option D has 5 hours 15 minutes public time. Option B has 3 hours 45 minutes public time, proper setup/cleanup timing, and fits within hours."
+    }
+  },
+  "raw_shape_diagnostics": {
+    "prose_array_n5": {
+      "raw_count": 5,
+      "surplus_positions": [],
+      "missing_positions": []
+    },
+    "prose_count_bound_n5": {
+      "raw_count": 5,
+      "raw_question_keys": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "missing_keys": [],
+      "extra_keys": []
+    }
+  }
+}

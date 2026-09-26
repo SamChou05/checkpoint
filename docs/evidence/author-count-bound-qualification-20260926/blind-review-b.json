@@ -1,0 +1,205 @@
+{
+  "worksheet_sha256": "1ec32d561d3ceeb7b3614e9a2721a91f13b8324c976f1cb8a9bf9163a35328bc",
+  "answers": {
+    "afbb61415601fa823615197d": {
+      "independent_answer": "B",
+      "reasoning": "The public intervals last 6 hours, 3 hours 45 minutes, 5 hours 45 minutes, and 5 hours 15 minutes respectively. Only B stays within the five-hour cap; its setup and cleanup also fit operating hours.",
+      "uncertain": false,
+      "premise_sufficiency": "sufficient",
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "383a02030f3ae19a1131afe4": {
+      "independent_answer": "B",
+      "reasoning": "A begins before 14:00 but lasts 3 hours 30 minutes, exceeding three hours. B begins before 14:00 and lasts exactly three hours. C and D begin at or after 14:00 and each last 2 hours 30 minutes, exceeding two hours.",
+      "uncertain": false,
+      "premise_sufficiency": "sufficient",
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "30fbc88ce6419eca77cac493": {
+      "independent_answer": "A",
+      "reasoning": "A starts at noon and ends within the gallery window. B extends past the 20:00 closing time; C and D start before the standard-member noon threshold.",
+      "uncertain": false,
+      "premise_sufficiency": "sufficient",
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "380fdc1175ebf9f1a1fe064f": {
+      "independent_answer": "D",
+      "reasoning": "The exhibit does not open to this non-member at 12:30. The earliest afternoon slot is at 13:00 and the afternoon guide fee is $50.",
+      "uncertain": false,
+      "premise_sufficiency": "sufficient",
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "b9b8e66e75ce4bef532ce5d3": {
+      "independent_answer": "B",
+      "reasoning": "B runs 09:00–13:00 for four hours and finishes well before the 16:30 latest end. A and C exceed four hours. D claims four hours but its stated 09:00 start and 13:30 end span four and a half hours, so it is internally inconsistent and invalid.",
+      "uncertain": false,
+      "premise_sufficiency": "sufficient",
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "812cbcbead7101f2679d0851": {
+      "independent_answer": "unavailable",
+      "reasoning": "The 90-minute grid gives 15:00–16:30 and 16:30–18:00 as two consecutive slots, so A cannot end at 17:30. Three consecutive slots from 10:30 end at 15:00, not 14:30, so D is also impossible. B and C align with valid slots. Two choices satisfy “impossible.”",
+      "uncertain": true,
+      "premise_sufficiency": "insufficient",
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "4ae9e9a68f388d49ed28cb1b": {
+      "independent_answer": "A",
+      "reasoning": "A starts when Room A’s blocking interval ends and finishes before Room B closes. B, C, and D each overlap the 09:00–12:00 blocked interval.",
+      "uncertain": false,
+      "premise_sufficiency": "sufficient",
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "d59c1932fc40ca072745ea89": {
+      "independent_answer": "D",
+      "reasoning": "A overlaps the 14:00–16:00 booking from 14:00 to 15:00; B overlaps it from 15:00 to 16:00; C overlaps the 10:00–12:00 booking from 11:00 to 12:00. D occupies the open interval 12:00–14:00, meeting existing reservations only at endpoints.",
+      "uncertain": false,
+      "premise_sufficiency": "sufficient",
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "d3edfed02f79e0501f1fb039": {
+      "independent_answer": "unavailable",
+      "reasoning": "The request is submitted at 09:00 today. Every listed start time tomorrow is at least 25 hours later, so A, C, and D meet the 24-hour notice rule for durations over three hours. B is only two hours and needs no advance notice. All four also lie within opening hours.",
+      "uncertain": true,
+      "premise_sufficiency": "insufficient",
+      "choice_judgments": {
+        "A": "correct",
+        "B": "correct",
+        "C": "correct",
+        "D": "correct"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    },
+    "9ad65361a62900d50a7a7bc7": {
+      "independent_answer": "C",
+      "reasoning": "A lasts five hours, exceeding the four-hour cap. B lasts four hours 15 minutes and ends after the 16:30 deadline. C lasts exactly four hours and ends at 14:00. D ends at closing rather than at least 30 minutes earlier.",
+      "uncertain": false,
+      "premise_sufficiency": "sufficient",
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "correct",
+        "D": "incorrect"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      }
+    }
+  }
+}

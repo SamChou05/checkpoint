@@ -1,0 +1,76 @@
+{
+  "artifact_sha256": {
+    "blind-lock-a.json": "62e10b665a7d37545ecfbba379ca0813935d6c5fd580a166789b99374d125d6f",
+    "blind-lock-b.json": "216f45c5bc8d6c1e4aa097dd6aee18b35e45e2740cafb67833d1cbceb6892bfc",
+    "blind-review-a-clarification.json": "5907e0704b7f0d8fd958ef9c138602d118ac6242bf1c9bfb24c63e13f1149d72",
+    "blind-review-a-revised.json": "70e37e54395d0d9235553b074de87232f817487a6461e41155216d5f6fe5173a",
+    "blind-review-a.json": "2ee8de7e71caeaa074a50304954084d79891e79bcf339a051070a17378572729",
+    "blind-review-b.json": "d6d25520dc4d4555f820cc1a9e3a6b80c5dcf6c64405dbe95625e4e84c519855"
+  },
+  "items": {
+    "30fbc88ce6419eca77cac493": {
+      "independent_answer": "A",
+      "keyless_usable": true,
+      "reason": "A starts at noon and ends within the gallery window. B extends past the 20:00 closing time; C and D start before the standard-member noon threshold.",
+      "unique_literal_answer": true
+    },
+    "380fdc1175ebf9f1a1fe064f": {
+      "independent_answer": "D",
+      "keyless_usable": true,
+      "reason": "The exhibit does not open to this non-member at 12:30. The earliest afternoon slot is at 13:00 and the afternoon guide fee is $50.",
+      "unique_literal_answer": true
+    },
+    "383a02030f3ae19a1131afe4": {
+      "independent_answer": "B",
+      "keyless_usable": true,
+      "reason": "A begins before 14:00 but lasts 3 hours 30 minutes, exceeding three hours. B begins before 14:00 and lasts exactly three hours. C and D begin at or after 14:00 and each last 2 hours 30 minutes, exceeding two hours.",
+      "unique_literal_answer": true
+    },
+    "4ae9e9a68f388d49ed28cb1b": {
+      "independent_answer": "A",
+      "keyless_usable": true,
+      "reason": "A starts when Room A\u2019s blocking interval ends and finishes before Room B closes. B, C, and D each overlap the 09:00\u201312:00 blocked interval.",
+      "unique_literal_answer": true
+    },
+    "812cbcbead7101f2679d0851": {
+      "independent_answer": "unavailable",
+      "keyless_usable": false,
+      "reason": "The 90-minute grid gives 15:00\u201316:30 and 16:30\u201318:00 as two consecutive slots, so A cannot end at 17:30. Three consecutive slots from 10:30 end at 15:00, not 14:30, so D is also impossible. B and C align with valid slots. Two choices satisfy \u201cimpossible.\u201d",
+      "unique_literal_answer": false
+    },
+    "9ad65361a62900d50a7a7bc7": {
+      "independent_answer": "C",
+      "keyless_usable": true,
+      "reason": "A lasts five hours, exceeding the four-hour cap. B lasts four hours 15 minutes and ends after the 16:30 deadline. C lasts exactly four hours and ends at 14:00. D ends at closing rather than at least 30 minutes earlier.",
+      "unique_literal_answer": true
+    },
+    "afbb61415601fa823615197d": {
+      "independent_answer": "B",
+      "keyless_usable": true,
+      "reason": "The public intervals last 6 hours, 3 hours 45 minutes, 5 hours 45 minutes, and 5 hours 15 minutes respectively. Only B stays within the five-hour cap; its setup and cleanup also fit operating hours.",
+      "unique_literal_answer": true
+    },
+    "b9b8e66e75ce4bef532ce5d3": {
+      "independent_answer": "B",
+      "keyless_usable": true,
+      "reason": "B runs 09:00\u201313:00 for four hours and finishes well before the 16:30 latest end. A and C exceed four hours. D claims four hours but its stated 09:00 start and 13:30 end span four and a half hours, so it is internally inconsistent and invalid.",
+      "unique_literal_answer": true
+    },
+    "d3edfed02f79e0501f1fb039": {
+      "independent_answer": "unavailable",
+      "keyless_usable": false,
+      "reason": "The request is submitted at 09:00 today. Every listed start time tomorrow is at least 25 hours later, so A, C, and D meet the 24-hour notice rule for durations over three hours. B is only two hours and needs no advance notice. All four also lie within opening hours.",
+      "unique_literal_answer": false
+    },
+    "d59c1932fc40ca072745ea89": {
+      "independent_answer": "D",
+      "keyless_usable": true,
+      "reason": "A overlaps the 14:00\u201316:00 booking from 14:00 to 15:00; B overlaps it from 15:00 to 16:00; C overlaps the 10:00\u201312:00 booking from 11:00 to 12:00. D occupies the open interval 12:00\u201314:00, meeting existing reservations only at endpoints.",
+      "unique_literal_answer": true
+    }
+  },
+  "locked_at_utc": "2026-09-26T20:01:07.135256+00:00",
+  "rule": "Literal rules and all four displayed options assessed without arm, author key, explanation, or provider source. The original A review is retained; the separate clarification changes premise_sufficiency on two unavailable rows only so the frozen lock validator can represent non-unique answers.",
+  "version": 1,
+  "worksheet_sha256": "1ec32d561d3ceeb7b3614e9a2721a91f13b8324c976f1cb8a9bf9163a35328bc"
+}

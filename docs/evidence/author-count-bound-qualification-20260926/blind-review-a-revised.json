@@ -1,0 +1,209 @@
+{
+  "answers": {
+    "30fbc88ce6419eca77cac493": {
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "independent_answer": "A",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient",
+      "reasoning": "A starts at the earliest standard-member start time and ends before closing. B extends 2 hours beyond closing; C and D start before 12:00. The four proposed intervals are distinct.",
+      "uncertain": false
+    },
+    "380fdc1175ebf9f1a1fe064f": {
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "independent_answer": "D",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient",
+      "reasoning": "The exhibit does not open until 13:00, and the non-member cannot use a pre-13:00 member-only slot in any case. The earliest entry is 13:00, which is an afternoon slot requiring the $50 guide fee. The options differ by entry time and/or fee.",
+      "uncertain": false
+    },
+    "383a02030f3ae19a1131afe4": {
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "independent_answer": "B",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient",
+      "reasoning": "B starts before 14:00 and lasts exactly 3 hours, ending within operating hours. A starts before 14:00 but lasts 3.5 hours. C and D start at or after 14:00 but each lasts 2.5 hours, exceeding the 2-hour cap. The intervals are distinct even where durations coincide.",
+      "uncertain": false
+    },
+    "4ae9e9a68f388d49ed28cb1b": {
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "independent_answer": "A",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient",
+      "reasoning": "The 09:00-12:00 Room A booking blocks any overlapping Room B booking. A begins at the boundary when that booking ends and runs for 2 hours inside Room B hours. B, C, and D all overlap the blocked window. The intervals are distinct.",
+      "uncertain": false
+    },
+    "812cbcbead7101f2679d0851": {
+      "choice_judgments": {
+        "A": "correct",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "independent_answer": "unavailable",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "insufficient",
+      "reasoning": "Both A and D are impossible under consecutive 90-minute slots. Two slots starting at 15:00 end at 18:00, not 17:30; three slots starting at 10:30 end at 15:00, not 14:30. B is the final permitted one-slot reservation, and C is two complete morning slots. The rules suffice to classify each distinct option, but two options answer the singular question.",
+      "uncertain": true
+    },
+    "9ad65361a62900d50a7a7bc7": {
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "correct",
+        "D": "incorrect"
+      },
+      "independent_answer": "C",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient",
+      "reasoning": "C lasts exactly 4 hours and ends at 14:00, well before the 16:30 latest permitted end. A lasts 5 hours; B lasts 4 hours 15 minutes and ends too late at 16:45; D ends at closing rather than at least 30 minutes before it. The intervals are distinct.",
+      "uncertain": false
+    },
+    "afbb61415601fa823615197d": {
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "independent_answer": "B",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient",
+      "reasoning": "The public interval in B is 3 hours 45 minutes, with 15 minutes of setup and cleanup inside operating hours. A has 6 public hours, C has 5 hours 45 minutes, and D has 5 hours 15 minutes, each exceeding the 5-hour cap. All four reservations specify different intervals.",
+      "uncertain": false
+    },
+    "b9b8e66e75ce4bef532ce5d3": {
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "correct",
+        "C": "incorrect",
+        "D": "incorrect"
+      },
+      "independent_answer": "B",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient",
+      "reasoning": "A 09:00 start with a 4-hour duration ends at 13:00, making B valid. A and C exceed the duration cap. D states a 4-hour duration and a 13:30 end, which would require a 09:30 start; a 09:00 start ending at 13:30 lasts 4.5 hours. Thus D is not a valid 09:00 reservation. Each option is a distinct proposed reservation.",
+      "uncertain": false
+    },
+    "d3edfed02f79e0501f1fb039": {
+      "choice_judgments": {
+        "A": "correct",
+        "B": "correct",
+        "C": "correct",
+        "D": "correct"
+      },
+      "independent_answer": "unavailable",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "insufficient",
+      "reasoning": "All four reservations fit 10:00-18:00. B lasts only 2 hours and needs no advance notice. A, C, and D exceed 3 hours, but a request at 09:00 today gives at least 25 hours of notice even for the earliest listed tomorrow start (D at 10:00); their later starts give still more. All four distinct options are accepted, so the singular question has no unique answer.",
+      "uncertain": true
+    },
+    "d59c1932fc40ca072745ea89": {
+      "choice_judgments": {
+        "A": "incorrect",
+        "B": "incorrect",
+        "C": "incorrect",
+        "D": "correct"
+      },
+      "independent_answer": "D",
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "premise_sufficiency": "sufficient",
+      "reasoning": "D fills the gap from 12:00 to 14:00, touching confirmed bookings only at their endpoints. A overlaps the 14:00-16:00 booking from 14:00 to 15:00; B overlaps it from 15:00 to 16:00; C overlaps the 10:00-12:00 booking from 11:00 to 12:00. The intervals are distinct.",
+      "uncertain": false
+    }
+  },
+  "clarification_provenance": {
+    "changed_field": "premise_sufficiency on two unavailable items only",
+    "clarification_sha256": "5907e0704b7f0d8fd958ef9c138602d118ac6242bf1c9bfb24c63e13f1149d72",
+    "original_sha256": "2ee8de7e71caeaa074a50304954084d79891e79bcf339a051070a17378572729"
+  }
+}

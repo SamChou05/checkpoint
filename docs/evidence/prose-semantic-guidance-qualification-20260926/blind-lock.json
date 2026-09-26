@@ -1,0 +1,14 @@
+{
+  "artifact_sha256": {
+    "blind-private-map.json": "7878cbfaa29162fdbeca67e71a5caaa5f60aa354f4b12a8ab4f3b01ec571cb6f",
+    "blind-review-a.json": "864993b1cd721e14aa25b06d492639768f7d85cd8e0657428219378dee6ef29b",
+    "blind-review-b.json": "a3ec6f7701220b108300fcfd8663fdbdb2ca7f5dac7094ceb047726d5259d4a3",
+    "blind-worksheet.json": "611d7a52a624448451031b8b07574e6057c125304847e92aacf9a06b0345d53d",
+    "capture.json": "29883bdbd2be23afe15527adc6a9f199a0cb79c13c6a0203adfb903ddd38ab1a",
+    "plan.json": "a3207520e2c38e914f50a7f552a815a37f5618bcceaf723bf4479aa22c54b3cf"
+  },
+  "locked_at_utc": "2026-09-26T19:59:13.259761+00:00",
+  "reviewed_ids": 20,
+  "scope": "Two independent keyless reviews fixed before author-key, explanation, or arm reveal.",
+  "version": 1
+}

@@ -1,0 +1,492 @@
+{
+  "worksheet_sha256": "611d7a52a624448451031b8b07574e6057c125304847e92aacf9a06b0345d53d",
+  "answers": {
+    "04f2dfbf87fea8a3": {
+      "literal_task": "Determine the exact string assigned by a conditional expression.",
+      "needed_premises": [
+        "The condition 4 > 6 is false.",
+        "A conditional expression selects its else operand when its condition is false."
+      ],
+      "choice_statuses": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "A",
+      "uncertain": false,
+      "decisive_reasoning": "The else operand is the string \"low\"; no Boolean or None is assigned."
+    },
+    "0bd5475589a31413": {
+      "literal_task": "Identify a sentence with standard written American English subject–verb agreement.",
+      "needed_premises": [
+        "The head of the subject is singular “stack”; the following prepositional phrases do not change its number.",
+        "The four choices differ in verb form and/or aspect."
+      ],
+      "choice_statuses": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "A",
+      "uncertain": false,
+      "decisive_reasoning": "“Needs” agrees with “stack.” The other choices use plural “are,” “were,” or “need” for that singular subject."
+    },
+    "2bdcbf392444eb8c": {
+      "literal_task": "Evaluate the exact value of a Python 3 and-chain.",
+      "needed_premises": [
+        "Python and evaluates left to right and returns the first false operand, or the final operand if all are truthy.",
+        "1 and the nonempty string are truthy."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "C",
+      "uncertain": false,
+      "decisive_reasoning": "Both earlier operands are truthy, so the final integer 42 is returned. Truthiness does not convert the result to True."
+    },
+    "2c1708a6b666f103": {
+      "literal_task": "Evaluate a Python 3 or-expression with a potentially failing right operand.",
+      "needed_premises": [
+        "Python or evaluates left to right and returns the first truthy operand.",
+        "The nonempty string is truthy, so the right operand is not evaluated."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "C",
+      "uncertain": false,
+      "decisive_reasoning": "The expression returns the exact string \"go\"; the division by zero is skipped."
+    },
+    "40da57479ec1d624": {
+      "literal_task": "Identify revision(s) whose reference for the disappointment is unambiguous.",
+      "needed_premises": [
+        "“These events” explicitly refers to the two preceding events.",
+        "In D, “this” can refer to the sole preceding event, the resignation; D also asserts that it caused cancellation.",
+        "The prompt asks for unambiguous reference, without forbidding a causal change."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "supported"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "unavailable",
+      "uncertain": true,
+      "decisive_reasoning": "B names both events. D also makes the reference to the resignation clear by placing “this” immediately after that sole event, while adding a causal claim. Because the literal criterion is reference clarity, both qualify; the prompt does not uniquely warrant one letter."
+    },
+    "4b0f2023411f09fd": {
+      "literal_task": "Select the auxiliary that correctly agrees in a neither–nor construction and precedes “seen.”",
+      "needed_premises": [
+        "For neither–nor with unequal numbers, standard agreement normally follows the nearer subject.",
+        "The nearer subject “store manager” is singular.",
+        "Present perfect uses has/have plus seen."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "C",
+      "uncertain": false,
+      "decisive_reasoning": "“Has seen” agrees with singular “store manager”; are/were seen changes the construction and have seen mismatches the nearer subject."
+    },
+    "5144289266879764": {
+      "literal_task": "Choose the verb agreeing with the head of a singular subject phrase.",
+      "needed_premises": [
+        "“Stack” is singular; “of old newspapers” is a modifier.",
+        "The required verb is followed by “blocking.”"
+      ],
+      "choice_statuses": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "A",
+      "uncertain": false,
+      "decisive_reasoning": "“The stack ... is blocking” has singular agreement. The other options are plural auxiliaries."
+    },
+    "77c4d6de7377c492": {
+      "literal_task": "Evaluate bool of a nonempty Python list.",
+      "needed_premises": [
+        "A Python list is truthy if it contains at least one element, regardless of the elements’ truth values.",
+        "bool returns a Boolean."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "B",
+      "uncertain": false,
+      "decisive_reasoning": "The list has three elements, so bool returns True even though each element is falsy."
+    },
+    "809cbbb01437a413": {
+      "literal_task": "Determine the exact value assigned to y by a Python conditional expression.",
+      "needed_premises": [
+        "An empty string is falsy.",
+        "With a falsy condition, the else operand is selected."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "supported"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "D",
+      "uncertain": false,
+      "decisive_reasoning": "x is empty and falsy, so y receives the string \"empty\"."
+    },
+    "8a3f978034c17d4f": {
+      "literal_task": "Find a revision that fixes the ambiguous possessor of the presentation.",
+      "needed_premises": [
+        "Both director and assistant can antecede “his” in the original.",
+        "Naming the assistant as possessor resolves the reference.",
+        "“Their” can refer to either person under singular-they usage."
+      ],
+      "choice_statuses": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "A",
+      "uncertain": false,
+      "decisive_reasoning": "A names the assistant as the presentation’s owner. B leaves a possible singular-they ambiguity, and C/D retain ambiguous “his.”"
+    },
+    "ab2758d2a9e04669": {
+      "literal_task": "Evaluate the exact value of a Python 3 and-chain.",
+      "needed_premises": [
+        "Python and returns the first falsy operand or the final operand.",
+        "3 and \"go\" are truthy."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "B",
+      "uncertain": false,
+      "decisive_reasoning": "The final list [1, 2] is returned without Boolean conversion."
+    },
+    "b396430b3b44e7c7": {
+      "literal_task": "Evaluate the exact value of a Python 3 or-chain whose operands are all falsy.",
+      "needed_premises": [
+        "Python or returns the first truthy operand, or its final operand if none is truthy.",
+        "0, None, and the empty string are all falsy."
+      ],
+      "choice_statuses": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "A",
+      "uncertain": false,
+      "decisive_reasoning": "All operands are falsy, so the expression returns its final operand, the empty string, rather than 0, False, or None."
+    },
+    "bbf2073da4882bd6": {
+      "literal_task": "Evaluate Python bool on a one-element list.",
+      "needed_premises": [
+        "A nonempty list is truthy, including one whose element is 0.",
+        "bool returns True or False, not the list or its element."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "B",
+      "uncertain": false,
+      "decisive_reasoning": "[0] has one element, so bool([0]) is True."
+    },
+    "c30999770f82d56b": {
+      "literal_task": "Find a revision that makes the referent of the person asking questions explicit.",
+      "needed_premises": [
+        "The original “he” could denote Marcus or the client.",
+        "Repeating “Marcus” identifies the questioner.",
+        "Singular “they” can still denote either person."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "B",
+      "uncertain": false,
+      "decisive_reasoning": "Only B names Marcus as the questioner. A retains “he,” C substitutes an ambiguous “they,” and D removes the named antecedent without identifying its “he.”"
+    },
+    "c53e9503937bb462": {
+      "literal_task": "Choose the auxiliary in a neither–nor subject followed by “completed.”",
+      "needed_premises": [
+        "Standard neither–nor agreement normally follows the nearer subject.",
+        "The nearer subject “interns” is plural.",
+        "Present perfect uses have/has plus completed."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "C",
+      "uncertain": false,
+      "decisive_reasoning": "“Have completed” agrees with plural “interns.” The singular auxiliaries do not."
+    },
+    "d558acd0104eb506": {
+      "literal_task": "Evaluate the exact value of a Python 3 and-chain with a false middle operand.",
+      "needed_premises": [
+        "Python and evaluates left to right and returns its first falsy operand.",
+        "5 is truthy and 0 is falsy; the last operand is skipped."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "C",
+      "uncertain": false,
+      "decisive_reasoning": "The result is integer 0, distinct from Boolean False, and \"skip\" is never evaluated."
+    },
+    "ebf5c1bc8b29a4e8": {
+      "literal_task": "Identify the standard American singular verb form when “jury” acts as one unit.",
+      "needed_premises": [
+        "Under the stated single-unit reading in standard written American English, “jury” takes singular agreement.",
+        "Plural agreement can occur with member-focused readings or in other English varieties, which the stem does not select."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "B",
+      "uncertain": false,
+      "decisive_reasoning": "“The jury was unable” has the requested singular agreement. The other choices use plural auxiliaries and do not satisfy the specified unit reading."
+    },
+    "eda925a91e4ec487": {
+      "literal_task": "Assess verb forms after “The jury” in standard written American English without an explicit unit/member reading.",
+      "needed_premises": [
+        "Singular “jury is” is standard on a unit reading.",
+        "Plural agreement with collective nouns is dialect- and construal-sensitive, especially on a member reading.",
+        "“For more than six hours” can describe a planned or ongoing duration with “is,” or an elapsed duration with a perfect/progressive form."
+      ],
+      "choice_statuses": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "supported",
+        "D": "uncertain"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "unavailable",
+      "uncertain": true,
+      "decisive_reasoning": "C is grammatical for a singular jury, including a planned duration. A, B, and D can be grammatical under member-focused collective agreement in some usage; the stem does not fix that reading or temporal context. A single letter is therefore not fully warranted by the literal wording."
+    },
+    "edca6a1c88539d59": {
+      "literal_task": "Evaluate a Python 3 or-chain that begins with a truthy string.",
+      "needed_premises": [
+        "Python or returns the first truthy operand and short-circuits.",
+        "The nonempty string \"ready\" is truthy."
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "C",
+      "uncertain": false,
+      "decisive_reasoning": "The result is the exact string \"ready\"; the later operands are not evaluated."
+    },
+    "fa499be1bd3e1b81": {
+      "literal_task": "Identify a sentence with an unambiguous pronoun antecedent.",
+      "needed_premises": [
+        "In B, “it” refers to the previously introduced report.",
+        "In A and D, either named person can antecede the personal pronoun.",
+        "In C, both box and shelf are singular possible antecedents for “it.”"
+      ],
+      "choice_statuses": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "pair_relations": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "independent_answer": "B",
+      "uncertain": false,
+      "decisive_reasoning": "B supplies only the report as an available earlier object for “it.” A, C, and D each offer two plausible antecedents."
+    }
+  }
+}

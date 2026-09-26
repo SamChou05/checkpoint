@@ -1,0 +1,117 @@
+{
+  "version": 2,
+  "capture_sha256": "21b6cce98529136db6632cb511380c8a90c630282b0047427fda1e10b238cdd4",
+  "plan_sha256": "b0e1a1f1f970a9ca859c332b0d58622be2efe9a4824744a2336a5e3e4bec9380",
+  "items": [
+    {
+      "id": "afbb61415601fa823615197d",
+      "requested_slot": true,
+      "stem": "The Onyx Chamber runs 08:00-22:00. Reservations require 15-minute setup before the public start time. Cleanup requires 15 minutes after the public end. Public-facing time is limited to 5 hours maximum. Which reservation is valid?",
+      "choices": {
+        "A": "Setup 09:00, public 09:15-15:15, cleanup 15:15-15:30",
+        "B": "Setup 10:00, public 10:15-14:00, cleanup 14:00-14:15",
+        "C": "Setup 08:00, public 08:15-14:00, cleanup 14:00-14:15",
+        "D": "Setup 12:00, public 12:15-17:30, cleanup 17:30-17:45"
+      }
+    },
+    {
+      "id": "383a02030f3ae19a1131afe4",
+      "requested_slot": true,
+      "stem": "The Amber Hall operates 10:00-18:00. If a reservation starts before 14:00, it may last up to 3 hours. If it starts at or after 14:00, it may last up to 2 hours. Which reservation is valid?",
+      "choices": {
+        "A": "11:00 to 14:30",
+        "B": "13:00 to 16:00",
+        "C": "14:00 to 16:30",
+        "D": "15:00 to 17:30"
+      }
+    },
+    {
+      "id": "30fbc88ce6419eca77cac493",
+      "requested_slot": true,
+      "stem": "The Jade Gallery accepts reservations from 08:00 to 20:00. Priority members may book any slot. Standard members may only book slots starting at or after 12:00. Which reservation is valid for a standard member?",
+      "choices": {
+        "A": "12:00 to 14:00",
+        "B": "20:00 to 22:00",
+        "C": "08:00 to 10:00",
+        "D": "11:30 to 13:30"
+      }
+    },
+    {
+      "id": "380fdc1175ebf9f1a1fe064f",
+      "requested_slot": true,
+      "stem": "The Special Exhibit opens at 13:00. Morning slots (before 13:00) are reserved for members only; afternoon slots require a guide fee of $50. A non-member arrives at 12:30 wanting the earliest possible slot. What applies?",
+      "choices": {
+        "A": "Can enter at 12:30 with no fee",
+        "B": "Can enter at 12:30 by paying $50",
+        "C": "Must wait until 13:00 with no fee",
+        "D": "Must wait until 13:00 and pay $50"
+      }
+    },
+    {
+      "id": "b9b8e66e75ce4bef532ce5d3",
+      "requested_slot": true,
+      "stem": "The North Wing opens at 09:00 and closes at 17:00. A reservation must end at least 30 minutes before closing. The maximum duration is 4 hours. Which 09:00 reservation is valid?",
+      "choices": {
+        "A": "A 5-hour reservation ending at 14:00",
+        "B": "A 4-hour reservation ending at 13:00",
+        "C": "A 4.5-hour reservation ending at 13:30",
+        "D": "A 4-hour reservation ending at 13:30"
+      }
+    },
+    {
+      "id": "812cbcbead7101f2679d0851",
+      "requested_slot": true,
+      "stem": "The Rotunda has consecutive 90-minute slots starting at 09:00. A reservation can span multiple slots if continuous. The last slot must start by 16:30. Which reservation is impossible?",
+      "choices": {
+        "A": "15:00-17:30 (two slots)",
+        "B": "16:30-18:00 (one slot)",
+        "C": "09:00-12:00 (two slots)",
+        "D": "10:30-14:30 (three slots)"
+      }
+    },
+    {
+      "id": "4ae9e9a68f388d49ed28cb1b",
+      "requested_slot": true,
+      "stem": "Room A and Room B share a single attendant. A booking in Room A from 09:00-12:00 blocks Room B during that window. Room B opens at 08:00 and closes at 16:00. When can Room B be reserved for 2 hours?",
+      "choices": {
+        "A": "12:00-14:00",
+        "B": "08:00-10:00",
+        "C": "10:00-12:00",
+        "D": "11:00-13:00"
+      }
+    },
+    {
+      "id": "d59c1932fc40ca072745ea89",
+      "requested_slot": true,
+      "stem": "The Ruby Room opens at 09:00. Existing reservations take precedence: a new reservation is rejected if it overlaps any confirmed reservation. Confirmed: 10:00-12:00 and 14:00-16:00. Which new reservation is accepted?",
+      "choices": {
+        "A": "13:00 to 15:00",
+        "B": "15:00 to 17:00",
+        "C": "11:00 to 13:00",
+        "D": "12:00 to 14:00"
+      }
+    },
+    {
+      "id": "d3edfed02f79e0501f1fb039",
+      "requested_slot": true,
+      "stem": "The East Gallery opens at 10:00 and closes at 18:00. Reservations over 3 hours require 24-hour advance notice. A group submits a request at 09:00 today for tomorrow. Which reservation is accepted?",
+      "choices": {
+        "A": "A 3.5-hour reservation from 12:00 to 15:30",
+        "B": "A 2-hour reservation from 10:00 to 12:00",
+        "C": "A 4-hour reservation from 14:00 to 18:00",
+        "D": "A 4-hour reservation from 10:00 to 14:00"
+      }
+    },
+    {
+      "id": "9ad65361a62900d50a7a7bc7",
+      "requested_slot": true,
+      "stem": "The Sapphire Wing opens at 09:00 and closes at 17:00. A reservation must end at least 30 minutes before closing. The maximum duration is 4 hours. Which reservation is valid?",
+      "choices": {
+        "A": "09:00 to 14:00",
+        "B": "12:30 to 16:45",
+        "C": "10:00 to 14:00",
+        "D": "13:00 to 17:00"
+      }
+    }
+  ]
+}

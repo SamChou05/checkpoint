@@ -1,0 +1,367 @@
+{
+  "capture_sha256": "70eb44f09e5e47a52d46d69e81db9da8feb3db5d1acd92b1ab0f29a387ba8b41",
+  "requested_slots": 20,
+  "items": [
+    {
+      "id": "04f2dfbf87fea8a3",
+      "prompt": "What value is assigned to label after this Python 3 statement?\n\nlabel = \"high\" if 4 > 6 else \"low\"",
+      "choices": [
+        "\"low\"",
+        "True",
+        "\"high\"",
+        "None"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "0bd5475589a31413",
+      "prompt": "Which of the following sentences is grammatically correct in standard written American English?",
+      "choices": [
+        "The stack of reports on both desks needs to be filed by Friday.",
+        "The stack of reports on both desks are needing to be filed by Friday.",
+        "The stack of reports on both desks were filed on Friday.",
+        "The stack of reports on both desks need to be filed by Friday."
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "2bdcbf392444eb8c",
+      "prompt": "What does the following expression evaluate to in Python 3?\n\n1 and \"yes\" and 42",
+      "choices": [
+        "\"yes\"",
+        "True",
+        "42",
+        "1"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "2c1708a6b666f103",
+      "prompt": "What does the following expression evaluate to in Python 3?\n\n\"go\" or (10 // 0)",
+      "choices": [
+        "True",
+        "0",
+        "\"go\"",
+        "ZeroDivisionError is raised"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "40da57479ec1d624",
+      "prompt": "\"The lead researcher resigned unexpectedly and the study was canceled. This disappointed the sponsors.\" The word \"This\" has an unclear reference. Which revision makes the reference unambiguous?",
+      "choices": [
+        "The lead researcher resigned unexpectedly and the study was canceled. They disappointed the sponsors.",
+        "The lead researcher resigned unexpectedly and the study was canceled. These events disappointed the sponsors.",
+        "The lead researcher resigned unexpectedly and the study was canceled, and this had disappointed the sponsors.",
+        "The lead researcher resigned unexpectedly, and this canceled the study, disappointing the sponsors."
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "4b0f2023411f09fd",
+      "prompt": "Choose the correct verb form: 'Neither the cashiers nor the store manager _____ seen the customer's receipt.'",
+      "choices": [
+        "are",
+        "have",
+        "has",
+        "were"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "5144289266879764",
+      "prompt": "Choose the correct verb form to complete this sentence: 'The stack of old newspapers _____ blocking the emergency exit.'",
+      "choices": [
+        "is",
+        "have been",
+        "are",
+        "were"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "77c4d6de7377c492",
+      "prompt": "What does the following expression evaluate to in Python 3?\n\nbool([0, False, \"\"])",
+      "choices": [
+        "None",
+        "True",
+        "False",
+        "0"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "809cbbb01437a413",
+      "prompt": "What is the value of y after the following Python 3 code executes?\n\nx = \"\"\ny = x if x else \"empty\"",
+      "choices": [
+        "\"\"",
+        "True",
+        "False",
+        "\"empty\""
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "8a3f978034c17d4f",
+      "prompt": "The sentence 'The director told the assistant that his presentation ran too long' is ambiguous. Which revision makes the pronoun reference unambiguous?",
+      "choices": [
+        "The director told the assistant that the assistant's presentation ran too long.",
+        "The director told the assistant that their presentation ran too long.",
+        "The director told his assistant that his presentation ran too long.",
+        "The director informed the assistant: his presentation ran too long."
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "ab2758d2a9e04669",
+      "prompt": "What does the following expression evaluate to in Python 3?\n\n3 and \"go\" and [1, 2]",
+      "choices": [
+        "\"go\"",
+        "[1, 2]",
+        "True",
+        "3"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "b396430b3b44e7c7",
+      "prompt": "What does the following expression evaluate to in Python 3?\n\n0 or None or \"\"",
+      "choices": [
+        "\"\"",
+        "0",
+        "False",
+        "None"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "bbf2073da4882bd6",
+      "prompt": "What does bool([0]) evaluate to in Python 3?",
+      "choices": [
+        "0",
+        "True",
+        "[0]",
+        "False"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "c30999770f82d56b",
+      "prompt": "\"After Marcus briefed the client, he had additional questions about the timeline.\" The pronoun \"he\" is ambiguous. Which revision makes the reference unambiguous?",
+      "choices": [
+        "After Marcus briefed the client, he had some further questions about the timeline.",
+        "After Marcus briefed the client, Marcus had additional questions about the timeline.",
+        "After Marcus briefed the client, they had additional questions about the timeline.",
+        "After briefing the client, he had additional questions about the timeline."
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "c53e9503937bb462",
+      "prompt": "\"Neither the supervisor nor the interns ___ completed the mandatory training.\" Which verb form correctly completes this sentence in standard written American English?",
+      "choices": [
+        "is",
+        "has",
+        "have",
+        "was"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "d558acd0104eb506",
+      "prompt": "What does the following expression evaluate to in Python 3?\n\n5 and 0 and \"skip\"",
+      "choices": [
+        "\"skip\"",
+        "5",
+        "0",
+        "False"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "ebf5c1bc8b29a4e8",
+      "prompt": "In standard written American English, which sentence uses the correct verb form for a collective noun acting as a single unit?",
+      "choices": [
+        "The jury were unable to reach a unanimous decision after two days of deliberation.",
+        "The jury was unable to reach a unanimous decision after two days of deliberation.",
+        "The jury have been unable to reach a unanimous decision after two days of deliberation.",
+        "The jury are expected to announce their verdict this afternoon."
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "eda925a91e4ec487",
+      "prompt": "Choose the correct verb form for this sentence in standard written American English: 'The jury _____ deliberating for more than six hours.'",
+      "choices": [
+        "were",
+        "have been",
+        "is",
+        "are"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "edca6a1c88539d59",
+      "prompt": "What does the following expression evaluate to in Python 3?\n\n\"ready\" or [] or 42",
+      "choices": [
+        "[]",
+        "42",
+        "\"ready\"",
+        "True"
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    },
+    {
+      "id": "fa499be1bd3e1b81",
+      "prompt": "Which of the following sentences has unambiguous pronoun reference?",
+      "choices": [
+        "When Tom called his brother, he was already on his way to the airport.",
+        "Marcus submitted the report and then archived it on the shared drive.",
+        "After the box fell off the shelf, it was cracked down the middle.",
+        "The teacher told the student that she needed to revise the essay."
+      ],
+      "shape": "readable",
+      "blind_review": {
+        "literal_task": null,
+        "premises": null,
+        "four_choice_judgments": null,
+        "six_pair_judgments": null,
+        "uncertainty": null
+      }
+    }
+  ],
+  "instruction": "Lock literal-task answers, all four choice judgments and six pair meanings before opening author keys, explanations or arm mapping. Uncertainty and missing rows fail."
+}

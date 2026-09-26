@@ -6,8 +6,10 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,351 backend tests** after the optional
-timeout, fraction-distractor, compiled-surplus, scalar-explanation and author-cardinality improvements. The latest
+Current source verification passes **1,357 backend tests** and the latest full
+iOS suite completed **1,058 tests with three existing skips** after the optional
+timeout, fraction-distractor, compiled-surplus, scalar-explanation,
+author-cardinality, numeric-choice and saved-inventory improvements. The latest
 [full-worker trial](evidence/constructed-sonnet-long-read-qualification-20260922/RESULTS.md)
 still fails qualification at 13/15 returns and three numerical compiled items
 where four were required. Its frozen source excludes the newer fraction-priority
@@ -28,11 +30,20 @@ the September 11 legacy package. No deployment or inventory transition has occur
 | Legacy client code inferred correctness from prose. The substring `correct` also occurs in `incorrect`, so distractor feedback could overwrite the explicit answer key. | [Highlighting reproduction and permutation tests](evidence/answer-highlighting-20260921.md). | The explicit structured key is authoritative. Explanation text cannot replace it. Text-based grading preserves the key across all 24 display orders. |
 | Old inventory and position-dependent feedback could outlive the assumptions used when generated. | [Cached inventory audit](evidence/question-reliability-release-20260922/CACHED_INVENTORY.md); the fresh English capture contained “Only the first choice” despite app shuffling. | All practice tiers enforce the configured client minimum, currently revision 2. Raising it to native revision 4 remains a coordinated rollout step; old history is preserved. Final review rejects display-position references, while retaining quoted subject literals and ordinary numeric values. |
 | Parenthesized display labels escaped the existing feedback guard. | The fresh Sonnet author trial emitted “In (b),” for an answer that moves after shuffling. | The shared guard now rejects unbound parenthesized choice references in authored and reviewer teaching. Regression tests preserve actual stem subparts, exact quoted literals and mathematical variables. |
+| Some numeric choices are visibly or mathematically identical despite different strings; some old saved MCQs carry invalid keys or colliding choices. | Scalar controls for `2`/`two` and `1/4`/`25%`, invisible-character controls, and stored-inventory tests. | Bounded numeric-value and visible-choice guards reject those exact classes. iOS quarantines old saved MCQs with malformed keys or visible-choice collisions before serving practice; historical attempts remain. This is not a general prose-equivalence proof. |
+| A required-key author schema can force five rows without making all five correct or teachable. | [Frozen count-bound trial](evidence/author-count-bound-qualification-20260926/RESULTS.md): both prose arms were structurally complete; the candidate had five one-answer rows but one false explanation, while two baseline rows had multiple valid choices. Five constructed typed rows included two compiler rejections. | Count-bound remains worker-only opt-in. Existing exact compiler rejects invalid typed tasks; semantic authoring still needs independent assessment. No default or deployment change followed the trial. |
 
 These changes make structure, key membership, exact identity and admission rules
 deterministic. They do not make a model's factual statements deterministic or
 universally correct. Schema-valid output can still describe an ambiguous question
 or attach a convincing false explanation to the right answer.
+
+The separately frozen [prose semantic prompt comparison](evidence/prose-semantic-guidance-qualification-20260926/RESULTS.md)
+confirmed that limitation on fresh calls. The candidate added explicit exception
+and distractor guidance, yet scored 7/10 independently usable authored rows
+against 6/10 baseline and regressed on Python from 4/5 to 3/5. It still wrote
+false universal Boolean rules and an ambiguous collective-noun item. It failed
+its frozen qualification gates, so the candidate prompt was not promoted.
 
 ## Model experiments
 

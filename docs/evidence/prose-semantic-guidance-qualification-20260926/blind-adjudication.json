@@ -1,0 +1,151 @@
+{
+  "blind_lock_sha256": "b38b67a9272a52def9716c9a5bce8656e738dfdead17c828cbd2592c8034bcd4",
+  "items": {
+    "04f2dfbf87fea8a3": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "A",
+      "reason": "The else operand is the string \"low\"; no Boolean or None is assigned.",
+      "unique_literal_answer": true
+    },
+    "0bd5475589a31413": {
+      "diversity_note": "AD express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer.",
+      "keyless_usable": true,
+      "literal_answer": "A",
+      "reason": "\u201cNeeds\u201d agrees with \u201cstack.\u201d The other choices use plural \u201care,\u201d \u201cwere,\u201d or \u201cneed\u201d for that singular subject.",
+      "unique_literal_answer": true
+    },
+    "2bdcbf392444eb8c": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "C",
+      "reason": "Both earlier operands are truthy, so the final integer 42 is returned. Truthiness does not convert the result to True.",
+      "unique_literal_answer": true
+    },
+    "2c1708a6b666f103": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "C",
+      "reason": "The expression returns the exact string \"go\"; the division by zero is skipped.",
+      "unique_literal_answer": true
+    },
+    "40da57479ec1d624": {
+      "diversity_note": null,
+      "keyless_usable": false,
+      "literal_answer": "unavailable",
+      "reason": "Both B and D are defensible revisions of the stated reference; the item asks for one.",
+      "unique_literal_answer": false
+    },
+    "4b0f2023411f09fd": {
+      "diversity_note": "BC express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer.",
+      "keyless_usable": true,
+      "literal_answer": "C",
+      "reason": "\u201cHas seen\u201d agrees with singular \u201cstore manager\u201d; are/were seen changes the construction and have seen mismatches the nearer subject.",
+      "unique_literal_answer": true
+    },
+    "5144289266879764": {
+      "diversity_note": "AC express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer.",
+      "keyless_usable": true,
+      "literal_answer": "A",
+      "reason": "\u201cThe stack ... is blocking\u201d has singular agreement. The other options are plural auxiliaries.",
+      "unique_literal_answer": true
+    },
+    "77c4d6de7377c492": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "B",
+      "reason": "The list has three elements, so bool returns True even though each element is falsy.",
+      "unique_literal_answer": true
+    },
+    "809cbbb01437a413": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "D",
+      "reason": "x is empty and falsy, so y receives the string \"empty\".",
+      "unique_literal_answer": true
+    },
+    "8a3f978034c17d4f": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "A",
+      "reason": "A names the assistant as the presentation\u2019s owner. B leaves a possible singular-they ambiguity, and C/D retain ambiguous \u201chis.\u201d",
+      "unique_literal_answer": true
+    },
+    "ab2758d2a9e04669": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "B",
+      "reason": "The final list [1, 2] is returned without Boolean conversion.",
+      "unique_literal_answer": true
+    },
+    "b396430b3b44e7c7": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "A",
+      "reason": "All operands are falsy, so the expression returns its final operand, the empty string, rather than 0, False, or None.",
+      "unique_literal_answer": true
+    },
+    "bbf2073da4882bd6": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "B",
+      "reason": "[0] has one element, so bool([0]) is True.",
+      "unique_literal_answer": true
+    },
+    "c30999770f82d56b": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "B",
+      "reason": "Only B names Marcus as the questioner. A retains \u201che,\u201d C substitutes an ambiguous \u201cthey,\u201d and D removes the named antecedent without identifying its \u201che.\u201d",
+      "unique_literal_answer": true
+    },
+    "c53e9503937bb462": {
+      "diversity_note": "BC express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer.",
+      "keyless_usable": true,
+      "literal_answer": "C",
+      "reason": "\u201cHave completed\u201d agrees with plural \u201cinterns.\u201d The singular auxiliaries do not.",
+      "unique_literal_answer": true
+    },
+    "d558acd0104eb506": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "C",
+      "reason": "The result is integer 0, distinct from Boolean False, and \"skip\" is never evaluated.",
+      "unique_literal_answer": true
+    },
+    "ebf5c1bc8b29a4e8": {
+      "diversity_note": "AB express a similar underlying proposition, but differ in the exact agreement or auxiliary form being tested. Mark as a weak-diversity distractor, not a second grammatical answer.",
+      "keyless_usable": true,
+      "literal_answer": "B",
+      "reason": "\u201cThe jury was unable\u201d has the requested singular agreement. The other choices use plural auxiliaries and do not satisfy the specified unit reading.",
+      "unique_literal_answer": true
+    },
+    "eda925a91e4ec487": {
+      "diversity_note": null,
+      "keyless_usable": false,
+      "literal_answer": "unavailable",
+      "reason": "The sentence omits time-frame and unit-versus-members premises needed to choose a single jury verb form.",
+      "unique_literal_answer": false
+    },
+    "edca6a1c88539d59": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "C",
+      "reason": "The result is the exact string \"ready\"; the later operands are not evaluated.",
+      "unique_literal_answer": true
+    },
+    "fa499be1bd3e1b81": {
+      "diversity_note": null,
+      "keyless_usable": true,
+      "literal_answer": "B",
+      "reason": "B supplies only the report as an available earlier object for \u201cit.\u201d A, C, and D each offer two plausible antecedents.",
+      "unique_literal_answer": true
+    }
+  },
+  "locked_at_utc": "2026-09-26T20:00:51.340623+00:00",
+  "review_a_sha256": "864993b1cd721e14aa25b06d492639768f7d85cd8e0657428219378dee6ef29b",
+  "review_b_sha256": "a3ec6f7701220b108300fcfd8663fdbdb2ca7f5dac7094ceb047726d5259d4a3",
+  "rule": "Answer the literal form/reference/value task. A wrong inflection may state a similar proposition while remaining a distinct tested form; retain that as a distractor-diversity concern rather than a second correct form. Unresolved multiple defensible revisions or missing premises fail. No arm, key, explanation, or author metadata consulted.",
+  "version": 1,
+  "worksheet_sha256": "611d7a52a624448451031b8b07574e6057c125304847e92aacf9a06b0345d53d"
+}

@@ -1,0 +1,467 @@
+{
+  "worksheet_sha256": "611d7a52a624448451031b8b07574e6057c125304847e92aacf9a06b0345d53d",
+  "assessor": "blind-review-a",
+  "scope": "Independent literal assessment from displayed worksheet only. No author keys, explanations, arm map, provider data, or candidate data consulted.",
+  "answers": {
+    "04f2dfbf87fea8a3": {
+      "literal_task": "Determine exact assigned Python value",
+      "required_premises": "4 > 6 is false; a conditional expression evaluates only the selected branch.",
+      "decisive_reasoning": "The else string low is assigned; there is no bool conversion.",
+      "four_choice_judgments": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "A",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "0bd5475589a31413": {
+      "literal_task": "Identify a grammatically correct sentence in written American English",
+      "required_premises": "Stack is the singular subject; reports and desks are inside modifiers.",
+      "decisive_reasoning": "A has correct singular needs; B/C/D use plural verbs, and B also uses an awkward progressive stative need. D nevertheless says the same thing as A.",
+      "four_choice_judgments": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "equivalent",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "AD express the same filing obligation despite different verb agreement; B has progressive aspect and C describes a past filing, so all other pairs differ.",
+      "independent_answer": "unavailable",
+      "uncertain": true,
+      "substantive_uncertainty": "A is the sole grammatical choice, but D is a semantically equivalent alternative; the stipulated no-equivalent-choice condition blocks an independent answer."
+    },
+    "2bdcbf392444eb8c": {
+      "literal_task": "Evaluate exact Python and-chain result",
+      "required_premises": "and returns the first false operand or, if all are true, the last operand; 1 and yes are truthy.",
+      "decisive_reasoning": "All operands are truthy, so integer 42 is returned.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "C",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "2c1708a6b666f103": {
+      "literal_task": "Evaluate exact Python or result and order",
+      "required_premises": "or returns its first truthy operand and short-circuits; nonempty go is truthy.",
+      "decisive_reasoning": "The string go is returned; 10 // 0 is not evaluated.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "C",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "40da57479ec1d624": {
+      "literal_task": "Find a revision making the original This unambiguous",
+      "required_premises": "The original offers resignation and cancellation as event referents; this may refer to a preceding event proposition.",
+      "decisive_reasoning": "B names both events explicitly. D has only the resignation preceding this, so the demonstrative naturally denotes that event and makes it the cause of cancellation. A and C retain unclear reference.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "supported"
+      },
+      "six_pair_judgments": {
+        "AB": "uncertain",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "AB is uncertain because They may denote the two events or another plurality. B and D have different causal/content claims; the remaining pairs differ in reference or tense.",
+      "independent_answer": "unavailable",
+      "uncertain": true,
+      "substantive_uncertainty": "B and D are distinct defensible repairs. Excluding D requires an unstated rule against event-denoting this."
+    },
+    "4b0f2023411f09fd": {
+      "literal_task": "Choose correct verb form for neither/nor subject",
+      "required_premises": "Standard proximity agreement follows nearer singular store manager; active perfect seen takes have/has.",
+      "decisive_reasoning": "C has seen agrees. B misagrees; A/D would be passive and also misagree. B and C retain the same perfect-event meaning.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "equivalent",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "BC differ in agreement, but describe the same perfect event. All other pairs differ in voice or tense.",
+      "independent_answer": "unavailable",
+      "uncertain": true,
+      "substantive_uncertainty": "C is the sole grammatically supported choice, but B is meaning-equivalent under the no-equivalent-choice rule."
+    },
+    "5144289266879764": {
+      "literal_task": "Choose correct agreement for stack",
+      "required_premises": "Stack is the singular subject head, not newspapers.",
+      "decisive_reasoning": "A is blocking agrees; plural auxiliaries in B/C/D do not. C conveys the same event as A with wrong agreement.",
+      "four_choice_judgments": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "equivalent",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "AC are the same present-progressive event with different agreement. B adds perfect aspect; D is past.",
+      "independent_answer": "unavailable",
+      "uncertain": true,
+      "substantive_uncertainty": "A is the sole grammatical choice, but C is meaning-equivalent under the no-equivalent-choice rule."
+    },
+    "77c4d6de7377c492": {
+      "literal_task": "Evaluate exact Python bool result",
+      "required_premises": "A nonempty list is truthy regardless of whether its elements are falsy.",
+      "decisive_reasoning": "The three-element list makes bool return True.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "B",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "809cbbb01437a413": {
+      "literal_task": "Determine exact Python value of y",
+      "required_premises": "An empty string is false; the conditional expression selects its else branch.",
+      "decisive_reasoning": "y receives the string empty.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "supported"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "D",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "8a3f978034c17d4f": {
+      "literal_task": "Resolve whose presentation ran long",
+      "required_premises": "Director and assistant are candidate owners; explicit noun repetition fixes one.",
+      "decisive_reasoning": "A names assistant as owner. Their or his in B/C/D can still denote different people.",
+      "four_choice_judgments": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "uncertain",
+        "AC": "uncertain",
+        "AD": "uncertain",
+        "BC": "uncertain",
+        "BD": "uncertain",
+        "CD": "uncertain"
+      },
+      "pair_meaning_reasoning": "Every pair includes at least one unresolved possessive that can overlap another reading or diverge; equivalence is underdetermined.",
+      "independent_answer": "A",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "ab2758d2a9e04669": {
+      "literal_task": "Evaluate exact Python and-chain result",
+      "required_premises": "and returns an operand, not a coerced bool; 3, go, and the nonempty list are truthy.",
+      "decisive_reasoning": "The final list [1, 2] is returned.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "B",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "b396430b3b44e7c7": {
+      "literal_task": "Evaluate exact Python or-chain result",
+      "required_premises": "or returns its last operand when all are false; 0, None, and empty string are false.",
+      "decisive_reasoning": "The final empty string is returned.",
+      "four_choice_judgments": {
+        "A": "supported",
+        "B": "refuted",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "A",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "bbf2073da4882bd6": {
+      "literal_task": "Evaluate exact bool([0]) result",
+      "required_premises": "The enclosing list is nonempty; bool returns a bool object.",
+      "decisive_reasoning": "The result is True despite its false element.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "B",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "c30999770f82d56b": {
+      "literal_task": "Resolve antecedent of he",
+      "required_premises": "Marcus and client could each be he; repeating a proper name identifies one.",
+      "decisive_reasoning": "B explicitly makes Marcus the person with questions. A remains ambiguous, C replaces it with ambiguous they, and D has no named antecedent for he.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "uncertain",
+        "AC": "uncertain",
+        "AD": "uncertain",
+        "BC": "uncertain",
+        "BD": "uncertain",
+        "CD": "uncertain"
+      },
+      "pair_meaning_reasoning": "Ambiguous pronouns can overlap the Marcus reading or diverge; pairwise equivalence involving them is unresolved.",
+      "independent_answer": "B",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "c53e9503937bb462": {
+      "literal_task": "Choose correct active perfect verb for neither/nor subject",
+      "required_premises": "Proximity agreement follows plural interns; completed in active perfect takes have/has.",
+      "decisive_reasoning": "C have completed agrees; B has misagrees; A/D change to passive. B and C still describe the same perfect event.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "equivalent",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "BC describe the same perfect event despite number agreement; passive A/D differ in voice and tense.",
+      "independent_answer": "unavailable",
+      "uncertain": true,
+      "substantive_uncertainty": "C is the sole grammatical choice, but B is meaning-equivalent under the no-equivalent-choice rule."
+    },
+    "d558acd0104eb506": {
+      "literal_task": "Evaluate exact Python and-chain result",
+      "required_premises": "and returns its first false operand; 5 is truthy and integer 0 is false.",
+      "decisive_reasoning": "Integer 0 is returned before skip is evaluated; it is distinct in type from False.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "C",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "ebf5c1bc8b29a4e8": {
+      "literal_task": "Identify correct collective-noun agreement for one unit",
+      "required_premises": "The question expressly says the jury acts as one unit; standard American agreement is singular in that reading.",
+      "decisive_reasoning": "B was agrees. A/C/D use plural verbs; D also shifts to plural their. A and B describe the same past inability.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "equivalent",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "AB have the same past inability proposition despite number agreement; C changes to present perfect and D describes a predicted announcement.",
+      "independent_answer": "unavailable",
+      "uncertain": true,
+      "substantive_uncertainty": "B is the sole grammatical choice for the stipulated unit reading, but A is meaning-equivalent under the no-equivalent-choice rule."
+    },
+    "eda925a91e4ec487": {
+      "literal_task": "Determine whether a unique verb is licensed for the standalone jury sentence",
+      "required_premises": "American jury commonly takes singular agreement as a unit but can take plural for members; the sentence supplies neither time frame nor collective interpretation.",
+      "decisive_reasoning": "Elapsed duration continuing now naturally needs singular has been, absent from choices. A works for past plural-member reading, B for present-perfect plural-member reading, C for singular planned duration, and D for plural planned duration; each requires missing context.",
+      "four_choice_judgments": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "equivalent"
+      },
+      "pair_meaning_reasoning": "CD can denote the same present-progressive deliberation with agreement variation; other pairs differ in tense or aspect.",
+      "independent_answer": "unavailable",
+      "uncertain": true,
+      "substantive_uncertainty": "No choice is secured without inventing a time frame and unit-versus-members reading."
+    },
+    "edca6a1c88539d59": {
+      "literal_task": "Evaluate exact Python or-chain result",
+      "required_premises": "or returns its first truthy operand and short-circuits; ready is nonempty.",
+      "decisive_reasoning": "The string ready is returned; later operands are unvisited.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "refuted",
+        "C": "supported",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "Each pair is distinct as an exact Python 3 value, type, or outcome; matching truthiness or == equality is insufficient for equivalence.",
+      "independent_answer": "C",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    },
+    "fa499be1bd3e1b81": {
+      "literal_task": "Identify unambiguous pronoun reference",
+      "required_premises": "An antecedent ordinarily precedes its pronoun; box and shelf can both be cracked.",
+      "decisive_reasoning": "In B, it means the previously mentioned report; shared drive appears later as destination. A he can be Tom/brother; C it box/shelf; D she teacher/student.",
+      "four_choice_judgments": {
+        "A": "refuted",
+        "B": "supported",
+        "C": "refuted",
+        "D": "refuted"
+      },
+      "six_pair_judgments": {
+        "AB": "distinct",
+        "AC": "distinct",
+        "AD": "distinct",
+        "BC": "distinct",
+        "BD": "distinct",
+        "CD": "distinct"
+      },
+      "pair_meaning_reasoning": "The four sentences refer to different people and events; every cross-sentence pair has distinct meaning.",
+      "independent_answer": "B",
+      "uncertain": false,
+      "substantive_uncertainty": null
+    }
+  }
+}
