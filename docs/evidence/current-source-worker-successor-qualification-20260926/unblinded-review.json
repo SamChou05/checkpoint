@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "status": "joined_after_locked_independent_reviews",
+  "blind_lock_sha256": "f92435f722e6162f4cd56ac4d27a914ca12a7767e7b8bcbbd7c30256df7fad6b",
+  "private_map_sha256": "5dcee1f1359092ce0ee54d3a3c28d0f38fc5c6adc85691c618c34384c358ccfa",
+  "capture_sha256": "c66cb1ba3d2987a361dfa06b1804814663f28a901573dd549a039a14d1b8a00d",
+  "plan_sha256": "1538df6423642f1d79e8e18279fd947bbcb5958ff4ea297137fee82a972ec89e",
+  "items": [
+    {
+      "id": "3ba7305dc674052f55f02727",
+      "job": "quantitative",
+      "original_slot_ordinal": 1,
+      "unavailable": true,
+      "source": null,
+      "explicit_key_display_letter": null,
+      "review_a_letter": "uncertain",
+      "review_b_letter": "uncertain",
+      "both_blind_solutions_match_key": false,
+      "review_a_missing_premises": [
+        "Stem and choices are unavailable in the worksheet."
+      ],
+      "review_b_missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ]
+    },
+    {
+      "id": "b6553b775db479ad2746c6fd",
+      "job": "python",
+      "original_slot_ordinal": 3,
+      "unavailable": false,
+      "source": [
+        "python",
+        0,
+        3
+      ],
+      "explicit_key_display_letter": "A",
+      "review_a_letter": "A",
+      "review_b_letter": "A",
+      "both_blind_solutions_match_key": true,
+      "review_a_missing_premises": [],
+      "review_b_missing_premises": []
+    },
+    {
+      "id": "3fcd334fb1d6d599742a92f4",
+      "job": "python",
+      "original_slot_ordinal": 4,
+      "unavailable": false,
+      "source": [
+        "python",
+        0,
+        4
+      ],
+      "explicit_key_display_letter": "A",
+      "review_a_letter": "A",
+      "review_b_letter": "A",
+      "both_blind_solutions_match_key": true,
+      "review_a_missing_premises": [],
+      "review_b_missing_premises": []
+    },
+    {
+      "id": "8b03beb29794b1a7d32af17d",
+      "job": "mixed",
+      "original_slot_ordinal": 4,
+      "unavailable": true,
+      "source": null,
+      "explicit_key_display_letter": null,
+      "review_a_letter": "uncertain",
+      "review_b_letter": "uncertain",
+      "both_blind_solutions_match_key": false,
+      "review_a_missing_premises": [
+        "Stem and choices are unavailable in the worksheet."
+      ],
+      "review_b_missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ]
+    },
+    {
+      "id": "6ebe7d99d6fdf3b33c8d8bab",
+      "job": "python",
+      "original_slot_ordinal": 2,
+      "unavailable": false,
+      "source": [
+        "python",
+        0,
+        2
+      ],
+      "explicit_key_display_letter": "D",
+      "review_a_letter": "D",
+      "review_b_letter": "D",
+      "both_blind_solutions_match_key": true,
+      "review_a_missing_premises": [],
+      "review_b_missing_premises": []
+    },
+    {
+      "id": "1631f8cdcc4126418f55f75f",
+      "job": "quantitative",
+      "original_slot_ordinal": 0,
+      "unavailable": true,
+      "source": null,
+      "explicit_key_display_letter": null,
+      "review_a_letter": "uncertain",
+      "review_b_letter": "uncertain",
+      "both_blind_solutions_match_key": false,
+      "review_a_missing_premises": [
+        "Stem and choices are unavailable in the worksheet."
+      ],
+      "review_b_missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ]
+    },
+    {
+      "id": "4b895d2516b7db9c4c2b73d7",
+      "job": "python",
+      "original_slot_ordinal": 1,
+      "unavailable": false,
+      "source": [
+        "python",
+        0,
+        1
+      ],
+      "explicit_key_display_letter": "B",
+      "review_a_letter": "B",
+      "review_b_letter": "B",
+      "both_blind_solutions_match_key": true,
+      "review_a_missing_premises": [],
+      "review_b_missing_premises": []
+    },
+    {
+      "id": "2bcf77d93f261c53dea0b355",
+      "job": "quantitative",
+      "original_slot_ordinal": 3,
+      "unavailable": true,
+      "source": null,
+      "explicit_key_display_letter": null,
+      "review_a_letter": "uncertain",
+      "review_b_letter": "uncertain",
+      "both_blind_solutions_match_key": false,
+      "review_a_missing_premises": [
+        "Stem and choices are unavailable in the worksheet."
+      ],
+      "review_b_missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ]
+    },
+    {
+      "id": "4121b142f542af9b32a10f49",
+      "job": "mixed",
+      "original_slot_ordinal": 0,
+      "unavailable": false,
+      "source": [
+        "mixed",
+        0,
+        0
+      ],
+      "explicit_key_display_letter": "D",
+      "review_a_letter": "D",
+      "review_b_letter": "D",
+      "both_blind_solutions_match_key": true,
+      "review_a_missing_premises": [],
+      "review_b_missing_premises": []
+    },
+    {
+      "id": "582c97c6c223d277c71082f4",
+      "job": "mixed",
+      "original_slot_ordinal": 2,
+      "unavailable": false,
+      "source": [
+        "mixed",
+        0,
+        2
+      ],
+      "explicit_key_display_letter": "C",
+      "review_a_letter": "C",
+      "review_b_letter": "C",
+      "both_blind_solutions_match_key": true,
+      "review_a_missing_premises": [],
+      "review_b_missing_premises": []
+    },
+    {
+      "id": "396c6670522ddc333b279cb3",
+      "job": "quantitative",
+      "original_slot_ordinal": 2,
+      "unavailable": true,
+      "source": null,
+      "explicit_key_display_letter": null,
+      "review_a_letter": "uncertain",
+      "review_b_letter": "uncertain",
+      "both_blind_solutions_match_key": false,
+      "review_a_missing_premises": [
+        "Stem and choices are unavailable in the worksheet."
+      ],
+      "review_b_missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ]
+    },
+    {
+      "id": "7a4b2699b9004396b7edad3c",
+      "job": "mixed",
+      "original_slot_ordinal": 3,
+      "unavailable": false,
+      "source": [
+        "mixed",
+        0,
+        3
+      ],
+      "explicit_key_display_letter": "B",
+      "review_a_letter": "B",
+      "review_b_letter": "B",
+      "both_blind_solutions_match_key": true,
+      "review_a_missing_premises": [],
+      "review_b_missing_premises": []
+    },
+    {
+      "id": "08582a996bd0dd24e9a8e49a",
+      "job": "quantitative",
+      "original_slot_ordinal": 4,
+      "unavailable": true,
+      "source": null,
+      "explicit_key_display_letter": null,
+      "review_a_letter": "uncertain",
+      "review_b_letter": "uncertain",
+      "both_blind_solutions_match_key": false,
+      "review_a_missing_premises": [
+        "Stem and choices are unavailable in the worksheet."
+      ],
+      "review_b_missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ]
+    },
+    {
+      "id": "d3c230cda931f7c78f08a246",
+      "job": "mixed",
+      "original_slot_ordinal": 1,
+      "unavailable": false,
+      "source": [
+        "mixed",
+        0,
+        1
+      ],
+      "explicit_key_display_letter": "A",
+      "review_a_letter": "A",
+      "review_b_letter": "A",
+      "both_blind_solutions_match_key": true,
+      "review_a_missing_premises": [],
+      "review_b_missing_premises": []
+    },
+    {
+      "id": "dcd7caed834ab8fe0f5da9fe",
+      "job": "python",
+      "original_slot_ordinal": 0,
+      "unavailable": false,
+      "source": [
+        "python",
+        0,
+        0
+      ],
+      "explicit_key_display_letter": "C",
+      "review_a_letter": "C",
+      "review_b_letter": "C",
+      "both_blind_solutions_match_key": true,
+      "review_a_missing_premises": [],
+      "review_b_missing_premises": []
+    }
+  ]
+}
