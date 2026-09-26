@@ -1,0 +1,173 @@
+{
+  "reviewer": "B",
+  "worksheet_sha256": "fe570cb8868d6a670730441488609dec7339781949996af98acdd2fcad217125",
+  "created_at_utc": "2026-09-26T23:00:38.731383+00:00",
+  "items": [
+    {
+      "id": "f7c7f86e4b74c5bf9d9206d2",
+      "selected_letter": "A",
+      "answer_reason": "3/4 + 5/6 = 9/12 + 10/12 = 19/12; only A equals that sum.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "A = 19/12 and B = 4/5; unequal exact values."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "A = 19/12 and C = 2/3; unequal exact values."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "A = 19/12 and D = 3/4; unequal exact values."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "B = 4/5 and C = 2/3; unequal exact values."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "B = 4/5 and D = 3/4; unequal exact values."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "C = 2/3 and D = 3/4; unequal exact values."
+        }
+      },
+      "scope_and_difficulty": "Exact fraction addition; within the requested arithmetic scope; familiar-rule difficulty.",
+      "uncertain": false
+    },
+    {
+      "id": "4b571f40004620bd17a31d54",
+      "selected_letter": "A",
+      "answer_reason": "(7/8) / (3/4) = (7/8)(4/3) = 28/24 = 7/6; only A equals the quotient.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "A = 7/6 and B = 21/32; unequal exact values."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "A = 7/6 and C = 32/21; unequal exact values."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "A = 7/6 and D = 6/7; unequal exact values."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "B = 21/32 and C = 32/21; unequal exact values."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "B = 21/32 and D = 6/7; unequal exact values."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "C = 32/21 and D = 6/7; unequal exact values."
+        }
+      },
+      "scope_and_difficulty": "Exact fraction division; within scope; familiar-rule difficulty.",
+      "uncertain": false
+    },
+    {
+      "id": "3b19006a2d4a48b931712e57",
+      "selected_letter": "C",
+      "answer_reason": "5/6 - 3/8 = 20/24 - 9/24 = 11/24; only C equals the difference.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "A = 5/6 and B = -1; unequal exact values."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "A = 5/6 and C = 11/24; unequal exact values."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "A = 5/6 and D = 1/12; unequal exact values."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "B = -1 and C = 11/24; unequal exact values."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "B = -1 and D = 1/12; unequal exact values."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "C = 11/24 and D = 1/12; unequal exact values."
+        }
+      },
+      "scope_and_difficulty": "Exact fraction subtraction; within scope; familiar-rule difficulty.",
+      "uncertain": false
+    },
+    {
+      "id": "56f9bcdf26f9ec3560c56c85",
+      "selected_letter": "A",
+      "answer_reason": "3x - 1 > 25 gives 3x > 26 and x > 26/3. The smallest integer in 1 through 20 that satisfies this is 9; 10 also satisfies but is not the minimum.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "A = 9 and B = 8; unequal exact values."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "A = 9 and C = 7; unequal exact values."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "A = 9 and D = 10; unequal exact values."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "B = 8 and C = 7; unequal exact values."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "B = 8 and D = 10; unequal exact values."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "C = 7 and D = 10; unequal exact values."
+        }
+      },
+      "scope_and_difficulty": "Bounded integer inequality with an explicit minimum; within scope; familiar-rule difficulty.",
+      "uncertain": false
+    },
+    {
+      "id": "d7ef87bfe21ba8254bf96ae1",
+      "selected_letter": "D",
+      "answer_reason": "4x + 1 <= 25 gives 4x <= 24 and x <= 6. The largest integer in 1 through 20 that satisfies this is 6; 4 and 5 also satisfy but are not the maximum.",
+      "choice_pairs": {
+        "AB": {
+          "relation": "distinct",
+          "reason": "A = 7 and B = 4; unequal exact values."
+        },
+        "AC": {
+          "relation": "distinct",
+          "reason": "A = 7 and C = 5; unequal exact values."
+        },
+        "AD": {
+          "relation": "distinct",
+          "reason": "A = 7 and D = 6; unequal exact values."
+        },
+        "BC": {
+          "relation": "distinct",
+          "reason": "B = 4 and C = 5; unequal exact values."
+        },
+        "BD": {
+          "relation": "distinct",
+          "reason": "B = 4 and D = 6; unequal exact values."
+        },
+        "CD": {
+          "relation": "distinct",
+          "reason": "C = 5 and D = 6; unequal exact values."
+        }
+      },
+      "scope_and_difficulty": "Bounded integer inequality with an explicit maximum; within scope; familiar-rule difficulty.",
+      "uncertain": false
+    }
+  ],
+  "source": "answer-blind worksheet only"
+}

@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "locked_at_utc": "2026-09-26T23:01:51.222395+00:00",
+  "answer_keys_unblinded": false,
+  "plan_sha256": "4fe1782059cf7d27339b406e426f642423599b43f70937f25676a2484e2d8f92",
+  "capture_sha256": "6524fec050e8402ef13d149aec1bd1421ed8593953c7febfb71be140b373e4ab",
+  "worksheet_sha256": "fe570cb8868d6a670730441488609dec7339781949996af98acdd2fcad217125",
+  "private_map_sha256": "845e9dc0f7fdf33151756a4a475178e7173fa45ee9811bbd7a471ea427cfa0dc",
+  "reviews": {
+    "a": {
+      "file": "blind-review-a.json",
+      "sha256": "9caadefae8e553574312ecf5a48a4fa0a4e900088c312b14a19a70128ee87c88",
+      "items": 5,
+      "pair_judgments": 30
+    },
+    "b": {
+      "file": "blind-review-b.json",
+      "sha256": "5b943f14d5933bd23304d1edeef11e08acbe2fcb8cd5f2738e8c8be9205da20a",
+      "items": 5,
+      "pair_judgments": 30
+    }
+  }
+}

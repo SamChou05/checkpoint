@@ -1,0 +1,202 @@
+{
+  "reviewer": "A",
+  "worksheet_sha256": "fe570cb8868d6a670730441488609dec7339781949996af98acdd2fcad217125",
+  "answer_blind": true,
+  "items": [
+    {
+      "id": "f7c7f86e4b74c5bf9d9206d2",
+      "selected_letter": "A",
+      "certainty": "certain",
+      "answer_reason": "3/4 + 5/6 = 9/12 + 10/12 = 19/12.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "judgment": "distinct",
+          "reason": "19/12 and 4/5 are unequal rational values."
+        },
+        {
+          "pair": "AC",
+          "judgment": "distinct",
+          "reason": "19/12 and 2/3 are unequal rational values."
+        },
+        {
+          "pair": "AD",
+          "judgment": "distinct",
+          "reason": "19/12 and 3/4 are unequal rational values."
+        },
+        {
+          "pair": "BC",
+          "judgment": "distinct",
+          "reason": "4/5 and 2/3 are unequal rational values."
+        },
+        {
+          "pair": "BD",
+          "judgment": "distinct",
+          "reason": "4/5 and 3/4 are unequal rational values."
+        },
+        {
+          "pair": "CD",
+          "judgment": "distinct",
+          "reason": "2/3 and 3/4 are unequal rational values."
+        }
+      ],
+      "scope_and_difficulty": "Direct exact rational addition within the stated goal; difficulty 2."
+    },
+    {
+      "id": "4b571f40004620bd17a31d54",
+      "selected_letter": "A",
+      "certainty": "certain",
+      "answer_reason": "(7/8) / (3/4) = (7/8)(4/3) = 28/24 = 7/6.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "judgment": "distinct",
+          "reason": "7/6 and 21/32 are unequal rational values."
+        },
+        {
+          "pair": "AC",
+          "judgment": "distinct",
+          "reason": "7/6 and 32/21 are reciprocals, not equal."
+        },
+        {
+          "pair": "AD",
+          "judgment": "distinct",
+          "reason": "7/6 and 6/7 are reciprocals, not equal."
+        },
+        {
+          "pair": "BC",
+          "judgment": "distinct",
+          "reason": "21/32 and 32/21 are unequal rational values."
+        },
+        {
+          "pair": "BD",
+          "judgment": "distinct",
+          "reason": "21/32 and 6/7 are unequal rational values."
+        },
+        {
+          "pair": "CD",
+          "judgment": "distinct",
+          "reason": "32/21 and 6/7 are unequal rational values."
+        }
+      ],
+      "scope_and_difficulty": "Direct exact rational division within the stated goal; difficulty 2."
+    },
+    {
+      "id": "3b19006a2d4a48b931712e57",
+      "selected_letter": "C",
+      "certainty": "certain",
+      "answer_reason": "5/6 - 3/8 = 20/24 - 9/24 = 11/24.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "judgment": "distinct",
+          "reason": "5/6 and -1 are unequal rational values."
+        },
+        {
+          "pair": "AC",
+          "judgment": "distinct",
+          "reason": "5/6 and 11/24 are unequal rational values."
+        },
+        {
+          "pair": "AD",
+          "judgment": "distinct",
+          "reason": "5/6 and 1/12 are unequal rational values."
+        },
+        {
+          "pair": "BC",
+          "judgment": "distinct",
+          "reason": "-1 and 11/24 are unequal rational values."
+        },
+        {
+          "pair": "BD",
+          "judgment": "distinct",
+          "reason": "-1 and 1/12 are unequal rational values."
+        },
+        {
+          "pair": "CD",
+          "judgment": "distinct",
+          "reason": "11/24 and 1/12 are unequal rational values."
+        }
+      ],
+      "scope_and_difficulty": "Direct exact rational subtraction within the stated goal; difficulty 2."
+    },
+    {
+      "id": "56f9bcdf26f9ec3560c56c85",
+      "selected_letter": "A",
+      "certainty": "certain",
+      "answer_reason": "3x - 1 > 25 implies 3x > 26 and x > 26/3. In the integer domain 1..20, the minimum is 9; 10 satisfies but is not minimum.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "judgment": "distinct",
+          "reason": "9 and 8 are distinct integers; 8 fails the condition."
+        },
+        {
+          "pair": "AC",
+          "judgment": "distinct",
+          "reason": "9 and 7 are distinct integers; 7 fails the condition."
+        },
+        {
+          "pair": "AD",
+          "judgment": "distinct",
+          "reason": "9 and 10 are distinct integers; both satisfy, but only 9 is the minimum."
+        },
+        {
+          "pair": "BC",
+          "judgment": "distinct",
+          "reason": "8 and 7 are distinct integers; both fail the condition."
+        },
+        {
+          "pair": "BD",
+          "judgment": "distinct",
+          "reason": "8 and 10 are distinct integers; only 10 satisfies."
+        },
+        {
+          "pair": "CD",
+          "judgment": "distinct",
+          "reason": "7 and 10 are distinct integers; only 10 satisfies."
+        }
+      ],
+      "scope_and_difficulty": "Self-contained bounded inequality with explicit minimum; difficulty 2 or 3."
+    },
+    {
+      "id": "d7ef87bfe21ba8254bf96ae1",
+      "selected_letter": "D",
+      "certainty": "certain",
+      "answer_reason": "4x + 1 <= 25 implies 4x <= 24 and x <= 6. In the integer domain 1..20, the maximum is 6; 4 and 5 satisfy but are smaller.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "judgment": "distinct",
+          "reason": "7 and 4 are distinct integers; 7 fails while 4 satisfies."
+        },
+        {
+          "pair": "AC",
+          "judgment": "distinct",
+          "reason": "7 and 5 are distinct integers; 7 fails while 5 satisfies."
+        },
+        {
+          "pair": "AD",
+          "judgment": "distinct",
+          "reason": "7 and 6 are distinct integers; 7 fails while 6 is the maximum satisfying value."
+        },
+        {
+          "pair": "BC",
+          "judgment": "distinct",
+          "reason": "4 and 5 are distinct satisfying integers, but neither is the maximum."
+        },
+        {
+          "pair": "BD",
+          "judgment": "distinct",
+          "reason": "4 and 6 are distinct satisfying integers; only 6 is the maximum."
+        },
+        {
+          "pair": "CD",
+          "judgment": "distinct",
+          "reason": "5 and 6 are distinct satisfying integers; only 6 is the maximum."
+        }
+      ],
+      "scope_and_difficulty": "Self-contained bounded inequality with explicit maximum; difficulty 2 or 3."
+    }
+  ]
+}
