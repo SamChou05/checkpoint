@@ -223,6 +223,30 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
         self.assertEqual(task_data(client.calls[0], "generation_request_json")["requestedObjectiveAllocation"],
                          [{"skillID": skill_id, "objectiveID": objective_id, "count": 5}])
 
+    def test_exact_goal_scoped_batch_cap_leaves_other_unallocated_goals_at_five(self):
+        numerical = self.request(5)
+        other = self.request(5)
+        other["goal"]["title"] = "Python 3 expressions"
+        digest = hashlib.sha256(json.dumps(numerical["goal"], sort_keys=True,
+                                           separators=(",", ":"), ensure_ascii=True,
+                                           allow_nan=False).encode()).hexdigest()
+        settings = {"QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3",
+                    "QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256": digest}
+        with patch.dict(os.environ, settings):
+            self.assertEqual(generation._constructed_author_batch_size(numerical, "constructed_quantitative"), 3)
+            self.assertEqual(generation._constructed_author_batch_size(other, "constructed_quantitative"), 5)
+            self.assertEqual(generation._constructed_author_batch_size(numerical, "prose"), 5)
+            allocated = {**numerical, "requestedSkillAllocation": {}}
+            self.assertEqual(generation._constructed_author_batch_size(allocated, "constructed_quantitative"), 5)
+        with patch.dict(os.environ, {**settings,
+                                    "QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256": "bad"}):
+            with self.assertRaises(ServiceConfigurationError):
+                generation._constructed_author_batch_size(numerical, "constructed_quantitative")
+        with patch.dict(os.environ, {**settings,
+                                    "QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256": "0" * 64}):
+            with self.assertRaises(ServiceConfigurationError):
+                generation._constructed_author_batch_size(numerical, "constructed_quantitative")
+
     def test_placeholders_only_validate_graph_and_never_enter_constructor_or_provenance(self):
         seen = []
         def construct(spec):
