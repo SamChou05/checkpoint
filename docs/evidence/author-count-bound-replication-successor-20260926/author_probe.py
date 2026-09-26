@@ -5,6 +5,7 @@ a separately reviewed frozen plan hash and a pinned named AWS profile.
 """
 
 import argparse
+import configparser
 import copy
 from datetime import datetime, timezone
 import hashlib
@@ -95,6 +96,40 @@ def launch_environment_pin():
         "awscrt_binary_path": str(CRT_BINARY_PATH),
         "awscrt_binary_sha256": file_hash(CRT_BINARY_PATH),
     }
+
+
+def default_aws_profile_paths():
+    aws_dir = Path.home() / ".aws"
+    return aws_dir / "config", aws_dir / "credentials"
+
+
+def aws_profile_config_pin():
+    """Inspect only the scoped default profile; never disclose session text."""
+    config_path, credentials_path = default_aws_profile_paths()
+    if not config_path.is_file() or credentials_path.exists() or credentials_path.is_symlink():
+        raise RuntimeError("Default AWS config must exist without a shared credentials file.")
+    parser = configparser.RawConfigParser(strict=True)
+    parser.read_string(config_path.read_text(encoding="utf-8"))
+    if (not parser.has_section("default")
+            or set(parser.options("default")) != {"login_session", "region"}
+            or not parser.get("default", "login_session").strip()
+            or parser.get("default", "region") != "us-east-1"):
+        raise RuntimeError("Default AWS profile must contain only login_session and us-east-1 region.")
+    return {
+        "config_path": str(config_path),
+        "config_sha256": file_hash(config_path),
+        "default_keys": ["login_session", "region"],
+        "region": "us-east-1",
+        "shared_credentials_path": str(credentials_path),
+        "shared_credentials_absent": True,
+    }
+
+
+def check_aws_profile_config(plan):
+    if "AWS_CONFIG_FILE" in os.environ or "AWS_SHARED_CREDENTIALS_FILE" in os.environ:
+        raise RuntimeError("Ambient AWS config or shared credentials path overrides are prohibited.")
+    if aws_profile_config_pin() != plan["aws_profile_config"]:
+        raise RuntimeError("Default AWS profile config path, hash or shape differs from frozen pin.")
 
 
 def check_launch_environment(plan):
@@ -221,6 +256,7 @@ def prepare():
         "sdk_versions": {name: version(name) for name in ("boto3", "botocore", "jsonschema")},
         "python_version": list(sys.version_info[:3]),
         "launch_environment": launch_environment_pin(),
+        "aws_profile_config": aws_profile_config_pin(),
         "region": fixed["region"], "model_id": fixed["model_id"],
         "endpoint_url": "https://bedrock-runtime.us-east-1.amazonaws.com",
         "sts_endpoint_url": STS_ENDPOINT_URL,
@@ -457,6 +493,8 @@ def check_frozen(plan, provided_hash):
         raise RuntimeError("Frozen plan source revision differs from the pinned starting commit.")
     if plan.get("launch_environment") is None:
         raise RuntimeError("Frozen plan lacks the reviewed launch environment and AWS CRT pin.")
+    if plan.get("aws_profile_config") is None:
+        raise RuntimeError("Frozen plan lacks the reviewed default AWS profile config pin.")
     if (plan.get("credential_pin", {}).get("minimum_cached_seconds") != MIN_CACHED_CREDENTIAL_SECONDS
             or plan["credential_pin"].get("minimum_dispatch_seconds") != MIN_DISPATCH_REMAINING_SECONDS
             or plan["credential_pin"].get("advisory_refresh_seconds") != BOTOCORE_ADVISORY_REFRESH_SECONDS):
@@ -658,6 +696,7 @@ def execute(provided_hash, capture_path):
     journal = CaptureJournal(capture_path, capture)  # Before credentials, STS or Bedrock setup.
     try:
         check_launch_environment(plan)
+        check_aws_profile_config(plan)
         if any(os.getenv(key) for key in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN")):
             raise RuntimeError("Ambient exported AWS credentials are prohibited.")
         if any(os.getenv(key) for key in ("AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_STS",
@@ -668,6 +707,7 @@ def execute(provided_hash, capture_path):
         from botocore.config import Config
 
         profile_session = boto3.Session(profile_name=profile, region_name=plan["region"])
+        check_aws_profile_config(plan)
         credentials = profile_session.get_credentials()
         if credentials is None or credentials.method != plan["credential_pin"]["provider_method"]:
             raise RuntimeError("Credential provider source differs from reviewed pin.")

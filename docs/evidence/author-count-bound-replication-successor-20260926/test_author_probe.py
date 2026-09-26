@@ -182,6 +182,99 @@ class AuthorProbeTests(unittest.TestCase):
                     probe.execute("reviewed", capture)
             self.assertEqual(json.loads(capture.read_text())["jobs"], [])
 
+    def test_alternate_credential_process_paths_refused_before_process_or_session(self):
+        for override in ("AWS_CONFIG_FILE", "AWS_SHARED_CREDENTIALS_FILE"):
+            with self.subTest(override=override), tempfile.TemporaryDirectory() as directory:
+                location = Path(directory)
+                plan = json.loads(probe.prepare().read_text())
+                capture = location / "capture.json"
+                plan["capture_path"] = str(capture)
+                (location / "plan.json").write_text(json.dumps(plan))
+                alternate_config = location / "alternate-config"
+                alternate_config.write_text("[default]\ncredential_process = /usr/bin/true\n")
+                with patch.dict(probe.os.environ, {override: str(alternate_config)}), \
+                        patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                        patch("subprocess.Popen", side_effect=AssertionError("credential_process must not run")), \
+                        patch("boto3.Session", side_effect=AssertionError("AWS session must not load")):
+                    with self.assertRaisesRegex(RuntimeError, "AWS config or shared credentials path overrides"):
+                        probe.execute("reviewed", capture)
+                saved = json.loads(capture.read_text())
+                self.assertEqual(saved["preflight_status"], "failed")
+                self.assertEqual(saved["jobs"], [])
+
+    def test_changed_default_config_hash_refused_before_credentials(self):
+        with tempfile.TemporaryDirectory() as directory:
+            location = Path(directory)
+            config = location / "config"
+            credentials = location / "credentials"
+            config.write_text("[default]\nlogin_session = synthetic\nregion = us-east-1\n")
+            with patch.object(probe, "default_aws_profile_paths", return_value=(config, credentials)):
+                safe_pin = probe.aws_profile_config_pin()
+            self.assertEqual(safe_pin["default_keys"], ["login_session", "region"])
+            self.assertNotIn("synthetic", str(safe_pin))
+            plan = json.loads(probe.prepare().read_text())
+            plan["aws_profile_config"] = safe_pin
+            capture = location / "capture.json"
+            plan["capture_path"] = str(capture)
+            (location / "plan.json").write_text(json.dumps(plan))
+            config.write_text(config.read_text() + "# changed after prospective pin\n")
+            with patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                    patch.object(probe, "default_aws_profile_paths", return_value=(config, credentials)), \
+                    patch("boto3.Session", side_effect=AssertionError("credentials must not load")):
+                with self.assertRaisesRegex(RuntimeError, "path, hash or shape differs"):
+                    probe.execute("reviewed", capture)
+            saved = json.loads(capture.read_text())
+            self.assertEqual(saved["preflight_status"], "failed")
+            self.assertEqual(saved["jobs"], [])
+
+    def test_default_shared_credentials_file_refused_before_session(self):
+        with tempfile.TemporaryDirectory() as directory:
+            location = Path(directory)
+            config = location / "config"
+            credentials = location / "credentials"
+            config.write_text("[default]\nlogin_session = synthetic\nregion = us-east-1\n")
+            with patch.object(probe, "default_aws_profile_paths", return_value=(config, credentials)):
+                safe_pin = probe.aws_profile_config_pin()
+            plan = json.loads(probe.prepare().read_text())
+            plan["aws_profile_config"] = safe_pin
+            capture = location / "capture.json"
+            plan["capture_path"] = str(capture)
+            (location / "plan.json").write_text(json.dumps(plan))
+            credentials.write_text("[default]\ncredential_process = /usr/bin/true\n")
+            with patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                    patch.object(probe, "default_aws_profile_paths", return_value=(config, credentials)), \
+                    patch("subprocess.Popen", side_effect=AssertionError("credential_process must not run")), \
+                    patch("boto3.Session", side_effect=AssertionError("AWS session must not load")):
+                with self.assertRaisesRegex(RuntimeError, "without a shared credentials file"):
+                    probe.execute("reviewed", capture)
+            self.assertEqual(json.loads(capture.read_text())["jobs"], [])
+
+    def test_config_change_during_session_setup_stops_before_get_credentials(self):
+        with tempfile.TemporaryDirectory() as directory:
+            location = Path(directory)
+            config = location / "config"
+            credentials = location / "credentials"
+            config.write_text("[default]\nlogin_session = synthetic\nregion = us-east-1\n")
+            with patch.object(probe, "default_aws_profile_paths", return_value=(config, credentials)):
+                safe_pin = probe.aws_profile_config_pin()
+            plan = json.loads(probe.prepare().read_text())
+            plan["aws_profile_config"] = safe_pin
+            capture = location / "capture.json"
+            plan["capture_path"] = str(capture)
+            (location / "plan.json").write_text(json.dumps(plan))
+
+            def mutate_config_during_session(**_kwargs):
+                config.write_text(config.read_text() + "credential_process = /usr/bin/true\n")
+                return SimpleNamespace(get_credentials=lambda: self.fail("credentials must not load"))
+
+            with patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                    patch.object(probe, "default_aws_profile_paths", return_value=(config, credentials)), \
+                    patch("subprocess.Popen", side_effect=AssertionError("credential_process must not run")), \
+                    patch("boto3.Session", side_effect=mutate_config_during_session):
+                with self.assertRaisesRegex(RuntimeError, "only login_session and us-east-1 region"):
+                    probe.execute("reviewed", capture)
+            self.assertEqual(json.loads(capture.read_text())["jobs"], [])
+
     def test_near_expiry_login_cache_fails_before_signin_or_any_client(self):
         from botocore.credentials import RefreshableCredentials
 
@@ -871,12 +964,13 @@ class AuthorProbeTests(unittest.TestCase):
     def test_frozen_proposal_passes_all_offline_pins(self):
         proposal_path = HERE / "plan-frozen-proposal.json"
         proposal = json.loads(proposal_path.read_text())
-        expected_hash = "ac24a20d0eaf70e5a8b35b9d052fa1121fa4bc3e27ec3dc773fb02173c16d0ce"
+        expected_hash = "72b2fdb2b0f762ceed8ea6c01db6c849a9085730f816a8dde7100ff466c9669f"
         self.assertEqual(probe.file_hash(proposal_path), expected_hash)
         self.assertEqual(proposal["status"], "frozen")
         self.assertEqual(proposal["source_revision"], probe.SOURCE_REVISION)
         self.assertEqual(proposal["sts_endpoint_url"], probe.STS_ENDPOINT_URL)
         self.assertEqual(proposal["launch_environment"], probe.launch_environment_pin())
+        self.assertEqual(proposal["aws_profile_config"], probe.aws_profile_config_pin())
         self.assertEqual(proposal["criteria"]["blind_projection"]["required_independent_reviews"], 2)
         self.assertEqual({**json.loads(probe.prepare().read_text()), "status": "frozen"}, proposal)
         self.assertEqual(proposal["criteria"]["prose_replication"]["candidate_followup_minimum_usable_total"], 8)

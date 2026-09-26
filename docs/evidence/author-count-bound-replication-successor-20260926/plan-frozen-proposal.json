@@ -34,9 +34,9 @@
     "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
     "backend/bedrock-question-service/requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67"
   },
-  "plan_document_sha256": "dc68292b92ca266e9d6bf718162b2632f237a13be1f0b8c54c3c79b89e7557f1",
+  "plan_document_sha256": "02ea94376cefb212d2d73d3e699f196ce173d525c9f9ffd2208b2994edc0e678",
   "fixed_requests_sha256": "7bf5c0ed9aceb3969a237007a219b844fd3eba4213f6fcc13c0306bd9116a091",
-  "harness_sha256": "dbf5df4b2cf1c74e37d0bce57053081f60c0d5f7e18739b0b548472272dfdc0a",
+  "harness_sha256": "ded41dc2707efbe20aa1bc4c0a5d1bcbe0f06b196fde0da89f45a189314cf11b",
   "sdk_versions": {
     "boto3": "1.43.91",
     "botocore": "1.43.91",
@@ -56,6 +56,17 @@
     "awscrt_module_sha256": "4ebd70f58156b88de39719eaeeabf6c2575d338be6a8ab5d34a00f4fa0a0a770",
     "awscrt_binary_path": "/tmp/checkpoint-count-crt-deps/_awscrt.abi3.so",
     "awscrt_binary_sha256": "c82434c858bd4e470ab51de532c23a14ef8cd319a19ac16f6d9f71561f267f10"
+  },
+  "aws_profile_config": {
+    "config_path": "/Users/samchou/.aws/config",
+    "config_sha256": "7f70246298d2f2897d39ee3a99a7353bfa9b83255ef95ba0db5f3a5623ea5f3d",
+    "default_keys": [
+      "login_session",
+      "region"
+    ],
+    "region": "us-east-1",
+    "shared_credentials_path": "/Users/samchou/.aws/credentials",
+    "shared_credentials_absent": true
   },
   "region": "us-east-1",
   "model_id": "moonshotai.kimi-k2.5",
