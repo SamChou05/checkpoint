@@ -516,9 +516,11 @@ class AuthorProbeTests(unittest.TestCase):
     def test_frozen_proposal_passes_all_offline_pins(self):
         proposal_path = HERE / "plan-frozen-proposal.json"
         proposal = json.loads(proposal_path.read_text())
-        expected_hash = "b3aa608e09fbdb9134c605dd9b0090bcabc1acd991dffd053972f8a3dbfda9b6"
+        expected_hash = "7654fc9e2fc9038b62deeaf9da534337ea7d1004ec6b676e9cba290012f1f3bf"
         self.assertEqual(probe.file_hash(proposal_path), expected_hash)
         self.assertEqual(proposal["status"], "frozen")
+        self.assertEqual(proposal["source_revision"], probe.SOURCE_REVISION)
+        self.assertEqual({**json.loads(probe.prepare().read_text()), "status": "frozen"}, proposal)
         self.assertEqual(proposal["criteria"]["prose_replication"]["candidate_followup_minimum_usable_total"], 8)
         self.assertEqual(proposal["criteria"]["prose_replication"]["candidate_followup_minimum_pairs_not_below_baseline"], 2)
         original_hash = probe.file_hash

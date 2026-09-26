@@ -1,7 +1,7 @@
 {
   "status": "frozen",
   "experiment": "author-count-bound-replication-20260926",
-  "source_revision": "d692e68323a5cb717afff63ea7b66e19af422498",
+  "source_revision": "99cd50a3ed7ee8babe98ec9e8763cdd9f9edff53",
   "source_sha256": {
     "backend/bedrock-question-service/answer_position_references.py": "7afe3705ef5d87d2426a4c6dfb2ed53136dda92f082052f77cea30e3f85d00dc",
     "backend/bedrock-question-service/complete_question_solution.py": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
@@ -36,7 +36,7 @@
   },
   "plan_document_sha256": "beadece97be4535da21a2b243112072381a7fcd24a71249253b6db9700b098b2",
   "fixed_requests_sha256": "951481d96818de3d9915d94b5cf738ffb44c91d0ea6e1dbe1fdc56c8bf6d2b56",
-  "harness_sha256": "53ad2429e5d77c3cb2b8b0d1c6745c75628ee88a9557a7eab2e6c3c58f403ac8",
+  "harness_sha256": "74390a9055d2194c58060297f2033d7509cd096e79ad625c1cdcf258cca3ca26",
   "sdk_versions": {
     "boto3": "1.43.91",
     "botocore": "1.43.91",

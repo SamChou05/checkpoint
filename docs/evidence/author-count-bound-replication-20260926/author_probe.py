@@ -23,6 +23,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 SERVICE = ROOT / "backend/bedrock-question-service"
 sys.path.insert(0, str(SERVICE))
+SOURCE_REVISION = "99cd50a3ed7ee8babe98ec9e8763cdd9f9edff53"
 
 from native_output_contracts import (  # noqa: E402
     AuthorSlotContract, adapt_native_response, contract_metadata, native_output_config,
@@ -141,6 +142,9 @@ def dry_job(fixed, job):
 
 
 def prepare():
+    if subprocess.run(["git", "diff", "--quiet", SOURCE_REVISION, "--",
+                       str(SERVICE.relative_to(ROOT))], cwd=ROOT, check=False).returncode != 0:
+        raise RuntimeError("Service source differs from the pinned starting commit.")
     fixed = json.loads(FIXED.read_text())
     jobs = fixed["jobs"]
     if len(jobs) != MAX_CALLS or len({job["id"] for job in jobs}) != MAX_CALLS:
@@ -160,7 +164,7 @@ def prepare():
             raise RuntimeError("Replicated pair differs in request, arm order or five-slot prose scope.")
     plan = {
         "status": "candidate", "experiment": fixed["experiment"],
-        "source_revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+        "source_revision": SOURCE_REVISION,
         "source_sha256": source_hashes(),
         "plan_document_sha256": file_hash(HERE / "PLAN.md"),
         "fixed_requests_sha256": file_hash(FIXED),
@@ -388,6 +392,8 @@ def check_frozen(plan, provided_hash):
     if plan["status"] != "frozen" or any(value == "REVIEW_REQUIRED"
                                             for value in plan["credential_pin"].values()):
         raise RuntimeError("Only a reviewed frozen plan with completed credential pins may execute.")
+    if plan["source_revision"] != SOURCE_REVISION:
+        raise RuntimeError("Frozen plan source revision differs from the pinned starting commit.")
     if len(plan["jobs"]) != MAX_CALLS or plan["limits"]["maximum_bedrock_author_calls"] != MAX_CALLS:
         raise RuntimeError("Live call ceiling drifted.")
     if plan["limits"]["maximum_visible_response_bytes"] != MAX_VISIBLE_BYTES:
