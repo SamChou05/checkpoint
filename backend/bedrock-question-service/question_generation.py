@@ -274,7 +274,8 @@ def _generate_sanitized_questions(
                 candidates = _sanitize_questions(raw_questions, current_request, request_metrics,
                                                  preserve_authored_explanation=feedback_contract == "authored_solution",
                                                  compiled_candidates=compiled_candidates,
-                                                 compiled_output=compiled_output)
+                                                 compiled_output=compiled_output,
+                                                 prefer_compiled_within_assignment=author_mode == "constructed_quantitative")
             else:
                 candidates = _sanitize_questions(
                     provider_payload.get("questions", []), current_request, request_metrics,

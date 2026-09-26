@@ -197,11 +197,11 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
         rows = [row(malformed), row(), prose_row(rejected), copy.deepcopy(row()), prose_row(self.prose), row(task("12"))]
         result, client, budget, _ = self.run_pipeline(rows, solver_count=2, reject=(0,), audit_count=3)
         self.assertEqual((len(result), budget.calls), (3, 3))
-        self.assertEqual([q["verificationPolicyRevision"] for q in result], [8, 7, 8])
-        self.assertEqual(result[1]["explanation"].encode(), self.prose["explanation"].encode())
-        self.assertEqual(result[1]["choiceExplanations"], {})
+        self.assertEqual([q["verificationPolicyRevision"] for q in result], [8, 8, 7])
+        self.assertEqual(result[2]["explanation"].encode(), self.prose["explanation"].encode())
+        self.assertEqual(result[2]["choiceExplanations"], {})
         _, sidecars, _ = author.prepare_mixed_rows({"questions": [rows[1], rows[5]]}, construct_choices=True)
-        self.assertEqual([learner(result[i]) for i in (0, 2)], [sidecars[i].content() for i in (0, 1)])
+        self.assertEqual([learner(result[i]) for i in (0, 1)], [sidecars[i].content() for i in (0, 1)])
         self.assertEqual(len(task_data(client.calls[1], "question_solution_json")["items"]), 2)
         self.assertEqual(len(task_data(client.calls[2], "question_review_json")["items"]), 3)
 

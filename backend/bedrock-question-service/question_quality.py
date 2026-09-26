@@ -160,6 +160,7 @@ def _sanitize_questions(
     preserve_authored_explanation: bool = False,
     compiled_candidates=None,
     compiled_output=None,
+    prefer_compiled_within_assignment: bool = False,
 ) -> list[dict[str, Any]]:
     if not isinstance(raw_questions, list):
         record_quality(request_metrics, "sanitize", "invalid_envelope")
@@ -193,7 +194,12 @@ def _sanitize_questions(
     }
     sanitized: list[dict[str, Any]] = []
 
-    for candidate_index, raw_question in enumerate(raw_questions):
+    candidate_order = (
+        _compiled_first_within_assignment(raw_questions, request, compiled_candidates)
+        if prefer_compiled_within_assignment and compiled_candidates else list(range(len(raw_questions)))
+    )
+    for position, candidate_index in enumerate(candidate_order):
+        raw_question = raw_questions[candidate_index]
         if not isinstance(raw_question, dict):
             record_quality(request_metrics, "sanitize", "invalid_item")
             continue
@@ -351,11 +357,44 @@ def _sanitize_questions(
                 request_metrics,
                 "sanitize",
                 "surplus",
-                len(raw_questions) - candidate_index - 1,
+                len(raw_questions) - position - 1,
             )
             break
 
     return sanitized
+
+
+def _compiled_first_within_assignment(raw_questions, request, compiled_candidates):
+    """Reorder only identical assignment positions, retaining source ordinals.
+
+    Private proof determines preference, not provider metadata. Resolved tags
+    group supplied assignments; they do not establish semantic scope fit. Every
+    selected row still passes the sanitizer and final review unchanged.
+    """
+    order = list(range(len(raw_questions)))
+    buckets = {}
+    verified = set()
+    for index, question in enumerate(raw_questions):
+        if not isinstance(question, dict):
+            continue
+        provenance = compiled_candidates.get(index)
+        if provenance is not None:
+            try:
+                provenance.content(question)
+            except (ValueError, TypeError, KeyError):
+                # Leave invalid proof in place for the existing rejection path.
+                continue
+            verified.add(index)
+        tag = _normalized_question_skill_tag(question, request)
+        if request.get("skillMap") and tag is None:
+            continue
+        bucket = (tag["skillID"], tag["objectiveID"]) if tag else None
+        buckets.setdefault(bucket, []).append(index)
+    for positions in buckets.values():
+        preferred = sorted(positions, key=lambda index: index not in verified)
+        for position, index in zip(positions, preferred, strict=True):
+            order[position] = index
+    return order
 
 
 def _normalized_question_skill_tag(
