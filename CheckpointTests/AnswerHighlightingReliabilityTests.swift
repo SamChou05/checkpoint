@@ -183,6 +183,86 @@ final class AnswerHighlightingReliabilityTests: XCTestCase {
         }
     }
 
+    func testInvisibleChoiceIdentityCollisionIsRejectedWhileVisibleJoinerSyntaxRemainsDistinct() {
+        for invisible in ["\u{00AD}", "\u{200B}", "\u{2060}", "\u{FEFF}", "\u{202E}", "\u{E0001}"] {
+            var malformed = question(explanation: "Two displayed alternatives must be distinguishable.", version: 1)
+            malformed.choices = ["K", invisible + "K", "L", "M"]
+            malformed.expectedAnswer = "K"
+            XCTAssertFalse(MultipleChoiceAnswerNormalizer.hasUnambiguousChoices(malformed.choices))
+            XCTAssertTrue(QuestionBatchSanitizer.sanitize([malformed], for: makeRequest(goal: makeGoal())).isEmpty)
+        }
+        XCTAssertFalse(MultipleChoiceAnswerNormalizer.hasUnambiguousChoices([
+            "K", "\u{200B}", "L", "M"
+        ]), "A nonempty byte string must not become a blank displayed answer")
+
+        // Joining and presentation selectors can produce visibly different emoji.
+        // Their actual code points remain valid choices.
+        XCTAssertTrue(MultipleChoiceAnswerNormalizer.hasUnambiguousChoices([
+            "👩‍💻", "👩💻", "✈️", "✈︎"
+        ]))
+    }
+
+    func testStoredNonMultipleChoiceQuestionKeepsItsExistingPracticeEligibility() {
+        var shortAnswer = question(explanation: "Historical authored short-answer item.", version: 1)
+        shortAnswer.format = .shortAnswer
+        shortAnswer.choices = []
+        XCTAssertTrue(QuestionVerificationPolicy.isSafeForCurrentPractice(shortAnswer))
+    }
+
+    @MainActor
+    func testPersistedCurrentPolicyInventoryExcludesQuestionsWithoutOneVisibleOfferedKey() throws {
+        let goal = makeGoal()
+        let valid = makeQuestion(goal: goal, index: 1)
+        let unoffered = makeQuestion(
+            goal: goal, index: 2, expectedAnswer: "B",
+            choices: ["A. Alpha", "B. Beta", "C. Gamma", "D. Delta"]
+        )
+        let invisibleDuplicate = makeQuestion(
+            goal: goal, index: 3, expectedAnswer: "K",
+            choices: ["K", "\u{200B}K", "L", "M"]
+        )
+        let incomplete = makeQuestion(
+            goal: goal, index: 4, expectedAnswer: "First",
+            choices: ["First", "Second", "Third"]
+        )
+        let historicalAttempt = CheckpointAttempt(
+            questionID: unoffered.id, goalID: goal.id, prompt: unoffered.prompt,
+            answer: unoffered.choices[0], result: .incorrect, unlockMinutes: 0,
+            reviewSnapshot: CheckpointAttemptReviewSnapshot(
+                topic: unoffered.topic, format: .multipleChoice,
+                referenceAnswer: "Historical answer as originally recorded",
+                explanation: unoffered.explanation
+            )
+        )
+        let suite = "AnswerHighlightingInventoryTests." + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let persistence = AppSnapshotPersistence(defaults: defaults)
+        try persistence.save(AppSnapshot(
+            goal: goal, questions: [unoffered, invisibleDuplicate, incomplete, valid],
+            attempts: [historicalAttempt], competencies: []
+        ))
+        guard case let .loaded(snapshot) = persistence.load() else {
+            return XCTFail("Expected persisted inventory to load")
+        }
+
+        XCTAssertEqual(snapshot.questions.count, 4, "Quarantine must preserve historical records")
+        XCTAssertEqual(snapshot.attempts, [historicalAttempt])
+        XCTAssertEqual(
+            PracticeHistoryReviewPresentation(attempt: snapshot.attempts[0]).referenceAnswer,
+            "Historical answer as originally recorded"
+        )
+        let selector = CheckpointQuestionSelector(
+            questions: snapshot.questions, goalProfiles: [goal], currentGoal: goal,
+            competencies: [], activeQuestionDifficulty: 1, maximumExactQuestionAskCount: 2
+        )
+        XCTAssertFalse(selector.isSelectableQuestion(unoffered))
+        XCTAssertFalse(selector.isSelectableQuestion(invisibleDuplicate))
+        XCTAssertFalse(selector.isSelectableQuestion(incomplete))
+        XCTAssertTrue(selector.isSelectableQuestion(valid))
+        XCTAssertEqual(selector.nextQuestions(limit: 4).map(\.id), [valid.id])
+    }
+
     private var misleadingExplanations: [String] {
         [
             "\(distractor) is incorrect because a stack uses last-in-first-out ordering.",

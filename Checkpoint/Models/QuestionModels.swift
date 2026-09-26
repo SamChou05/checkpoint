@@ -65,6 +65,20 @@ enum QuestionVerificationPolicy {
         question.verificationVersion == 1
             && question.verificationPolicyRevision >= currentRevision
     }
+
+    /// Saved current-policy inventory has not necessarily passed this build's
+    /// presentation checks. Keep it for history, but never offer an item whose
+    /// displayed choices cannot identify exactly one answer.
+    static func isSafeForCurrentPractice(_ question: CheckpointQuestion) -> Bool {
+        guard meetsCurrentRequirement(question) else { return false }
+        guard question.format == .multipleChoice else { return true }
+        return question.choices.count == 4
+            && MultipleChoiceAnswerNormalizer.hasUnambiguousChoices(question.choices)
+            && question.choices.filter {
+                MultipleChoiceAnswerNormalizer.key(for: $0)
+                    == MultipleChoiceAnswerNormalizer.key(for: question.expectedAnswer)
+            }.count == 1
+    }
 }
 
 struct CheckpointQuestion: Identifiable, Codable, Equatable, Sendable {

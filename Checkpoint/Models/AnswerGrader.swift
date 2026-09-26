@@ -20,8 +20,28 @@ enum MultipleChoiceAnswerNormalizer {
         let texts = choices.map { text(for: $0) }
         // String equality deliberately detects canonical equivalence here:
         // our String-keyed feedback and UI cannot distinguish both alternatives.
+        let visibleIdentities = texts.map(visibleChoiceIdentity)
         return !texts.isEmpty && texts.allSatisfy { !$0.isEmpty }
             && Set(texts).count == texts.count
+            && visibleIdentities.allSatisfy { !$0.isEmpty }
+            && Set(visibleIdentities).count == texts.count
+    }
+
+    private static func visibleChoiceIdentity(_ text: String) -> String {
+        // These format characters can leave two answer buttons looking identical
+        // even when their byte identities differ. Keep ZWJ and variation selectors:
+        // they can change a visibly rendered emoji or script sequence.
+        let visibleScalars = text.unicodeScalars.filter { scalar in
+            switch scalar.value {
+            case 0x00AD, 0x061C, 0x200B, 0x2060, 0xFEFF,
+                 0x200E...0x200F, 0x202A...0x202E, 0x2066...0x2069,
+                 0xE0000...0xE007F:
+                return false
+            default:
+                return true
+            }
+        }
+        return Self.text(for: String(String.UnicodeScalarView(visibleScalars)))
     }
 
     static func choiceIndex(from text: String) -> Int? {

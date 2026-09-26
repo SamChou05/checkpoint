@@ -2597,7 +2597,7 @@ final class CheckpointStore {
         // A safety replacement appends new accepted inventory. It never rewrites
         // old keys, retires unanswered questions, or changes historical attempts.
         let preservesExistingQuestions = preservingExistingQuestions || questions.contains {
-            $0.goalID == newGoal.id && !QuestionVerificationPolicy.meetsCurrentRequirement($0)
+            $0.goalID == newGoal.id && !QuestionVerificationPolicy.isSafeForCurrentPractice($0)
         }
         backgroundGenerationGoalIDs.insert(newGoal.id)
         defer { backgroundGenerationGoalIDs.remove(newGoal.id) }
@@ -3328,7 +3328,7 @@ final class CheckpointStore {
         guard isMember else {
             if !hasConsumedStarterPractice,
                activeCheckpointRun == nil,
-               activeQuestions.contains(where: { !QuestionVerificationPolicy.meetsCurrentRequirement($0) }) {
+               activeQuestions.contains(where: { !QuestionVerificationPolicy.isSafeForCurrentPractice($0) }) {
                 await generateInitialQuestionBatch(
                     for: goal,
                     requiredActiveGoalID: requiredActiveGoalID,
