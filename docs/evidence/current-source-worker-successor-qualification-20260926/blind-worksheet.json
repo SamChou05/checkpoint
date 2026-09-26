@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "capture_sha256": "c66cb1ba3d2987a361dfa06b1804814663f28a901573dd549a039a14d1b8a00d",
+  "plan_sha256": "1538df6423642f1d79e8e18279fd947bbcb5958ff4ea297137fee82a972ec89e",
+  "requested_slots": 15,
+  "items": [
+    {
+      "id": "3ba7305dc674052f55f02727",
+      "unavailable": true
+    },
+    {
+      "id": "b6553b775db479ad2746c6fd",
+      "stem": "What does the expression `0 or 'hello'` evaluate to in Python 3?",
+      "choices": {
+        "A": "'hello'",
+        "B": "0",
+        "C": "True",
+        "D": "False"
+      }
+    },
+    {
+      "id": "3fcd334fb1d6d599742a92f4",
+      "stem": "items = [1, 2, 3, 4, 5]\nprint(items[1:3])\n\nWhat does this print?",
+      "choices": {
+        "A": "[2, 3]",
+        "B": "[1, 2, 3]",
+        "C": "[2, 3, 4]",
+        "D": "[1, 2]"
+      }
+    },
+    {
+      "id": "8b03beb29794b1a7d32af17d",
+      "unavailable": true
+    },
+    {
+      "id": "6ebe7d99d6fdf3b33c8d8bab",
+      "stem": "x = 7\nresult = \"even\" if x % 2 == 0 else \"odd\"\nprint(result)\n\nWhat does this print?",
+      "choices": {
+        "A": "even",
+        "B": "7",
+        "C": "True",
+        "D": "odd"
+      }
+    },
+    {
+      "id": "1631f8cdcc4126418f55f75f",
+      "unavailable": true
+    },
+    {
+      "id": "4b895d2516b7db9c4c2b73d7",
+      "stem": "nums = [10, 20, 30, 40, 50]\nprint(nums[-2])\n\nWhat does this print?",
+      "choices": {
+        "A": "IndexError is raised",
+        "B": "40",
+        "C": "30",
+        "D": "50"
+      }
+    },
+    {
+      "id": "2bcf77d93f261c53dea0b355",
+      "unavailable": true
+    },
+    {
+      "id": "4121b142f542af9b32a10f49",
+      "stem": "Let q be a unitless number, defined by q = ((3 / 4) + (5 / 6)). What is its exact value?",
+      "choices": {
+        "A": "4/5",
+        "B": "2/3",
+        "C": "3/4",
+        "D": "19/12"
+      }
+    },
+    {
+      "id": "582c97c6c223d277c71082f4",
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: ((2 * x) + 3) = 11. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "5",
+        "B": "2",
+        "C": "4",
+        "D": "3"
+      }
+    },
+    {
+      "id": "396c6670522ddc333b279cb3",
+      "unavailable": true
+    },
+    {
+      "id": "7a4b2699b9004396b7edad3c",
+      "stem": "Neither the coach nor the players ___ satisfied with the final score. Choose the word or phrase that correctly completes the sentence.",
+      "choices": {
+        "A": "has been",
+        "B": "were",
+        "C": "was",
+        "D": "is"
+      }
+    },
+    {
+      "id": "08582a996bd0dd24e9a8e49a",
+      "unavailable": true
+    },
+    {
+      "id": "d3c230cda931f7c78f08a246",
+      "stem": "Let q be a unitless number, defined by q = ((2 / 3) * (9 / 4)). What is its exact value?",
+      "choices": {
+        "A": "3/2",
+        "B": "6",
+        "C": "9/2",
+        "D": "8/27"
+      }
+    },
+    {
+      "id": "dcd7caed834ab8fe0f5da9fe",
+      "stem": "What does the expression `True and False or True` evaluate to in Python 3?",
+      "choices": {
+        "A": "None",
+        "B": "TypeError is raised",
+        "C": "True",
+        "D": "False"
+      }
+    }
+  ]
+}
