@@ -243,6 +243,16 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
             with self.assertRaises(ServiceConfigurationError):
                 generation._constructed_author_batch_size(numerical, "constructed_quantitative")
         with patch.dict(os.environ, {**settings,
+                                    "QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256": "   "}):
+            with self.assertRaises(ServiceConfigurationError):
+                generation._constructed_author_batch_size(other, "constructed_quantitative")
+        with patch.dict(os.environ, {
+            "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3",
+            "QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256": digest,
+        }):
+            with self.assertRaises(ServiceConfigurationError):
+                generation._constructed_author_batch_size(other, "constructed_quantitative")
+        with patch.dict(os.environ, {**settings,
                                     "QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256": "0" * 64}):
             with self.assertRaises(ServiceConfigurationError):
                 generation._constructed_author_batch_size(numerical, "constructed_quantitative")

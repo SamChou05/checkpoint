@@ -167,6 +167,7 @@ class TaskOnlyAuthorTests(unittest.TestCase):
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
         with patch.dict(os.environ, {"QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256": self.goal_hash,
+                                  "QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256": self.goal_hash,
                                   "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3", "GENERATION_ATTEMPTS": "3"}):
             result = generation._generate_sanitized_questions(request, client, budget)
         self.assertEqual((len(result), budget.calls, reserve.call_count), (5, 4, 4))
@@ -197,6 +198,7 @@ class TaskOnlyAuthorTests(unittest.TestCase):
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
         with patch.dict(os.environ, {"QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256": self.goal_hash,
+                                  "QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256": self.goal_hash,
                                   "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3", "GENERATION_ATTEMPTS": "3"}):
             result = generation._generate_sanitized_questions({**self.request, "targetCount": 5}, client, budget)
         self.assertEqual((len(result), budget.calls, reserve.call_count), (3, 3, 3))

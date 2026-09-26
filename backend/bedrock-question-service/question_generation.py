@@ -397,11 +397,15 @@ def _constructed_author_batch_size(request: dict[str, Any], author_mode: str) ->
     target_count = request["targetCount"]
     if author_mode != "constructed_quantitative":
         return target_count
+    scoped_goal_present = "QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256" in os.environ
+    task_only_goal = os.getenv("QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256", "").strip().lower()
+    if (task_only_goal and "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE" in os.environ
+            and not scoped_goal_present):
+        raise ServiceConfigurationError("Task-only author batch cap requires an exact goal scope.")
     scoped_goal = os.getenv("QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256", "").strip().lower()
-    if scoped_goal:
+    if scoped_goal_present:
         if len(scoped_goal) != 64 or any(character not in "0123456789abcdef" for character in scoped_goal):
             raise ServiceConfigurationError("QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256 is invalid.")
-        task_only_goal = os.getenv("QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256", "").strip().lower()
         if task_only_goal and task_only_goal != scoped_goal:
             raise ServiceConfigurationError("Task-only and scoped author batch goals differ.")
         goal = request.get("goal")
