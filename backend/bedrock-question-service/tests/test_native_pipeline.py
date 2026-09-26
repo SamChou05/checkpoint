@@ -29,7 +29,7 @@ from skill_maps import _evolve_skill_map, _infer_skill_map
 from test_lambda_skill_map_evolution import _evolution_payload, _provider_response
 
 
-AUTHOR = "question_author_v3"
+AUTHOR = "question_author_v4_n1"
 SOLVER = "complete_choice_solver_v5_n1"
 LEGACY_SOLVER = "complete_choice_solver_v1"
 REVIEWER = "default_reviewer_v3_n1"
@@ -123,7 +123,10 @@ class ScriptedNativeClient:
         contract, result = self.steps.pop(0)
         assert request["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"] == contract
         system = request["system"][0]["text"]
-        if contract == AUTHOR:
+        if contract.startswith("question_author_v4_n"):
+            assert "NATIVE TRANSPORT OVERRIDE (question_author_v2)" in system
+            assert "NATIVE AUTHOR CARDINALITY OVERRIDE" in system
+        elif contract == "question_author_v3":
             assert "NATIVE TRANSPORT OVERRIDE (question_author_v2)" in system
         elif contract.startswith("default_reviewer_v3_n"):
             assert "REVIEW IDENTITY OVERRIDE" in system
@@ -140,6 +143,12 @@ class ScriptedNativeClient:
             raise result
         if callable(result):
             result = result(request)
+        if (contract.startswith(("question_author_v4_n", "question_author_mixed_v2_n",
+                                 "question_author_constructed_v2_n")) and isinstance(result, dict)
+                and isinstance(result.get("questions"), list)):
+            # Historical pipeline fixtures describe author rows as arrays.
+            # The fake provider emits the new native map on their behalf.
+            result = {"questions": {str(index): row for index, row in enumerate(result["questions"])}}
         return {
             "stopReason": "end_turn",
             "output": {"message": {"content": [{
@@ -153,6 +162,7 @@ class NativePipelineTests(unittest.TestCase):
     def setUp(self):
         environment = patch.dict(os.environ, {
             "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+            "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound",
             "BEDROCK_MODEL_ID": MODEL,
             "BEDROCK_VERIFICATION_MODEL_ID": MODEL,
             "BEDROCK_FALLBACK_MODEL_ID": "",
@@ -249,7 +259,8 @@ class NativePipelineTests(unittest.TestCase):
     def test_top_up_keeps_stage_schemas_and_accepted_work_after_invalid_native_output(self):
         request = _normalize_request(_request_payload(target_count=2))
         client = self.pipeline()
-        client.steps.append((AUTHOR, '{"questions":[],"unknown":true}'))
+        client.steps[0] = ("question_author_v4_n2", author_payload(self.question, self.question))
+        client.steps.append((AUTHOR, '{"questions":{},"unknown":true}'))
         metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
@@ -259,7 +270,7 @@ class NativePipelineTests(unittest.TestCase):
         top_up = task_data(client.calls[3], "generation_request_json")
         self.assertEqual(top_up["targetCount"], 1)
         self.assertIn(self.question["prompt"], top_up["existingPrompts"])
-        self.assertEqual(client.calls[0]["outputConfig"], client.calls[3]["outputConfig"])
+        self.assertNotEqual(client.calls[0]["outputConfig"], client.calls[3]["outputConfig"])
         self.assertEqual(metrics["ProviderCalls"], 4)
         self.assertEqual(budget.calls, 4)
         self.assertEqual(reserve.call_count, 4)
@@ -307,6 +318,7 @@ class NativePipelineTests(unittest.TestCase):
         secret = "private-learner-secret-from-provider-error"
         error = ClientError({"Error": {"Code": "ValidationException", "Message": secret}}, "Converse")
         client = self.pipeline()
+        client.steps[0] = ("question_author_v4_n2", author_payload(self.question, self.question))
         client.steps.extend([(AUTHOR, error), (AUTHOR, {"questions": []})])
         request = _normalize_request(_request_payload(target_count=2))
         reserve = Mock()
@@ -358,7 +370,7 @@ class NativePipelineTests(unittest.TestCase):
         self.assertEqual(set(structure), {"mode", "name", "version", "sha256"})
         self.assertEqual(structure["mode"], "native")
         self.assertEqual(structure["name"], AUTHOR)
-        self.assertEqual(structure["version"], "3")
+        self.assertEqual(structure["version"], "4")
         self.assertRegex(structure["sha256"], r"^[0-9a-f]{64}$")
         self.assertNotIn(secret, json.dumps(metrics))
         self.assertNotIn(self.question["expectedAnswer"], json.dumps(metrics))

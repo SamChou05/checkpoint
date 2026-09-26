@@ -10,7 +10,9 @@ from unittest.mock import patch
 from jsonschema import Draft202012Validator
 
 from lambda_test_support import _raw_question, _request_payload
-from native_output_contracts import adapt_native_response, contract_metadata, native_output_config, native_prompt
+from native_output_contracts import (
+    AuthorSlotContract, adapt_native_response, contract_metadata, native_output_config, native_prompt,
+)
 from question_generation import ProviderCallBudget, _generate_provider_payload, _generate_sanitized_questions
 from request_contract import _normalize_request
 from service_errors import ProviderError
@@ -57,17 +59,19 @@ class NativeAuthorV3Tests(unittest.TestCase):
         source = question()
         source["correctChoice"] = "d"
         source["explanation"] = "This unrelated sentence cannot choose or replace the answer key."
-        client = Client(raw(source))
+        contract = AuthorSlotContract(1)
+        client = Client(json.dumps({"questions": {"0": source}}))
         request = _normalize_request(_request_payload(target_count=1))
         metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
         with patch.dict(os.environ, {
             "BEDROCK_STRUCTURED_OUTPUT_MODE": "native", "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+            "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound",
             "BEDROCK_FALLBACK_MODEL_ID": "",
         }):
             result = _generate_provider_payload(request, client, ProviderCallBudget(1), metrics)
         self.assertEqual(result["questions"][0]["choices"], list(source["choices"].values()))
         self.assertEqual(result["questions"][0]["expectedAnswer"], source["choices"]["d"])
-        self.assertEqual(client.calls[0]["outputConfig"], native_output_config(CONTRACT))
+        self.assertEqual(client.calls[0]["outputConfig"], native_output_config(contract))
         instructions = client.calls[0]["system"][0]["text"]
         examples = [json.loads(line) for line in instructions.splitlines() if line.startswith('{"questions":')]
         self.assertEqual(len(examples), 1)
@@ -76,7 +80,7 @@ class NativeAuthorV3Tests(unittest.TestCase):
         self.assertNotIn("expectedAnswer exactly equals", instructions)
         self.assertIn("correctChoice identifies exactly one", instructions)
         self.assertEqual(metrics["ProviderObservations"][0]["structuredOutput"],
-                         {"mode": "native", **contract_metadata(CONTRACT)})
+                         {"mode": "native", **contract_metadata(contract)})
 
     def test_legacy_author_keeps_its_own_matching_output_example(self):
         client = Client(raw(_raw_question("Which statement follows from the given evidence?")))
@@ -97,9 +101,10 @@ class NativeAuthorV3Tests(unittest.TestCase):
 
     def test_initial_and_json_repair_share_the_mode_selected_author_contract(self):
         request = _normalize_request(_request_payload(target_count=1))
-        for mode, contract in (("legacy", "question_author_v1"), ("native", CONTRACT)):
+        for mode, contract in (("legacy", "question_author_v1"), ("native", AuthorSlotContract(1))):
             with self.subTest(mode=mode), patch.dict(os.environ, {
                 "BEDROCK_STRUCTURED_OUTPUT_MODE": mode,
+                "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound" if mode == "native" else "array",
                 "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5", "BEDROCK_FALLBACK_MODEL_ID": "",
             }), patch("question_generation._generate_with_bedrock", side_effect=["invalid JSON", '{"questions":[]}']) as generate:
                 self.assertEqual(_generate_provider_payload(request, object()), {"questions": []})
@@ -128,7 +133,7 @@ class NativeAuthorV3Tests(unittest.TestCase):
                     row.update(judgment="refuted", reason="Concentrate rises from9 to15liters:66⅔%, which is absent.")
             return solver_map(solver_record(item, "25%", refute_all))
 
-        client = ScriptedNativeClient((AUTHOR, {"questions": [bad_question]}), (SOLVER, solve))
+        client = ScriptedNativeClient((AUTHOR, {"questions": {"0": bad_question}}), (SOLVER, solve))
         request = _normalize_request({
             "goal": {"title": "Apply arithmetic to mixture quantities", "needsSkillMap": False},
             "targetCount": 1, "minimumDifficulty": 2,
@@ -136,6 +141,7 @@ class NativeAuthorV3Tests(unittest.TestCase):
         metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
         with patch.dict(os.environ, {
             "BEDROCK_STRUCTURED_OUTPUT_MODE": "native", "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+            "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound",
             "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
             "BEDROCK_FALLBACK_MODEL_ID": "", "QUESTION_FEEDBACK_CONTRACT": "reviewer_written",
             "GENERATION_ATTEMPTS": "1",

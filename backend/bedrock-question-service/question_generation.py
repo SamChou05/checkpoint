@@ -10,7 +10,7 @@ from typing import Any, Callable
 
 from generation_diagnostics import quality_summary, record_quality
 from native_output_contracts import (
-    Contract,
+    AuthorSlotContract,
     NativeContract,
     ReviewerSlotContract,
     SolverSlotContract,
@@ -56,7 +56,8 @@ from service_errors import (
 )
 from question_verification import NEGATIVE_ANSWER_GUIDANCE, verify_questions
 from quantitative_authoring import (
-    MIXED_AUTHOR_CONTRACT, CONSTRUCTED_AUTHOR_CONTRACT, QuantitativeAuthoringError, prepare_mixed_rows,
+    CONSTRUCTED_AUTHOR_CONTRACT, MIXED_AUTHOR_CONTRACT,
+    QuantitativeAuthoringError, prepare_mixed_rows,
 )
 
 
@@ -150,9 +151,18 @@ def _generate_provider_payload(
     request_metrics: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     errors: list[ProviderError] = []
-    author_contract: Contract = (CONSTRUCTED_AUTHOR_CONTRACT if _author_mode() == "constructed_quantitative" else
-                                MIXED_AUTHOR_CONTRACT if _author_mode() == "mixed_quantitative" else
-                                "question_author_v3" if output_mode() == "native" else "question_author_v1")
+    author_mode = _author_mode()
+    cardinality_mode = _author_cardinality_mode()
+    if output_mode() != "native":
+        author_contract: NativeContract = "question_author_v1"
+    elif cardinality_mode == "count_bound":
+        author_contract = AuthorSlotContract(request["targetCount"], author_mode)
+    else:
+        author_contract = {
+            "prose": "question_author_v3",
+            "mixed_quantitative": MIXED_AUTHOR_CONTRACT,
+            "constructed_quantitative": CONSTRUCTED_AUTHOR_CONTRACT,
+        }[author_mode]
     for model_id in _model_attempts():
         try:
             raw_text = _generate_with_bedrock(
@@ -711,6 +721,13 @@ def _author_mode() -> str:
         raise ServiceConfigurationError("Mixed quantitative authoring requires native mode.")
     if mode == "constructed_quantitative" and _feedback_contract() != "authored_solution":
         raise ServiceConfigurationError("Constructed quantitative authoring requires authored_solution feedback.")
+    return mode
+
+
+def _author_cardinality_mode() -> str:
+    mode = _model_setting("QUESTION_AUTHOR_CARDINALITY_CONTRACT", "array", {"array", "count_bound"})
+    if mode == "count_bound" and output_mode() != "native":
+        raise ServiceConfigurationError("Count-bound authoring requires native mode.")
     return mode
 
 

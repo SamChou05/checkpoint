@@ -111,6 +111,7 @@ class ObjectiveContextTests(unittest.TestCase):
                 for authored in (False, True):
                     with self.subTest(mapped=mapped, mode=mode, authored=authored), patch.dict(os.environ, {
                         "BEDROCK_STRUCTURED_OUTPUT_MODE": mode,
+                        "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound" if mode == "native" else "array",
                         "QUESTION_FEEDBACK_CONTRACT": "authored_solution" if authored else "reviewer_written",
                     }):
                         normalized, raw = request(mapped=mapped, sources=sources), question()
@@ -133,8 +134,9 @@ class ObjectiveContextTests(unittest.TestCase):
                                 text = provider_request["messages"][0]["content"][0]["text"]
                                 if "<generation_request_json>\n" in text:
                                     tag = "generation_request_json"
-                                    contract = "question_author_v3" if mode == "native" else "question_author_v1"
-                                    response = author_payload(raw) if mode == "native" else {"questions": [raw]}
+                                    contract = "question_author_v4_n1" if mode == "native" else "question_author_v1"
+                                    response = ({"questions": {"0": author_payload(raw)["questions"][0]}}
+                                                if mode == "native" else {"questions": [raw]})
                                 elif "<question_solution_json>\n" in text:
                                     tag = "question_solution_json"
                                     use_slots = mode == "native"

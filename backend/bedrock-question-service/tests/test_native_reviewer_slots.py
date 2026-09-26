@@ -18,7 +18,7 @@ from native_output_contracts import (
 from question_verification import COMPLETE_REVIEW_SYSTEM_PROMPT
 from service_errors import ProviderError, ServiceConfigurationError
 from test_native_pipeline import (
-    AUTHOR, REVIEWER, ScriptedNativeClient,
+    REVIEWER, ScriptedNativeClient,
     author_payload, review, review_map, solver_map, solver_record, task_data,
 )
 
@@ -150,7 +150,7 @@ class ReviewerSurvivorRoutingTests(unittest.TestCase):
             self.assertEqual([(item["index"], item["prompt"]) for item in items], [(0, self.question["prompt"])])
             return review_map(review(self.question))
 
-        client = ScriptedNativeClient((AUTHOR, author_payload(rejected, self.question)),
+        client = ScriptedNativeClient(("question_author_v4_n2", author_payload(rejected, self.question)),
                                       ("complete_choice_solver_v5_n2", solve), (REVIEWER, reviewer))
         request = {**self.request, "targetCount": 2}
         metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}

@@ -34,6 +34,7 @@ Contract = Literal[
 ]
 
 MAX_REVIEW_BATCH_COUNT = 40
+MAX_AUTHOR_BATCH_COUNT = 40
 
 # Match only the owned author example, never arbitrary JSON or subject content.
 _LEGACY_AUTHOR_EXAMPLE = '{"questions":[{"prompt":"...","explanation":"...","expectedAnswer":"...","choices":["...","...","...","..."],"topic":"...","skillID":"...","objectiveID":"...","objective":"...","difficulty":3,"format":"Multiple Choice"}]}'
@@ -71,6 +72,39 @@ class SolverSlotContract:
 
 
 @dataclass(frozen=True)
+class AuthorSlotContract:
+    """Bind the author's raw row count to this generation pass's request."""
+
+    count: int
+    mode: Literal["prose", "mixed_quantitative", "constructed_quantitative"] = "prose"
+
+    def __post_init__(self) -> None:
+        if type(self.count) is not int or not 1 <= self.count <= MAX_AUTHOR_BATCH_COUNT:
+            raise ServiceConfigurationError("Native author count must be an integer from 1 through 40.")
+        if type(self.mode) is not str or self.mode not in {
+            "prose", "mixed_quantitative", "constructed_quantitative"
+        }:
+            raise ServiceConfigurationError("Unknown native author mode.")
+
+    @property
+    def base_contract(self) -> Contract:
+        return {
+            "prose": "question_author_v3",
+            "mixed_quantitative": MIXED_AUTHOR_CONTRACT,
+            "constructed_quantitative": CONSTRUCTED_AUTHOR_CONTRACT,
+        }[self.mode]
+
+    @property
+    def name(self) -> str:
+        prefix = {
+            "prose": "question_author_v4",
+            "mixed_quantitative": "question_author_mixed_v2",
+            "constructed_quantitative": "question_author_constructed_v2",
+        }[self.mode]
+        return f"{prefix}_n{self.count}"
+
+
+@dataclass(frozen=True)
 class AuthoredSolutionReviewContract:
     """Bind immutable-main audit identities to actual post-solver survivors."""
 
@@ -105,10 +139,12 @@ AUTHORED_ISSUE_FLAGS = (
 )
 
 _COUNT_BOUND_CONTRACTS = (
-    ReviewerSlotContract, SolverSlotContract, AuthoredSolutionReviewContract, AuthoredSolutionFlagReviewContract,
+    AuthorSlotContract, ReviewerSlotContract, SolverSlotContract, AuthoredSolutionReviewContract,
+    AuthoredSolutionFlagReviewContract,
 )
 NativeContract = (
-    Contract | ReviewerSlotContract | SolverSlotContract | AuthoredSolutionReviewContract | AuthoredSolutionFlagReviewContract
+    Contract | AuthorSlotContract | ReviewerSlotContract | SolverSlotContract |
+    AuthoredSolutionReviewContract | AuthoredSolutionFlagReviewContract
 )
 
 _STRING = {"type": "string"}
@@ -254,6 +290,11 @@ def output_mode() -> str:
 
 
 def _contract_schema(contract: NativeContract) -> dict[str, Any]:
+    if isinstance(contract, AuthorSlotContract):
+        row = _SCHEMAS[contract.base_contract]["properties"]["questions"]["items"]
+        return _object({"questions": _object({
+            str(index): copy.deepcopy(row) for index in range(contract.count)
+        })})
     if isinstance(contract, AuthoredSolutionFlagReviewContract):
         row = _object({
             "valid": _BOOLEAN, "answer": _STRING,
@@ -315,12 +356,26 @@ def _solver_slot_transport_schema(contract: SolverSlotContract) -> dict[str, Any
     return schema
 
 
+def _author_slot_transport_schema(contract: AuthorSlotContract) -> dict[str, Any]:
+    """Share one ordered author row while retaining the base mode's definitions."""
+    base = native_output_config(contract.base_contract)
+    source = json.loads(base["textFormat"]["structure"]["jsonSchema"]["schema"])
+    row = source["properties"]["questions"]["items"]
+    schema = _object({"questions": _object({
+        str(index): {"$ref": "#/$defs/authorRow"} for index in range(contract.count)
+    })})
+    schema["$defs"] = {**source.get("$defs", {}), "authorRow": row}
+    return schema
+
+
 def native_output_config(contract: NativeContract) -> dict[str, Any]:
     """Return an independent wrapper with stable schema serialization."""
     schema = json.dumps(_contract_schema(contract), sort_keys=not isinstance(contract, _COUNT_BOUND_CONTRACTS),
                         separators=(",", ":"))
     if isinstance(contract, SolverSlotContract):
         schema = json.dumps(_solver_slot_transport_schema(contract), separators=(",", ":"))
+    if isinstance(contract, AuthorSlotContract):
+        schema = json.dumps(_author_slot_transport_schema(contract), separators=(",", ":"))
     if isinstance(contract, (AuthoredSolutionReviewContract, AuthoredSolutionFlagReviewContract)):
         # Share the closed row definition so larger batches do not multiply the
         # provider grammar. The local validator uses the exact expanded schema.
@@ -365,7 +420,9 @@ def contract_metadata(contract: NativeContract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
     return {"name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract,
-            "version": ("3" if isinstance(contract, AuthoredSolutionFlagReviewContract) else
+            "version": ("4" if isinstance(contract, AuthorSlotContract) and contract.mode == "prose" else
+                        "2" if isinstance(contract, AuthorSlotContract) else
+                        "3" if isinstance(contract, AuthoredSolutionFlagReviewContract) else
                         "2" if isinstance(contract, AuthoredSolutionReviewContract) else
                         "5" if isinstance(contract, SolverSlotContract) else "3"
                         if isinstance(contract, ReviewerSlotContract) else contract.rsplit("_v", 1)[1]),
@@ -426,6 +483,42 @@ def _authored_flag_review_prompt(system_prompt: str, contract: AuthoredSolutionF
 
 
 def native_prompt(system_prompt: str, contract: NativeContract) -> str:
+    if isinstance(contract, AuthorSlotContract):
+        prompt = native_prompt(system_prompt, contract.base_contract)
+        examples = [line for line in prompt.splitlines() if line.startswith('{"questions":')]
+        if len(examples) != 1:
+            raise ServiceConfigurationError("Count-bound author prompt requires one owned output example.")
+        example_line = examples[0]
+        try:
+            rows = json.loads(example_line)["questions"]
+        except (ValueError, TypeError, KeyError) as error:
+            raise ServiceConfigurationError("Count-bound author example is malformed.") from error
+        if type(rows) is not list or not rows:
+            raise ServiceConfigurationError("Count-bound author example must contain a row.")
+        illustration = json.dumps({"questions": {"0": rows[0]}}, separators=(",", ":"))
+        prompt = prompt.replace(
+            example_line,
+            "Illustrative single map entry with ordered row fields; return every required key below:\n"
+            + illustration,
+            1,
+        )
+        if contract.mode != "prose":
+            if prompt.count('Return {"questions":[...]} using exactly') != 1:
+                raise ServiceConfigurationError("Count-bound mixed author instructions drifted.")
+            prompt = prompt.replace(
+                'Return {"questions":[...]} using exactly',
+                "Return the required questions object using exactly",
+            )
+        keys = ", ".join(json.dumps(str(index)) for index in range(contract.count))
+        return prompt + "\n\n" + (
+            f"NATIVE AUTHOR CARDINALITY OVERRIDE ({contract.name}): Return questions as an object, "
+            f"not an array. It must contain exactly these required keys: {keys}. Each key "
+            "holds one complete, distinct question row for this generation pass; never add an "
+            "unknown key or an index field inside a row. This replaces every earlier array "
+            "output instruction or example. Preserve the row format, subject, assignments, "
+            "difficulty, novelty and content-quality requirements above. Do not insert empty "
+            "or repeated rows just to satisfy the structure."
+        )
     if isinstance(contract, AuthoredSolutionFlagReviewContract):
         return _authored_flag_review_prompt(system_prompt, contract)
     if isinstance(contract, AuthoredSolutionReviewContract):
@@ -557,6 +650,14 @@ def adapt_native_response(raw: str, contract: NativeContract) -> str:
         _validate_schema_value(payload, _contract_schema(contract))
     except ValueError as error:
         raise ProviderError("Native stage response violates its contract.") from error
+    if isinstance(contract, AuthorSlotContract):
+        # Full closed-map validation precedes adaptation. Never salvage a
+        # partial batch, trust model-written indexes, or change source ordinals.
+        restored = {"questions": [
+            payload["questions"][str(index)] for index in range(contract.count)
+        ]}
+        return adapt_native_response(json.dumps(restored, ensure_ascii=False, allow_nan=False),
+                                     contract.base_contract)
     if isinstance(contract, SolverSlotContract):
         # Only required trusted keys can become indexes. Validate the complete
         # map before adapting; malformed or unbound records are never salvaged.

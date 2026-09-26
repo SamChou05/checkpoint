@@ -57,6 +57,9 @@ class _ScriptedClient:
         self.calls.append(copy.deepcopy(request))
         if callable(response):
             response = response(data)
+        if (contract.startswith("question_author_v4_n") and isinstance(response, dict)
+                and isinstance(response.get("questions"), list)):
+            response = {"questions": {str(index): row for index, row in enumerate(response["questions"])}}
         return {
             "stopReason": "end_turn",
             "output": {"message": {"content": [{
@@ -104,7 +107,8 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
     def test_generation_preserves_goal_through_author_repair_solver_and_review(self):
         for mode in ("legacy", "native"):
             with self.subTest(mode=mode), patch.dict(
-                os.environ, {"BEDROCK_STRUCTURED_OUTPUT_MODE": mode},
+                os.environ, {"BEDROCK_STRUCTURED_OUTPUT_MODE": mode,
+                             "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound" if mode == "native" else "array"},
             ):
                 self.mode = mode
                 payload = _request_payload(target_count=1)
@@ -149,7 +153,7 @@ class GoalContextProviderBoundaryTests(unittest.TestCase):
                     steps.append(("generation_request_json", "question_author_v1", "not JSON"))
                 steps.extend([
                     ("generation_request_json",
-                     "question_author_v3" if mode == "native" else "question_author_v1",
+                     "question_author_v4_n1" if mode == "native" else "question_author_v1",
                      author_payload(question) if mode == "native" else {"questions": [question]}),
                     ("question_solution_json",
                      "complete_choice_solver_v5_n1" if mode == "native" else "complete_choice_solver_v1",

@@ -15,7 +15,7 @@ from question_teaching import AuthoredTeachingFormatError, freeze_authored_quest
 from question_verification import verify_questions
 from request_contract import _normalize_request
 from service_errors import ProviderError, ServiceConfigurationError
-from test_native_pipeline import AUTHOR, MODEL, ScriptedNativeClient, author_payload, authored_issue_flags, solver_map, solver_record, task_data
+from test_native_pipeline import MODEL, ScriptedNativeClient, author_payload, authored_issue_flags, solver_map, solver_record, task_data
 from verification_policy import AUTHORED_PAIR_VERIFICATION_POLICY_REVISION, VERIFICATION_POLICY_REVISION
 
 
@@ -79,7 +79,7 @@ class NativeAuthoredSolutionPairTests(unittest.TestCase):
 
         count = len(questions)
         return ScriptedNativeClient(
-            (AUTHOR, author_payload(*questions)),
+            ("question_author_v3", author_payload(*questions)),
             (native.SolverSlotContract(count).name, solve),
             (native.AuthoredSolutionFlagReviewContract(count - len(rejected)).name, review),
         )
@@ -192,9 +192,14 @@ class NativeAuthoredSolutionPairTests(unittest.TestCase):
         first.steps.extend(second.steps)
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
-        with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "2"}):
+        with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "2",
+                                          "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "array"}):
             result = generation._generate_sanitized_questions(self.request(2), first, budget)
         self.assertEqual((budget.calls, reserve.call_count), (6, 6))
+        self.assertEqual([first.calls[index]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"]
+                          for index in (0, 3)], ["question_author_v3"] * 2)
+        self.assertEqual(task_data(first.calls[0], "generation_request_json")["targetCount"], 2)
+        self.assertEqual(task_data(first.calls[3], "generation_request_json")["targetCount"], 1)
         self.assertEqual([q["explanation"] for q in result], [q["explanation"] for q in self.questions[:2]])
         self.assertTrue(all(q["choiceExplanations"] == {} for q in result))
 

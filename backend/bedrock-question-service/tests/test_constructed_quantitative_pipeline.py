@@ -44,6 +44,7 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
     def setUp(self):
         self.enterContext(patch.dict(os.environ, {
             "BEDROCK_STRUCTURED_OUTPUT_MODE": "native", "QUESTION_AUTHOR_MODE": "constructed_quantitative",
+            "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound",
             "QUESTION_FEEDBACK_CONTRACT": "authored_solution", "BEDROCK_MODEL_ID": MODEL,
             "BEDROCK_VERIFICATION_MODEL_ID": MODEL, "BEDROCK_FALLBACK_MODEL_ID": "",
             "BEDROCK_CLAUDE_THINKING": "disabled", "GENERATION_ATTEMPTS": "1",
@@ -92,7 +93,8 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
                 reviews[str(item["index"])] = review
             return {"reviews": reviews}
 
-        steps = [(CONTRACT, {"questions": rows})]
+        steps = [(native.AuthorSlotContract(len(rows), "constructed_quantitative").name,
+                  {"questions": rows})]
         if solver_count:
             steps.append((f"complete_choice_solver_v5_n{solver_count}", solve))
         if audit_count:
@@ -106,7 +108,8 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
         metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
         result = generation._generate_sanitized_questions(self.request(len(rows)), client, budget, metrics)
         self.assertEqual((budget.calls, reserve.call_count, metrics["ProviderCalls"]), (len(client.calls),) * 3)
-        self.assertEqual(metrics["ProviderObservations"][0]["structuredOutput"]["name"], CONTRACT)
+        self.assertEqual(metrics["ProviderObservations"][0]["structuredOutput"]["name"],
+                         native.AuthorSlotContract(len(rows), "constructed_quantitative").name)
         return result, client, budget, metrics
 
     def test_task_only_native_author_produces_five_exact_compiled_items_in_two_calls(self):
@@ -164,7 +167,8 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
         bad_rows = [row(value) for value in bad_tasks]
         bad_rows.extend({**row(), field: "model supplied"} for field in ("choices", "explanation", "verificationPolicyRevision", "compiled"))
         for value in bad_rows:
-            client = ScriptedNativeClient((CONTRACT, {"questions": [value]}))
+            client = ScriptedNativeClient((native.AuthorSlotContract(1, "constructed_quantitative").name,
+                                           {"questions": [value]}))
             with self.subTest(row=value), self.assertRaises(ProviderError):
                 generation._generate_sanitized_questions(self.request(1), client, generation.ProviderCallBudget(3))
             self.assertEqual(len(client.calls), 1)
@@ -224,8 +228,10 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
             reserve.assert_not_called()
 
     def test_partial_topup_preserves_compiled_then_prose_and_durable_refusal_propagates(self):
-        client = self.client([row()])
-        client.steps.extend(self.client([prose_row(self.prose)], solver_count=1).steps)
+        first = row()
+        prose = prose_row(self.prose)
+        client = self.client([first, copy.deepcopy(first), copy.deepcopy(first)], audit_count=1)
+        client.steps.extend(self.client([prose, copy.deepcopy(prose)], solver_count=1).steps)
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
         with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "3"}):
@@ -233,7 +239,8 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
         self.assertEqual([q["verificationPolicyRevision"] for q in result], [8, 7])
         self.assertEqual((budget.calls, reserve.call_count), (5, 5))
         self.assertIn(result[0]["prompt"], task_data(client.calls[2], "generation_request_json")["existingPrompts"])
-        client = self.client([row()])
+        first = row()
+        client = self.client([first, copy.deepcopy(first)], audit_count=1)
         reserve = Mock(side_effect=[None, None, DurableProviderCallBudgetExceededError("synthetic refusal")])
         with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "2"}), self.assertRaises(DurableProviderCallBudgetExceededError):
             generation._generate_sanitized_questions(self.request(2), client, generation.ProviderCallBudget(6, reserve_call=reserve))

@@ -201,12 +201,12 @@ class SolverSlotRoutingTests(unittest.TestCase):
             items = task_data(request, "question_review_json")["items"]
             self.assertEqual([(item["index"], item["prompt"]) for item in items], [(0, self.question["prompt"])])
             return review_map(review(self.question))
-        client = ScriptedNativeClient((AUTHOR, author_payload(invalid, rejected, self.question)),
+        client = ScriptedNativeClient(("question_author_v4_n3", author_payload(invalid, rejected, self.question)),
                                       ("complete_choice_solver_v5_n2", solve), (REVIEWER, reviewer))
         reserve = Mock()
         budget = generation.ProviderCallBudget(3, reserve_call=reserve)
         metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
-        result = generation._generate_sanitized_questions({**self.request, "targetCount": 4}, client, budget, metrics)
+        result = generation._generate_sanitized_questions({**self.request, "targetCount": 3}, client, budget, metrics)
         self.assertEqual([question["prompt"] for question in result], [self.question["prompt"]])
         self.assertEqual(result[0]["verificationPolicyRevision"], 4)
         self.assertEqual((len(client.calls), budget.calls, reserve.call_count), (3, 3, 3))

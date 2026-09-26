@@ -8,6 +8,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 import question_generation as generation
+from native_output_contracts import AuthorSlotContract
 from lambda_test_support import _raw_question, _request_payload, _skill_map
 from quantitative_authoring import (
     CompiledCandidate, LEARNER_FIELDS, MIXED_AUTHOR_CONTRACT, QuantitativeAuthoringError, prepare_mixed_rows,
@@ -35,6 +36,7 @@ class MixedQuantitativePipelineTests(unittest.TestCase):
     def setUp(self):
         environment = patch.dict(os.environ, {
             "BEDROCK_STRUCTURED_OUTPUT_MODE": "native", "QUESTION_AUTHOR_MODE": "mixed_quantitative",
+            "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound",
             "QUESTION_FEEDBACK_CONTRACT": "reviewer_written", "BEDROCK_MODEL_ID": MODEL,
             "BEDROCK_VERIFICATION_MODEL_ID": MODEL, "BEDROCK_FALLBACK_MODEL_ID": "",
             "GENERATION_ATTEMPTS": "1", "BEDROCK_CLAUDE_THINKING": "disabled",
@@ -81,7 +83,7 @@ class MixedQuantitativePipelineTests(unittest.TestCase):
 
         survivors = expected_after_sanitize - len(solver_reject)
         return ScriptedNativeClient(
-            (MIXED_AUTHOR_CONTRACT, {"questions": rows}),
+            (AuthorSlotContract(len(rows), "mixed_quantitative").name, {"questions": rows}),
             (f"complete_choice_solver_v5_n{expected_after_sanitize}", solver),
             (f"default_reviewer_v3_n{survivors}", reviewer),
         )
@@ -147,7 +149,8 @@ class MixedQuantitativePipelineTests(unittest.TestCase):
         self.assertEqual(budget.calls, 3)
 
     def test_every_invalid_compiled_item_stops_after_author_without_stamp(self):
-        client = ScriptedNativeClient((MIXED_AUTHOR_CONTRACT, {"questions": [quantitative_row(scalar_task(False))]}))
+        client = ScriptedNativeClient((AuthorSlotContract(1, "mixed_quantitative").name,
+                                       {"questions": [quantitative_row(scalar_task(False))]}))
         budget = generation.ProviderCallBudget(3)
         self.assertEqual(generation._generate_sanitized_questions(self.request(1), client, budget), [])
         self.assertEqual(budget.calls, 1)
@@ -163,7 +166,8 @@ class MixedQuantitativePipelineTests(unittest.TestCase):
         for field in ("verificationPolicyRevision", "compiled", "provenance", "expectedAnswer"):
             row = quantitative_row()
             row[field] = 6
-            client = ScriptedNativeClient((MIXED_AUTHOR_CONTRACT, {"questions": [row]}))
+            client = ScriptedNativeClient((AuthorSlotContract(1, "mixed_quantitative").name,
+                                           {"questions": [row]}))
             with self.assertRaises(ProviderError):
                 generation._generate_sanitized_questions(self.request(1), client, generation.ProviderCallBudget(3))
             self.assertEqual(len(client.calls), 1)
@@ -214,7 +218,7 @@ class MixedQuantitativePipelineTests(unittest.TestCase):
 
     def test_two_full_passes_share_existing_six_call_and_durable_reservation_budget(self):
         first, second = quantitative_row(), quantitative_row(exact_task("3", ("4", "5", "6", "7")))
-        client = self.client([first])
+        client = self.client([first, copy.deepcopy(first)])
         client.steps.extend(self.client([second]).steps)
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
