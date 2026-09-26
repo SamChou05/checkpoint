@@ -13,7 +13,7 @@ from question_quality import (
     _sanitize_questions,
 )
 from question_verification import _has_reviewable_choices, verify_questions
-from request_contract import _choice_uniqueness_key, _normalize_request
+from request_contract import _choice_uniqueness_key, _has_unambiguous_choices, _normalize_request
 from lambda_test_support import _request_payload
 
 FIXTURES = json.loads(
@@ -63,6 +63,25 @@ class ChoiceIdentityTests(unittest.TestCase):
             }
             self.assertEqual(_sanitize_questions([question], request), [])
             self.assertFalse(_has_reviewable_choices(question))
+
+    def test_nonrendering_controls_cannot_create_duplicate_display_choices(self):
+        hidden = ("\u00ad", "\u061c", "\u200b", "\u200e", "\u200f", "\u202a", "\u202b",
+                  "\u202c", "\u202d", "\u202e", "\u2060", "\u2066", "\u2067", "\u2068",
+                  "\u2069", "\ufeff", "\U000e0000", "\U000e007f")
+        for control in hidden:
+            choices = ["K", "K" + control, "L", "M"]
+            item = {**FIXTURES["questions"][0], "choices": choices, "expectedAnswer": "K"}
+            with self.subTest(codepoint=hex(ord(control))):
+                self.assertFalse(_has_unambiguous_choices(choices))
+                self.assertEqual(_sanitize_questions([item], _normalize_request(_request_payload(target_count=1))), [])
+                self.assertFalse(_has_reviewable_choices(item))
+
+        self.assertFalse(_has_unambiguous_choices(["K", "\u200b K", "L", "M"]))
+        self.assertFalse(_has_unambiguous_choices(["\u200b", "K", "L", "M"]))
+
+        # These can change rendered emoji or script, so they are not erased.
+        for choices in (["👩‍💻", "👩💻", "A", "B"], ["❤", "❤️", "A", "B"]):
+            self.assertTrue(_has_unambiguous_choices(choices))
 
     def test_choice_set_identity_cannot_collide_on_literal_separators(self):
         first = ["a|b", "c", "d", "e"]

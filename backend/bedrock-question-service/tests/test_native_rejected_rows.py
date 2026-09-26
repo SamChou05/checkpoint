@@ -34,7 +34,7 @@ def review(item, index, *, valid=True):
 class NativeRejectedRowsTests(unittest.TestCase):
     def setUp(self):
         self.valid = question("What is 2 + 2?", "4", ["4", "5", "6", "7"])
-        self.invalid = question("What is 1 + 1?", "2", ["2", "3", "3.0", "4"])
+        self.invalid = question("What is 1 + 1?", "2", ["2", "3", "5", "4"])
         self.positive = review(self.valid, 0)
         self.negative = review(self.invalid, 1, valid=False)
 
@@ -90,8 +90,12 @@ class NativeRejectedRowsTests(unittest.TestCase):
         questions = [question(case["prompt"], case["expectedAnswer"], case["choices"])
                      for case in plan["expected_cases"]]
         metrics = {}
-        accepted = verify_questions(questions, {"minimumDifficulty": 1}, lambda *_: adapted,
-                                    metrics, preserve_reviewed_text=True)
+        # This frozen capture predates the later plain-scalar preflight. Replay
+        # the reviewer contract at its historical boundary; that new preflight
+        # has separate current-path tests and must not rewrite captured rows.
+        with patch("question_verification.has_plain_scalar_collision", return_value=False):
+            accepted = verify_questions(questions, {"minimumDifficulty": 1}, lambda *_: adapted,
+                                        metrics, preserve_reviewed_text=True)
         admitted = [case["id"] for case in plan["expected_cases"]
                     if any(q["prompt"] == case["prompt"] and q["choices"] == case["choices"] for q in accepted)]
         self.assertEqual(admitted, ["valid_arithmetic", "case_sensitive_valid", "operator_sensitive_valid"])

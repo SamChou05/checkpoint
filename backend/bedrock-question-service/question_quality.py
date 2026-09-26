@@ -7,6 +7,7 @@ from quantitative_authoring import QuantitativeAuthoringError, checked_provenanc
 from typing import Any
 
 from generation_diagnostics import record_quality
+from plain_scalar_choices import has_plain_scalar_collision
 
 from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 from request_contract import (
@@ -300,6 +301,9 @@ def _sanitize_questions(
             # Validation above still applies; compiler order and exact text are
             # authoritative rather than the legacy correct-answer-first order.
             choices = list(raw_question["choices"])
+        if has_plain_scalar_collision(prompt, choices):
+            record_quality(request_metrics, "sanitize", "duplicate_choices")
+            continue
         if _looks_like_generic_meta_question(
             prompt, expected_answer, choices, explanation
         ):

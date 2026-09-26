@@ -1501,6 +1501,26 @@ def _choice_uniqueness_key(value: str) -> str:
     return value.strip(" \t\n\r\v\f")
 
 
+_NONRENDERING_CHOICE_CODEPOINTS = frozenset({
+    0x00AD, 0x061C, 0x200B, 0x200E, 0x200F, 0x202A, 0x202B, 0x202C,
+    0x202D, 0x202E, 0x2060, 0x2066, 0x2067, 0x2068, 0x2069, 0xFEFF,
+    *range(0xE0000, 0xE0080),
+})
+
+
+def _display_choice_identity(value: str) -> str:
+    """Detect alternatives made indistinguishable by selected hidden controls.
+
+    Do not remove joiners or variation selectors: they can visibly change emoji
+    and script. This is an ambiguity veto, never a replacement for stored text.
+    """
+    visible = "".join(
+        character for character in value
+        if ord(character) not in _NONRENDERING_CHOICE_CODEPOINTS
+    )
+    return unicodedata.normalize("NFC", visible.strip(" \t\n\r\v\f"))
+
+
 def _has_unambiguous_choices(choices: list[str]) -> bool:
     """Reject sets that Swift String-keyed UI/feedback cannot represent safely.
 
@@ -1508,9 +1528,8 @@ def _has_unambiguous_choices(choices: list[str]) -> bool:
     or establish expected-answer membership.
     """
     keys = [_choice_uniqueness_key(choice) for choice in choices]
-    return bool(keys) and all(keys) and len(
-        {unicodedata.normalize("NFC", key) for key in keys}
-    ) == len(keys)
+    display_keys = [_display_choice_identity(key) for key in keys]
+    return bool(keys) and all(display_keys) and len(set(display_keys)) == len(keys)
 
 
 def _semantic_signal_key(value: str) -> str:

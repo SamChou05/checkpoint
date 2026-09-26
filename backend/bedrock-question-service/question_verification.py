@@ -15,6 +15,7 @@ from answer_position_references import contains_answer_label_references as _cont
 from quantitative_authoring import QuantitativeAuthoringError, checked_provenance
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _strict_json_object
+from plain_scalar_choices import has_plain_scalar_collision
 from question_teaching import (
     AUTHORED_SOLUTION_REVIEW_SYSTEM_PROMPT,
     AuthoredTeachingFormatError,
@@ -665,7 +666,9 @@ def _has_reviewable_choices(question: dict[str, Any]) -> bool:
     keys = [_choice_uniqueness_key(choice) for choice in choices]
     # Similar wording and short final qualifiers require semantic review. They
     # are not duplicates merely because one text is a long prefix of another.
-    return _has_unambiguous_choices(keys)
+    return _has_unambiguous_choices(keys) and not has_plain_scalar_collision(
+        question.get("prompt"), choices
+    )
 
 
 def _bounded_explanation(value: Any, limit: int) -> bool:
