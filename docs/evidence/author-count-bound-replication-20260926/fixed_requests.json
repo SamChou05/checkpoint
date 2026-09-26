@@ -1,0 +1,104 @@
+{
+  "experiment": "author-count-bound-replication-20260926",
+  "region": "us-east-1",
+  "model_id": "moonshotai.kimi-k2.5",
+  "environment": {
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "200",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced"
+  },
+  "jobs": [
+    {
+      "id": "archive_circulation_array_n5",
+      "assignment_id": "archive_circulation",
+      "author_mode": "prose",
+      "cardinality_contract": "array",
+      "feedback_contract": "reviewer_written",
+      "payload": {
+        "goal": {
+          "title": "Apply fictional archive circulation rules",
+          "learningTarget": "Determine valid item loans and renewals from stated eligibility, hold, and return rules",
+          "contentTopics": [
+            "Loan windows",
+            "Renewal eligibility",
+            "Hold precedence"
+          ],
+          "questionDirective": "Write five distinct, self-contained multiple-choice cases about fictional archive circulation. State every needed loan period, time convention, membership condition, hold rule, and all other premises inside each item. Require one and only one correct answer. Make each incorrect choice fail one identifiable stated rule; explain the correct choice and every rejection accurately. Do not reuse a scenario or correct-answer mechanism within these five items. Assume no outside domain knowledge."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 2
+      }
+    },
+    {
+      "id": "archive_circulation_count_bound_n5",
+      "assignment_id": "archive_circulation",
+      "author_mode": "prose",
+      "cardinality_contract": "count_bound",
+      "feedback_contract": "reviewer_written",
+      "payload": {
+        "goal": {
+          "title": "Apply fictional archive circulation rules",
+          "learningTarget": "Determine valid item loans and renewals from stated eligibility, hold, and return rules",
+          "contentTopics": [
+            "Loan windows",
+            "Renewal eligibility",
+            "Hold precedence"
+          ],
+          "questionDirective": "Write five distinct, self-contained multiple-choice cases about fictional archive circulation. State every needed loan period, time convention, membership condition, hold rule, and all other premises inside each item. Require one and only one correct answer. Make each incorrect choice fail one identifiable stated rule; explain the correct choice and every rejection accurately. Do not reuse a scenario or correct-answer mechanism within these five items. Assume no outside domain knowledge."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 2
+      }
+    },
+    {
+      "id": "greenhouse_alerts_count_bound_n5",
+      "assignment_id": "greenhouse_alerts",
+      "author_mode": "prose",
+      "cardinality_contract": "count_bound",
+      "feedback_contract": "reviewer_written",
+      "payload": {
+        "goal": {
+          "title": "Apply fictional greenhouse alert policy rules",
+          "learningTarget": "Choose the required alert action from stated sensor thresholds, observation windows, and override precedence",
+          "contentTopics": [
+            "Threshold decisions",
+            "Observation windows",
+            "Override precedence"
+          ],
+          "questionDirective": "Write five distinct, self-contained multiple-choice cases about fictional greenhouse alert policy. State every needed sensor value, threshold, comparison boundary, observation window, override, and all other premises inside each item. Require one and only one correct answer. Make each incorrect choice fail one identifiable stated rule; explain the correct choice and every rejection accurately. Do not reuse a scenario or correct-answer mechanism within these five items. Assume no outside domain knowledge."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 2
+      }
+    },
+    {
+      "id": "greenhouse_alerts_array_n5",
+      "assignment_id": "greenhouse_alerts",
+      "author_mode": "prose",
+      "cardinality_contract": "array",
+      "feedback_contract": "reviewer_written",
+      "payload": {
+        "goal": {
+          "title": "Apply fictional greenhouse alert policy rules",
+          "learningTarget": "Choose the required alert action from stated sensor thresholds, observation windows, and override precedence",
+          "contentTopics": [
+            "Threshold decisions",
+            "Observation windows",
+            "Override precedence"
+          ],
+          "questionDirective": "Write five distinct, self-contained multiple-choice cases about fictional greenhouse alert policy. State every needed sensor value, threshold, comparison boundary, observation window, override, and all other premises inside each item. Require one and only one correct answer. Make each incorrect choice fail one identifiable stated rule; explain the correct choice and every rejection accurately. Do not reuse a scenario or correct-answer mechanism within these five items. Assume no outside domain knowledge."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 2
+      }
+    }
+  ]
+}
