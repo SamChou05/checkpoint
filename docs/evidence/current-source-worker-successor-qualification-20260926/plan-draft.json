@@ -1,0 +1,348 @@
+{
+  "state": "draft_unfrozen_offline_only",
+  "purpose": "Separately frozen current-source generation-worker successor after the zero-model-call credential-lifetime setup abort; same prespecified jobs and criteria, no count-bound author contract.",
+  "source_commit": "99cd50a3ed7ee8babe98ec9e8763cdd9f9edff53",
+  "source_root": "/Users/samchou/.codex/worktrees/current-worker-qualification/Checkpoint",
+  "source_hashes": {
+    "backend/bedrock-question-service/answer_position_references.py": "7afe3705ef5d87d2426a4c6dfb2ed53136dda92f082052f77cea30e3f85d00dc",
+    "backend/bedrock-question-service/complete_question_solution.py": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+    "backend/bedrock-question-service/execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "backend/bedrock-question-service/generation_diagnostics.py": "0b73f213a862135bc3f8cd3bb389aa1b77f68f27268128aa9900ddb06df053af",
+    "backend/bedrock-question-service/lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "backend/bedrock-question-service/native_output_contracts.py": "082c347f061843aea33f654ce45989900261d646af763d5cb85a2abedb5b41bd",
+    "backend/bedrock-question-service/plain_scalar_choices.py": "29bf6f761ca04bfeaeaebed960e0ccb2b96cfd7869679100412a041dc0ead3f7",
+    "backend/bedrock-question-service/python_boolean_teaching.py": "d60e67101ee262bdad8c37c7b29ea319ee1966030fc57b7a8e4a119f9789069c",
+    "backend/bedrock-question-service/quantitative_authoring.py": "12a44d69994e855a1866619fdd03f8873ef0908619a18df9cd3074e6bfdcbca2",
+    "backend/bedrock-question-service/quantitative_choice_construction.py": "d838c5c2dcedcd5bf5df6423156386ecae855b5f30111ed2a22e8af7d3b3c68c",
+    "backend/bedrock-question-service/quantitative_task_compiler.py": "19cf4acaf42e15cda8c1fe00abf6b7563b673f11affa4318aa6c52d944ed977a",
+    "backend/bedrock-question-service/question_bank.py": "96cd56b56c16738c76582f2c64506466835bdda2406bf318ca26026b3dae4549",
+    "backend/bedrock-question-service/question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "backend/bedrock-question-service/question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "backend/bedrock-question-service/question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "backend/bedrock-question-service/question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "backend/bedrock-question-service/question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "backend/bedrock-question-service/question_generation.py": "afab33cae4edb7c8de597f92dfa456ca6b1194c3d7fc0b31a2b040960bb47a75",
+    "backend/bedrock-question-service/question_quality.py": "ff7d02429fe2d0f53636fb826608413c6f49c8302d511d09aadca87032922a8a",
+    "backend/bedrock-question-service/question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "backend/bedrock-question-service/question_teaching.py": "1979db933721b5735ecbaae5ab14a2c10a0fcb570911dbc324728af1483518f4",
+    "backend/bedrock-question-service/question_verification.py": "da455ba93530102766d55954117224685ceabe930a3f5f6478b8c7536f106eea",
+    "backend/bedrock-question-service/request_contract.py": "fcb425388a53b01abacb9a6e858ab44780b427ee182855c31ce99ed02c0ec954",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "backend/bedrock-question-service/skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "backend/bedrock-question-service/smoke_test_backend.py": "0f4f08b42fe9b1ff19e33d0fdaf4eab5ff11b2496aa85bf4262f537bb593e063",
+    "backend/bedrock-question-service/source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "backend/bedrock-question-service/verification_policy.py": "33941df8ea41d2317b964a3b19ccdf5dab0a1cc391ebdf34adeb3967f2e6d9f4",
+    "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "backend/bedrock-question-service/requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67",
+    "backend/bedrock-question-service/template.yaml": "3047236ab4f307bd26f998a8e3328a0abe30e027947e8d6c70b16e94a7f303dd",
+    "backend/bedrock-question-service/evals/bounded_bedrock_capture.py": "cc547d6687ee81dc80c18615099d8b971955ceed95588acf8ab2d160cb3823f3"
+  },
+  "source_hash_count": 32,
+  "prior_failed_full_worker_evidence_sha256": {
+    "docs/evidence/constructed-sonnet-long-read-qualification-20260922/plan.json": "37ebfc0e48ab8c80f31f34fbd1732ce6e9992d2685bbab046e89e521fe24c5c1",
+    "docs/evidence/constructed-sonnet-long-read-qualification-20260922/capture.json": "c68f424b5a71d981083283e3b5d1ef667aa61ad6ebfb6ba8d08996e2ef9acfcb",
+    "docs/evidence/constructed-sonnet-long-read-qualification-20260922/RESULTS.md": "0fa170ba10d29776fd3a06940d1a07193f3565fa43592033c0213d593de78eba",
+    "docs/evidence/constructed-sonnet-long-read-qualification-20260922/mixed_probe.py": "1f51780bc3a7f87cc1e11034579b54dd997e4c2092e176953882edbdd408b27a",
+    "docs/evidence/constructed-sonnet-long-read-qualification-20260922/jobs-draft.json": "c96252f3e3d73cf53893410e02202b1bec3767c4edf28545a2211f82135d19cc",
+    "docs/evidence/current-source-worker-qualification-20260926/plan.json": "2b5eef877b8c86280d88be14eeef0bb7a6e9940c8d3b829339ba1223b17bffbb",
+    "docs/evidence/current-source-worker-qualification-20260926/capture.json": "5fa9ab811293d1f442317bb02f41eb66d900db912e31d4e4e7f39ed88a8d9f26",
+    "docs/evidence/current-source-worker-qualification-20260926/SETUP_ABORT.md": "f0bbdbd939f38d5463ff4e8da105dc90c9d45f93ec57a64dc386f480adbc99d2"
+  },
+  "prior_result": {
+    "source_commit": "77f794efa8cc24f94123cda61532ae7fe30d3e38",
+    "returned_of_requested": [
+      13,
+      15
+    ],
+    "numerical_job_compiled": 3,
+    "required_numerical_job_compiled": 4,
+    "dispatched_calls": 13,
+    "deadline_seconds_per_job": 240,
+    "read_ceiling_seconds": 200,
+    "outcome": "failed"
+  },
+  "fixed_jobs": [
+    {
+      "id": "quantitative",
+      "request": {
+        "goal": {
+          "title": "Exact rational arithmetic and bounded conditions",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Exact rational arithmetic and bounded conditions",
+          "contentTopics": [
+            "Fraction and decimal arithmetic",
+            "Explicit minimum and maximum conditions"
+          ],
+          "questionDirective": "Evaluate exact expressions using addition, subtraction, multiplication and division, or solve an explicitly stated bounded integer condition. Vary the operations. Preserve the distinction between any satisfying value and an explicitly requested minimum or maximum. Use complete numerical tasks without stories or unstated physical assumptions. Aim for difficulty 2 or 3.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      }
+    },
+    {
+      "id": "python",
+      "request": {
+        "goal": {
+          "title": "Python 3 expressions",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Python 3 expressions",
+          "contentTopics": [
+            "Boolean expressions",
+            "List indexing",
+            "Conditionals"
+          ],
+          "questionDirective": "Use complete short Python 3 expressions or correctly indented code, with explicit values. Preserve case and literal syntax. Vary the expressions and test application of Python semantics at difficulty 2 or 3. The subject is Python behavior, not arithmetic alone.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      }
+    },
+    {
+      "id": "mixed",
+      "request": {
+        "goal": {
+          "title": "Arithmetic and English application practice",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Arithmetic and English application practice",
+          "contentTopics": [
+            "Exact arithmetic",
+            "Standard written English"
+          ],
+          "questionDirective": "Cover both assigned skills with self-contained application questions at difficulty 2 or 3. Arithmetic questions use complete exact expressions or explicitly bounded integer conditions. English questions supply complete sentences in standard written American English and make the tested agreement or pronoun-reference distinction explicit.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "skillMap": {
+          "version": 1,
+          "skills": [
+            {
+              "id": "11111111-1111-4111-8111-111111111111",
+              "name": "Exact arithmetic",
+              "objectives": [
+                {
+                  "id": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+                  "name": "Evaluate an exact rational expression or explicit bounded condition"
+                }
+              ]
+            },
+            {
+              "id": "22222222-2222-4222-8222-222222222222",
+              "name": "Standard written English",
+              "objectives": [
+                {
+                  "id": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+                  "name": "Apply subject-verb agreement or unambiguous pronoun reference"
+                }
+              ]
+            }
+          ]
+        },
+        "desiredSkillAllocation": {},
+        "requestedSkillAllocation": {
+          "11111111-1111-4111-8111-111111111111": 3,
+          "22222222-2222-4222-8222-222222222222": 2
+        },
+        "adaptiveSkillPlans": []
+      }
+    }
+  ],
+  "fixed_jobs_source_sha256": "c96252f3e3d73cf53893410e02202b1bec3767c4edf28545a2211f82135d19cc",
+  "trial_environment": {
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "QUESTION_AUTHOR_MODE": "constructed_quantitative",
+    "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "200",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "GENERATION_ATTEMPTS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "MAX_QUESTIONS_PER_BATCH": "20",
+    "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "array"
+  },
+  "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com",
+  "identity": {
+    "profile": "default",
+    "account": "239342516379",
+    "sts_endpoint": "https://sts.us-east-1.amazonaws.com",
+    "aws_cli_version": "2.33.15",
+    "aws_cli_path": "/opt/homebrew/Cellar/awscli/2.33.15/libexec/bin/aws",
+    "cli_ignores_configured_endpoints": true,
+    "minimum_credential_lifetime_seconds": 780,
+    "config_path": "/Users/samchou/.aws/config",
+    "config_sha256": "7f70246298d2f2897d39ee3a99a7353bfa9b83255ef95ba0db5f3a5623ea5f3d",
+    "default_profile_keys": [
+      "login_session",
+      "region"
+    ],
+    "login_session_sha256": "8731d91a75118f0c6e502e84b95a999bbf68e2c825830881788660d6ee32e1f2",
+    "region": "us-east-1",
+    "shared_credentials_path": "/Users/samchou/.aws/credentials",
+    "shared_credentials_default_section": "absent"
+  },
+  "limits": {
+    "jobs": 3,
+    "questions_per_job": 5,
+    "maximum_calls": 18,
+    "calls_per_job": 6,
+    "seconds_per_job": 240,
+    "read_ceiling": 200,
+    "connect_timeout": 3,
+    "sdk_attempts": 1
+  },
+  "criteria": {
+    "returned_total_of_15_at_least": 14,
+    "returned_per_job_at_least": 4,
+    "compiled_total_at_least": 6,
+    "quantitative_job_compiled_at_least": 4,
+    "mixed_job_compiled_at_least": 2,
+    "mixed_job_english_prose_at_least": 1,
+    "all_returned_literal_answers_unique_and_keys_correct": true,
+    "all_returned_choices_distinct_and_wrong_choices_excluded": true,
+    "all_returned_main_explanations_sound_and_complete": true,
+    "all_returned_scope_difficulty_novelty_valid": true,
+    "all_compiled_learner_fields_recompile_exactly_at_policy_8": true,
+    "all_prose_mains_identical_to_authored_and_feedback_empty_at_policy_7": true,
+    "all_returned_within_240_second_job_deadline": true,
+    "all_dispatches_within_durable_6_per_job_and_18_total_reservations": true,
+    "all_source_request_contract_transport_and_capture_pins_match": true,
+    "independent_content_uncertainty_count": 0,
+    "false_universal_python_boolean_main_count": 0,
+    "author_prose_main_character_limit": 320,
+    "runtime_prose_main_character_limit": 420,
+    "python_and_or_exposure_in_returned_python_job_at_least": 1
+  },
+  "qualification_route": "Call the unmodified current-source _generate_sanitized_questions once per fixed job with its exact normalized request, real ProviderCallBudget and deadline-aware client factory. The runtime alone owns at most three author passes, top-ups, sanitization, compilation, answer-blind solving where required, immutable final auditing, and partial returns. Do not invoke SQS, DynamoDB, deployed Lambda, bank write, or API endpoint.",
+  "capture_protocol": [
+    "A separate one-shot metadata-only launch precheck must precede freeze: use the reviewed default login profile in a child-controlled endpoint environment for one explicit STS GetCallerIdentity request, then the pinned CLI export. Reject any inherited AWS_ENDPOINT_URL* override before credential resolution and validate the resolved STS endpoint before its signed request. One Botocore Signin refresh and one CLI Signin refresh may accompany the STS operation; budget at most three pretrial AWS operations, with zero model calls. CLI ancillary Signin activity cannot be directly observed in this capture. Require account 239342516379, exported expiry at least 840 seconds away, and a precheck record with no credential values. Freeze and execute require that record to match the exact draft digest and still have at least 810 seconds remaining; execute then independently requires at least 780 seconds in its own snapshot. This precheck is outside the fifteen-slot and eighteen-call model trial.",
+    "At freeze, pin the exact executable harness, tests, 29 runtime modules, requirements, template, bounded capture helper, initial author prompt bytes and every native contract before acquiring credentials.",
+    "Create an exclusive no-resume capture with three original jobs, fifteen question slots and eighteen unattempted call slots before credential acquisition. Fsync the capture file and parent directory after initial creation and each atomic replacement, including every reservation and exact request before Converse.",
+    "Use one explicit default-profile credential export through the pinned AWS CLI 2.33.15 executable for a single boto3 session. Before export, reject AWS_CONFIG_FILE and AWS_SHARED_CREDENTIALS_FILE overrides; verify the exact reviewed ~/.aws/config path and SHA-256, its default profile with only login_session and us-east-1 region (login-session value retained only as a SHA-256 fingerprint), and no shared-credentials default section. The child process receives the pinned HOME/config/credentials paths, keeps the login cache, removes inherited AWS credential-source and AWS_ENDPOINT_URL* variables, and sets AWS_IGNORE_CONFIGURED_ENDPOINT_URLS=true to neutralize service endpoint overrides during any Signin refresh. Require a parsed, timezone-aware expiration at least 780 seconds after export (three 240-second job windows plus 60 seconds for setup/inter-job overhead), and recheck remaining snapshot lifetime against the dispatch read plus connect timeout and safety margin immediately before every Converse. Reject wrong profiles, validate the resolved exact STS endpoint before a signed identity request, require account 239342516379, then use that same session for Bedrock. A failed identity check leaves all original slots unattempted.",
+    "Record job/pass/raw-row/source-order/compiled-spec/sanitized/verified/returned provenance; retain extra rows only as diagnostics and never replace a planned slot.",
+    "At each dispatch verify source, request, model, native schema, endpoint, us-east-1 region, three-second connect ceiling, deadline-clamped read timeout at most 200 seconds, and exactly one SDK attempt. Recheck the remaining deadline after all pin and capture writes immediately before the underlying Converse call.",
+    "Bound response capture, remove reasoning and signatures, scan raw visible and decoded duplicate JSON members for credential echo before persistence, and save only safe error type/code.",
+    "Check capture digest against external modification and recheck all source and request pins after each call and at finalization. Missing response usage remains unknown."
+  ],
+  "independent_review_protocol": [
+    "After capture, project all 15 original slots as opaque IDs with exact stem and rotated choices; include explicit missing placeholders. Hide arm, key, explanation, author and auditor claims.",
+    "Lock independent literal solution, four choice statuses and six pair meanings for every slot before opening private mapping, authored key, teaching or model judgments. Uncertainty fails an item.",
+    "Then inspect every authored key and all visible main/choice teaching, scope, difficulty at least two, novelty, exact compiler fields, policy revision and empty prose choice feedback.",
+    "For Python, evaluate exact values and short-circuit order and refute universal first-truthy/first-falsy claims with absent-trigger final-operand examples. For English, preserve American notional plural alternatives where the stem lacks unit/member disambiguation."
+  ],
+  "failure_policy": "Ordinary provider, timeout, safety, malformed, model-review and deadline failures consume their reserved call and original slots; later independent jobs remain eligible. Global credential/SDK setup, source/request/contract/provenance/capture integrity, unsafe output or budget overrun stops all work. No retry, rescue, warmup, cache flush, replacement job, count-bound switch, or second run.",
+  "offline_prerequisites": [
+    "Review the zero-model-call predecessor plan, capture and setup-abort hashes; preserve those bytes and use only this successor directory for the new plan, precheck and capture.",
+    "Use the pinned Python 3.12.11 interpreter and dependency search path recorded in offline_validation_environment; do not use the system default Python 3.9.",
+    "Independently review the ported mixed_probe.py, its offline fake-provider tests, exact source/evidence pins, fixed requests, and current native contracts.",
+    "Confirm the harness tests and the 4 Boolean, 16 native-contract, and 12 provider-deadline tests still pass offline after any change; preflight requires Python 3.12.11, boto3/botocore 1.43.91, awscrt 0.36.0 and AWS CLI 2.33.15. The CLI version command is offline; fake subprocess tests never refresh login credentials or contact AWS.",
+    "Review the generated executable draft digest and make a separate exact frozen plan before any provider dispatch.",
+    "Run --preflight offline first and finish independent review before live work. Then, in immediate sequence, run --launch-precheck once, inspect its metadata-only record, run --freeze with the reviewed draft digest, hash and commit the frozen plan, and invoke one --execute while the precheck snapshot still has at least 810 seconds. A 900-second login token leaves about 90 seconds between fresh export and this gate; any slower review or commit must happen before precheck. Precheck is a pretrial AWS operation, not model dispatch. Do not invoke it, freeze, or execute during preparation."
+  ],
+  "estimated_calls": {
+    "hard_maximum": 18,
+    "per_job_hard_maximum": 6,
+    "prior_comparable_observation": 13,
+    "planning_estimate": "9–18 Converse attempts; approximately 13 if behavior resembles the previous longer-read run. Zero authorized in this preparation.",
+    "pretrial_sts_requests": 1,
+    "pretrial_signin_operations_max": 2,
+    "pretrial_aws_operations_max": 3,
+    "pretrial_cli_signin_actual_observable": false,
+    "provider_calls_during_preparation": 0
+  },
+  "claim_limits": "Fresh batches on reused assignments are descriptive, not a same-item causal comparison or broad accuracy estimate. A passing generation route does not qualify SQS, DynamoDB, deployed Lambda, bank inventory, default settings or release. The count-bound author trial remains separate. The predecessor credential abort had zero model observations and supplies no yield or quality evidence; this successor does not combine outputs with it.",
+  "offline_validation_environment": {
+    "python": "/tmp/checkpoint-reliability-20260921-venv/bin/python",
+    "python_version": "3.12.11",
+    "PYTHONPATH": "/tmp/checkpoint-count-crt-deps:/tmp/checkpoint-reliability-jsonschema-deps:/tmp/checkpoint-probe-pinned-deps:backend/bedrock-question-service:backend/bedrock-question-service/tests:.",
+    "boto3_version": "1.43.91",
+    "botocore_version": "1.43.91",
+    "offline_suites_passed": {
+      "test_python_boolean_teaching.py": 4,
+      "test_native_output_contracts.py": 16,
+      "test_provider_deadlines.py": 12,
+      "test_mixed_probe.py": 53
+    },
+    "awscrt_version": "0.36.0"
+  },
+  "preflight_artifact_sha256": {
+    "docs/evidence/current-source-worker-successor-qualification-20260926/mixed_probe.py": "eba42e376cef71ecfce4121f19e0e3a02840e021ac39a28e554b1b928e03148c",
+    "docs/evidence/current-source-worker-successor-qualification-20260926/test_mixed_probe.py": "4a62f92ee081788214d8cde94534a0667bb9e53e1e64284b01eb6793ab7bdf74",
+    "docs/evidence/current-source-worker-successor-qualification-20260926/jobs-draft.json": "c96252f3e3d73cf53893410e02202b1bec3767c4edf28545a2211f82135d19cc",
+    "docs/evidence/current-source-worker-successor-qualification-20260926/PLAN.md": "cf9a19c0b5325e7a7db35ca7363fc2e61f164d57ab3f5ec160c94089676a7e46"
+  },
+  "predecessor_setup_abort": {
+    "plan_sha256": "2b5eef877b8c86280d88be14eeef0bb7a6e9940c8d3b829339ba1223b17bffbb",
+    "capture_sha256": "5fa9ab811293d1f442317bb02f41eb66d900db912e31d4e4e7f39ed88a8d9f26",
+    "sts_requests": 0,
+    "bedrock_calls": 0,
+    "attempted_jobs": 0,
+    "unattempted_provider_slots": 18,
+    "model_observations": 0
+  },
+  "launch_precheck": {
+    "path": "docs/evidence/current-source-worker-successor-qualification-20260926/launch-precheck.json",
+    "pretrial_signed_sts_requests": 1,
+    "pretrial_signin_operations_max": 2,
+    "pretrial_aws_operations_max": 3,
+    "model_calls": 0,
+    "exported_snapshot_minimum_lifetime_seconds": 840,
+    "minimum_remaining_before_freeze_and_execute_seconds": 810,
+    "execute_snapshot_minimum_lifetime_seconds": 780,
+    "provider_retry": "none",
+    "scope": "one-shot separate pretrial refresh and metadata-only freshness proof; a durable attempt marker precedes at most one explicit STS request and no trial capture, model call or frozen plan is created by precheck",
+    "attempt_path": "docs/evidence/current-source-worker-successor-qualification-20260926/launch-precheck-attempt.json"
+  }
+}
