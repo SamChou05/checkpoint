@@ -8,6 +8,7 @@ from typing import Any
 
 from generation_diagnostics import record_quality
 from plain_scalar_choices import has_plain_scalar_collision
+from python_boolean_teaching import has_incomplete_python_boolean_rule
 
 from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 from request_contract import (
@@ -270,6 +271,13 @@ def _sanitize_questions(
         )
         if not topic:
             topic = request["goal"]["contentTopics"][0]
+
+        if (
+            provenance is None and preserve_authored_explanation
+            and has_incomplete_python_boolean_rule(prompt, topic, explanation)
+        ):
+            record_quality(request_metrics, "sanitize", "invalid_content")
+            continue
 
         prompt_keys = {_normalized_stem_identity(prompt)}
         stem_fingerprint = _stem_fingerprint(

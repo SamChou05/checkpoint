@@ -12,6 +12,7 @@ from complete_question_solution import CompleteSolutionFormatError, _items_by_in
 from quantitative_authoring import CompiledCandidate
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _strict_json_object
+from python_boolean_teaching import has_incomplete_python_boolean_rule
 from request_contract import _has_unambiguous_choices
 from service_errors import ProviderError
 
@@ -123,6 +124,10 @@ def freeze_authored_question(
         # never returned; the immutable result retains every compiled field.
         content_view = {**question, "choiceExplanations": {}}
     _validate_content(content_view)
+    if compiled_candidate is None and has_incomplete_python_boolean_rule(
+        question.get("prompt"), question.get("topic"), question.get("explanation")
+    ):
+        raise AuthoredTeachingFormatError("Incomplete Python Boolean operator rule.")
     answer = question.get("expectedAnswer")
     if type(answer) is not str or answer not in question["choices"]:
         raise AuthoredTeachingFormatError("The key must be an exact offered choice.")
