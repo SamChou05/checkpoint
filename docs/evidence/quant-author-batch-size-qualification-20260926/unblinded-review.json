@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "status": "joined_after_two_blind_reviews_locked",
+  "blind_lock_sha256": "833a0547dcce3f5c69fbc2463d9b3da18cab736eefef27584714a293dc531f47",
+  "private_map_sha256": "0c0fb21f2b49d7b520c28034b62e44232194eef38e2449e86df6e742cab7b778",
+  "capture_sha256": "3fd74b140c2137278f72e54101cf67f102f5c710e7cd9c1626e2e020d462a155",
+  "plan_sha256": "c0774eff26fa5d7d785fd0649483694408e7d9cb9f83468002053be6b7e1df6a",
+  "items": [
+    {
+      "id": "8eee427487cb7cd7a1ac68eb",
+      "original_slot_ordinal": 0,
+      "unavailable": false,
+      "returned_row_index": 0,
+      "explicit_key_display_letter": "D",
+      "blind_a_letter": "D",
+      "blind_b_letter": "D",
+      "both_blind_solutions_match_key": true,
+      "blind_a_missing_premises": [],
+      "blind_b_missing_premises": []
+    },
+    {
+      "id": "c92dfacf4e14cf1be1209f96",
+      "original_slot_ordinal": 2,
+      "unavailable": false,
+      "returned_row_index": 2,
+      "explicit_key_display_letter": "C",
+      "blind_a_letter": "C",
+      "blind_b_letter": "C",
+      "both_blind_solutions_match_key": true,
+      "blind_a_missing_premises": [],
+      "blind_b_missing_premises": []
+    },
+    {
+      "id": "d5c15d08d67e789fa99709a2",
+      "original_slot_ordinal": 3,
+      "unavailable": true,
+      "returned_row_index": null,
+      "explicit_key_display_letter": null,
+      "blind_a_letter": null,
+      "blind_b_letter": null,
+      "both_blind_solutions_match_key": false,
+      "blind_a_missing_premises": [
+        "Stem and answer choices are unavailable."
+      ],
+      "blind_b_missing_premises": [
+        "Stem and choices are unavailable."
+      ]
+    },
+    {
+      "id": "2990fa97d94a16eda1ba8a9f",
+      "original_slot_ordinal": 4,
+      "unavailable": true,
+      "returned_row_index": null,
+      "explicit_key_display_letter": null,
+      "blind_a_letter": null,
+      "blind_b_letter": null,
+      "both_blind_solutions_match_key": false,
+      "blind_a_missing_premises": [
+        "Stem and answer choices are unavailable."
+      ],
+      "blind_b_missing_premises": [
+        "Stem and choices are unavailable."
+      ]
+    },
+    {
+      "id": "fc6dad6bfd5c40c729d83c9b",
+      "original_slot_ordinal": 1,
+      "unavailable": false,
+      "returned_row_index": 1,
+      "explicit_key_display_letter": "A",
+      "blind_a_letter": "A",
+      "blind_b_letter": "A",
+      "both_blind_solutions_match_key": true,
+      "blind_a_missing_premises": [],
+      "blind_b_missing_premises": []
+    }
+  ]
+}
