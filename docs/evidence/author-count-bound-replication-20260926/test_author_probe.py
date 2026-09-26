@@ -513,6 +513,22 @@ class AuthorProbeTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "reviewed frozen plan"):
             probe.check_frozen(draft, "0" * 64)
 
+    def test_frozen_proposal_passes_all_offline_pins(self):
+        proposal_path = HERE / "plan-frozen-proposal.json"
+        proposal = json.loads(proposal_path.read_text())
+        expected_hash = "b3aa608e09fbdb9134c605dd9b0090bcabc1acd991dffd053972f8a3dbfda9b6"
+        self.assertEqual(probe.file_hash(proposal_path), expected_hash)
+        self.assertEqual(proposal["status"], "frozen")
+        self.assertEqual(proposal["criteria"]["prose_replication"]["candidate_followup_minimum_usable_total"], 8)
+        self.assertEqual(proposal["criteria"]["prose_replication"]["candidate_followup_minimum_pairs_not_below_baseline"], 2)
+        original_hash = probe.file_hash
+
+        def proposal_as_live_path(path):
+            return original_hash(proposal_path if path == HERE / "plan.json" else path)
+
+        with patch.object(probe, "file_hash", side_effect=proposal_as_live_path):
+            probe.check_frozen(proposal, expected_hash)
+
 
 if __name__ == "__main__":
     unittest.main()
