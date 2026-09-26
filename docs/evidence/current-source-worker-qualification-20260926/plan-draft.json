@@ -211,6 +211,11 @@
     "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "array"
   },
   "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com",
+  "identity": {
+    "profile": "default",
+    "account": "239342516379",
+    "sts_endpoint": "https://sts.us-east-1.amazonaws.com"
+  },
   "limits": {
     "jobs": 3,
     "questions_per_job": 5,
@@ -246,9 +251,10 @@
   "qualification_route": "Call the unmodified current-source _generate_sanitized_questions once per fixed job with its exact normalized request, real ProviderCallBudget and deadline-aware client factory. The runtime alone owns at most three author passes, top-ups, sanitization, compilation, answer-blind solving where required, immutable final auditing, and partial returns. Do not invoke SQS, DynamoDB, deployed Lambda, bank write, or API endpoint.",
   "capture_protocol": [
     "At freeze, pin the exact executable harness, tests, 29 runtime modules, requirements, template, bounded capture helper, initial author prompt bytes and every native contract before acquiring credentials.",
-    "Create an exclusive no-resume capture with all three jobs and 18 unattempted call slots before credential acquisition. Persist each durable reservation and exact request before Converse.",
+    "Create an exclusive no-resume capture with three original jobs, fifteen question slots and eighteen unattempted call slots before credential acquisition. Fsync the capture file and parent directory after initial creation and each atomic replacement, including every reservation and exact request before Converse.",
+    "Use one explicit default-profile credential export for a single boto3 session. Reject profile or STS endpoint overrides, validate the resolved exact STS endpoint before a signed identity request, require account 239342516379, then use that same session for Bedrock. A failed identity check leaves all original slots unattempted.",
     "Record job/pass/raw-row/source-order/compiled-spec/sanitized/verified/returned provenance; retain extra rows only as diagnostics and never replace a planned slot.",
-    "At each dispatch verify source, request, model, native schema, endpoint, us-east-1 region, three-second connect ceiling, deadline-clamped read timeout at most 200 seconds, and exactly one SDK attempt.",
+    "At each dispatch verify source, request, model, native schema, endpoint, us-east-1 region, three-second connect ceiling, deadline-clamped read timeout at most 200 seconds, and exactly one SDK attempt. Recheck the remaining deadline after all pin and capture writes immediately before the underlying Converse call.",
     "Bound response capture, remove reasoning and signatures, scan raw visible and decoded duplicate JSON members for credential echo before persistence, and save only safe error type/code.",
     "Check capture digest against external modification and recheck all source and request pins after each call and at finalization. Missing response usage remains unknown."
   ],
@@ -261,15 +267,15 @@
   "failure_policy": "Ordinary provider, timeout, safety, malformed, model-review and deadline failures consume their reserved call and original slots; later independent jobs remain eligible. Global credential/SDK setup, source/request/contract/provenance/capture integrity, unsafe output or budget overrun stops all work. No retry, rescue, warmup, cache flush, replacement job, count-bound switch, or second run.",
   "offline_prerequisites": [
     "Use the pinned Python 3.12.11 interpreter and dependency search path recorded in offline_validation_environment; do not use the system default Python 3.9.",
-    "Independently review the ported mixed_probe.py, its 35 offline tests, exact source/evidence pins, fixed requests, and current native contracts.",
-    "Confirm the 35 harness tests and the 4 Boolean, 16 native-contract, and 12 provider-deadline tests still pass offline after any change.",
+    "Independently review the ported mixed_probe.py, its offline fake-provider tests, exact source/evidence pins, fixed requests, and current native contracts.",
+    "Confirm the harness tests and the 4 Boolean, 16 native-contract, and 12 provider-deadline tests still pass offline after any change; preflight requires Python 3.12.11, boto3/botocore 1.43.91 and awscrt 0.36.0.",
     "Review the generated executable draft digest and make a separate exact frozen plan before any provider dispatch."
   ],
   "estimated_calls": {
     "hard_maximum": 18,
     "per_job_hard_maximum": 6,
     "prior_comparable_observation": 13,
-    "planning_estimate": "9–18 Converse attempts; approximately 13 if behavior resembles the previous longer-read run. Zero authorized in this preparation."
+    "planning_estimate": "9\u201318 Converse attempts; approximately 13 if behavior resembles the previous longer-read run. Zero authorized in this preparation."
   },
   "claim_limits": "Fresh batches on reused assignments are descriptive, not a same-item causal comparison or broad accuracy estimate. A passing generation route does not qualify SQS, DynamoDB, deployed Lambda, bank inventory, default settings or release. The count-bound author trial remains separate.",
   "offline_validation_environment": {
@@ -282,14 +288,14 @@
       "test_python_boolean_teaching.py": 4,
       "test_native_output_contracts.py": 16,
       "test_provider_deadlines.py": 12,
-      "test_mixed_probe.py": 35
+      "test_mixed_probe.py": 43
     },
     "awscrt_version": "0.36.0"
   },
   "preflight_artifact_sha256": {
-    "docs/evidence/current-source-worker-qualification-20260926/mixed_probe.py": "088cce6706c93b5d7cb5e6fbd52f890ed11aa674f24891cd70a4faa336c0227f",
-    "docs/evidence/current-source-worker-qualification-20260926/test_mixed_probe.py": "a1b6579181fd69170c66219005692aebb820102f107c76a21303df091e420936",
+    "docs/evidence/current-source-worker-qualification-20260926/mixed_probe.py": "69071cfe0f3b6c3ffd4e8bc1837c9e8cf44bf5e189dcba98887f5043d82ea6fd",
+    "docs/evidence/current-source-worker-qualification-20260926/test_mixed_probe.py": "e7e686204b21ee862939967a36447b27f46720841aa46d7bf4aa840ac974edf7",
     "docs/evidence/current-source-worker-qualification-20260926/jobs-draft.json": "c96252f3e3d73cf53893410e02202b1bec3767c4edf28545a2211f82135d19cc",
-    "docs/evidence/current-source-worker-qualification-20260926/PLAN.md": "167ee775af84012ad71960f07655b899599b6c4737d72233780da1d37971ecb9"
+    "docs/evidence/current-source-worker-qualification-20260926/PLAN.md": "8ce58119ffcbf9a60b8cfac21b6c7eb66e1310e26617e5a1521c7e3dd1cbfe7c"
   }
 }
