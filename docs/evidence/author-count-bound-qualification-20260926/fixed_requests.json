@@ -1,0 +1,88 @@
+{
+  "experiment": "author-count-bound-qualification-20260926",
+  "region": "us-east-1",
+  "model_id": "moonshotai.kimi-k2.5",
+  "environment": {
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "BEDROCK_MODEL_ID": "moonshotai.kimi-k2.5",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "200",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced"
+  },
+  "jobs": [
+    {
+      "id": "prose_array_n5",
+      "scope": "paired_prose",
+      "author_mode": "prose",
+      "cardinality_contract": "array",
+      "feedback_contract": "reviewer_written",
+      "payload": {
+        "goal": {
+          "title": "Apply fictional exhibit scheduling rules to concrete cases",
+          "learningTarget": "Determine valid exhibit room reservations from stated opening times, duration limits, and precedence rules",
+          "contentTopics": ["Time-window constraints", "Reservation precedence", "Conditional eligibility"],
+          "questionDirective": "Write five distinct, self-contained applications of fictional exhibit-room scheduling rules. State every rule, time convention, and needed fact inside each item; use exact times and avoid outside museum knowledge. Include plausible distractors based on a single mistaken rule. Do not reuse a scenario or correct-answer mechanism."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 2
+      }
+    },
+    {
+      "id": "prose_count_bound_n5",
+      "scope": "paired_prose",
+      "author_mode": "prose",
+      "cardinality_contract": "count_bound",
+      "feedback_contract": "reviewer_written",
+      "payload": {
+        "goal": {
+          "title": "Apply fictional exhibit scheduling rules to concrete cases",
+          "learningTarget": "Determine valid exhibit room reservations from stated opening times, duration limits, and precedence rules",
+          "contentTopics": ["Time-window constraints", "Reservation precedence", "Conditional eligibility"],
+          "questionDirective": "Write five distinct, self-contained applications of fictional exhibit-room scheduling rules. State every rule, time convention, and needed fact inside each item; use exact times and avoid outside museum knowledge. Include plausible distractors based on a single mistaken rule. Do not reuse a scenario or correct-answer mechanism."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 2
+      }
+    },
+    {
+      "id": "mixed_count_bound_n1",
+      "scope": "grammar_smoke",
+      "author_mode": "mixed_quantitative",
+      "cardinality_contract": "count_bound",
+      "feedback_contract": "reviewer_written",
+      "payload": {
+        "goal": {
+          "title": "Evaluate one exact rational expression",
+          "learningTarget": "Evaluate a fully specified fraction expression with exact rational arithmetic and operation precedence",
+          "contentTopics": ["Rational expression evaluation", "Order of operations"],
+          "questionDirective": "Create exactly one typed quantitative exact_value task for the expression (3/4 + 5/6) / 2. Encode the given operands and operations in the flat node graph with an exact unitless result and four distinct rational answer choices. Use no word story, outside facts, or rounding."
+        },
+        "targetCount": 1,
+        "minimumDifficulty": 2
+      }
+    },
+    {
+      "id": "constructed_count_bound_n5",
+      "scope": "grammar_smoke",
+      "author_mode": "constructed_quantitative",
+      "cardinality_contract": "count_bound",
+      "feedback_contract": "authored_solution",
+      "payload": {
+        "goal": {
+          "title": "Build exact quantitative practice from elementary expressions",
+          "learningTarget": "Solve self-contained arithmetic and comparison tasks with exact answers",
+          "contentTopics": ["Fraction arithmetic", "Signed integers", "Order of operations", "Unit-rate comparison"],
+          "questionDirective": "Create five distinct, self-contained quantitative tasks supported by the structured arithmetic grammar. State exact operands, units when used, and answer domains. Vary operations and distractor mechanisms; avoid equivalent filler tasks and any unstated real-world assumption."
+        },
+        "targetCount": 5,
+        "minimumDifficulty": 2
+      }
+    }
+  ]
+}
