@@ -1,0 +1,223 @@
+{
+  "state": "draft_unfrozen_offline_only",
+  "purpose": "One numerical five-slot fixed assignment tests whether an opt-in three-item constructed author batch avoids the prior max_tokens zero-yield failure within the unchanged six-call and 240-second job budget.",
+  "source_commit": "53f7628f70393239b06ff2f5df380414aad36c88",
+  "source_root": "/Users/samchou/.codex/worktrees/quant-author-batch-size/Checkpoint/backend/bedrock-question-service",
+  "source_hashes": {
+    "backend/bedrock-question-service/answer_position_references.py": "7afe3705ef5d87d2426a4c6dfb2ed53136dda92f082052f77cea30e3f85d00dc",
+    "backend/bedrock-question-service/complete_question_solution.py": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+    "backend/bedrock-question-service/execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "backend/bedrock-question-service/generation_diagnostics.py": "0b73f213a862135bc3f8cd3bb389aa1b77f68f27268128aa9900ddb06df053af",
+    "backend/bedrock-question-service/lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "backend/bedrock-question-service/native_output_contracts.py": "082c347f061843aea33f654ce45989900261d646af763d5cb85a2abedb5b41bd",
+    "backend/bedrock-question-service/plain_scalar_choices.py": "29bf6f761ca04bfeaeaebed960e0ccb2b96cfd7869679100412a041dc0ead3f7",
+    "backend/bedrock-question-service/python_boolean_teaching.py": "d60e67101ee262bdad8c37c7b29ea319ee1966030fc57b7a8e4a119f9789069c",
+    "backend/bedrock-question-service/quantitative_authoring.py": "12a44d69994e855a1866619fdd03f8873ef0908619a18df9cd3074e6bfdcbca2",
+    "backend/bedrock-question-service/quantitative_choice_construction.py": "d838c5c2dcedcd5bf5df6423156386ecae855b5f30111ed2a22e8af7d3b3c68c",
+    "backend/bedrock-question-service/quantitative_task_compiler.py": "19cf4acaf42e15cda8c1fe00abf6b7563b673f11affa4318aa6c52d944ed977a",
+    "backend/bedrock-question-service/question_bank.py": "96cd56b56c16738c76582f2c64506466835bdda2406bf318ca26026b3dae4549",
+    "backend/bedrock-question-service/question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "backend/bedrock-question-service/question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "backend/bedrock-question-service/question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "backend/bedrock-question-service/question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "backend/bedrock-question-service/question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "backend/bedrock-question-service/question_generation.py": "df99fbe9dc3d02e2a8973a463ade16ab6e5a9d2a464e4eb0fe4f011511e16828",
+    "backend/bedrock-question-service/question_quality.py": "ff7d02429fe2d0f53636fb826608413c6f49c8302d511d09aadca87032922a8a",
+    "backend/bedrock-question-service/question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "backend/bedrock-question-service/question_teaching.py": "1979db933721b5735ecbaae5ab14a2c10a0fcb570911dbc324728af1483518f4",
+    "backend/bedrock-question-service/question_verification.py": "da455ba93530102766d55954117224685ceabe930a3f5f6478b8c7536f106eea",
+    "backend/bedrock-question-service/request_contract.py": "fcb425388a53b01abacb9a6e858ab44780b427ee182855c31ce99ed02c0ec954",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "backend/bedrock-question-service/skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "backend/bedrock-question-service/smoke_test_backend.py": "0f4f08b42fe9b1ff19e33d0fdaf4eab5ff11b2496aa85bf4262f537bb593e063",
+    "backend/bedrock-question-service/source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "backend/bedrock-question-service/verification_policy.py": "33941df8ea41d2317b964a3b19ccdf5dab0a1cc391ebdf34adeb3967f2e6d9f4",
+    "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "backend/bedrock-question-service/requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67",
+    "backend/bedrock-question-service/template.yaml": "3047236ab4f307bd26f998a8e3328a0abe30e027947e8d6c70b16e94a7f303dd",
+    "backend/bedrock-question-service/evals/bounded_bedrock_capture.py": "cc547d6687ee81dc80c18615099d8b971955ceed95588acf8ab2d160cb3823f3"
+  },
+  "source_hash_count": 32,
+  "prior_failed_full_worker_evidence_sha256": {
+    "docs/evidence/current-source-worker-successor-qualification-20260926/plan.json": "1538df6423642f1d79e8e18279fd947bbcb5958ff4ea297137fee82a972ec89e",
+    "docs/evidence/current-source-worker-successor-qualification-20260926/capture.json": "c66cb1ba3d2987a361dfa06b1804814663f28a901573dd549a039a14d1b8a00d",
+    "docs/evidence/current-source-worker-successor-qualification-20260926/RESULTS.md": "086d60cd398470fac33a388ebfb192dbfd1bc313cadc56b629d2f64edcc9112b"
+  },
+  "prior_result": {
+    "source_commit": "99cd50a3ed7ee8babe98ec9e8763cdd9f9edff53",
+    "numerical_returned_of_requested": "0/5",
+    "numerical_author_stop_reason": "max_tokens",
+    "numerical_author_elapsed_seconds": 188.839,
+    "numerical_author_output_tokens": 16000,
+    "not_a_matched_causal_comparison": true
+  },
+  "fixed_jobs": [
+    {
+      "id": "quantitative",
+      "request": {
+        "goal": {
+          "title": "Exact rational arithmetic and bounded conditions",
+          "category": "",
+          "focusAreas": "",
+          "currentLevel": "",
+          "learningTarget": "Exact rational arithmetic and bounded conditions",
+          "contentTopics": [
+            "Fraction and decimal arithmetic",
+            "Explicit minimum and maximum conditions"
+          ],
+          "questionDirective": "Evaluate exact expressions using addition, subtraction, multiplication and division, or solve an explicitly stated bounded integer condition. Vary the operations. Preserve the distinction between any satisfying value and an explicitly requested minimum or maximum. Use complete numerical tasks without stories or unstated physical assumptions. Aim for difficulty 2 or 3.",
+          "needsSkillMap": false,
+          "preferredQuestionStyle": "Multiple Choice"
+        },
+        "competencies": [],
+        "existingPrompts": [],
+        "existingQuestionCoverage": [],
+        "reportedPrompts": [],
+        "blockedStemFingerprints": [],
+        "stemFingerprintVersion": 1,
+        "sourceDocuments": [],
+        "targetCount": 5,
+        "minimumDifficulty": 2,
+        "requiresFullObjectiveCoverage": false,
+        "difficultyGuidance": "Apply one familiar rule directly.",
+        "adaptiveSkillPlans": []
+      }
+    }
+  ],
+  "fixed_jobs_source_sha256": "2131351127455a182fc87217951ef6809e333364bc89a6747eec923e57b1a13f",
+  "trial_environment": {
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "QUESTION_AUTHOR_MODE": "constructed_quantitative",
+    "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "200",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "GENERATION_ATTEMPTS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "MAX_QUESTIONS_PER_BATCH": "20",
+    "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "array",
+    "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3"
+  },
+  "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com",
+  "identity": {
+    "profile": "default",
+    "account": "239342516379",
+    "sts_endpoint": "https://sts.us-east-1.amazonaws.com",
+    "aws_cli_version": "2.33.15",
+    "aws_cli_path": "/opt/homebrew/Cellar/awscli/2.33.15/libexec/bin/aws",
+    "cli_ignores_configured_endpoints": true,
+    "minimum_credential_lifetime_seconds": 780,
+    "config_path": "/Users/samchou/.aws/config",
+    "config_sha256": "7f70246298d2f2897d39ee3a99a7353bfa9b83255ef95ba0db5f3a5623ea5f3d",
+    "default_profile_keys": [
+      "login_session",
+      "region"
+    ],
+    "login_session_sha256": "8731d91a75118f0c6e502e84b95a999bbf68e2c825830881788660d6ee32e1f2",
+    "region": "us-east-1",
+    "shared_credentials_path": "/Users/samchou/.aws/credentials",
+    "shared_credentials_default_section": "absent"
+  },
+  "limits": {
+    "jobs": 1,
+    "questions_per_job": 5,
+    "maximum_calls": 6,
+    "calls_per_job": 6,
+    "seconds_per_job": 240,
+    "read_ceiling": 200,
+    "connect_timeout": 3,
+    "sdk_attempts": 1
+  },
+  "criteria": {
+    "returned_original_slots_at_least": 4,
+    "compiled_numerical_returns_at_least": 4,
+    "all_returned_literal_answers_unique_and_keys_correct": true,
+    "all_returned_choices_distinct_and_wrong_choices_excluded": true,
+    "all_returned_main_explanations_sound_and_complete": true,
+    "all_returned_scope_difficulty_novelty_valid": true,
+    "all_compiled_learner_fields_recompile_exactly_at_policy_8": true,
+    "all_returned_within_240_second_job_deadline": true,
+    "all_dispatches_within_durable_6_call_reservations": true,
+    "all_source_request_contract_transport_and_capture_pins_match": true,
+    "independent_content_uncertainty_count": 0
+  },
+  "qualification_route": "One unmodified numerical worker generation route, actual native author/compiler/audit/top-up/partial-return decisions and durable reservations, with answer-blind content review after capture.",
+  "capture_protocol": [
+    "A separate one-shot launch precheck uses the reviewed default login profile for one explicit STS GetCallerIdentity and a metadata-only credential freshness record. It precedes freeze, allows at most two bounded Signin refresh operations and zero model calls, and remains separate from this trial.",
+    "Create an exclusive no-resume capture with one numerical job, five original question slots, and six unattempted call slots before credential acquisition; fsync each capture and reservation before dispatch.",
+    "Export credentials once through the pinned AWS CLI and create one boto3 session; reject alternate config, profile and endpoint sources, verify the exact STS endpoint and account 239342516379, then use the same session for Bedrock Runtime. Conservatively require 780 seconds of snapshot life at execution and check lifetime before every signed call.",
+    "Pass the exact pinned five-slot numerical request to unmodified _generate_sanitized_questions under the single-variable batch-size flag 3. Capture actual author, compiler, solver if any, final audit, top-up, and partial-return decisions without replacing them.",
+    "Before every Converse, verify source, prompt, model, native contract, Bedrock endpoint, region, deadline-clamped read timeout no more than 200 seconds, three-second connect timeout, one SDK attempt, the six-call ceiling, and remaining credentials. Persist the request and dispatch marker before sending it.",
+    "Store bounded redacted responses and errors without reasoning content or credentials. Do not retry or resume an ambiguous dispatch. A 240-second deadline applies to this one job."
+  ],
+  "independent_review_protocol": [
+    "Project all five original slots, including unavailable placeholders, into a keyless worksheet with stems and rotated choices.",
+    "Two independent reviewers lock their own answer and all six unordered pair judgments for every returned item before keys or authored explanations are joined.",
+    "After lock, compare explicit keys, independently review teaching, and recompile exact learner fields from each trusted quantitative source. Score unavailable or unverified slots as failures."
+  ],
+  "failure_policy": "One-shot, no provider retries or reruns after an attempted dispatch; persist unavailable slots and bounded redacted errors.",
+  "offline_prerequisites": [
+    "Use pinned Python 3.12.11, boto3/botocore 1.43.91, awscrt 0.36.0 and AWS CLI 2.33.15; the ordinary preflight must make no AWS/model calls.",
+    "Independently review batch_probe.py, test_batch_probe.py, the committed source and first prompt/schema pins, exact numerical job, and one-job six-call capture and deadline policy.",
+    "Run socket-blocked harness tests plus relevant service tests; reject any source, profile, endpoint, credential lifetime, or plan-hash drift before model dispatch."
+  ],
+  "estimated_calls": {
+    "hard_maximum": 6,
+    "per_job_hard_maximum": 6,
+    "pretrial_sts_requests": 1,
+    "pretrial_signin_operations_max": 2,
+    "pretrial_aws_operations_max": 3,
+    "prior_comparable_observation": "Five-item author max_tokens at 188.839 seconds and zero returns; not causal baseline."
+  },
+  "claim_limits": "One unpaired numerical pilot on candidate source; no population reliability or default-rollout claim.",
+  "offline_validation_environment": {
+    "python": "/tmp/checkpoint-reliability-20260921-venv/bin/python",
+    "python_version": "3.12.11",
+    "PYTHONPATH": "/tmp/checkpoint-count-crt-deps:/tmp/checkpoint-reliability-jsonschema-deps:/tmp/checkpoint-probe-pinned-deps:backend/bedrock-question-service:backend/bedrock-question-service/tests:.",
+    "boto3_version": "1.43.91",
+    "botocore_version": "1.43.91",
+    "offline_suites_passed": "Full backend 1365; one-job socket-blocked harness 27; zero AWS/model calls.",
+    "awscrt_version": "0.36.0"
+  },
+  "preflight_artifact_sha256": {
+    "docs/evidence/quant-author-batch-size-qualification-20260926/batch_probe.py": "c65329fe1c55bd4560cfd8668ca20a7c01ef956ceff15d1adf217519514347b9",
+    "docs/evidence/quant-author-batch-size-qualification-20260926/test_batch_probe.py": "8dd039e9641f6588e1ffdf661ab467328a4565c5c3c42bb9349027c16b163518",
+    "docs/evidence/quant-author-batch-size-qualification-20260926/jobs-draft.json": "2131351127455a182fc87217951ef6809e333364bc89a6747eec923e57b1a13f",
+    "docs/evidence/quant-author-batch-size-qualification-20260926/PLAN.md": "fe9d41de7a1a220f14605e9ab202da8429fa7b09f3bfe60d7c27fdde5c13b7f9"
+  },
+  "predecessor_setup_abort": {
+    "plan_sha256": "2b5eef877b8c86280d88be14eeef0bb7a6e9940c8d3b829339ba1223b17bffbb",
+    "capture_sha256": "5fa9ab811293d1f442317bb02f41eb66d900db912e31d4e4e7f39ed88a8d9f26",
+    "sts_requests": 0,
+    "bedrock_calls": 0,
+    "attempted_jobs": 0,
+    "unattempted_provider_slots": 18,
+    "model_observations": 0
+  },
+  "launch_precheck": {
+    "path": "docs/evidence/quant-author-batch-size-qualification-20260926/launch-precheck.json",
+    "pretrial_signed_sts_requests": 1,
+    "pretrial_signin_operations_max": 2,
+    "pretrial_aws_operations_max": 3,
+    "model_calls": 0,
+    "exported_snapshot_minimum_lifetime_seconds": 840,
+    "minimum_remaining_before_freeze_and_execute_seconds": 810,
+    "execute_snapshot_minimum_lifetime_seconds": 780,
+    "provider_retry": "none",
+    "scope": "one-shot separate pretrial refresh and metadata-only freshness proof; a durable attempt marker precedes at most one explicit STS request and no trial capture, model call or frozen plan is created by precheck",
+    "attempt_path": "docs/evidence/quant-author-batch-size-qualification-20260926/launch-precheck-attempt.json"
+  }
+}
