@@ -234,6 +234,58 @@ class QuantitativeTaskCompilerTests(unittest.TestCase):
         self.assertIn("At x = 25, 125/2 > 60 is true", result["explanation"])
         self.assertIn("Every smaller value in the stated domain fails", result["explanation"])
 
+    def test_small_minimum_shows_every_failing_domain_comparison(self):
+        spec = condition("minimum", relation="ge", choices=["5", "6", "7", "8"],
+                         domain={"kind": "integer_interval", "lower": 1, "upper": 20})
+        spec["unit"] = "unitless"
+        spec["condition"]["left"] = operation(
+            "sub", operation("mul", constant(2), {"variable": "x"}), constant(3))
+        spec["condition"]["right"] = constant(11)
+        result = compile_question(spec)
+        self.assert_payload(result)
+        self.assertEqual(result["expectedAnswer"], "7")
+        self.assertIn("At x = 7, 11 >= 11 is true", result["explanation"])
+        comparisons = "; ".join(
+            f"x = {x}: {2 * x - 3} >= 11 is false" for x in range(1, 7)
+        )
+        self.assertIn(f"The smaller domain values fail: {comparisons}.", result["explanation"])
+
+    def test_small_maximum_shows_nonmonotone_competitors(self):
+        spec = square_condition(relation="eq", choices=["-2", "1", "2", "3"],
+                                lower=-4, upper=4)
+        spec["selection"] = "maximum"
+        spec["condition"]["right"] = constant(4)
+        result = compile_question(spec)
+        self.assert_payload(result)
+        self.assertEqual(result["expectedAnswer"], "2")
+        self.assertIn("The larger domain values fail: x = 3: 9 = 4 is false; "
+                      "x = 4: 16 = 4 is false.", result["explanation"])
+
+    def test_offered_domain_competitor_proof_is_choice_order_independent(self):
+        spec = condition("minimum", choices=["25", "23", "24", "26"],
+                         domain={"kind": "offered"})
+        expected = compile_question(spec)
+        self.assertIn("x = 23: 115/2 > 60 is false; x = 24: 60 > 60 is false",
+                      expected["explanation"])
+        for choices in itertools.permutations(spec["choices"]):
+            result = compile_question({**spec, "choices": list(choices)})
+            for field in ("prompt", "expectedAnswer", "explanation", "choiceExplanations"):
+                self.assertEqual(result[field], expected[field])
+
+    def test_small_competitor_set_falls_back_when_exact_evidence_is_too_long(self):
+        spec = condition("minimum", relation="ge", choices=["5", "6", "7", "8"],
+                         domain={"kind": "integer_interval", "lower": 0, "upper": 8})
+        spec["unit"] = "unitless"
+        spec["condition"]["left"] = operation(
+            "div", operation("mul", constant(999999937), {"variable": "x"}),
+            constant(999999929))
+        spec["condition"]["right"] = constant(8)
+        result = compile_question(spec)
+        self.assert_payload(result)
+        self.assertEqual(result["expectedAnswer"], "8")
+        self.assertIn("Every smaller value in the stated domain fails", result["explanation"])
+        self.assertNotIn("The smaller domain values fail:", result["explanation"])
+
     def test_inclusive_boundary_moves_minimum(self):
         strict = compile_question(condition("minimum"))
         inclusive = compile_question(condition("minimum", relation="ge"))
@@ -342,15 +394,18 @@ class QuantitativeTaskCompilerTests(unittest.TestCase):
         minimum = compile_question(spec)
         self.assertEqual(minimum["expectedAnswer"], "1 rides")
         self.assertIn("At x = 1, 0 <= 0 is true", minimum["explanation"])
-        self.assertIn("Every smaller value in the stated domain fails", minimum["explanation"])
+        self.assertIn("The smaller domain values fail: x = 0: 3 <= 0 is false",
+                      minimum["explanation"])
         self.assertIn("3 <= 0 is false", minimum["choiceExplanations"]["4 rides"])
         spec["selection"] = "maximum"
         maximum = compile_question(spec)
         self.assertEqual(maximum["expectedAnswer"], "3 rides")
         self.assertIn("At x = 3, 0 <= 0 is true", maximum["explanation"])
-        self.assertIn("Every larger value in the stated domain fails", maximum["explanation"])
+        self.assertIn("The larger domain values fail: x = 4: 3 <= 0 is false",
+                      maximum["explanation"])
         spec["domain"] = {"kind": "offered"}
-        self.assertIn("Every larger value in the stated domain fails", compile_question(spec)["explanation"])
+        self.assertIn("The larger domain values fail: x = 4: 3 <= 0 is false",
+                      compile_question(spec)["explanation"])
 
     def test_extremum_at_domain_edge_does_not_invent_failed_competitors(self):
         spec = condition("minimum", choices=["25", "26", "27", "28"], domain={"kind": "offered"})

@@ -17,6 +17,7 @@ MAX_EXPRESSION_NODES = 31
 MAX_EXPRESSION_DEPTH = 6
 MAX_DOMAIN_SIZE = 201
 MAX_DOMAIN_BOUND = 1_000_000
+MAX_EXPLICIT_COMPETITORS = 8
 UNITS = frozenset(("unitless", "m", "cm", "s", "kg", "g", "L", "USD", "rides"))
 RELATIONS = {"lt": "<", "le": "<=", "gt": ">", "ge": ">=", "eq": "=", "ne": "!="}
 OPERATORS = {"add": "+", "sub": "-", "mul": "*", "div": "/"}
@@ -303,12 +304,23 @@ def compile_question(spec):
         proof = "Every other offered value is outside the domain or fails the condition."
     else:
         direction = "smaller" if selection == "minimum" else "larger"
-        competitors = [value for value in domain
-                       if (value < answer if selection == "minimum" else value > answer)]
+        competitors = sorted(value for value in domain
+                             if (value < answer if selection == "minimum" else value > answer))
         proof = (f"Every {direction} value in the stated domain fails the condition." if competitors
                  else f"No {direction} value exists in the stated domain.")
-    explanation = (f"At x = {answer}, {answer_left} {RELATIONS[relation]} {answer_right} is true. "
-                   f"{_quantity(answer, unit)} is {selected_text}. {proof}")
+    explanation_start = (f"At x = {answer}, {answer_left} {RELATIONS[relation]} {answer_right} is true. "
+                         f"{_quantity(answer, unit)} is {selected_text}. ")
+    # Show the whole competing set when it fits; a partial list would not prove
+    # a domain-wide minimum or maximum. Never clip learner-facing evidence.
+    if selection != "any_satisfying" and 0 < len(competitors) <= MAX_EXPLICIT_COMPETITORS:
+        comparisons = "; ".join(
+            f"x = {value}: {observations[value][0]} {RELATIONS[relation]} "
+            f"{observations[value][1]} is false" for value in competitors
+        )
+        explicit_proof = f"The {direction} domain values fail: {comparisons}."
+        if len(explanation_start) + len(explicit_proof) <= 420:
+            proof = explicit_proof
+    explanation = explanation_start + proof
     feedback = {}
     for value, shown in zip(choices, rendered, strict=True):
         if not in_domain(value):
