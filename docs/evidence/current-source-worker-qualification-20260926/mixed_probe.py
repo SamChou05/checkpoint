@@ -27,6 +27,7 @@ sys.path.insert(0, str(SERVICE))
 import awscrt  # noqa: E402
 import boto3  # noqa: E402
 import botocore  # noqa: E402
+from botocore.config import Config  # noqa: E402
 import native_output_contracts as native  # noqa: E402
 import question_generation as runtime  # noqa: E402
 import question_quality as quality  # noqa: E402
@@ -40,6 +41,9 @@ _spec = importlib.util.spec_from_file_location("mixed_capture_helper", HELPER)
 safe = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(safe)
 ENDPOINT = "https://bedrock-runtime.us-east-1.amazonaws.com"
+STS_ENDPOINT = "https://sts.us-east-1.amazonaws.com"
+EXPECTED_ACCOUNT_ID = "239342516379"
+EXPECTED_PROFILE = "default"
 ENVIRONMENT = copy.deepcopy(DRAFT_DATA["trial_environment"])
 AUTHOR_MODEL = ENVIRONMENT["BEDROCK_MODEL_ID"]
 LIMITS = copy.deepcopy(DRAFT_DATA["limits"])
@@ -70,6 +74,14 @@ def check_capture(path):
     require(previous is None or (path.is_file() and file_hash(path) == previous), "Capture was externally modified or removed.")
 
 
+def _sync_directory(path):
+    descriptor = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
 def save(path, value, *, exclusive=False):
     is_capture = type(value) is dict and "jobs" in value and "calls" in value
     if is_capture:
@@ -87,12 +99,84 @@ def save(path, value, *, exclusive=False):
     if exclusive:
         with path.open("x") as stream:
             stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        _sync_directory(path.parent)
     else:
         temporary = path.with_suffix(".partial")
-        temporary.write_text(text)
-        temporary.replace(path)
+        with temporary.open("x") as stream:
+            stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+        _sync_directory(path.parent)
     if is_capture:
         CAPTURE_HASHES[path.resolve()] = file_hash(path)
+
+
+def safe_error_identity(error, secrets=()):
+    """Persist only bounded, credential-redacted error type and provider code."""
+    response = getattr(error, "response", {})
+    problem = response.get("Error", {}) if type(response) is dict else {}
+    code = problem.get("Code") if type(problem) is dict else None
+    return {"type": type(error).__name__, "code": safe.redact(code, secrets, maximum=128)}
+
+
+def new_capture(plan, plan_sha256=None):
+    """Materialize all original job, question and call slots before credentials."""
+    require(len(plan["jobs"]) == 3 and all(job["request"]["targetCount"] == 5 for job in plan["jobs"]),
+            "Original fifteen-slot assignment changed.")
+    original_jobs = [{"id": job["id"], "status": "unattempted",
+                      "slots": [{"ordinal": index, "status": "unattempted"} for index in range(5)]}
+                     for job in plan["jobs"]]
+    call_slots = [{"job": job["id"], "ordinal": index, "status": "unattempted"}
+                  for job in plan["jobs"] for index in range(6)]
+    return {"plan": copy.deepcopy(plan), "plan_sha256": plan_sha256, "calls": [], "jobs": [],
+            "original_jobs": original_jobs, "call_slots": call_slots, "reservations": [],
+            "identity_check": {"profile": EXPECTED_PROFILE, "account": EXPECTED_ACCOUNT_ID,
+                               "endpoint": STS_ENDPOINT, "status": "unattempted"},
+            "started_at": datetime.now(timezone.utc).isoformat(), "status": "setup"}
+
+
+def validate_identity_environment(environment=None):
+    environment = os.environ if environment is None else environment
+    for name in ("AWS_PROFILE", "AWS_DEFAULT_PROFILE"):
+        require(environment.get(name, EXPECTED_PROFILE) in ("", EXPECTED_PROFILE),
+                "AWS identity profile differs from the frozen default profile.")
+    for name in ("AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_STS"):
+        require(not environment.get(name), "An AWS endpoint override is present.")
+
+
+def default_profile_session():
+    """Export one explicit default-profile credential set for STS and Bedrock."""
+    validate_identity_environment()
+    command = ("aws", "configure", "export-credentials", "--profile", EXPECTED_PROFILE,
+               "--format", "process")
+    with patch.object(safe, "CREDENTIAL_COMMAND", command):
+        return safe.credential_session()
+
+
+def verify_account_identity(session, capture, path):
+    """Check the exact STS endpoint before any signed identity request."""
+    validate_identity_environment()
+    client = session.client(
+        "sts", region_name="us-east-1", endpoint_url=STS_ENDPOINT,
+        config=Config(connect_timeout=3, read_timeout=10,
+                      retries={"total_max_attempts": 1, "mode": "standard"}),
+    )
+    meta = client.meta
+    config = meta.config
+    require(meta.endpoint_url == STS_ENDPOINT and meta.region_name == "us-east-1"
+            and config.connect_timeout == 3 and config.read_timeout == 10
+            and config.retries.get("total_max_attempts") == 1,
+            "STS transport differs from the frozen identity endpoint.")
+    capture["identity_check"]["status"] = "endpoint_validated"
+    save(path, capture)
+    response = client.get_caller_identity()
+    require(type(response) is dict and response.get("Account") == EXPECTED_ACCOUNT_ID,
+            "AWS account differs from the frozen intended account.")
+    capture["identity_check"]["status"] = "verified"
+    save(path, capture)
 
 
 def learner(question):
@@ -168,6 +252,16 @@ def build_plan():
     require(ENDPOINT == spec["endpoint"] and LIMITS["maximum_calls"] == 18
             and LIMITS["calls_per_job"] == 6 and LIMITS["seconds_per_job"] == 240,
             "Endpoint or hard budget changed.")
+    require(spec["identity"] == {"profile": EXPECTED_PROFILE, "account": EXPECTED_ACCOUNT_ID,
+                                 "sts_endpoint": STS_ENDPOINT}, "Intended AWS identity changed.")
+    dependencies = {"python": sys.version.split()[0], "boto3": boto3.__version__,
+                    "botocore": botocore.__version__, "awscrt": awscrt.__version__}
+    required_environment = spec["offline_validation_environment"]
+    require(dependencies == {"python": required_environment["python_version"],
+                             "boto3": required_environment["boto3_version"],
+                             "botocore": required_environment["botocore_version"],
+                             "awscrt": required_environment["awscrt_version"]},
+            "Pinned Python or AWS SDK dependency changed.")
     paths = [ROOT / relative for relative in [*spec["source_hashes"],
                                                 *spec["prior_failed_full_worker_evidence_sha256"]]]
     paths += [HERE / name for name in ("mixed_probe.py", "test_mixed_probe.py", "PLAN.md",
@@ -183,13 +277,12 @@ def build_plan():
             "source_revision": {"commit": SOURCE_COMMIT, "module_count": len(modules),
                                 "boolean_guard_sha256": spec["source_hashes"]["backend/bedrock-question-service/python_boolean_teaching.py"]},
             "draft_spec_sha256": file_hash(DRAFT_SPEC), "jobs": jobs, "environment": ENVIRONMENT,
-            "limits": LIMITS, "endpoint": ENDPOINT,
+            "limits": LIMITS, "endpoint": ENDPOINT, "identity": copy.deepcopy(spec["identity"]),
             "source_hashes": {str(path): file_hash(path) for path in paths},
             "contracts": {native.contract_metadata(contract)["name"]: native.native_output_config(contract)
                           for contract in contracts},
             "initial_author_prompts": initial,
-            "dependencies": {"python": sys.version.split()[0], "boto3": boto3.__version__,
-                             "botocore": botocore.__version__, "awscrt": awscrt.__version__},
+            "dependencies": dependencies,
             "criteria": copy.deepcopy(spec["criteria"]),
             "credential_limits": {"seconds": safe.CREDENTIAL_TIMEOUT_SECONDS,
                                   "bytes": safe.CREDENTIAL_MAX_BYTES},
@@ -225,6 +318,9 @@ class Deadline:
 
 
 def run_job(job, capture, path, client_factory, pin_check, *, secrets=(), clock=time.monotonic):
+    original_job = next(item for item in capture["original_jobs"] if item["id"] == job["id"])
+    require(original_job["status"] == "unattempted", "Original job was already attempted.")
+    original_job["status"] = "running"
     row = {"id": job["id"], "status": "running", "returned": [], "passes": [],
            "metrics": {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}}
     capture["jobs"].append(row)
@@ -250,6 +346,10 @@ def run_job(job, capture, path, client_factory, pin_check, *, secrets=(), clock=
     def reserve():
         guard(not capture.get("global_stop"), "Global dispatch already stopped.")
         guard(len(capture["reservations"]) < 18, "Global reservation ceiling.")
+        call_slot = next(item for item in capture["call_slots"]
+                         if item["job"] == job["id"] and item["ordinal"] == budget.calls)
+        guard(call_slot["status"] == "unattempted", "Original call slot was already reserved.")
+        call_slot["status"] = "reserved"
         capture["reservations"].append({"job": job["id"], "ordinal": budget.calls})
         save(path, capture)
 
@@ -377,20 +477,40 @@ def run_job(job, capture, path, client_factory, pin_check, *, secrets=(), clock=
                 "additionalModelRequestFields": {"thinking": {"type": "adaptive"}, "output_config": {"effort": "high"}}}, "Actual request drift.")
             call = {"job": job["id"], "stage": stage_context["name"], "request": copy.deepcopy(request),
                     "read_timeout": cfg.read_timeout, "connect_timeout": cfg.connect_timeout, "sdk_attempts": 1,
-                    "remaining_before_ms": budget.remaining_milliseconds()}
+                    "remaining_before_ms": budget.remaining_milliseconds(), "dispatch_attempted": None}
+            call_slot = next(item for item in capture["call_slots"]
+                             if item["job"] == job["id"] and item["ordinal"] == budget.calls - 1)
+            guard(call_slot["status"] == "reserved", "Dispatch lacks its original reserved slot.")
+            call_slot["status"] = "request_saved"
             capture["calls"].append(call)
             save(path, capture)
             started = clock()
             try:
+                pins()
+                minimum = runtime._minimum_provider_remaining_milliseconds(
+                    connect_timeout=cfg.connect_timeout, read_timeout=cfg.read_timeout)
+                if budget.remaining_milliseconds() < minimum:
+                    raise runtime.ProviderDeadlineExceededError(
+                        "Insufficient request time after capture persistence.")
+                call["dispatch_attempted"] = True
+                call_slot["status"] = "dispatch_attempted"
                 response = self.client.converse(**request)
                 retained, omitted = safe.safe_response(response, secrets)
+                retained.pop("safeResponseMetadata", None)
                 visible = json.dumps(retained, ensure_ascii=False)
                 guard(not any(secret and secret in visible for secret in secrets), "Credential echo in visible output.")
                 guard(not decoded_credential_echo(response, secrets), "Credential echo in decoded native output.")
                 call.update(response=retained, reasoning_blocks_omitted=omitted)
+                call_slot["status"] = "completed"
                 return response
             except Exception as error:
-                call["error"] = safe.safe_error(error, secrets)
+                call["error"] = safe_error_identity(error, secrets)
+                if call["dispatch_attempted"] is None:
+                    call["dispatch_attempted"] = False
+                    call_slot["status"] = "deadline_blocked" if isinstance(
+                        error, runtime.ProviderDeadlineExceededError) else "failed_before_dispatch"
+                else:
+                    call_slot["status"] = "failed_after_dispatch"
                 if setup_failure(error) or isinstance(error, (IntegrityError, safe.CaptureBoundaryError)):
                     capture["global_stop"] = "provider_setup_or_capture_integrity"
                 raise
@@ -429,19 +549,26 @@ def run_job(job, capture, path, client_factory, pin_check, *, secrets=(), clock=
             provenance.append(copy.deepcopy(observed[1]["compiled_source"]))
         row.update(returned=returned, returned_provenance=provenance, returned_sources=returned_sources, status="finished")
     except Exception as error:
-        row.update(status="failed", error=safe.safe_error(error, secrets))
+        row.update(status="failed", error=safe_error_identity(error, secrets))
         if isinstance(error, (IntegrityError, safe.CaptureBoundaryError)) or setup_failure(error) or not isinstance(error, (ProviderError, SafetyInterventionError)):
             capture["global_stop"] = "setup_or_integrity_failure"
     finally:
         row.update(elapsed_seconds=round(clock() - deadline.started, 6), provider_calls=budget.calls,
                    remaining_ms=budget.remaining_milliseconds())
         row["within_deadline"] = row["elapsed_seconds"] <= 240
+        original_job["status"] = row["status"]
+        for index, slot in enumerate(original_job["slots"]):
+            slot["status"] = ("returned" if index < len(row["returned"]) and row["within_deadline"]
+                              else "late_uncredited" if index < len(row["returned"])
+                              else "unfilled")
         pins()
         save(path, capture)
 
 
 def run_jobs(plan, capture, path, client_factory, pin_check, *, secrets=(), clock=time.monotonic):
     require(not capture["calls"] and not capture["jobs"], "No resume or repeat.")
+    require(len(capture["original_jobs"]) == 3 and len(capture["call_slots"]) == 18,
+            "Original job or call slots were not materialized.")
     for job in plan["jobs"]:
         if capture.get("global_stop"):
             break
@@ -452,8 +579,12 @@ def run_jobs(plan, capture, path, client_factory, pin_check, *, secrets=(), cloc
 
 
 def finish(capture):
-    capture["summary"] = {"planned_jobs": 3, "planned_questions": 15, "attempted_jobs": len(capture["jobs"]),
-                          "attempted_calls": len(capture["calls"]),
+    capture["summary"] = {"planned_jobs": len(capture["original_jobs"]), "planned_questions": 15,
+                          "attempted_jobs": len(capture["jobs"]),
+                          "unattempted_jobs": sum(job["status"] == "unattempted" for job in capture["original_jobs"]),
+                          "reserved_calls": len(capture["reservations"]),
+                          "attempted_calls": sum(call.get("dispatch_attempted") is True for call in capture["calls"]),
+                          "unattempted_call_slots": sum(slot["status"] == "unattempted" for slot in capture["call_slots"]),
                           "returned_questions": sum(len(row["returned"]) for row in capture["jobs"] if row["within_deadline"]),
                           "independent_content_review": "pending", "qualified": False}
     usages = [call.get("response", {}).get("usage", {}) for call in capture["calls"]]
@@ -485,15 +616,16 @@ def execute(expected_hash):
     plan = safe.strict_json(PLAN.read_text())
     require(plan["state"] == "frozen", "Plan is not frozen.")
     check_plan(plan, PLAN, expected_hash)
-    capture = {"plan": plan, "plan_sha256": expected_hash, "calls": [], "jobs": [], "reservations": [],
-               "started_at": datetime.now(timezone.utc).isoformat(), "status": "setup"}
+    capture = new_capture(plan, expected_hash)
     save(CAPTURE, capture, exclusive=True)
     secrets = ()
     try:
-        session, secrets = safe.credential_session()
+        session, secrets = default_profile_session()
+        verify_account_identity(session, capture, CAPTURE)
         run_jobs(plan, capture, CAPTURE, session.client, lambda: check_plan(plan, PLAN, expected_hash), secrets=secrets)
     except BaseException as error:
-        capture.update(status="globally_aborted", global_stop="setup_or_interruption", error=safe.safe_error(error, secrets))
+        capture.update(status="globally_aborted", global_stop="setup_or_interruption",
+                       error=safe_error_identity(error, secrets))
         finish(capture)
         save(CAPTURE, capture)
         if isinstance(error, (SystemExit, KeyboardInterrupt)):

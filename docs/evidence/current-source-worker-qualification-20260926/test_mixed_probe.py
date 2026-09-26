@@ -3,9 +3,11 @@
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import re
 import socket
+import stat
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -91,6 +93,25 @@ class FakeNetwork:
         return self.modify(index, request, payload, response) if self.modify else response
 
 
+class FakeIdentitySession:
+    def __init__(self, account=probe.EXPECTED_ACCOUNT_ID, endpoint=probe.STS_ENDPOINT):
+        self.account, self.endpoint = account, endpoint
+        self.client_calls, self.identity_requests = [], 0
+
+    def client(self, service, **kwargs):
+        self.client_calls.append((service, kwargs))
+        if service != "sts":
+            return SimpleNamespace(meta=SimpleNamespace(endpoint_url=probe.ENDPOINT))
+
+        def identity():
+            self.identity_requests += 1
+            return {"Account": self.account, "Arn": "unretained-test-arn", "UserId": "unretained-test-id"}
+
+        return SimpleNamespace(meta=SimpleNamespace(
+            endpoint_url=self.endpoint, region_name=kwargs["region_name"], config=kwargs["config"]),
+            get_caller_identity=identity)
+
+
 class MixedProbeTests(unittest.TestCase):
     def setUp(self):
         self.enterContext(patch.object(socket.socket, "connect", side_effect=AssertionError("No network in offline preflight")))
@@ -98,12 +119,162 @@ class MixedProbeTests(unittest.TestCase):
         self.addCleanup(self.directory.cleanup)
         self.path = Path(self.directory.name) / "capture.json"
         self.plan = probe.build_plan()
-        self.capture = {"plan": self.plan, "calls": [], "jobs": [], "reservations": []}
+        self.capture = probe.new_capture(self.plan)
 
     def run_fake(self, network=None, **kwargs):
         network = network or FakeNetwork()
         probe.run_jobs(self.plan, self.capture, self.path, network.client, kwargs.pop("pin_check", lambda: None), **kwargs)
         return network
+
+    def test_initial_capture_materializes_all_original_slots(self):
+        self.assertEqual(len(self.capture["original_jobs"]), 3)
+        self.assertEqual([len(job["slots"]) for job in self.capture["original_jobs"]], [5, 5, 5])
+        self.assertTrue(all(slot["status"] == "unattempted" for job in self.capture["original_jobs"]
+                            for slot in job["slots"]))
+        self.assertEqual(len(self.capture["call_slots"]), 18)
+        self.assertTrue(all(slot["status"] == "unattempted" for slot in self.capture["call_slots"]))
+        self.assertEqual(self.capture["identity_check"]["status"], "unattempted")
+
+    def test_capture_writes_fsync_file_and_directory_before_and_after_replace(self):
+        events = []
+        original_fsync, original_replace = os.fsync, os.replace
+
+        def fsync(descriptor):
+            events.append("directory" if stat.S_ISDIR(os.fstat(descriptor).st_mode) else "file")
+            return original_fsync(descriptor)
+
+        def replace(source, destination):
+            events.append("replace")
+            return original_replace(source, destination)
+
+        with patch.object(probe.os, "fsync", side_effect=fsync), \
+                patch.object(probe.os, "replace", side_effect=replace):
+            probe.save(self.path, {"first": True}, exclusive=True)
+            probe.save(self.path, {"second": True})
+        self.assertEqual(events, ["file", "directory", "file", "replace", "directory"])
+        self.assertEqual(json.loads(self.path.read_text()), {"second": True})
+
+    def test_default_profile_export_is_explicit_and_wrong_profile_stops_before_credentials(self):
+        def inspect_command():
+            return probe.safe.CREDENTIAL_COMMAND, ()
+
+        with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_DEFAULT_PROFILE": "",
+                                          "AWS_ENDPOINT_URL": "", "AWS_ENDPOINT_URL_STS": ""}), \
+                patch.object(probe.safe, "credential_session", side_effect=inspect_command):
+            command, _ = probe.default_profile_session()
+        self.assertEqual(command, ("aws", "configure", "export-credentials", "--profile", "default",
+                                   "--format", "process"))
+
+        with patch.dict(os.environ, {"AWS_PROFILE": "different", "AWS_ENDPOINT_URL": "",
+                                          "AWS_ENDPOINT_URL_STS": ""}), \
+                patch.object(probe.safe, "credential_session") as export:
+            with self.assertRaises(probe.IntegrityError):
+                probe.default_profile_session()
+            export.assert_not_called()
+
+    def test_sts_endpoint_override_and_wrong_resolved_endpoint_stop_before_signed_request(self):
+        session = FakeIdentitySession()
+        with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_ENDPOINT_URL": "",
+                                          "AWS_ENDPOINT_URL_STS": "https://example.invalid"}):
+            with self.assertRaises(probe.IntegrityError):
+                probe.verify_account_identity(session, self.capture, self.path)
+        self.assertEqual(session.client_calls, [])
+        self.assertEqual(session.identity_requests, 0)
+
+        session = FakeIdentitySession(endpoint="https://example.invalid")
+        with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_ENDPOINT_URL": "",
+                                          "AWS_ENDPOINT_URL_STS": ""}):
+            with self.assertRaises(probe.IntegrityError):
+                probe.verify_account_identity(session, self.capture, self.path)
+        self.assertEqual(session.identity_requests, 0)
+
+    def test_wrong_account_stops_before_bedrock_and_only_error_type_code_persist(self):
+        plan_path = Path(self.directory.name) / "plan.json"
+        probe.save(plan_path, {**self.plan, "state": "frozen"}, exclusive=True)
+        session = FakeIdentitySession(account="000000000000")
+        with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_ENDPOINT_URL": "",
+                                          "AWS_ENDPOINT_URL_STS": ""}), \
+                patch.object(probe, "PLAN", plan_path), patch.object(probe, "CAPTURE", self.path), \
+                patch.object(probe.safe, "credential_session", return_value=(session, ("SYNTHETIC_SECRET",))), \
+                patch.object(probe, "run_jobs") as run:
+            result = probe.execute(probe.file_hash(plan_path))
+        run.assert_not_called()
+        self.assertEqual(session.identity_requests, 1)
+        self.assertEqual([service for service, _ in session.client_calls], ["sts"])
+        self.assertEqual(result["summary"]["planned_questions"], 15)
+        self.assertEqual(result["summary"]["unattempted_jobs"], 3)
+        self.assertEqual(result["summary"]["unattempted_call_slots"], 18)
+        persisted = json.loads(self.path.read_text())
+        self.assertEqual(set(persisted["error"]), {"type", "code"})
+        self.assertNotIn("unretained-test-arn", self.path.read_text())
+        self.assertNotIn("unretained-test-id", self.path.read_text())
+
+    def test_verified_sts_and_bedrock_share_one_frozen_session(self):
+        plan_path = Path(self.directory.name) / "plan.json"
+        probe.save(plan_path, {**self.plan, "state": "frozen"}, exclusive=True)
+        session = FakeIdentitySession()
+        observed = []
+
+        def no_dispatch(plan, capture, path, client_factory, pin_check, **kwargs):
+            observed.append(client_factory.__self__ is session)
+            client_factory("bedrock-runtime", region_name="us-east-1", config=probe.Config())
+            probe.finish(capture)
+            probe.save(path, capture)
+
+        with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_ENDPOINT_URL": "",
+                                          "AWS_ENDPOINT_URL_STS": ""}), \
+                patch.object(probe, "PLAN", plan_path), patch.object(probe, "CAPTURE", self.path), \
+                patch.object(probe.safe, "credential_session", return_value=(session, ())), \
+                patch.object(probe, "run_jobs", side_effect=no_dispatch):
+            result = probe.execute(probe.file_hash(plan_path))
+        self.assertEqual(observed, [True])
+        self.assertEqual([service for service, _ in session.client_calls], ["sts", "bedrock-runtime"])
+        self.assertEqual(session.identity_requests, 1)
+        self.assertEqual(json.loads(self.path.read_text())["identity_check"]["status"], "verified")
+        self.assertEqual(result["summary"]["attempted_calls"], 0)
+
+    def test_final_deadline_guard_blocks_dispatch_after_durable_request_write(self):
+        now = [0.0]
+        network = FakeNetwork()
+        original_save = probe.save
+        advanced = False
+
+        def slow_persistence(path, value, *, exclusive=False):
+            nonlocal advanced
+            original_save(path, value, exclusive=exclusive)
+            if (not advanced and value is self.capture and value["calls"]
+                    and value["calls"][-1]["dispatch_attempted"] is None):
+                now[0] = 230.0
+                advanced = True
+
+        with patch.object(probe, "save", side_effect=slow_persistence):
+            probe.run_job(self.plan["jobs"][0], self.capture, self.path,
+                          network.client, lambda: None, clock=lambda: now[0])
+        self.assertTrue(advanced)
+        self.assertEqual(network.calls, [])
+        self.assertEqual(len(self.capture["reservations"]), 1)
+        self.assertEqual(self.capture["calls"][0]["dispatch_attempted"], False)
+        self.assertEqual(self.capture["call_slots"][0]["status"], "deadline_blocked")
+        self.assertEqual(json.loads(self.path.read_text())["call_slots"][0]["status"], "deadline_blocked")
+
+    def test_provider_error_and_response_metadata_never_persist_messages_or_request_ids(self):
+        def fail(index, request, payload, response):
+            if index == 0:
+                raise ClientError({"Error": {"Code": "ThrottlingException", "Message": "PRIVATE_MESSAGE"},
+                                   "ResponseMetadata": {"RequestId": "PRIVATE_REQUEST_ID"}}, "Converse")
+            response["ResponseMetadata"] = {"RequestId": "PRIVATE_SUCCESS_ID", "HTTPStatusCode": 200}
+            return response
+
+        self.run_fake(FakeNetwork(fail))
+        persisted_text = self.path.read_text()
+        self.assertNotIn("PRIVATE_", persisted_text)
+        persisted = json.loads(persisted_text)
+        self.assertEqual(persisted["calls"][0]["error"],
+                         {"type": "ClientError", "code": "ThrottlingException"})
+        self.assertTrue(all(set(call["error"]) == {"type", "code"}
+                            for call in persisted["calls"] if "error" in call))
+        self.assertTrue(all("safeResponseMetadata" not in call.get("response", {})
+                            for call in persisted["calls"]))
 
     def test_three_real_mixed_jobs_use_eight_calls_and_preserve_compiler_fields(self):
         network = self.run_fake()
@@ -311,7 +482,7 @@ class MixedProbeTests(unittest.TestCase):
         self.assertEqual(network.calls, [])
         self.assertEqual(len(self.capture["jobs"]), 1)
         self.assertTrue(self.capture["global_stop"])
-        self.capture = {"plan": self.plan, "calls": [], "jobs": [], "reservations": []}
+        self.capture = probe.new_capture(self.plan)
         original = probe.runtime.native_output_config
         with patch.object(probe.runtime, "native_output_config", side_effect=lambda contract: {**original(contract), "unexpected": True}):
             network = self.run_fake()
@@ -615,7 +786,7 @@ class MixedProbeTests(unittest.TestCase):
 
     def test_immutable_audit_replacement_is_not_repaired_and_support_vetoes_remain(self):
         for invalid in ("replacement", "support", "issues"):
-            self.capture = {"plan": self.plan, "calls": [], "jobs": [], "reservations": []}
+            self.capture = probe.new_capture(self.plan)
             def modify(index, request, payload, response):
                 if index == 1:
                     if invalid == "replacement":
