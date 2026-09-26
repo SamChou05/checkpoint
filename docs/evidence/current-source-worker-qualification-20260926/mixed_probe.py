@@ -8,9 +8,11 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import time
+from types import SimpleNamespace
 from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
@@ -44,6 +46,9 @@ ENDPOINT = "https://bedrock-runtime.us-east-1.amazonaws.com"
 STS_ENDPOINT = "https://sts.us-east-1.amazonaws.com"
 EXPECTED_ACCOUNT_ID = "239342516379"
 EXPECTED_PROFILE = "default"
+EXPECTED_AWS_CLI_VERSION = "2.33.15"
+AWS_CLI_PATH = Path(shutil.which("aws") or "/__missing_aws_cli__/aws").resolve()
+MIN_CREDENTIAL_LIFETIME_SECONDS = 780
 ENVIRONMENT = copy.deepcopy(DRAFT_DATA["trial_environment"])
 AUTHOR_MODEL = ENVIRONMENT["BEDROCK_MODEL_ID"]
 LIMITS = copy.deepcopy(DRAFT_DATA["limits"])
@@ -147,13 +152,80 @@ def validate_identity_environment(environment=None):
         require(not environment.get(name), "An AWS endpoint override is present.")
 
 
+def controlled_cli_environment(environment=None):
+    """Keep the profile and login cache while excluding inherited endpoint settings."""
+    source = os.environ if environment is None else environment
+    child = {key: value for key, value in source.items()
+             if not key.upper().startswith("AWS_ENDPOINT_URL")}
+    child["AWS_PROFILE"] = EXPECTED_PROFILE
+    child["AWS_DEFAULT_PROFILE"] = EXPECTED_PROFILE
+    child["AWS_IGNORE_CONFIGURED_ENDPOINT_URLS"] = "true"
+    return child
+
+
+def check_aws_cli():
+    """Fail before credential export if the frozen CLI binary or version changed."""
+    require(AWS_CLI_PATH.is_file() and os.access(AWS_CLI_PATH, os.X_OK)
+            and Path(shutil.which("aws") or "/__missing_aws_cli__/aws").resolve() == AWS_CLI_PATH,
+            "Pinned AWS CLI executable changed.")
+    try:
+        result = subprocess.run((str(AWS_CLI_PATH), "--version"), capture_output=True,
+                                timeout=5, env=controlled_cli_environment())
+        output = (result.stdout + result.stderr).decode("utf-8", errors="replace").strip()
+    except (OSError, subprocess.TimeoutExpired):
+        raise IntegrityError("Pinned AWS CLI version unavailable.") from None
+    require(result.returncode == 0 and bool(output)
+            and output.split(maxsplit=1)[0] == f"aws-cli/{EXPECTED_AWS_CLI_VERSION}",
+            "Pinned AWS CLI version changed.")
+
+
+def validate_credential_lifetime(raw, now=None):
+    """Require one exported snapshot to outlive all three 240-second jobs."""
+    try:
+        credentials = safe.strict_json(raw.decode("utf-8"))
+        expiration = credentials.get("Expiration") if type(credentials) is dict else None
+        if type(expiration) is not str or not 1 <= len(expiration) <= 64:
+            raise ValueError
+        expires_at = datetime.fromisoformat(expiration.replace("Z", "+00:00"))
+        if expires_at.tzinfo is None:
+            raise ValueError
+    except (UnicodeError, ValueError, TypeError, OverflowError):
+        raise IntegrityError("Exported credentials have no valid expiry bound.") from None
+    current = datetime.now(timezone.utc) if now is None else now
+    require((expires_at - current).total_seconds() >= MIN_CREDENTIAL_LIFETIME_SECONDS,
+            "Exported credentials expire before the bounded trial ends.")
+    return expires_at
+
+
 def default_profile_session():
     """Export one explicit default-profile credential set for STS and Bedrock."""
     validate_identity_environment()
-    command = ("aws", "configure", "export-credentials", "--profile", EXPECTED_PROFILE,
+    check_aws_cli()
+    command = (str(AWS_CLI_PATH), "configure", "export-credentials", "--profile", EXPECTED_PROFILE,
                "--format", "process")
-    with patch.object(safe, "CREDENTIAL_COMMAND", command):
-        return safe.credential_session()
+    child_environment = controlled_cli_environment()
+
+    def spawn(actual, **kwargs):
+        require(tuple(actual) == command and "env" not in kwargs,
+                "Credential export command or subprocess environment changed.")
+        return subprocess.Popen(actual, env=child_environment, **kwargs)
+
+    original_export = safe.export_credentials
+    snapshot = {}
+
+    def checked_export():
+        raw = original_export()
+        snapshot["expires_at"] = validate_credential_lifetime(raw)
+        return raw
+
+    controlled_subprocess = SimpleNamespace(Popen=spawn, PIPE=subprocess.PIPE,
+                                             DEVNULL=subprocess.DEVNULL)
+    with patch.object(safe, "CREDENTIAL_COMMAND", command), \
+            patch.object(safe, "subprocess", controlled_subprocess), \
+            patch.object(safe, "export_credentials", checked_export):
+        session, secrets = safe.credential_session()
+    require("expires_at" in snapshot, "Credential export was not checked for expiration.")
+    return session, secrets, snapshot["expires_at"]
 
 
 def verify_account_identity(session, capture, path):
@@ -253,7 +325,14 @@ def build_plan():
             and LIMITS["calls_per_job"] == 6 and LIMITS["seconds_per_job"] == 240,
             "Endpoint or hard budget changed.")
     require(spec["identity"] == {"profile": EXPECTED_PROFILE, "account": EXPECTED_ACCOUNT_ID,
-                                 "sts_endpoint": STS_ENDPOINT}, "Intended AWS identity changed.")
+                                 "sts_endpoint": STS_ENDPOINT,
+                                 "aws_cli_version": EXPECTED_AWS_CLI_VERSION,
+                                 "aws_cli_path": str(AWS_CLI_PATH),
+                                 "cli_ignores_configured_endpoints": True,
+                                 "minimum_credential_lifetime_seconds": MIN_CREDENTIAL_LIFETIME_SECONDS},
+            "Intended AWS identity or CLI changed.")
+    require(AWS_CLI_PATH.is_file() and os.access(AWS_CLI_PATH, os.X_OK),
+            "Pinned AWS CLI executable is missing.")
     dependencies = {"python": sys.version.split()[0], "boto3": boto3.__version__,
                     "botocore": botocore.__version__, "awscrt": awscrt.__version__}
     required_environment = spec["offline_validation_environment"]
@@ -317,7 +396,8 @@ class Deadline:
         return max(0, int((240 - (self.clock() - self.started)) * 1000))
 
 
-def run_job(job, capture, path, client_factory, pin_check, *, secrets=(), clock=time.monotonic):
+def run_job(job, capture, path, client_factory, pin_check, *, secrets=(), clock=time.monotonic,
+            credential_expires_at=None, credential_clock=lambda: datetime.now(timezone.utc)):
     original_job = next(item for item in capture["original_jobs"] if item["id"] == job["id"])
     require(original_job["status"] == "unattempted", "Original job was already attempted.")
     original_job["status"] = "running"
@@ -492,6 +572,11 @@ def run_job(job, capture, path, client_factory, pin_check, *, secrets=(), clock=
                 if budget.remaining_milliseconds() < minimum:
                     raise runtime.ProviderDeadlineExceededError(
                         "Insufficient request time after capture persistence.")
+                if credential_expires_at is not None:
+                    credential_remaining_ms = int((credential_expires_at - credential_clock()).total_seconds() * 1000)
+                    call["credential_remaining_before_ms"] = max(0, credential_remaining_ms)
+                    guard(credential_remaining_ms >= minimum,
+                          "Credential snapshot expires before this provider request can complete.")
                 call["dispatch_attempted"] = True
                 call_slot["status"] = "dispatch_attempted"
                 response = self.client.converse(**request)
@@ -565,14 +650,16 @@ def run_job(job, capture, path, client_factory, pin_check, *, secrets=(), clock=
         save(path, capture)
 
 
-def run_jobs(plan, capture, path, client_factory, pin_check, *, secrets=(), clock=time.monotonic):
+def run_jobs(plan, capture, path, client_factory, pin_check, *, secrets=(), clock=time.monotonic,
+             credential_expires_at=None, credential_clock=lambda: datetime.now(timezone.utc)):
     require(not capture["calls"] and not capture["jobs"], "No resume or repeat.")
     require(len(capture["original_jobs"]) == 3 and len(capture["call_slots"]) == 18,
             "Original job or call slots were not materialized.")
     for job in plan["jobs"]:
         if capture.get("global_stop"):
             break
-        run_job(job, capture, path, client_factory, pin_check, secrets=secrets, clock=clock)
+        run_job(job, capture, path, client_factory, pin_check, secrets=secrets, clock=clock,
+                credential_expires_at=credential_expires_at, credential_clock=credential_clock)
     pin_check()
     finish(capture)
     save(path, capture)
@@ -596,6 +683,7 @@ def finish(capture):
 
 
 def preflight():
+    check_aws_cli()
     result = subprocess.run([sys.executable, "-B", "-m", "unittest", "discover", "-s", str(HERE),
                              "-p", "test_mixed_probe.py", "-q"], capture_output=True, text=True)
     require(result.returncode == 0, "Offline tests failed: " + result.stderr)
@@ -620,9 +708,10 @@ def execute(expected_hash):
     save(CAPTURE, capture, exclusive=True)
     secrets = ()
     try:
-        session, secrets = default_profile_session()
+        session, secrets, credential_expires_at = default_profile_session()
         verify_account_identity(session, capture, CAPTURE)
-        run_jobs(plan, capture, CAPTURE, session.client, lambda: check_plan(plan, PLAN, expected_hash), secrets=secrets)
+        run_jobs(plan, capture, CAPTURE, session.client, lambda: check_plan(plan, PLAN, expected_hash),
+                 secrets=secrets, credential_expires_at=credential_expires_at)
     except BaseException as error:
         capture.update(status="globally_aborted", global_stop="setup_or_interruption",
                        error=safe_error_identity(error, secrets))

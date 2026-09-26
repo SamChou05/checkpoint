@@ -1,6 +1,7 @@
 """Exercise the selected real runtime using fake provider responses only."""
 
 import copy
+from datetime import datetime, timedelta, timezone
 import importlib.util
 import json
 import os
@@ -26,6 +27,14 @@ def data(request):
     text = request["messages"][0]["content"][0]["text"]
     match = re.search(r"<[^>]*_json>\n(.*?)\n</[^>]*_json>", text, re.S)
     return json.loads(match.group(1))
+
+
+def fake_export(expires_after_seconds=900):
+    return json.dumps({"Version": 1, "AccessKeyId": "SYNTHETIC_ACCESS_KEY",
+                       "SecretAccessKey": "SYNTHETIC_SECRET_KEY",
+                       "SessionToken": "SYNTHETIC_SESSION_TOKEN",
+                       "Expiration": (datetime.now(timezone.utc)
+                                      + timedelta(seconds=expires_after_seconds)).isoformat()}).encode()
 
 
 class FakeNetwork:
@@ -156,14 +165,18 @@ class MixedProbeTests(unittest.TestCase):
 
     def test_default_profile_export_is_explicit_and_wrong_profile_stops_before_credentials(self):
         def inspect_command():
+            probe.safe.export_credentials()
             return probe.safe.CREDENTIAL_COMMAND, ()
 
         with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_DEFAULT_PROFILE": "",
                                           "AWS_ENDPOINT_URL": "", "AWS_ENDPOINT_URL_STS": ""}), \
+                patch.object(probe, "check_aws_cli"), \
+                patch.object(probe.safe, "export_credentials", return_value=fake_export()), \
                 patch.object(probe.safe, "credential_session", side_effect=inspect_command):
-            command, _ = probe.default_profile_session()
-        self.assertEqual(command, ("aws", "configure", "export-credentials", "--profile", "default",
+            command, _, expires_at = probe.default_profile_session()
+        self.assertEqual(command, (str(probe.AWS_CLI_PATH), "configure", "export-credentials", "--profile", "default",
                                    "--format", "process"))
+        self.assertGreater((expires_at - datetime.now(timezone.utc)).total_seconds(), 780)
 
         with patch.dict(os.environ, {"AWS_PROFILE": "different", "AWS_ENDPOINT_URL": "",
                                           "AWS_ENDPOINT_URL_STS": ""}), \
@@ -171,6 +184,71 @@ class MixedProbeTests(unittest.TestCase):
             with self.assertRaises(probe.IntegrityError):
                 probe.default_profile_session()
             export.assert_not_called()
+
+    def test_aws_cli_version_is_pinned_without_credential_or_network_activity(self):
+        with patch.object(probe.subprocess, "run", return_value=SimpleNamespace(
+                returncode=0, stdout=b"aws-cli/2.33.15 Python/3.13.12 Darwin/25.6.0", stderr=b"")) as run:
+            probe.check_aws_cli()
+        command = run.call_args.args[0]
+        environment = run.call_args.kwargs["env"]
+        self.assertEqual(command, (str(probe.AWS_CLI_PATH), "--version"))
+        self.assertEqual(environment["AWS_IGNORE_CONFIGURED_ENDPOINT_URLS"], "true")
+        self.assertFalse(any(key.upper().startswith("AWS_ENDPOINT_URL") for key in environment))
+        with patch.object(probe.subprocess, "run", return_value=SimpleNamespace(
+                returncode=0, stdout=b"aws-cli/2.33.16", stderr=b"")):
+            with self.assertRaises(probe.IntegrityError):
+                probe.check_aws_cli()
+
+    def test_export_child_ignores_environment_and_profile_service_endpoint_overrides(self):
+        config = Path(self.directory.name) / "config"
+        config.write_text("[default]\nlogin_session = test-session\nservices = redirected\n"
+                          "[services redirected]\nsignin =\n  endpoint_url = https://signin.invalid\n")
+        marker = object()
+
+        def inspect_export():
+            process = probe.safe.subprocess.Popen(
+                probe.safe.CREDENTIAL_COMMAND, stdout=probe.safe.subprocess.PIPE,
+                stderr=probe.safe.subprocess.DEVNULL)
+            probe.safe.export_credentials()
+            return process, ()
+
+        with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_DEFAULT_PROFILE": "",
+                                  "AWS_CONFIG_FILE": str(config), "HOME": self.directory.name,
+                                  "AWS_ENDPOINT_URL": "", "AWS_ENDPOINT_URL_STS": "",
+                                  "AWS_ENDPOINT_URL_SIGNIN": "https://env-signin.invalid",
+                                  "AWS_ENDPOINT_URL_S3": "https://env-s3.invalid",
+                                  "AWS_IGNORE_CONFIGURED_ENDPOINT_URLS": "false"}), \
+                patch.object(probe, "check_aws_cli"), \
+                patch.object(probe.subprocess, "Popen", return_value=marker) as popen, \
+                patch.object(probe.safe, "export_credentials", return_value=fake_export()), \
+                patch.object(probe.safe, "credential_session", side_effect=inspect_export):
+            process, _, _ = probe.default_profile_session()
+        self.assertIs(process, marker)
+        self.assertEqual(popen.call_args.args[0], (
+            str(probe.AWS_CLI_PATH), "configure", "export-credentials", "--profile", "default",
+            "--format", "process"))
+        child = popen.call_args.kwargs["env"]
+        self.assertEqual(child["AWS_IGNORE_CONFIGURED_ENDPOINT_URLS"], "true")
+        self.assertEqual(child["AWS_PROFILE"], "default")
+        self.assertEqual(child["AWS_DEFAULT_PROFILE"], "default")
+        self.assertEqual(child["AWS_CONFIG_FILE"], str(config))
+        self.assertEqual(child["HOME"], self.directory.name)
+        self.assertFalse(any(key.upper().startswith("AWS_ENDPOINT_URL") for key in child))
+        self.assertIn("endpoint_url = https://signin.invalid", config.read_text())
+
+    def test_short_or_unbounded_credential_snapshot_stops_before_session_use(self):
+        with self.assertRaises(probe.IntegrityError):
+            probe.validate_credential_lifetime(fake_export(700))
+        with self.assertRaises(probe.IntegrityError):
+            probe.validate_credential_lifetime(b'{"Version":1,"AccessKeyId":"SYNTHETIC"}')
+        with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_ENDPOINT_URL": "",
+                                  "AWS_ENDPOINT_URL_STS": ""}), \
+                patch.object(probe, "check_aws_cli"), \
+                patch.object(probe.safe, "export_credentials", return_value=fake_export(700)), \
+                patch.object(probe.safe.boto3, "Session") as session:
+            with self.assertRaises(probe.IntegrityError):
+                probe.default_profile_session()
+            session.assert_not_called()
 
     def test_sts_endpoint_override_and_wrong_resolved_endpoint_stop_before_signed_request(self):
         session = FakeIdentitySession()
@@ -195,7 +273,8 @@ class MixedProbeTests(unittest.TestCase):
         with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_ENDPOINT_URL": "",
                                           "AWS_ENDPOINT_URL_STS": ""}), \
                 patch.object(probe, "PLAN", plan_path), patch.object(probe, "CAPTURE", self.path), \
-                patch.object(probe.safe, "credential_session", return_value=(session, ("SYNTHETIC_SECRET",))), \
+                patch.object(probe, "default_profile_session", return_value=(
+                    session, ("SYNTHETIC_SECRET",), datetime.now(timezone.utc) + timedelta(seconds=900))), \
                 patch.object(probe, "run_jobs") as run:
             result = probe.execute(probe.file_hash(plan_path))
         run.assert_not_called()
@@ -224,7 +303,8 @@ class MixedProbeTests(unittest.TestCase):
         with patch.dict(os.environ, {"AWS_PROFILE": "default", "AWS_ENDPOINT_URL": "",
                                           "AWS_ENDPOINT_URL_STS": ""}), \
                 patch.object(probe, "PLAN", plan_path), patch.object(probe, "CAPTURE", self.path), \
-                patch.object(probe.safe, "credential_session", return_value=(session, ())), \
+                patch.object(probe, "default_profile_session", return_value=(
+                    session, (), datetime.now(timezone.utc) + timedelta(seconds=900))), \
                 patch.object(probe, "run_jobs", side_effect=no_dispatch):
             result = probe.execute(probe.file_hash(plan_path))
         self.assertEqual(observed, [True])
@@ -256,6 +336,33 @@ class MixedProbeTests(unittest.TestCase):
         self.assertEqual(self.capture["calls"][0]["dispatch_attempted"], False)
         self.assertEqual(self.capture["call_slots"][0]["status"], "deadline_blocked")
         self.assertEqual(json.loads(self.path.read_text())["call_slots"][0]["status"], "deadline_blocked")
+
+    def test_credential_expiry_after_request_write_blocks_signed_dispatch(self):
+        start = datetime(2026, 9, 26, tzinfo=timezone.utc)
+        wall = [start]
+        expires_at = start + timedelta(seconds=900)
+        network = FakeNetwork()
+        original_save = probe.save
+        advanced = False
+
+        def slow_persistence(path, value, *, exclusive=False):
+            nonlocal advanced
+            original_save(path, value, exclusive=exclusive)
+            if (not advanced and value is self.capture and value["calls"]
+                    and value["calls"][-1]["dispatch_attempted"] is None):
+                wall[0] = start + timedelta(seconds=800)
+                advanced = True
+
+        with patch.object(probe, "save", side_effect=slow_persistence):
+            probe.run_job(self.plan["jobs"][0], self.capture, self.path,
+                          network.client, lambda: None, clock=lambda: 0.0,
+                          credential_expires_at=expires_at, credential_clock=lambda: wall[0])
+        self.assertTrue(advanced)
+        self.assertEqual(network.calls, [])
+        self.assertEqual(self.capture["calls"][0]["dispatch_attempted"], False)
+        self.assertEqual(self.capture["calls"][0]["credential_remaining_before_ms"], 100_000)
+        self.assertEqual(self.capture["call_slots"][0]["status"], "failed_before_dispatch")
+        self.assertTrue(self.capture["global_stop"])
 
     def test_provider_error_and_response_metadata_never_persist_messages_or_request_ids(self):
         def fail(index, request, payload, response):
