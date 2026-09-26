@@ -127,6 +127,73 @@ class ConstructedQuantitativePipelineTests(unittest.TestCase):
         self.assertIn("Code constructs quantitative choices", client.calls[0]["system"][0]["text"])
         self.assertNotIn('"expectedAnswer"', client.calls[0]["system"][0]["text"])
 
+    def test_opt_in_three_then_two_batches_preserve_compiler_proofs_and_call_budget(self):
+        batches = [[row(task(str(value))) for value in values] for values in ((8, 10, 12), (14, 16))]
+        client = ScriptedNativeClient()
+        for batch in batches:
+            client.steps.extend(self.client(batch).steps)
+        reserve = Mock()
+        budget = generation.ProviderCallBudget(6, reserve_call=reserve)
+        request = self.request(5)
+        original = copy.deepcopy(request)
+        with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "3", "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3"}):
+            result = generation._generate_sanitized_questions(request, client, budget)
+        self.assertEqual((len(result), budget.calls, reserve.call_count), (5, 4, 4))
+        self.assertEqual(request, original)
+        self.assertEqual([task_data(call, "generation_request_json")["targetCount"] for call in (client.calls[0], client.calls[2])], [3, 2])
+        self.assertEqual([call["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"]
+                          for call in (client.calls[0], client.calls[2])],
+                         [native.AuthorSlotContract(n, "constructed_quantitative").name for n in (3, 2)])
+        self.assertEqual([q["verificationPolicyRevision"] for q in result], [8] * 5)
+        self.assertEqual(len(task_data(client.calls[2], "generation_request_json")["existingQuestionCoverage"]), 3)
+
+    def test_opt_in_batch_keeps_verified_partial_when_second_author_fails(self):
+        first = [row(task(str(value))) for value in (8, 10, 12)]
+        client = self.client(first)
+        client.steps.append((native.AuthorSlotContract(2, "constructed_quantitative").name,
+                             ProviderError("synthetic second-batch failure")))
+        reserve = Mock()
+        budget = generation.ProviderCallBudget(6, reserve_call=reserve)
+        with patch.dict(os.environ, {"GENERATION_ATTEMPTS": "3", "QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3"}):
+            result = generation._generate_sanitized_questions(self.request(5), client, budget)
+        self.assertEqual((len(result), budget.calls, reserve.call_count), (3, 3, 3))
+        self.assertEqual([q["verificationPolicyRevision"] for q in result], [8] * 3)
+
+    def test_opt_in_batch_does_not_change_mapped_skill_or_objective_assignments(self):
+        request = self.request(5)
+        skill_id = "11111111-1111-4111-8111-111111111111"
+        objective_id = "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA"
+        request["skillMap"] = {"version": 1, "skills": [{"id": skill_id, "name": "Arithmetic",
+                            "objectives": [{"id": objective_id, "name": "Evaluate exact expressions"}]}]}
+        request["requestedSkillAllocation"] = {skill_id: 5}
+        request["requestedObjectiveAllocation"] = [{"skillID": skill_id, "objectiveID": objective_id, "count": 5}]
+        rows = [row(task(str(value))) for value in (8, 10, 12, 14, 16)]
+        for item in rows:
+            item.update(topic="Arithmetic", skillID=skill_id, objectiveID=objective_id,
+                        objective="Evaluate exact expressions")
+        client = self.client(rows)
+        with patch.dict(os.environ, {"QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE": "3"}):
+            self.assertEqual(generation._constructed_author_batch_size(self.request(5), "constructed_quantitative"), 3)
+            self.assertEqual(generation._constructed_author_batch_size(request, "constructed_quantitative"), 5)
+            objective_request = {**request, "requestedSkillAllocation": {},
+                                 "requestedObjectiveAllocation": [{"skillID": skill_id, "objectiveID": objective_id, "count": 5}]}
+            self.assertEqual(generation._constructed_author_batch_size(objective_request, "constructed_quantitative"), 5)
+            self.assertEqual(generation._constructed_author_batch_size(self.request(5), "prose"), 5)
+            for field, value in (("skillMap", None), ("desiredSkillAllocation", {}),
+                                 ("requestedSkillAllocation", {}), ("requestedObjectiveAllocation", []),
+                                 ("adaptiveSkillPlans", [{"skillID": "skill", "targetDifficulty": 3}]),
+                                 ("requiresFullObjectiveCoverage", True)):
+                with self.subTest(field=field):
+                    restricted = self.request(5)
+                    restricted[field] = value
+                    self.assertEqual(generation._constructed_author_batch_size(restricted, "constructed_quantitative"), 5)
+            result = generation._generate_sanitized_questions(request, client, generation.ProviderCallBudget(6))
+        self.assertEqual(len(result), 5)
+        self.assertEqual(task_data(client.calls[0], "generation_request_json")["targetCount"], 5)
+        self.assertEqual(task_data(client.calls[0], "generation_request_json")["requestedSkillAllocation"], {skill_id: 5})
+        self.assertEqual(task_data(client.calls[0], "generation_request_json")["requestedObjectiveAllocation"],
+                         [{"skillID": skill_id, "objectiveID": objective_id, "count": 5}])
+
     def test_placeholders_only_validate_graph_and_never_enter_constructor_or_provenance(self):
         seen = []
         def construct(spec):
