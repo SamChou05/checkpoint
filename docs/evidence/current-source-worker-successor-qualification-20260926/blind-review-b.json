@@ -1,0 +1,334 @@
+{
+  "reviewer": "B",
+  "worksheet_sha256": "aab841d560dc37a72b8ac13fe3922f68396d8e3b13c6b0b0afe48e6c7f69b7b1",
+  "judgment_basis": "Blinded worksheet only; uncertainty receives zero credit.",
+  "slots": [
+    {
+      "id": "3ba7305dc674052f55f02727",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "AB": "uncertain",
+        "AC": "uncertain",
+        "AD": "uncertain",
+        "BC": "uncertain",
+        "BD": "uncertain",
+        "CD": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ],
+      "rationale": "No answer can be assessed from the supplied premises; zero credit assigned."
+    },
+    {
+      "id": "b6553b775db479ad2746c6fd",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "true",
+        "B": "false",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "AB": "false",
+        "AC": "false",
+        "AD": "false",
+        "BC": "false",
+        "BD": "false",
+        "CD": "false"
+      },
+      "unique_correct_choice": "A",
+      "missing_premises": [],
+      "rationale": "Python's or returns the first truthy operand; 0 is falsey, so the expression returns the string 'hello'. The numeric 0 and Boolean False are distinct answer values despite comparing equal in Python."
+    },
+    {
+      "id": "3fcd334fb1d6d599742a92f4",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "true",
+        "B": "false",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "AB": "false",
+        "AC": "false",
+        "AD": "false",
+        "BC": "false",
+        "BD": "false",
+        "CD": "false"
+      },
+      "unique_correct_choice": "A",
+      "missing_premises": [],
+      "rationale": "A slice starts at index 1 and stops before index 3, yielding the elements 2 and 3."
+    },
+    {
+      "id": "8b03beb29794b1a7d32af17d",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "AB": "uncertain",
+        "AC": "uncertain",
+        "AD": "uncertain",
+        "BC": "uncertain",
+        "BD": "uncertain",
+        "CD": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ],
+      "rationale": "No answer can be assessed from the supplied premises; zero credit assigned."
+    },
+    {
+      "id": "6ebe7d99d6fdf3b33c8d8bab",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "false",
+        "C": "false",
+        "D": "true"
+      },
+      "choice_pair_equivalence": {
+        "AB": "false",
+        "AC": "false",
+        "AD": "false",
+        "BC": "false",
+        "BD": "false",
+        "CD": "false"
+      },
+      "unique_correct_choice": "D",
+      "missing_premises": [],
+      "rationale": "7 modulo 2 is 1, so the condition is false and the else branch assigns odd."
+    },
+    {
+      "id": "1631f8cdcc4126418f55f75f",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "AB": "uncertain",
+        "AC": "uncertain",
+        "AD": "uncertain",
+        "BC": "uncertain",
+        "BD": "uncertain",
+        "CD": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ],
+      "rationale": "No answer can be assessed from the supplied premises; zero credit assigned."
+    },
+    {
+      "id": "4b895d2516b7db9c4c2b73d7",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "true",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "AB": "false",
+        "AC": "false",
+        "AD": "false",
+        "BC": "false",
+        "BD": "false",
+        "CD": "false"
+      },
+      "unique_correct_choice": "B",
+      "missing_premises": [],
+      "rationale": "Index -2 selects the second item from the end of the five-element list, which is 40."
+    },
+    {
+      "id": "2bcf77d93f261c53dea0b355",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "AB": "uncertain",
+        "AC": "uncertain",
+        "AD": "uncertain",
+        "BC": "uncertain",
+        "BD": "uncertain",
+        "CD": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ],
+      "rationale": "No answer can be assessed from the supplied premises; zero credit assigned."
+    },
+    {
+      "id": "4121b142f542af9b32a10f49",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "false",
+        "C": "false",
+        "D": "true"
+      },
+      "choice_pair_equivalence": {
+        "AB": "false",
+        "AC": "false",
+        "AD": "false",
+        "BC": "false",
+        "BD": "false",
+        "CD": "false"
+      },
+      "unique_correct_choice": "D",
+      "missing_premises": [],
+      "rationale": "3/4 + 5/6 = 9/12 + 10/12 = 19/12."
+    },
+    {
+      "id": "582c97c6c223d277c71082f4",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "false",
+        "C": "true",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "AB": "false",
+        "AC": "false",
+        "AD": "false",
+        "BC": "false",
+        "BD": "false",
+        "CD": "false"
+      },
+      "unique_correct_choice": "C",
+      "missing_premises": [],
+      "rationale": "2x + 3 = 11 implies 2x = 8 and x = 4, which is in the stated domain."
+    },
+    {
+      "id": "396c6670522ddc333b279cb3",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "AB": "uncertain",
+        "AC": "uncertain",
+        "AD": "uncertain",
+        "BC": "uncertain",
+        "BD": "uncertain",
+        "CD": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ],
+      "rationale": "No answer can be assessed from the supplied premises; zero credit assigned."
+    },
+    {
+      "id": "7a4b2699b9004396b7edad3c",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "true",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "AB": "false",
+        "AC": "false",
+        "AD": "false",
+        "BC": "false",
+        "BD": "false",
+        "CD": "false"
+      },
+      "unique_correct_choice": "B",
+      "missing_premises": [],
+      "rationale": "With neither ... nor, the plural nearer subject players takes the plural verb were."
+    },
+    {
+      "id": "08582a996bd0dd24e9a8e49a",
+      "unavailable": true,
+      "choice_truth": {
+        "A": "uncertain",
+        "B": "uncertain",
+        "C": "uncertain",
+        "D": "uncertain"
+      },
+      "choice_pair_equivalence": {
+        "AB": "uncertain",
+        "AC": "uncertain",
+        "AD": "uncertain",
+        "BC": "uncertain",
+        "BD": "uncertain",
+        "CD": "uncertain"
+      },
+      "unique_correct_choice": "uncertain",
+      "missing_premises": [
+        "Stem and choices are unavailable in the blinded worksheet."
+      ],
+      "rationale": "No answer can be assessed from the supplied premises; zero credit assigned."
+    },
+    {
+      "id": "d3c230cda931f7c78f08a246",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "true",
+        "B": "false",
+        "C": "false",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "AB": "false",
+        "AC": "false",
+        "AD": "false",
+        "BC": "false",
+        "BD": "false",
+        "CD": "false"
+      },
+      "unique_correct_choice": "A",
+      "missing_premises": [],
+      "rationale": "(2/3) × (9/4) = 18/12 = 3/2."
+    },
+    {
+      "id": "dcd7caed834ab8fe0f5da9fe",
+      "unavailable": false,
+      "choice_truth": {
+        "A": "false",
+        "B": "false",
+        "C": "true",
+        "D": "false"
+      },
+      "choice_pair_equivalence": {
+        "AB": "false",
+        "AC": "false",
+        "AD": "false",
+        "BC": "false",
+        "BD": "false",
+        "CD": "false"
+      },
+      "unique_correct_choice": "C",
+      "missing_premises": [],
+      "rationale": "and binds more tightly than or: (True and False) or True is False or True, which is True."
+    }
+  ]
+}

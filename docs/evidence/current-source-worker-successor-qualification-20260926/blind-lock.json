@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "status": "both_independent_blind_reviews_locked_before_unblinding",
+  "capture_sha256": "c66cb1ba3d2987a361dfa06b1804814663f28a901573dd549a039a14d1b8a00d",
+  "plan_sha256": "1538df6423642f1d79e8e18279fd947bbcb5958ff4ea297137fee82a972ec89e",
+  "worksheet_sha256": "aab841d560dc37a72b8ac13fe3922f68396d8e3b13c6b0b0afe48e6c7f69b7b1",
+  "review_a_sha256": "a4a167db27ff42beb19979a94992984867be694decc59c2f9da874c2d7c36847",
+  "review_b_sha256": "ee094447c1753b2f8297922a2ff05f73c75f14c7a723802c714ae12de7540a0c",
+  "original_slots": 15,
+  "readable_slots": 9,
+  "unavailable_slots": 6,
+  "reviewed_slot_ids": [
+    "3ba7305dc674052f55f02727",
+    "b6553b775db479ad2746c6fd",
+    "3fcd334fb1d6d599742a92f4",
+    "8b03beb29794b1a7d32af17d",
+    "6ebe7d99d6fdf3b33c8d8bab",
+    "1631f8cdcc4126418f55f75f",
+    "4b895d2516b7db9c4c2b73d7",
+    "2bcf77d93f261c53dea0b355",
+    "4121b142f542af9b32a10f49",
+    "582c97c6c223d277c71082f4",
+    "396c6670522ddc333b279cb3",
+    "7a4b2699b9004396b7edad3c",
+    "08582a996bd0dd24e9a8e49a",
+    "d3c230cda931f7c78f08a246",
+    "dcd7caed834ab8fe0f5da9fe"
+  ]
+}
