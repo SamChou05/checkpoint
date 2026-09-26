@@ -243,7 +243,9 @@ def _generate_sanitized_questions(
     target_count = request["targetCount"]
     questions: list[dict[str, Any]] = []
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
+    author_batch_size = _constructed_author_batch_size(request, author_mode)
     current_request = copy.deepcopy(request)
+    current_request["targetCount"] = min(target_count, author_batch_size)
     rejected_prompts: list[str] = []
     # Feedback is needed even for callers that do not collect telemetry.
     if request_metrics is None:
@@ -369,7 +371,7 @@ def _generate_sanitized_questions(
         current_request["previousAttemptFeedback"] = _rejection_feedback(
             previous_quality, quality_summary(request_metrics)
         )
-        current_request["targetCount"] = target_count - len(questions)
+        current_request["targetCount"] = min(target_count - len(questions), author_batch_size)
         current_request["existingPrompts"] = (
             request["existingPrompts"]
             + rejected_prompts
@@ -388,6 +390,25 @@ def _generate_sanitized_questions(
                 )
 
     return questions[:target_count]
+
+
+def _constructed_author_batch_size(request: dict[str, Any], author_mode: str) -> int:
+    """Opt-in small batches only when no structured assignment needs reallocation."""
+    target_count = request["targetCount"]
+    if (
+        author_mode != "constructed_quantitative"
+        or any(key in request for key in (
+            "skillMap", "desiredSkillAllocation", "requestedSkillAllocation",
+            "requestedObjectiveAllocation",
+        ))
+        or request.get("adaptiveSkillPlans")
+        or request.get("requiresFullObjectiveCoverage")
+    ):
+        return target_count
+    return min(
+        target_count,
+        _int_env("QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE", target_count, maximum=5),
+    )
 
 
 def _rejection_feedback(
