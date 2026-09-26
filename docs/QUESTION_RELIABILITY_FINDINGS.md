@@ -6,7 +6,7 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,357 backend tests** and the latest full
+Current source verification passes **1,361 backend tests** and the latest full
 iOS suite completed **1,058 tests with three existing skips** after the optional
 timeout, fraction-distractor, compiled-surplus, scalar-explanation,
 author-cardinality, numeric-choice and saved-inventory improvements. The latest
@@ -32,6 +32,7 @@ the September 11 legacy package. No deployment or inventory transition has occur
 | Parenthesized display labels escaped the existing feedback guard. | The fresh Sonnet author trial emitted “In (b),” for an answer that moves after shuffling. | The shared guard now rejects unbound parenthesized choice references in authored and reviewer teaching. Regression tests preserve actual stem subparts, exact quoted literals and mathematical variables. |
 | Some numeric choices are visibly or mathematically identical despite different strings; some old saved MCQs carry invalid keys or colliding choices. | Scalar controls for `2`/`two` and `1/4`/`25%`, invisible-character controls, and stored-inventory tests. | Bounded numeric-value and visible-choice guards reject those exact classes. iOS quarantines old saved MCQs with malformed keys or visible-choice collisions before serving practice; historical attempts remain. This is not a general prose-equivalence proof. |
 | A required-key author schema can force five rows without making all five correct or teachable. | [Frozen count-bound trial](evidence/author-count-bound-qualification-20260926/RESULTS.md): both prose arms were structurally complete; the candidate had five one-answer rows but one false explanation, while two baseline rows had multiple valid choices. Five constructed typed rows included two compiler rejections. | Count-bound remains worker-only opt-in. Existing exact compiler rejects invalid typed tasks; semantic authoring still needs independent assessment. No default or deployment change followed the trial. |
+| A correct Python answer can carry a false generic Boolean rule in its authored explanation. | The [frozen prose trial](evidence/prose-semantic-guidance-qualification-20260926/RESULTS.md) had three explanations saying `or` returns the first truthy operand or `and` the first falsy operand without the no-trigger final-operand case. | A bounded authored-prose guard now rejects those unqualified generic claims before they consume a batch slot and rechecks them at immutable teaching freeze. [Offline replay](evidence/prose-semantic-guidance-qualification-20260926/BOOLEAN_GUARD_REPLAY.md) caught all three labeled cases and none of the other 17 explanations. Complete or case-specific rules remain eligible; other semantic claims still need review. |
 
 These changes make structure, key membership, exact identity and admission rules
 deterministic. They do not make a model's factual statements deterministic or
