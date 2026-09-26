@@ -1,6 +1,7 @@
 """Offline contract and dispatch tests; all socket connections are denied."""
 
 import importlib.util
+from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
 import socket
@@ -181,6 +182,86 @@ class AuthorProbeTests(unittest.TestCase):
                     probe.execute("reviewed", capture)
             self.assertEqual(json.loads(capture.read_text())["jobs"], [])
 
+    def test_near_expiry_login_cache_fails_before_signin_or_any_client(self):
+        from botocore.credentials import RefreshableCredentials
+
+        with tempfile.TemporaryDirectory() as directory:
+            location = Path(directory)
+            plan = json.loads(probe.prepare().read_text())
+            capture = location / "capture.json"
+            plan["capture_path"] = str(capture)
+            (location / "plan.json").write_text(json.dumps(plan))
+            refresh_calls = []
+            credentials = RefreshableCredentials(
+                access_key="cached-access", secret_key="cached-secret", token="cached-token",
+                expiry_time=datetime.now(timezone.utc) + timedelta(minutes=10),
+                refresh_using=lambda: refresh_calls.append("signin"), method="login",
+            )
+
+            class ProfileSession:
+                def get_credentials(self):
+                    return credentials
+
+                def client(self, *_args, **_kwargs):
+                    raise AssertionError("signin or AWS client must not be constructed")
+
+            def session_factory(**kwargs):
+                if "profile_name" not in kwargs:
+                    raise AssertionError("static AWS client must not be constructed")
+                return ProfileSession()
+
+            with patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                    patch("boto3.Session", side_effect=session_factory):
+                with self.assertRaisesRegex(RuntimeError, "cannot cover the frozen no-refresh trial window"):
+                    probe.execute("reviewed", capture)
+            self.assertEqual(refresh_calls, [])
+            saved = json.loads(capture.read_text())
+            self.assertEqual(saved["preflight_status"], "failed")
+            self.assertEqual(saved["jobs"], [])
+
+    def test_normal_cached_login_snapshot_freezes_exactly_once(self):
+        from botocore.credentials import RefreshableCredentials
+
+        refresh_calls = []
+        credentials = RefreshableCredentials(
+            access_key="cached-access", secret_key="cached-secret", token="cached-token",
+            expiry_time=datetime.now(timezone.utc) + timedelta(minutes=40),
+            refresh_using=lambda: refresh_calls.append("signin"), method="login",
+        )
+        original = RefreshableCredentials.get_frozen_credentials
+        freeze_calls = []
+
+        def counted_freeze(self):
+            freeze_calls.append(True)
+            return original(self)
+
+        with patch.object(RefreshableCredentials, "get_frozen_credentials", counted_freeze):
+            frozen = probe.freeze_cached_login_credentials(credentials, {
+                "minimum_cached_seconds": probe.MIN_CACHED_CREDENTIAL_SECONDS,
+                "advisory_refresh_seconds": probe.BOTOCORE_ADVISORY_REFRESH_SECONDS,
+            })
+        self.assertEqual(len(freeze_calls), 1)
+        self.assertEqual(refresh_calls, [])
+        self.assertEqual((frozen.access_key, frozen.secret_key, frozen.token),
+                         ("cached-access", "cached-secret", "cached-token"))
+
+    def test_uninspectable_login_expiry_fails_without_refresh(self):
+        from botocore.credentials import RefreshableCredentials
+
+        refresh_calls = []
+        credentials = RefreshableCredentials(
+            access_key="cached-access", secret_key="cached-secret", token="cached-token",
+            expiry_time=datetime.now(timezone.utc) + timedelta(minutes=40),
+            refresh_using=lambda: refresh_calls.append("signin"), method="login",
+        )
+        credentials._expiry_time = None
+        with self.assertRaisesRegex(RuntimeError, "uninspectable or changed"):
+            probe.freeze_cached_login_credentials(credentials, {
+                "minimum_cached_seconds": probe.MIN_CACHED_CREDENTIAL_SECONDS,
+                "advisory_refresh_seconds": probe.BOTOCORE_ADVISORY_REFRESH_SECONDS,
+            })
+        self.assertEqual(refresh_calls, [])
+
     def test_durable_reservation_and_capture_tamper_stop_next_dispatch(self):
         with tempfile.TemporaryDirectory() as directory:
             capture = Path(directory) / "capture.json"
@@ -313,6 +394,7 @@ class AuthorProbeTests(unittest.TestCase):
                 raise probe.ProviderCallBudgetExceededError("synthetic retry denied")
 
             with patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                    patch.object(probe, "freeze_cached_login_credentials", return_value=frozen), \
                     patch.object(probe, "_generate_provider_payload", side_effect=attempted_retry), \
                     patch("boto3.Session", side_effect=session_factory):
                 with self.assertRaisesRegex(RuntimeError, "budget overrun attempt"):
@@ -357,6 +439,7 @@ class AuthorProbeTests(unittest.TestCase):
 
             with patch.dict(probe.os.environ, {}, clear=True), patch.object(probe, "HERE", location), \
                     patch.object(probe, "check_frozen"), patch.object(probe, "check_launch_environment"), \
+                    patch.object(probe, "freeze_cached_login_credentials", return_value=frozen), \
                     patch("boto3.Session", side_effect=session_factory):
                 with self.assertRaisesRegex(RuntimeError, "STS endpoint differs from reviewed pin"):
                     probe.execute("reviewed", capture)
@@ -365,20 +448,21 @@ class AuthorProbeTests(unittest.TestCase):
             self.assertEqual(saved["preflight_status"], "failed")
             self.assertEqual(saved["jobs"], [])
 
-    def test_ambient_sts_endpoint_override_refused_before_credentials(self):
-        with tempfile.TemporaryDirectory() as directory:
-            location = Path(directory)
-            plan = json.loads(probe.prepare().read_text())
-            capture = location / "capture.json"
-            plan["capture_path"] = str(capture)
-            (location / "plan.json").write_text(json.dumps(plan))
-            with patch.dict(probe.os.environ, {"AWS_ENDPOINT_URL_STS": "https://unreviewed.example"}, clear=True), \
-                    patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
-                    patch.object(probe, "check_launch_environment"), \
-                    patch("boto3.Session", side_effect=AssertionError("credentials must not load")):
-                with self.assertRaisesRegex(RuntimeError, "endpoint overrides are prohibited"):
-                    probe.execute("reviewed", capture)
-            self.assertEqual(json.loads(capture.read_text())["jobs"], [])
+    def test_ambient_sts_and_signin_endpoint_overrides_refused_before_credentials(self):
+        for override in ("AWS_ENDPOINT_URL_STS", "AWS_ENDPOINT_URL_SIGNIN"):
+            with self.subTest(override=override), tempfile.TemporaryDirectory() as directory:
+                location = Path(directory)
+                plan = json.loads(probe.prepare().read_text())
+                capture = location / "capture.json"
+                plan["capture_path"] = str(capture)
+                (location / "plan.json").write_text(json.dumps(plan))
+                with patch.dict(probe.os.environ, {override: "https://unreviewed.example"}, clear=True), \
+                        patch.object(probe, "HERE", location), patch.object(probe, "check_frozen"), \
+                        patch.object(probe, "check_launch_environment"), \
+                        patch("boto3.Session", side_effect=AssertionError("credentials must not load")):
+                    with self.assertRaisesRegex(RuntimeError, "endpoint overrides are prohibited"):
+                        probe.execute("reviewed", capture)
+                self.assertEqual(json.loads(capture.read_text())["jobs"], [])
 
     def test_pinned_sts_endpoint_matches_offline_sdk_client(self):
         import boto3
@@ -628,8 +712,8 @@ class AuthorProbeTests(unittest.TestCase):
     def test_plan_document_pin_rejects_assessment_drift(self):
         draft = json.loads(probe.prepare().read_text())
         draft["status"] = "frozen"
-        draft["credential_pin"] = {"profile": "fake", "account_id": "000000000000",
-                                   "provider_method": "explicit"}
+        draft["credential_pin"].update({"profile": "fake", "account_id": "000000000000",
+                                        "provider_method": "explicit"})
         actual_hash = probe.file_hash
 
         def tampered_hash(path):
@@ -648,7 +732,9 @@ class AuthorProbeTests(unittest.TestCase):
         self.assertEqual(draft["status"], "candidate")
         self.assertEqual(draft["limits"]["maximum_bedrock_author_calls"], 4)
         self.assertEqual(draft["credential_pin"], {"profile": "default", "account_id": "239342516379",
-                                                    "provider_method": "login"})
+                                                    "provider_method": "login",
+                                                    "minimum_cached_seconds": 2100,
+                                                    "advisory_refresh_seconds": 900})
         self.assertEqual(draft["criteria"]["prose_replication"]["primary_novelty_scope"],
                          "within_each_five_row_arm_only")
         self.assertEqual(draft["criteria"]["prose_replication"]["cross_arm_novelty"],
@@ -659,7 +745,7 @@ class AuthorProbeTests(unittest.TestCase):
     def test_frozen_proposal_passes_all_offline_pins(self):
         proposal_path = HERE / "plan-frozen-proposal.json"
         proposal = json.loads(proposal_path.read_text())
-        expected_hash = "c5e86461eb1b16a16376b8437d463f70046b49acff47a4e6e040d2247a28b722"
+        expected_hash = "391df0cac6341c7711d6352ccb7acd965a6c23099c5025ac5825590070787f3f"
         self.assertEqual(probe.file_hash(proposal_path), expected_hash)
         self.assertEqual(proposal["status"], "frozen")
         self.assertEqual(proposal["source_revision"], probe.SOURCE_REVISION)

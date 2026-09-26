@@ -34,9 +34,9 @@
     "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
     "backend/bedrock-question-service/requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67"
   },
-  "plan_document_sha256": "b3f70f08c3eeb52972097d771cb149e0f3173b2c8061ecb988152be6882e7642",
+  "plan_document_sha256": "3b604d74bb1c45e7c36c7f20c2aecaa50578386f9fd98d3e2777f6ada972be9a",
   "fixed_requests_sha256": "7bf5c0ed9aceb3969a237007a219b844fd3eba4213f6fcc13c0306bd9116a091",
-  "harness_sha256": "f1ad25708d0302c332045500366ecceeeb1d21ef6f0d68f246701441c83458bc",
+  "harness_sha256": "4338b553aa09383f3d870b56e5302cf047ed0271e24ba220d3317330949bfc4d",
   "sdk_versions": {
     "boto3": "1.43.91",
     "botocore": "1.43.91",
@@ -65,7 +65,9 @@
   "credential_pin": {
     "profile": "default",
     "account_id": "239342516379",
-    "provider_method": "login"
+    "provider_method": "login",
+    "minimum_cached_seconds": 2100,
+    "advisory_refresh_seconds": 900
   },
   "limits": {
     "maximum_bedrock_author_calls": 4,

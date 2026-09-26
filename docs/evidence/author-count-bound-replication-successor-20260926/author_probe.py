@@ -26,6 +26,9 @@ SERVICE = ROOT / "backend/bedrock-question-service"
 sys.path.insert(0, str(SERVICE))
 SOURCE_REVISION = "99cd50a3ed7ee8babe98ec9e8763cdd9f9edff53"
 STS_ENDPOINT_URL = "https://sts.us-east-1.amazonaws.com"
+MIN_CACHED_CREDENTIAL_SECONDS = 35 * 60
+BOTOCORE_ADVISORY_REFRESH_SECONDS = 15 * 60
+BOTOCORE_MANDATORY_REFRESH_SECONDS = 10 * 60
 LAUNCH_PYTHONPATH = ("/tmp/checkpoint-count-crt-deps:"
                      "/tmp/checkpoint-reliability-jsonschema-deps:"
                      "/tmp/checkpoint-probe-pinned-deps:tests:.")
@@ -218,7 +221,9 @@ def prepare():
         "sts_endpoint_url": STS_ENDPOINT_URL,
         "capture_path": str((HERE / "capture.json").relative_to(ROOT)),
         "credential_pin": {"profile": "default", "account_id": "239342516379",
-                           "provider_method": "login"},
+                           "provider_method": "login",
+                           "minimum_cached_seconds": MIN_CACHED_CREDENTIAL_SECONDS,
+                           "advisory_refresh_seconds": BOTOCORE_ADVISORY_REFRESH_SECONDS},
         "limits": {"maximum_bedrock_author_calls": MAX_CALLS, "maximum_calls_per_job": 1,
                    "sdk_total_max_attempts": 1, "connect_timeout_seconds": 3,
                    "read_timeout_seconds": 200, "retries": 0, "warmups": 0,
@@ -441,6 +446,9 @@ def check_frozen(plan, provided_hash):
         raise RuntimeError("Frozen plan source revision differs from the pinned starting commit.")
     if plan.get("launch_environment") is None:
         raise RuntimeError("Frozen plan lacks the reviewed launch environment and AWS CRT pin.")
+    if (plan.get("credential_pin", {}).get("minimum_cached_seconds") != MIN_CACHED_CREDENTIAL_SECONDS
+            or plan["credential_pin"].get("advisory_refresh_seconds") != BOTOCORE_ADVISORY_REFRESH_SECONDS):
+        raise RuntimeError("Frozen cached credential lifetime or refresh pin differs.")
     if plan.get("sts_endpoint_url") != STS_ENDPOINT_URL:
         raise RuntimeError("Frozen STS endpoint differs from the reviewed regional endpoint.")
     blind_criteria = plan.get("criteria", {}).get("blind_projection", {})
@@ -581,6 +589,34 @@ def static_session_for_snapshot(boto3_module, frozen_credentials, region):
     return session
 
 
+def freeze_cached_login_credentials(credentials, credential_pin):
+    """Read pinned botocore login cache state without invoking a refresh hook."""
+    from botocore.credentials import RefreshableCredentials, _local_now
+
+    if type(credentials) is not RefreshableCredentials or credentials.method != "login":
+        raise RuntimeError("Login credentials are not inspectable pinned RefreshableCredentials.")
+    expiry = credentials.__dict__.get("_expiry_time")
+    advisory = credentials.__dict__.get("_advisory_refresh_timeout",
+                                    type(credentials)._advisory_refresh_timeout)
+    mandatory = credentials.__dict__.get("_mandatory_refresh_timeout",
+                                     type(credentials)._mandatory_refresh_timeout)
+    if (not isinstance(expiry, datetime) or expiry.tzinfo is None
+            or expiry.utcoffset() is None or credentials.__dict__.get("_time_fetcher") is not _local_now
+            or advisory != credential_pin["advisory_refresh_seconds"]
+            or mandatory != BOTOCORE_MANDATORY_REFRESH_SECONDS):
+        raise RuntimeError("Cached login expiry or botocore refresh window is uninspectable or changed.")
+    remaining = (expiry - datetime.now(timezone.utc)).total_seconds()
+    if remaining <= credential_pin["minimum_cached_seconds"]:
+        raise RuntimeError("Cached login credentials cannot cover the frozen no-refresh trial window.")
+    cached_snapshot = credentials.__dict__.get("_frozen_credentials")
+    if cached_snapshot is None:
+        raise RuntimeError("Cached login credential snapshot is uninspectable.")
+    frozen = credentials.get_frozen_credentials()
+    if (frozen is not cached_snapshot or credentials.__dict__.get("_expiry_time") != expiry):
+        raise RuntimeError("Login credentials refreshed despite the frozen lifetime preflight.")
+    return frozen
+
+
 def execute(provided_hash, capture_path):
     plan_path = HERE / "plan.json"
     plan = json.loads(plan_path.read_text())
@@ -599,7 +635,7 @@ def execute(provided_hash, capture_path):
         if any(os.getenv(key) for key in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN")):
             raise RuntimeError("Ambient exported AWS credentials are prohibited.")
         if any(os.getenv(key) for key in ("AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_STS",
-                                          "AWS_ENDPOINT_URL_BEDROCK_RUNTIME")):
+                                          "AWS_ENDPOINT_URL_BEDROCK_RUNTIME", "AWS_ENDPOINT_URL_SIGNIN")):
             raise RuntimeError("Ambient AWS endpoint overrides are prohibited.")
         import boto3
         import botocore
@@ -609,7 +645,7 @@ def execute(provided_hash, capture_path):
         credentials = profile_session.get_credentials()
         if credentials is None or credentials.method != plan["credential_pin"]["provider_method"]:
             raise RuntimeError("Credential provider source differs from reviewed pin.")
-        frozen_credentials = credentials.get_frozen_credentials()
+        frozen_credentials = freeze_cached_login_credentials(credentials, plan["credential_pin"])
         signing_session = static_session_for_snapshot(boto3, frozen_credentials, plan["region"])
         # STS verifies the exact static signing snapshot used by Bedrock.
         sts_client = signing_session.client("sts", config=Config(connect_timeout=3, read_timeout=10,
