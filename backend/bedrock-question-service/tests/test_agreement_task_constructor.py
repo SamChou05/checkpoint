@@ -85,6 +85,19 @@ class AgreementTaskConstructorTests(unittest.TestCase):
             self.assertNotEqual(clauses(first), clauses(second))
         self.assertEqual(sorted(answer_positions), [0, 0, 1, 1, 2, 2, 3, 3])
 
+    def test_every_gerund_source_passes_the_complete_mapped_english_route(self):
+        # The provider schema admits these tasks; the final two-slot compiler
+        # must admit the same closed families before worker sanitization.
+        for scene in GERUND_SCENES:
+            for order in ("singular_first", "plural_first"):
+                source = {"3": task("coach"), "4": task(scene, order)}
+                with self.subTest(scene=scene, order=order):
+                    candidates = compile_mapped_english_slots(source, contract())
+                    self.assertEqual(set(candidates), {3, 4})
+                    self.assertEqual(json.loads(candidates[4].source_task_json), source["4"])
+                    self.assertEqual(candidates[4].content()["expectedAnswer"],
+                                     compile_question(source["4"], ordinal=4)["expectedAnswer"])
+
     def test_correlative_nearer_subject_has_independent_keys_and_choice_feedback(self):
         expected = {
             "or_archive": ("checks", "sort", "the curator", "the assistants"),

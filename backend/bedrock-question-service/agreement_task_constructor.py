@@ -608,7 +608,7 @@ def compile_mapped_english_slots(
         raise AgreementTaskError("Both original English slots must be present.")
     scenes = [_checked_task(tasks_by_slot[str(slot)])[0] for slot in (3, 4)]
     if scenes[0] not in {*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES} or scenes[1] not in {
-        *COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES,
+        *COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES, *GERUND_SCENES,
     }:
         raise AgreementTaskError("Original English slots require their closed agreement families.")
     if type(existing_prompts) is not tuple or any(type(prompt) is not str for prompt in existing_prompts):
