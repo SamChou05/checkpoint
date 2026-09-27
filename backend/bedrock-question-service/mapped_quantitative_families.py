@@ -20,7 +20,8 @@ FAMILIES = ("fraction_evaluation", "bounded_equation", "bounded_ratio_threshold"
 # mathematical decision on a refill. Operands within one family are examples
 # of the same decision, not evidence of bank-level variety.
 SLOT_FAMILIES = (
-    (FAMILIES[0], "fraction_quotient", "fraction_reciprocal_sum"),
+    (FAMILIES[0], "fraction_quotient", "fraction_reciprocal_sum",
+     "fraction_product_complement"),
     (FAMILIES[1], "bounded_quadratic_equation", "bounded_rational_equation",
      "bounded_two_root_minimum"),
     (FAMILIES[2], "bounded_quadratic_maximum", "bounded_linear_budget_maximum"),
@@ -91,6 +92,15 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
             _literal(a), _literal(a + 1), _binary("div", 0, 1),
             _literal(b), _literal(b + 2), _binary("div", 3, 4),
             _binary("add", 2, 5), _literal(1), _binary("div", 7, 6),
+        ], "root": 8}
+    if family == "fraction_product_complement":
+        # Find the complement of a fraction of a fraction. The learner must
+        # multiply the two proper fractions, then subtract that share from one;
+        # this is neither sum-and-scale, quotient-and-add nor reciprocal-of-sum.
+        return {"kind": "exact_value", "unit": "unitless", "nodes": [
+            _literal(a), _literal(a + 1), _binary("div", 0, 1),
+            _literal(b), _literal(b + 2), _binary("div", 3, 4),
+            _binary("mul", 2, 5), _literal(1), _binary("sub", 7, 6),
         ], "root": 8}
     if family == FAMILIES[1]:
         # a(x+2)+(a+3)=(a-1)x+(b+3a+3) reduces to x=b. The variable

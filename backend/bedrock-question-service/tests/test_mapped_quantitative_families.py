@@ -131,8 +131,53 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                             self.assertIn(str(b + a), learner["choices"])
                             self.assertIn("minimum", learner["choiceExplanations"][str(b + a)])
                         checked += 1
-        self.assertEqual(checked, 696)
-        self.assertEqual(len(numeric_variant_identities()), 696)
+        self.assertEqual(checked, 760)
+        self.assertEqual(len(numeric_variant_identities()), 760)
+
+    def test_every_product_complement_variant_has_an_independent_exact_key(self):
+        new_stems = set()
+        old_stems = {
+            _normalized_stem_identity(_constructed_candidate(flat_task(0, {
+                "family": family, "a": a, "b": b,
+            })).content()["prompt"])
+            for family in SLOT_FAMILIES[0][:-1] for a in OPERANDS for b in OPERANDS
+        }
+        for a in OPERANDS:
+            for b in OPERANDS:
+                with self.subTest(a=a, b=b):
+                    task = flat_task(0, {
+                        "family": "fraction_product_complement", "a": a, "b": b,
+                    })
+                    proof = _constructed_candidate(task)
+                    learner = proof.content()
+                    product = Fraction(a, a + 1) * Fraction(b, b + 2)
+                    self.assertEqual(Fraction(learner["expectedAnswer"]), 1 - product)
+                    self.assertGreater(Fraction(learner["expectedAnswer"]), 0)
+                    self.assertLess(Fraction(learner["expectedAnswer"]), 1)
+                    self.assertEqual(len({Fraction(choice) for choice in learner["choices"]}), 4)
+                    self.assertIn("Multiply numerators and denominators", learner["explanation"])
+                    self.assertIn(f"1 - ({product})", learner["explanation"])
+                    self.assertEqual(proof.content(learner), learner)
+                    new_stems.add(_normalized_stem_identity(learner["prompt"]))
+        self.assertEqual(len(new_stems), 64)
+        self.assertTrue(new_stems.isdisjoint(old_stems))
+
+    def test_product_complement_survives_the_complete_mapped_author_route(self):
+        raw = self.raw()
+        raw["questions"]["0"] = {
+            "family": "fraction_product_complement", "a": 4, "b": 6,
+        }
+        schema = json.loads(native.native_output_config(self.contract())
+                            ["textFormat"]["structure"]["jsonSchema"]["schema"])
+        Draft202012Validator(schema).validate(raw)
+        adapted = json.loads(native.adapt_native_response(json.dumps(raw), self.contract()))
+        rows, numeric, english, failures = prepare_mapped_agreement_rows(adapted, self.contract())
+        self.assertEqual(failures, [])
+        self.assertEqual(set(numeric), {0, 1, 2})
+        self.assertEqual(set(english), {3, 4})
+        self.assertEqual(rows[0]["expectedAnswer"], "2/5")
+        self.assertEqual(numeric[0].content(rows[0])["expectedAnswer"], "2/5")
+        self.assertEqual(len(rows), 5)
 
     def test_every_bounded_rational_equation_teaches_its_verified_linear_solution(self):
         for a in OPERANDS:
@@ -169,15 +214,15 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
-        self.assertEqual(len(schema_json.encode()), 2101)
+        self.assertEqual(len(schema_json.encode()), 2131)
         self.assertEqual(hashlib.sha256(schema_json.encode()).hexdigest(),
-                         "ed2e1fbd2dff973a8a15c94d15a54dc8952f5c25a865a13c411e3a31e6c00cb0")
+                         "999d3bd7dadd26a318cf859f5dd5aa43189668fff8a4861d235c544a2deb5f32")
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"] for i in range(3)],
                          [list(families) for families in SLOT_FAMILIES])
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(self.contract())["version"], "9")
+        self.assertEqual(native.contract_metadata(self.contract())["version"], "10")
         agreement = self.contract(False)
         agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
         self.assertEqual(len(agreement_schema.encode()), 3060)
@@ -503,6 +548,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         chosen_operands = {slot: [] for slot in range(3)}
         chosen_answers = {slot: [] for slot in range(3)}
         pair_counts = {}
+        slot_zero_pair_counts = {}
         for batch in range(16):
             recent = question_bank._recent_question_items(existing_items, 30)
             recent_prompts = tuple(question_bank._question_from_item(item)["prompt"]
@@ -552,6 +598,10 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                     for slot in range(3)
                     for count in Counter(chosen_families[slot]).values()
                 )
+                slot_zero_pair_counts[batch + 1] = sum(
+                    count * (count - 1) // 2
+                    for count in Counter(chosen_families[0]).values()
+                )
         self.assertEqual([len(set(chosen[slot])) for slot in range(3)], [16] * 3)
         self.assertEqual([len(set(chosen_operands[slot])) for slot in range(3)], [16] * 3)
         for slot in range(3):
@@ -566,9 +616,11 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                 SLOT_FAMILIES[slot][index % len(SLOT_FAMILIES[slot])]
                 for index in range(16)
             ])
-        # The two-root minimum family reduces slot-one structural reuse;
-        # all exact stems remain unique across the full simulated history.
-        self.assertEqual(pair_counts, {8: 18, 16: 94})
+        # The fourth slot-zero family reduces repeated-mechanism pairs from
+        # 7 to 4 at eight batches and from 35 to 24 at sixteen. Across all
+        # numeric slots the corresponding counts fall from 18/94 to 15/83.
+        self.assertEqual(slot_zero_pair_counts, {8: 4, 16: 24})
+        self.assertEqual(pair_counts, {8: 15, 16: 83})
         request = {**self.request,
                    "_mappedQuantitativeVariantIdentities": list(full_identities)}
         self.assertEqual(generation._mapped_author_scope_sha256(request),

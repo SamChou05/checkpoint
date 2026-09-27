@@ -136,7 +136,7 @@ class AuthorSlotContract:
                                                ensure_ascii=True).encode()).hexdigest()[:16]
             if self.mapped_agreement_tasks:
                 if self.mapped_quantitative_families:
-                    return f"question_author_constructed_mapped_families_v7_n{self.count}_{digest}"
+                    return f"question_author_constructed_mapped_families_v8_n{self.count}_{digest}"
                 return f"question_author_constructed_mapped_agreement_v5_n{self.count}_{digest}"
             return f"question_author_constructed_mapped_compact_v1_n{self.count}_{digest}"
         prefix = {
@@ -153,7 +153,7 @@ class AuthorSlotContract:
             return self.name
         if self.mapped_agreement_tasks:
             if self.mapped_quantitative_families:
-                return f"question_author_constructed_mapped_families_v7_n{self.count}"
+                return f"question_author_constructed_mapped_families_v8_n{self.count}"
             return f"question_author_constructed_mapped_agreement_v5_n{self.count}"
         return f"question_author_constructed_mapped_compact_v1_n{self.count}"
 
@@ -563,7 +563,7 @@ def contract_metadata(contract: NativeContract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
     return {"name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract,
-            "version": ("9" if isinstance(contract, AuthorSlotContract) and contract.mapped_quantitative_families else
+            "version": ("10" if isinstance(contract, AuthorSlotContract) and contract.mapped_quantitative_families else
                         "5" if isinstance(contract, AuthorSlotContract) and contract.mapped_agreement_tasks else
                         "1" if isinstance(contract, AuthorSlotContract) and contract.mapped_assignments is not None else
                         "4" if isinstance(contract, AuthorSlotContract) and contract.mode == "prose" else
@@ -644,7 +644,8 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
                     'Slot 0 has "a":2..9,"b":2..9 and family fraction_evaluation '
                     "(sum and scale two fractions) or fraction_quotient "
                     "(divide two fractions and add one) or fraction_reciprocal_sum "
-                    "(take the reciprocal of a sum of fractions). "
+                    "(take the reciprocal of a sum of fractions) or fraction_product_complement "
+                    "(subtract a product of two fractions from one). "
                     'Slot 1 has "a":2..9,"b":3..11 and family bounded_equation '
                     "(unique linear solution) or bounded_quadratic_equation "
                     "(unique nonnegative product-equation solution) or bounded_rational_equation "
