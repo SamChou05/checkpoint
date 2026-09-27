@@ -1,0 +1,46 @@
+{
+  "audit": "independent post-lock content and teaching review",
+  "capture_sha256": "1b4b1b991ef0c4a01a62c86c0213fe5917e842417eb8c92293ba7625e364462e",
+  "scope": "All five returned prompts, keys, four choices, main explanations, and all 20 choice explanations; exact returned learner text matched the frozen provenance for each item.",
+  "overall_verdict": "pass",
+  "checked_choice_explanations": 20,
+  "limits_and_labels": "Every prompt is 12..320 characters, every main explanation 12..420, every choice 1..140, and every choice explanation 12..280. Each explanation map has exactly the four choice strings as keys. No main explanation depends on shuffled choice labels.",
+  "items": [
+    {
+      "ordinal": 1,
+      "verdict": "pass",
+      "key": "12/17",
+      "evidence": "3/4 + 4/6 = 17/12; its reciprocal is 12/17. The three wrong values reflect stopping at 1, taking 17/12, and adding 1 + 17/12 = 29/12. The main explanation and all four choice explanations are mathematically accurate.",
+      "issues": []
+    },
+    {
+      "ordinal": 2,
+      "verdict": "pass",
+      "key": "7",
+      "evidence": "For integer x in 0..15, x+1 is nonzero. Cross-multiplication gives 2(x+5)=3(x+1), hence x=7 uniquely. Direct substitution confirms the four feedback claims: x=5 yields 5/3, x=8 yields 13/9, x=7 yields 3/2, and x=6 yields 11/7.",
+      "issues": []
+    },
+    {
+      "ordinal": 3,
+      "verdict": "pass",
+      "key": "9",
+      "evidence": "(x-9)^2 < 25 holds exactly for the nine integers 5..13 within the stated 3..15 domain; the other four domain integers fail. Choices 7, 8, and 10 are distinct wrong counts. The main explanation and all four choice explanations state the correct count and direction of error.",
+      "issues": []
+    },
+    {
+      "ordinal": 4,
+      "verdict": "pass",
+      "key": "carries; check",
+      "evidence": "Singular 'One' takes 'carries'; plural antecedent 'editors' takes 'check' in the relative clause. Each alternative reverses one or both required forms, and each of the four choice explanations identifies its forms correctly.",
+      "issues": []
+    },
+    {
+      "ordinal": 5,
+      "verdict": "pass",
+      "key": "inspect; demands",
+      "evidence": "Plural 'chefs' takes 'inspect'; the gerund phrase 'cleaning the ovens' is a singular subject and takes 'demands'. Each alternative reverses one or both required forms, and each of the four choice explanations identifies its forms correctly.",
+      "issues": []
+    }
+  ],
+  "qualification_boundary": "This audit establishes correctness and teaching for these exact frozen five items. It does not establish deterministic future generation or long-bank variety. The two English items share the ordered-pair response format, though they test distinct agreement constructions."
+}

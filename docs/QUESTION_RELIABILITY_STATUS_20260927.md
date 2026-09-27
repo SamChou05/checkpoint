@@ -149,8 +149,7 @@ other three sentences were wrong; the rule-specific per-choice feedback was
 not included in the reviewer's input. Two locked answer-blind reviewers later
 found all five candidate keys unique, all 30 choice pairs distinct, and all
 five difficulty 2–3. They disagreed on within-batch repetition. The reviewer
-veto and failed trial remain in force. This source still lacks a successful
-current full-worker qualification.
+veto and failed trial remain in force.
 The compiler now makes the main explanation for each full-sentence scene
 state the required verb and agreement rule for **all four** offered sentences,
 because the final reviewer sees that main explanation but not the separate
@@ -158,8 +157,14 @@ per-choice teaching. An independent read-only audit checked all eight
 scene/order variants and found their keys, distractor corrections, and main
 explanations sound; every main explanation is 331–362 characters under the
 420-character limit. The reviewer’s uncertainty veto remains unchanged.
-This teaching revision has passed only local checks; it requires a fresh
-full-worker qualification before a live-yield claim.
+On that revision, the separately frozen [explained v12 full-worker
+trial](evidence/combined-v12-explained-full-worker-qualification-20260927/RESULTS.md)
+again returned **4/5**. The final reviewer accepted the revised explanation,
+exact key, and all other content of the full-sentence item, but rated its
+four-rule reasoning difficulty 4 and the existing level-2/3 gate withheld it.
+Two answer-blind reviewers independently rated that item 3 and found all five
+candidate keys and 30 choice pairs sound. Their disagreement with the live
+difficulty rating does not change the failed worker result.
 After two live full-worker reviewer vetoes involving the four-rule
 full-sentence format, the mapped level-2 slot-4 selector now quarantines all
 `select_*` variants, including an author-proposed one. Direct compilation and
@@ -168,7 +173,14 @@ difficulty, and explanation vetoes remain unchanged. The eligible slot-4
 inventory is 32 exact stems rather than 40, and it fails closed when those
 32 are used. The offline capacity replay still completes 20/40/80/85 items
 with unique exact stems, but four remaining slot-4 solve families repeat.
-This selection change has no new live full-worker qualification.
+On the quarantined source, a new separately frozen
+[full-worker trial](evidence/combined-v12-level2-quarantine-full-worker-qualification-20260927/RESULTS.md)
+returned **5/5 original slots** in 58.785 seconds with three Converse calls.
+The independent answer-blind reviewers matched all five keys, rated all five
+difficulty 2, and judged all 30 choice pairs distinct. A post-lock audit found
+all five main explanations and 20 choice-feedback entries sound. Both blind
+reviewers still called the two English questions a strong format/method
+repeat. This is a narrow one-batch pass, not repeated-bank qualification.
 An [offline single-rule full-sentence prototype](evidence/level2-sentence-selection-prototype-20260927/README.md)
 reached unique keys and level-2 ratings, but its best blind-reviewed version
 had only 3/6 and 5/6 meaningfully distinct choice pairs. It was not added to
@@ -184,8 +196,8 @@ key-letter transcription error. Both called the same eight cross-item pairs
 strong repeats. Adding inventory and maintaining full-bank stem history alone
 do not deliver a varied bank.
 
-The selector now balances compiled numeric solve signatures and spaces the
-scarce full-sentence English format. In the [new chronological replay](evidence/selector-balanced-bank20-20260927/RESULTS.md), numeric signature pairs fell
+An earlier selector balanced compiled numeric solve signatures and spaced the
+full-sentence English format. In the [chronological replay](evidence/selector-balanced-bank20-20260927/RESULTS.md), numeric signature pairs fell
 from 1/14/78 to 0/12/72 at 20/40/80 items and within-slot response-format
 pairs fell from 30/133/561 to 26/125/552. Two locked blind reviewers selected
 all 20 code-owned keys, found all choices distinct at difficulty 2–3, and
@@ -194,6 +206,14 @@ chronological while the older one was stratified, so their blind pair counts
 are not a matched before/after result. The remaining repeats show why the
 selector improvement cannot substitute for more substantive formats and
 objectives.
+The [selector-first 20-item blind review](evidence/selector-singular-first-bank20-20260927/RESULTS.md)
+likewise found 20/20 unique keys and 120/120 distinct within-item pairs, but
+both reviewers flagged four strong repeated pairs across questions. One
+reviewer also flagged 31/190 pairs for a repeated prompt/response skeleton;
+the other required both method and format similarity and flagged 4/190.
+The current level-2 quarantine excludes the full-sentence format that this
+historical worksheet contained; its own 20/40/80 replay remains structurally
+unique but has not had a separate blind bank-wide content review.
 
 ## Established causes and fixes
 
@@ -205,7 +225,7 @@ objectives.
 | Answer highlighting could be changed by legacy explanatory prose. | The old iOS helper could interpret “incorrect” prose as a key and endorse a distractor. | Grading and highlighting now use the explicit key or a deterministic legacy label. Backend feedback referring to shuffled answer positions is rejected. See [client reproduction](evidence/answer-highlighting-20260921.md). |
 | Downstream review and deadlines reduce worker yield. | Earlier mapped workers returned 3/5 after difficulty vetoes, 0/5 after a reviewer timeout, and 4/5 after a model vetoed correct rational-equation teaching. | The proof-scoped difficulty rule and deadline-clamped worker read setting already exist. The rational compiler now shows a verified cross-multiplication and linear solution for all 72 bounded variants; the reviewer veto remains active. The [fresh one-shot worker trial](evidence/mapped-full-worker-next-prep-20260927/RESULTS.md) passed its five-slot key, choice, teaching, and deadline gate, but one pass cannot establish repeat reliability. See [earlier worker](evidence/current-mapped-full-worker-qualification-reauth-20260927/RESULTS.md), [difficulty](evidence/agreement-difficulty-calibration-qualification-20260927/RESULTS.md), and [refill](evidence/mapped-refill-qualification-20260927/RESULTS.md) trials. |
 | The native schema can admit a task that the final compiler rejects. | Bedrock returned all five typed tasks under the 2,101-byte schema, but the new gerund scene was missing from the final slot-4 allowlist; the batch returned 0/5. | The allowlist now includes the gerund family. Offline replay of that exact author object reached all five compiled candidates, and a later full worker returned 5/5. A regression takes all 56 schema-admitted English scene/order variants through the complete five-task adapter and compiler route. See [failure](evidence/mapped-full-worker-post-teaching-20260927/RESULTS.md) and [qualification](evidence/mapped-full-worker-next-prep-20260927/RESULTS.md). |
-| Reuse history and repertoire were insufficient for a large bank. | The refill's five new candidates were rated strong near-duplicates of earlier items by both blind reviewers. Older linear stems dropped out of numeric history after a template upgrade. The original [offline 40/80-item simulation](evidence/mapped-bank-diversity-simulation-20260927/RESULTS.md) had 60/280 same-slot-family pairs and exhausted both English inventories after 80. | Full-bank history, alternate numeric/grammar structures, and the 72-stem historical numeric mapping are on `main`. The current [capacity gate](MAPPED_BANK_CAPACITY_GATE.md) reaches 85 unique stems; new two-root, gerund, product-complement, and [typed solution-count](evidence/slot2-count-selection-20260927/RESULTS.md) mechanisms reduce same-slot-family pairs to 23/131/152 at 40/80/85. A numeric selector tie-break removes repeated `(a,b)` operand pairs across all three math slots in the 80-item replay. The strict one-use-per-family gate still fails. The [20-item blind sample](evidence/current-20-bank-blind-20260927/RESULTS.md) found one strong repeat and a below-level factored-root item; the latter was fixed and [blind checked](evidence/expanded-two-root-blind-20260927/RESULTS.md), but the numeric repeats remain. The teaching-fixed 2,156-byte source passed one full-worker batch, not a repeated-bank trial. |
+| Reuse history and repertoire were insufficient for a large bank. | The refill's five new candidates were rated strong near-duplicates of earlier items by both blind reviewers. Older linear stems dropped out of numeric history after a template upgrade. The original [offline 40/80-item simulation](evidence/mapped-bank-diversity-simulation-20260927/RESULTS.md) had 60/280 same-slot-family pairs and exhausted both English inventories after 80. | Full-bank history, alternate numeric/grammar structures, and the 72-stem historical numeric mapping are on `main`. The current [capacity gate](MAPPED_BANK_CAPACITY_GATE.md) reaches 85 unique stems; new two-root, gerund, product-complement, and [typed solution-count](evidence/slot2-count-selection-20260927/RESULTS.md) mechanisms yield 18/112/128 same-slot-family pairs at 40/80/85 after the level-2 sentence-selection quarantine. A numeric selector tie-break removes repeated `(a,b)` operand pairs across all three math slots in the 80-item replay. The strict one-use-per-family gate still fails. The [20-item blind sample](evidence/current-20-bank-blind-20260927/RESULTS.md) found one strong repeat and a below-level factored-root item; the latter was fixed and [blind checked](evidence/expanded-two-root-blind-20260927/RESULTS.md), but the numeric repeats remain. The quarantined 2,357-byte source passed one full-worker batch, not a repeated-bank trial. |
 | Different labels can hide the same numeric solve. | Both reviewers of the [English-each 20-item worksheet](evidence/english-each-contrast-20260927/RESULTS.md) rated Q05/Q06 (quadratic equality) and Q11/Q16 (linear upper bound) as their strongest repeats. An [offline compiled-graph probe](evidence/solve-signature-gate-20260927/RESULTS.md) found exactly those two matches across each review's 190 pairs and no reviewed moderate/low false positives. The [combined-source replay](evidence/combined-current-bank-replay-20260927/RESULTS.md) found a cross-family signature repeat already at 20. | The production selector now ranks the closed graph signature before the family label, reducing same-signature pairs to 0/12/72 at 20/40/80. It is a **balancing preference**, not a rejection gate or semantic guarantee. The 20-item blind sample still has a strongly similar linear-equation pair under different graph signatures. A strict one-use gate is not enabled: 40/80 exceed finite inventory, and failure behavior must not silently lose questions. |
 | A plausible new family can hide multiple grammatical keys. | A proposed quantity-versus-count agreement family looked sound in a first keyless review, but the [revised blind review](evidence/slot3-measurement-rejected-20260927/RESULTS.md) found viable alternative agreement for time and distance sentences, plus strong within-family repetition. | The candidate was rejected before code integration. New scene families require a locked blind one-key and novelty review in addition to compiler checks. |
 | Structural families do not capture all semantic repetition. | In a [15-item blind sample](evidence/mapped-combined-bank-blind-20260927/RESULTS.md), both reviewers selected every code-owned key and found distinct choices, yet agreed on four strong near-duplicate pairs across English slots or named numeric families. The [gerund-family blind review](evidence/slot4-gerund-capacity-20260927/RESULTS.md) found all eight keys sound and choices distinct, but four strong within-family near-duplicate pairs. A [solution-count blind review](evidence/slot2-count-selection-20260927/RESULTS.md) selected all 11 sampled keys across two worksheets but called every count-to-count pair strongly similar. A [product-complement blind review](evidence/slot0-product-complement-20260927/RESULTS.md) found four correct keys and distinct choices but all six within-family question pairs strongly similar. In the [live English v10 author sample](evidence/english-native-author-acceptance-20260927/RESULTS.md), two reviewers found two strong within-batch format repeats despite five distinct family/scene labels. | Keep the mapped route opt-in. The selector and qualification must consider both solving method and question format, including cross-slot/cross-family comparisons; exact stem and family counters are insufficient. |
@@ -229,8 +249,12 @@ objectives and question formats for a 40/80-item bank, with full-bank
 history and answer-blind cross-bank review. The 2,156-byte source passed one
 full-worker trial with its own solver/reviewer calls and independent content
 review; the 2,226-byte source passed one author/schema trial but not the full
-worker. The current 2,357-byte source passed one author/schema trial but failed
-its one full-worker trial at 4/5. A repeated-bank trial must
+worker. The current 2,357-byte source passed one author/schema trial; its
+first three full-worker trials returned 4/5 for different reviewer vetoes.
+After quarantining the four-rule sentence selection at level 2, a fourth
+one-shot trial met its five-slot key, choice, teaching, difficulty, and
+deadline gate, with two locked blind reviews and a post-lock teaching audit.
+Its two English items still strongly repeated a format. A repeated-bank trial must
 hold the key, difficulty, teaching, distinctness, and deadline properties over
 the desired inventory size. Schema compliance or one successful batch cannot
 replace those tests.

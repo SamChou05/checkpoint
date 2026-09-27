@@ -1,0 +1,86 @@
+{
+  "reviewer": "B",
+  "status": "locked",
+  "worksheet_sha256": "c77d1167f87940cc9b56de5817343df8e04c9d3452ff73c6badfba6ef7d5e23e",
+  "items": [
+    {
+      "id": "Q01",
+      "key": "B",
+      "additional_defensible_keys": [],
+      "ambiguous_or_no_answer": false,
+      "solution": "The head of 'one of the editors' is singular, so 'carries'; 'editors who' is plural, so 'check'.",
+      "difficulty": 2,
+      "difficulty_reason": "Two routine subject-verb agreement decisions; the relative clause adds a small trap.",
+      "choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": [],
+      "other_issues": []
+    },
+    {
+      "id": "Q02",
+      "key": "D",
+      "additional_defensible_keys": [],
+      "ambiguous_or_no_answer": false,
+      "solution": "(x-9)^2 < 25 means -5 < x-9 < 5, hence 4 < x < 14. The integers 5 through 13 give 9 values, all in the stated domain.",
+      "difficulty": 2,
+      "difficulty_reason": "Requires a simple strict-inequality bound and inclusive integer count.",
+      "choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": [],
+      "other_issues": []
+    },
+    {
+      "id": "Q03",
+      "key": "B",
+      "additional_defensible_keys": [],
+      "ambiguous_or_no_answer": false,
+      "solution": "Plural 'chefs' takes 'inspect'; the gerund phrase 'cleaning the ovens' is a singular subject and takes 'demands'.",
+      "difficulty": 2,
+      "difficulty_reason": "Two routine agreement decisions, with a gerund phrase as the only modest complication.",
+      "choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": [],
+      "other_issues": ["The two-blank agreement method and ordered-pair response closely repeat Q01."]
+    },
+    {
+      "id": "Q04",
+      "key": "D",
+      "additional_defensible_keys": [],
+      "ambiguous_or_no_answer": false,
+      "solution": "12/8 = 3/2. Cross-multiplying gives 2x+10 = 3x+3, so x = 7, which is in the domain and has nonzero denominator.",
+      "difficulty": 2,
+      "difficulty_reason": "A short rational equation with a single valid integer solution.",
+      "choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": [],
+      "other_issues": []
+    },
+    {
+      "id": "Q05",
+      "key": "D",
+      "additional_defensible_keys": [],
+      "ambiguous_or_no_answer": false,
+      "solution": "3/4 + 4/6 = 9/12 + 8/12 = 17/12; its reciprocal is 12/17.",
+      "difficulty": 2,
+      "difficulty_reason": "One fraction addition followed by a reciprocal.",
+      "choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": [
+        "A (29/12) has no clear connection to a likely arithmetic slip in the displayed expression.",
+        "C (1) is a generic guess rather than a plausible result of the stated fraction operations."
+      ],
+      "other_issues": []
+    }
+  ],
+  "choice_pair_scale": "true means the two choices are meaningfully distinct as answer alternatives; all 30 pairs are distinct",
+  "cross_item_pairs": [
+    {"pair": "Q01-Q02", "method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q01-Q03", "method_repetition": "strong", "response_format_repetition": "strong", "reason": "Both require exactly two independent present-tense subject-verb agreement decisions and return an ordered pair of verb forms; each supplies the same four singular/plural combinations."},
+    {"pair": "Q01-Q04", "method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q01-Q05", "method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q02-Q03", "method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q02-Q04", "method_repetition": "moderate", "response_format_repetition": "moderate", "reason": "Both use a bounded integer x and an algebraic condition, but Q02 counts inequality solutions while Q04 finds one equation solution; each response is a single integer."},
+    {"pair": "Q02-Q05", "method_repetition": "none", "response_format_repetition": "low", "reason": "Both yield one numerical choice, but one is an integer count and the other an exact fraction."},
+    {"pair": "Q03-Q04", "method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q03-Q05", "method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q04-Q05", "method_repetition": "low", "response_format_repetition": "moderate", "reason": "Both involve rational-number manipulation and ask for one numerical value, though one solves for x and the other evaluates an expression."}
+  ],
+  "overall_repetition_rating": "moderate",
+  "overall_repetition_reason": "Q01 and Q03 strongly duplicate the same grammar operation and answer structure. Q02, Q04, and Q05 share some numeric presentation but require materially different operations.",
+  "other_ambiguity_or_misleading_feedback": []
+}

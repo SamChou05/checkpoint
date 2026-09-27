@@ -1,4 +1,4 @@
-# Level-2 quarantine v12 full-worker trial: five returned, content review pending
+# Level-2 quarantine v12 full-worker trial: narrow 5/5 pass
 
 The single frozen live worker job returned **all five original slots** in
 **58.784834 seconds** with three one-attempt Bedrock Converse calls. It met
@@ -26,13 +26,33 @@ The frozen [plan](plan.json) SHA-256 is
 source commit `1e411c345a34d867bbee445953c1d0b29101e66e`. The accepted
 v12 author wire and schema are unchanged. The [independent exact-hash
 review](independent-review.json) approved this one-shot run, and the fresh
-[credential precheck](launch-precheck.json) passed before execution. Captured
-status is `completed_pending_review`; `qualified:false` is intentional until
-the prespecified independent content review is complete.
+[credential precheck](launch-precheck.json) passed before execution. The
+immutable capture retains `completed_pending_review` and `qualified:false`;
+later content reviews are recorded separately and do not rewrite it.
 
 The five sanitized candidates were projected into a [keyless
 worksheet](blind-candidates/worksheet.json) with SHA-256
 `c77d1167f87940cc9b56de5817343df8e04c9d3452ff73c6badfba6ef7d5e23e`.
-Its answer map is stored outside Git and remains unopened pending two locked
-answer-blind reviews. This single live pass is not a repeated-bank or
-arbitrary-topic reliability estimate. The mapped route remains opt-in.
+Its answer map was stored outside Git and opened only after both reviews were
+locked. [Review A](blind-candidates/review-a.json) (SHA-256
+`49be0366aafb2b0ba666f1e885ff4a679625ef0cc31d62255bd35f157abb0613`)
+and [review B](blind-candidates/review-b.json) (SHA-256
+`ba0a6fc062da897f1cb4db1a264d6f6b0306a66e815f7bcc5ae84c5d933eff1e`)
+independently matched **all five** code-owned keys, found no second defensible
+key, rated all five items difficulty 2, and judged **all 30 of 30** within-item
+choice pairs meaningfully distinct. Each reviewed all ten cross-item pairs.
+Both found the two English ordered-pair questions strongly repetitive in
+method and response format; A also flagged a strong repeated numeric
+domain/condition format that B rated moderate. They noted some weak numeric
+distractors despite distinct values.
+
+A separate [post-lock teaching audit](teaching-audit.json) (SHA-256
+`c17621eb37311c427b391a543739e7c4d2df1e5db7b4fd4bcb2f06ebeb824238`)
+independently recomputed the three math keys, checked both English keys, and
+found all five main explanations and **20/20** choice explanations sound,
+complete, within text limits, and independent of shuffled answer labels.
+Thus this one batch meets the frozen **five-original-slot key, choice,
+teaching, difficulty, and deadline gate**. The strong English repeat prevents
+any claim that a larger bank has adequate variety. One batch is not a future
+yield estimate or an arbitrary-topic guarantee; the mapped route remains
+opt-in.

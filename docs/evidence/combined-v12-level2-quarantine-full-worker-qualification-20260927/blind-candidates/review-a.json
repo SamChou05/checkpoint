@@ -1,0 +1,77 @@
+{
+  "reviewer": "A",
+  "blind_review": true,
+  "worksheet_sha256": "c77d1167f87940cc9b56de5817343df8e04c9d3452ff73c6badfba6ef7d5e23e",
+  "items": [
+    {
+      "id": "Q01",
+      "key": "B",
+      "additional_defensible_keys": [],
+      "solution": "The singular head of 'one of the editors' takes 'carries'; the plural antecedent 'editors' takes 'check' in the relative clause.",
+      "difficulty": 2,
+      "difficulty_reason": "Both blanks require ordinary subject–verb agreement, though the intervening plural noun in the first clause may cause a slip.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": [],
+      "other_issues": []
+    },
+    {
+      "id": "Q02",
+      "key": "D",
+      "additional_defensible_keys": [],
+      "solution": "The strict inequality gives |x - 9| < 5, so the qualifying integers are 5 through 13 inclusive: nine integers.",
+      "difficulty": 2,
+      "difficulty_reason": "A simple strict inequality and inclusive count; the nearby options test boundary counting.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": [],
+      "other_issues": ["The stated domain contains the entire solution interval, so its endpoints do not affect the count."]
+    },
+    {
+      "id": "Q03",
+      "key": "B",
+      "additional_defensible_keys": [],
+      "solution": "The plural subject 'chefs' takes 'inspect'; the gerund phrase 'cleaning the ovens' functions as a singular subject and takes 'demands'.",
+      "difficulty": 2,
+      "difficulty_reason": "Routine agreement in two clauses, with a gerund phrase providing the only mild complication.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": [],
+      "other_issues": []
+    },
+    {
+      "id": "Q04",
+      "key": "D",
+      "additional_defensible_keys": [],
+      "solution": "Since 12/8 = 3/2, 2(x + 5) = 3(x + 1), giving x = 7; this lies in the stated domain.",
+      "difficulty": 2,
+      "difficulty_reason": "Solving the rational equation requires one cross multiplication and a linear rearrangement.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": ["The adjacent integers 5, 6, and 8 are possible arithmetic slips but do not target clearly different misconceptions."],
+      "other_issues": []
+    },
+    {
+      "id": "Q05",
+      "key": "D",
+      "additional_defensible_keys": [],
+      "solution": "3/4 + 4/6 = 9/12 + 8/12 = 17/12, and its reciprocal is 12/17.",
+      "difficulty": 2,
+      "difficulty_reason": "Adding two fractions and taking the reciprocal is a short two-step calculation.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": ["17/12 plausibly catches omission of the outer reciprocal; 29/12 and 1 have no clear, comparably natural error path."],
+      "other_issues": []
+    }
+  ],
+  "cross_item_pairs": [
+    {"pair": "Q01-Q02", "solving_method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q01-Q03", "solving_method_repetition": "strong", "response_format_repetition": "strong", "reason": "Both ask for two present-tense subject–verb agreement forms as an ordered pair; each uses a plural subject and a less obvious singular subject."},
+    {"pair": "Q01-Q04", "solving_method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q01-Q05", "solving_method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q02-Q03", "solving_method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q02-Q04", "solving_method_repetition": "moderate", "response_format_repetition": "strong", "reason": "Both give a unitless integer x, an inclusive domain, and a symbolic condition, then require one numeric multiple-choice response. Their operations differ: Q02 counts inequality solutions while Q04 solves an equation for x."},
+    {"pair": "Q02-Q05", "solving_method_repetition": "none", "response_format_repetition": "low"},
+    {"pair": "Q03-Q04", "solving_method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q03-Q05", "solving_method_repetition": "none", "response_format_repetition": "none"},
+    {"pair": "Q04-Q05", "solving_method_repetition": "low", "response_format_repetition": "low"}
+  ],
+  "overall_repetition": "strong",
+  "overall_repetition_reason": "Q01 and Q03 substantially duplicate both the tested agreement method and ordered-pair answer format; Q02 and Q04 repeat a highly similar domain/condition/numeric-answer presentation.",
+  "overall_ambiguity_or_misleading_feedback": "No additional defensible answers or misleading feedback implied by the prompts were found."
+}
