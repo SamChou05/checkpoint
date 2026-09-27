@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import time
@@ -42,6 +43,14 @@ STS_ENDPOINT = "https://sts.us-east-1.amazonaws.com"
 EXPECTED_SCHEMA_BYTES = 2156
 EXPECTED_SCHEMA_SHA256 = "a6426dd4d8cdd26a7d6fb03bbd373c8d55ab1dd79c17eab48279e3a3120d201e"
 MAX_SECONDS = 150
+
+
+class DeadlineExceeded(BaseException):
+    """Escape SDK reads when the whole execution wall-clock bound expires."""
+
+
+def deadline_alarm(_signal, _frame):
+    raise DeadlineExceeded("Whole author probe deadline expired.")
 
 
 def require(condition, message):
@@ -152,7 +161,7 @@ def build():
     source_paths = [*sorted(SERVICE.glob("*.py")), SERVICE / "requirements.txt",
                     SERVICE / "evals/bounded_bedrock_capture.py"]
     plan = {
-        "state": "frozen", "trial_id": "native-v9-mapped-3x2-author-20260927-01",
+        "state": "frozen", "trial_id": "native-v9-mapped-3x2-author-20260927-02",
         "source_commit": SOURCE_COMMIT,
         "source_hashes": {str(path.relative_to(ROOT)): file_sha(path) for path in source_paths},
         "harness_sha256": file_sha(Path(__file__)),
@@ -176,6 +185,7 @@ def build():
         "limits": {"original_jobs": 1, "original_slots": 5, "sts_calls": 1,
                    "converse_calls": 1, "sdk_attempts_per_call": 1,
                    "seconds_from_before_credential_export": MAX_SECONDS,
+                   "hard_deadline_enforcement": "SIGALRM_ITIMER_REAL_one_shot",
                    "connect_timeout_seconds": 3, "read_timeout_seconds": 110,
                    "retry_fallback_topup": False,
                    "queue_bank_deploy_github_writes": False},
@@ -216,7 +226,12 @@ def execute(expected):
                "converse_calls": 0, "author_response": None}
     write_new(CAPTURE, capture)
     secrets = ()
+    old_alarm = signal.getsignal(signal.SIGALRM)
+    signal.signal(signal.SIGALRM, deadline_alarm)
     try:
+        remaining = MAX_SECONDS - (time.monotonic() - started)
+        require(remaining > 0, "Execution deadline expired before credential export.")
+        signal.setitimer(signal.ITIMER_REAL, remaining)
         require(not any(os.environ.get(key) for key in
                         ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN")),
                 "Inherited credential override is present.")
@@ -241,6 +256,8 @@ def execute(expected):
         capture["status"] = "dispatched"
         update_capture(capture)
         response = bedrock.converse(**wire)
+        require(time.monotonic() - started < MAX_SECONDS,
+                "Author call exceeded the whole execution deadline.")
         retained, omitted = safe.safe_response(response, secrets)
         capture["author_response"] = retained
         capture["reasoning_blocks_omitted"] = omitted
@@ -252,13 +269,21 @@ def execute(expected):
         capture["chosen_families"] = {str(i): tasks[str(i)]["family"] for i in range(3)}
         capture["offline_compilation"] = {"rows": len(rows), "numeric_proofs": len(numerical),
                                           "english_proofs": len(english), "failures": failures}
+        require(time.monotonic() - started < MAX_SECONDS,
+                "Post-response compilation exceeded the whole execution deadline.")
         capture["status"] = "completed" if len(rows) == 5 and not failures else "compile_failed"
+    except DeadlineExceeded:
+        capture["status"] = "deadline_exceeded"
+        capture["error"] = {"type": "DeadlineExceeded", "code": "whole_execution_deadline"}
     except Exception as error:
         capture["status"] = "failed"
         capture["error"] = safe.safe_error(error, secrets)
     finally:
-        capture["elapsed_seconds"] = round(time.monotonic() - started, 3)
-        capture["within_deadline"] = capture["elapsed_seconds"] <= MAX_SECONDS
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, old_alarm)
+        elapsed = time.monotonic() - started
+        capture["elapsed_seconds"] = round(elapsed, 3)
+        capture["within_deadline"] = elapsed <= MAX_SECONDS and capture["status"] != "deadline_exceeded"
         update_capture(capture)
     return {"status": capture["status"], "sts_calls": capture["sts_calls"],
             "converse_calls": capture["converse_calls"],

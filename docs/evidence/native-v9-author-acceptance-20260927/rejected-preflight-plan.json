@@ -1,6 +1,6 @@
 {
   "state": "frozen",
-  "trial_id": "native-v9-mapped-3x2-author-20260927-02",
+  "trial_id": "native-v9-mapped-3x2-author-20260927-01",
   "source_commit": "226316eecfb3e8100d3cb55d349cac8212f83b8e",
   "source_hashes": {
     "backend/bedrock-question-service/agreement_task_constructor.py": "3db79ad1072c6e4febc4b52c086526eda1c3055f863e1c01ca37e1548ae89916",
@@ -37,7 +37,7 @@
     "backend/bedrock-question-service/requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67",
     "backend/bedrock-question-service/evals/bounded_bedrock_capture.py": "cc547d6687ee81dc80c18615099d8b971955ceed95588acf8ab2d160cb3823f3"
   },
-  "harness_sha256": "85fd733d8bac1212fc50751d0a8cedbf381044e7562ac30db6bb413bf3369608",
+  "harness_sha256": "0c745e87fa447ae1cf7d5a8d847fd9732d50f726177e217869788b8dd64857d5",
   "request_sha256": "b6c0f712b693deeedbb03919a920499fa1d0d3abdfa97b857e68ad10d0bd1714",
   "normalized_request_sha256": "212cea7d53ddefe17fbe8f2459705b46b871793e62e0e58b56cc11e3626e63ae",
   "previous_successful_worker_plan_sha256": "7be1e0b7079d4007623d39481189db48de016c459af89766d49367ae1a5d0bdb",
@@ -96,7 +96,6 @@
     "converse_calls": 1,
     "sdk_attempts_per_call": 1,
     "seconds_from_before_credential_export": 150,
-    "hard_deadline_enforcement": "SIGALRM_ITIMER_REAL_one_shot",
     "connect_timeout_seconds": 3,
     "read_timeout_seconds": 110,
     "retry_fallback_topup": false,
