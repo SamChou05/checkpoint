@@ -20,7 +20,8 @@ FAMILIES = ("fraction_evaluation", "bounded_equation", "bounded_ratio_threshold"
 # of the same decision, not evidence of bank-level variety.
 SLOT_FAMILIES = (
     (FAMILIES[0], "fraction_quotient", "fraction_reciprocal_sum"),
-    (FAMILIES[1], "bounded_quadratic_equation", "bounded_rational_equation"),
+    (FAMILIES[1], "bounded_quadratic_equation", "bounded_rational_equation",
+     "bounded_two_root_minimum"),
     (FAMILIES[2], "bounded_quadratic_maximum", "bounded_linear_budget_maximum"),
 )
 SUPPORTED_TOPIC = "Exact arithmetic"
@@ -122,6 +123,17 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
         ], "condition": {"left": 5, "relation": "eq", "right": 8},
             "selection": "any_satisfying",
             "domain": {"kind": "integer_interval", "lower": 0, "upper": 15}}
+    if family == "bounded_two_root_minimum":
+        # Exactly two roots lie in the stated domain: b and b+a. Unlike the
+        # unique-solution families, the learner must identify both and apply
+        # the explicit minimum selection to distinguish the answer.
+        return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
+            {"kind": "variable"}, _literal(b), _binary("sub", 0, 1),
+            _literal(b + a), _binary("sub", 0, 3), _binary("mul", 2, 4),
+            _literal(0),
+        ], "condition": {"left": 5, "relation": "eq", "right": 6},
+            "selection": "minimum",
+            "domain": {"kind": "integer_interval", "lower": 0, "upper": b + a + 2}}
     if family == "bounded_quadratic_maximum":
         # x(x+a) is strictly increasing on this nonnegative interval. The
         # greatest integer satisfying its bound is therefore x=b.

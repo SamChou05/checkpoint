@@ -126,23 +126,26 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                             self.assertIn(" / (x + ", learner["prompt"])
                         if family == "bounded_quadratic_maximum":
                             self.assertIn("The larger domain values fail:", learner["explanation"])
+                        if family == "bounded_two_root_minimum":
+                            self.assertIn(str(b + a), learner["choices"])
+                            self.assertIn("minimum", learner["choiceExplanations"][str(b + a)])
                         checked += 1
-        self.assertEqual(checked, 624)
-        self.assertEqual(len(numeric_variant_identities()), 624)
+        self.assertEqual(checked, 696)
+        self.assertEqual(len(numeric_variant_identities()), 696)
 
     def test_family_schema_is_small_closed_and_agreement_route_matches_current_contract(self):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
-        self.assertEqual(len(schema_json.encode()), 2013)
+        self.assertEqual(len(schema_json.encode()), 2040)
         self.assertEqual(hashlib.sha256(schema_json.encode()).hexdigest(),
-                         "be8391e81587d8dca861f46cfdb0f1a89e18d88ad19a3417105affab016f2d99")
+                         "4cb4a9f845c5553f141bb684360f7a086529814b465271d55ca13900e9932d5e")
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"] for i in range(3)],
                          [list(families) for families in SLOT_FAMILIES])
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(self.contract())["version"], "7")
+        self.assertEqual(native.contract_metadata(self.contract())["version"], "8")
         agreement = self.contract(False)
         agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
         self.assertEqual(len(agreement_schema.encode()), 2999)
@@ -481,11 +484,13 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                 )
         self.assertEqual([len(set(chosen[slot])) for slot in range(3)], [16] * 3)
         for slot in range(3):
-            self.assertEqual(chosen_families[slot], list(SLOT_FAMILIES[slot]) * 5
-                             + [SLOT_FAMILIES[slot][0]])
-        # The previous two-family inventory required 36/168 numeric
-        # same-family pairs in 40/80 items; all exact stems remain unique.
-        self.assertEqual(pair_counts, {8: 21, 16: 105})
+            self.assertEqual(chosen_families[slot], [
+                SLOT_FAMILIES[slot][index % len(SLOT_FAMILIES[slot])]
+                for index in range(16)
+            ])
+        # The two-root minimum family reduces slot-one structural reuse;
+        # all exact stems remain unique across the full simulated history.
+        self.assertEqual(pair_counts, {8: 18, 16: 94})
         request = {**self.request,
                    "_mappedQuantitativeVariantIdentities": list(full_identities)}
         self.assertEqual(generation._mapped_author_scope_sha256(request),

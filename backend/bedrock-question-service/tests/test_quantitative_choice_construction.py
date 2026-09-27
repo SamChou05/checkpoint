@@ -242,6 +242,14 @@ class QuantitativeChoiceConstructionTests(unittest.TestCase):
             self.assertTrue(all("maximum" in text or "minimum" in text or "false" in text
                                 for text in content["choiceExplanations"].values()))
 
+    def test_extremum_choices_include_another_satisfying_value_and_failing_values(self):
+        spec = scalar({"variable": "x"}, "ge", literal(0), "minimum", -5, 5)
+        full = construct_quantitative_spec(spec)
+        self.assertEqual(set(full["choices"]), {"0", "1", "-1", "-2"})
+        content = compile_question(full)
+        self.assertEqual(content["expectedAnswer"], "0")
+        self.assertIn("minimum", content["choiceExplanations"]["1"])
+
     def test_scalar_domain_and_pool_limits(self):
         x = {"variable": "x"}
         self.assert_error(scalar(x, "eq", literal(100)), "no_answer")

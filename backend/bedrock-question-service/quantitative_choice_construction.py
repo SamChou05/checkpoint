@@ -166,11 +166,21 @@ def _construct(spec):
         answer = feasible[-1] if selection == "maximum" else feasible[0]
         if selection == "any_satisfying":
             candidates = [value for value in domain if value not in feasible]
+            candidates.sort(key=lambda value: (abs(value - answer), value))
         else:
-            # A second satisfying number is wrong only under the explicitly
-            # requested extremum. All options stay inside the stated domain.
-            candidates = [value for value in domain if value != answer]
-        candidates.sort(key=lambda value: (abs(value - answer), value))
+            # Offer a satisfying but non-extreme value when one exists, so the
+            # selection rule matters even when that value is far from the key.
+            # Then prefer nearby values that fail the condition. Additional
+            # satisfying values fill any remaining slots if needed.
+            other_feasible = sorted(
+                (value for value in feasible if value != answer),
+                key=lambda value: (abs(value - answer), value),
+            )
+            false_values = sorted(
+                (value for value in domain if value not in feasible),
+                key=lambda value: (abs(value - answer), value),
+            )
+            candidates = other_feasible[:1] + false_values + other_feasible[1:]
         choices = _number_choices(answer, candidates)
 
     # The hash orders every final option identically, regardless of which is
