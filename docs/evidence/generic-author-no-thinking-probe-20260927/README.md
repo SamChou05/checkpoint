@@ -27,4 +27,5 @@ would need a separate keyless content review, and a full five-question worker
 trial would still be needed to qualify the chunked verifier. This trial has
 one durable Converse reservation, one SDK attempt, a shared deadline starting
 before credential export/STS, and no retry or fallback. Its capture is
-terminal for this trial ID. No AWS operation has run for this frozen plan yet.
+terminal for this trial ID. The one-shot author call is complete; see
+[results](RESULTS.md) and the [blind-review rubric](BLIND_REVIEW.md).

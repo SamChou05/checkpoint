@@ -257,6 +257,14 @@ any solver or reviewer call, so the smaller verification transport remains
 unmeasured live. This is a second independent obstacle to reliable seven-row
 reserve yield, alongside trial 02's seven-row solver validation error and
 the blind-rated difficulty misses in its authored content.
+A [one-call author comparison](evidence/generic-author-no-thinking-probe-20260927/RESULTS.md)
+kept Trial 03's request, model, and native schema unchanged while disabling
+adaptive thinking. Bedrock returned seven native rows in 48.980 seconds using
+1,162 output tokens, and the existing sanitizer accepted all seven offline.
+This shows a viable author transport on one sample, not a verified worker
+return or a model-quality pass; a blind content review is pending. The wire
+also changed the output cap and temperature as a consequence of disabling
+thinking, so the observation does not isolate a single low-level parameter.
 
 Two standalone math response-format constructors were compared against six
 quarantined level-2 examples in a [frozen 12-item blind worksheet](evidence/math-format-mixed-blind-20260927/RESULTS.md).
