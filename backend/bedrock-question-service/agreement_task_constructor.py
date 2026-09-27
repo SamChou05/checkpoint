@@ -68,6 +68,17 @@ class _NumberScene:
 
 
 @dataclass(frozen=True)
+class _RelativeScene:
+    plural_antecedent: str
+    relative_object: str
+    matrix_object: str
+    relative_base: str
+    relative_third: str
+    matrix_base: str
+    matrix_third: str
+
+
+@dataclass(frozen=True)
 class _Clause:
     text: str
     base: str
@@ -125,6 +136,14 @@ NUMBER_SCENES = {
     "number_readers": _NumberScene("readers", "the author", "copies", "the editors", "present", "known"),
     "number_students": _NumberScene("students", "the tutor", "forms", "the teachers", "available", "clear"),
 }
+RELATIVE_SCENES = {
+    # "Who" refers to the plural antecedent, while "one" is the singular
+    # subject of the main clause. The two blanks require different analyses.
+    "relative_guides": _RelativeScene("guides", "the maps", "a badge", "fold", "folds", "wear", "wears"),
+    "relative_editors": _RelativeScene("editors", "the proofs", "a notebook", "check", "checks", "carry", "carries"),
+    "relative_technicians": _RelativeScene("technicians", "the samples", "a log", "label", "labels", "keep", "keeps"),
+    "relative_clerks": _RelativeScene("clerks", "the files", "a key", "sort", "sorts", "hold", "holds"),
+}
 
 
 class AgreementTaskError(ValueError):
@@ -138,7 +157,8 @@ def task_schema() -> dict:
         "properties": {
             "kind": {"type": "string", "enum": [TASK_KIND]},
             "scene": {"type": "string", "enum": sorted((*SCENES, *COMPOUND_SCENES,
-                                                       *INVERSION_SCENES, *NUMBER_SCENES))},
+                                                       *INVERSION_SCENES, *NUMBER_SCENES,
+                                                       *RELATIVE_SCENES))},
             "order": {"type": "string", "enum": ["singular_first", "plural_first"]},
         },
         "required": ["kind", "scene", "order"],
@@ -150,6 +170,7 @@ def _checked_task(task: object) -> tuple[str, str]:
             or type(task["kind"]) is not str or task["kind"] != TASK_KIND
             or type(task["scene"]) is not str or task["scene"] not in {
                 *SCENES, *COMPOUND_SCENES, *INVERSION_SCENES, *NUMBER_SCENES,
+                *RELATIVE_SCENES,
             }
             or type(task["order"]) is not str
             or task["order"] not in {"singular_first", "plural_first"}):
@@ -161,11 +182,68 @@ def _clause(subject: str, attractor: str, obj: str) -> str:
     return f"{subject[0].upper()}{subject[1:]} near {attractor} ___ {obj}"
 
 
+def _compile_relative_question(scene: _RelativeScene, order: str, ordinal: int) -> dict:
+    """Prove agreement separately in a relative clause and its main clause."""
+    matrix = f"One of the {scene.plural_antecedent} ___ {scene.matrix_object}."
+    relative = (f"The {scene.plural_antecedent} who ___ {scene.relative_object} "
+                "are here.")
+    clauses = ((matrix, relative) if order == "singular_first" else
+               (relative, matrix))
+    prompt = ("Fill both blanks with present-tense forms in standard written American English. "
+              f"{' '.join(clauses)} Which ordered pair fills the blanks?")
+    positions = (("matrix", "relative") if order == "singular_first" else
+                 ("relative", "matrix"))
+    pairs = [(False, False), (False, True), (True, False), (True, True)]
+    pairs = pairs[ordinal % 4:] + pairs[:ordinal % 4]
+    forms = {
+        "relative": (scene.relative_base, scene.relative_third),
+        "matrix": (scene.matrix_base, scene.matrix_third),
+    }
+    choices = ["; ".join(forms[position][int(flag)]
+                         for position, flag in zip(positions, flags, strict=True))
+               for flags in pairs]
+    correct_flags = tuple(position == "matrix" for position in positions)
+    answer = "; ".join(forms[position][int(flag)]
+                       for position, flag in zip(positions, correct_flags, strict=True))
+    relative_rule = (f'The relative pronoun "who" refers to plural "{scene.plural_antecedent}"; '
+                     f'the relative-clause verb is "{scene.relative_base}".')
+    matrix_rule = ('The main-clause subject is singular "One"; '
+                   f'the main-clause verb is "{scene.matrix_third}".')
+    rules = {"relative": relative_rule, "matrix": matrix_rule}
+    explanation = (" ".join(rules[position] for position in positions)
+                   + f" Therefore the ordered pair is {answer}.")
+
+    def feedback(flags: tuple[bool, bool]) -> str:
+        reasons = []
+        for position, flag in zip(positions, flags, strict=True):
+            if flag == (position == "matrix"):
+                reasons.append(rules[position])
+            elif position == "relative":
+                reasons.append(f'"{scene.relative_third}" does not agree with plural '
+                               f'"{scene.plural_antecedent}"; use "{scene.relative_base}".')
+            else:
+                reasons.append(f'"{scene.matrix_base}" does not agree with singular "One"; '
+                               f'use "{scene.matrix_third}".')
+        return " ".join(reasons)
+
+    result = {"prompt": prompt, "choices": choices, "expectedAnswer": answer,
+              "explanation": explanation,
+              "choiceExplanations": {choice: feedback(flags)
+                                     for choice, flags in zip(choices, pairs, strict=True)}}
+    if (len(set(choices)) != 4 or choices.count(answer) != 1
+            or len(prompt) > 320 or len(explanation) > 420
+            or any(len(text) > 280 for text in result["choiceExplanations"].values())):
+        raise AgreementTaskError("Relative-clause agreement exceeded closed answer limits.")
+    return result
+
+
 def compile_question(task: dict, *, ordinal: int) -> dict:
     """Return exactly five code-owned learner fields for original slot 3 or 4."""
     scene_id, order = _checked_task(task)
     if type(ordinal) is not int or ordinal not in {3, 4}:
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
+    if scene_id in RELATIVE_SCENES:
+        return _compile_relative_question(RELATIVE_SCENES[scene_id], order, ordinal)
     if scene_id in COMPOUND_SCENES:
         scene = COMPOUND_SCENES[scene_id]
         first = _Clause(
@@ -323,7 +401,7 @@ def canonical_variant_identities() -> frozenset[str]:
         _normalized_stem_identity(compile_question(
             {"kind": TASK_KIND, "scene": scene, "order": order}, ordinal=slot,
         )["prompt"])
-        for slot, scenes in ((3, (*SCENES, *INVERSION_SCENES)),
+        for slot, scenes in ((3, (*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)),
                              (4, (*COMPOUND_SCENES, *NUMBER_SCENES)))
         for scene in scenes
         for order in ("singular_first", "plural_first")
@@ -346,14 +424,14 @@ def _select_novel_task(
 ) -> tuple[dict, bool]:
     """Keep a fresh authored task, otherwise choose a fresh code-owned variant.
 
-    Prefer an unseen solve mechanism, then a new scene, before swapping
+    Prefer the least-used solve mechanism, then a new scene, before swapping
     clauses in an already seen scene. If the finite inventory is exhausted,
     retain the authored task for the normal per-item duplicate filter.
     """
     scene, _ = _checked_task(task)
     if ordinal not in (3, 4):
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
-    allowed = ({**SCENES, **INVERSION_SCENES} if ordinal == 3
+    allowed = ({**SCENES, **INVERSION_SCENES, **RELATIVE_SCENES} if ordinal == 3
                else {**COMPOUND_SCENES, **NUMBER_SCENES})
     if scene not in allowed:
         raise AgreementTaskError("Agreement task is outside its mapped slot.")
@@ -378,18 +456,21 @@ def _select_novel_task(
     if not fresh:
         return task, True
     family_by_scene = {
-        candidate_scene: ("inversion" if candidate_scene in INVERSION_SCENES else
+        candidate_scene: ("relative" if candidate_scene in RELATIVE_SCENES else
+                          "inversion" if candidate_scene in INVERSION_SCENES else
                           "number" if candidate_scene in NUMBER_SCENES else
                           "compound" if candidate_scene in COMPOUND_SCENES else "proximity")
         for candidate_scene in allowed
     }
-    used_families = {
-        family_by_scene[candidate["scene"]]
-        for candidate in variants
-        if _normalized_stem_identity(compile_question(candidate, ordinal=ordinal)["prompt"]) in blocked
+    family_counts = {
+        family: sum(
+            _normalized_stem_identity(compile_question(candidate, ordinal=ordinal)["prompt"]) in blocked
+            for candidate in variants if family_by_scene[candidate["scene"]] == family
+        )
+        for family in set(family_by_scene.values())
     }
     selected = min(fresh, key=lambda candidate: (
-        family_by_scene[candidate["scene"]] in used_families,
+        family_counts[family_by_scene[candidate["scene"]]],
         by_scene[candidate["scene"]], candidate != task,
         candidate["scene"], candidate["order"],
     ))
@@ -412,7 +493,7 @@ def compile_mapped_english_slots(
     if type(tasks_by_slot) is not dict or set(tasks_by_slot) != {"3", "4"}:
         raise AgreementTaskError("Both original English slots must be present.")
     scenes = [_checked_task(tasks_by_slot[str(slot)])[0] for slot in (3, 4)]
-    if scenes[0] not in {*SCENES, *INVERSION_SCENES} or scenes[1] not in {
+    if scenes[0] not in {*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES} or scenes[1] not in {
         *COMPOUND_SCENES, *NUMBER_SCENES,
     }:
         raise AgreementTaskError("Original English slots require their closed agreement families.")

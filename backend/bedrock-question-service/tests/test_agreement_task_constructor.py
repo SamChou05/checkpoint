@@ -6,7 +6,7 @@ import unittest
 
 from agreement_task_constructor import (
     AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, INVERSION_SCENES,
-    LEARNER_FIELDS, NUMBER_SCENES, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
+    LEARNER_FIELDS, NUMBER_SCENES, RELATIVE_SCENES, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
     TASK_KIND, canonical_variant_identities, compile_mapped_english_slots,
     compile_question, task_schema,
 )
@@ -38,7 +38,40 @@ def contract():
 
 class AgreementTaskConstructorTests(unittest.TestCase):
     def test_all_slot_variants_have_distinct_canonical_stems(self):
-        self.assertEqual(len(canonical_variant_identities()), 32)
+        self.assertEqual(len(canonical_variant_identities()), 40)
+
+    def test_relative_clause_and_main_clause_have_independent_keys_and_feedback(self):
+        facts = {
+            "relative_guides": ("fold", "wears", "guides"),
+            "relative_editors": ("check", "carries", "editors"),
+            "relative_technicians": ("label", "keeps", "technicians"),
+            "relative_clerks": ("sort", "holds", "clerks"),
+        }
+        self.assertEqual(set(facts), set(RELATIVE_SCENES))
+        for scene, (relative, matrix, antecedent) in facts.items():
+            for order in ("singular_first", "plural_first"):
+                with self.subTest(scene=scene, order=order):
+                    result = compile_question(task(scene, order), ordinal=3)
+                    key = (f"{matrix}; {relative}" if order == "singular_first"
+                           else f"{relative}; {matrix}")
+                    self.assertEqual(result["expectedAnswer"], key)
+                    self.assertEqual(result["choices"].count(key), 1)
+                    self.assertEqual(len(set(result["choices"])), 4)
+                    self.assertEqual(set(result["choices"]), set(result["choiceExplanations"]))
+                    self.assertEqual(result["prompt"].count("___"), 2)
+                    self.assertIn(f"The {antecedent} who ___", result["prompt"])
+                    self.assertIn(f"One of the {antecedent} ___", result["prompt"])
+                    self.assertIn(f'plural "{antecedent}"', result["explanation"])
+                    self.assertIn('singular "One"', result["explanation"])
+                    for choice in result["choices"]:
+                        mismatches = sum(a != b for a, b in zip(
+                            choice.split("; "), key.split("; "), strict=True))
+                        self.assertEqual(result["choiceExplanations"][choice].count(
+                            "does not agree"), mismatches)
+                    self.assertLessEqual(len(result["prompt"]), 320)
+                    self.assertLessEqual(len(result["explanation"]), 420)
+                    self.assertTrue(all(len(text) <= 280 for text in
+                                        result["choiceExplanations"].values()))
 
     def test_every_closed_scene_and_order_has_one_exact_grammatical_pair(self):
         for scene, correct in EXPECTED.items():
@@ -267,6 +300,28 @@ class AgreementTaskConstructorTests(unittest.TestCase):
             source, contract(), existing_prompts=tuple(history),
         )[4]
         self.assertTrue(exhausted.novelty_exhausted)
+
+    def test_slot_three_balances_three_mechanisms_across_eighty_item_bank(self):
+        source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
+        history = []
+        families = {"proximity": 0, "inversion": 0, "relative": 0}
+        for _ in range(16):
+            candidate = compile_mapped_english_slots(
+                source, contract(), existing_prompts=tuple(history),
+            )[3]
+            self.assertFalse(candidate.novelty_exhausted)
+            scene = json.loads(candidate.task_json)["scene"]
+            family = ("relative" if scene in RELATIVE_SCENES else
+                      "inversion" if scene in INVERSION_SCENES else "proximity")
+            families[family] += 1
+            prompt = candidate.content()["prompt"]
+            self.assertNotIn(prompt, history)
+            history.append(prompt)
+        self.assertEqual(len(set(history)), 16)
+        self.assertEqual(sorted(families.values()), [5, 5, 6])
+        self.assertFalse(compile_mapped_english_slots(
+            source, contract(), existing_prompts=tuple(history),
+        )[3].novelty_exhausted)
 
     def test_model_cannot_write_answer_text_metadata_or_open_grammar(self):
         invalid = [

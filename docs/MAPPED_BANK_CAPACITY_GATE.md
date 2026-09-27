@@ -30,9 +30,9 @@ This keeps the [frozen 40/80 evidence](evidence/mapped-bank-diversity-simulation
 immutable while allowing the current constructors to be evaluated again.
 
 At the current source, the gate reports 40/40 and 80/80 unique stems, yet
-only three substantive families per numeric slot and two per English slot.
-The 40-item bank has 45 same-slot/family item pairs and the 80-item bank has
-217 such pairs. Both English slots
+three substantive families in numeric slots and English slot 3, with two in
+English slot 4. The 40-item bank has 40 same-slot/family item pairs and the
+80-item bank has 196 such pairs. English slot 4
 have zero unused exact stem variants after 80, and the next five-item batch
 reports `agreement_novelty_exhausted`. The default gate therefore fails at
 both targets. Its messages say how many families are needed for the selected
