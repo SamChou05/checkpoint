@@ -1,0 +1,206 @@
+{
+  "items": [
+    {
+      "choices": {
+        "A": "sort; hold",
+        "B": "sort; holds",
+        "C": "sorts; holds",
+        "D": "sorts; hold"
+      },
+      "id": "Q01",
+      "prompt": "Fill both blanks with present-tense forms in standard written American English. The clerks who ___ the files are here. One of the clerks ___ a key. Which ordered pair fills the blanks?"
+    },
+    {
+      "choices": {
+        "A": "prepares; plans",
+        "B": "prepare; plan",
+        "C": "prepare; plans",
+        "D": "prepares; plan"
+      },
+      "id": "Q02",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The cooks near the chef ___ the meals, while the chef near the cooks ___ the menu. Which ordered pair fills the blanks?"
+    },
+    {
+      "choices": {
+        "A": "4",
+        "B": "3",
+        "C": "5",
+        "D": "2"
+      },
+      "id": "Q03",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 6) * (x + 1)) = 50. Which offered value of x satisfies the condition?"
+    },
+    {
+      "choices": {
+        "A": "19/42",
+        "B": "57",
+        "C": "57/14",
+        "D": "3/14"
+      },
+      "id": "Q04",
+      "prompt": "Let q be a unitless number, defined by q = (((6 / 7) + (2 / 4)) * 3). What is its exact value?"
+    },
+    {
+      "choices": {
+        "A": "-17/27",
+        "B": "19/54",
+        "C": "1",
+        "D": "34/53"
+      },
+      "id": "Q05",
+      "prompt": "Let q be a unitless number, defined by q = (1 - ((5 / 6) * (7 / 9))). What is its exact value?"
+    },
+    {
+      "choices": {
+        "A": "8",
+        "B": "7",
+        "C": "9",
+        "D": "6"
+      },
+      "id": "Q06",
+      "prompt": "Let x be a unitless number. Its domain is integers from 4 through 13, inclusive. Condition: (((x * x) - (17 * x)) + 60) != 0. How many integers in this domain satisfy the condition?"
+    },
+    {
+      "choices": {
+        "A": "Each of the guests receive a plate.",
+        "B": "Proofreading the reports require patience.",
+        "C": "Maya and Theo each prepare lunch.",
+        "D": "Neither the curator nor the assistants sorts the records."
+      },
+      "id": "Q07",
+      "prompt": "An editor compares sentences about Maya and Theo, the assistants, and proofreading the reports. Which sentence uses present-tense subject-verb agreement correctly in standard written American English?"
+    },
+    {
+      "choices": {
+        "A": "7",
+        "B": "10",
+        "C": "8",
+        "D": "9"
+      },
+      "id": "Q08",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 4) / (x + 1)) = (13 / 10). Which offered value of x satisfies the condition?"
+    },
+    {
+      "choices": {
+        "A": "Ava and Ben each reviews the forms.",
+        "B": "Drawing the maps requires accuracy.",
+        "C": "Neither the scientist nor the technicians labels the samples.",
+        "D": "Each of the clerks keep a copy."
+      },
+      "id": "Q09",
+      "prompt": "An editor compares sentences about Ava and Ben, the technicians, and drawing the maps. Which sentence uses present-tense subject-verb agreement correctly in standard written American English?"
+    },
+    {
+      "choices": {
+        "A": "14/9",
+        "B": "23/9",
+        "C": "1",
+        "D": "9/14"
+      },
+      "id": "Q10",
+      "prompt": "Let q be a unitless number, defined by q = (1 / ((8 / 9) + (4 / 6))). What is its exact value?"
+    },
+    {
+      "choices": {
+        "A": "keep; review",
+        "B": "keeps; review",
+        "C": "keeps; reviews",
+        "D": "keep; reviews"
+      },
+      "id": "Q11",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Each of the clerks ___ a copy, while Ava and Ben each ___ the forms. Which ordered pair fills the blanks?"
+    },
+    {
+      "choices": {
+        "A": "3/2",
+        "B": "59/24",
+        "C": "35/24",
+        "D": "36/25"
+      },
+      "id": "Q12",
+      "prompt": "Let q be a unitless number, defined by q = (((7 / 8) / (3 / 5)) + 1). What is its exact value?"
+    },
+    {
+      "choices": {
+        "A": "5",
+        "B": "3",
+        "C": "6",
+        "D": "4"
+      },
+      "id": "Q13",
+      "prompt": "Let x be a unitless number. Its domain is integers from 4 through 11, inclusive. Condition: ((3 * (x + 2)) - (2 * x)) <= 14. How many integers in this domain satisfy the condition?"
+    },
+    {
+      "choices": {
+        "A": "2",
+        "B": "4",
+        "C": "1",
+        "D": "3"
+      },
+      "id": "Q14",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 6, inclusive. Condition: (x / (x + 4)) >= (3 / 7). What is the minimum x in this domain satisfying the condition?"
+    },
+    {
+      "choices": {
+        "A": "includes; arrives",
+        "B": "include; arrives",
+        "C": "include; arrive",
+        "D": "includes; arrive"
+      },
+      "id": "Q15",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Most of the letters ___ return addresses, while most of the mail ___ by noon. Which ordered pair fills the blanks?"
+    },
+    {
+      "choices": {
+        "A": "requires; measure",
+        "B": "require; measure",
+        "C": "requires; measures",
+        "D": "require; measures"
+      },
+      "id": "Q16",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Preparing the meals ___ planning, and the cooks ___ the ingredients. Which ordered pair fills the blanks?"
+    },
+    {
+      "choices": {
+        "A": "4",
+        "B": "1",
+        "C": "2",
+        "D": "3"
+      },
+      "id": "Q17",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((5 * (x + 2)) + 8) = ((4 * x) + 21). Which offered value of x satisfies the condition?"
+    },
+    {
+      "choices": {
+        "A": "are; is",
+        "B": "are; are",
+        "C": "is; are",
+        "D": "is; is"
+      },
+      "id": "Q18",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the librarian ___ the returns from the library, while near the volunteers ___ the book from the library. Which ordered pair fills the blanks?"
+    },
+    {
+      "choices": {
+        "A": "3",
+        "B": "5",
+        "C": "6",
+        "D": "4"
+      },
+      "id": "Q19",
+      "prompt": "Let x be a unitless number. Its domain is integers from 1 through 7, inclusive. Condition: (x * (x + 5)) <= 36. What is the maximum x in this domain satisfying the condition?"
+    },
+    {
+      "choices": {
+        "A": "11",
+        "B": "12",
+        "C": "14",
+        "D": "13"
+      },
+      "id": "Q20",
+      "prompt": "Let x be a unitless number. Its domain is integers from -3 through 13, inclusive. Condition: ((x - 5) * (x - 5)) < 49. How many integers in this domain satisfy the condition?"
+    }
+  ],
+  "status": "offline_code_owned_candidates_not_worker_verified",
+  "targetDifficulty": "2–3"
+}
