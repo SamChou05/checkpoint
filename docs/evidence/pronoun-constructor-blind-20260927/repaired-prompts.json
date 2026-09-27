@@ -1,0 +1,37 @@
+{
+  "sourceCommit": "a644840",
+  "items": [
+    {
+      "id": "Q01",
+      "prompt": "Mara told Nia, \"I will catalog your sketches after you photograph my model.\" If the actions occur, who would do each, and who owns the two objects?"
+    },
+    {
+      "id": "Q02",
+      "prompt": "Mara told Nia, \"Before you photograph my model, I will catalog your sketches.\" If the actions occur, who would do each, and who owns the two objects?"
+    },
+    {
+      "id": "Q03",
+      "prompt": "Eli told Ava, \"I will repair your bicycle after you inspect my helmet.\" If the actions occur, who would do each, and who owns the two objects?"
+    },
+    {
+      "id": "Q04",
+      "prompt": "Eli told Ava, \"Before you inspect my helmet, I will repair your bicycle.\" If the actions occur, who would do each, and who owns the two objects?"
+    },
+    {
+      "id": "Q05",
+      "prompt": "Leah told Theo, \"I will translate your notes after you review my draft.\" If the actions occur, who would do each, and who owns the two objects?"
+    },
+    {
+      "id": "Q06",
+      "prompt": "Leah told Theo, \"Before you review my draft, I will translate your notes.\" If the actions occur, who would do each, and who owns the two objects?"
+    },
+    {
+      "id": "Q07",
+      "prompt": "Sana told Remy, \"I will frame your drawing after you measure my canvas.\" If the actions occur, who would do each, and who owns the two objects?"
+    },
+    {
+      "id": "Q08",
+      "prompt": "Sana told Remy, \"Before you measure my canvas, I will frame your drawing.\" If the actions occur, who would do each, and who owns the two objects?"
+    }
+  ]
+}
