@@ -1,0 +1,9 @@
+# Teaching-fixed v9 mapped 3:2 full-worker trial
+
+This is a new one-shot synthetic five-slot full-worker qualification on source `5687283850ad8bb8705fc2664f4c57b49e7413ba`. The author schema remains the 2,156-byte v9 contract. The intervening changes to numeric learner teaching are part of this source, not modifications to the native author wire. The earlier [v9 full-worker trial](../native-v9-full-worker-qualification-20260927/RESULTS.md) remains an immutable 4/5 failure; the [v7 full-worker result](../mapped-full-worker-next-prep-20260927/RESULTS.md) remains a distinct single-trial 5/5 result.
+
+The prespecified job requests three exact-arithmetic and two standard-English questions. The normal mapped worker runs native author, answer-blind solver where needed, authored-solution reviewer, sanitizer, and original-slot accounting. A pass needs all five original slots, one independently correct key and four meaningfully distinct choices per item, adequate teaching and feedback, target difficulty, and two answer-blind content reviews.
+
+The trial permits at most six durable Bedrock Converse call slots, one SDK attempt per call, no retries, fallback, repair or top-up, and a 240-second hard wall-clock deadline beginning before execute-time credential export and STS. A one-shot process timer interrupts long SDK reads. One preflight STS and one execute-time STS are separately bounded. The harness contains no real queue, bank, deployment or GitHub mutation.
+
+The plan is frozen only after socket-free fake-provider tests and exact source, schema, prompt, wire, request and predecessor checks. A fresh credential window, root and independent exact-hash approvals, and one bounded launch precheck are required before dispatch. A failed precheck or trial will not be repeated under this plan. Captures retain all five original-slot statuses; any returned questions receive a keyless worksheet for independent blind review before keys and teaching are revealed.
