@@ -88,6 +88,19 @@ MIN_BEDROCK_READ_TIMEOUT_SECONDS = 2.0
 DEFAULT_PROVIDER_CLIENT_SETUP_MILLISECONDS = 1_000
 DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS = 2_000
 DEFAULT_MIN_PROVIDER_REMAINING_MILLISECONDS = 0
+GENERIC_RESERVE_DIVERSITY_AUDIT = """
+
+GENERIC RESERVE BATCH DIVERSITY AUDIT: Compare every supplied item with each
+other supplied item and with every existingQuestions descriptor. A later item
+is a material repeat when it asks for the same central learner decision or
+calculation AND uses the same answer format, even when the objects, wording,
+numbers, story, or number of arithmetic steps differ. Set
+issueFlags.novelty=true and valid=false on the later supplied item (or on the
+supplied item when its counterpart is in existingQuestions). Do not reject
+different operations or response formats merely because they share a topic.
+This batch-diversity rule is stricter than the general exact/cosmetic-repeat
+rule above; use it for this reserve pass.
+"""
 MappedAssignments = dict[tuple[str, str], tuple[str, str, int]]
 
 
@@ -407,7 +420,10 @@ def _generate_sanitized_questions(
                     normalized_request=current_request,
                     bedrock_client=bedrock_client,
                     model_id=_verification_model_id(),
-                    system_prompt=system,
+                    system_prompt=(
+                        system + GENERIC_RESERVE_DIVERSITY_AUDIT
+                        if generic_reserve else system
+                    ),
                     user_prompt=prompt,
                     call_budget=call_budget,
                     request_metrics=request_metrics,
@@ -459,22 +475,23 @@ def _generate_sanitized_questions(
                 if len(candidates) >= target_count:
                     first_batch = candidates[:4]
                     second_batch = candidates[4:]
-                    generated_questions.extend(verify_batch(first_batch, current_request))
+                    verified_first = verify_batch(first_batch, current_request)
+                    generated_questions.extend(verified_first)
                     if (call_budget is not None
                             and call_budget.maximum_calls - call_budget.calls < 2):
                         raise ProviderCallBudgetExceededError(
                             "Insufficient call budget for the second reserve verification chunk."
                         )
                     second_request = copy.deepcopy(current_request)
-                    # Show every first-chunk candidate to the second reviewer
-                    # as keyless prior coverage. This keeps cross-chunk prompt
-                    # comparisons visible, but semantic novelty remains a
-                    # fallible model judgment, not a deterministic guarantee.
+                    # Only released first-chunk survivors count as prior
+                    # coverage. A candidate vetoed for another defect must
+                    # not make a sound second-chunk question look repetitive.
+                    # Semantic novelty is still a fallible model judgment.
                     second_request["existingQuestionCoverage"] += [
                         {key: question[key] for key in (
                             "prompt", "topic", "skillID", "objectiveID", "objective",
                         ) if key in question}
-                        for question in first_batch
+                        for question in verified_first
                     ]
                     generated_questions.extend(verify_batch(second_batch, second_request))
             else:

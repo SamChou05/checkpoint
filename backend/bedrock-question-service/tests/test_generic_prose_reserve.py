@@ -75,8 +75,10 @@ class GenericProseReserveTests(unittest.TestCase):
                 self.assertEqual([source_index[item["prompt"]] for item in items],
                                  [index for index in expected if index not in solver_rejected])
                 if chunked and expected[0] >= 4:
-                    self.assertEqual([item["prompt"] for item in data["existingQuestions"]][-4:],
-                                     [self.questions[index]["prompt"] for index in source_order[:4]])
+                    released_first = [index for index in source_order[:4]
+                                      if index not in solver_rejected | review_rejected]
+                    self.assertEqual([item["prompt"] for item in data["existingQuestions"]],
+                                     [self.questions[index]["prompt"] for index in released_first])
                     self.assertTrue(all("expectedAnswer" not in item for item in data["existingQuestions"]))
                 rows = {}
                 for item in items:
@@ -114,6 +116,10 @@ class GenericProseReserveTests(unittest.TestCase):
         self.assertEqual(set(author_schema["properties"]["questions"]["required"]),
                          set(map(str, range(7))))
         self.assertIn('"6"', client.calls[0]["system"][0]["text"])
+        for call in (client.calls[2], client.calls[4]):
+            self.assertIn("Compare every supplied item", call["system"][0]["text"])
+            self.assertIn("same central learner decision", call["system"][0]["text"])
+            self.assertIn("issueFlags.novelty=true", call["system"][0]["text"])
         self.assertEqual([row["prompt"] for row in result], [q["prompt"] for q in self.questions[:5]])
         for result_row, authored in zip(result, self.questions[:5], strict=True):
             self.assertEqual(result_row["expectedAnswer"], authored["expectedAnswer"])
@@ -187,6 +193,8 @@ class GenericProseReserveTests(unittest.TestCase):
             )
             self.assertEqual(len(result), 5)
             self.assertEqual(task_data(client.calls[0], "generation_request_json")["targetCount"], 5)
+            self.assertNotIn("GENERIC RESERVE BATCH DIVERSITY AUDIT",
+                             client.calls[2]["system"][0]["text"])
         for change in (
             {"skillMap": {"skills": []}},
             {"requestedSkillAllocation": {"skill": 5}},
