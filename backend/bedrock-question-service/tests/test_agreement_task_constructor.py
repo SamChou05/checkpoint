@@ -5,7 +5,7 @@ import json
 import unittest
 
 from agreement_task_constructor import (
-    AgreementTaskError, LEARNER_FIELDS, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
+    AgreementTaskError, COMPOUND_SCENE, LEARNER_FIELDS, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
     TASK_KIND, compile_mapped_english_slots, compile_question, task_schema,
 )
 from native_output_contracts import AuthorSlotContract
@@ -69,6 +69,26 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         self.assertIn('head subject "the players" is plural', result["explanation"])
         self.assertIn('The form "checks" agrees.', result["explanation"])
 
+    def test_compound_and_distributive_scene_is_distinct_and_unambiguous(self):
+        for order in ("singular_first", "plural_first"):
+            expected = ("prepare", "receives") if order == "singular_first" else (
+                "receives", "prepare"
+            )
+            for ordinal in (3, 4):
+                with self.subTest(order=order, ordinal=ordinal):
+                    result = compile_question(task(COMPOUND_SCENE, order), ordinal=ordinal)
+                    self.assertEqual(result["expectedAnswer"], "; ".join(expected))
+                    self.assertEqual(len(set(result["choices"])), 4)
+                    self.assertEqual(set(result["choiceExplanations"]), set(result["choices"]))
+                    self.assertIn('"Maya and Theo" names two people joined by "and"',
+                                  result["explanation"])
+                    self.assertIn('"Every guest" is grammatically singular',
+                                  result["explanation"])
+                    self.assertLessEqual(len(result["explanation"]), 420)
+                    self.assertTrue(all(len(text) <= 280 for text in
+                                        result["choiceExplanations"].values()))
+                    self.assertIn("Maya and Theo", result["prompt"])
+
     def test_model_cannot_write_answer_text_metadata_or_open_grammar(self):
         invalid = [
             {**task(), "correctChoice": "a"},
@@ -94,12 +114,12 @@ class AgreementTaskConstructorTests(unittest.TestCase):
 
     def test_exact_mapped_slots_preserve_original_ordinals_and_trusted_tags(self):
         candidates = compile_mapped_english_slots(
-            {"3": task("coach"), "4": task("chef", "plural_first")}, contract(),
+            {"3": task("coach"), "4": task(COMPOUND_SCENE, "plural_first")}, contract(),
         )
         self.assertEqual(set(candidates), {3, 4})
         first, second = candidates[3].content(), candidates[4].content()
         self.assertEqual(first["expectedAnswer"], "checks; practice")
-        self.assertEqual(second["expectedAnswer"], "prepare; plans")
+        self.assertEqual(second["expectedAnswer"], "receives; prepare")
         for ordinal, question in ((3, first), (4, second)):
             self.assertEqual(candidates[ordinal].ordinal, ordinal)
             self.assertEqual(question["skillID"], "english-id")
@@ -122,12 +142,15 @@ class AgreementTaskConstructorTests(unittest.TestCase):
             replace(candidates[3], ordinal=4).content()
 
     def test_no_missing_extra_repeated_or_reassigned_mapped_slots(self):
-        valid = {"3": task("coach"), "4": task("chef")}
+        valid = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
         for invalid in (
             {"3": task("coach")},
             {**valid, "5": task("curator")},
             {"0": task("coach"), "1": task("chef")},
             {"3": task("coach"), "4": task("coach", "plural_first")},
+            {"3": task("coach"), "4": task("chef")},
+            {"3": task(COMPOUND_SCENE), "4": task(COMPOUND_SCENE, "plural_first")},
+            {"3": task(COMPOUND_SCENE), "4": task("coach")},
         ):
             with self.subTest(invalid=invalid), self.assertRaises(AgreementTaskError):
                 compile_mapped_english_slots(invalid, contract())

@@ -1,10 +1,8 @@
-"""Offline prototype: compile a closed subject–verb agreement task.
+"""Closed subject–verb agreement tasks for an exact-scope opt-in route.
 
-This module is deliberately not connected to the provider or question-bank
-pipeline. A future route must qualify the provider grammar and propagate the
-private ordinal sidecar through the existing sanitizer and final audit. The
-model may choose only a scene and clause order; it supplies no learner text,
-choices, key, teaching, metadata, or provenance.
+The model may choose only a scene and clause order; it supplies no learner text,
+choices, key, teaching, metadata, or provenance. Provider acceptance and live
+quality of the opt-in route require separate qualification.
 """
 
 from dataclasses import dataclass
@@ -16,6 +14,7 @@ from native_output_contracts import AuthorSlotContract
 SUPPORTED_TOPIC = "Standard written English"
 SUPPORTED_OBJECTIVE = "Apply subject-verb agreement or unambiguous pronoun reference"
 TASK_KIND = "agreement_pair_v1"
+COMPOUND_SCENE = "compound_every"
 LEARNER_FIELDS = ("prompt", "choices", "expectedAnswer", "explanation", "choiceExplanations")
 
 
@@ -31,6 +30,17 @@ class _Scene:
     first_third: str
     second_base: str
     second_third: str
+
+
+@dataclass(frozen=True)
+class _Clause:
+    text: str
+    base: str
+    third: str
+    correct_third: bool
+    subject: str
+    attractor: str | None = None
+    rule: str = "near"
 
 
 # Whole clause frames and inflections are reviewed code data, never model text.
@@ -62,7 +72,7 @@ def task_schema() -> dict:
         "type": "object", "additionalProperties": False,
         "properties": {
             "kind": {"type": "string", "enum": [TASK_KIND]},
-            "scene": {"type": "string", "enum": sorted(SCENES)},
+            "scene": {"type": "string", "enum": sorted((*SCENES, COMPOUND_SCENE))},
             "order": {"type": "string", "enum": ["singular_first", "plural_first"]},
         },
         "required": ["kind", "scene", "order"],
@@ -72,7 +82,7 @@ def task_schema() -> dict:
 def _checked_task(task: object) -> tuple[str, str]:
     if (type(task) is not dict or set(task) != {"kind", "scene", "order"}
             or type(task["kind"]) is not str or task["kind"] != TASK_KIND
-            or type(task["scene"]) is not str or task["scene"] not in SCENES
+            or type(task["scene"]) is not str or task["scene"] not in {*SCENES, COMPOUND_SCENE}
             or type(task["order"]) is not str
             or task["order"] not in {"singular_first", "plural_first"}):
         raise AgreementTaskError("Unsupported or model-extended agreement task.")
@@ -88,43 +98,63 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
     scene_id, order = _checked_task(task)
     if type(ordinal) is not int or ordinal not in {3, 4}:
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
-    scene = SCENES[scene_id]
-    singular = (_clause(scene.singular_subject, scene.plural_attractor, scene.singular_object),
-                scene.first_base, scene.first_third, scene.singular_subject,
-                scene.plural_attractor)
-    plural = (_clause(scene.plural_subject, scene.singular_attractor, scene.plural_object),
-              scene.second_base, scene.second_third, scene.plural_subject,
-              scene.singular_attractor)
-    clauses = (singular, plural) if order == "singular_first" else (plural, singular)
+    if scene_id == COMPOUND_SCENE:
+        first = _Clause("Maya and Theo ___ lunch", "prepare", "prepares", False,
+                        "Maya and Theo", rule="compound")
+        second = _Clause("Every guest ___ a plate", "receive", "receives", True,
+                         "Every guest", rule="every")
+    else:
+        scene = SCENES[scene_id]
+        first = _Clause(
+            _clause(scene.singular_subject, scene.plural_attractor, scene.singular_object),
+            scene.first_base, scene.first_third, True,
+            scene.singular_subject, scene.plural_attractor,
+        )
+        second = _Clause(
+            _clause(scene.plural_subject, scene.singular_attractor, scene.plural_object),
+            scene.second_base, scene.second_third, False,
+            scene.plural_subject, scene.singular_attractor,
+        )
+    clauses = (first, second) if order == "singular_first" else (second, first)
+    following = clauses[1].text
+    if following.startswith(("The ", "Every ")):
+        following = following[0].lower() + following[1:]
     prompt = ("Fill both blanks with the present-tense verb forms that agree with "
               "the subjects in standard written American English. "
-              f"{clauses[0][0]}, while {clauses[1][0].lower()}. "
+              f"{clauses[0].text}, while {following}. "
               "Which ordered pair fills the blanks?")
     # False/True indexes choose the bare or third-person singular form for each
     # clause. The Cartesian product has four different ordered commitments.
     pairs = [(False, False), (False, True), (True, False), (True, True)]
     pairs = pairs[ordinal % 4:] + pairs[:ordinal % 4]
 
-    def form(clause: tuple, third_person: bool) -> str:
-        return clause[2] if third_person else clause[1]
+    def form(clause: _Clause, third_person: bool) -> str:
+        return clause.third if third_person else clause.base
 
     choices = [f"{form(clauses[0], first)}; {form(clauses[1], second)}"
                for first, second in pairs]
-    correct_flags = tuple(clause is singular for clause in clauses)
+    correct_flags = tuple(clause.correct_third for clause in clauses)
     correct_index = pairs.index(correct_flags)
     answer = choices[correct_index]
 
-    def reason(clause: tuple, selected_third: bool, position: str) -> str:
-        should_be_third = clause is singular
-        head, attractor = clause[3], clause[4]
+    def reason(clause: _Clause, selected_third: bool, position: str) -> str:
+        should_be_third = clause.correct_third
         correct_form = form(clause, should_be_third)
         selected_form = form(clause, selected_third)
         number = "singular" if should_be_third else "plural"
+        if clause.rule == "near":
+            support = (f'The {position} head subject "{clause.subject}" is {number}; '
+                       f'"near {clause.attractor}" does not change that.')
+        elif clause.rule == "compound":
+            support = (f'The {position} subject "Maya and Theo" names two people joined by '
+                       '"and", so it takes a plural verb.')
+        else:
+            support = (f'The {position} subject "Every guest" is grammatically singular, '
+                       'so it takes a singular verb.')
         judgment = (f'The form "{selected_form}" agrees.'
                     if selected_third == should_be_third else
                     f'"{selected_form}" does not agree; use "{correct_form}".')
-        return (f'The {position} head subject "{head}" is {number}; '
-                f'"near {attractor}" does not change that. {judgment}')
+        return f"{support} {judgment}"
 
     explanation = (reason(clauses[0], correct_flags[0], "first") + " "
                    + reason(clauses[1], correct_flags[1], "second")
@@ -179,8 +209,8 @@ def compile_mapped_english_slots(tasks_by_slot: dict, contract: AuthorSlotContra
     if type(tasks_by_slot) is not dict or set(tasks_by_slot) != {"3", "4"}:
         raise AgreementTaskError("Both original English slots must be present.")
     scenes = [_checked_task(tasks_by_slot[str(slot)])[0] for slot in (3, 4)]
-    if len(set(scenes)) != 2:
-        raise AgreementTaskError("The two English slots must use different scenes.")
+    if scenes[0] == COMPOUND_SCENE or scenes[1] != COMPOUND_SCENE:
+        raise AgreementTaskError("Original slot 3 requires proximity and slot 4 requires compound agreement.")
     assignment = contract.mapped_assignments[1]
     candidates = {}
     for slot in (3, 4):
@@ -193,3 +223,56 @@ def compile_mapped_english_slots(tasks_by_slot: dict, contract: AuthorSlotContra
         candidate.content()
         candidates[slot] = candidate
     return candidates
+
+
+def prepare_mapped_agreement_rows(payload: dict, contract: AuthorSlotContract):
+    """Compile a complete 3:2 native batch without relabeling source ordinals.
+
+    Quantitative failures retain their original None position; malformed or
+    repeated English tasks reject the entire batch before sanitization.
+    """
+    from quantitative_authoring import QuantitativeAuthoringError, prepare_mixed_rows
+
+    if (type(payload) is not dict or set(payload) != {"questions"}
+            or type(payload["questions"]) is not list or len(payload["questions"]) != 5
+            or type(contract) is not AuthorSlotContract or not contract.mapped_agreement_tasks):
+        raise AgreementTaskError("Agreement route requires one complete trusted five-slot batch.")
+    rows = payload["questions"]
+    first_assignment, english_assignment = contract.mapped_assignments
+    for ordinal, row in enumerate(rows):
+        if type(row) is not dict or row.get("kind") != ("quantitative" if ordinal < 3 else "agreement"):
+            raise AgreementTaskError("Mapped row changed its original task kind.")
+        assignment = first_assignment if ordinal < 3 else english_assignment
+        if any(row.get(field) != value for field, value in zip(
+            ("skillID", "objectiveID", "topic", "objective"), assignment[:4], strict=True
+        )):
+            raise AgreementTaskError("Mapped row changed its trusted assignment.")
+        if ordinal >= 3 and set(row) != {
+            "kind", "task", "topic", "skillID", "objectiveID", "objective"
+        }:
+            raise AgreementTaskError("Agreement row contains model-authored learner fields.")
+    try:
+        quantitative_rows, quantitative_proof, failures = prepare_mixed_rows(
+            {"questions": rows[:3]}, construct_choices=True,
+        )
+    except QuantitativeAuthoringError as error:
+        raise AgreementTaskError("Quantitative mapped rows violated their closed contract.") from error
+    agreement_proof = compile_mapped_english_slots(
+        {str(index): rows[index]["task"] for index in (3, 4)}, contract,
+    )
+    return (quantitative_rows + [agreement_proof[index].content() for index in (3, 4)],
+            quantitative_proof, agreement_proof, failures)
+
+
+def checked_agreement_provenance(mapping, count: int, *, original_ordinals: bool = False):
+    """Accept only private exact-type sidecars; raw JSON cannot impersonate one."""
+    if mapping is None:
+        return {}
+    if (type(mapping) is not dict or type(count) is not int
+            or any(type(index) is not int or not 0 <= index < count
+                   or type(value) is not CompiledAgreementCandidate
+                   or value.ordinal not in (3, 4)
+                   or original_ordinals and value.ordinal != index
+                   for index, value in mapping.items())):
+        raise AgreementTaskError("Agreement provenance must be a trusted ordinal sidecar.")
+    return dict(mapping)

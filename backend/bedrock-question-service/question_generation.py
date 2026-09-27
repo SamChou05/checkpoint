@@ -9,6 +9,11 @@ import time
 from typing import Any, Callable
 
 from generation_diagnostics import quality_summary, record_quality
+from agreement_task_constructor import (
+    SUPPORTED_OBJECTIVE as MAPPED_AGREEMENT_OBJECTIVE,
+    SUPPORTED_TOPIC as MAPPED_AGREEMENT_TOPIC,
+    AgreementTaskError, prepare_mapped_agreement_rows,
+)
 from native_output_contracts import (
     AuthorSlotContract,
     NativeContract,
@@ -157,14 +162,11 @@ def _generate_provider_payload(
     cardinality_mode = _author_cardinality_mode()
     task_only = _task_only_numerical_author(request, author_mode, cardinality_mode)
     mapped_assignments = _mapped_fixed_slot_assignments(request, author_mode, cardinality_mode)
+    mapped_agreement = _mapped_agreement_route(request, mapped_assignments)
     if task_only:
         author_contract: NativeContract = TASK_ONLY_AUTHOR_CONTRACT
     elif mapped_assignments is not None:
-        author_contract = AuthorSlotContract(request["targetCount"], "constructed_quantitative", tuple(
-            (skill_id, objective_id, skill_name, objective_name, count)
-            for (skill_id, objective_id), (skill_name, objective_name, count)
-            in mapped_assignments.items()
-        ), next(iter(mapped_assignments))[0], request["minimumDifficulty"])
+        author_contract = _mapped_author_contract(request, mapped_assignments, mapped_agreement)
     elif output_mode() != "native":
         author_contract: NativeContract = "question_author_v1"
     elif cardinality_mode == "count_bound":
@@ -209,6 +211,7 @@ def _generate_provider_payload(
                 _validate_mapped_fixed_slot_rows(
                     payload, mapped_assignments,
                     author_contract.mapped_quantitative_skill_id if mapped_assignments is not None else None,
+                    agreement_tasks=mapped_agreement,
                 )
             except ProviderError as first_error:
                 record_quality(request_metrics, "provider", "invalid_allocation")
@@ -250,6 +253,7 @@ def _generate_provider_payload(
                 _validate_mapped_fixed_slot_rows(
                     payload, mapped_assignments,
                     author_contract.mapped_quantitative_skill_id if mapped_assignments is not None else None,
+                    agreement_tasks=mapped_agreement,
                 )
             except ProviderError as second_error:
                 record_quality(request_metrics, "provider", "invalid_allocation")
@@ -273,6 +277,7 @@ def _generate_sanitized_questions(
     mapped_initial_assignments = _mapped_fixed_slot_assignments(
         request, author_mode, _author_cardinality_mode(),
     )
+    mapped_agreement = _mapped_agreement_route(request, mapped_initial_assignments)
     mixed_quantitative = author_mode in {"mixed_quantitative", "constructed_quantitative"}
     # Native fixed slots hide the sanitizer's correct-answer-first ordering and
     # make four choice judgments plus six unordered pair judgments explicit.
@@ -315,13 +320,21 @@ def _generate_sanitized_questions(
                 request_metrics=request_metrics,
             )
             compiled_output = {}
+            agreement_output = {}
             if mixed_quantitative:
                 try:
-                    raw_questions, compiled_candidates, failures = (
-                        prepare_mixed_rows(provider_payload, construct_choices=True)
-                        if author_mode == "constructed_quantitative" else prepare_mixed_rows(provider_payload)
-                    )
-                except QuantitativeAuthoringError as error:
+                    if mapped_agreement:
+                        contract = _mapped_author_contract(request, mapped_initial_assignments, True)
+                        raw_questions, compiled_candidates, agreement_candidates, failures = (
+                            prepare_mapped_agreement_rows(provider_payload, contract)
+                        )
+                    else:
+                        raw_questions, compiled_candidates, failures = (
+                            prepare_mixed_rows(provider_payload, construct_choices=True)
+                            if author_mode == "constructed_quantitative" else prepare_mixed_rows(provider_payload)
+                        )
+                        agreement_candidates = {}
+                except (QuantitativeAuthoringError, AgreementTaskError) as error:
                     raise ProviderError("Mixed author envelope violated its contract.") from error
                 for reason in failures:
                     record_quality(request_metrics, "compile", reason)
@@ -330,6 +343,8 @@ def _generate_sanitized_questions(
                                                  preserve_authored_explanation=feedback_contract == "authored_solution",
                                                  compiled_candidates=compiled_candidates,
                                                  compiled_output=compiled_output,
+                                                 **({"agreement_candidates": agreement_candidates,
+                                                     "agreement_output": agreement_output} if mapped_agreement else {}),
                                                  prefer_compiled_within_assignment=author_mode == "constructed_quantitative")
             else:
                 candidates = _sanitize_questions(
@@ -379,6 +394,7 @@ def _generate_sanitized_questions(
                 audit_choice_pairs=choice_slots,
                 choice_slots=choice_slots,
                 **({"compiled_questions": compiled_output} if mixed_quantitative else {}),
+                **({"agreement_questions": agreement_output} if mapped_agreement else {}),
             )
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its
@@ -936,9 +952,39 @@ def _mapped_fixed_slot_assignments(
     return assignments
 
 
+def _mapped_agreement_route(
+    request: dict[str, Any], assignments: MappedAssignments | None,
+) -> bool:
+    """Opt in only after the existing exact goal and full-request scope match."""
+    mode = os.getenv("QUESTION_MAPPED_AGREEMENT_TASKS", "disabled").strip().lower()
+    if mode not in {"disabled", "enabled"}:
+        raise ServiceConfigurationError("QUESTION_MAPPED_AGREEMENT_TASKS must be enabled or disabled.")
+    if mode == "disabled" or assignments is None:
+        return False
+    english = list(assignments.values())[1]
+    if (request.get("minimumDifficulty") != 2
+            or english[:2] != (MAPPED_AGREEMENT_TOPIC, MAPPED_AGREEMENT_OBJECTIVE)
+            or any(plan.get("targetDifficulty") != 2
+                   for plan in request.get("adaptiveSkillPlans", [])
+                   if plan.get("skillID") == list(assignments)[1][0])):
+        raise ServiceConfigurationError("Mapped agreement tasks require the pinned level-2 English objective.")
+    return True
+
+
+def _mapped_author_contract(
+    request: dict[str, Any], assignments: MappedAssignments, agreement_tasks: bool,
+) -> AuthorSlotContract:
+    return AuthorSlotContract(request["targetCount"], "constructed_quantitative", tuple(
+        (skill_id, objective_id, skill_name, objective_name, count)
+        for (skill_id, objective_id), (skill_name, objective_name, count)
+        in assignments.items()
+    ), next(iter(assignments))[0], request["minimumDifficulty"], agreement_tasks)
+
+
 def _validate_mapped_fixed_slot_rows(
     payload: dict[str, Any], assignments: MappedAssignments | None,
     quantitative_skill_id: str | None,
+    *, agreement_tasks: bool = False,
 ) -> None:
     """Reject the whole authored batch before compilation if any tag is absent or wrong."""
     if assignments is None:
@@ -951,13 +997,18 @@ def _validate_mapped_fixed_slot_rows(
         if type(row) is not dict:
             raise ProviderError("Mapped fixed-five author returned a malformed row.")
         tagged = row.get("question") if row.get("kind") == "prose" else row
-        if type(tagged) is not dict or row.get("kind") not in {"prose", "quantitative"}:
+        if type(tagged) is not dict or row.get("kind") not in (
+            {"quantitative", "agreement"} if agreement_tasks else {"prose", "quantitative"}
+        ):
             raise ProviderError("Mapped fixed-five author returned a malformed row.")
         if type(tagged.get("skillID")) is not str or type(tagged.get("objectiveID")) is not str:
             raise ProviderError("Mapped fixed-five author omitted an assigned skill or objective.")
         pair = (tagged["skillID"], tagged["objectiveID"])
         assignment = assignments.get(pair)
-        if (pair != expected[index] or row["kind"] != ("quantitative" if pair[0] == quantitative_skill_id else "prose")
+        expected_kind = "quantitative" if pair[0] == quantitative_skill_id else (
+            "agreement" if agreement_tasks else "prose"
+        )
+        if (pair != expected[index] or row["kind"] != expected_kind
                 or assignment is None or tagged.get("topic") != assignment[0]
                 or tagged.get("objective") != assignment[1]):
             raise ProviderError("Mapped fixed-five author omitted or changed an assigned skill or objective.")

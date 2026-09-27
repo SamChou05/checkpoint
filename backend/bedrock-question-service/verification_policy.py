@@ -26,6 +26,11 @@ distractor quality. Code proves the bounded mathematical key and distinctness;
 no model correctness/pair solver runs for those rows. Prose retains revision 7
 and its unchanged blind solver. Revision 6 keeps its historical model-solver
 promise. Policy minimums are freshness thresholds, not cumulative capabilities.
+Revision 9 is reserved for the opt-in closed English agreement constructor:
+the server rederives all five learner fields from an exact-type private sidecar,
+and retains the answer-blind complete-choice solver and immutable final audit.
+It does not imply quantitative proof or broader English correctness. This route
+remains unqualified and inactive by default.
 """
 
 from typing import Any
@@ -40,7 +45,8 @@ VERIFICATION_POLICY_REVISION = DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION
 COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION = 6
 AUTHORED_PAIR_VERIFICATION_POLICY_REVISION = 7
 COMPILED_PROOF_VERIFICATION_POLICY_REVISION = 8
-MAX_SUPPORTED_VERIFICATION_POLICY_REVISION = COMPILED_PROOF_VERIFICATION_POLICY_REVISION
+COMPILED_AGREEMENT_VERIFICATION_POLICY_REVISION = 9
+MAX_SUPPORTED_VERIFICATION_POLICY_REVISION = COMPILED_AGREEMENT_VERIFICATION_POLICY_REVISION
 
 
 def meets_verification_policy(question: dict[str, Any], minimum: int) -> bool:

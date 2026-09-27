@@ -4,6 +4,7 @@ import json
 import math
 import re
 from quantitative_authoring import QuantitativeAuthoringError, checked_provenance
+from agreement_task_constructor import AgreementTaskError, checked_agreement_provenance
 from typing import Any
 
 from generation_diagnostics import record_quality
@@ -162,6 +163,8 @@ def _sanitize_questions(
     preserve_authored_explanation: bool = False,
     compiled_candidates=None,
     compiled_output=None,
+    agreement_candidates=None,
+    agreement_output=None,
     prefer_compiled_within_assignment: bool = False,
 ) -> list[dict[str, Any]]:
     if not isinstance(raw_questions, list):
@@ -169,8 +172,14 @@ def _sanitize_questions(
         return []
 
     compiled_candidates = checked_provenance(compiled_candidates, len(raw_questions))
+    agreement_candidates = checked_agreement_provenance(
+        agreement_candidates, len(raw_questions), original_ordinals=True,
+    )
     if compiled_candidates and (type(compiled_output) is not dict or compiled_output):
         raise QuantitativeAuthoringError("Compiled sanitization requires an empty trusted output sidecar.")
+    if agreement_candidates and (type(agreement_output) is not dict or agreement_output
+                                 or set(compiled_candidates) & set(agreement_candidates)):
+        raise AgreementTaskError("Agreement sanitization requires a separate empty trusted sidecar.")
 
     requested_objective_allocation = _requested_objective_allocation_limits(request)
     if requested_objective_allocation is None:
@@ -207,9 +216,11 @@ def _sanitize_questions(
             continue
 
         provenance = compiled_candidates.get(candidate_index)
-        if provenance is not None:
+        agreement_proof = agreement_candidates.get(candidate_index)
+        proof = provenance if provenance is not None else agreement_proof
+        if proof is not None:
             try:
-                provenance.content(raw_question)
+                proof.content(raw_question)
             except (ValueError, TypeError, KeyError):
                 record_quality(request_metrics, "sanitize", "invalid_compiled_content")
                 continue
@@ -231,7 +242,7 @@ def _sanitize_questions(
                     record_quality(request_metrics, "sanitize", "objective_quota")
                     continue
 
-        raw_prompt = raw_question["prompt"] if provenance is not None else _prompt_without_trailing_choice_echo(
+        raw_prompt = raw_question["prompt"] if proof is not None else _prompt_without_trailing_choice_echo(
             raw_question.get("prompt"),
             raw_question.get("choices"),
         )
@@ -243,7 +254,7 @@ def _sanitize_questions(
         expected_answer = _choice_uniqueness_key(
             str(raw_question.get("expectedAnswer") or "")
         )
-        if provenance is not None:
+        if proof is not None:
             explanation = raw_question["explanation"]
         elif preserve_authored_explanation:
             # This text will be audited and then displayed unchanged. Reject
@@ -273,7 +284,7 @@ def _sanitize_questions(
             topic = request["goal"]["contentTopics"][0]
 
         if (
-            provenance is None and preserve_authored_explanation
+            proof is None and preserve_authored_explanation
             and has_incomplete_python_boolean_rule(prompt, topic, explanation)
         ):
             record_quality(request_metrics, "sanitize", "invalid_content")
@@ -305,7 +316,7 @@ def _sanitize_questions(
         if len(choices) != 4:
             record_quality(request_metrics, "sanitize", "invalid_choices")
             continue
-        if provenance is not None:
+        if proof is not None:
             # Validation above still applies; compiler order and exact text are
             # authoritative rather than the legacy correct-answer-first order.
             choices = list(raw_question["choices"])
@@ -347,12 +358,21 @@ def _sanitize_questions(
             "difficulty": difficulty,
             "format": "Multiple Choice",
         }
-        if provenance is not None:
-            question["choiceExplanations"] = provenance.content()["choiceExplanations"]
+        if proof is not None:
+            question["choiceExplanations"] = proof.content()["choiceExplanations"]
+        if skill_tag:
+            question.update(skill_tag)
+        if agreement_proof is not None:
+            try:
+                agreement_proof.content(question)
+            except (ValueError, TypeError, KeyError):
+                record_quality(request_metrics, "sanitize", "invalid_compiled_content")
+                continue
+            agreement_output[len(sanitized)] = agreement_proof
+        elif provenance is not None:
             provenance.content(question)
             compiled_output[len(sanitized)] = provenance
         if skill_tag:
-            question.update(skill_tag)
             accepted_skill_counts[skill_tag["skillID"]] = (
                 accepted_skill_counts.get(skill_tag["skillID"], 0) + 1
             )

@@ -10,6 +10,7 @@ from typing import Any, Literal
 from answer_position_references import contains_answer_label_references
 from complete_question_solution import CompleteSolutionFormatError, _items_by_index
 from quantitative_authoring import CompiledCandidate
+from agreement_task_constructor import CompiledAgreementCandidate
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _strict_json_object
 from python_boolean_teaching import has_incomplete_python_boolean_rule
@@ -101,6 +102,7 @@ def _validate_content(question: Any) -> None:
 
 def freeze_authored_question(
     question: dict[str, Any], *, compiled_candidate: CompiledCandidate | None = None,
+    agreement_candidate: CompiledAgreementCandidate | None = None,
 ) -> dict[str, Any]:
     """Validate and deep-copy exact content; do not normalize or mint approval.
 
@@ -113,18 +115,21 @@ def freeze_authored_question(
     if type(question) is not dict:
         raise AuthoredTeachingFormatError("Question must be an object.")
     content_view = question
-    if compiled_candidate is not None:
-        if type(compiled_candidate) is not CompiledCandidate:
+    if compiled_candidate is not None or agreement_candidate is not None:
+        if ((compiled_candidate is not None and type(compiled_candidate) is not CompiledCandidate)
+                or (agreement_candidate is not None
+                    and type(agreement_candidate) is not CompiledAgreementCandidate)
+                or (compiled_candidate is not None and agreement_candidate is not None)):
             raise AuthoredTeachingFormatError("Compiled teaching requires a real private sidecar.")
         try:
-            compiled_candidate.content(question)
+            (compiled_candidate if compiled_candidate is not None else agreement_candidate).content(question)
         except (ValueError, TypeError, KeyError) as error:
             raise AuthoredTeachingFormatError("Compiled learner content changed.") from error
         # Validate the same main/choice bounds and shuffle safety. This view is
         # never returned; the immutable result retains every compiled field.
         content_view = {**question, "choiceExplanations": {}}
     _validate_content(content_view)
-    if compiled_candidate is None and has_incomplete_python_boolean_rule(
+    if compiled_candidate is None and agreement_candidate is None and has_incomplete_python_boolean_rule(
         question.get("prompt"), question.get("topic"), question.get("explanation")
     ):
         raise AuthoredTeachingFormatError("Incomplete Python Boolean operator rule.")
@@ -187,13 +192,15 @@ def validate_authored_reviews(raw: str, items: list[dict[str, Any]]) -> list[dic
 def authored_review_rejection_reason(
     review: dict[str, Any], question: dict[str, Any], *,
     compiled_candidate: CompiledCandidate | None = None,
+    agreement_candidate: CompiledAgreementCandidate | None = None,
 ) -> RejectionReason | None:
     """Enforce declared support/issues/key agreement, not semantic truth.
 
     Difficulty admission belongs to the caller. A false supported declaration
     with no issues can still pass; there is no natural-language truth oracle.
     """
-    question = freeze_authored_question(question, compiled_candidate=compiled_candidate)
+    question = freeze_authored_question(question, compiled_candidate=compiled_candidate,
+                                      agreement_candidate=agreement_candidate)
     review = _validated_review(review, question["choices"])
     if review["explanationSupport"] == "unsupported":
         return "unsupported_authored_explanation"

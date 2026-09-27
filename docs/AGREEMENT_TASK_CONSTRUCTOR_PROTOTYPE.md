@@ -1,47 +1,54 @@
-# Closed English agreement constructor (offline prototype)
+# Closed English agreement constructor (unqualified opt-in)
 
-The mixed five-slot trial's English objective includes standard written American
-English subject–verb agreement or unambiguous pronoun reference. Open prose
-authoring can omit the edit target, assert an unsupported rule, or offer two
-defensible replacements. A JSON schema can require four strings and a key, but
-it cannot prove that those strings have one correct meaning.
+Open prose authoring can omit an edit target, assert an unsupported grammar
+rule, or offer two defensible answers. A strict JSON schema can require four
+strings and a key, but cannot prove their meanings. This prototype replaces
+model-authored English learner text with a closed task: the model chooses only
+an enumerated scene and clause order. Code owns the two clauses, four ordered
+verb-form pairs, unique key, main explanation and feedback for every choice.
 
-`agreement_task_constructor.py` tests one narrower alternative. The model may
-select only a scene ID and a clause-order enum. Reviewed code owns the full
-sentences, inflected verbs, four ordered-pair choices, unique answer key, main
-teaching, and feedback for every choice. Each sentence has one singular and one
-plural head subject with an intervening `near` phrase of the opposite number.
-The four choices are the Cartesian product of bare and third-person singular
-verb forms, so precisely one pair agrees in both clauses. The pair choices
-represent four different grammatical outcomes, although their surface wording
-is intentionally similar to test the same rule.
+The exact mapped 3:2 route uses quantitative tasks in original slots `0`–`2`,
+a singular/plural head with an intervening `near` phrase in slot `3`, and a
+different compound/distributive mechanism in slot `4` (`Maya and Theo` versus
+`Every guest`). Four reviewed proximity scenes vary slot `3`; slot `4` uses one
+reviewed scene. Each task's four choices are the Cartesian product of the two
+verb inflections, with exactly one pair agreeing in both clauses. The new
+provider schema requires all five original slots, fixes the English scene
+enums by slot, and excludes author keys, choices, teaching and metadata.
+Its compact shared-definition representation is under 3 KB. Local validation
+rejects missing, extra, duplicated, forged and swapped English tasks before
+compilation; no failed slot is relabeled as a top-up.
 
-The pilot accepts only difficulty 2 and the exact mapped English topic and
-objective used in the 3:2 trial. It requires both original English slots `3`
-and `4` together, different scenes, and the trusted five-slot
-`AuthorSlotContract`; it does not accept model-written IDs, indexes, choices,
-keys, explanations or metadata. An immutable private candidate retains the
-original ordinal and trusted assignment and recompiles every learner field
-before accepting a question. Missing/extra slots, renamed assignments,
-tampered text, and duplicate scenes fail closed. The quantitative slots remain
-`0`–`2`; no result is relabeled as a top-up.
+`QUESTION_MAPPED_AGREEMENT_TASKS=enabled` selects this route only after the
+existing exact goal digest and full normalized request scope match, with native
+constructed authoring, immutable feedback, no fallback and difficulty 2. It
+defaults to `disabled`; the prior compact v1 schema and prompt SHA remain
+unchanged. The server injects skill/objective assignments from the trusted
+request. A private exact-type sidecar retains each English source ordinal and
+recompiles its complete learner payload after sanitization and final audit.
+The agreement questions still undergo answer-blind complete-choice solving,
+all six pair judgments and immutable final review. Models may veto or rate but
+cannot overwrite the code-owned key or teaching. Proven agreement rows receive
+an explicit policy revision 9; quantitative proof remains revision 8, and
+ordinary prose without the private agreement proof remains revision 7.
 
-The prototype is not imported by the live generation path. Its typed task
-schema has not been submitted to Bedrock, and no provider yield, grammar
-acceptance, latency or downstream policy result is claimed. Connecting it
-would require an explicit new route, source/scope pinning, original-ordinal
-sidecar propagation through sanitization, independent final audit, and a
-bounded live qualification. The existing numerical compiler's policy 8 stamp
-must not be reused merely because this constructor is deterministic.
+The opt-in is a local prototype. Its schema has **not** been accepted by
+Bedrock in a live call, and no provider yield, worker latency or release
+qualification is claimed. It has not been deployed or wired into the worker
+deployment defaults. The earlier mapped prose-variant grammar failure remains
+evidence of provider limits, not evidence that this smaller schema succeeds.
+Before activation, freeze one bounded five-slot worker trial and obtain blind
+independent judgments of all keys, 30 pairs, teaching, scope, difficulty and
+novelty. Code-owned answers in this subset do not prove broader language
+correctness, distractor usefulness or non-repetition.
 
-The guarantee is deliberately limited: four reviewed scenes, simple present
-tense, singular/plural lexical noun heads, and one intervening prepositional
-phrase. It does not cover pronoun reference, collective nouns, existential
-constructions, relative clauses, tense choice, irregular agreement, free
-language generation, or difficulty 3–5. Repeated inventory could become
-predictable; additional templates would need independent linguistic review.
+The subset excludes pronoun reference, collective nouns, existential and
+relative-clause agreement, tense choice, irregular verbs, free language and
+difficulty 3–5. Repeated inventory could become predictable. The two English
+mechanisms are different, but additional templates would need independent
+linguistic and novelty review.
 
-Local unit controls enumerate all scene/order/slot combinations and separately
-check the manually reviewed correct forms, distinct choices, full feedback,
-lengths, closed task fields, tamper detection and slot assignment. This is a
-feasibility result, not production evidence.
+Offline tests cover closed schemas, immutable old-route hashes, fake native
+author/solver/reviewer calls, exact 3:2 slot provenance, private-proof loss and
+tampering, all 24 display permutations, and solver/reviewer key disagreement.
+They are implementation evidence only.

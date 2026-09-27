@@ -13,6 +13,7 @@ from complete_question_solution import (
 from generation_diagnostics import record_quality
 from answer_position_references import contains_answer_label_references as _contains_answer_label_references
 from quantitative_authoring import QuantitativeAuthoringError, checked_provenance
+from agreement_task_constructor import AgreementTaskError, checked_agreement_provenance
 from question_difficulty import DIFFICULTY_RUBRIC
 from question_quality import _strict_json_object
 from plain_scalar_choices import has_plain_scalar_collision
@@ -28,6 +29,7 @@ from request_contract import _choice_uniqueness_key, _has_unambiguous_choices
 from verification_policy import (
     COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION,
     COMPILED_PROOF_VERIFICATION_POLICY_REVISION,
+    COMPILED_AGREEMENT_VERIFICATION_POLICY_REVISION,
     AUTHORED_SOLUTION_VERIFICATION_POLICY_REVISION,
     AUTHORED_PAIR_VERIFICATION_POLICY_REVISION,
     COMPLETE_CHOICE_VERIFICATION_POLICY_REVISION,
@@ -214,6 +216,7 @@ def verify_questions(
     audit_choice_pairs: bool = False,
     choice_slots: bool = False,
     compiled_questions=None,
+    agreement_questions=None,
 ) -> list[dict[str, Any]]:
     """Review with an explicit solver contract; legacy remains the eval default.
 
@@ -241,34 +244,49 @@ def verify_questions(
         raise ValueError("Authored pair audit requires count-bound fixed-slot solving and review.")
     original_count = len(questions)
     compiled_questions = checked_provenance(compiled_questions, original_count)
+    agreement_questions = checked_agreement_provenance(agreement_questions, original_count)
+    if set(compiled_questions) & set(agreement_questions):
+        raise AgreementTaskError("A question cannot have quantitative and agreement proof.")
     if compiled_questions and not choice_slots:
         raise QuantitativeAuthoringError("Compiled release requires the fixed-slot complete verification path.")
-    reviewable = [(question, compiled_questions.get(index)) for index, question in enumerate(questions)
+    if agreement_questions and not (choice_slots and authored_solution):
+        raise AgreementTaskError("Agreement release requires the fixed-slot immutable audit path.")
+    reviewable = [(question, compiled_questions.get(index), agreement_questions.get(index))
+                  for index, question in enumerate(questions)
                   if _has_reviewable_choices(question)]
-    questions = [question for question, _ in reviewable]
+    questions = [question for question, _, _ in reviewable]
     record_quality(
         request_metrics, "review", "invalid_choices", original_count - len(questions)
     )
     trusted_compiled = []
+    trusted_agreement = []
     questions = []
-    for question, provenance in reviewable:
-        if provenance is not None:
+    for question, provenance, agreement_proof in reviewable:
+        proof = provenance if provenance is not None else agreement_proof
+        if proof is not None:
             try:
-                provenance.content(question)
+                proof.content(question)
             except (ValueError, TypeError, KeyError):
                 record_quality(request_metrics, "review", "invalid_compiled_content")
                 continue
         questions.append(question)
         trusted_compiled.append(provenance)
+        trusted_agreement.append(agreement_proof)
     if authored_solution:
         frozen = []
-        for question, provenance in zip(questions, trusted_compiled, strict=True):
+        for question, provenance, agreement_proof in zip(
+            questions, trusted_compiled, trusted_agreement, strict=True,
+        ):
             try:
-                frozen.append((freeze_authored_question(question, compiled_candidate=provenance), provenance))
+                frozen.append((freeze_authored_question(
+                    question, compiled_candidate=provenance,
+                    agreement_candidate=agreement_proof,
+                ), provenance, agreement_proof))
             except AuthoredTeachingFormatError:
                 record_quality(request_metrics, "review", "invalid_feedback")
-        questions = [question for question, _ in frozen]
-        trusted_compiled = [provenance for _, provenance in frozen]
+        questions = [question for question, _, _ in frozen]
+        trusted_compiled = [provenance for _, provenance, _ in frozen]
+        trusted_agreement = [agreement_proof for _, _, agreement_proof in frozen]
     if not questions:
         return []
     if complete_choices and solve is None:
@@ -386,6 +404,8 @@ def verify_questions(
         ]
         trusted_compiled = [provenance for index, provenance in enumerate(trusted_compiled)
                             if index in supported_indexes]
+        trusted_agreement = [provenance for index, provenance in enumerate(trusted_agreement)
+                             if index in supported_indexes]
         data["items"] = [item for item in items if item["index"] in supported_indexes]
         review_indexes = {original_index: index for index, original_index in enumerate(sorted(supported_indexes))}
         for new_index, item in enumerate(data["items"]):
@@ -466,7 +486,10 @@ def verify_questions(
     for index, question in enumerate(questions):
         item = by_index[index]
         if authored_solution:
-            reason = authored_review_rejection_reason(item, question, compiled_candidate=trusted_compiled[index])
+            reason = authored_review_rejection_reason(
+                item, question, compiled_candidate=trusted_compiled[index],
+                agreement_candidate=trusted_agreement[index],
+            )
             if reason is not None:
                 record_quality(request_metrics, "review", reason)
                 continue
@@ -494,6 +517,9 @@ def verify_questions(
             record_quality(request_metrics, "review", "difficulty_floor")
             continue
         if target is not None and difficulty != target:
+            record_quality(request_metrics, "review", "difficulty_target")
+            continue
+        if trusted_agreement[index] is not None and difficulty != 2:
             record_quality(request_metrics, "review", "difficulty_target")
             continue
         if authored_solution:
@@ -526,6 +552,13 @@ def verify_questions(
         if trusted_compiled[index] is not None:
             try:
                 compiled_content = trusted_compiled[index].content(question)
+            except (ValueError, TypeError, KeyError):
+                record_quality(request_metrics, "review", "invalid_compiled_content")
+                continue
+        agreement_content = None
+        if trusted_agreement[index] is not None:
+            try:
+                agreement_content = trusted_agreement[index].content(question)
             except (ValueError, TypeError, KeyError):
                 record_quality(request_metrics, "review", "invalid_compiled_content")
                 continue
@@ -563,6 +596,14 @@ def verify_questions(
             verified_question["verificationPolicyRevision"] = (
                 COMPILED_PROOF_VERIFICATION_POLICY_REVISION if authored_solution
                 else COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION
+            )
+        if agreement_content is not None:
+            # Unlike mathematical proof, this closed language proof still runs
+            # the independent blind solver. Both model stages may veto or rate,
+            # but neither may replace the code-owned key or teaching.
+            verified_question.update(agreement_content)
+            verified_question["verificationPolicyRevision"] = (
+                COMPILED_AGREEMENT_VERIFICATION_POLICY_REVISION
             )
         accepted.append(verified_question)
         record_quality(request_metrics, "review", "accepted")
