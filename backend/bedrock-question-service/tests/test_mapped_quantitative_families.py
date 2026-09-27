@@ -28,7 +28,7 @@ from mapped_quantitative_families import (
     flat_task, historical_variant_identity_map, select_novel_task,
 )
 from native_output_contracts import AuthorSlotContract
-from quantitative_authoring import _constructed_candidate
+from quantitative_authoring import _constructed_candidate, prepare_mixed_rows
 from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 from question_quality import _sanitize_questions
 from request_contract import _normalize_request
@@ -118,8 +118,12 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         self.assertEqual(learner["choices"].count(learner["expectedAnswer"]), 1)
                         self.assertEqual(set(learner["choiceExplanations"]), set(learner["choices"]))
                         self.assertEqual(proof.content(learner), learner)
-                        if slot in (1, 2):
+                        if slot == 1 or (slot == 2 and family != "bounded_solution_count"):
                             self.assertEqual(learner["expectedAnswer"], str(b))
+                        if family == "bounded_solution_count":
+                            self.assertEqual(learner["expectedAnswer"], str(2 + a % 5))
+                            self.assertIn("How many integers", learner["prompt"])
+                            self.assertEqual(learner["explanation"].count("x = "), 8)
                         if family == "bounded_equation":
                             self.assertGreaterEqual(learner["prompt"].count("x"), 2)
                         if slot == 2 and family == FAMILIES[slot]:
@@ -131,8 +135,8 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                             self.assertIn(str(b + a), learner["choices"])
                             self.assertIn("minimum", learner["choiceExplanations"][str(b + a)])
                         checked += 1
-        self.assertEqual(checked, 760)
-        self.assertEqual(len(numeric_variant_identities()), 760)
+        self.assertEqual(checked, 832)
+        self.assertEqual(len(numeric_variant_identities()), 832)
 
     def test_every_product_complement_variant_has_an_independent_exact_key(self):
         new_stems = set()
@@ -210,19 +214,46 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         self.assertIn("9(x + 5) = 13(x + 1)", sample["explanation"])
         self.assertIn("32 = 4x", sample["explanation"])
 
+    def test_count_family_is_available_only_to_the_closed_mapped_route(self):
+        task = flat_task(2, {"family": "bounded_solution_count", "a": 4, "b": 8})
+        row = {"kind": "quantitative", "task": task, "topic": SUPPORTED_TOPIC,
+               "difficulty": 2}
+        ordinary, proof, failures = prepare_mixed_rows(
+            {"questions": [row]}, construct_choices=True,
+        )
+        self.assertEqual((ordinary, proof, failures), ([None], {}, ["invalid_spec"]))
+        mapped, proof, failures = prepare_mixed_rows(
+            {"questions": [row]}, construct_choices=True, allow_count_satisfying=True,
+        )
+        self.assertEqual(failures, [])
+        self.assertEqual(mapped[0]["expectedAnswer"], "6")
+        self.assertEqual(proof[0].content(mapped[0])["expectedAnswer"], "6")
+
+        raw = self.raw()
+        raw["questions"]["2"] = {"family": "bounded_solution_count", "a": 4, "b": 8}
+        adapted = json.loads(native.adapt_native_response(json.dumps(raw), self.contract()))
+        rows, math_proof, english_proof, failures = prepare_mapped_agreement_rows(
+            adapted, self.contract(),
+        )
+        self.assertEqual(failures, [])
+        self.assertEqual(len(rows), 5)
+        self.assertEqual(rows[2]["expectedAnswer"], "6")
+        self.assertEqual(math_proof[2].content(rows[2])["expectedAnswer"], "6")
+        self.assertEqual(set(english_proof), {3, 4})
+
     def test_family_schema_is_small_closed_and_agreement_route_matches_current_contract(self):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
-        self.assertEqual(len(schema_json.encode()), 2131)
+        self.assertEqual(len(schema_json.encode()), 2156)
         self.assertEqual(hashlib.sha256(schema_json.encode()).hexdigest(),
-                         "999d3bd7dadd26a318cf859f5dd5aa43189668fff8a4861d235c544a2deb5f32")
+                         "a6426dd4d8cdd26a7d6fb03bbd373c8d55ab1dd79c17eab48279e3a3120d201e")
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"] for i in range(3)],
                          [list(families) for families in SLOT_FAMILIES])
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(self.contract())["version"], "10")
+        self.assertEqual(native.contract_metadata(self.contract())["version"], "11")
         agreement = self.contract(False)
         agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
         self.assertEqual(len(agreement_schema.encode()), 3060)
@@ -606,21 +637,20 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         self.assertEqual([len(set(chosen_operands[slot])) for slot in range(3)], [16] * 3)
         for slot in range(3):
             self.assertLessEqual(max(Counter(a for a, _ in chosen_operands[slot]).values()), 3)
-        # Sixteen scalar answers from nine allowed boundaries require at least
-        # seven repeated-answer pairs; the selector reaches that lower bound.
-        for slot in (1, 2):
+        # Slot one has nine possible answer boundaries; the new count family
+        # gives slot two an additional possible answer value of two.
+        for slot, minimum_pairs in ((1, 7), (2, 6)):
             self.assertEqual(sum(count * (count - 1) // 2 for count in
-                                 Counter(chosen_answers[slot]).values()), 7)
+                                 Counter(chosen_answers[slot]).values()), minimum_pairs)
         for slot in range(3):
             self.assertEqual(chosen_families[slot], [
                 SLOT_FAMILIES[slot][index % len(SLOT_FAMILIES[slot])]
                 for index in range(16)
             ])
-        # The fourth slot-zero family reduces repeated-mechanism pairs from
-        # 7 to 4 at eight batches and from 35 to 24 at sixteen. Across all
-        # numeric slots the corresponding counts fall from 18/94 to 15/83.
+        # A fourth family in both slots zero and two lowers structural reuse;
+        # all exact stems remain unique across the full simulated history.
         self.assertEqual(slot_zero_pair_counts, {8: 4, 16: 24})
-        self.assertEqual(pair_counts, {8: 15, 16: 83})
+        self.assertEqual(pair_counts, {8: 12, 16: 72})
         request = {**self.request,
                    "_mappedQuantitativeVariantIdentities": list(full_identities)}
         self.assertEqual(generation._mapped_author_scope_sha256(request),

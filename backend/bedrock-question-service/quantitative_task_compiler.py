@@ -21,7 +21,7 @@ MAX_EXPLICIT_COMPETITORS = 8
 UNITS = frozenset(("unitless", "m", "cm", "s", "kg", "g", "L", "USD", "rides"))
 RELATIONS = {"lt": "<", "le": "<=", "gt": ">", "ge": ">=", "eq": "=", "ne": "!="}
 OPERATORS = {"add": "+", "sub": "-", "mul": "*", "div": "/"}
-SELECTIONS = frozenset(("any_satisfying", "minimum", "maximum"))
+SELECTIONS = frozenset(("any_satisfying", "minimum", "maximum", "count_satisfying"))
 _NUMBER = re.compile(r"-?[0-9]+(?:/[0-9]+|\.[0-9]+)?\Z", re.ASCII)
 
 
@@ -404,6 +404,32 @@ def compile_question(spec):
     # arithmetic anywhere in the declared domain rejects the task, not a choice.
     observations = {value: (_evaluate(left, value), _evaluate(right, value)) for value in domain}
     feasible = [value for value, (a, b) in observations.items() if _holds(a, relation, b)]
+    if selection == "count_satisfying":
+        if unit != "unitless" or spec["domain"]["kind"] != "integer_interval":
+            _fail("invalid_count_task")
+        if any(value.denominator != 1 or not 0 <= value <= len(domain) for value in choices):
+            _fail("invalid_count_choices")
+        answer = Fraction(len(feasible))
+        supported = [value for value in choices if value == answer]
+        answer = _unique_answer(supported)
+        formula = f"{left_text} {RELATIONS[relation]} {right_text}"
+        prompt = (f"Let x be {measure}. Its domain is {domain_text}. "
+                  f"Condition: {formula}. How many integers in this domain satisfy the condition?")
+        comparisons = "; ".join(
+            f"x = {value}: {observations[value][0]} {RELATIONS[relation]} "
+            f"{observations[value][1]} is {'true' if value in feasible else 'false'}"
+            for value in domain
+        )
+        explanation = f"Check every integer: {comparisons}. Exactly {answer} satisfy the condition."
+        feedback = {}
+        for value, shown in zip(choices, rendered, strict=True):
+            if value == answer:
+                feedback[shown] = f"Exactly {answer} domain integers satisfy the condition; {shown} is the count."
+            else:
+                direction = "too few" if value < answer else "too many"
+                feedback[shown] = (f"Exactly {answer} domain integers satisfy the condition; "
+                                   f"{shown} counts {direction}.")
+        return _finish(prompt, rendered, _quantity(answer, unit), explanation, feedback)
     if selection == "any_satisfying":
         supported = [value for value in choices if value in feasible]
         task = "Which offered value of x satisfies the condition?"

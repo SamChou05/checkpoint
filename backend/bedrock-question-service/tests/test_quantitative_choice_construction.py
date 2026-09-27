@@ -231,6 +231,26 @@ class QuantitativeChoiceConstructionTests(unittest.TestCase):
         self.assertEqual(full["selection"], "any_satisfying")
         self.assertNotIn("minimum", compile_question(full)["prompt"])
 
+    def test_count_satisfying_uses_whole_domain_and_counts_not_x_values(self):
+        x = {"variable": "x"}
+        for threshold in (-3, -2, 0, 3, 5):
+            with self.subTest(threshold=threshold):
+                spec = scalar(x, "le", literal(threshold), "count_satisfying", -2, 5)
+                full = construct_quantitative_spec(spec)
+                content = compile_question(full)
+                expected = sum(holds(spec, value) for value in range(-2, 6))
+                self.assertEqual(content["expectedAnswer"], str(expected))
+                self.assertEqual(len(set(full["choices"])), 4)
+                self.assertEqual(full["choices"].count(str(expected)), 1)
+                self.assertTrue(all(0 <= int(choice) <= 8 for choice in full["choices"]))
+                self.assertEqual(content["explanation"].count("x = "), 8)
+                self.assertEqual(set(content["choiceExplanations"]), set(full["choices"]))
+                self.assertTrue(all("count" in feedback for feedback in
+                                    content["choiceExplanations"].values()))
+        bad = scalar(x, "le", literal(0), "count_satisfying", -2, 5)
+        bad["unit"] = "kg"
+        self.assert_error(bad, "invalid_unit")
+
     def test_nonmonotonic_extrema_keep_other_satisfying_values_wrong(self):
         x = {"variable": "x"}
         for selection, answer in (("minimum", "-3"), ("maximum", "3")):

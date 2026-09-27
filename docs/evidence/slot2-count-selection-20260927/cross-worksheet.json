@@ -1,0 +1,56 @@
+{
+  "purpose": "answer-blind comparison of five mapped slot-2 numeric questions",
+  "requestedDifficulty": 2,
+  "items": [
+    {
+      "id": "X02",
+      "prompt": "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: (x * (x + 4)) <= 96. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "9",
+        "C": "10",
+        "D": "7"
+      }
+    },
+    {
+      "id": "X03",
+      "prompt": "Let x be a unitless number. Its domain is integers from 6 through 12, inclusive. Condition: ((5 * (x + 2)) + x) <= 64. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "9",
+        "C": "10",
+        "D": "11"
+      }
+    },
+    {
+      "id": "X05",
+      "prompt": "Let x be a unitless number. Its domain is integers from 7 through 14, inclusive. Condition: ((8 * (x + 2)) - (7 * x)) <= 27. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "4",
+        "B": "3",
+        "C": "6",
+        "D": "5"
+      }
+    },
+    {
+      "id": "X01",
+      "prompt": "Let x be a unitless number. Its domain is integers from 4 through 10, inclusive. Condition: (x / (x + 3)) >= (7 / 10). What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "5",
+        "B": "7",
+        "C": "6",
+        "D": "8"
+      }
+    },
+    {
+      "id": "X04",
+      "prompt": "Let x be a unitless number. Its domain is integers from 2 through 9, inclusive. Condition: ((6 * (x + 2)) - (5 * x)) <= 16. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "1",
+        "B": "4",
+        "C": "2",
+        "D": "3"
+      }
+    }
+  ]
+}

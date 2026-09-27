@@ -24,7 +24,8 @@ SLOT_FAMILIES = (
      "fraction_product_complement"),
     (FAMILIES[1], "bounded_quadratic_equation", "bounded_rational_equation",
      "bounded_two_root_minimum"),
-    (FAMILIES[2], "bounded_quadratic_maximum", "bounded_linear_budget_maximum"),
+    (FAMILIES[2], "bounded_quadratic_maximum", "bounded_linear_budget_maximum",
+     "bounded_solution_count"),
 )
 SUPPORTED_TOPIC = "Exact arithmetic"
 SUPPORTED_OBJECTIVE = "Evaluate an exact rational expression or explicit bounded condition"
@@ -164,6 +165,21 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
         ], "condition": {"left": 5, "relation": "le", "right": 6},
             "selection": "maximum",
             "domain": {"kind": "integer_interval", "lower": b - 3, "upper": b + 3}}
+    if family == "bounded_solution_count":
+        # Distribution reduces a(x+2) - (a-1)x <= b+2a to x <= b. The
+        # eight-integer domain straddles b, and its varying left span makes
+        # the code-owned count 2..6. The learner counts solutions instead of
+        # selecting an extremal x as in the other slot-two families.
+        left_span = 1 + a % 5
+        return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
+            _literal(a), {"kind": "variable"}, _literal(2),
+            _binary("add", 1, 2), _binary("mul", 0, 3),
+            _literal(a - 1), _binary("mul", 5, 1), _binary("sub", 4, 6),
+            _literal(b + 2 * a),
+        ], "condition": {"left": 7, "relation": "le", "right": 8},
+            "selection": "count_satisfying",
+            "domain": {"kind": "integer_interval", "lower": b - left_span,
+                       "upper": b + 7 - left_span}}
     # The ratio x/(x+a) reaches b/(b+a) first at x=b for positive a.
     # Its entire interval is positive-denominator; the three smaller domain
     # values are all explicitly checked in the compiler's worked teaching.
@@ -177,18 +193,26 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
 
 
 @lru_cache(maxsize=3)
-def _inventory(slot: int) -> tuple[tuple[str, dict[str, Any], str, str], ...]:
-    """Compile the finite inventory once, with its exact learner stem identity."""
+def _inventory_rows(slot: int) -> tuple[tuple[str, dict[str, Any], str, str, str], ...]:
+    """Compile the finite inventory once, including exact stem and answer."""
     from quantitative_authoring import _constructed_candidate
 
     return tuple(
-        (family, task, prompt, _normalized_stem_identity(prompt))
+        (family, task, learner["prompt"], _normalized_stem_identity(learner["prompt"]),
+         learner["expectedAnswer"])
         for family in SLOT_FAMILIES[slot]
         for a in OPERANDS
         for b in (OPERANDS if slot == 0 else BOUNDARIES)
         for task in (flat_task(slot, {"family": family, "a": a, "b": b}),)
-        for prompt in (_constructed_candidate(task).content()["prompt"],)
+        for learner in (_constructed_candidate(task).content(),)
     )
+
+
+@lru_cache(maxsize=3)
+def _inventory(slot: int) -> tuple[tuple[str, dict[str, Any], str, str], ...]:
+    """Keep the stable four-field inventory view for existing replay tools."""
+    return tuple((family, task, prompt, identity)
+                 for family, task, prompt, identity, _ in _inventory_rows(slot))
 
 
 def canonical_variant_identities() -> frozenset[str]:
@@ -238,7 +262,7 @@ def select_novel_task(
     """Prefer an unseen solve structure, then a fresh parameterization.
 
     Prefer the least-used assigned-slot family. Within an equally used family,
-    prefer operands and answer boundaries that have appeared less often across
+    prefer operand pairs and proven answers that have appeared less often across
     the full bank, then prefer the source family. The inventory is compiled,
     and every candidate passes exact-stem and fingerprint checks.
     """
@@ -256,9 +280,9 @@ def select_novel_task(
         _stem_fingerprint("", version=fingerprint_version)
     except ValueError as error:
         raise MappedQuantitativeFamilyError("Invalid fingerprint version.") from error
-    inventory = _inventory(slot)
+    inventory = _inventory_rows(slot)
     try:
-        source_index = next(index for index, (_, task, _, _) in enumerate(inventory)
+        source_index = next(index for index, (_, task, _, _, _) in enumerate(inventory)
                             if task == source_task)
     except StopIteration as error:
         raise MappedQuantitativeFamilyError("Source task is outside its assigned family.") from error
@@ -273,28 +297,30 @@ def select_novel_task(
         return OPERANDS[offset // len(second_values)], second_values[offset % len(second_values)]
 
     used = [
-        (index, family) for index, (family, _, prompt, identity) in enumerate(inventory)
+        (index, family, answer) for index, (family, _, prompt, identity, answer) in enumerate(inventory)
         if identity in blocked
         or _stem_fingerprint(prompt, version=fingerprint_version) in fingerprints
     ]
-    family_use_counts = Counter(family for _, family in used)
-    pair_use_counts = Counter(operands(index) for index, _ in used)
-    first_use_counts = Counter(operands(index)[0] for index, _ in used)
-    second_use_counts = Counter(operands(index)[1] for index, _ in used)
+    family_use_counts = Counter(family for _, family, _ in used)
+    pair_use_counts = Counter(operands(index) for index, _, _ in used)
+    answer_use_counts = Counter(answer for _, _, answer in used)
+    first_use_counts = Counter(operands(index)[0] for index, _, _ in used)
+    second_use_counts = Counter(operands(index)[1] for index, _, _ in used)
     source_family = inventory[source_index][0]
     eligible = [
         (index, family, task)
-        for index, (family, task, prompt, identity) in enumerate(inventory)
+        for index, (family, task, prompt, identity, _) in enumerate(inventory)
         if identity not in blocked
         and _stem_fingerprint(prompt, version=fingerprint_version) not in fingerprints
     ]
     if eligible:
         return copy.deepcopy(min(eligible, key=lambda row: (
             family_use_counts[row[1]],
-            # Repeating operands or the same scalar answer boundary across
+            # Repeating operands or the same proven answer across
             # different families still makes a bank feel like a reworded quiz.
             # Family balancing stays first; these counts only break ties.
             pair_use_counts[operands(row[0])],
+            answer_use_counts[inventory[row[0]][4]],
             second_use_counts[operands(row[0])[1]],
             first_use_counts[operands(row[0])[0]],
             row[1] != source_family,

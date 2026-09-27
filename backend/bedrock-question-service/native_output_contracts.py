@@ -136,7 +136,7 @@ class AuthorSlotContract:
                                                ensure_ascii=True).encode()).hexdigest()[:16]
             if self.mapped_agreement_tasks:
                 if self.mapped_quantitative_families:
-                    return f"question_author_constructed_mapped_families_v8_n{self.count}_{digest}"
+                    return f"question_author_constructed_mapped_families_v9_n{self.count}_{digest}"
                 return f"question_author_constructed_mapped_agreement_v5_n{self.count}_{digest}"
             return f"question_author_constructed_mapped_compact_v1_n{self.count}_{digest}"
         prefix = {
@@ -153,7 +153,7 @@ class AuthorSlotContract:
             return self.name
         if self.mapped_agreement_tasks:
             if self.mapped_quantitative_families:
-                return f"question_author_constructed_mapped_families_v8_n{self.count}"
+                return f"question_author_constructed_mapped_families_v9_n{self.count}"
             return f"question_author_constructed_mapped_agreement_v5_n{self.count}"
         return f"question_author_constructed_mapped_compact_v1_n{self.count}"
 
@@ -563,7 +563,7 @@ def contract_metadata(contract: NativeContract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
     return {"name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract,
-            "version": ("10" if isinstance(contract, AuthorSlotContract) and contract.mapped_quantitative_families else
+            "version": ("11" if isinstance(contract, AuthorSlotContract) and contract.mapped_quantitative_families else
                         "5" if isinstance(contract, AuthorSlotContract) and contract.mapped_agreement_tasks else
                         "1" if isinstance(contract, AuthorSlotContract) and contract.mapped_assignments is not None else
                         "4" if isinstance(contract, AuthorSlotContract) and contract.mode == "prose" else
@@ -654,7 +654,8 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
                     'Slot 2 has "a":2..9,"b":3..11 and family bounded_ratio_threshold '
                     "(minimum integer reaching a ratio bound) or bounded_quadratic_maximum "
                     "(maximum integer within a product bound) or bounded_linear_budget_maximum "
-                    "(maximum integer within a distributed linear budget). "
+                    "(maximum integer within a distributed linear budget) or "
+                    "bounded_solution_count (count integers satisfying a distributed inequality). "
                     'Slots 3 and 4 are {"kind":"agreement_pair_v1","scene":...,"order":...}; '
                     "slot 3 chooses a proximity, inverted-subject, or relative-clause scene from "
                     + "/".join(sorted((*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)))

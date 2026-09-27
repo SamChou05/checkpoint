@@ -1,0 +1,42 @@
+[
+  {
+    "id": "X01",
+    "family": "bounded_ratio_threshold",
+    "a": 3,
+    "b": 7,
+    "answer": "7",
+    "displayKey": "B"
+  },
+  {
+    "id": "X02",
+    "family": "bounded_quadratic_maximum",
+    "a": 4,
+    "b": 8,
+    "answer": "8",
+    "displayKey": "A"
+  },
+  {
+    "id": "X03",
+    "family": "bounded_linear_budget_maximum",
+    "a": 5,
+    "b": 9,
+    "answer": "9",
+    "displayKey": "B"
+  },
+  {
+    "id": "X04",
+    "family": "bounded_solution_count",
+    "a": 6,
+    "b": 4,
+    "answer": "3",
+    "displayKey": "D"
+  },
+  {
+    "id": "X05",
+    "family": "bounded_solution_count",
+    "a": 8,
+    "b": 11,
+    "answer": "5",
+    "displayKey": "D"
+  }
+]

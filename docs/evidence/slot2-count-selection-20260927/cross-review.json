@@ -1,0 +1,64 @@
+{
+  "sourceSha256": "94c6cedbd4d7e877fad16b6ca8012ff2b4a76ef0a7287a65438474c5d96aec6a",
+  "reviewMode": "answer-blind; worksheet only",
+  "items": [
+    {
+      "id": "X02",
+      "soleCorrectLabel": "A",
+      "reason": "At x=8 the product is 8*12=96, while x=9 gives 9*13=117; the product increases throughout the stated positive domain.",
+      "optionsDistinct": true,
+      "selfContained": true,
+      "difficultyOutOf5": 2,
+      "notes": "A short boundary check suffices; no explicit quadratic formula is needed."
+    },
+    {
+      "id": "X03",
+      "soleCorrectLabel": "B",
+      "reason": "5(x+2)+x=6x+10<=64 implies x<=9; 9 is in the domain.",
+      "optionsDistinct": true,
+      "selfContained": true,
+      "difficultyOutOf5": 2,
+      "notes": "Straightforward linear inequality and upper-bound selection."
+    },
+    {
+      "id": "X05",
+      "soleCorrectLabel": "D",
+      "reason": "8(x+2)-7x=x+16<=27 implies x<=11; integers 7,8,9,10,11 give five values.",
+      "optionsDistinct": true,
+      "selfContained": true,
+      "difficultyOutOf5": 2,
+      "notes": "Simple cancellation followed by inclusive counting."
+    },
+    {
+      "id": "X01",
+      "soleCorrectLabel": "B",
+      "reason": "The denominator x+3 is positive on the domain. Thus 10x>=7(x+3), so x>=7; 7 is the minimum permitted value satisfying the condition.",
+      "optionsDistinct": true,
+      "selfContained": true,
+      "difficultyOutOf5": 3,
+      "notes": "Requires attention to the denominator sign; still suitable for a lower-intermediate learner."
+    },
+    {
+      "id": "X04",
+      "soleCorrectLabel": "D",
+      "reason": "6(x+2)-5x=x+12<=16 implies x<=4; integers 2,3,4 give three values.",
+      "optionsDistinct": true,
+      "selfContained": true,
+      "difficultyOutOf5": 2,
+      "notes": "Simple cancellation followed by inclusive counting."
+    }
+  ],
+  "crossItemPairs": [
+    {"ids": ["X02", "X03"], "overlap": "strong", "reason": "Both ask for the maximum integer satisfying an upper-threshold inequality in a bounded domain; only the product-versus-linear expression changes."},
+    {"ids": ["X02", "X05"], "overlap": "moderate", "reason": "Both find the feasible portion below an upper threshold, but X02 selects its maximum after a product check while X05 counts it after linear cancellation."},
+    {"ids": ["X02", "X01"], "overlap": "weak", "reason": "Both seek a boundary satisfying an inequality, but X02 selects a maximum from a product upper bound and X01 a minimum from a rational lower bound."},
+    {"ids": ["X02", "X04"], "overlap": "moderate", "reason": "Both determine an upper feasible boundary on an integer interval; X02 returns that boundary and X04 counts feasible integers after cancellation."},
+    {"ids": ["X03", "X05"], "overlap": "moderate", "reason": "Both simplify a linear upper-bound inequality; X03 selects the maximum satisfying integer, whereas X05 counts all satisfying integers."},
+    {"ids": ["X03", "X01"], "overlap": "weak", "reason": "Both choose an inequality boundary but use opposite directions and different linear-versus-rational algebra."},
+    {"ids": ["X03", "X04"], "overlap": "moderate", "reason": "Both simplify to a linear upper threshold in a bounded integer domain; the requested decision changes from maximum to count."},
+    {"ids": ["X05", "X01"], "overlap": "weak", "reason": "X05 counts values below a linear threshold; X01 finds the minimum above a rational threshold."},
+    {"ids": ["X05", "X04"], "overlap": "strong", "reason": "Near-duplicate decision and algebra: both cancel k(x+2)-(k-1)x to x+constant, then count the bounded integers below a threshold."},
+    {"ids": ["X01", "X04"], "overlap": "weak", "reason": "The rational lower-bound minimum and canceled-linear upper-bound count require different learner decisions."}
+  ],
+  "overall": "All five items have a single correct displayed label, four distinct answer choices, and sufficient domain information. The new count decision differs from the existing max/min decisions, but X04 and X05 are strong semantic near-duplicates of each other; the shared bounded-domain inequality framing also creates moderate overlap with max questions."
+}

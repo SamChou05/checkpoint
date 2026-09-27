@@ -689,6 +689,7 @@ def prepare_mapped_agreement_rows(
     try:
         quantitative_rows, quantitative_proof, failures = prepare_mixed_rows(
             {"questions": quantitative_sources}, construct_choices=True,
+            allow_count_satisfying=contract.mapped_quantitative_families,
         )
     except QuantitativeAuthoringError as error:
         raise AgreementTaskError("Quantitative mapped rows violated their closed contract.") from error

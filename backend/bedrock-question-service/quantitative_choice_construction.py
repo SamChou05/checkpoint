@@ -161,13 +161,20 @@ def _construct(spec):
         feasible = [value for value in domain
                     if compiler._holds(compiler._evaluate(left, value), relation,
                                        compiler._evaluate(right, value))]
-        if not feasible:
+        if not feasible and selection != "count_satisfying":
             raise QuantitativeConstructionError("no_answer")
-        answer = feasible[-1] if selection == "maximum" else feasible[0]
+        if selection == "count_satisfying":
+            if spec["unit"] != "unitless":
+                raise QuantitativeConstructionError("invalid_unit")
+            answer = Fraction(len(feasible))
+            candidates = [answer + offset for offset in (-1, 1, -2, 2, -3, 3)
+                          if 0 <= answer + offset <= len(domain)]
+        else:
+            answer = feasible[-1] if selection == "maximum" else feasible[0]
         if selection == "any_satisfying":
             candidates = [value for value in domain if value not in feasible]
             candidates.sort(key=lambda value: (abs(value - answer), value))
-        else:
+        elif selection != "count_satisfying":
             # Offer a satisfying but non-extreme value when one exists, so the
             # selection rule matters even when that value is far from the key.
             # Then prefer nearby values that fail the condition. Additional

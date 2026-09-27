@@ -20,6 +20,8 @@ MIXED_AUTHOR_CONTRACT = "question_author_mixed_v1"
 CONSTRUCTED_AUTHOR_CONTRACT = "question_author_constructed_v1"
 TASK_ONLY_AUTHOR_CONTRACT = "question_author_tasks_v1"
 SLOTS = ("a", "b", "c", "d")
+MODEL_SELECTIONS = frozenset(("any_satisfying", "minimum", "maximum"))
+assert MODEL_SELECTIONS <= SELECTIONS
 LEARNER_FIELDS = ("prompt", "choices", "expectedAnswer", "explanation", "choiceExplanations")
 METADATA = ("topic", "difficulty", "skillID", "objectiveID", "objective")
 
@@ -54,7 +56,7 @@ def mixed_author_schema(prose_schema, *, shared=False):
                       "condition": _object({"left": integer,
                                             "relation": {"type": "string", "enum": list(RELATIONS)},
                                             "right": integer}),
-                      "selection": {"type": "string", "enum": sorted(SELECTIONS)},
+                      "selection": {"type": "string", "enum": sorted(MODEL_SELECTIONS)},
                       "domain": {"anyOf": [
                           _object({"kind": {"type": "string", "enum": ["offered"]}}),
                           _object({"kind": {"type": "string", "enum": ["integer_interval"]},
@@ -371,10 +373,10 @@ def checked_provenance(mapping, count):
     return dict(mapping)
 
 
-def prepare_mixed_rows(payload, *, construct_choices=False):
+def prepare_mixed_rows(payload, *, construct_choices=False, allow_count_satisfying=False):
     """Keep source positions even for a failed spec; never fall back to prose."""
-    if type(construct_choices) is not bool:
-        raise QuantitativeAuthoringError("Construction mode must be trusted Boolean configuration.")
+    if type(construct_choices) is not bool or type(allow_count_satisfying) is not bool:
+        raise QuantitativeAuthoringError("Construction modes must be trusted Boolean configuration.")
     _fields(payload, ("questions",))
     if type(payload["questions"]) is not list:
         raise QuantitativeAuthoringError("Questions must be an array.")
@@ -398,6 +400,9 @@ def prepare_mixed_rows(payload, *, construct_choices=False):
         elif row["kind"] == "quantitative":
             _fields(row, ("kind", "task", "topic", "difficulty"), ("skillID", "objectiveID", "objective"))
             try:
+                if (type(row["task"]) is dict and row["task"].get("selection") == "count_satisfying"
+                        and not allow_count_satisfying):
+                    raise QuantitativeAuthoringError("Count selection requires the closed mapped family route.")
                 provenance = (_constructed_candidate(row["task"]) if construct_choices
                               else CompiledCandidate.from_task(row["task"]))
             except (QuantitativeAuthoringError, QuantitativeTaskError, QuantitativeConstructionError) as error:
