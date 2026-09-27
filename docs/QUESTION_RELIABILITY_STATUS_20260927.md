@@ -241,8 +241,9 @@ error code, so the precise provider validation cause is unknown. Smaller
 verification batches are now implemented behind the same disabled-by-default
 flag: a full seven-row author/sanitize pass followed by at-most-four-row and
 at-most-three-row solver/reviewer calls, with the existing vetoes and a
-five-survivor fail-closed return. Socket-free tests pass; this source is
-**not yet live-qualified**. The
+five-survivor fail-closed return. Socket-free tests pass, and a later live
+trial completed the five-call 4+3 path, but its independent content gate
+failed. The
 seven authored rows then passed [independent keyless content review](evidence/generic-reserve-author7-blind-20260927/RESULTS.md)
 for key and choice distinctness: both reviewers matched 7/7 private keys and
 42/42 choice pairs. Both rated three rows difficulty 1 despite the level-2
@@ -274,6 +275,21 @@ kept adaptive-high author settings but added explicit level-2 problem and
 diagnostic distractor guidance. It too stopped at the 16,000-token output
 limit, with incomplete native JSON after 165.589 seconds. Prompt wording
 could not be evaluated for content quality under that configuration.
+A [fourth reserve trial](evidence/generic-reserve-seven-probe-v4-20260927/RESULTS.md)
+disabled thinking while keeping the original request. It completed author7,
+solver4, reviewer4, solver3, and reviewer3 in about 104 seconds; seven author
+rows sanitized, six verified, and the worker returned five in original order.
+Two independently locked blind reviewers selected all 5/5 returned keys and
+found all 30/30 within-item choice pairs meaningful, yet both rated one item
+below the requested level and identified a strong expected-money/answer-format
+repeat. The authored teaching for all five matched the key on post-lock
+inspection. This is a live transport/yield success and a **content-gate
+failure**, so the generic reserve remains opt-in and disabled by default.
+A separate disabled-thinking author-only trial added the explicit probability
+directive: it completed seven native rows in 19.641 seconds, but the existing
+sanitizer rejected one for duplicate choices. The six survivors are awaiting
+independent blind content review. Neither this author-only trial nor one
+completed worker batch establishes reliable arbitrary-topic MCQs.
 
 Two standalone math response-format constructors were compared against six
 quarantined level-2 examples in a [frozen 12-item blind worksheet](evidence/math-format-mixed-blind-20260927/RESULTS.md).
