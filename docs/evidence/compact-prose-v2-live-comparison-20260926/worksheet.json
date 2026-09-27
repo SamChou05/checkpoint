@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "requested_items": 10,
+  "items": [
+    {
+      "id": "3a06546b77173be4120c6666",
+      "stem": "Which sentence correctly applies subject-verb agreement?",
+      "choices": {
+        "A": "The box of chocolates have been shared among the guests.",
+        "B": "The box of chocolates are shared among the guests.",
+        "C": "The box of chocolates were shared among the guests.",
+        "D": "The box of chocolates was shared among the guests."
+      }
+    },
+    {
+      "id": "c4d2e651902bc05bf23c37f7",
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 10, inclusive. Condition: ((2 * x) + 3) = 11. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "5",
+        "B": "2",
+        "C": "3",
+        "D": "4"
+      }
+    },
+    {
+      "id": "9adb5289f40bc9a50b5c343b",
+      "stem": "Let q be a unitless number, defined by q = (((7/3) - (2/5)) * 15). What is its exact value?",
+      "choices": {
+        "A": "29/225",
+        "B": "29",
+        "C": "435",
+        "D": "1"
+      }
+    },
+    {
+      "id": "39164e744cef6ae12338c59d",
+      "stem": "The sentence 'The director called the actor before the show, and she was nervous' contains an ambiguous pronoun. Which revision makes the pronoun reference unambiguous? The text establishes that the actor was nervous.",
+      "choices": {
+        "A": "The director called the actor before the show, and one of them was nervous.",
+        "B": "The director called the actor before the show, and the director was nervous.",
+        "C": "The director called the actor before the show, and they were nervous.",
+        "D": "The director called the actor before the show, and the actor was nervous."
+      }
+    },
+    {
+      "id": "71ed6801bb66a61fbf90b832",
+      "stem": "Let q be a unitless number, defined by q = ((3/4) * (8/9)). What is its exact value?",
+      "choices": {
+        "A": "27/32",
+        "B": "2/3",
+        "C": "6",
+        "D": "8/3"
+      }
+    },
+    {
+      "id": "ea6878bf5ce79c681da904f4",
+      "stem": "Let q be a unitless number, defined by q = (((3/4) + (5/6)) * 8). What is its exact value?",
+      "choices": {
+        "A": "38/3",
+        "B": "2/3",
+        "C": "19/96",
+        "D": "152"
+      }
+    },
+    {
+      "id": "a49114188c3939486e308801",
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: ((3 * x) - 7) = 14. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "6",
+        "B": "5",
+        "C": "8",
+        "D": "7"
+      }
+    },
+    {
+      "id": "947f790c2f46801251b8706c",
+      "stem": "Which sentence has an unambiguous pronoun reference?",
+      "choices": {
+        "A": "Lucas told Ben about the error Lucas had made in the calculations.",
+        "B": "Lucas told Ben that they had made an error in the calculations.",
+        "C": "He told Ben that Lucas had made an error in the calculations.",
+        "D": "Lucas told Ben that he had made an error in the calculations."
+      }
+    },
+    {
+      "id": "30ab87b2752f86c7474b181b",
+      "stem": "Choose the option that correctly completes the sentence with subject-verb agreement: 'The committee of senior engineers _____ the revised safety protocol.'",
+      "choices": {
+        "A": "are approving",
+        "B": "has approved",
+        "C": "have approved",
+        "D": "were approving"
+      }
+    },
+    {
+      "id": "f912dd2ff362c1c0484ea4af",
+      "stem": "Let q be a unitless number, defined by q = (5 - (3/8)). What is its exact value?",
+      "choices": {
+        "A": "5",
+        "B": "-2/7",
+        "C": "1/4",
+        "D": "37/8"
+      }
+    }
+  ]
+}

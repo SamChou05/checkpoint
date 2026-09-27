@@ -23,6 +23,18 @@ Verified improvements are on main, while the [fresh September 26 deployment chec
 still finds the September 11 legacy API and worker packages. No deployment or
 inventory transition has occurred.
 
+The later [compact mapped trial](evidence/compact-typed-slots-qualification-20260926/RESULTS.md)
+proved that a smaller 2,664-byte native schema can force the exact five assigned
+author slots on this request; all three arithmetic tasks compiled, but a
+shuffle-dependent English explanation reduced the verified worker return to 4/5.
+A [paired author-only prompt trial](evidence/compact-prose-v2-live-comparison-20260926/RESULTS.md)
+returned all ten schema-valid slots, yet blinded content review credited only
+4/5 in the revised arm and 3/5 in the baseline. The revised arm still had an
+ambiguous pronoun item with a false exclusion in its explanation, so that prompt
+remains inactive. An [offline English agreement constructor](AGREEMENT_TASK_CONSTRUCTOR_PROTOTYPE.md)
+now derives a unique key and all teaching from closed, reviewed sentence frames;
+it is not connected to live generation or qualified for rollout.
+
 ## Findings and verified fixes
 
 | Finding | Evidence | Fix on main |

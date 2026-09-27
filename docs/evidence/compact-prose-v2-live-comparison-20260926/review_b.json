@@ -1,0 +1,96 @@
+{
+  "reviewer": "blind_b",
+  "worksheet_sha256": "f8f4d74b160df0bcef77cbd8a143dbc0d6e95dccd8433f92f375212e6bbef4d7",
+  "rubric_sha256": "067443bda9c35c27771ebf1d14b8c97dfe6e6f9506789a0c7cef27802b67d8a4",
+  "arm_and_key_blind": true,
+  "summary": {
+    "readable": 10,
+    "unavailable": 0,
+    "single_supported_answer": 7,
+    "ambiguous_or_unsupported": 3,
+    "pairwise_distinction_failures": 0,
+    "cross_worksheet_novelty_note": "The two bounded linear-equation items c4d2e651902bc05bf23c37f7 and a49114188c3939486e308801 use the same reverse-two-operations mechanism with changed constants. The two pronoun items 39164e744cef6ae12338c59d and 947f790c2f46801251b8706c also share an explicit-name disambiguation motif. Arm membership is hidden, so these are observations across the whole worksheet, not within-arm deductions."
+  },
+  "items": [
+    {
+      "id": "3a06546b77173be4120c6666",
+      "answer": {"status": "single", "letter": "D"},
+      "all_necessary_facts_displayed": true,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Clear level-2 application of singular head-noun agreement despite the plural noun in the of-phrase.",
+      "notes": "Box is the singular subject, so was shared agrees. The plural auxiliaries in A-C do not. The three wrong forms differ in tense or aspect, though all rely on the same agreement error."
+    },
+    {
+      "id": "c4d2e651902bc05bf23c37f7",
+      "answer": {"status": "single", "letter": "D"},
+      "all_necessary_facts_displayed": true,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Level-2 explicit bounded integer condition; all values are in the stated domain.",
+      "notes": "2x+3=11 gives x=4, offered once. Near-repeat mechanism with a49114188c3939486e308801 across the blind worksheet."
+    },
+    {
+      "id": "9adb5289f40bc9a50b5c343b",
+      "answer": {"status": "single", "letter": "B"},
+      "all_necessary_facts_displayed": true,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Exact rational-expression evaluation with more than one arithmetic step; suitable for level 2 or low level 3.",
+      "notes": "7/3-2/5=29/15, then multiplying by 15 gives 29. All four numeric answers are different."
+    },
+    {
+      "id": "39164e744cef6ae12338c59d",
+      "answer": {"status": "ambiguous", "letter": null},
+      "all_necessary_facts_displayed": false,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Pronoun clarity is on topic and approximately level 2, but the stated selection criterion does not uniquely select a revision.",
+      "notes": "D explicitly says the actor was nervous and preserves the added fact. B explicitly says the director was nervous. Both B and D remove ambiguous pronoun reference; the question asks only which revision makes reference unambiguous, without explicitly requiring preservation of the actor fact. If preserving the fact is an implicit requirement, D is the intended best answer, but a literal reading admits B."
+    },
+    {
+      "id": "71ed6801bb66a61fbf90b832",
+      "answer": {"status": "single", "letter": "B"},
+      "all_necessary_facts_displayed": true,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Level-2 multiplication and simplification of rational numbers.",
+      "notes": "3/4 times 8/9 is 24/36 = 2/3. All alternatives are numerically distinct."
+    },
+    {
+      "id": "ea6878bf5ce79c681da904f4",
+      "answer": {"status": "single", "letter": "A"},
+      "all_necessary_facts_displayed": true,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Exact rational-expression evaluation with addition and multiplication; level 2 or low level 3.",
+      "notes": "3/4+5/6=19/12, and 8 times 19/12 is 38/3. All alternatives are numerically distinct."
+    },
+    {
+      "id": "a49114188c3939486e308801",
+      "answer": {"status": "single", "letter": "D"},
+      "all_necessary_facts_displayed": true,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Level-2 explicit bounded integer condition; all values are in the stated domain.",
+      "notes": "3x-7=14 gives x=7, offered once. Near-repeat mechanism with c4d2e651902bc05bf23c37f7 across the blind worksheet."
+    },
+    {
+      "id": "947f790c2f46801251b8706c",
+      "answer": {"status": "unsupported", "letter": null},
+      "all_necessary_facts_displayed": false,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Tests pronoun clarity at roughly level 2, but the apparent clear sentence has no pronoun to reference.",
+      "notes": "A names Lucas twice and is clear, but it has no pronoun, so it does not literally have an unambiguous pronoun reference. B allows they to mean Lucas, Ben, or both; D leaves he between Lucas and Ben; C begins with he without an established antecedent. The stem needs to ask which revision avoids ambiguous reference or provide a candidate with a pronoun and a single established antecedent."
+    },
+    {
+      "id": "30ab87b2752f86c7474b181b",
+      "answer": {"status": "ambiguous", "letter": null},
+      "all_necessary_facts_displayed": false,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Collective-noun agreement is on topic and level 2, but the stem does not specify a dialect or whether committee is treated as a unit or its members.",
+      "notes": "B has approved is standard singular agreement in American usage. Plural committee with have approved, are approving, or were approving is accepted in some English varieties and can express member-focused agreement. Without a stated convention or context, the offered choices cannot be graded as one unqualified correct completion. Tense/aspect is also unspecified."
+    },
+    {
+      "id": "f912dd2ff362c1c0484ea4af",
+      "answer": {"status": "single", "letter": "D"},
+      "all_necessary_facts_displayed": true,
+      "pairwise_meaning_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "objective_and_difficulty": "Level-2 exact rational subtraction.",
+      "notes": "5-3/8=40/8-3/8=37/8. All alternatives are numerically distinct."
+    }
+  ]
+}

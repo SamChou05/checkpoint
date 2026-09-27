@@ -1,0 +1,210 @@
+{
+  "version": 1,
+  "reviewer": "A",
+  "worksheet_sha256": "f8f4d74b160df0bcef77cbd8a143dbc0d6e95dccd8433f92f375212e6bbef4d7",
+  "rubric_sha256": "067443bda9c35c27771ebf1d14b8c97dfe6e6f9506789a0c7cef27802b67d8a4",
+  "blind_review": true,
+  "items": [
+    {
+      "id": "3a06546b77173be4120c6666",
+      "answer": "D",
+      "answer_status": "single_supported",
+      "answer_reason": "The head subject box is singular. The intervening phrase of chocolates does not change agreement, so was shared is the one standard form.",
+      "pairs": {
+        "AB": "distinct: have been versus are changes aspect and tense",
+        "AC": "distinct: have been versus were changes aspect and tense",
+        "AD": "distinct: have been versus was changes agreement and aspect",
+        "BC": "distinct: are versus were changes present to past",
+        "BD": "distinct: are versus was changes tense and agreement",
+        "CD": "distinct: were versus was changes agreement"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Sufficient for the singular head-noun agreement rule; no extra context is needed.",
+      "objective_fit": "Subject-verb agreement directly tested.",
+      "estimated_difficulty": 2,
+      "novelty": "Uses an intervening plural prepositional phrase; similar mechanism to the later committee item, though that item adds a collective-noun problem.",
+      "ambiguity": "No material ambiguity under standard written agreement with box as head."
+    },
+    {
+      "id": "c4d2e651902bc05bf23c37f7",
+      "answer": "D",
+      "answer_status": "single_supported",
+      "answer_reason": "2x + 3 = 11 gives 2x = 8 and x = 4, which lies in the stated domain.",
+      "pairs": {
+        "AB": "distinct numerical values: 5 and 2",
+        "AC": "distinct numerical values: 5 and 3",
+        "AD": "distinct numerical values: 5 and 4",
+        "BC": "distinct numerical values: 2 and 3",
+        "BD": "distinct numerical values: 2 and 4",
+        "CD": "distinct numerical values: 3 and 4"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Complete equation, integer domain and answer task are stated.",
+      "objective_fit": "Exact bounded scalar-condition arithmetic directly tested.",
+      "estimated_difficulty": 2,
+      "novelty": "The same solve-a-linear-equation mechanism recurs with different coefficients in item a49114188c3939486e308801.",
+      "ambiguity": "None; exactly one offered value satisfies the equation."
+    },
+    {
+      "id": "9adb5289f40bc9a50b5c343b",
+      "answer": "B",
+      "answer_status": "single_supported",
+      "answer_reason": "7/3 - 2/5 = 35/15 - 6/15 = 29/15, and multiplying by 15 gives 29.",
+      "pairs": {
+        "AB": "distinct exact values: 29/225 and 29",
+        "AC": "distinct exact values: 29/225 and 435",
+        "AD": "distinct exact values: 29/225 and 1",
+        "BC": "distinct exact values: 29 and 435",
+        "BD": "distinct exact values: 29 and 1",
+        "CD": "distinct exact values: 435 and 1"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Complete parenthesized rational expression with no hidden assumptions.",
+      "objective_fit": "Exact rational-expression evaluation directly tested.",
+      "estimated_difficulty": 2,
+      "novelty": "A fraction operation followed by multiplication; related to the other exact-expression items but uses cancellation after unlike-denominator subtraction.",
+      "ambiguity": "None; all offered values are numerically different."
+    },
+    {
+      "id": "39164e744cef6ae12338c59d",
+      "answer": "D",
+      "answer_status": "single_supported",
+      "answer_reason": "The stem explicitly establishes that the actor was nervous. Repeating the actor names that person without an ambiguous pronoun; director in B contradicts the fact, and A/C leave the referent unresolved.",
+      "pairs": {
+        "AB": "distinct: A leaves which person nervous unresolved; B explicitly names the director",
+        "AC": "distinct: one of them asserts an unspecified one-person reading; they permits a singular or plural reading",
+        "AD": "distinct: A leaves the person unresolved; D explicitly names the actor",
+        "BC": "distinct: B explicitly names the director; C leaves they unresolved",
+        "BD": "distinct: B names the director as nervous; D names the actor",
+        "CD": "distinct: C leaves they unresolved; D explicitly names the actor"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Sufficient: the final sentence supplies the fact needed to distinguish director from actor.",
+      "objective_fit": "Unambiguous pronoun-reference revision directly tested, though the winning revision replaces the pronoun with a noun.",
+      "estimated_difficulty": 2,
+      "novelty": "Contrasts an explicit actor fact against ambiguous replacements; the later pronoun item does not supply an analogous valid pronoun-bearing answer.",
+      "ambiguity": "They in C can be singular or plural, but neither reading makes the intended actor reference unambiguous."
+    },
+    {
+      "id": "71ed6801bb66a61fbf90b832",
+      "answer": "B",
+      "answer_status": "single_supported",
+      "answer_reason": "(3/4) times (8/9) is 24/36, which reduces to 2/3.",
+      "pairs": {
+        "AB": "distinct exact values: 27/32 and 2/3",
+        "AC": "distinct exact values: 27/32 and 6",
+        "AD": "distinct exact values: 27/32 and 8/3",
+        "BC": "distinct exact values: 2/3 and 6",
+        "BD": "distinct exact values: 2/3 and 8/3",
+        "CD": "distinct exact values: 6 and 8/3"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Complete fraction multiplication task.",
+      "objective_fit": "Exact rational-expression evaluation directly tested.",
+      "estimated_difficulty": 2,
+      "novelty": "A simpler fraction-product instance within several exact-expression questions; no duplicate stem or answer set.",
+      "ambiguity": "None; each offered fraction or integer denotes a different value."
+    },
+    {
+      "id": "ea6878bf5ce79c681da904f4",
+      "answer": "A",
+      "answer_status": "single_supported",
+      "answer_reason": "3/4 + 5/6 = 9/12 + 10/12 = 19/12, then 8 times 19/12 is 38/3.",
+      "pairs": {
+        "AB": "distinct exact values: 38/3 and 2/3",
+        "AC": "distinct exact values: 38/3 and 19/96",
+        "AD": "distinct exact values: 38/3 and 152",
+        "BC": "distinct exact values: 2/3 and 19/96",
+        "BD": "distinct exact values: 2/3 and 152",
+        "CD": "distinct exact values: 19/96 and 152"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Complete parenthesized expression; no outside fact or unit conversion is needed.",
+      "objective_fit": "Exact rational-expression evaluation directly tested.",
+      "estimated_difficulty": 2,
+      "novelty": "Shares a fraction-then-operation pattern with item 9adb5289f40bc9a50b5c343b, but uses addition and a different scale factor.",
+      "ambiguity": "None; exactly one listed value equals the expression."
+    },
+    {
+      "id": "a49114188c3939486e308801",
+      "answer": "D",
+      "answer_status": "single_supported",
+      "answer_reason": "3x - 7 = 14 gives 3x = 21 and x = 7, inside the stated integer domain.",
+      "pairs": {
+        "AB": "distinct numerical values: 6 and 5",
+        "AC": "distinct numerical values: 6 and 8",
+        "AD": "distinct numerical values: 6 and 7",
+        "BC": "distinct numerical values: 5 and 8",
+        "BD": "distinct numerical values: 5 and 7",
+        "CD": "distinct numerical values: 8 and 7"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Complete equation, domain and selection task are stated.",
+      "objective_fit": "Exact bounded scalar-condition arithmetic directly tested.",
+      "estimated_difficulty": 2,
+      "novelty": "Mechanically close to item c4d2e651902bc05bf23c37f7: both ask for the sole offered solution of a two-step linear equation.",
+      "ambiguity": "None; only 7 satisfies the equation."
+    },
+    {
+      "id": "947f790c2f46801251b8706c",
+      "answer": null,
+      "answer_status": "unsupported_or_ambiguous",
+      "answer_reason": "A explicitly names Lucas twice and contains no pronoun, so it cannot literally have an unambiguous pronoun reference. B leaves they unresolved between Lucas, Ben or both; C begins with he without a supplied antecedent; D leaves he open to Lucas or Ben. A could be picked only by silently changing the question to which sentence avoids ambiguous pronouns. Under a vacuous all-pronouns reading, A becomes arguable, itself confirming an ambiguous stem.",
+      "pairs": {
+        "AB": "distinct: A explicitly names Lucas as error maker; B leaves they unresolved",
+        "AC": "distinct: A names Lucas as teller and error maker; C leaves the teller he unresolved",
+        "AD": "distinct: A names Lucas as error maker; D leaves he as error maker unresolved",
+        "BC": "distinct: B leaves the error maker they unresolved; C explicitly names Lucas as error maker but not teller",
+        "BD": "distinct: they in B may be singular or plural; he in D is singular and male-coded, both unresolved",
+        "CD": "distinct: C leaves the teller unresolved and names Lucas as error maker; D names Lucas as teller and leaves the error maker unresolved"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Insufficient for the literal task: no offered sentence both contains a pronoun and identifies its referent unambiguously.",
+      "objective_fit": "Intends pronoun-reference clarity but fails to supply a valid pronoun-bearing option.",
+      "estimated_difficulty": 2,
+      "novelty": "Another antecedent-clarity task after the actor item, but its answer construction differs and fails literally.",
+      "ambiguity": "Do not silently treat no pronoun as an unambiguous pronoun. A is potentially defensible only under an unstated alternative interpretation."
+    },
+    {
+      "id": "30ab87b2752f86c7474b181b",
+      "answer": null,
+      "answer_status": "multiple_plausible",
+      "answer_reason": "B is the conventional singular agreement with committee as one body in American English. C uses plural agreement with a collective noun, which is standard in British English and can reflect members acting individually. The stem does not state a regional variety or whether the group is treated as a unit. A and D also mix plural agreement with unanchored progressive tenses; the missing time context does not independently exclude those aspects. There is no uniquely defensible answer across standard English varieties.",
+      "plausible_choices": ["B", "C"],
+      "pairs": {
+        "AB": "distinct: present-progressive plural are approving versus completed singular has approved",
+        "AC": "distinct: present-progressive are approving versus completed have approved",
+        "AD": "distinct: present-progressive are approving versus past-progressive were approving",
+        "BC": "distinct agreement construal despite the same completed event: has versus have",
+        "BD": "distinct: completed singular has approved versus past-progressive plural were approving",
+        "CD": "distinct: completed plural have approved versus past-progressive plural were approving"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Insufficient: a collective noun permits regional/notional variation, and no tense or aspect context is supplied.",
+      "objective_fit": "Intends subject-verb agreement, but collective-noun and tense variation undermine a single answer.",
+      "estimated_difficulty": 2,
+      "novelty": "Repeats an intervening plural of-phrase from the box item, while adding a disputed collective head.",
+      "ambiguity": "B is likely the intended key, but C is also grammatically defensible without an American-English-only constraint."
+    },
+    {
+      "id": "f912dd2ff362c1c0484ea4af",
+      "answer": "D",
+      "answer_status": "single_supported",
+      "answer_reason": "5 - 3/8 = 40/8 - 3/8 = 37/8.",
+      "pairs": {
+        "AB": "distinct exact values: 5 and -2/7",
+        "AC": "distinct exact values: 5 and 1/4",
+        "AD": "distinct exact values: 5 and 37/8",
+        "BC": "distinct exact values: -2/7 and 1/4",
+        "BD": "distinct exact values: -2/7 and 37/8",
+        "CD": "distinct exact values: 1/4 and 37/8"
+      },
+      "all_six_pairs_distinct": true,
+      "stem_premises": "Complete rational subtraction task.",
+      "objective_fit": "Exact rational-expression evaluation directly tested.",
+      "estimated_difficulty": 2,
+      "novelty": "Another exact-expression arithmetic item, but uses integer-minus-fraction rather than the other multi-operation patterns.",
+      "ambiguity": "None; all four options denote different exact values."
+    }
+  ]
+}

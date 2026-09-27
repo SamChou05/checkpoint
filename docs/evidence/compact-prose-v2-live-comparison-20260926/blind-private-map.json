@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "capture_sha256": "1638dbed88def242362a4b215e652ca41ffc688cb473b3124b7e189308e5093b",
+  "plan_sha256": "20b369b9719c1cad29642dfe66e3c94b89f6632931dafe79654b3ff5402d3bdb",
+  "worksheet_sha256": "f8f4d74b160df0bcef77cbd8a143dbc0d6e95dccd8433f92f375212e6bbef4d7",
+  "mapping": {
+    "ea6878bf5ce79c681da904f4": {
+      "arm": "v2",
+      "original_slot": 0,
+      "status": "accepted",
+      "display_to_source_index": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "correct_display_label": "A"
+    },
+    "9adb5289f40bc9a50b5c343b": {
+      "arm": "v2",
+      "original_slot": 1,
+      "status": "accepted",
+      "display_to_source_index": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "correct_display_label": "B"
+    },
+    "c4d2e651902bc05bf23c37f7": {
+      "arm": "v2",
+      "original_slot": 2,
+      "status": "accepted",
+      "display_to_source_index": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "correct_display_label": "D"
+    },
+    "3a06546b77173be4120c6666": {
+      "arm": "v2",
+      "original_slot": 3,
+      "status": "accepted",
+      "display_to_source_index": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "correct_display_label": "D"
+    },
+    "39164e744cef6ae12338c59d": {
+      "arm": "v2",
+      "original_slot": 4,
+      "status": "accepted",
+      "display_to_source_index": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "correct_display_label": "D"
+    },
+    "71ed6801bb66a61fbf90b832": {
+      "arm": "v1",
+      "original_slot": 0,
+      "status": "accepted",
+      "display_to_source_index": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "correct_display_label": "B"
+    },
+    "f912dd2ff362c1c0484ea4af": {
+      "arm": "v1",
+      "original_slot": 1,
+      "status": "accepted",
+      "display_to_source_index": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "correct_display_label": "D"
+    },
+    "a49114188c3939486e308801": {
+      "arm": "v1",
+      "original_slot": 2,
+      "status": "accepted",
+      "display_to_source_index": [
+        2,
+        1,
+        0,
+        3
+      ],
+      "correct_display_label": "D"
+    },
+    "30ab87b2752f86c7474b181b": {
+      "arm": "v1",
+      "original_slot": 3,
+      "status": "accepted",
+      "display_to_source_index": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "correct_display_label": "B"
+    },
+    "947f790c2f46801251b8706c": {
+      "arm": "v1",
+      "original_slot": 4,
+      "status": "accepted",
+      "display_to_source_index": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "correct_display_label": "A"
+    }
+  },
+  "diagnostics": {
+    "v2": {
+      "compiler_rejections": [],
+      "sanitizer_reasons_by_original_slot": [
+        "accepted",
+        "accepted",
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "sanitizer_counts": {
+        "accepted": 5
+      }
+    },
+    "v1": {
+      "compiler_rejections": [],
+      "sanitizer_reasons_by_original_slot": [
+        "accepted",
+        "accepted",
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "sanitizer_counts": {
+        "accepted": 5
+      }
+    }
+  }
+}
