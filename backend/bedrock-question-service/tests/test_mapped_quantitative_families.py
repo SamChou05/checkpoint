@@ -17,7 +17,7 @@ import native_output_contracts as native
 import question_bank
 import question_generation as generation
 from agreement_task_constructor import (
-    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, LEARNER_FIELDS,
+    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, GERUND_SCENES, LEARNER_FIELDS,
     blocked_fingerprint_variant_identities, canonical_variant_identities, compile_question,
     prepare_mapped_agreement_rows,
 )
@@ -169,28 +169,29 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
-        self.assertEqual(len(schema_json.encode()), 2040)
+        self.assertEqual(len(schema_json.encode()), 2101)
         self.assertEqual(hashlib.sha256(schema_json.encode()).hexdigest(),
-                         "4cb4a9f845c5553f141bb684360f7a086529814b465271d55ca13900e9932d5e")
+                         "ed2e1fbd2dff973a8a15c94d15a54dc8952f5c25a865a13c411e3a31e6c00cb0")
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"] for i in range(3)],
                          [list(families) for families in SLOT_FAMILIES])
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(self.contract())["version"], "8")
+        self.assertEqual(native.contract_metadata(self.contract())["version"], "9")
         agreement = self.contract(False)
         agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
-        self.assertEqual(len(agreement_schema.encode()), 2999)
+        self.assertEqual(len(agreement_schema.encode()), 3060)
         self.assertEqual(hashlib.sha256(agreement_schema.encode()).hexdigest(),
-                         "d9d26fd3b54af91ff2aeac048924f4098e3382d2f8a6062634804c884d221ab2")
+                         "3009f98f1d3023d4a6c6df566acd200145bc5e1b8665a50d45265bbd3be01094")
         self.assertEqual(hashlib.sha256(native.native_prompt(
             generation._system_prompt(), agreement,
         ).encode()).hexdigest(),
-                         "2c12c19d1bacafdaae5a1950d63d292526d7aa95357e77c70f7340edc64e65be")
+                         "3699157272ca0c37fc4e39ac5cd4dd0c13679764bd61706199c1d6f1f8b7e75d")
         family_prompt = native.native_prompt(generation._system_prompt(), self.contract())
         self.assertTrue(all(family in family_prompt for families in SLOT_FAMILIES
                             for family in families))
         self.assertTrue(all(scene in family_prompt for scene in COMPOUND_SCENES))
+        self.assertTrue(all(scene in family_prompt for scene in GERUND_SCENES))
         shape = get_session().get_service_model("bedrock-runtime").operation_model("Converse").input_shape
         validate_parameters({
             "modelId": MODEL,

@@ -5,8 +5,9 @@ import json
 import unittest
 
 from agreement_task_constructor import (
-    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, CORRELATIVE_SCENES, INVERSION_SCENES,
-    LEARNER_FIELDS, NUMBER_SCENES, RELATIVE_SCENES, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
+    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, CORRELATIVE_SCENES, GERUND_SCENES,
+    INVERSION_SCENES, LEARNER_FIELDS, NUMBER_SCENES, RELATIVE_SCENES, SUPPORTED_OBJECTIVE,
+    SUPPORTED_TOPIC,
     TASK_KIND, canonical_variant_identities, compile_mapped_english_slots,
     compile_question, task_schema,
 )
@@ -38,7 +39,51 @@ def contract():
 
 class AgreementTaskConstructorTests(unittest.TestCase):
     def test_all_slot_variants_have_distinct_canonical_stems(self):
-        self.assertEqual(len(canonical_variant_identities()), 48)
+        self.assertEqual(len(canonical_variant_identities()), 56)
+
+    def test_gerund_subject_keys_and_nonmirror_frames(self):
+        # Manually checked against the written clauses, independent of the
+        # constructor's activity/subject fields and key calculation.
+        expected = {
+            "gerund_reports": ("requires; check", "review; demands"),
+            "gerund_books": ("helps; update", "examine; takes"),
+            "gerund_meals": ("requires; measure", "inspect; demands"),
+            "gerund_maps": ("requires; trace", "record; takes"),
+        }
+        self.assertEqual(set(expected), set(GERUND_SCENES))
+        answer_positions = []
+        for scene, keys in expected.items():
+            questions = []
+            for order, key in zip(("singular_first", "plural_first"), keys, strict=True):
+                with self.subTest(scene=scene, order=order):
+                    result = compile_question(task(scene, order), ordinal=4)
+                    questions.append(result)
+                    self.assertEqual(result["expectedAnswer"], key)
+                    answer_positions.append(result["choices"].index(key))
+                    self.assertEqual(result["choices"].count(key), 1)
+                    self.assertEqual(len(set(result["choices"])), 4)
+                    self.assertEqual(set(result["choices"]), set(result["choiceExplanations"]))
+                    self.assertEqual(result["prompt"].count("___"), 2)
+                    self.assertIn("one singular subject", result["explanation"])
+                    self.assertIn("is plural", result["explanation"])
+                    self.assertIn(", and ", result["prompt"])
+                    self.assertLessEqual(len(result["prompt"]), 320)
+                    self.assertLessEqual(len(result["explanation"]), 420)
+                    for choice, feedback in result["choiceExplanations"].items():
+                        wrong = sum(selected != correct for selected, correct in zip(
+                            choice.split("; "), key.split("; "), strict=True))
+                        self.assertEqual(feedback.count("does not agree"), wrong)
+                        self.assertLessEqual(len(feedback), 280)
+            first, second = questions
+            # The reversed-order question uses a separate scene frame; it is
+            # not the same two clauses in the opposite order.
+            def clauses(question):
+                body = question["prompt"].split("English. ", 1)[1].split(
+                    ". Which ordered pair", 1)[0]
+                return {clause.casefold() for clause in body.split(", and ")}
+
+            self.assertNotEqual(clauses(first), clauses(second))
+        self.assertEqual(sorted(answer_positions), [0, 0, 1, 1, 2, 2, 3, 3])
 
     def test_correlative_nearer_subject_has_independent_keys_and_choice_feedback(self):
         expected = {
@@ -286,7 +331,8 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         self.assertNotEqual(json.loads(candidates[3].task_json)["scene"], "coach")
         self.assertNotEqual(json.loads(candidates[4].task_json)["scene"], COMPOUND_SCENE)
         self.assertIn(json.loads(candidates[3].task_json)["scene"], INVERSION_SCENES)
-        self.assertIn(json.loads(candidates[4].task_json)["scene"], NUMBER_SCENES)
+        self.assertIn(json.loads(candidates[4].task_json)["scene"],
+                      {**NUMBER_SCENES, **GERUND_SCENES, **CORRELATIVE_SCENES})
         self.assertTrue(all(candidate.content()["prompt"] not in prior for candidate in candidates.values()))
         self.assertTrue(all(not candidate.novelty_exhausted for candidate in candidates.values()))
         with self.assertRaises(AgreementTaskError):
@@ -301,14 +347,15 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         candidates = compile_mapped_english_slots(
             source, contract(), existing_prompts=history)
         self.assertIn(json.loads(candidates[3].task_json)["scene"], INVERSION_SCENES)
-        self.assertIn(json.loads(candidates[4].task_json)["scene"], NUMBER_SCENES)
+        self.assertIn(json.loads(candidates[4].task_json)["scene"],
+                      {**NUMBER_SCENES, **GERUND_SCENES, **CORRELATIVE_SCENES})
         self.assertTrue(all(candidate.content()["prompt"] not in history
                             for candidate in candidates.values()))
 
     def test_finite_inventory_exhaustion_keeps_original_task_for_item_filter(self):
         history = tuple(
             compile_question(task(scene, order), ordinal=4)["prompt"]
-            for scene in (*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES)
+            for scene in (*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES, *GERUND_SCENES)
             for order in ("singular_first", "plural_first")
         )
         source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
@@ -317,11 +364,11 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         self.assertEqual(json.loads(candidates[4].task_json), source["4"])
         self.assertFalse(candidates[3].novelty_exhausted)
 
-    def test_history_selection_yields_all_twenty_four_slot_four_stems_before_exhaustion(self):
+    def test_history_selection_yields_all_thirty_two_slot_four_stems_before_exhaustion(self):
         source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
         history = []
         chosen_scenes = []
-        for _ in range(24):
+        for _ in range(32):
             candidate = compile_mapped_english_slots(
                 source, contract(), existing_prompts=tuple(history),
             )[4]
@@ -331,9 +378,12 @@ class AgreementTaskConstructorTests(unittest.TestCase):
             history.append(prompt)
             chosen_scenes.append(json.loads(candidate.task_json)["scene"])
         self.assertEqual(chosen_scenes[0], COMPOUND_SCENE)
-        self.assertIn(chosen_scenes[1], NUMBER_SCENES)
-        self.assertIn(chosen_scenes[2], CORRELATIVE_SCENES)
-        self.assertEqual(len(set(history)), 24)
+        self.assertIn(chosen_scenes[1], {**NUMBER_SCENES, **GERUND_SCENES,
+                                         **CORRELATIVE_SCENES})
+        self.assertEqual(len(set(history)), 32)
+        self.assertTrue(set(chosen_scenes) & set(NUMBER_SCENES))
+        self.assertTrue(set(chosen_scenes) & set(CORRELATIVE_SCENES))
+        self.assertTrue(set(chosen_scenes) & set(GERUND_SCENES))
         exhausted = compile_mapped_english_slots(
             source, contract(), existing_prompts=tuple(history),
         )[4]

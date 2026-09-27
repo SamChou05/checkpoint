@@ -91,6 +91,18 @@ class _CorrelativeScene:
 
 
 @dataclass(frozen=True)
+class _GerundFrame:
+    activity: str
+    activity_object: str
+    plural_subject: str
+    plural_object: str
+    activity_base: str
+    activity_third: str
+    plural_base: str
+    plural_third: str
+
+
+@dataclass(frozen=True)
 class _Clause:
     text: str
     base: str
@@ -176,6 +188,34 @@ CORRELATIVE_SCENES = {
         "inspect", "inspects", "label", "labels",
     ),
 }
+GERUND_SCENES = {
+    # Each order uses a different activity and plural subject, rather than
+    # turning one sentence into a second bank stem by swapping its clauses.
+    "gerund_reports": (
+        _GerundFrame("Proofreading the reports", "patience", "the editors", "every heading",
+                     "require", "requires", "check", "checks"),
+        _GerundFrame("Verifying the totals", "careful work", "the auditors", "each calculation",
+                     "demand", "demands", "review", "reviews"),
+    ),
+    "gerund_books": (
+        _GerundFrame("Cataloging the books", "readers", "the librarians", "the shelf labels",
+                     "help", "helps", "update", "updates"),
+        _GerundFrame("Restoring the manuscripts", "time", "the archivists", "the damaged pages",
+                     "take", "takes", "examine", "examines"),
+    ),
+    "gerund_meals": (
+        _GerundFrame("Preparing the meals", "planning", "the cooks", "the ingredients",
+                     "require", "requires", "measure", "measures"),
+        _GerundFrame("Cleaning the ovens", "patience", "the chefs", "the equipment",
+                     "demand", "demands", "inspect", "inspects"),
+    ),
+    "gerund_maps": (
+        _GerundFrame("Drawing the maps", "accuracy", "the cartographers", "the borders",
+                     "require", "requires", "trace", "traces"),
+        _GerundFrame("Checking the routes", "time", "the surveyors", "the distances",
+                     "take", "takes", "record", "records"),
+    ),
+}
 
 
 class AgreementTaskError(ValueError):
@@ -190,7 +230,8 @@ def task_schema() -> dict:
             "kind": {"type": "string", "enum": [TASK_KIND]},
             "scene": {"type": "string", "enum": sorted((*SCENES, *COMPOUND_SCENES,
                                                        *INVERSION_SCENES, *NUMBER_SCENES,
-                                                       *RELATIVE_SCENES, *CORRELATIVE_SCENES))},
+                                                       *RELATIVE_SCENES, *CORRELATIVE_SCENES,
+                                                       *GERUND_SCENES))},
             "order": {"type": "string", "enum": ["singular_first", "plural_first"]},
         },
         "required": ["kind", "scene", "order"],
@@ -202,7 +243,7 @@ def _checked_task(task: object) -> tuple[str, str]:
             or type(task["kind"]) is not str or task["kind"] != TASK_KIND
             or type(task["scene"]) is not str or task["scene"] not in {
                 *SCENES, *COMPOUND_SCENES, *INVERSION_SCENES, *NUMBER_SCENES,
-                *RELATIVE_SCENES, *CORRELATIVE_SCENES,
+                *RELATIVE_SCENES, *CORRELATIVE_SCENES, *GERUND_SCENES,
             }
             or type(task["order"]) is not str
             or task["order"] not in {"singular_first", "plural_first"}):
@@ -324,6 +365,18 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
             scene.plural_base, scene.plural_third, False,
             scene.plural_subject, scene.singular_subject, rule="correlative",
         )
+    elif scene_id in GERUND_SCENES:
+        frame = GERUND_SCENES[scene_id][order == "plural_first"]
+        first = _Clause(
+            f"{frame.activity} ___ {frame.activity_object}",
+            frame.activity_base, frame.activity_third, True,
+            frame.activity, rule="gerund",
+        )
+        second = _Clause(
+            f"{frame.plural_subject[0].upper()}{frame.plural_subject[1:]} ___ {frame.plural_object}",
+            frame.plural_base, frame.plural_third, False,
+            frame.plural_subject, rule="plural_noun",
+        )
     else:
         scene = SCENES[scene_id]
         first = _Clause(
@@ -338,16 +391,22 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
         )
     clauses = (first, second) if order == "singular_first" else (second, first)
     following = clauses[1].text
-    if following.startswith(("The ", "Every ", "Near ", "A ", "Either ", "Neither ")):
+    if (clauses[1].rule == "gerund"
+            or following.startswith(("The ", "Every ", "Near ", "A ", "Either ", "Neither "))):
         following = following[0].lower() + following[1:]
+    connector = "and" if scene_id in GERUND_SCENES else "while"
     prompt = ("Fill both blanks with the present-tense verb forms that agree with "
               "the subjects in standard written American English. "
-              f"{clauses[0].text}, while {following}. "
+              f"{clauses[0].text}, {connector} {following}. "
               "Which ordered pair fills the blanks?")
     # False/True indexes choose the bare or third-person singular form for each
     # clause. The Cartesian product has four different ordered commitments.
     pairs = [(False, False), (False, True), (True, False), (True, True)]
-    pairs = pairs[ordinal % 4:] + pairs[:ordinal % 4]
+    # A fixed original slot ordinal would put every gerund answer in B or C.
+    # Rotate its eight closed variants evenly across all four positions.
+    rotation = (tuple(GERUND_SCENES).index(scene_id) +
+                (order == "plural_first")) % 4 if scene_id in GERUND_SCENES else ordinal % 4
+    pairs = pairs[rotation:] + pairs[:rotation]
 
     def form(clause: _Clause, third_person: bool) -> str:
         return clause.third if third_person else clause.base
@@ -381,6 +440,11 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
         elif clause.rule == "correlative":
             support = (f'{position.capitalize()}, the nearer subject "{clause.subject}" '
                        f'is {number}; "{clause.attractor}" is farther away.')
+        elif clause.rule == "gerund":
+            support = (f'{position.capitalize()}, the activity "{clause.subject}" is one '
+                       'singular subject, even though it contains a plural object.')
+        elif clause.rule == "plural_noun":
+            support = (f'{position.capitalize()}, the subject "{clause.subject}" is plural.')
         else:
             support = (f'{position.capitalize()}, "{clause.subject}" has the singular head '
                        f'"number"; "near {clause.attractor}" does not change it.')
@@ -449,7 +513,8 @@ def canonical_variant_identities() -> frozenset[str]:
             {"kind": TASK_KIND, "scene": scene, "order": order}, ordinal=slot,
         )["prompt"])
         for slot, scenes in ((3, (*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)),
-                             (4, (*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES)))
+                             (4, (*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES,
+                                  *GERUND_SCENES)))
         for scene in scenes
         for order in ("singular_first", "plural_first")
     )
@@ -479,7 +544,7 @@ def _select_novel_task(
     if ordinal not in (3, 4):
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
     allowed = ({**SCENES, **INVERSION_SCENES, **RELATIVE_SCENES} if ordinal == 3
-               else {**COMPOUND_SCENES, **NUMBER_SCENES, **CORRELATIVE_SCENES})
+               else {**COMPOUND_SCENES, **NUMBER_SCENES, **CORRELATIVE_SCENES, **GERUND_SCENES})
     if scene not in allowed:
         raise AgreementTaskError("Agreement task is outside its mapped slot.")
     blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
@@ -506,6 +571,7 @@ def _select_novel_task(
         candidate_scene: ("relative" if candidate_scene in RELATIVE_SCENES else
                           "inversion" if candidate_scene in INVERSION_SCENES else
                           "correlative" if candidate_scene in CORRELATIVE_SCENES else
+                          "gerund" if candidate_scene in GERUND_SCENES else
                           "number" if candidate_scene in NUMBER_SCENES else
                           "compound" if candidate_scene in COMPOUND_SCENES else "proximity")
         for candidate_scene in allowed

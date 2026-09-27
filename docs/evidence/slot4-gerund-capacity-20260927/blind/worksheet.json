@@ -1,0 +1,82 @@
+[
+  {
+    "id": "G1",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Proofreading the reports ___ patience, and the editors ___ every heading. Which ordered pair fills the blanks?",
+    "choices": [
+      "require; check",
+      "require; checks",
+      "requires; check",
+      "requires; checks"
+    ]
+  },
+  {
+    "id": "G2",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The auditors ___ each calculation, and verifying the totals ___ careful work. Which ordered pair fills the blanks?",
+    "choices": [
+      "review; demands",
+      "reviews; demand",
+      "reviews; demands",
+      "review; demand"
+    ]
+  },
+  {
+    "id": "G3",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Cataloging the books ___ readers, and the librarians ___ the shelf labels. Which ordered pair fills the blanks?",
+    "choices": [
+      "help; updates",
+      "helps; update",
+      "helps; updates",
+      "help; update"
+    ]
+  },
+  {
+    "id": "G4",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The archivists ___ the damaged pages, and restoring the manuscripts ___ time. Which ordered pair fills the blanks?",
+    "choices": [
+      "examines; take",
+      "examines; takes",
+      "examine; take",
+      "examine; takes"
+    ]
+  },
+  {
+    "id": "G5",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Preparing the meals ___ planning, and the cooks ___ the ingredients. Which ordered pair fills the blanks?",
+    "choices": [
+      "requires; measure",
+      "requires; measures",
+      "require; measure",
+      "require; measures"
+    ]
+  },
+  {
+    "id": "G6",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The chefs ___ the equipment, and cleaning the ovens ___ patience. Which ordered pair fills the blanks?",
+    "choices": [
+      "inspects; demands",
+      "inspect; demand",
+      "inspect; demands",
+      "inspects; demand"
+    ]
+  },
+  {
+    "id": "G7",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Drawing the maps ___ accuracy, and the cartographers ___ the borders. Which ordered pair fills the blanks?",
+    "choices": [
+      "requires; traces",
+      "require; trace",
+      "require; traces",
+      "requires; trace"
+    ]
+  },
+  {
+    "id": "G8",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The surveyors ___ the distances, and checking the routes ___ time. Which ordered pair fills the blanks?",
+    "choices": [
+      "record; take",
+      "record; takes",
+      "records; take",
+      "records; takes"
+    ]
+  }
+]

@@ -1,0 +1,1289 @@
+{
+  "review_type": "answer-blind review of locked final English MCQs",
+  "source_path": "/tmp/checkpoint-gerund-locked-blind-20260927.json",
+  "source_sha256": "ec77dd9c9bdc410b2c77811c4ececc8bf4b7c4d5ffee77af4f1fff1dd5e4056b",
+  "answer_key_or_repository_consulted": false,
+  "summary": {
+    "unique_unambiguous_answers": 8,
+    "ambiguous_items": [],
+    "unnatural_completed_sentences": [],
+    "non_self_contained_items": [],
+    "choice_pair_findings": "Each item has six distinct unordered pairs among four unique choices. In every pair involving the correct answer, the alternative has an agreement error; every pair of distractors differs in one or both blanks, with both distractors invalid.",
+    "difficulty": "Each item individually fits 2/5 at its easy end. As a set, the eight are highly repetitive and offer little progression or transfer beyond the same gerund singular versus overt plural contrast."
+  },
+  "items": [
+    {
+      "id": "G1",
+      "answer_choice_number_1_based": 3,
+      "exact_correct_offered_choice": "requires; check",
+      "ambiguity": "none",
+      "agreement_reasoning": [
+        "The gerund phrase “Proofreading the reports” is singular, so it takes “requires”.",
+        "“The editors” is plural, so it takes “check”."
+      ],
+      "option_error_blanks_in_offered_order": [
+        [
+          "first"
+        ],
+        [
+          "first",
+          "second"
+        ],
+        [],
+        [
+          "second"
+        ]
+      ],
+      "six_unordered_choice_pair_assessments": [
+        {
+          "choices": [
+            1,
+            2
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            1,
+            3
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 3,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            1,
+            4
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            2,
+            3
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 3,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            2,
+            4
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            3,
+            4
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": 3,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        }
+      ],
+      "completed_sentence": "Proofreading the reports requires patience, and the editors check every heading.",
+      "naturalness_standard_written_american_english": "Natural and idiomatic. “Proofreading the reports requires patience” and “the editors check every heading” both read smoothly.",
+      "self_contained": true,
+      "self_containment_reason": "The prompt supplies the required dialect, tense, task, and both subjects; no outside context is needed.",
+      "individual_difficulty_relative_to_target_2_of_5": {
+        "rating_out_of_5": 2,
+        "assessment": "Meets 2/5 at the easy end: identify one singular gerund phrase and one explicit plural subject; the four choices enumerate all form combinations."
+      }
+    },
+    {
+      "id": "G2",
+      "answer_choice_number_1_based": 1,
+      "exact_correct_offered_choice": "review; demands",
+      "ambiguity": "none",
+      "agreement_reasoning": [
+        "“The auditors” is plural, so it takes “review”.",
+        "The gerund phrase “verifying the totals” is singular, so it takes “demands”."
+      ],
+      "option_error_blanks_in_offered_order": [
+        [],
+        [
+          "first",
+          "second"
+        ],
+        [
+          "first"
+        ],
+        [
+          "second"
+        ]
+      ],
+      "six_unordered_choice_pair_assessments": [
+        {
+          "choices": [
+            1,
+            2
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": 1,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            1,
+            3
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": 1,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            1,
+            4
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": 1,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            2,
+            3
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            2,
+            4
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            3,
+            4
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        }
+      ],
+      "completed_sentence": "The auditors review each calculation, and verifying the totals demands careful work.",
+      "naturalness_standard_written_american_english": "Natural, though “demands careful work” is a slightly formal collocation.",
+      "self_contained": true,
+      "self_containment_reason": "The prompt supplies the required dialect, tense, task, and both subjects; no outside context is needed.",
+      "individual_difficulty_relative_to_target_2_of_5": {
+        "rating_out_of_5": 2,
+        "assessment": "Meets 2/5 at the easy end: identify one singular gerund phrase and one explicit plural subject; the four choices enumerate all form combinations."
+      }
+    },
+    {
+      "id": "G3",
+      "answer_choice_number_1_based": 2,
+      "exact_correct_offered_choice": "helps; update",
+      "ambiguity": "none",
+      "agreement_reasoning": [
+        "The gerund phrase “Cataloging the books” is singular, so it takes “helps”.",
+        "“The librarians” is plural, so it takes “update”."
+      ],
+      "option_error_blanks_in_offered_order": [
+        [
+          "first",
+          "second"
+        ],
+        [],
+        [
+          "second"
+        ],
+        [
+          "first"
+        ]
+      ],
+      "six_unordered_choice_pair_assessments": [
+        {
+          "choices": [
+            1,
+            2
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 2,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            1,
+            3
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            1,
+            4
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            2,
+            3
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": 2,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            2,
+            4
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": 2,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            3,
+            4
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        }
+      ],
+      "completed_sentence": "Cataloging the books helps readers, and the librarians update the shelf labels.",
+      "naturalness_standard_written_american_english": "Natural and clear; the first clause is broad but idiomatic.",
+      "self_contained": true,
+      "self_containment_reason": "The prompt supplies the required dialect, tense, task, and both subjects; no outside context is needed.",
+      "individual_difficulty_relative_to_target_2_of_5": {
+        "rating_out_of_5": 2,
+        "assessment": "Meets 2/5 at the easy end: identify one singular gerund phrase and one explicit plural subject; the four choices enumerate all form combinations."
+      }
+    },
+    {
+      "id": "G4",
+      "answer_choice_number_1_based": 4,
+      "exact_correct_offered_choice": "examine; takes",
+      "ambiguity": "none",
+      "agreement_reasoning": [
+        "“The archivists” is plural, so it takes “examine”.",
+        "The gerund phrase “restoring the manuscripts” is singular, so it takes “takes”."
+      ],
+      "option_error_blanks_in_offered_order": [
+        [
+          "first",
+          "second"
+        ],
+        [
+          "first"
+        ],
+        [
+          "second"
+        ],
+        []
+      ],
+      "six_unordered_choice_pair_assessments": [
+        {
+          "choices": [
+            1,
+            2
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            1,
+            3
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            1,
+            4
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 4,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            2,
+            3
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            2,
+            4
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 4,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            3,
+            4
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 4,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        }
+      ],
+      "completed_sentence": "The archivists examine the damaged pages, and restoring the manuscripts takes time.",
+      "naturalness_standard_written_american_english": "Natural and idiomatic.",
+      "self_contained": true,
+      "self_containment_reason": "The prompt supplies the required dialect, tense, task, and both subjects; no outside context is needed.",
+      "individual_difficulty_relative_to_target_2_of_5": {
+        "rating_out_of_5": 2,
+        "assessment": "Meets 2/5 at the easy end: identify one singular gerund phrase and one explicit plural subject; the four choices enumerate all form combinations."
+      }
+    },
+    {
+      "id": "G5",
+      "answer_choice_number_1_based": 1,
+      "exact_correct_offered_choice": "requires; measure",
+      "ambiguity": "none",
+      "agreement_reasoning": [
+        "The gerund phrase “Preparing the meals” is singular, so it takes “requires”.",
+        "“The cooks” is plural, so it takes “measure”."
+      ],
+      "option_error_blanks_in_offered_order": [
+        [],
+        [
+          "second"
+        ],
+        [
+          "first"
+        ],
+        [
+          "first",
+          "second"
+        ]
+      ],
+      "six_unordered_choice_pair_assessments": [
+        {
+          "choices": [
+            1,
+            2
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": 1,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            1,
+            3
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": 1,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            1,
+            4
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": 1,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            2,
+            3
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            2,
+            4
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            3,
+            4
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        }
+      ],
+      "completed_sentence": "Preparing the meals requires planning, and the cooks measure the ingredients.",
+      "naturalness_standard_written_american_english": "Natural and idiomatic.",
+      "self_contained": true,
+      "self_containment_reason": "The prompt supplies the required dialect, tense, task, and both subjects; no outside context is needed.",
+      "individual_difficulty_relative_to_target_2_of_5": {
+        "rating_out_of_5": 2,
+        "assessment": "Meets 2/5 at the easy end: identify one singular gerund phrase and one explicit plural subject; the four choices enumerate all form combinations."
+      }
+    },
+    {
+      "id": "G6",
+      "answer_choice_number_1_based": 3,
+      "exact_correct_offered_choice": "inspect; demands",
+      "ambiguity": "none",
+      "agreement_reasoning": [
+        "“The chefs” is plural, so it takes “inspect”.",
+        "The gerund phrase “cleaning the ovens” is singular, so it takes “demands”."
+      ],
+      "option_error_blanks_in_offered_order": [
+        [
+          "first"
+        ],
+        [
+          "second"
+        ],
+        [],
+        [
+          "first",
+          "second"
+        ]
+      ],
+      "six_unordered_choice_pair_assessments": [
+        {
+          "choices": [
+            1,
+            2
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            [
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            1,
+            3
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 3,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            1,
+            4
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            2,
+            3
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 3,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            2,
+            4
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            3,
+            4
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": 3,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        }
+      ],
+      "completed_sentence": "The chefs inspect the equipment, and cleaning the ovens demands patience.",
+      "naturalness_standard_written_american_english": "Natural and idiomatic; “demands patience” fits the context.",
+      "self_contained": true,
+      "self_containment_reason": "The prompt supplies the required dialect, tense, task, and both subjects; no outside context is needed.",
+      "individual_difficulty_relative_to_target_2_of_5": {
+        "rating_out_of_5": 2,
+        "assessment": "Meets 2/5 at the easy end: identify one singular gerund phrase and one explicit plural subject; the four choices enumerate all form combinations."
+      }
+    },
+    {
+      "id": "G7",
+      "answer_choice_number_1_based": 4,
+      "exact_correct_offered_choice": "requires; trace",
+      "ambiguity": "none",
+      "agreement_reasoning": [
+        "The gerund phrase “Drawing the maps” is singular, so it takes “requires”.",
+        "“The cartographers” is plural, so it takes “trace”."
+      ],
+      "option_error_blanks_in_offered_order": [
+        [
+          "second"
+        ],
+        [
+          "first",
+          "second"
+        ],
+        [
+          "first"
+        ],
+        []
+      ],
+      "six_unordered_choice_pair_assessments": [
+        {
+          "choices": [
+            1,
+            2
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            1,
+            3
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            1,
+            4
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 4,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            2,
+            3
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            2,
+            4
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 4,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            3,
+            4
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 4,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        }
+      ],
+      "completed_sentence": "Drawing the maps requires accuracy, and the cartographers trace the borders.",
+      "naturalness_standard_written_american_english": "Natural, if somewhat generic; both clauses make sense together.",
+      "self_contained": true,
+      "self_containment_reason": "The prompt supplies the required dialect, tense, task, and both subjects; no outside context is needed.",
+      "individual_difficulty_relative_to_target_2_of_5": {
+        "rating_out_of_5": 2,
+        "assessment": "Meets 2/5 at the easy end: identify one singular gerund phrase and one explicit plural subject; the four choices enumerate all form combinations."
+      }
+    },
+    {
+      "id": "G8",
+      "answer_choice_number_1_based": 2,
+      "exact_correct_offered_choice": "record; takes",
+      "ambiguity": "none",
+      "agreement_reasoning": [
+        "“The surveyors” is plural, so it takes “record”.",
+        "The gerund phrase “checking the routes” is singular, so it takes “takes”."
+      ],
+      "option_error_blanks_in_offered_order": [
+        [
+          "second"
+        ],
+        [],
+        [
+          "first",
+          "second"
+        ],
+        [
+          "first"
+        ]
+      ],
+      "six_unordered_choice_pair_assessments": [
+        {
+          "choices": [
+            1,
+            2
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            []
+          ],
+          "correct_choice_in_pair": 2,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            1,
+            3
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            1,
+            4
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "second"
+            ],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        },
+        {
+          "choices": [
+            2,
+            3
+          ],
+          "differing_blanks": [
+            "first",
+            "second"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "first",
+              "second"
+            ]
+          ],
+          "correct_choice_in_pair": 2,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            2,
+            4
+          ],
+          "differing_blanks": [
+            "first"
+          ],
+          "choice_error_blanks": [
+            [],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": 2,
+          "assessment": "distinct; one uniquely satisfies both agreements"
+        },
+        {
+          "choices": [
+            3,
+            4
+          ],
+          "differing_blanks": [
+            "second"
+          ],
+          "choice_error_blanks": [
+            [
+              "first",
+              "second"
+            ],
+            [
+              "first"
+            ]
+          ],
+          "correct_choice_in_pair": null,
+          "assessment": "distinct; both violate at least one agreement"
+        }
+      ],
+      "completed_sentence": "The surveyors record the distances, and checking the routes takes time.",
+      "naturalness_standard_written_american_english": "Natural and idiomatic.",
+      "self_contained": true,
+      "self_containment_reason": "The prompt supplies the required dialect, tense, task, and both subjects; no outside context is needed.",
+      "individual_difficulty_relative_to_target_2_of_5": {
+        "rating_out_of_5": 2,
+        "assessment": "Meets 2/5 at the easy end: identify one singular gerund phrase and one explicit plural subject; the four choices enumerate all form combinations."
+      }
+    }
+  ],
+  "cross_item_near_duplicates": {
+    "strongest_pairs": [
+      {
+        "items": [
+          "G1",
+          "G5"
+        ],
+        "reason": "Same gerund-first/plural-second structure and same correct singular verb “requires”; only topic nouns and second verbs change."
+      },
+      {
+        "items": [
+          "G2",
+          "G6"
+        ],
+        "reason": "Same plural-first/gerund-second structure and same correct singular verb “demands”; only topic nouns and first verbs change."
+      },
+      {
+        "items": [
+          "G4",
+          "G8"
+        ],
+        "reason": "Same plural-first/gerund-second structure and same correct singular verb “takes”; only topic nouns and first verbs change."
+      },
+      {
+        "items": [
+          "G3",
+          "G7"
+        ],
+        "reason": "Same gerund-first/plural-second structure with the same two agreement decisions; topics and lexical verbs change."
+      }
+    ],
+    "structural_clusters": [
+      {
+        "items": [
+          "G1",
+          "G3",
+          "G5",
+          "G7"
+        ],
+        "all_strong_structure_pairs": [
+          [
+            "G1",
+            "G3"
+          ],
+          [
+            "G1",
+            "G5"
+          ],
+          [
+            "G1",
+            "G7"
+          ],
+          [
+            "G3",
+            "G5"
+          ],
+          [
+            "G3",
+            "G7"
+          ],
+          [
+            "G5",
+            "G7"
+          ]
+        ],
+        "pattern": "Gerund phrase first takes singular present; explicit plural occupational noun second takes plural present."
+      },
+      {
+        "items": [
+          "G2",
+          "G4",
+          "G6",
+          "G8"
+        ],
+        "all_strong_structure_pairs": [
+          [
+            "G2",
+            "G4"
+          ],
+          [
+            "G2",
+            "G6"
+          ],
+          [
+            "G2",
+            "G8"
+          ],
+          [
+            "G4",
+            "G6"
+          ],
+          [
+            "G4",
+            "G8"
+          ],
+          [
+            "G6",
+            "G8"
+          ]
+        ],
+        "pattern": "Explicit plural occupational noun first takes plural present; gerund phrase second takes singular present."
+      }
+    ],
+    "bank_level_assessment": "Every item tests the same two-choice agreement rule in the same two-clause format, and the two clause orders simply alternate. The set has strong near-duplicate redundancy even though no two prompts are verbatim duplicates."
+  }
+}

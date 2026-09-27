@@ -24,13 +24,14 @@ class MappedBankCapacityHarnessTests(unittest.TestCase):
         # reuse rather than require rewriting the test to preserve old counts.
         self.assertLessEqual(report["snapshots"][0]["sameSlotFamilyPairs"], 60)
         self.assertLessEqual(report["snapshots"][1]["sameSlotFamilyPairs"], 280)
-        self.assertLessEqual(report["snapshots"][2]["sameSlotFamilyPairs"], 200)
+        self.assertLessEqual(report["snapshots"][2]["sameSlotFamilyPairs"], 188)
         self.assertEqual(report["snapshots"][1]["slots"]["1"]["substantiveFamilyCapacity"], 4)
         self.assertEqual(report["snapshots"][1]["slots"]["1"]["sameFamilyPairs"], 24)
         for snapshot in report["snapshots"]:
-            self.assertEqual(snapshot["slots"]["4"]["exactStemCapacity"], 24)
+            self.assertEqual(snapshot["slots"]["4"]["exactStemCapacity"], 32)
             self.assertIn("correlative", snapshot["slots"]["4"]["familyUses"])
-        self.assertEqual(report["snapshots"][2]["slots"]["4"]["remainingExactStems"], 7)
+            self.assertIn("gerund", snapshot["slots"]["4"]["familyUses"])
+        self.assertEqual(report["snapshots"][2]["slots"]["4"]["remainingExactStems"], 15)
 
     def test_unique_stems_do_not_override_family_capacity_gate(self):
         report = {"targets": (40,), "exhaustion": None, "snapshots": [{
@@ -83,9 +84,9 @@ class MappedBankCapacityHarnessTests(unittest.TestCase):
         report = simulate((120, 125))
         self.assertEqual(report["exhaustion"]["atItems"], 120)
         self.assertEqual(report["exhaustion"]["failureReasons"],
-                         ["agreement_novelty_exhausted"] * 2)
+                         ["agreement_novelty_exhausted"])
         self.assertEqual(report["snapshots"][0]["slots"]["3"]["remainingExactStems"], 0)
-        self.assertEqual(report["snapshots"][0]["slots"]["4"]["remainingExactStems"], 0)
+        self.assertEqual(report["snapshots"][0]["slots"]["4"]["remainingExactStems"], 8)
         self.assertTrue(any("125 items unavailable" in failure for failure in
                             qualification_failures(report)))
 

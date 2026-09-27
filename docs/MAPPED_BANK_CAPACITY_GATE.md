@@ -30,12 +30,13 @@ This keeps the [frozen 40/80 evidence](evidence/mapped-bank-diversity-simulation
 immutable while allowing the current constructors to be evaluated again.
 
 At the current source, the gate reports 40/40, 80/80, and 85/85 unique exact
-stems. Each slot has three substantive families. The 40-, 80-, and 85-item
-banks have 35, 175, and 200 same-slot/family pairs, respectively. The new
-slot-4 correlative family leaves eight unused exact stems at 80 items and
-seven at 85. The default gate still fails because each slot reuses its three
-families many times. Its messages identify insufficient family capacity and
-actual overuse.
+stems. Slots 0, 2, and 3 have three substantive families each; slots 1 and 4
+have four. The 40-, 80-, and 85-item banks have 29, 153, and 176
+same-slot/family pairs, respectively, down from 35, 175, and 200 before the
+two-root numeric and -ing-activity English additions. Slot 4 now has 32 exact stems, with 16 unused
+at 80 items and 15 at 85. The default gate still fails because every slot
+reuses its families many times. Its messages identify insufficient family
+capacity and actual overuse.
 
 This is a structural capacity gate, not an automatic judgment of semantic
 novelty. Two distinct families can still ask nearly the same question, and

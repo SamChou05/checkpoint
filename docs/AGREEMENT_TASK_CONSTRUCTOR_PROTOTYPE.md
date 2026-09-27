@@ -8,17 +8,20 @@ an enumerated scene and clause order. Code owns the two clauses, four ordered
 verb-form pairs, unique key, main explanation and feedback for every choice.
 
 The exact mapped 3:2 route uses quantitative tasks in original slots `0`–`2`.
-Slot `3` has four proximity scenes (a singular/plural head before a `near`
-phrase) and four inverted-subject scenes (the subject follows the verb).
-Slot `4` has four compound/distributive scenes (`Maya and Theo` versus
-`Every guest`) and four `a number`/`the number` scenes. Nearby nouns with the
-opposite number force the learner to identify each subject. Clause order
-yields 16 exact stems per English slot, across two solve mechanisms. Each task's
-four choices are the Cartesian product of the two
+Slot `3` has proximity, inverted-subject, and relative-clause scenes.
+Slot `4` has compound/distributive, `a number`/`the number`,
+either/or-neither/nor, and -ing-activity-subject scenes. The last family asks
+the learner to distinguish a singular activity from a plural noun subject;
+its two order variants use different clauses rather than mirroring one pair.
+[Cambridge's gerund entry](https://dictionary.cambridge.org/us/dictionary/english/gerund)
+gives an -ing activity as the subject of a singular clause. The current
+library has 24 exact stems for slot `3` and 32 for slot `4`. Each task's four
+choices are the Cartesian product of the two
 verb inflections, with exactly one pair agreeing in both clauses. The new
 provider schema requires all five original slots, fixes the English scene
 enums by slot, and excludes author keys, choices, teaching and metadata.
-Its compact shared-definition representation is under 3 KB. Local validation
+Its compact shared-definition representation is 3,060 bytes for the mapped
+agreement schema and 2,101 bytes with closed numeric families. Local validation
 rejects missing, extra, duplicated, forged and swapped English tasks before
 compilation; no failed slot is relabeled as a top-up.
 
@@ -31,7 +34,7 @@ request. A private exact-type sidecar retains each English source ordinal and
 recompiles its complete learner payload after sanitization and final audit.
 When the exact route is selected, code prefers an unused solve mechanism,
 then an unused scene, using the request's recent prompts and a bounded
-32-variant identity set from the full stored bank. Client-blocked stem
+56-variant identity set from the full stored bank. Client-blocked stem
 fingerprints also veto matching variants.
 The selected task and its source are retained in private provenance. This
 does not make the finite bank broadly diverse: the same two-blank format and
@@ -82,17 +85,18 @@ hashes; the deployed worker does not use this route. Code-owned answers in
 this subset do not prove broader language correctness, distractor usefulness,
 calibration across learners or non-repetition.
 
-The subset excludes pronoun reference, collective nouns, existential and
-relative-clause agreement, tense choice, irregular verbs, free language and
-difficulty 3–5. Repeated inventory could become predictable. Each English
-slot has two solve mechanisms. A third five-item chunk must reuse a mechanism
-even if its exact scene and stem are new; larger or more varied inventory
-would need independent linguistic and novelty review.
+The subset excludes pronoun reference, collective nouns, existential
+agreement, tense choice, irregular verbs, free language and difficulty 3–5.
+Repeated inventory could become predictable. Slots `3` and `4` have three
+and four solve mechanisms, respectively. The fourth five-item chunk must
+reuse a mechanism in slot `3` even if its exact scene and stem are new;
+slot `4` reaches that limit in its fifth chunk. Larger or more varied
+inventory needs independent linguistic and novelty review.
 
 Offline tests cover closed schemas, immutable old-route hashes, fake native
 author/solver/reviewer calls, exact 3:2 slot provenance, private-proof loss and
 tampering, all 24 display permutations, and solver/reviewer key disagreement.
 They also check reviewer difficulty disagreement against proven English and
 ordinary unproven prose separately. Full-history identity and blocked-fingerprint
-controls cover the finite 32-variant library. These are implementation evidence
+controls cover the finite 56-variant library. These are implementation evidence
 only.

@@ -17,7 +17,7 @@ import native_output_contracts as native
 import question_bank
 import question_generation as generation
 from agreement_task_constructor import (
-    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, INVERSION_SCENES,
+    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, GERUND_SCENES, INVERSION_SCENES,
     NUMBER_SCENES, CORRELATIVE_SCENES, RELATIVE_SCENES, SCENES, LEARNER_FIELDS,
     SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
     blocked_fingerprint_variant_identities, checked_agreement_provenance,
@@ -111,12 +111,13 @@ class MappedAgreementRouteTests(unittest.TestCase):
         schema_json = native.native_output_config(new)["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
-        self.assertLess(len(schema_json.encode()), 3000)
+        self.assertLess(len(schema_json.encode()), 3200)
         self.assertEqual(set(schema["$defs"]), {"node", "task", "slot3", "slot4"})
         self.assertEqual(schema["$defs"]["slot3"]["properties"]["scene"]["enum"],
                          sorted((*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)))
         self.assertEqual(schema["$defs"]["slot4"]["properties"]["scene"]["enum"],
-                         sorted((*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES)))
+                         sorted((*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES,
+                                 *GERUND_SCENES)))
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
         self.assertEqual(native.contract_metadata(new)["version"], "5")
@@ -245,7 +246,7 @@ class MappedAgreementRouteTests(unittest.TestCase):
                 question_bank._question_from_item(item)["prompt"] for item in recent
             )
             full_identities = tuple(question_bank._agreement_variant_history(existing_items))
-            self.assertLessEqual(len(full_identities), 48)
+            self.assertLessEqual(len(full_identities), 56)
             if batch == 7:
                 self.assertEqual(len(existing_items), 35)
                 self.assertEqual(len(recent), 30)
@@ -286,10 +287,10 @@ class MappedAgreementRouteTests(unittest.TestCase):
             blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),
         )
         self.assertTrue(exhausted[3].novelty_exhausted)
-        self.assertTrue(exhausted[4].novelty_exhausted)
-        self.assertEqual(question_bank._prepare_questions(
+        self.assertFalse(exhausted[4].novelty_exhausted)
+        self.assertEqual(len(question_bank._prepare_questions(
             bank_id, [exhausted[4].content()], existing_items,
-        ), [])
+        )), 1)
 
     def test_fingerprint_only_block_and_private_history_preserve_scope_and_prompt(self):
         source = {"3": agreement("coach"), "4": agreement(COMPOUND_SCENE)}
