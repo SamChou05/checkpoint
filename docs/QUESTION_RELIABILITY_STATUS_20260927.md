@@ -15,6 +15,16 @@ the requested difficulty, avoid repeats across a growing bank, and complete
 the author, answer-blind solver, and reviewer calls within one job deadline.
 One failure at any layer can discard an item or the whole batch.
 
+The intuition about a modern model making a small quiz is supported by a
+[matched two-call test](evidence/general-mcq-structure-vs-quality-20260927/RESULTS.md):
+Opus 4.6 returned five parseable Python questions both with and without native
+JSON Schema. CPython and an answer-blind reviewer agreed with all ten keys,
+and every item had four distinct listed choices. Yet the blind reviewer rated
+none at the requested level 3 and flagged four near-duplicate pairs. The
+experiment isolates why a plausible one-off quiz does not imply a reliable
+level-specific, repeated-bank worker; it does not estimate a general failure
+rate.
+
 The deployed TestFlight mode is still `legacy`, which asks the author for JSON
 in prose. The repository has an opt-in native mode, but its schema only
 constrains form. [AWS's structured-output documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/structured-output.html)
