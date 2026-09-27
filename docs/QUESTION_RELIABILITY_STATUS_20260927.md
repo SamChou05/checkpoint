@@ -139,6 +139,18 @@ first adding this format from another authored family. The reviewer-4 veto
 and learner difficulty metadata remain unchanged. This is an offline-verified
 selection change, not a successful new live worker trial or a claim that all
 eight scene/order variants have independent difficulty ratings.
+On that selector-first source, a new separately frozen
+[full-worker trial](evidence/combined-v12-selector-first-full-worker-qualification-20260927/RESULTS.md)
+also returned **4/5** in 130.220 seconds with three Converse calls. All five
+tasks compiled/sanitized; the final reviewer agreed on the withheld
+full-sentence key and rated it difficulty 3, but marked its main explanation
+uncertain. That main explanation justified the key without showing why the
+other three sentences were wrong; the rule-specific per-choice feedback was
+not included in the reviewer's input. Two locked answer-blind reviewers later
+found all five candidate keys unique, all 30 choice pairs distinct, and all
+five difficulty 2–3. They disagreed on within-batch repetition. The reviewer
+veto and failed trial remain in force. This source still lacks a successful
+current full-worker qualification.
 An [offline single-rule full-sentence prototype](evidence/level2-sentence-selection-prototype-20260927/README.md)
 reached unique keys and level-2 ratings, but its best blind-reviewed version
 had only 3/6 and 5/6 meaningfully distinct choice pairs. It was not added to

@@ -24,9 +24,23 @@ other sentences were wrong without stating their three different corrections.
 The final reviewer saw that main explanation and the choices, not the
 rule-specific per-choice feedback. A missing worked rejection of the other
 choices is a plausible cause of the uncertainty, not a proven causal account.
-The final reviewer’s explanation veto remains in force. An answer-blind
-content review of all five sanitized candidates is in progress; it cannot
-retroactively change this failed return count.
+The final reviewer’s explanation veto remains in force.
+
+After the capture was locked, two independent reviewers saw only the same
+[keyless worksheet](blind-candidates/worksheet.json), SHA-256
+`a7b4cba3b80a5bd2351640fbea8dccc08ee98c253035d36b212ec64a345cd97d`.
+[Review A](blind-candidates/review-a.json) and
+[review B](blind-candidates/review-b.json) independently selected the
+code-owned key for **all five** sanitized candidates, found no alternative
+viable key, judged **all 30 of 30** within-item choice pairs meaningfully
+distinct, and rated all five difficulty 2–3. They both rated the withheld
+full-sentence item 3. The reviewers disagreed about cross-question novelty:
+A found no strong repeat among ten pairs; B called the two agreement items
+strongly similar in solving method and the inequality-count/rational-equation
+pair strongly similar in stem format. B also called two fraction choices weak
+distractors because the result must lie between zero and one. These are
+content-quality warnings, not additional live-worker returns. The private
+answer map was opened only after both reviews were locked.
 
 The immutable [capture](capture.json) SHA-256 is
 `d23f4fb1ac51d672a9ab9b2e4d95ca26c184dab0a2fb9631a11c2287a6b9f62f`.

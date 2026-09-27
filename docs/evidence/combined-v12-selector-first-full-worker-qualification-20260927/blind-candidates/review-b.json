@@ -1,0 +1,68 @@
+{
+  "reviewer": "B",
+  "worksheet_sha256": "a7b4cba3b80a5bd2351640fbea8dccc08ee98c253035d36b212ec64a345cd97d",
+  "items": {
+    "Q01": {
+      "selected_key": "C",
+      "alternate_viable_keys": [],
+      "solution": "In each inverted clause the subject follows the verb: plural 'notes' takes 'are'; singular 'sample' takes 'is'.",
+      "difficulty_1_to_5": 3,
+      "difficulty_reason": "The two inverted clauses require locating subjects after the blanks and tracking their different numbers; this meets the target of 2–3.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "choice_pair_reason": "Every pair differs in at least one agreement decision; no two ordered pairs have the same meaning in this task.",
+      "other_notes": []
+    },
+    "Q02": {
+      "selected_key": "D",
+      "alternate_viable_keys": [],
+      "solution": "(7/8)(4/6) = 7/12, so 1 - 7/12 = 5/12.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "A short fraction multiplication and subtraction; this meets the target of 2–3.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "choice_pair_reason": "All four choices are different exact numbers.",
+      "other_notes": ["Choices A (1) and C (-1/2) are weak distractors because the stated expression must lie strictly between 0 and 1."]
+    },
+    "Q03": {
+      "selected_key": "D",
+      "alternate_viable_keys": [],
+      "solution": "The plural compound subject 'Maya and Theo' takes 'prepare'; 'each' does not change that agreement. A needs 'requires', B needs 'sort', and C needs 'receives'.",
+      "difficulty_1_to_5": 3,
+      "difficulty_reason": "It tests several common agreement patterns, including proximity with 'neither ... nor' and the placement of 'each'; this meets the target of 2–3.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "choice_pair_reason": "Each pair contains different sentences and different agreement constructions; none are equivalent alternatives.",
+      "other_notes": ["The stem's topical framing does not describe choice C, which concerns guests rather than Maya, Theo, the assistants, or proofreading. This does not obscure the agreement answer."]
+    },
+    "Q04": {
+      "selected_key": "C",
+      "alternate_viable_keys": [],
+      "solution": "3(x + 2) - 2x = x + 6, so x <= 7. The integers 3, 4, 5, 6, and 7 satisfy the condition: five values.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "One linear simplification followed by an inclusive integer count; this meets the target of 2–3.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "choice_pair_reason": "The four choices give different counts; each pair changes the asserted answer.",
+      "other_notes": []
+    },
+    "Q05": {
+      "selected_key": "B",
+      "alternate_viable_keys": [],
+      "solution": "9(x + 5) = 13(x + 1), hence 9x + 45 = 13x + 13 and x = 8, which is in the domain.",
+      "difficulty_1_to_5": 3,
+      "difficulty_reason": "Solving a rational equation by cross multiplication and checking the stated domain is moderately involved; this meets the target of 2–3.",
+      "choice_pairs_meaningfully_distinct": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "choice_pair_reason": "All four offered integers differ, and exactly one satisfies the equation.",
+      "other_notes": []
+    }
+  },
+  "cross_item_pairs": [
+    {"items": ["Q01", "Q02"], "solving_method_repetition": "none", "response_format_repetition": "none", "overall": "none", "reason": "Grammar agreement in an ordered pair versus fraction evaluation to one number."},
+    {"items": ["Q01", "Q03"], "solving_method_repetition": "strong", "response_format_repetition": "low", "overall": "strong", "reason": "Both require identifying the grammatical subject and choosing present-tense verb agreement. Q01 fills two verbs in inverted clauses, while Q03 selects a complete correct sentence, so the response forms differ."},
+    {"items": ["Q01", "Q04"], "solving_method_repetition": "none", "response_format_repetition": "none", "overall": "none", "reason": "Agreement choices and counting solutions of an inequality use unrelated methods and outputs."},
+    {"items": ["Q01", "Q05"], "solving_method_repetition": "none", "response_format_repetition": "none", "overall": "none", "reason": "An ordered grammar pair versus an algebraic value."},
+    {"items": ["Q02", "Q03"], "solving_method_repetition": "none", "response_format_repetition": "none", "overall": "none", "reason": "Fraction arithmetic versus sentence agreement."},
+    {"items": ["Q02", "Q04"], "solving_method_repetition": "low", "response_format_repetition": "low", "overall": "low", "reason": "Both contain elementary arithmetic and offer numeric choices, but one evaluates a fraction expression and the other solves an inequality and counts integers."},
+    {"items": ["Q02", "Q05"], "solving_method_repetition": "moderate", "response_format_repetition": "moderate", "overall": "moderate", "reason": "Both use fractions and select a numerical value; Q02 evaluates a fixed expression, while Q05 solves a rational equation for an unknown."},
+    {"items": ["Q03", "Q04"], "solving_method_repetition": "none", "response_format_repetition": "none", "overall": "none", "reason": "Sentence agreement versus an integer solution count."},
+    {"items": ["Q03", "Q05"], "solving_method_repetition": "none", "response_format_repetition": "none", "overall": "none", "reason": "Sentence agreement versus solving a rational equation."},
+    {"items": ["Q04", "Q05"], "solving_method_repetition": "moderate", "response_format_repetition": "strong", "overall": "strong", "reason": "Both begin with nearly the same unitless-integer-domain and labeled-condition template, then require identifying valid integers. The mathematical operations and final answers differ: Q04 solves an inequality and counts, while Q05 solves an equation and selects one value."}
+  ]
+}
