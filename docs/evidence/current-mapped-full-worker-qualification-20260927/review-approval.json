@@ -1,0 +1,7 @@
+{
+  "plan_sha256": "21b15d7fcfc5afe776d00d510a379080918949fd5b4cc20729ba10dda4ee56d2",
+  "harness_sha256": "cde1c962802b10128624808e4101fb28c275860b0bfacf769b98c11b659e5a09",
+  "source_commit": "dc85ef80b29172fbeb2f67d08b3096ef60267ef5",
+  "root_go": true,
+  "independent_go": true
+}

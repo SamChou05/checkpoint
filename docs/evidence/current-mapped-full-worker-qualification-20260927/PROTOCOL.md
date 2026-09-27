@@ -1,0 +1,7 @@
+# Current mapped full-worker one-shot qualification
+
+This isolated trial pins `dc85ef80b29172fbeb2f67d08b3096ef60267ef5`, the existing synthetic five-slot 3:2 arithmetic/English request, and its exact normalized goal and scope hashes. The current source uses Sonnet 4.6 with Bedrock native JSON Schema, adaptive high effort, opt-in code-owned quantitative families and agreement construction, and a shape-stable native transport name. Its current 2,013-byte author schema is pinned. There is no real queue, bank or deployment path.
+
+Freeze the exact plan and harness hashes before dispatch. One read-only STS launch precheck and one execute-time STS identity check must confirm account `239342516379`. The original job has six durable Converse call slots, one SDK attempt per call, no fallback, retry, repair, top-up or resumed call, and a 240-second deadline starting before credential export. Capture starts with all five original slot identities. On a failed or interrupted run, leave all unfilled slots explicit and do not make another call.
+
+The prespecified mechanical gate requires five original slots and policy revisions 8,8,8,10,10, exact requested allocation, independent keys, all 30 within-item choice pairs distinct, sound teaching, and bounded call and wall time. A separate answer-blind content review checks key clarity, self-contained stems, teaching, objective fit, level 2 and meaningful novelty; a mechanical 5/5 alone is not qualification of bank reliability. Document any failure without a repeat run.
