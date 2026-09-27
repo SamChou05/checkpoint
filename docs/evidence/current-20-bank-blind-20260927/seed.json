@@ -1,0 +1,36 @@
+{
+  "baseSourceCommit": "0488e5239f63dcdc02c1926d5e8ecd270254953b",
+  "batchCount": 4,
+  "choiceSeed": 17393,
+  "itemOrderSeed": 20260927,
+  "providerCalls": 0,
+  "sourceEvidence": "docs/evidence/native-v9-author-acceptance-20260927/capture.json",
+  "sourceTaskSeed": {
+    "0": {
+      "a": 5,
+      "b": 7,
+      "family": "fraction_product_complement"
+    },
+    "1": {
+      "a": 4,
+      "b": 9,
+      "family": "bounded_rational_equation"
+    },
+    "2": {
+      "a": 3,
+      "b": 8,
+      "family": "bounded_solution_count"
+    },
+    "3": {
+      "kind": "agreement_pair_v1",
+      "order": "plural_first",
+      "scene": "inversion_library"
+    },
+    "4": {
+      "kind": "agreement_pair_v1",
+      "order": "singular_first",
+      "scene": "gerund_meals"
+    }
+  },
+  "targetDifficulty": "2–3"
+}
