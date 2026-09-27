@@ -19,6 +19,7 @@ import question_generation as generation
 from agreement_task_constructor import (
     AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, GERUND_SCENES, INVERSION_SCENES,
     NUMBER_SCENES, CORRELATIVE_SCENES, PARTITIVE_SCENES, RELATIVE_SCENES, SCENES,
+    SENTENCE_SELECTION_SCENES,
     LEARNER_FIELDS,
     SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
     blocked_fingerprint_variant_identities, checked_agreement_provenance,
@@ -119,10 +120,10 @@ class MappedAgreementRouteTests(unittest.TestCase):
                                  *PARTITIVE_SCENES)))
         self.assertEqual(schema["$defs"]["slot4"]["properties"]["scene"]["enum"],
                          sorted((*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES,
-                                 *GERUND_SCENES)))
+                                 *GERUND_SCENES, *SENTENCE_SELECTION_SCENES)))
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(new)["version"], "6")
+        self.assertEqual(native.contract_metadata(new)["version"], "7")
         old = self.contract(False)
         self.assertEqual(native.contract_metadata(old)["version"], "1")
         old_schema = native.native_output_config(old)["textFormat"]["structure"]["jsonSchema"]["schema"]
@@ -248,7 +249,7 @@ class MappedAgreementRouteTests(unittest.TestCase):
                 question_bank._question_from_item(item)["prompt"] for item in recent
             )
             full_identities = tuple(question_bank._agreement_variant_history(existing_items))
-            self.assertLessEqual(len(full_identities), 64)
+            self.assertLessEqual(len(full_identities), 72)
             if batch == 7:
                 self.assertEqual(len(existing_items), 35)
                 self.assertEqual(len(recent), 30)
@@ -289,6 +290,21 @@ class MappedAgreementRouteTests(unittest.TestCase):
             blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),
         )
         self.assertTrue(exhausted[3].novelty_exhausted)
+        self.assertFalse(exhausted[4].novelty_exhausted)
+        remaining = [exhausted[4].content()["prompt"]]
+        for _ in range(7):
+            next_item = compile_mapped_english_slots(
+                source, self.contract(),
+                blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),
+                existing_prompts=tuple(remaining),
+            )[4]
+            self.assertFalse(next_item.novelty_exhausted)
+            remaining.append(next_item.content()["prompt"])
+        exhausted = compile_mapped_english_slots(
+            source, self.contract(),
+            blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),
+            existing_prompts=tuple(remaining),
+        )
         self.assertTrue(exhausted[4].novelty_exhausted)
         self.assertEqual(len(question_bank._prepare_questions(
             bank_id, [exhausted[4].content()], existing_items,

@@ -396,24 +396,24 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
-        self.assertEqual(len(schema_json.encode()), 2294)
+        self.assertEqual(len(schema_json.encode()), 2357)
         self.assertEqual(hashlib.sha256(schema_json.encode()).hexdigest(),
-                         "f9b2e1cd2137214fcb0796ab1dd4b5cf35b85737032e43d083b0cec221e86ce9")
+                         "495db717d6b3fd6cc5272cdb289c7d77d9ca2e275b7c1d3f0cb856c1a18b6934")
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"] for i in range(3)],
                          [list(families) for families in SLOT_FAMILIES])
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(self.contract())["version"], "13")
+        self.assertEqual(native.contract_metadata(self.contract())["version"], "14")
         agreement = self.contract(False)
         agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
-        self.assertEqual(len(agreement_schema.encode()), 3130)
+        self.assertEqual(len(agreement_schema.encode()), 3193)
         self.assertEqual(hashlib.sha256(agreement_schema.encode()).hexdigest(),
-                         "e14a3554d9e937e2296952e00fc4cbe46323305c61322b78ca74c193d0e4ab68")
+                         "fb2aec963d6283a524cdbe406138181b58290ec9f8956a7ae3a11e5d93228909")
         self.assertEqual(hashlib.sha256(native.native_prompt(
             generation._system_prompt(), agreement,
         ).encode()).hexdigest(),
-                         "031729ec06348df7914d7be8ea3d2b2b66ffd255b710f5e01df16ef2b98babcf")
+                         "d37248038dfd09a5ca9ad398489d838619feb25e435f81be4f5169bf500e4266")
         family_prompt = native.native_prompt(generation._system_prompt(), self.contract())
         self.assertTrue(all(family in family_prompt for families in SLOT_FAMILIES
                             for family in families))
@@ -454,7 +454,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         self.assertEqual(rows[slot]["expectedAnswer"],
                                          english[slot].content()["expectedAnswer"])
                         checked += 1
-        self.assertEqual(checked, 64)
+        self.assertEqual(checked, 72)
 
     def test_adapter_rejects_cross_family_and_forged_payloads(self):
         adapted = json.loads(native.adapt_native_response(json.dumps(self.raw()), self.contract()))

@@ -15,6 +15,8 @@ from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 
 SUPPORTED_TOPIC = "Standard written English"
 SUPPORTED_OBJECTIVE = "Apply subject-verb agreement or unambiguous pronoun reference"
+# Preserve the deployed wire kind while closed scene IDs distinguish the
+# full-sentence selector from the older two-blank pair constructors.
 TASK_KIND = "agreement_pair_v1"
 COMPOUND_SCENE = "compound_every"  # Preserve the wire scene ID across prompt revisions.
 LEARNER_FIELDS = ("prompt", "choices", "expectedAnswer", "explanation", "choiceExplanations")
@@ -110,6 +112,13 @@ class _PartitiveScene:
     count_object: str
     count_base: str
     count_third: str
+
+
+@dataclass(frozen=True)
+class _SentenceSelectionScene:
+    compound: str
+    correlative: str
+    gerund: str
 
 
 @dataclass(frozen=True)
@@ -246,6 +255,15 @@ PARTITIVE_SCENES = {
         "Most of the letters", "return addresses", "include", "includes",
     ),
 }
+SENTENCE_SELECTION_SCENES = {
+    # Four different subject structures appear as complete sentences. The
+    # selected variant has exactly one grammatical sentence, rather than a
+    # Cartesian product of two verb blanks like the older English families.
+    "select_archive": _SentenceSelectionScene("compound_every", "or_archive", "gerund_reports"),
+    "select_library": _SentenceSelectionScene("compound_guides", "or_library", "gerund_books"),
+    "select_studio": _SentenceSelectionScene("compound_visitors", "or_studio", "gerund_meals"),
+    "select_lab": _SentenceSelectionScene("compound_clerks", "or_lab", "gerund_maps"),
+}
 
 
 class AgreementTaskError(ValueError):
@@ -261,7 +279,8 @@ def task_schema() -> dict:
             "scene": {"type": "string", "enum": sorted((*SCENES, *COMPOUND_SCENES,
                                                        *INVERSION_SCENES, *NUMBER_SCENES,
                                                        *RELATIVE_SCENES, *CORRELATIVE_SCENES,
-                                                       *GERUND_SCENES, *PARTITIVE_SCENES))},
+                                                       *GERUND_SCENES, *PARTITIVE_SCENES,
+                                                       *SENTENCE_SELECTION_SCENES))},
             "order": {"type": "string", "enum": ["singular_first", "plural_first"]},
         },
         "required": ["kind", "scene", "order"],
@@ -274,7 +293,7 @@ def _checked_task(task: object) -> tuple[str, str]:
             or type(task["scene"]) is not str or task["scene"] not in {
                 *SCENES, *COMPOUND_SCENES, *INVERSION_SCENES, *NUMBER_SCENES,
                 *RELATIVE_SCENES, *CORRELATIVE_SCENES, *GERUND_SCENES,
-                *PARTITIVE_SCENES,
+                *PARTITIVE_SCENES, *SENTENCE_SELECTION_SCENES,
             }
             or type(task["order"]) is not str
             or task["order"] not in {"singular_first", "plural_first"}):
@@ -341,11 +360,77 @@ def _compile_relative_question(scene: _RelativeScene, order: str, ordinal: int) 
     return result
 
 
+def _compile_sentence_selection_question(scene_id: str, order: str) -> dict:
+    """Select the only correct full sentence across four nontrivial rules."""
+    scene = SENTENCE_SELECTION_SCENES[scene_id]
+    compound = COMPOUND_SCENES[scene.compound]
+    correlative = CORRELATIVE_SCENES[scene.correlative]
+    gerund = GERUND_SCENES[scene.gerund][order == "plural_first"]
+    scene_index = tuple(SENTENCE_SELECTION_SCENES).index(scene_id)
+    correct_rule = (scene_index + 2 * (order == "plural_first")) % 4
+    compound_forms = (compound.compound_base, compound.compound_third)
+    each_forms = (compound.distributive_base, compound.distributive_third)
+    correlative_forms = (correlative.plural_base, correlative.plural_third)
+    gerund_forms = (gerund.activity_base, gerund.activity_third)
+    # Each pair is (wrong, right). Every distractor violates a different
+    # subject/verb relation; all choices are whole, otherwise parallel sentences.
+    sentences = (
+        (f"{compound.compound_subject} each {compound_forms[1]} {compound.compound_object}.",
+         f"{compound.compound_subject} each {compound_forms[0]} {compound.compound_object}."),
+        (f"Each of {compound.distributive_group} {each_forms[0]} {compound.distributive_object}.",
+         f"Each of {compound.distributive_group} {each_forms[1]} {compound.distributive_object}."),
+        (f"Neither {correlative.singular_subject} nor {correlative.plural_subject} "
+         f"{correlative_forms[1]} {correlative.plural_object}.",
+         f"Neither {correlative.singular_subject} nor {correlative.plural_subject} "
+         f"{correlative_forms[0]} {correlative.plural_object}."),
+        (f"{gerund.activity} {gerund_forms[0]} {gerund.activity_object}.",
+         f"{gerund.activity} {gerund_forms[1]} {gerund.activity_object}."),
+    )
+    reasons = (
+        (f'"{compound.compound_subject}" is a plural joined subject; the following "each" '
+         f'does not make it singular, so use "{compound_forms[0]}".'),
+        (f'"Each" is the singular head of "Each of {compound.distributive_group}"; '
+         f'the plural noun after "of" does not control the verb, so use "{each_forms[1]}".'),
+        (f'With "neither...nor," the nearer subject "{correlative.plural_subject}" is '
+         f'plural, so use "{correlative_forms[0]}".'),
+        (f'The whole -ing activity "{gerund.activity}" is one singular subject, '
+         f'even though it contains a plural noun, so use "{gerund_forms[1]}".'),
+    )
+    raw = [sentences[index][index == correct_rule] for index in range(4)]
+    desired_position = (scene_index + (order == "plural_first")) % 4
+    rotation = (correct_rule - desired_position) % 4
+    indices = list(range(4))[rotation:] + list(range(4))[:rotation]
+    choices = [raw[index] for index in indices]
+    answer = sentences[correct_rule][1]
+    raw_feedback = {
+        raw[index]: ("This sentence agrees. " if index == correct_rule else
+                     "This sentence does not agree. ") + reasons[index]
+        for index in range(4)
+    }
+    feedback = {choice: raw_feedback[choice] for choice in choices}
+    prompt = (f"An editor compares sentences about {compound.compound_subject}, "
+              f"{correlative.plural_subject}, and {gerund.activity.lower()}. "
+              "Which sentence uses present-tense subject-verb agreement correctly "
+              "in standard written American English?")
+    explanation = (f"Only {answer} is grammatical. {reasons[correct_rule]} "
+                   "Each other sentence uses the wrong verb form for its subject.")
+    if (len(set(choices)) != 4 or choices.count(answer) != 1
+            or len(prompt) > 320 or len(explanation) > 420
+            or any(len(value) > 280 for value in feedback.values())):
+        raise AgreementTaskError("Sentence-selection agreement exceeded closed answer limits.")
+    return {"prompt": prompt, "choices": choices, "expectedAnswer": answer,
+            "explanation": explanation, "choiceExplanations": feedback}
+
+
 def compile_question(task: dict, *, ordinal: int) -> dict:
     """Return exactly five code-owned learner fields for original slot 3 or 4."""
     scene_id, order = _checked_task(task)
     if type(ordinal) is not int or ordinal not in {3, 4}:
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
+    if scene_id in SENTENCE_SELECTION_SCENES:
+        if ordinal != 4:
+            raise AgreementTaskError("Sentence selection is available only in slot 4.")
+        return _compile_sentence_selection_question(scene_id, order)
     if scene_id in RELATIVE_SCENES:
         return _compile_relative_question(RELATIVE_SCENES[scene_id], order, ordinal)
     if scene_id in PARTITIVE_SCENES:
@@ -566,7 +651,7 @@ def canonical_variant_identities() -> frozenset[str]:
         for slot, scenes in ((3, (*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES,
                                    *PARTITIVE_SCENES)),
                              (4, (*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES,
-                                  *GERUND_SCENES)))
+                                  *GERUND_SCENES, *SENTENCE_SELECTION_SCENES)))
         for scene in scenes
         for order in ("singular_first", "plural_first")
     )
@@ -597,7 +682,8 @@ def _select_novel_task(
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
     allowed = ({**SCENES, **INVERSION_SCENES, **RELATIVE_SCENES,
                 **PARTITIVE_SCENES} if ordinal == 3
-               else {**COMPOUND_SCENES, **NUMBER_SCENES, **CORRELATIVE_SCENES, **GERUND_SCENES})
+               else {**COMPOUND_SCENES, **NUMBER_SCENES, **CORRELATIVE_SCENES,
+                     **GERUND_SCENES, **SENTENCE_SELECTION_SCENES})
     if scene not in allowed:
         raise AgreementTaskError("Agreement task is outside its mapped slot.")
     blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
@@ -626,6 +712,7 @@ def _select_novel_task(
                           "inversion" if candidate_scene in INVERSION_SCENES else
                           "correlative" if candidate_scene in CORRELATIVE_SCENES else
                           "gerund" if candidate_scene in GERUND_SCENES else
+                          "sentence_selection" if candidate_scene in SENTENCE_SELECTION_SCENES else
                           "number" if candidate_scene in NUMBER_SCENES else
                           "compound" if candidate_scene in COMPOUND_SCENES else "proximity")
         for candidate_scene in allowed
@@ -664,6 +751,7 @@ def compile_mapped_english_slots(
     if scenes[0] not in {*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES,
                          *PARTITIVE_SCENES} or scenes[1] not in {
         *COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES, *GERUND_SCENES,
+        *SENTENCE_SELECTION_SCENES,
     }:
         raise AgreementTaskError("Original English slots require their closed agreement families.")
     if type(existing_prompts) is not tuple or any(type(prompt) is not str for prompt in existing_prompts):

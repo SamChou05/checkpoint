@@ -50,13 +50,14 @@ def _catalog() -> dict[int, dict[str, str]]:
         ("number", agreement.NUMBER_SCENES),
         ("correlative", agreement.CORRELATIVE_SCENES),
         ("gerund", agreement.GERUND_SCENES),
+        ("sentence_selection", agreement.SENTENCE_SELECTION_SCENES),
     )
     schema_scenes = set(agreement.task_schema()["properties"]["scene"]["enum"])
     catalog_scenes = [scene for _, scenes in named_families for scene in scenes]
     if len(catalog_scenes) != len(set(catalog_scenes)) or set(catalog_scenes) != schema_scenes:
         raise CapacityError("Agreement schema scenes need an explicit family classification")
     for slot, permitted in ((3, {"proximity", "inversion", "relative", "partitive"}),
-                            (4, {"compound", "number", "correlative", "gerund"})):
+                            (4, {"compound", "number", "correlative", "gerund", "sentence_selection"})):
         variants = {}
         for family, scenes in named_families:
             if family not in permitted:

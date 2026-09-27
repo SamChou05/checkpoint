@@ -7,6 +7,7 @@ import unittest
 from agreement_task_constructor import (
     AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, CORRELATIVE_SCENES, GERUND_SCENES,
     INVERSION_SCENES, LEARNER_FIELDS, NUMBER_SCENES, PARTITIVE_SCENES, RELATIVE_SCENES,
+    SENTENCE_SELECTION_SCENES,
     SUPPORTED_OBJECTIVE,
     SUPPORTED_TOPIC,
     TASK_KIND, canonical_variant_identities, compile_mapped_english_slots,
@@ -41,7 +42,52 @@ def contract():
 
 class AgreementTaskConstructorTests(unittest.TestCase):
     def test_all_slot_variants_have_distinct_canonical_stems(self):
-        self.assertEqual(len(canonical_variant_identities()), 64)
+        self.assertEqual(len(canonical_variant_identities()), 72)
+
+    def test_sentence_selection_has_one_independent_key_and_rule_specific_feedback(self):
+        # These full-sentence keys are independently read from the subject and
+        # verb in each option, not from the constructor's selected-rule index.
+        expected = {
+            ("select_archive", "singular_first"): "Maya and Theo each prepare lunch.",
+            ("select_archive", "plural_first"): "Neither the curator nor the assistants sort the records.",
+            ("select_library", "singular_first"): "Each of the guides wears a badge.",
+            ("select_library", "plural_first"): "Restoring the manuscripts takes time.",
+            ("select_studio", "singular_first"): "Neither the director nor the actors move the props.",
+            ("select_studio", "plural_first"): "Leah and Omar each close the doors.",
+            ("select_lab", "singular_first"): "Drawing the maps requires accuracy.",
+            ("select_lab", "plural_first"): "Each of the clerks keeps a copy.",
+        }
+        self.assertEqual({scene for scene, _ in expected}, set(SENTENCE_SELECTION_SCENES))
+        answer_positions = []
+        for (scene, order), key in expected.items():
+            with self.subTest(scene=scene, order=order):
+                result = compile_question(task(scene, order), ordinal=4)
+                self.assertEqual(result["expectedAnswer"], key)
+                self.assertEqual(result["choices"].count(key), 1)
+                self.assertEqual(len(set(result["choices"])), 4)
+                self.assertEqual(list(result["choiceExplanations"]), result["choices"])
+                self.assertTrue(all(choice.endswith(".") for choice in result["choices"]))
+                self.assertNotIn("___", result["prompt"])
+                self.assertIn("Which sentence", result["prompt"])
+                self.assertIn(key, result["explanation"])
+                self.assertEqual(sum("This sentence agrees." in feedback for feedback
+                                     in result["choiceExplanations"].values()), 1)
+                self.assertTrue(all(len(feedback) <= 280 for feedback in
+                                    result["choiceExplanations"].values()))
+                answer_positions.append(result["choices"].index(key))
+                with self.assertRaises(AgreementTaskError):
+                    compile_question(task(scene, order), ordinal=3)
+        self.assertEqual(sorted(answer_positions), [0, 0, 1, 1, 2, 2, 3, 3])
+
+    def test_sentence_selection_reaches_complete_mapped_english_compiler(self):
+        for scene in SENTENCE_SELECTION_SCENES:
+            for order in ("singular_first", "plural_first"):
+                source = {"3": task("partitive_mail"), "4": task(scene, order)}
+                with self.subTest(scene=scene, order=order):
+                    candidates = compile_mapped_english_slots(source, contract())
+                    self.assertEqual(candidates[4].content()["expectedAnswer"],
+                                     compile_question(source["4"], ordinal=4)["expectedAnswer"])
+                    self.assertEqual(candidates[4].content()["difficulty"], 2)
 
     def test_partitive_mass_and_count_agreement_has_one_independent_key(self):
         # These keys follow the mass/count nouns in the written clauses; this
@@ -425,7 +471,8 @@ class AgreementTaskConstructorTests(unittest.TestCase):
     def test_finite_inventory_exhaustion_keeps_original_task_for_item_filter(self):
         history = tuple(
             compile_question(task(scene, order), ordinal=4)["prompt"]
-            for scene in (*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES, *GERUND_SCENES)
+            for scene in (*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES,
+                          *GERUND_SCENES, *SENTENCE_SELECTION_SCENES)
             for order in ("singular_first", "plural_first")
         )
         source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
@@ -434,11 +481,11 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         self.assertEqual(json.loads(candidates[4].task_json), source["4"])
         self.assertFalse(candidates[3].novelty_exhausted)
 
-    def test_history_selection_yields_all_thirty_two_slot_four_stems_before_exhaustion(self):
+    def test_history_selection_yields_all_forty_slot_four_stems_before_exhaustion(self):
         source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
         history = []
         chosen_scenes = []
-        for _ in range(32):
+        for _ in range(40):
             candidate = compile_mapped_english_slots(
                 source, contract(), existing_prompts=tuple(history),
             )[4]
@@ -450,10 +497,11 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         self.assertEqual(chosen_scenes[0], COMPOUND_SCENE)
         self.assertIn(chosen_scenes[1], {**NUMBER_SCENES, **GERUND_SCENES,
                                          **CORRELATIVE_SCENES})
-        self.assertEqual(len(set(history)), 32)
+        self.assertEqual(len(set(history)), 40)
         self.assertTrue(set(chosen_scenes) & set(NUMBER_SCENES))
         self.assertTrue(set(chosen_scenes) & set(CORRELATIVE_SCENES))
         self.assertTrue(set(chosen_scenes) & set(GERUND_SCENES))
+        self.assertTrue(set(chosen_scenes) & set(SENTENCE_SELECTION_SCENES))
         exhausted = compile_mapped_english_slots(
             source, contract(), existing_prompts=tuple(history),
         )[4]
