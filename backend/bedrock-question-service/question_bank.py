@@ -9,12 +9,14 @@ symbols remain re-exported here for handlers, tests, and operational tooling.
 from __future__ import annotations
 
 import json
+import os
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
 from verification_policy import MAX_SUPPORTED_VERIFICATION_POLICY_REVISION, meets_verification_policy
+from agreement_task_constructor import canonical_variant_identities
 
 from question_bank_common import (
     DEFAULT_BANK_TTL_SECONDS,
@@ -120,6 +122,27 @@ del _compatibility_type
 
 MAX_CLAIM_TRANSACTION_QUESTION_UPDATES = 22
 MAX_DUPLICATE_CLEANUP_QUESTION_UPDATES = 23
+
+
+def _stored_agreement_variant_identity(item: dict[str, Any]) -> str:
+    try:
+        question = _question_from_item(item)
+    except (json.JSONDecodeError, TypeError):
+        return ""
+    if not isinstance(question, dict):
+        return ""
+    return _normalized_stem_identity(question.get("prompt"))
+
+
+def _agreement_variant_history(existing_items: list[dict[str, Any]]) -> list[str]:
+    """Keep only closed agreement identities from the entire durable bank."""
+    canonical = canonical_variant_identities()
+    identities = set()
+    for item in existing_items:
+        identity = _stored_agreement_variant_identity(item)
+        if identity in canonical:
+            identities.add(identity)
+    return sorted(identities)
 
 
 def ensure_bank(
@@ -875,6 +898,8 @@ def _process_job(
 
     generation_request = json.loads(_string(meta, "generationRequest"))
     existing_items = _query_question_history(client, table_name, bank_key)
+    if os.getenv("QUESTION_MAPPED_AGREEMENT_TASKS", "disabled").strip().lower() == "enabled":
+        generation_request["_agreementVariantIdentities"] = _agreement_variant_history(existing_items)
     recent_items = _recent_question_items(
         [item for item in existing_items if _string(item, "state") != "discarded"],
         30,

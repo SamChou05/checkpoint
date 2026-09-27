@@ -434,12 +434,12 @@ def _compact_mapped_slot(kind: str, *, shared: bool) -> dict[str, Any]:
 
 
 def _mapped_agreement_slot(index: int) -> dict[str, Any]:
-    from agreement_task_constructor import COMPOUND_SCENE, SCENES, task_schema
+    from agreement_task_constructor import COMPOUND_SCENES, SCENES, task_schema
     if index not in (3, 4):
         raise ServiceConfigurationError("Agreement tasks require original slots 3 and 4.")
     schema = task_schema()
     schema["properties"]["scene"]["enum"] = (
-        sorted(SCENES) if index == 3 else [COMPOUND_SCENE]
+        sorted(SCENES) if index == 3 else sorted(COMPOUND_SCENES)
     )
     return schema
 
@@ -598,6 +598,7 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
     if isinstance(contract, AuthorSlotContract):
         if contract.mapped_assignments is not None:
             if contract.mapped_agreement_tasks:
+                from agreement_task_constructor import COMPOUND_SCENES
                 assignments = _mapped_slot_kinds(contract)
                 slots = "; ".join(
                     f'{index}: {kind} task for {assignment[2]} / {assignment[3]}'
@@ -610,9 +611,10 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
                     "user-authored fields. Return only one JSON object with questions keys "
                     '"0","1","2","3","4". The original trusted slots are: ' + slots + ". "
                     "Slots 0-2 contain complete typed quantitative tasks. Slots 3-4 contain only "
-                    '{"kind":"agreement_pair_v1","scene":"coach|librarian|chef|curator|compound_every",'
+                    '{"kind":"agreement_pair_v1","scene":"coach|librarian|chef|curator|'
+                    + '|'.join(sorted(COMPOUND_SCENES)) + '",'
                     '"order":"singular_first|plural_first"}. Slot 3 uses one of the four '
-                    "proximity scenes; slot 4 uses compound_every. "
+                    "proximity scenes; slot 4 uses a compound scene. "
                     "The application injects all skill/objective tags from the trusted request and "
                     "derives every stem, choice, answer key, explanation and feedback in code. "
                     "Never write learner text, a key, choices, teaching, metadata or an index inside "

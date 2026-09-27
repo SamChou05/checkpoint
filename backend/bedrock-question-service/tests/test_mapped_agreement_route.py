@@ -1,6 +1,7 @@
 """Fake-provider qualification of the exact 3:2 agreement-task route."""
 
 import copy
+from dataclasses import replace
 import hashlib
 from itertools import permutations
 import json
@@ -13,15 +14,18 @@ from botocore.validate import validate_parameters
 from jsonschema import Draft202012Validator
 
 import native_output_contracts as native
+import question_bank
 import question_generation as generation
 from agreement_task_constructor import (
-    AgreementTaskError, COMPOUND_SCENE, LEARNER_FIELDS,
+    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, LEARNER_FIELDS,
     SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
-    checked_agreement_provenance, prepare_mapped_agreement_rows,
+    blocked_fingerprint_variant_identities, checked_agreement_provenance,
+    compile_mapped_english_slots, compile_question, prepare_mapped_agreement_rows,
 )
 from lambda_test_support import _request_payload
 from native_output_contracts import AuthorSlotContract
 from question_quality import _sanitize_questions
+from question_bank_common import _stem_fingerprint
 from question_verification import verify_questions
 from request_contract import _normalize_request
 from service_errors import ProviderError, ServiceConfigurationError
@@ -111,7 +115,7 @@ class MappedAgreementRouteTests(unittest.TestCase):
         self.assertEqual(schema["$defs"]["proximityTask"]["properties"]["scene"]["enum"],
                          ["chef", "coach", "curator", "librarian"])
         self.assertEqual(schema["$defs"]["compoundTask"]["properties"]["scene"]["enum"],
-                         [COMPOUND_SCENE])
+                         sorted(COMPOUND_SCENES))
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
         self.assertEqual(native.contract_metadata(new)["version"], "2")
@@ -228,6 +232,113 @@ class MappedAgreementRouteTests(unittest.TestCase):
                              {field: proof.content()[field] for field in LEARNER_FIELDS})
         self.assertEqual([row["skillID"] for row in result], [MATH] * 3 + [ENGLISH] * 2)
         self.assertEqual(client.steps, [])
+
+    def test_bank_history_keeps_eighth_unique_pair_beyond_recent_thirty(self):
+        source = {"3": agreement("coach"), "4": agreement(COMPOUND_SCENE)}
+        bank_id = "a" * 64
+        existing_items = []
+        chosen = {3: [], 4: []}
+        for batch in range(8):
+            recent = question_bank._recent_question_items(existing_items, 30)
+            recent_prompts = tuple(
+                question_bank._question_from_item(item)["prompt"] for item in recent
+            )
+            full_identities = tuple(question_bank._agreement_variant_history(existing_items))
+            self.assertLessEqual(len(full_identities), 16)
+            if batch == 7:
+                self.assertEqual(len(existing_items), 35)
+                self.assertEqual(len(recent), 30)
+                # The first pair has dropped out of prompt feedback, but its
+                # exact identities still belong to bank deduplication history.
+                self.assertNotIn(chosen[3][0], recent_prompts)
+                self.assertNotIn(chosen[4][0], recent_prompts)
+                without_full_history = compile_mapped_english_slots(
+                    source, self.contract(), existing_prompts=recent_prompts,
+                )
+                self.assertIn(without_full_history[3].content()["prompt"], chosen[3])
+                self.assertIn(without_full_history[4].content()["prompt"], chosen[4])
+
+            candidates = compile_mapped_english_slots(
+                source, self.contract(), existing_prompts=recent_prompts,
+                blocked_variant_identities=full_identities,
+            )
+            generated = [{"prompt": f"Unique quantitative batch {batch} slot {slot}"}
+                         for slot in range(3)]
+            generated += [candidates[slot].content() for slot in (3, 4)]
+            prepared = question_bank._prepare_questions(bank_id, generated, existing_items)
+            self.assertEqual(len(prepared), 5)
+            for slot in (3, 4):
+                self.assertFalse(candidates[slot].novelty_exhausted)
+                self.assertEqual(candidates[slot].content(), generated[slot])
+                chosen[slot].append(prepared[slot]["prompt"])
+            existing_items.extend({
+                "sk": {"S": f"QUESTION#{batch:02d}#{slot}"},
+                "createdAt": {"N": str(batch)},
+                "remoteID": {"S": question["remoteID"]},
+                "questionJSON": {"S": json.dumps(question)},
+            } for slot, question in enumerate(prepared))
+
+        self.assertEqual(len(set(chosen[3])), 8)
+        self.assertEqual(len(set(chosen[4])), 8)
+        exhausted = compile_mapped_english_slots(
+            source, self.contract(),
+            blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),
+        )
+        self.assertTrue(all(candidate.novelty_exhausted for candidate in exhausted.values()))
+        self.assertEqual(question_bank._prepare_questions(
+            bank_id, [candidate.content() for candidate in exhausted.values()], existing_items,
+        ), [])
+
+    def test_fingerprint_only_block_and_private_history_preserve_scope_and_prompt(self):
+        source = {"3": agreement("coach"), "4": agreement(COMPOUND_SCENE)}
+        blocked_prompt = compile_question(source["3"], ordinal=3)["prompt"]
+        for version in (1, 2):
+            with self.subTest(version=version):
+                fingerprint = _stem_fingerprint(blocked_prompt, version=version)
+                identities = tuple(sorted(blocked_fingerprint_variant_identities(
+                    [fingerprint], version,
+                )))
+                self.assertIn(blocked_prompt, identities)
+                candidates = compile_mapped_english_slots(
+                    source, self.contract(), blocked_variant_identities=identities,
+                )
+                self.assertNotEqual(candidates[3].content()["prompt"], blocked_prompt)
+                request = {**self.request, "_agreementVariantIdentities": list(identities)}
+                self.assertEqual(
+                    generation._mapped_author_scope_sha256(request),
+                    generation._mapped_author_scope_sha256(self.request),
+                )
+                self.assertEqual(
+                    generation._provider_visible_request(request),
+                    generation._provider_visible_request(self.request),
+                )
+                with self.assertRaises(AgreementTaskError):
+                    replace(candidates[3], blocked_variant_identities=()).content()
+
+    def test_generation_passes_full_history_and_fingerprint_blocks_to_selector(self):
+        request = copy.deepcopy(self.request)
+        source = {"3": agreement("coach"), "4": agreement(COMPOUND_SCENE, "plural_first")}
+        history_prompt = compile_question(source["3"], ordinal=3)["prompt"]
+        fingerprint_prompt = compile_question(source["4"], ordinal=4)["prompt"]
+        request["_agreementVariantIdentities"] = [history_prompt]
+        request["blockedStemFingerprints"] = [_stem_fingerprint(fingerprint_prompt, version=2)]
+        request["stemFingerprintVersion"] = 2
+        # The fingerprint is already part of the normalized scoped request;
+        # repin that exact request before adding the private bank sidecar.
+        scoped = {key: value for key, value in request.items()
+                  if key != "_agreementVariantIdentities"}
+        adapted = json.loads(native.adapt_native_response(json.dumps(self.raw()), self.contract()))
+        with (
+            patch.dict(os.environ, {
+                "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(scoped),
+            }),
+            patch.object(generation, "_generate_provider_payload", return_value=adapted),
+            patch.object(generation, "verify_questions", side_effect=lambda candidates, *_args, **_kwargs: candidates),
+        ):
+            generated = generation._generate_sanitized_questions(request, None)
+        self.assertEqual(len(generated), 5)
+        self.assertNotEqual(generated[3]["prompt"], history_prompt)
+        self.assertNotEqual(generated[4]["prompt"], fingerprint_prompt)
 
     def test_missing_or_forged_proof_and_tampered_learner_content_fail_closed(self):
         rows, math_proof, english_proof = self.prepared()

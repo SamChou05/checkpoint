@@ -6,7 +6,7 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,400 backend tests** and the latest full
+Current source verification passes **1,409 backend tests** and the latest full
 iOS suite completed **1,058 tests with three existing skips** after the optional
 timeout, fraction-distractor, compiled-surplus, scalar-explanation,
 author-cardinality, task-only numerical, numeric-choice and saved-inventory improvements. The latest
@@ -48,7 +48,17 @@ choice pairs distinct, but both rated the simple compound/`every` item level 1,
 below the requested minimum of 2. The official content gate was 4/5, so this
 route remains unqualified and inactive. The fraction items and agreement frames
 also showed limited bank-level variety. A subsequent numeric-feedback change
-on main was not part of that frozen live trial.
+on main was not part of that frozen live trial. The compound/`every` frames
+now include opposing-number nearby nouns in both clauses, with four scenes
+and two clause orders. Two independent reviewers of a
+[keyless offline worksheet](evidence/agreement-v2-grammar-preflight-20260927/RESULTS.md)
+selected all 16 code-owned keys and rated every standalone frame level 2,
+while warning that clause reversals leave bank novelty low. Selection now
+checks the full stored bank's finite agreement variants as well as recent
+prompts and client-blocked fingerprints. A single pinned full-request digest
+still applies only to its exact request state; later refills with changed
+history need separate routing and qualification. None of this has a new live
+worker result or deployment.
 
 ## Findings and verified fixes
 
@@ -75,6 +85,7 @@ on main was not part of that frozen live trial.
 | The mapped mixed author can ignore the requested five-item count even with native JSON schema, exhausting the output budget before yielding any parseable batch. | The [one-shot three-topic trial](evidence/task-only-full-worker-qualification-20260926/RESULTS.md) returned 5/5 compiled numerical and 5/5 Python items, but 0/5 mixed items. Its mixed author completed 37 top-level rows, began a 38th, then stopped at `max_tokens` with invalid JSON. Two locked blind reviewers chose all ten captured keys and found all 60 pairs distinct; the job-yield gate still failed. | Preserve rejection of truncated output and partial returns from other jobs. Keep the route opt-in while a bounded, allocation-preserving mixed-author contract is evaluated. Worker-only deployment variables now expose the exact tested numerical scope without altering the API defaults; they are configuration preparation, not a rollout. |
 | Even a closed, code-authored question can be discarded by a fallible difficulty judgment. | The [mapped agreement full-worker trial](evidence/mapped-agreement-full-worker-qualification-20260927/RESULTS.md) accepted a five-slot native schema and constructed five questions. The final model reviewer called both English tasks level 3 and the exact-level gate returned 3/5. Two independent blind reviewers rated the five sanitized drafts level 2, picked all five code-owned keys, and found all within-item choice pairs distinct. | Policy 10 on main uses the freshly revalidated agreement template's calibrated level 2 when the reviewer estimates 2 or 3. Ratings 1, 4, 5 and all other solver/reviewer vetoes remain binding; ordinary prose and quantitative difficulty rules are unchanged. An independent source review and 1,395 backend tests passed. The opt-in remains inactive in deployment and needs a fresh worker qualification; the failed trial remains 3/5. |
 | A code-owned key and complete response still cannot establish requested difficulty or bank variety. | The [fresh bounded policy-10 trial](evidence/agreement-difficulty-calibration-qualification-20260927/RESULTS.md) returned 5/5 original slots with all keys and 30 choice pairs accepted by two independent blind reviewers. Both nevertheless rated the simple compound/`every` item level 1 against a level-2 request; content qualification was 4/5. They also noted near-duplicate fraction task forms, while the closed agreement library has little slot-4 variety. | Keep the exact mapped route disabled. Strengthen the finite agreement frames and cross-batch selection, then require a new frozen worker trial and blind difficulty/novelty review before promotion. The later numeric feedback improvement has offline verification but was outside this live capture. |
+| A finite code-owned library can still repeat older bank questions when selection sees only recent prompt history. | The bank feeds the author its latest 30 questions but deduplicates against all stored items. An eight-batch regression reproduced a repeated agreement stem while another variant remained unused. The stronger 16-frame [offline preflight](evidence/agreement-v2-grammar-preflight-20260927/RESULTS.md) passed standalone key and difficulty review but found formulaic repetition. | For the opt-in exact mapped route, project the full stored bank onto the bounded 16 agreement stem identities and combine those with recent prompts and blocked fingerprints before selecting a scene/order. Preserve the source and selected task in private proof and reject once the finite inventory is exhausted. Exact scope pinning still limits which refill states can use this route, and live qualification remains open. |
 
 These changes make structure, key membership, exact identity and admission rules
 deterministic. They do not make a model's factual statements deterministic or

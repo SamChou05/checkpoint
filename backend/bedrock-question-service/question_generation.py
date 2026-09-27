@@ -12,7 +12,8 @@ from generation_diagnostics import quality_summary, record_quality
 from agreement_task_constructor import (
     SUPPORTED_OBJECTIVE as MAPPED_AGREEMENT_OBJECTIVE,
     SUPPORTED_TOPIC as MAPPED_AGREEMENT_TOPIC,
-    AgreementTaskError, prepare_mapped_agreement_rows,
+    AgreementTaskError, blocked_fingerprint_variant_identities,
+    prepare_mapped_agreement_rows,
 )
 from native_output_contracts import (
     AuthorSlotContract,
@@ -326,7 +327,23 @@ def _generate_sanitized_questions(
                     if mapped_agreement:
                         contract = _mapped_author_contract(request, mapped_initial_assignments, True)
                         raw_questions, compiled_candidates, agreement_candidates, failures = (
-                            prepare_mapped_agreement_rows(provider_payload, contract)
+                            prepare_mapped_agreement_rows(
+                                provider_payload, contract,
+                                existing_prompts=tuple(dict.fromkeys(
+                                    current_request.get("existingPrompts", [])
+                                    + current_request.get("reportedPrompts", [])
+                                    + [entry["prompt"] for entry in current_request.get(
+                                        "existingQuestionCoverage", []
+                                    ) if entry.get("prompt")]
+                                )),
+                                blocked_variant_identities=tuple(sorted(
+                                    set(current_request.get("_agreementVariantIdentities", []))
+                                    | blocked_fingerprint_variant_identities(
+                                        current_request.get("blockedStemFingerprints", []),
+                                        current_request.get("stemFingerprintVersion", 1),
+                                    )
+                                )),
+                            )
                         )
                     else:
                         raw_questions, compiled_candidates, failures = (
@@ -870,7 +887,9 @@ def _task_only_numerical_author(
 
 def _mapped_author_scope_json(request: dict[str, Any]) -> str:
     """Bind every normalized first-pass field, including prior-item context."""
-    return json.dumps(request, sort_keys=True, separators=(",", ":"),
+    scoped = {key: value for key, value in request.items()
+              if key != "_agreementVariantIdentities"}
+    return json.dumps(scoped, sort_keys=True, separators=(",", ":"),
                       ensure_ascii=True, allow_nan=False)
 
 
@@ -1564,7 +1583,8 @@ def _provider_visible_request(request: dict[str, Any]) -> dict[str, Any]:
     visible = {
         key: value
         for key, value in request.items()
-        if key not in {"blockedStemFingerprints", "stemFingerprintVersion"}
+        if key not in {"blockedStemFingerprints", "stemFingerprintVersion",
+                       "_agreementVariantIdentities"}
     }
     visible["difficultyGuidance"] = _generation_difficulty_guidance(request)
     return visible

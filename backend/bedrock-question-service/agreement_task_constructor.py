@@ -9,6 +9,7 @@ from dataclasses import dataclass
 import json
 
 from native_output_contracts import AuthorSlotContract
+from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 
 
 SUPPORTED_TOPIC = "Standard written English"
@@ -30,6 +31,20 @@ class _Scene:
     first_third: str
     second_base: str
     second_third: str
+
+
+@dataclass(frozen=True)
+class _CompoundScene:
+    compound_subject: str
+    singular_attractor: str
+    compound_object: str
+    distributive_subject: str
+    plural_attractor: str
+    distributive_object: str
+    compound_base: str
+    compound_third: str
+    distributive_base: str
+    distributive_third: str
 
 
 @dataclass(frozen=True)
@@ -60,6 +75,24 @@ SCENES = {
                       "the assistants", "the curator", "the records",
                       "label", "labels", "catalog", "catalogs"),
 }
+COMPOUND_SCENES = {
+    COMPOUND_SCENE: _CompoundScene(
+        "Maya and Theo", "the cook", "lunch", "Every guest", "the servers", "a plate",
+        "prepare", "prepares", "receive", "receives",
+    ),
+    "compound_guides": _CompoundScene(
+        "Nora and Eli", "the guide", "the maps", "Every guide", "the hikers", "a badge",
+        "fold", "folds", "wear", "wears",
+    ),
+    "compound_visitors": _CompoundScene(
+        "Leah and Omar", "the visitor", "the doors", "Every visitor", "the guides", "a ticket",
+        "close", "closes", "hold", "holds",
+    ),
+    "compound_clerks": _CompoundScene(
+        "Ava and Ben", "the clerk", "the forms", "Every clerk", "the visitors", "a copy",
+        "review", "reviews", "keep", "keeps",
+    ),
+}
 
 
 class AgreementTaskError(ValueError):
@@ -72,7 +105,7 @@ def task_schema() -> dict:
         "type": "object", "additionalProperties": False,
         "properties": {
             "kind": {"type": "string", "enum": [TASK_KIND]},
-            "scene": {"type": "string", "enum": sorted((*SCENES, COMPOUND_SCENE))},
+            "scene": {"type": "string", "enum": sorted((*SCENES, *COMPOUND_SCENES))},
             "order": {"type": "string", "enum": ["singular_first", "plural_first"]},
         },
         "required": ["kind", "scene", "order"],
@@ -82,7 +115,7 @@ def task_schema() -> dict:
 def _checked_task(task: object) -> tuple[str, str]:
     if (type(task) is not dict or set(task) != {"kind", "scene", "order"}
             or type(task["kind"]) is not str or task["kind"] != TASK_KIND
-            or type(task["scene"]) is not str or task["scene"] not in {*SCENES, COMPOUND_SCENE}
+            or type(task["scene"]) is not str or task["scene"] not in {*SCENES, *COMPOUND_SCENES}
             or type(task["order"]) is not str
             or task["order"] not in {"singular_first", "plural_first"}):
         raise AgreementTaskError("Unsupported or model-extended agreement task.")
@@ -98,11 +131,18 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
     scene_id, order = _checked_task(task)
     if type(ordinal) is not int or ordinal not in {3, 4}:
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
-    if scene_id == COMPOUND_SCENE:
-        first = _Clause("Maya and Theo ___ lunch", "prepare", "prepares", False,
-                        "Maya and Theo", rule="compound")
-        second = _Clause("Every guest ___ a plate", "receive", "receives", True,
-                         "Every guest", rule="every")
+    if scene_id in COMPOUND_SCENES:
+        scene = COMPOUND_SCENES[scene_id]
+        first = _Clause(
+            _clause(scene.compound_subject, scene.singular_attractor, scene.compound_object),
+            scene.compound_base, scene.compound_third, False,
+            scene.compound_subject, scene.singular_attractor, rule="compound",
+        )
+        second = _Clause(
+            _clause(scene.distributive_subject, scene.plural_attractor, scene.distributive_object),
+            scene.distributive_base, scene.distributive_third, True,
+            scene.distributive_subject, scene.plural_attractor, rule="every",
+        )
     else:
         scene = SCENES[scene_id]
         first = _Clause(
@@ -146,11 +186,11 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
             support = (f'The {position} head subject "{clause.subject}" is {number}; '
                        f'"near {clause.attractor}" does not change that.')
         elif clause.rule == "compound":
-            support = (f'The {position} subject "Maya and Theo" names two people joined by '
-                       '"and", so it takes a plural verb.')
+            support = (f'{position.capitalize()}, the subject "{clause.subject}" is plural '
+                       f'("and" joins two); "near {clause.attractor}" does not change it.')
         else:
-            support = (f'The {position} subject "Every guest" is grammatically singular, '
-                       'so it takes a singular verb.')
+            support = (f'{position.capitalize()}, the subject "{clause.subject}" is singular; '
+                       f'"near {clause.attractor}" does not change it.')
         judgment = (f'The form "{selected_form}" agrees.'
                     if selected_third == should_be_third else
                     f'"{selected_form}" does not agree; use "{correct_form}".')
@@ -178,10 +218,20 @@ class CompiledAgreementCandidate:
 
     ordinal: int
     task_json: str
+    source_task_json: str
+    novelty_prompts: tuple[str, ...]
+    blocked_variant_identities: tuple[str, ...]
+    novelty_exhausted: bool
     assignment: tuple[str, str, str, str, int]
     learner_json: str
 
     def content(self, question: dict | None = None) -> dict:
+        selected, exhausted = _select_novel_task(
+            json.loads(self.source_task_json), self.ordinal, self.novelty_prompts,
+            self.blocked_variant_identities,
+        )
+        if selected != json.loads(self.task_json) or exhausted != self.novelty_exhausted:
+            raise AgreementTaskError("Agreement task selection provenance changed.")
         rendered = compile_question(json.loads(self.task_json), ordinal=self.ordinal)
         if rendered != json.loads(self.learner_json):
             raise AgreementTaskError("Agreement provenance changed.")
@@ -196,7 +246,75 @@ class CompiledAgreementCandidate:
         return result
 
 
-def compile_mapped_english_slots(tasks_by_slot: dict, contract: AuthorSlotContract) -> dict[int, CompiledAgreementCandidate]:
+def canonical_variant_identities() -> frozenset[str]:
+    """The complete, bounded bank-history vocabulary for the closed pilot."""
+    return frozenset(
+        _normalized_stem_identity(compile_question(
+            {"kind": TASK_KIND, "scene": scene, "order": order}, ordinal=slot,
+        )["prompt"])
+        for slot, scenes in ((3, SCENES), (4, COMPOUND_SCENES))
+        for scene in scenes
+        for order in ("singular_first", "plural_first")
+    )
+
+
+def blocked_fingerprint_variant_identities(
+    fingerprints: list[str], version: int,
+) -> frozenset[str]:
+    """Resolve local fingerprint blocks without exposing prompts to the provider."""
+    return frozenset(
+        identity for identity in canonical_variant_identities()
+        if _stem_fingerprint(identity, version=version) in fingerprints
+    )
+
+
+def _select_novel_task(
+    task: dict, ordinal: int, existing_prompts: tuple[str, ...],
+    blocked_variant_identities: tuple[str, ...] = (),
+) -> tuple[dict, bool]:
+    """Keep a fresh authored task, otherwise choose a fresh code-owned variant.
+
+    Prefer a new scene over swapping the clauses in an already seen scene. If
+    the finite inventory is exhausted, retain the authored task so the normal
+    per-item duplicate filter can reject it without discarding the batch.
+    """
+    scene, _ = _checked_task(task)
+    if ordinal not in (3, 4):
+        raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
+    allowed = SCENES if ordinal == 3 else COMPOUND_SCENES
+    if scene not in allowed:
+        raise AgreementTaskError("Agreement task is outside its mapped slot.")
+    blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
+    blocked.update(blocked_variant_identities)
+    variants = [
+        {"kind": TASK_KIND, "scene": candidate_scene, "order": order}
+        for candidate_scene in sorted(allowed)
+        for order in ("singular_first", "plural_first")
+    ]
+    by_scene = {
+        candidate_scene: any(
+            _normalized_stem_identity(compile_question(candidate, ordinal=ordinal)["prompt"]) in blocked
+            for candidate in variants if candidate["scene"] == candidate_scene
+        )
+        for candidate_scene in allowed
+    }
+    fresh = [
+        candidate for candidate in variants
+        if _normalized_stem_identity(compile_question(candidate, ordinal=ordinal)["prompt"]) not in blocked
+    ]
+    if not fresh:
+        return task, True
+    selected = min(fresh, key=lambda candidate: (
+        by_scene[candidate["scene"]], candidate != task,
+        candidate["scene"], candidate["order"],
+    ))
+    return selected, False
+
+
+def compile_mapped_english_slots(
+    tasks_by_slot: dict, contract: AuthorSlotContract, *, existing_prompts: tuple[str, ...] = (),
+    blocked_variant_identities: tuple[str, ...] = (),
+) -> dict[int, CompiledAgreementCandidate]:
     """Bind complete original English slots of this exact 3:2 pilot, no top-ups."""
     if (type(contract) is not AuthorSlotContract or contract.count != 5
             or contract.mode != "constructed_quantitative"
@@ -209,15 +327,26 @@ def compile_mapped_english_slots(tasks_by_slot: dict, contract: AuthorSlotContra
     if type(tasks_by_slot) is not dict or set(tasks_by_slot) != {"3", "4"}:
         raise AgreementTaskError("Both original English slots must be present.")
     scenes = [_checked_task(tasks_by_slot[str(slot)])[0] for slot in (3, 4)]
-    if scenes[0] == COMPOUND_SCENE or scenes[1] != COMPOUND_SCENE:
+    if scenes[0] not in SCENES or scenes[1] not in COMPOUND_SCENES:
         raise AgreementTaskError("Original slot 3 requires proximity and slot 4 requires compound agreement.")
+    if type(existing_prompts) is not tuple or any(type(prompt) is not str for prompt in existing_prompts):
+        raise AgreementTaskError("Agreement novelty history must contain exact prompt strings.")
+    if (type(blocked_variant_identities) is not tuple
+            or any(type(identity) is not str for identity in blocked_variant_identities)
+            or not set(blocked_variant_identities) <= canonical_variant_identities()):
+        raise AgreementTaskError("Agreement blocked identities must be canonical variants.")
     assignment = contract.mapped_assignments[1]
     candidates = {}
     for slot in (3, 4):
-        task = tasks_by_slot[str(slot)]
+        source_task = tasks_by_slot[str(slot)]
+        task, exhausted = _select_novel_task(
+            source_task, slot, existing_prompts, blocked_variant_identities,
+        )
         learner = compile_question(task, ordinal=slot)
         candidate = CompiledAgreementCandidate(
-            slot, json.dumps(task, sort_keys=True, separators=(",", ":")), assignment,
+            slot, json.dumps(task, sort_keys=True, separators=(",", ":")),
+            json.dumps(source_task, sort_keys=True, separators=(",", ":")),
+            existing_prompts, blocked_variant_identities, exhausted, assignment,
             json.dumps(learner, sort_keys=True, separators=(",", ":")),
         )
         candidate.content()
@@ -225,7 +354,10 @@ def compile_mapped_english_slots(tasks_by_slot: dict, contract: AuthorSlotContra
     return candidates
 
 
-def prepare_mapped_agreement_rows(payload: dict, contract: AuthorSlotContract):
+def prepare_mapped_agreement_rows(
+    payload: dict, contract: AuthorSlotContract, *, existing_prompts: tuple[str, ...] = (),
+    blocked_variant_identities: tuple[str, ...] = (),
+):
     """Compile a complete 3:2 native batch without relabeling source ordinals.
 
     Quantitative failures retain their original None position; malformed or
@@ -259,6 +391,12 @@ def prepare_mapped_agreement_rows(payload: dict, contract: AuthorSlotContract):
         raise AgreementTaskError("Quantitative mapped rows violated their closed contract.") from error
     agreement_proof = compile_mapped_english_slots(
         {str(index): rows[index]["task"] for index in (3, 4)}, contract,
+        existing_prompts=existing_prompts,
+        blocked_variant_identities=blocked_variant_identities,
+    )
+    failures.extend(
+        "agreement_novelty_exhausted" for candidate in agreement_proof.values()
+        if candidate.novelty_exhausted
     )
     return (quantitative_rows + [agreement_proof[index].content() for index in (3, 4)],
             quantitative_proof, agreement_proof, failures)

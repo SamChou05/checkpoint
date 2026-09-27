@@ -10,8 +10,11 @@ verb-form pairs, unique key, main explanation and feedback for every choice.
 The exact mapped 3:2 route uses quantitative tasks in original slots `0`–`2`,
 a singular/plural head with an intervening `near` phrase in slot `3`, and a
 different compound/distributive mechanism in slot `4` (`Maya and Theo` versus
-`Every guest`). Four reviewed proximity scenes vary slot `3`; slot `4` uses one
-reviewed scene. Each task's four choices are the Cartesian product of the two
+`Every guest`). Four proximity scenes vary slot `3`; four compound/`every`
+scenes vary slot `4`. Both clauses in every compound scene now contain a
+nearby noun of the opposite number, so the subject must be identified before
+choosing its verb. Clause order yields eight exact stems per slot. Each task's
+four choices are the Cartesian product of the two
 verb inflections, with exactly one pair agreeing in both clauses. The new
 provider schema requires all five original slots, fixes the English scene
 enums by slot, and excludes author keys, choices, teaching and metadata.
@@ -26,6 +29,13 @@ defaults to `disabled`; the prior compact v1 schema and prompt SHA remain
 unchanged. The server injects skill/objective assignments from the trusted
 request. A private exact-type sidecar retains each English source ordinal and
 recompiles its complete learner payload after sanitization and final audit.
+When the exact route is selected, code prefers an unused scene using the
+request's recent prompts and a bounded 16-variant identity set from the full
+stored bank. Client-blocked stem fingerprints also veto matching variants.
+The selected task and its source are retained in private provenance. This
+does not make the finite bank broadly diverse: the same two-blank format and
+clause-order reversals remain, and a single pinned full-request SHA matches
+only one request state, not later refills whose history has changed.
 The agreement questions still undergo answer-blind complete-choice solving,
 all six pair judgments and immutable final review. Models may veto on validity,
 key disagreement, unsupported teaching or reported issues, but cannot overwrite
@@ -52,7 +62,10 @@ selected all five keys and found all 30 within-item choice pairs distinct.
 Both reviewers rated the simple compound/`every` item level 1, below the
 requested minimum of 2, so the prespecified content gate failed at 4/5.
 They also found limited variety across fraction tasks and agreement frames.
-The route needs stronger level-2 templates and a new blind live qualification.
+The [keyless offline preflight](evidence/agreement-v2-grammar-preflight-20260927/RESULTS.md)
+of the strengthened frames found 16/16 unique keys and standalone level-2
+ratings from each of two independent reviewers, but both flagged low bank
+novelty. A new bounded full-worker trial is still required.
 Neither trial nor the source change authorizes deployment. Worker-only
 SAM and workflow settings exist but default to disabled with empty scope
 hashes; the deployed worker does not use this route. Code-owned answers in
@@ -62,11 +75,13 @@ calibration across learners or non-repetition.
 The subset excludes pronoun reference, collective nouns, existential and
 relative-clause agreement, tense choice, irregular verbs, free language and
 difficulty 3–5. Repeated inventory could become predictable. The two English
-mechanisms are different, but additional templates would need independent
-linguistic and novelty review.
+mechanisms are different, but larger or more varied inventory would need
+independent linguistic and novelty review.
 
 Offline tests cover closed schemas, immutable old-route hashes, fake native
 author/solver/reviewer calls, exact 3:2 slot provenance, private-proof loss and
 tampering, all 24 display permutations, and solver/reviewer key disagreement.
 They also check reviewer difficulty disagreement against proven English and
-ordinary unproven prose separately. They are implementation evidence only.
+ordinary unproven prose separately. Full-history identity and blocked-fingerprint
+controls cover the finite 16-variant library. These are implementation evidence
+only.
