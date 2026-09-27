@@ -238,7 +238,11 @@ returned seven schema-valid authored rows, all sanitized, but Bedrock rejected
 the seven-row answer-blind solver request with `ValidationException`. No
 reviewer ran and the worker returned **0/5**; the capture retains only the
 error code, so the precise provider validation cause is unknown. Smaller
-verification batches are being tested but are not yet live-qualified. The
+verification batches are now implemented behind the same disabled-by-default
+flag: a full seven-row author/sanitize pass followed by at-most-four-row and
+at-most-three-row solver/reviewer calls, with the existing vetoes and a
+five-survivor fail-closed return. Socket-free tests pass; this source is
+**not yet live-qualified**. The
 seven authored rows then passed [independent keyless content review](evidence/generic-reserve-author7-blind-20260927/RESULTS.md)
 for key and choice distinctness: both reviewers matched 7/7 private keys and
 42/42 choice pairs. Both rated three rows difficulty 1 despite the level-2
@@ -273,7 +277,7 @@ bank novelty.
 | Rebalancing a finite repertoire cannot eliminate repeated decisions. | The frozen [cross-slot audit](evidence/mapped-cross-slot-mechanism-audit-20260927/RESULTS.md) counted 2/18/76 structural pair patterns at 15/40/80 items that resemble earlier blind-rated strong overlaps. The new gerund family lowers this heuristic to 2/13/55, but its own blind review finds repeated templates. A trial selector reduced maximum-decision pairings but created near-identical minimum-ratio tasks; it was reverted. | These counts are heuristic warnings, not newly blind-confirmed duplicates. Expand substantively different, code-owned objectives and require repeated-bank blind review; do not promote a selector that merely moves the repetition. |
 | Passing local tests does not update TestFlight. | The active workflow is manual, has never run, and the required protected environment and AWS OIDC identity were absent in the read-only audit. | [Release audit](evidence/testflight-release-readiness-20260927/RESULTS.md), [scoped bootstrap](../infra/TESTFLIGHT_DEPLOY_BOOTSTRAP.md), and [service-role design](../infra/TESTFLIGHT_EXECUTION_ROLE.md) specify the identity, protected variables, role boundary, rollback artifacts, and live-setting comparison. Nothing was deployed. |
 
-The integrated backend passed **1,494 unit tests**, Ruff on changed Python
+The integrated backend passed **1,501 unit tests**, Ruff on changed Python
 files, and `git diff --check`. Both SAM templates passed lint; the deployment
 script suite, actionlint, shellcheck, and AWS's read-only CloudFormation
 template validation also passed. The earlier bootstrap audit compared five
