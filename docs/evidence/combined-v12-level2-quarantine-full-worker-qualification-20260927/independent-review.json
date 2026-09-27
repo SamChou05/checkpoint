@@ -1,0 +1,31 @@
+{
+  "review": "GO",
+  "review_scope": "Offline exact-hash preparation and one bounded launch only; no AWS or provider call made by this reviewer",
+  "source_commit": "1e411c345a34d867bbee445953c1d0b29101e66e",
+  "preparation_commit": "057035d",
+  "plan_sha256": "2c2515a8264cdb6fa6660c722b629bdc44ba4ad24917fc3daaf1ed50f253ef3e",
+  "harness_sha256": "87fbf3eb2ba092ee14c739e3cbfda6f543ad82aae0fbe0b23589146f6efd0359",
+  "immediate_predecessor_capture_sha256": "8337af2d8d23ede59ec0f487ab8095de2515719a4702ab29eabd49bffcaed696",
+  "immediate_predecessor_returned_questions": 4,
+  "native_author_wire_sha256": "0317c2b75115c309232c02e6eddcedd230461fc63f5d18da7312502868092a0a",
+  "native_author_schema_sha256": "495db717d6b3fd6cc5272cdb289c7d77d9ca2e275b7c1d3f0cb856c1a18b6934",
+  "checks": {
+    "frozen_plan_rebuild_exact": true,
+    "source_hashes_recomputed": 47,
+    "source_hashes_match": true,
+    "source_commit_is_ancestor": true,
+    "one_original_job_five_slots_three_arithmetic_two_english": true,
+    "strict_original_five_of_five_required": true,
+    "single_sdk_attempt_at_most_six_converse_calls": true,
+    "whole_240_second_sigalrm_before_credential_export_and_sts": true,
+    "capture_created_exclusively_before_credentials": true,
+    "exact_hash_review_lock_required": true,
+    "no_retry_fallback_topup_bank_queue_or_deploy": true,
+    "fake_author_select_scene_replaced_by_two_blank_compound_scene": true,
+    "fake_worker_three_calls_five_of_five_policies_8_8_8_10_10": true,
+    "socket_free_preflight_tests_passed": 10,
+    "ruff_passed": true,
+    "git_diff_check_passed": true
+  },
+  "limits": "The fake provider verifies the worker path and invariants, not the live model's difficulty judgment, question content, or teaching quality. A fresh bounded launch precheck and separately locked blind content reviews are still required for live qualification. Any changed plan, harness, or pinned source bytes revoke this GO."
+}
