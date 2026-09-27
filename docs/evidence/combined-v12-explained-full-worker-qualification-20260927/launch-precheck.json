@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "draft_digest": "46e7213ef3a527cbacb303b46ea1f5ffe4ecc2e6fb0c68a6f48b0fd988ca4d5b",
+  "checked_at": "2026-09-27T13:10:55.197882+00:00",
+  "credential_expires_at": "2026-09-27T13:19:00+00:00",
+  "credential_lifetime_seconds": 484,
+  "account": "239342516379",
+  "pretrial_sts_requests": 1,
+  "botocore_signin_refresh_operations": 0,
+  "cli_signin_refresh_operations": "unobserved; bounded 0-1",
+  "pretrial_aws_operations_budget": 3,
+  "provider_calls": 0
+}

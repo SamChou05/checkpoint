@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "id": "Q01",
+      "prompt": "An editor compares sentences about Maya and Theo, the assistants, and proofreading the reports. Which sentence uses present-tense subject-verb agreement correctly in standard written American English?",
+      "choices": {
+        "A": "Maya and Theo each prepare lunch.",
+        "B": "Proofreading the reports require patience.",
+        "C": "Each of the guests receive a plate.",
+        "D": "Neither the curator nor the assistants sorts the records."
+      }
+    },
+    {
+      "id": "Q02",
+      "prompt": "Let x be a unitless number. Its domain is integers from 2 through 12, inclusive. Condition: ((x - 7) * (x - 7)) < 16. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "6",
+        "B": "8",
+        "C": "5",
+        "D": "7"
+      }
+    },
+    {
+      "id": "Q03",
+      "prompt": "Let q be a unitless number, defined by q = (1 - ((7 / 8) * (4 / 6))). What is its exact value?",
+      "choices": {
+        "A": "5/12",
+        "B": "-1/2",
+        "C": "1",
+        "D": "6/11"
+      }
+    },
+    {
+      "id": "Q04",
+      "prompt": "Fill both blanks with present-tense forms in standard written American English. The guides who ___ the maps are here. One of the guides ___ a badge. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "folds; wear",
+        "B": "folds; wears",
+        "C": "fold; wears",
+        "D": "fold; wear"
+      }
+    },
+    {
+      "id": "Q05",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 5) / (x + 1)) = (13 / 9). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "6",
+        "B": "8",
+        "C": "7",
+        "D": "9"
+      }
+    }
+  ]
+}
