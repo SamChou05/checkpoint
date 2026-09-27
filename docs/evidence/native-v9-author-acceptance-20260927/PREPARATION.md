@@ -1,0 +1,9 @@
+# Current-source native v9 author acceptance probe
+
+This is a new, author-only, synthetic 3:2 trial from source `226316eecfb3e8100d3cb55d349cac8212f83b8e`. It is distinct from the earlier successful [five-slot full-worker run](../mapped-full-worker-next-prep-20260927/RESULTS.md), which used a 2,101-byte v7 mapped author schema. The current exact production route emits the 2,156-byte v9 native schema SHA-256 `a6426dd4d8cdd26a7d6fb03bbd373c8d55ab1dd79c17eab48279e3a3120d201e`. The frozen [plan](plan.json) SHA-256 is `cde10d1889fa2357623e972147361e19f7298682869a46b408388704b4bae0ab`, and the [harness](probe.py) SHA-256 is `0c745e87fa447ae1cf7d5a8d847fd9732d50f726177e217869788b8dd64857d5`.
+
+The probe uses one original request, at most one STS identity call and one Bedrock Converse call with one SDK attempt, no fallback, retry, repair or top-up, and a 150-second deadline starting before credential export. It creates an exclusive sanitized capture before credentials. It does not invoke the worker, queue, bank, deployment or GitHub APIs. Execution requires an exact-hash lock containing both root and independent reviewer GO decisions. This document and the plan were prepared without AWS calls.
+
+The native schema permits `fraction_product_complement` at slot 0 and `bounded_solution_count` at slot 2. A socket-free scripted five-task response using both labels passes the native adapter and compiles three numeric and two English tasks with zero failures. The **live production prompt permits, but does not force, either label**. This probe can establish schema acceptance and report what the model selected in its one response; it cannot guarantee that the live response exercises both new labels or that downstream solver/reviewer/worker gates pass.
+
+Offline frozen-plan reconstruction, JSON Schema validation, Botocore Converse shape validation, scripted new-family compilation, Ruff and `git diff --check` passed before launch. No live outcome is claimed here.

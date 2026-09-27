@@ -1,0 +1,287 @@
+"""One-shot current-source native author acceptance probe; no worker or bank writes."""
+
+import argparse
+import copy
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+from unittest.mock import patch
+
+import boto3
+import botocore
+from botocore.config import Config
+from botocore.validate import validate_parameters
+from jsonschema import Draft202012Validator
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
+SERVICE = ROOT / "backend/bedrock-question-service"
+sys.path.insert(0, str(SERVICE))
+
+import native_output_contracts as native  # noqa: E402
+import question_generation as generation  # noqa: E402
+from agreement_task_constructor import prepare_mapped_agreement_rows  # noqa: E402
+from evals import bounded_bedrock_capture as safe  # noqa: E402
+
+SOURCE_COMMIT = "226316eecfb3e8100d3cb55d349cac8212f83b8e"
+PREVIOUS_PLAN = ROOT / "docs/evidence/mapped-full-worker-next-prep-20260927/plan.json"
+PREVIOUS_CAPTURE = ROOT / "docs/evidence/mapped-full-worker-next-prep-20260927/capture.json"
+PREVIOUS_CAPTURE_SHA256 = "1ab308db5ea2aeedea0655a7886886c4851fbfa9278b22b5c9413cacaf45af4a"
+REQUEST = HERE / "request.json"
+PLAN = HERE / "plan.json"
+CAPTURE = HERE / "capture.json"
+REVIEW_LOCK = HERE / "review-approval.json"
+ACCOUNT = "239342516379"
+MODEL = "us.anthropic.claude-sonnet-4-6"
+BEDROCK_ENDPOINT = "https://bedrock-runtime.us-east-1.amazonaws.com"
+STS_ENDPOINT = "https://sts.us-east-1.amazonaws.com"
+EXPECTED_SCHEMA_BYTES = 2156
+EXPECTED_SCHEMA_SHA256 = "a6426dd4d8cdd26a7d6fb03bbd373c8d55ab1dd79c17eab48279e3a3120d201e"
+MAX_SECONDS = 150
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def file_sha(path):
+    return sha(path.read_bytes())
+
+
+def canonical(value):
+    return json.dumps(value, sort_keys=True, ensure_ascii=True, allow_nan=False,
+                      separators=(",", ":")).encode()
+
+
+def write_new(path, value):
+    with path.open("x", encoding="utf-8") as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=True, allow_nan=False)
+        stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
+def update_capture(value):
+    temporary = CAPTURE.with_suffix(".partial")
+    write_new(temporary, value)
+    os.replace(temporary, CAPTURE)
+
+
+def source_guard():
+    require(subprocess.run(("git", "merge-base", "--is-ancestor", SOURCE_COMMIT, "HEAD"),
+                           cwd=ROOT, check=False, capture_output=True).returncode == 0,
+            "The pinned source commit is not an ancestor.")
+    require(Path(generation.__file__).resolve().parent == SERVICE.resolve(),
+            "Wrong service checkout imported.")
+    require(file_sha(PREVIOUS_CAPTURE) == PREVIOUS_CAPTURE_SHA256,
+            "Predecessor 5/5 capture changed.")
+
+
+def fake_two_new_families(contract):
+    """Offline schema/compiler check, not a forced live author response."""
+    tasks = {"questions": {
+        "0": {"family": "fraction_product_complement", "a": 4, "b": 6},
+        "1": {"family": "bounded_rational_equation", "a": 4, "b": 7},
+        "2": {"family": "bounded_solution_count", "a": 5, "b": 8},
+        "3": {"kind": "agreement_pair_v1", "scene": "inversion_lab", "order": "plural_first"},
+        "4": {"kind": "agreement_pair_v1", "scene": "gerund_meals", "order": "singular_first"},
+    }}
+    adapted = safe.strict_json(native.adapt_native_response(json.dumps(tasks), contract))
+    rows, numerical, english, failures = prepare_mapped_agreement_rows(adapted, contract)
+    require(len(rows) == 5 and len(numerical) == 3 and len(english) == 2 and not failures,
+            "Offline scripted new-family compile failed.")
+    return {"source": "scripted_socket_free_not_live", "new_family_slot_0": tasks["questions"]["0"]["family"],
+            "new_family_slot_2": tasks["questions"]["2"]["family"],
+            "compiled_rows": len(rows), "numeric_proofs": len(numerical),
+            "english_proofs": len(english), "failures": failures}
+
+
+def build():
+    source_guard()
+    previous = safe.strict_json(PREVIOUS_PLAN.read_text())
+    request = safe.strict_json(REQUEST.read_text())
+    require(request["targetCount"] == 5 and request["requestedSkillAllocation"] == {
+        "11111111-1111-4111-8111-111111111111": 3,
+        "22222222-2222-4222-8222-222222222222": 2},
+        "Synthetic original 3:2 request changed.")
+    environment = copy.deepcopy(previous["environment"])
+    require(environment["BEDROCK_MODEL_ID"] == MODEL
+            and environment["BEDROCK_FALLBACK_MODEL_ID"] == ""
+            and environment["QUESTION_AUTHOR_CARDINALITY_CONTRACT"] == "array",
+            "Author environment changed.")
+    with patch.dict(os.environ, environment, clear=True):
+        assignments = generation._mapped_fixed_slot_assignments(
+            request, "constructed_quantitative", "array")
+        require(assignments is not None
+                and generation._mapped_agreement_route(request, assignments)
+                and generation._mapped_quantitative_family_route(request, assignments, True),
+                "Expected mapped route was not selected.")
+        contract = generation._mapped_author_contract(request, assignments, True, True)
+        config = native.native_output_config(contract)
+        schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
+        Draft202012Validator.check_schema(json.loads(schema))
+        require(len(schema.encode()) == EXPECTED_SCHEMA_BYTES
+                and sha(schema.encode()) == EXPECTED_SCHEMA_SHA256
+                and contract.name.startswith("question_author_constructed_mapped_families_v9_n5_"),
+                "Current v9 schema differs from the reviewed target.")
+        properties = json.loads(schema)["properties"]["questions"]["properties"]
+        require("fraction_product_complement" in properties["0"]["properties"]["family"]["enum"]
+                and "bounded_solution_count" in properties["2"]["properties"]["family"]["enum"],
+                "New family labels are absent from the native schema.")
+        system = native.native_prompt(generation._system_prompt(), contract)
+        user = generation._user_prompt(request)
+        wire = {"modelId": MODEL, "system": [{"text": system}],
+                "messages": [{"role": "user", "content": [{"text": user}]}],
+                "outputConfig": config, "inferenceConfig": {"maxTokens": 16000},
+                "additionalModelRequestFields": {"thinking": {"type": "adaptive"},
+                                                  "output_config": {"effort": "high"}}}
+        scripted = fake_two_new_families(contract)
+    offline = boto3.Session(aws_access_key_id="offline", aws_secret_access_key="offline",
+                            region_name="us-east-1").client(
+        "bedrock-runtime", endpoint_url=BEDROCK_ENDPOINT)
+    validate_parameters(wire, offline.meta.service_model.operation_model("Converse").input_shape)
+    source_paths = [*sorted(SERVICE.glob("*.py")), SERVICE / "requirements.txt",
+                    SERVICE / "evals/bounded_bedrock_capture.py"]
+    plan = {
+        "state": "frozen", "trial_id": "native-v9-mapped-3x2-author-20260927-01",
+        "source_commit": SOURCE_COMMIT,
+        "source_hashes": {str(path.relative_to(ROOT)): file_sha(path) for path in source_paths},
+        "harness_sha256": file_sha(Path(__file__)),
+        "request_sha256": file_sha(REQUEST),
+        "normalized_request_sha256": sha(canonical(request)),
+        "previous_successful_worker_plan_sha256": file_sha(PREVIOUS_PLAN),
+        "previous_successful_worker_capture_sha256": PREVIOUS_CAPTURE_SHA256,
+        "previous_schema_bytes": 2101,
+        "current_schema_bytes": len(schema.encode()),
+        "current_schema_sha256": sha(schema.encode()),
+        "author_contract": contract.name,
+        "system_prompt_sha256": sha(system.encode()),
+        "user_prompt_sha256": sha(user.encode()),
+        "wire_sha256": sha(canonical(wire)),
+        "environment": environment,
+        "model": MODEL,
+        "account": ACCOUNT,
+        "endpoints": {"bedrock": BEDROCK_ENDPOINT, "sts": STS_ENDPOINT},
+        "runtime": {"python": sys.version.split()[0], "boto3": boto3.__version__,
+                    "botocore": botocore.__version__},
+        "limits": {"original_jobs": 1, "original_slots": 5, "sts_calls": 1,
+                   "converse_calls": 1, "sdk_attempts_per_call": 1,
+                   "seconds_from_before_credential_export": MAX_SECONDS,
+                   "connect_timeout_seconds": 3, "read_timeout_seconds": 110,
+                   "retry_fallback_topup": False,
+                   "queue_bank_deploy_github_writes": False},
+        "live_prompt_new_family_selection": "permitted_not_forced_exact_production_wire",
+        "scripted_offline_new_family_result": scripted,
+    }
+    return plan, wire, contract, request
+
+
+def checked(expected):
+    require(PLAN.exists() and file_sha(PLAN) == expected, "Frozen plan SHA mismatch.")
+    plan, wire, contract, request = build()
+    require(safe.strict_json(PLAN.read_text()) == plan,
+            "Source, schema, request, wire or harness drifted after freeze.")
+    return plan, wire, contract, request
+
+
+def freeze():
+    require(not PLAN.exists() and not CAPTURE.exists(), "Trial already frozen or attempted.")
+    plan, _, _, _ = build()
+    write_new(PLAN, plan)
+    return {"status": "frozen_offline", "plan_sha256": file_sha(PLAN),
+            "harness_sha256": plan["harness_sha256"],
+            "schema_sha256": plan["current_schema_sha256"],
+            "schema_bytes": plan["current_schema_bytes"]}
+
+
+def execute(expected):
+    require(not CAPTURE.exists(), "This one-call trial cannot be resumed or retried.")
+    plan, wire, contract, request = checked(expected)
+    lock = safe.strict_json(REVIEW_LOCK.read_text())
+    require(lock == {"plan_sha256": expected,
+                     "harness_sha256": plan["harness_sha256"],
+                     "root_go": True, "independent_go": True},
+            "Exact-hash root and independent review is required before AWS.")
+    started = time.monotonic()
+    capture = {"plan_sha256": expected, "status": "setup", "sts_calls": 0,
+               "converse_calls": 0, "author_response": None}
+    write_new(CAPTURE, capture)
+    secrets = ()
+    try:
+        require(not any(os.environ.get(key) for key in
+                        ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN")),
+                "Inherited credential override is present.")
+        session, secrets = safe.credential_session()
+        require(time.monotonic() - started < 20, "Credential setup exceeded the bound.")
+        sts = session.client("sts", endpoint_url=STS_ENDPOINT,
+                             config=Config(connect_timeout=3, read_timeout=10,
+                                           retries={"total_max_attempts": 1, "mode": "standard"}))
+        capture["sts_calls"] = 1
+        update_capture(capture)
+        require(sts.get_caller_identity()["Account"] == ACCOUNT, "Wrong AWS account.")
+        bedrock = session.client("bedrock-runtime", endpoint_url=BEDROCK_ENDPOINT,
+                                 config=Config(connect_timeout=3, read_timeout=110,
+                                               retries={"total_max_attempts": 1, "mode": "standard"}))
+        require(bedrock.meta.endpoint_url == BEDROCK_ENDPOINT
+                and bedrock.meta.config.retries.get("total_max_attempts") == 1
+                and sha(canonical(wire)) == plan["wire_sha256"],
+                "Pinned transport or wire changed.")
+        validate_parameters(wire, bedrock.meta.service_model.operation_model("Converse").input_shape)
+        require(time.monotonic() - started < 30, "Identity setup exhausted dispatch budget.")
+        capture["converse_calls"] = 1
+        capture["status"] = "dispatched"
+        update_capture(capture)
+        response = bedrock.converse(**wire)
+        retained, omitted = safe.safe_response(response, secrets)
+        capture["author_response"] = retained
+        capture["reasoning_blocks_omitted"] = omitted
+        content = retained["output"]["message"]["content"]
+        require(len(content) == 1, "Author text cardinality changed.")
+        adapted = safe.strict_json(native.adapt_native_response(content[0]["text"], contract))
+        rows, numerical, english, failures = prepare_mapped_agreement_rows(adapted, contract)
+        tasks = adapted["questions"]
+        capture["chosen_families"] = {str(i): tasks[str(i)]["family"] for i in range(3)}
+        capture["offline_compilation"] = {"rows": len(rows), "numeric_proofs": len(numerical),
+                                          "english_proofs": len(english), "failures": failures}
+        capture["status"] = "completed" if len(rows) == 5 and not failures else "compile_failed"
+    except Exception as error:
+        capture["status"] = "failed"
+        capture["error"] = safe.safe_error(error, secrets)
+    finally:
+        capture["elapsed_seconds"] = round(time.monotonic() - started, 3)
+        capture["within_deadline"] = capture["elapsed_seconds"] <= MAX_SECONDS
+        update_capture(capture)
+    return {"status": capture["status"], "sts_calls": capture["sts_calls"],
+            "converse_calls": capture["converse_calls"],
+            "elapsed_seconds": capture["elapsed_seconds"],
+            "chosen_families": capture.get("chosen_families"),
+            "offline_compilation": capture.get("offline_compilation"),
+            "capture_sha256": file_sha(CAPTURE)}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("mode", choices=("freeze", "check", "execute"))
+    parser.add_argument("--plan-sha256")
+    args = parser.parse_args()
+    if args.mode == "freeze":
+        result = freeze()
+    else:
+        require(args.plan_sha256, "Exact plan SHA required.")
+        checked(args.plan_sha256)
+        result = ({"status": "offline_ready", "plan_sha256": args.plan_sha256}
+                  if args.mode == "check" else execute(args.plan_sha256))
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == "__main__":
+    main()
