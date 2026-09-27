@@ -1,0 +1,126 @@
+{
+  "worksheet_sha256": "8505b8928be1df93284107ad369a6a21671bea3469774c05e1d0528db924728b",
+  "reviewer": "generic_choice_edge_audit",
+  "review_status": "locked_answer_blind",
+  "items": [
+    {
+      "id": "J01",
+      "key_status": "single",
+      "displayed_key": "D",
+      "reason": "9 times 13 equals 117; the next integer, 10, exceeds the bound.",
+      "self_contained": true,
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 3
+    },
+    {
+      "id": "J02",
+      "key_status": "single",
+      "displayed_key": "A",
+      "reason": "4x + 7 = 35 gives x = 7, which lies in the domain.",
+      "self_contained": true,
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 2
+    },
+    {
+      "id": "J03",
+      "key_status": "single",
+      "displayed_key": "C",
+      "reason": "(3/4) divided by (4/6) equals 9/8; adding 1 gives 17/8.",
+      "self_contained": true,
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 3
+    },
+    {
+      "id": "J04",
+      "key_status": "single",
+      "displayed_key": "B",
+      "reason": "At x = 7, (x + 5)(x + 1) = 12 times 8 = 96; the other offered values do not satisfy it.",
+      "self_contained": true,
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 3
+    },
+    {
+      "id": "J05",
+      "key_status": "single",
+      "displayed_key": "D",
+      "reason": "Plural volunteers sort; singular librarian organizes.",
+      "self_contained": true,
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 2
+    },
+    {
+      "id": "J06",
+      "key_status": "single",
+      "displayed_key": "B",
+      "reason": "A number of students takes plural are; the number of forms takes singular is.",
+      "self_contained": true,
+      "self_containment_note": "The second clause is slightly stiff, but its grammatical subject and intended meaning are clear.",
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 3
+    },
+    {
+      "id": "J07",
+      "key_status": "single",
+      "displayed_key": "B",
+      "reason": "The compound subject Maya and Theo takes prepare; every guest takes receives.",
+      "self_contained": true,
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 2
+    },
+    {
+      "id": "J08",
+      "key_status": "single",
+      "displayed_key": "D",
+      "reason": "The denominator is positive throughout the domain; 11x >= 8(x + 3) gives x >= 8, so the minimum is 8.",
+      "self_contained": true,
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 3
+    },
+    {
+      "id": "J09",
+      "key_status": "single",
+      "displayed_key": "A",
+      "reason": "5/6 + 3/5 = 43/30; multiplying by 3 gives 43/10.",
+      "self_contained": true,
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 3
+    },
+    {
+      "id": "J10",
+      "key_status": "single",
+      "displayed_key": "C",
+      "reason": "The postverbal subject records is plural, so are; report is singular, so is.",
+      "self_contained": true,
+      "choice_pairs": {"AB": "distinct", "AC": "distinct", "AD": "distinct", "BC": "distinct", "BD": "distinct", "CD": "distinct"},
+      "difficulty_1_to_5": 3
+    }
+  ],
+  "near_duplicate_pairs": [
+    {
+      "ids": ["J01", "J08"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Solve an inequality over a short integer interval and select the threshold extreme. The quadratic product versus rational inequality keeps the algebra different."
+    },
+    {
+      "ids": ["J02", "J04"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Find the offered integer satisfying an equation on the identical 0-through-15 domain; both resolve to x = 7. Linear versus factored quadratic arithmetic differs."
+    },
+    {
+      "ids": ["J03", "J09"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Compute an exact rational value from a two-stage fraction expression and distinguish it from arithmetic-error distractors. The operations and order differ."
+    },
+    {
+      "ids": ["J05", "J07"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "In two clauses with nearby distracting nouns, identify a plural first subject and singular second subject, then choose the ordered verb pair. Compound and every-subject rules add variation."
+    },
+    {
+      "ids": ["J05", "J10"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Both require plural agreement in the first clause and singular agreement in the second despite nearby nouns. J10 additionally places each subject after the verb."
+    }
+  ],
+  "strong_near_duplicate_pairs": []
+}

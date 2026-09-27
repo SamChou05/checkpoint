@@ -1,0 +1,293 @@
+{
+  "status": "both_blind_reviews_locked_before_unblinding",
+  "worksheet_sha256": "8505b8928be1df93284107ad369a6a21671bea3469774c05e1d0528db924728b",
+  "private_sha256": "da1c6e81a24fc4c09a5454853031410a6de357855b853dd3274eac745b4b303b",
+  "review_a_sha256": "e7f1bc5d9dd7869d38f3055242be2b6cc831c4c74030e1fb30897aec6e780a3a",
+  "review_b_sha256": "3e529fc7f4a4c5654361c94098226a1bff72d7554db67278247ddf9ea5914f57",
+  "items": [
+    {
+      "id": "J01",
+      "origin": "author_only",
+      "original_slot": 2,
+      "key": "D",
+      "both_blind_keys_match": true
+    },
+    {
+      "id": "J02",
+      "origin": "prior",
+      "original_slot": 1,
+      "key": "A",
+      "both_blind_keys_match": true
+    },
+    {
+      "id": "J03",
+      "origin": "author_only",
+      "original_slot": 0,
+      "key": "C",
+      "both_blind_keys_match": true
+    },
+    {
+      "id": "J04",
+      "origin": "author_only",
+      "original_slot": 1,
+      "key": "B",
+      "both_blind_keys_match": true
+    },
+    {
+      "id": "J05",
+      "origin": "prior",
+      "original_slot": 3,
+      "key": "D",
+      "both_blind_keys_match": true
+    },
+    {
+      "id": "J06",
+      "origin": "author_only",
+      "original_slot": 4,
+      "key": "B",
+      "both_blind_keys_match": true
+    },
+    {
+      "id": "J07",
+      "origin": "prior",
+      "original_slot": 4,
+      "key": "B",
+      "both_blind_keys_match": true
+    },
+    {
+      "id": "J08",
+      "origin": "prior",
+      "original_slot": 2,
+      "key": "D",
+      "both_blind_keys_match": true
+    },
+    {
+      "id": "J09",
+      "origin": "prior",
+      "original_slot": 0,
+      "key": "A",
+      "both_blind_keys_match": true
+    },
+    {
+      "id": "J10",
+      "origin": "author_only",
+      "original_slot": 3,
+      "key": "C",
+      "both_blind_keys_match": true
+    }
+  ],
+  "review_a_pairs": [
+    {
+      "ids": [
+        "J01",
+        "J08"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "author_only",
+        "prior"
+      ],
+      "original_slots": [
+        2,
+        2
+      ]
+    },
+    {
+      "ids": [
+        "J02",
+        "J04"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "prior",
+        "author_only"
+      ],
+      "original_slots": [
+        1,
+        1
+      ]
+    },
+    {
+      "ids": [
+        "J03",
+        "J09"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "author_only",
+        "prior"
+      ],
+      "original_slots": [
+        0,
+        0
+      ]
+    },
+    {
+      "ids": [
+        "J05",
+        "J07"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "prior",
+        "prior"
+      ],
+      "original_slots": [
+        3,
+        4
+      ]
+    },
+    {
+      "ids": [
+        "J05",
+        "J10"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "prior",
+        "author_only"
+      ],
+      "original_slots": [
+        3,
+        3
+      ]
+    }
+  ],
+  "review_b_pairs": [
+    {
+      "ids": [
+        "J01",
+        "J08"
+      ],
+      "strength": "strong",
+      "origins": [
+        "author_only",
+        "prior"
+      ],
+      "original_slots": [
+        2,
+        2
+      ]
+    },
+    {
+      "ids": [
+        "J03",
+        "J09"
+      ],
+      "strength": "strong",
+      "origins": [
+        "author_only",
+        "prior"
+      ],
+      "original_slots": [
+        0,
+        0
+      ]
+    },
+    {
+      "ids": [
+        "J05",
+        "J07"
+      ],
+      "strength": "strong",
+      "origins": [
+        "prior",
+        "prior"
+      ],
+      "original_slots": [
+        3,
+        4
+      ]
+    },
+    {
+      "ids": [
+        "J02",
+        "J04"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "prior",
+        "author_only"
+      ],
+      "original_slots": [
+        1,
+        1
+      ]
+    },
+    {
+      "ids": [
+        "J01",
+        "J04"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "author_only",
+        "author_only"
+      ],
+      "original_slots": [
+        2,
+        1
+      ]
+    },
+    {
+      "ids": [
+        "J05",
+        "J06"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "prior",
+        "author_only"
+      ],
+      "original_slots": [
+        3,
+        4
+      ]
+    },
+    {
+      "ids": [
+        "J06",
+        "J07"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "author_only",
+        "prior"
+      ],
+      "original_slots": [
+        4,
+        4
+      ]
+    },
+    {
+      "ids": [
+        "J05",
+        "J10"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "prior",
+        "author_only"
+      ],
+      "original_slots": [
+        3,
+        3
+      ]
+    },
+    {
+      "ids": [
+        "J07",
+        "J10"
+      ],
+      "strength": "moderate",
+      "origins": [
+        "prior",
+        "author_only"
+      ],
+      "original_slots": [
+        4,
+        3
+      ]
+    }
+  ]
+}

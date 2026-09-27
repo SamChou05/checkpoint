@@ -1,0 +1,146 @@
+{
+  "worksheet_sha256": "8505b8928be1df93284107ad369a6a21671bea3469774c05e1d0528db924728b",
+  "review_status": "locked_blind_independent",
+  "review_scope": "Displayed worksheet only; no private keys, source outcomes, or capture inspected.",
+  "pairwise_choice_check": "For each item, all six displayed pairs AB, AC, AD, BC, BD, and CD were checked for meaningfully different answer claims.",
+  "items": [
+    {
+      "id": "J01",
+      "key_status": "single_supported",
+      "selected_choice": "D",
+      "reason": "At x = 9 the product is 9 × 13 = 117; at x = 10 it exceeds 117, and the product increases over the stated domain.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 2
+    },
+    {
+      "id": "J02",
+      "key_status": "single_supported",
+      "selected_choice": "A",
+      "reason": "4x + 7 = 35 gives x = 7, which is in the domain.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 1
+    },
+    {
+      "id": "J03",
+      "key_status": "single_supported",
+      "selected_choice": "C",
+      "reason": "(3/4) ÷ (4/6) = 9/8; adding 1 gives 17/8.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 2
+    },
+    {
+      "id": "J04",
+      "key_status": "single_supported",
+      "selected_choice": "B",
+      "reason": "At x = 7, (x + 5)(x + 1) = 12 × 8 = 96; the other algebraic root is outside the nonnegative domain.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 2
+    },
+    {
+      "id": "J05",
+      "key_status": "single_supported",
+      "selected_choice": "D",
+      "reason": "Plural volunteers sort; singular librarian organizes. The nearby nouns do not control agreement.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 2
+    },
+    {
+      "id": "J06",
+      "key_status": "single_supported",
+      "selected_choice": "B",
+      "reason": "A number of students takes plural are, while the number of forms takes singular is.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 3,
+      "note": "The number of forms is clear is slightly unnatural in meaning, but the agreement target is unambiguous."
+    },
+    {
+      "id": "J07",
+      "key_status": "single_supported",
+      "selected_choice": "B",
+      "reason": "Compound subject Maya and Theo takes prepare; every guest takes receives.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 2
+    },
+    {
+      "id": "J08",
+      "key_status": "single_supported",
+      "selected_choice": "D",
+      "reason": "The denominator is positive on the domain, so 11x ≥ 8(x + 3) reduces to x ≥ 8; the minimum is 8.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 3
+    },
+    {
+      "id": "J09",
+      "key_status": "single_supported",
+      "selected_choice": "A",
+      "reason": "5/6 + 3/5 = 43/30; multiplying by 3 gives 43/10.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 2
+    },
+    {
+      "id": "J10",
+      "key_status": "single_supported",
+      "selected_choice": "C",
+      "reason": "In the inverted clauses, plural records takes are and singular report takes is; curator and interns are nearby objects of prepositions.",
+      "self_contained": true,
+      "all_six_choice_pairs_distinct": true,
+      "difficulty_1_to_5": 3
+    }
+  ],
+  "near_duplicate_pairs": [
+    {
+      "ids": ["J01", "J08"],
+      "strength": "strong",
+      "repeated_cognitive_work": "Both impose an integer domain, solve a monotone inequality for a cutoff, and select the extreme allowed x. The algebraic expressions and direction differ, but the decision sequence is nearly the same."
+    },
+    {
+      "ids": ["J03", "J09"],
+      "strength": "strong",
+      "repeated_cognitive_work": "Both ask for the exact value of a named q from a nested rational expression; compute fraction arithmetic and match one reduced fraction."
+    },
+    {
+      "ids": ["J05", "J07"],
+      "strength": "strong",
+      "repeated_cognitive_work": "Both have two ordinary-order clauses with a plural subject followed by a singular subject, a nearby prepositional noun distractor, and verb choices that toggle singular -s endings."
+    },
+    {
+      "ids": ["J02", "J04"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Both state an integer domain and an equation, then ask which offered x satisfies it. J02 needs linear isolation, while J04 needs a product or quadratic check."
+    },
+    {
+      "ids": ["J01", "J04"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Both require evaluating or manipulating a product of two expressions in x over an integer domain. J01 adds an inequality and extreme-value selection, so the overlap is partial."
+    },
+    {
+      "ids": ["J05", "J06"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Both fill two agreement blanks with plural first and singular second while ignoring nearby nouns; J06 adds the distinct a number of versus the number of rule."
+    },
+    {
+      "ids": ["J06", "J07"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Both require choosing a plural first verb and singular second verb in two clauses with nearby nouns; their subject constructions differ."
+    },
+    {
+      "ids": ["J05", "J10"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Both test agreement across two clauses with misleading nouns in near phrases and a plural first answer followed by singular second. J10 changes the work by inverting each clause."
+    },
+    {
+      "ids": ["J07", "J10"],
+      "strength": "moderate",
+      "repeated_cognitive_work": "Both resolve plural then singular agreement while setting aside nearby nouns, but J10 requires identifying postverbal subjects rather than the ordinary subject-before-verb pattern."
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "status": "author_only_new_candidates_not_worker_verified",
+  "instructions": "For each item, independently choose the single correct displayed answer if one exists; rate self-containment, all six within-item choice pairs for meaningful difference, and difficulty 1-5. Identify strong or moderate near-duplicate question pairs across all ten items based on the actual reasoning task, not just scene names or answer format. Do not inspect source/capture/private mapping until your review is locked. Item origins, private keys and proofs are hidden.",
+  "items": [
+    {
+      "id": "J01",
+      "prompt": "Let x be a unitless number. Its domain is integers from 6 through 12, inclusive. Condition: (x * (x + 4)) <= 117. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "10",
+        "C": "7",
+        "D": "9"
+      }
+    },
+    {
+      "id": "J02",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((4 * x) + 7) = 35. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "7",
+        "B": "8",
+        "C": "6",
+        "D": "5"
+      }
+    },
+    {
+      "id": "J03",
+      "prompt": "Let q be a unitless number, defined by q = (((3 / 4) / (4 / 6)) + 1). What is its exact value?",
+      "choices": {
+        "A": "5/4",
+        "B": "9/8",
+        "C": "17/8",
+        "D": "10/9"
+      }
+    },
+    {
+      "id": "J04",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 5) * (x + 1)) = 96. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "5",
+        "B": "7",
+        "C": "6",
+        "D": "8"
+      }
+    },
+    {
+      "id": "J05",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The volunteers near the librarian ___ the returns, while the librarian near the volunteers ___ the books. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "sorts; organize",
+        "B": "sorts; organizes",
+        "C": "sort; organize",
+        "D": "sort; organizes"
+      }
+    },
+    {
+      "id": "J06",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. A number of students near the tutor ___ available, while the number of forms near the teachers ___ clear. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "is; is",
+        "B": "are; is",
+        "C": "is; are",
+        "D": "are; are"
+      }
+    },
+    {
+      "id": "J07",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Maya and Theo near the cook ___ lunch, while every guest near the servers ___ a plate. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "prepares; receives",
+        "B": "prepare; receives",
+        "C": "prepares; receive",
+        "D": "prepare; receive"
+      }
+    },
+    {
+      "id": "J08",
+      "prompt": "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: (x / (x + 3)) >= (8 / 11). What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "6",
+        "B": "9",
+        "C": "7",
+        "D": "8"
+      }
+    },
+    {
+      "id": "J09",
+      "prompt": "Let q be a unitless number, defined by q = (((5 / 6) + (3 / 5)) * 3). What is its exact value?",
+      "choices": {
+        "A": "43/10",
+        "B": "43/90",
+        "C": "129",
+        "D": "1/10"
+      }
+    },
+    {
+      "id": "J10",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the curator ___ the records from the archive, while near the interns ___ the report from the archive. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "are; are",
+        "B": "is; are",
+        "C": "are; is",
+        "D": "is; is"
+      }
+    }
+  ]
+}

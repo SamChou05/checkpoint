@@ -35,6 +35,33 @@ the distinct `a number of` / `the number of` forms. The two English candidates
 share the same four answer strings despite different grammar rules; this
 trial does not prove sustained format variety.
 
+Two independent reviewers then received only an answer-hidden, shuffled
+[ten-item worksheet](blind-worksheet.json) (SHA-256
+`8505b8928be1df93284107ad369a6a21671bea3469774c05e1d0528db924728b`).
+Five items came from the previously verified seed and five from this
+author-only response; their origins, keys, and proofs were withheld. Both
+[review A](blind-review-a.json) (SHA-256
+`e7f1bc5d9dd7869d38f3055242be2b6cc831c4c74030e1fb30897aec6e780a3a`)
+and [review B](blind-review-b.json) (SHA-256
+`3e529fc7f4a4c5654361c94098226a1bff72d7554db67278247ddf9ea5914f57`)
+locked before the [private mapping](blind-private.json) was opened. Both
+selected the exact key on all ten questions and judged every item
+self-contained with all four choices meaningfully distinct. The
+[post-lock join](post-unblind.json) verifies their keys against the private
+map and records pair origins.
+
+Variety was less settled. Review A found five **moderate** near-duplicate
+pairs and no strong pairs. Review B found nine overlapping pairs, including
+three it rated **strong**: the seed and new inequality-cutoff items, the two
+exact fraction-evaluation items, and two seed two-clause agreement items.
+The reviewers agreed on those pairings but not on severity. The agreement
+pair contains **two previous seed items**, so it is not a regression caused
+by this author response. The new candidate and previous seed share a solve
+pattern on the other two strong-rated pairs. This is direct evidence that a
+schema, exact stem deduplication, and alternate algebraic frames do not by
+themselves guarantee a bank of meaningfully different questions. It does
+not establish that all three pairs are strong by consensus.
+
 The result shows that the compact typed author schema can work with the live
 service and that the current constructor can make unambiguous candidate
 choices from this response. It does **not** overturn the earlier
@@ -44,3 +71,8 @@ those required downstream model calls, which rejected two difficulty ratings
 or timed out, respectively. Nor does one five-item call establish a reliable
 40/80-item inventory. The mapped route remains opt-in and the deployed
 TestFlight worker remains on the legacy path.
+
+The archived `audit.py` checks hashes against commit `6ea0eaf`; run it with
+the evidence files in a checkout of that source snapshot. It intentionally
+fails when service source changes. The live call cannot be replayed under its
+frozen plan because its one-call allowance was consumed.
