@@ -1,0 +1,2320 @@
+{
+  "reviewer": "B",
+  "review_mode": "answer_blind_independent",
+  "worksheet_sha256": "34e0dcf9e673f9791a32af437755d001f6a722fd5e3e7ec5e83e19ab442fbeb7",
+  "rubric_source": "No rubric file present in the worksheet folder; standard one-key, difficulty 2–3, all-six within-item distinctness, and all-190 cross-item method/response-format review used.",
+  "criteria": {
+    "one_key": "Exactly one offered choice is correct under standard written American English or exact stated mathematics.",
+    "difficulty": "1 easy, 2 moderate, 3 challenging, 4 advanced; target is 2 or 3.",
+    "within_item_distinctness": "Every unordered pair of the four choices must have distinct requested form pairs or unequal exact numerical values; all six pairs per item are explicitly recorded.",
+    "cross_item_repetition_scale": {
+      "0": "Different domain and response form.",
+      "1": "Same broad domain only; decisive method or response form differs.",
+      "2": "Same response family or a substantial operation, but a different decisive rule, operation, or response goal.",
+      "3": "Strong repetition: same response family and same dominant solution procedure; a student can carry the same sequence of steps to both with only surface words, expression details, or numbers changed."
+    },
+    "strong_pair_threshold": 3,
+    "bank_repetition_pass_rule": "No cross-item pair rated 3.",
+    "weak_distractor": "A wrong choice with no plausible single-step misconception or a much less diagnostic path than peer distractors."
+  },
+  "item_reviews": [
+    {
+      "id": "Q01",
+      "selected_key": "B",
+      "selected_answer": "sort; holds",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "Relative-clause who takes plural clerks; one of the clerks is singular.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "ordered_verb_pair"
+    },
+    {
+      "id": "Q02",
+      "selected_key": "C",
+      "selected_answer": "prepare; plans",
+      "difficulty": 2,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "Cooks is plural and chef is singular despite intervening near phrases.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "ordered_verb_pair"
+    },
+    {
+      "id": "Q03",
+      "selected_key": "A",
+      "selected_answer": "4",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "(x+6)(x+1)=50 has in-domain solution x=4.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "offered_integer_satisfying_equation"
+    },
+    {
+      "id": "Q04",
+      "selected_key": "C",
+      "selected_answer": "57/14",
+      "difficulty": 2,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "(6/7+1/2)×3=57/14.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "exact_rational_value"
+    },
+    {
+      "id": "Q05",
+      "selected_key": "B",
+      "selected_answer": "19/54",
+      "difficulty": 2,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "1−(5/6)(7/9)=1−35/54=19/54.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "exact_rational_value"
+    },
+    {
+      "id": "Q06",
+      "selected_key": "A",
+      "selected_answer": "8",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "There are ten integers 4 through 13; only roots 5 and 12 fail the nonzero test.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "count_of_bounded_integers"
+    },
+    {
+      "id": "Q07",
+      "selected_key": "A",
+      "selected_answer": "requires; measure",
+      "difficulty": 2,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "The gerund phrase Preparing the meals is singular; cooks is plural.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "ordered_verb_pair"
+    },
+    {
+      "id": "Q08",
+      "selected_key": "D",
+      "selected_answer": "9",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "10(x+4)=13(x+1), so x=9.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "offered_integer_satisfying_equation"
+    },
+    {
+      "id": "Q09",
+      "selected_key": "A",
+      "selected_answer": "sort; checks",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "With neither/nor and either/or, the nearer subjects assistants and curator control the two verbs.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "ordered_verb_pair"
+    },
+    {
+      "id": "Q10",
+      "selected_key": "D",
+      "selected_answer": "9/14",
+      "difficulty": 2,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "8/9+4/6=14/9; its reciprocal is 9/14.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "exact_rational_value"
+    },
+    {
+      "id": "Q11",
+      "selected_key": "A",
+      "selected_answer": "is; are",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "The number takes singular is; a number of readers takes plural are.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "ordered_verb_pair"
+    },
+    {
+      "id": "Q12",
+      "selected_key": "B",
+      "selected_answer": "59/24",
+      "difficulty": 2,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "(7/8)÷(3/5)+1=35/24+1=59/24.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "exact_rational_value"
+    },
+    {
+      "id": "Q13",
+      "selected_key": "A",
+      "selected_answer": "5",
+      "difficulty": 2,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "The condition reduces to x≤8, giving 4,5,6,7,8: five integers.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "count_of_bounded_integers"
+    },
+    {
+      "id": "Q14",
+      "selected_key": "D",
+      "selected_answer": "3",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "7x≥3(x+4) gives x≥3; the minimum is 3.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "integer_extremum_under_inequality"
+    },
+    {
+      "id": "Q15",
+      "selected_key": "B",
+      "selected_answer": "include; arrives",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "Most of the letters is plural; most of the mail is singular mass-noun agreement.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "ordered_verb_pair"
+    },
+    {
+      "id": "Q16",
+      "selected_key": "B",
+      "selected_answer": "keeps; review",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "Each of the clerks takes keeps; Ava and Ben each takes plural review.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "ordered_verb_pair"
+    },
+    {
+      "id": "Q17",
+      "selected_key": "D",
+      "selected_answer": "3",
+      "difficulty": 2,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "5x+18=4x+21 gives x=3.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "offered_integer_satisfying_equation"
+    },
+    {
+      "id": "Q18",
+      "selected_key": "A",
+      "selected_answer": "are; is",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "Inverted subjects returns and book are plural and singular respectively.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "ordered_verb_pair"
+    },
+    {
+      "id": "Q19",
+      "selected_key": "D",
+      "selected_answer": "4",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "x(x+5)≤36 holds for positive domain x≤4; the maximum is 4.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "integer_extremum_under_inequality"
+    },
+    {
+      "id": "Q20",
+      "selected_key": "D",
+      "selected_answer": "13",
+      "difficulty": 3,
+      "difficulty_scale": "1=easy, 2=moderate, 3=challenging, 4=advanced",
+      "key_basis": "−7<x−5<7 yields integers −1 through 11, thirteen values.",
+      "one_key_judgment": "pass",
+      "target_difficulty_judgment": "pass",
+      "response_family": "count_of_bounded_integers"
+    }
+  ],
+  "within_item_choice_pairs": [
+    {
+      "item_id": "Q01",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q01",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q01",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q01",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q01",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q01",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q02",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q02",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q02",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q02",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q02",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q02",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q03",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q03",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q03",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q03",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q03",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q03",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q04",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q04",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q04",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q04",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q04",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q04",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q05",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q05",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q05",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q05",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q05",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q05",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q06",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q06",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q06",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q06",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q06",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q06",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q07",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q07",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q07",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q07",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q07",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q07",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q08",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q08",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q08",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q08",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q08",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q08",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q09",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q09",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q09",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q09",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q09",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q09",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q10",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q10",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q10",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q10",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q10",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q10",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q11",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q11",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q11",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q11",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q11",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q11",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q12",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q12",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q12",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q12",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q12",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q12",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q13",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q13",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q13",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q13",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q13",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q13",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q14",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q14",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q14",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q14",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q14",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q14",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q15",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q15",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q15",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q15",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q15",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q15",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q16",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q16",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q16",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q16",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q16",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q16",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q17",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q17",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q17",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q17",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q17",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q17",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q18",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q18",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q18",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q18",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q18",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 1 and 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q18",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different form in blank 2; the requested ordered form pairs are distinct."
+    },
+    {
+      "item_id": "Q19",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q19",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q19",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q19",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q19",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q19",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q20",
+      "choice_a": "A",
+      "choice_b": "B",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q20",
+      "choice_a": "A",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q20",
+      "choice_a": "A",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q20",
+      "choice_a": "B",
+      "choice_b": "C",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q20",
+      "choice_a": "B",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    },
+    {
+      "item_id": "Q20",
+      "choice_a": "C",
+      "choice_b": "D",
+      "judgment": "distinct",
+      "basis": "Different exact numerical values under the requested answer format."
+    }
+  ],
+  "cross_item_pairs": [
+    {
+      "item_a": "Q01",
+      "item_b": "Q02",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q03",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q04",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q05",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q06",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q07",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q08",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q09",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q10",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q11",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q12",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q13",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q14",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q15",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q16",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q17",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q18",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q19",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q01",
+      "item_b": "Q20",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q03",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q04",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q05",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q06",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q07",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q08",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q09",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q10",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q11",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q12",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q13",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q14",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q15",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q16",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q17",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q18",
+      "repetition_rating": 3,
+      "basis": "Two ordered agreement forms with a nearby opposite-number noun in each clause; identifying the controlling subject gives plural then singular forms in both."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q19",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q02",
+      "item_b": "Q20",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q04",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q05",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q06",
+      "repetition_rating": 2,
+      "basis": "Both involve quadratic expressions over an integer domain, but one selects an equation solution and the other counts nonroots."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q07",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q08",
+      "repetition_rating": 3,
+      "basis": "Same offered-integer equation template: test candidate x values against one equality and select the satisfying value; expression details change."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q09",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q10",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q11",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q12",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q13",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q14",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q15",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q16",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q17",
+      "repetition_rating": 3,
+      "basis": "Same offered-integer equation template: test candidate x values against one equality and select the satisfying value; expression details change."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q19",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q20",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q05",
+      "repetition_rating": 2,
+      "basis": "Both evaluate a nested rational expression for an exact value; the decisive arithmetic operation sequence differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q06",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q07",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q08",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q09",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q10",
+      "repetition_rating": 2,
+      "basis": "Both evaluate a nested rational expression for an exact value; the decisive arithmetic operation sequence differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q11",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q12",
+      "repetition_rating": 2,
+      "basis": "Both evaluate a nested rational expression for an exact value; the decisive arithmetic operation sequence differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q13",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q14",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q15",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q16",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q17",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q19",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q04",
+      "item_b": "Q20",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q06",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q07",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q08",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q09",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q10",
+      "repetition_rating": 2,
+      "basis": "Both evaluate a nested rational expression for an exact value; the decisive arithmetic operation sequence differs."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q11",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q12",
+      "repetition_rating": 2,
+      "basis": "Both evaluate a nested rational expression for an exact value; the decisive arithmetic operation sequence differs."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q13",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q14",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q15",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q16",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q17",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q19",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q05",
+      "item_b": "Q20",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q07",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q08",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q09",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q10",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q11",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q12",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q13",
+      "repetition_rating": 3,
+      "basis": "Same bounded-integer count template: test a short inclusive domain against a condition and report how many satisfy it; condition details change."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q14",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q15",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q16",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q17",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q19",
+      "repetition_rating": 2,
+      "basis": "Both use quadratic expressions over integer domains, but counting nonroots and finding an inequality maximum differ."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q20",
+      "repetition_rating": 3,
+      "basis": "Same bounded-integer count template: test a short inclusive domain against a condition and report how many satisfy it; condition details change."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q08",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q09",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q10",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q11",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q12",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q13",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q14",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q15",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q16",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q17",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q18",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q19",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q07",
+      "item_b": "Q20",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q09",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q10",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q11",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q12",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q13",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q14",
+      "repetition_rating": 2,
+      "basis": "Both reduce a rational condition in x by cross-multiplication; equality selection and inequality minimum differ."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q15",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q16",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q17",
+      "repetition_rating": 3,
+      "basis": "Same offered-integer equation template: test candidate x values against one equality and select the satisfying value; expression details change."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q19",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q20",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q10",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q11",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q12",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q13",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q14",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q15",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q16",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q17",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q18",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q19",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q09",
+      "item_b": "Q20",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q11",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q12",
+      "repetition_rating": 2,
+      "basis": "Both evaluate a nested rational expression for an exact value; the decisive arithmetic operation sequence differs."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q13",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q14",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q15",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q16",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q17",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q19",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q10",
+      "item_b": "Q20",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q11",
+      "item_b": "Q12",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q11",
+      "item_b": "Q13",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q11",
+      "item_b": "Q14",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q11",
+      "item_b": "Q15",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q11",
+      "item_b": "Q16",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q11",
+      "item_b": "Q17",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q11",
+      "item_b": "Q18",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q11",
+      "item_b": "Q19",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q11",
+      "item_b": "Q20",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q12",
+      "item_b": "Q13",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q12",
+      "item_b": "Q14",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q12",
+      "item_b": "Q15",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q12",
+      "item_b": "Q16",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q12",
+      "item_b": "Q17",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q12",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q12",
+      "item_b": "Q19",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q12",
+      "item_b": "Q20",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q13",
+      "item_b": "Q14",
+      "repetition_rating": 2,
+      "basis": "Both reduce an inequality to a threshold over bounded integers; one counts solutions and the other selects a minimum."
+    },
+    {
+      "item_a": "Q13",
+      "item_b": "Q15",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q13",
+      "item_b": "Q16",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q13",
+      "item_b": "Q17",
+      "repetition_rating": 2,
+      "basis": "Both simplify linear expressions in x, though one counts inequality solutions and the other selects an equation solution."
+    },
+    {
+      "item_a": "Q13",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q13",
+      "item_b": "Q19",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q13",
+      "item_b": "Q20",
+      "repetition_rating": 3,
+      "basis": "Same bounded-integer count template: test a short inclusive domain against a condition and report how many satisfy it; condition details change."
+    },
+    {
+      "item_a": "Q14",
+      "item_b": "Q15",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q14",
+      "item_b": "Q16",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q14",
+      "item_b": "Q17",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q14",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q14",
+      "item_b": "Q19",
+      "repetition_rating": 2,
+      "basis": "Both find an integer boundary satisfying an inequality, but the expression and minimum/maximum direction differ."
+    },
+    {
+      "item_a": "Q14",
+      "item_b": "Q20",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q15",
+      "item_b": "Q16",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q15",
+      "item_b": "Q17",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q15",
+      "item_b": "Q18",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q15",
+      "item_b": "Q19",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q15",
+      "item_b": "Q20",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q16",
+      "item_b": "Q17",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q16",
+      "item_b": "Q18",
+      "repetition_rating": 2,
+      "basis": "Both request an ordered pair of present-tense agreement forms, but the controlling-subject construction differs."
+    },
+    {
+      "item_a": "Q16",
+      "item_b": "Q19",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q16",
+      "item_b": "Q20",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q17",
+      "item_b": "Q18",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q17",
+      "item_b": "Q19",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q17",
+      "item_b": "Q20",
+      "repetition_rating": 1,
+      "basis": "Both are mathematics items, but their dominant operation or requested response form differs."
+    },
+    {
+      "item_a": "Q18",
+      "item_b": "Q19",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q18",
+      "item_b": "Q20",
+      "repetition_rating": 0,
+      "basis": "Different language versus mathematics method and response format."
+    },
+    {
+      "item_a": "Q19",
+      "item_b": "Q20",
+      "repetition_rating": 2,
+      "basis": "Both turn a quadratic inequality into an integer interval; maximum and count responses differ."
+    }
+  ],
+  "strong_pairs": [
+    {
+      "item_a": "Q02",
+      "item_b": "Q18",
+      "basis": "Two ordered agreement forms with a nearby opposite-number noun in each clause; identifying the controlling subject gives plural then singular forms in both."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q08",
+      "basis": "Same offered-integer equation template: test candidate x values against one equality and select the satisfying value; expression details change."
+    },
+    {
+      "item_a": "Q03",
+      "item_b": "Q17",
+      "basis": "Same offered-integer equation template: test candidate x values against one equality and select the satisfying value; expression details change."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q13",
+      "basis": "Same bounded-integer count template: test a short inclusive domain against a condition and report how many satisfy it; condition details change."
+    },
+    {
+      "item_a": "Q06",
+      "item_b": "Q20",
+      "basis": "Same bounded-integer count template: test a short inclusive domain against a condition and report how many satisfy it; condition details change."
+    },
+    {
+      "item_a": "Q08",
+      "item_b": "Q17",
+      "basis": "Same offered-integer equation template: test candidate x values against one equality and select the satisfying value; expression details change."
+    },
+    {
+      "item_a": "Q13",
+      "item_b": "Q20",
+      "basis": "Same bounded-integer count template: test a short inclusive domain against a condition and report how many satisfy it; condition details change."
+    }
+  ],
+  "weak_distractors": [
+    {
+      "item_id": "Q04",
+      "choice": "D",
+      "value": "3/14",
+      "concern": "No clear single-step arithmetic error in the stated addition-then-multiplication gives this value."
+    },
+    {
+      "item_id": "Q05",
+      "choice": "A",
+      "value": "-17/27",
+      "concern": "No clear single-step error in the product or subtraction gives this value."
+    },
+    {
+      "item_id": "Q05",
+      "choice": "D",
+      "value": "34/53",
+      "concern": "The denominator 53 has no natural path from 6 and 9, making this an implausible fraction distractor."
+    },
+    {
+      "item_id": "Q10",
+      "choice": "B",
+      "value": "23/9",
+      "concern": "The denominator sum is 14/9; 23/9 does not reflect a recognizable single-step error."
+    },
+    {
+      "item_id": "Q10",
+      "choice": "C",
+      "value": "1",
+      "concern": "This requires dropping the nonunit denominator entirely and is less diagnostic than a fraction error."
+    },
+    {
+      "item_id": "Q12",
+      "choice": "A",
+      "value": "3/2",
+      "concern": "This approximate-looking fraction does not arise naturally from the exact division-plus-one computation."
+    },
+    {
+      "item_id": "Q12",
+      "choice": "D",
+      "value": "36/25",
+      "concern": "Neither numerator nor denominator follows a clear single-step error from 35/24+1."
+    }
+  ],
+  "summary": {
+    "items": 20,
+    "one_key_passes": 20,
+    "difficulty_target_passes": 20,
+    "within_item_pairs_reviewed": 120,
+    "within_item_distinct_pairs": 120,
+    "cross_item_pairs_reviewed": 190,
+    "strong_pair_count": 7,
+    "strong_pairs_present": true,
+    "bank_verdict": "fail_repetition",
+    "key_and_difficulty_verdict": "pass",
+    "within_item_distinctness_verdict": "pass"
+  }
+}

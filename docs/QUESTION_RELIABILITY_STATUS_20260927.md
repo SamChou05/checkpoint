@@ -213,7 +213,13 @@ reviewer also flagged 31/190 pairs for a repeated prompt/response skeleton;
 the other required both method and format similarity and flagged 4/190.
 The current level-2 quarantine excludes the full-sentence format that this
 historical worksheet contained; its own 20/40/80 replay remains structurally
-unique but has not had a separate blind bank-wide content review.
+unique. In its separate [answer-blind first-20
+review](evidence/level2-quarantine-bank20-20260927/RESULTS.md), both reviewers
+matched 20/20 keys, rated all items difficulty 2–3, and found 120/120 choice
+pairs distinct. They agreed on seven strong cross-question repeats; one
+reviewer flagged 41/190 strong pairs using a broader format criterion, while
+the other flagged 7/190. The current bank therefore still fails a quality
+bar requiring no strong repetition, despite the narrow 5/5 live worker pass.
 
 ## Established causes and fixes
 

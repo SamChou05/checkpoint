@@ -1,0 +1,2545 @@
+{
+  "reviewer": "A",
+  "status": "locked_answer_blind",
+  "sourceWorksheetSha256": "34e0dcf9e673f9791a32af437755d001f6a722fd5e3e7ec5e83e19ab442fbeb7",
+  "rubric": {
+    "rubricFile": "none present in the provided folder",
+    "targetDifficulty": "2–3",
+    "difficultyScale": "2 = direct application with one or two routine steps; 3 = layered agreement, multiple boundary cases, or a less immediate exception.",
+    "oneKeyCriterion": "Exactly one offered choice satisfies the prompt under standard written American English or exact arithmetic.",
+    "withinItemCriterion": "All six unordered choice pairs must differ in the answer they express, not merely in spelling.",
+    "crossItemRatingScale": {
+      "0": "No meaningful method or response-format overlap.",
+      "1": "Only broad topic, notation, or domain/answer surface overlaps.",
+      "2": "A substantive solving step or response format repeats, but the full method-and-format pair does not.",
+      "3": "Strong repetition: the same core solving routine and response format carry from one item to the other; changing numbers, nouns, verbs, or a local trap does not make the pair independent."
+    },
+    "strongCriterion": "Rating 3 requires both a transferable core solving routine and the same requested answer format. For the agreement items, select singular/plural forms for two blanks; for exact fractions, perform a short fraction expression and return one rational value; for bounded-domain equations, find/test one offered x; for counting, enumerate or solve a finite-domain condition and report a count; for extrema, find the boundary satisfying an inequality."
+  },
+  "summary": {
+    "itemCount": 20,
+    "oneKeyItemCount": 20,
+    "difficultyInTargetCount": 20,
+    "choicePairCount": 120,
+    "distinctChoicePairCount": 120,
+    "crossItemPairCount": 190,
+    "crossItemRatingCounts": {
+      "0": 120,
+      "1": 22,
+      "2": 7,
+      "3": 41
+    },
+    "strongPairCount": 41,
+    "weakDistractorCount": 6
+  },
+  "items": [
+    {
+      "id": "Q01",
+      "selectedKey": "B",
+      "difficulty": 2,
+      "keyReason": "Plural clerks sort; singular one holds.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q02",
+      "selectedKey": "C",
+      "difficulty": 2,
+      "keyReason": "Plural cooks prepare; singular chef plans.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q03",
+      "selectedKey": "A",
+      "difficulty": 2,
+      "keyReason": "At x=4, (x+6)(x+1)=10×5=50.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q04",
+      "selectedKey": "C",
+      "difficulty": 2,
+      "keyReason": "6/7+2/4=19/14; multiplying by 3 gives 57/14.",
+      "weakDistractors": [
+        {
+          "choice": "D",
+          "reason": "3/14 has no clear path from the displayed addition and multiplication; the fraction errors in A and B are more diagnostic."
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "selectedKey": "B",
+      "difficulty": 2,
+      "keyReason": "1−(5/6)(7/9)=1−35/54=19/54.",
+      "weakDistractors": [
+        {
+          "choice": "A",
+          "reason": "−17/27 has no clear common operation error leading from 1−35/54."
+        },
+        {
+          "choice": "D",
+          "reason": "34/53 has an unrelated denominator and no clear path from the operands."
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "selectedKey": "A",
+      "difficulty": 3,
+      "keyReason": "The expression is zero at 5 and 12; eight of the ten domain integers remain.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q07",
+      "selectedKey": "A",
+      "difficulty": 2,
+      "keyReason": "The gerund phrase takes requires; plural cooks take measure.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q08",
+      "selectedKey": "D",
+      "difficulty": 2,
+      "keyReason": "Cross multiplication gives 10x+40=13x+13, so x=9.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q09",
+      "selectedKey": "A",
+      "difficulty": 3,
+      "keyReason": "With neither/nor and either/or, the nearer subjects assistants and curator govern sort and checks.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q10",
+      "selectedKey": "D",
+      "difficulty": 2,
+      "keyReason": "8/9+4/6=14/9, whose reciprocal is 9/14.",
+      "weakDistractors": [
+        {
+          "choice": "B",
+          "reason": "23/9 has no clear path from 8/9+4/6 or its reciprocal."
+        },
+        {
+          "choice": "C",
+          "reason": "1 is a generic guess rather than a result of the indicated fraction operations."
+        }
+      ]
+    },
+    {
+      "id": "Q11",
+      "selectedKey": "A",
+      "difficulty": 3,
+      "keyReason": "The number is singular; a number of readers is plural.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q12",
+      "selectedKey": "B",
+      "difficulty": 2,
+      "keyReason": "(7/8)/(3/5)=35/24; adding 1 gives 59/24.",
+      "weakDistractors": [
+        {
+          "choice": "D",
+          "reason": "36/25 has no clear path from the quotient 35/24 or the final addition."
+        }
+      ]
+    },
+    {
+      "id": "Q13",
+      "selectedKey": "A",
+      "difficulty": 2,
+      "keyReason": "The inequality reduces to x≤8, admitting 4 through 8: five integers.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q14",
+      "selectedKey": "D",
+      "difficulty": 2,
+      "keyReason": "Cross multiplication gives 7x≥3x+12, hence the minimum is 3.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q15",
+      "selectedKey": "B",
+      "difficulty": 3,
+      "keyReason": "Most of the letters is plural and takes include; most of the mail is singular and takes arrives.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q16",
+      "selectedKey": "B",
+      "difficulty": 3,
+      "keyReason": "Each of the clerks takes keeps; the compound subject Ava and Ben takes review.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q17",
+      "selectedKey": "D",
+      "difficulty": 2,
+      "keyReason": "5x+18=4x+21 gives x=3.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q18",
+      "selectedKey": "A",
+      "difficulty": 3,
+      "keyReason": "In the inverted clauses, plural returns takes are and singular book takes is.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q19",
+      "selectedKey": "D",
+      "difficulty": 2,
+      "keyReason": "At x=4, x(x+5)=36; larger positive domain values exceed 36.",
+      "weakDistractors": []
+    },
+    {
+      "id": "Q20",
+      "selectedKey": "D",
+      "difficulty": 3,
+      "keyReason": "(x−5)^2<49 means −2<x<12; integers −1 through 11 total 13.",
+      "weakDistractors": []
+    }
+  ],
+  "choicePairJudgments": [
+    {
+      "id": "Q01",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q01",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q01",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q01",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q01",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q01",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q02",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q02",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q02",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q02",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q02",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q02",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q03",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q03",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q03",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q03",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q03",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q03",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q04",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q04",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q04",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q04",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q04",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q04",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q05",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q05",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q05",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q05",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q05",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q05",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q06",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q06",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q06",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q06",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q06",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q06",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q07",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q07",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q07",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q07",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q07",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q07",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q08",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q08",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q08",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q08",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q08",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q08",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q09",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q09",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q09",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q09",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q09",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q09",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q10",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q10",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q10",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q10",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q10",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q10",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q11",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q11",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q11",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q11",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q11",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q11",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q12",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q12",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q12",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q12",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q12",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q12",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q13",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q13",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q13",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q13",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q13",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q13",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q14",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q14",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q14",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q14",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q14",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q14",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q15",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q15",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q15",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q15",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q15",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q15",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q16",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q16",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q16",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q16",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q16",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q16",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q17",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q17",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q17",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q17",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q17",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q17",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q18",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q18",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q18",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q18",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q18",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q18",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different ordered verb-form pairs"
+    },
+    {
+      "id": "Q19",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q19",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q19",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q19",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q19",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q19",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q20",
+      "choiceA": "A",
+      "choiceB": "B",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q20",
+      "choiceA": "A",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q20",
+      "choiceA": "A",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q20",
+      "choiceA": "B",
+      "choiceB": "C",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q20",
+      "choiceA": "B",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    },
+    {
+      "id": "Q20",
+      "choiceA": "C",
+      "choiceB": "D",
+      "semanticallyDistinct": true,
+      "basis": "Different exact numeric values"
+    }
+  ],
+  "crossItemRatings": [
+    {
+      "itemA": "Q01",
+      "itemB": "Q02",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q03",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q04",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q05",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q06",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q07",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q08",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q09",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q10",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q11",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q12",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q13",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q14",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q15",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q16",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q18",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q03",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q04",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q05",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q06",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q07",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q08",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q09",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q10",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q11",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q12",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q13",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q14",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q15",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q16",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q18",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q04",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q05",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q06",
+      "rating": 2,
+      "strong": false,
+      "basis": "Substantial shared algebraic step or finite-domain inequality method, but a different answer request or core condition."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q07",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q08",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same bounded-integer equation task: find or test one offered x value."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q09",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q10",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q11",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q12",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q13",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q14",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q15",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q16",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q17",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same bounded-integer equation task: find or test one offered x value."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q19",
+      "rating": 2,
+      "strong": false,
+      "basis": "Substantial shared algebraic step or finite-domain inequality method, but a different answer request or core condition."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q20",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q05",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same exact-value fraction-arithmetic procedure and single-rational-answer format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q06",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q07",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q08",
+      "rating": 1,
+      "strong": false,
+      "basis": "Fraction notation or manipulation overlaps, but solving for x differs from exact-value arithmetic."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q09",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q10",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same exact-value fraction-arithmetic procedure and single-rational-answer format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q11",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q12",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same exact-value fraction-arithmetic procedure and single-rational-answer format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q13",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q14",
+      "rating": 1,
+      "strong": false,
+      "basis": "Fraction notation or manipulation overlaps, but solving for x differs from exact-value arithmetic."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q15",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q16",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q06",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q07",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q08",
+      "rating": 1,
+      "strong": false,
+      "basis": "Fraction notation or manipulation overlaps, but solving for x differs from exact-value arithmetic."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q09",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q10",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same exact-value fraction-arithmetic procedure and single-rational-answer format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q11",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q12",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same exact-value fraction-arithmetic procedure and single-rational-answer format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q13",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q14",
+      "rating": 1,
+      "strong": false,
+      "basis": "Fraction notation or manipulation overlaps, but solving for x differs from exact-value arithmetic."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q15",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q16",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q07",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q08",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q09",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q10",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q11",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q12",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q13",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same finite-domain counting task: evaluate a condition over integers and report the count."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q14",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q15",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q16",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q17",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q19",
+      "rating": 2,
+      "strong": false,
+      "basis": "Substantial shared algebraic step or finite-domain inequality method, but a different answer request or core condition."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q20",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same finite-domain counting task: evaluate a condition over integers and report the count."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q08",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q09",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q10",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q11",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q12",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q13",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q14",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q15",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q16",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q18",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q09",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q10",
+      "rating": 1,
+      "strong": false,
+      "basis": "Fraction notation or manipulation overlaps, but solving for x differs from exact-value arithmetic."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q11",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q12",
+      "rating": 1,
+      "strong": false,
+      "basis": "Fraction notation or manipulation overlaps, but solving for x differs from exact-value arithmetic."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q13",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q14",
+      "rating": 2,
+      "strong": false,
+      "basis": "Substantial shared algebraic step or finite-domain inequality method, but a different answer request or core condition."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q15",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q16",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q17",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same bounded-integer equation task: find or test one offered x value."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q19",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q20",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q10",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q11",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q12",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q13",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q14",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q15",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q16",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q18",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q11",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q12",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same exact-value fraction-arithmetic procedure and single-rational-answer format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q13",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q14",
+      "rating": 1,
+      "strong": false,
+      "basis": "Fraction notation or manipulation overlaps, but solving for x differs from exact-value arithmetic."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q15",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q16",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q12",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q13",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q14",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q15",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q16",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q18",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q13",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q14",
+      "rating": 1,
+      "strong": false,
+      "basis": "Fraction notation or manipulation overlaps, but solving for x differs from exact-value arithmetic."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q15",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q16",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different core mathematical procedure and response format."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q14",
+      "rating": 2,
+      "strong": false,
+      "basis": "Substantial shared algebraic step or finite-domain inequality method, but a different answer request or core condition."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q15",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q16",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q17",
+      "rating": 2,
+      "strong": false,
+      "basis": "Substantial shared algebraic step or finite-domain inequality method, but a different answer request or core condition."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q19",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q20",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same finite-domain counting task: evaluate a condition over integers and report the count."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q15",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q16",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q17",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q19",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same finite-domain inequality task: identify the extreme satisfying x."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q20",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q16",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q18",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q17",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q18",
+      "rating": 3,
+      "strong": true,
+      "basis": "Same ordered two-blank singular/plural agreement task and response format; the local agreement trap changes."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q17",
+      "itemB": "Q18",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q17",
+      "itemB": "Q19",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q17",
+      "itemB": "Q20",
+      "rating": 1,
+      "strong": false,
+      "basis": "Both use a bounded integer domain and a numeric answer, but the task and method differ."
+    },
+    {
+      "itemA": "Q18",
+      "itemB": "Q19",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q18",
+      "itemB": "Q20",
+      "rating": 0,
+      "strong": false,
+      "basis": "Different content and response procedure."
+    },
+    {
+      "itemA": "Q19",
+      "itemB": "Q20",
+      "rating": 2,
+      "strong": false,
+      "basis": "Substantial shared algebraic step or finite-domain inequality method, but a different answer request or core condition."
+    }
+  ],
+  "strongPairs": [
+    {
+      "itemA": "Q01",
+      "itemB": "Q02"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q07"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q09"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q11"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q15"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q16"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q18"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q07"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q09"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q11"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q15"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q16"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q18"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q08"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q17"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q05"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q10"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q12"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q10"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q12"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q13"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q20"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q09"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q11"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q15"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q16"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q18"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q17"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q11"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q15"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q16"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q18"
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q12"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q15"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q16"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q18"
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q20"
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q19"
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q16"
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q18"
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q18"
+    }
+  ]
+}

@@ -21,7 +21,31 @@ The accepted author capture is pinned at SHA-256 `17575d5a62b1fde235c3d43c7c9bc1
 
 The numeric signature counts are unchanged from the [singular-first selector replay](../selector-singular-first-bank20-20260927/RESULTS.md): 0/12/72 overall, or 0/4/24 in each numeric slot. Cross-family signature pairs are 0/2/8. The quarantine removes all full-sentence selections from the mapped level-2 slot: slot 4 now has 4/8/16 two-blank items at 20/40/80, rather than the previous two-blank/full-sentence splits of 2/2, 5/3, and 12/4. Its same-format pair count rises from 2/13/72 to 6/28/120. Across all five slots, this raises same-format pairs from 26/125/552 to **30/140/600**. Same-family pairs change from 1/18/106 to **0/18/112**. These are structural proxies for repetition, not answer-blind judgments of semantic similarity.
 
-The first 20 contain one each of the slot-4 `gerund`, `compound`, `number`, and `correlative` families. Four public worksheet items (Q07, Q09, Q11, Q16) differ from the prior singular-first worksheet; the other 16 prompt/choice objects are identical under the fixed shuffle. Every row still needs independent answer-blind review for the difficulty target, unique defensible answer, meaningful distractors, and cross-question similarity. The [worksheet](worksheet.json) omits the code-owned key; reviewers should lock their judgments before opening the private map.
+The first 20 contain one each of the slot-4 `gerund`, `compound`, `number`, and `correlative` families. Four public worksheet items (Q07, Q09, Q11, Q16) differ from the prior singular-first worksheet; the other 16 prompt/choice objects are identical under the fixed shuffle. The [worksheet](worksheet.json) omits the code-owned key.
+
+## Locked answer-blind first-20 review
+
+[Reviewer A](review-a.json) (SHA-256
+`7d752b7f989484102b0853591062d61d24e302aefdd853806bd3ae403ef12c77`)
+and [reviewer B](review-b.json) (SHA-256
+`47a04135ba404a17c891bfddaafe108f5cccf0df77822e1533531826347e716b`)
+independently solved the same keyless worksheet before the private answer
+map was opened. Both selected the code-owned key on **20/20** items, found no
+second defensible key, rated all 20 items difficulty 2–3, and judged **120/120**
+within-item choice pairs meaningfully distinct. These findings support the
+closed constructor's exact answers and option distinctness in this sample;
+both reviewers also noted some weakly plausible numeric distractors.
+
+Both reviewed **all 190** cross-item pairs and agreed that seven pairs strongly
+repeat a solving method or response format: Q02/Q18, Q03/Q08, Q03/Q17,
+Q06/Q13, Q06/Q20, Q08/Q17, and Q13/Q20. B used a narrower strong criterion
+and flagged **7/190**; A also counted recurring two-blank agreement and answer
+frames as strong, flagging **41/190**, including all seven from B. The counts
+reflect different novelty rubrics, but both conclude the 20-item bank fails
+their no-strong-repeat criterion. Removing the level-4-prone full-sentence
+format preserves one-key and within-question distinctness while making bank
+format repetition worse. This offline replay is not a live 20-item worker
+trial and does not estimate future model yield.
 
 Reproduce from the repository root with the backend test dependencies installed:
 
