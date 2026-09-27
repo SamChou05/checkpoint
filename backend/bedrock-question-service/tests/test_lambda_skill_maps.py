@@ -5,6 +5,7 @@ import unittest
 import uuid
 
 import lambda_function
+from question_generation import _coverage_notes_text
 from lambda_test_support import (
     BackendTestCase,
     FakeBedrockClient,
@@ -16,6 +17,23 @@ from lambda_test_support import (
 
 
 class LambdaSkillMapTests(BackendTestCase):
+    def test_novelty_summary_keeps_the_newest_bank_ideas(self):
+        coverage = [
+            {
+                "topic": "Virtual Memory",
+                "prompt": f"Compare page replacement scenario {index}?",
+                "expectedAnswer": f"Decision {index}",
+            }
+            for index in range(30)
+        ]
+
+        notes = _coverage_notes_text({"existingQuestionCoverage": coverage})
+
+        self.assertIn("scenario 29? -> Decision 29", notes)
+        self.assertIn("scenario 12? -> Decision 12", notes)
+        self.assertNotIn("scenario 11? -> Decision 11", notes)
+        self.assertLess(notes.index("scenario 29?"), notes.index("scenario 28?"))
+
     def test_skill_map_mode_is_prompted_when_requested(self):
         payload = _request_payload(target_count=3, minimum_difficulty=3)
         payload["goal"]["focusAreas"] = ""

@@ -1581,7 +1581,10 @@ def _coverage_notes_text(request: dict[str, Any]) -> str:
 
     notes = []
     seen = set()
-    for item in coverage:
+    # Worker coverage is ordered by creation time. With a bounded prompt budget,
+    # show the most recently tested ideas rather than the oldest part of the
+    # thirty-item window, which can omit the entire latest refill batch.
+    for item in reversed(coverage):
         topic = _clip(_clean_text(item.get("topic")), 40)
         prompt = _clip(_clean_text(item.get("prompt")), 120)
         answer = _clip(_clean_text(item.get("expectedAnswer")), 90)
