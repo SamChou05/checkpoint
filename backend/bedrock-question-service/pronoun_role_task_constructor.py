@@ -106,7 +106,7 @@ def _single_speaker_question(scene: _SingleSpeakerScene, order: str, ordinal: in
     quote = (f"{plan} after {condition}" if order == "forward"
              else f"Before {condition}, {plan}")
     prompt = (f'{speaker} told {addressee}, "{quote}." '
-              "Which account matches the two proposed actions and object owners?")
+              "If the actions occur, who would do each, and who owns the two objects?")
     names = {"speaker": speaker, "addressee": addressee}
     claims = _ordered_claims(_SINGLE_ROLE_MAPS, ordinal)
 

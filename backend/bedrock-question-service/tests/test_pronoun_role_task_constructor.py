@@ -30,6 +30,17 @@ def task(scene: str, order: str = "forward") -> dict:
 
 
 class PronounRoleTaskConstructorTests(unittest.TestCase):
+    def test_single_speaker_prompt_does_not_ascribe_a_plan_to_the_addressee(self):
+        for scene in SINGLE_EXPECTED:
+            for order in ORDERS:
+                with self.subTest(scene=scene, order=order):
+                    question = compile_question(task(scene, order))
+                    self.assertTrue(question["prompt"].endswith(
+                        "If the actions occur, who would do each, and who owns the two objects?"))
+                    self.assertNotIn("two proposed actions", question["prompt"])
+                    self.assertNotRegex(question["prompt"], r"\b(?:plans|promises|commits)\b")
+                    self.assertIn(" would ", question["expectedAnswer"])
+
     def test_closed_task_contract_rejects_extensions_and_wrong_types(self):
         schema = task_schema()
         self.assertEqual(schema["additionalProperties"], False)
