@@ -123,8 +123,17 @@ schema is now 2,357 bytes, version 12. A separately frozen
 confirmed that Bedrock accepts it. All five tasks compiled, including one of
 the new centered-square numeric tasks. Two answer-blind reviewers chose all
 five code-owned keys and found distinct within-item choices, but both flagged
-repeated English format. This is author-only evidence; full-worker and
-repeated-bank yield still need qualification.
+repeated English format. A separately frozen
+[v12 full-worker trial](evidence/combined-v12-full-worker-qualification-20260927/RESULTS.md)
+made three Converse calls in 98.275 seconds and compiled/sanitized all five
+tasks, but returned **4/5**: the final reviewer rated a full-sentence English
+item difficulty 4 and the level-2 agreement policy vetoed it. Two locked
+answer-blind reviewers independently selected all five code-owned keys,
+found all 30 choice pairs distinct, and rated every item difficulty 2–3,
+including the rejected item at 3. A post-lock audit found all five main
+explanations and 20 choice-feedback entries sound. This is a failed worker
+trial with a measured difficulty-calibration disagreement; it cannot be
+retroactively counted as 5/5. Repeated-bank yield also remains unqualified.
 
 The [current combined-source offline replay](evidence/combined-current-bank-replay-20260927/RESULTS.md)
 constructed 20/40/80 unique exact stems, but found 1/14/78 same numeric
@@ -180,8 +189,8 @@ objectives and question formats for a 40/80-item bank, with full-bank
 history and answer-blind cross-bank review. The 2,156-byte source passed one
 full-worker trial with its own solver/reviewer calls and independent content
 review; the 2,226-byte source passed one author/schema trial but not the full
-worker. The current 2,357-byte source passed one author/schema trial but not
-the full worker. A repeated-bank trial must
+worker. The current 2,357-byte source passed one author/schema trial but failed
+its one full-worker trial at 4/5. A repeated-bank trial must
 hold the key, difficulty, teaching, distinctness, and deadline properties over
 the desired inventory size. Schema compliance or one successful batch cannot
 replace those tests.

@@ -1,0 +1,423 @@
+{
+  "reviewer": "A",
+  "reviewType": "independent_answer_blind",
+  "worksheetSha256": "21371050818585c2e443e58763e0082a1633fc22a3ea6d387f979eb9ca0a2ae6",
+  "difficultyTarget": "2–3",
+  "coverage": {
+    "items": 5,
+    "withinItemChoicePairs": 30,
+    "crossItemPairs": 10
+  },
+  "items": [
+    {
+      "id": "Q01",
+      "selectedChoice": "B",
+      "additionalViableKeys": [],
+      "ambiguousOrNoAnswer": false,
+      "difficulty1To5": 2,
+      "difficultyRationale": "Two exact fraction steps: divide, then add one; within target 2–3.",
+      "independentSolution": "(6/7)/(4/6)=(6/7)(6/4)=9/7; adding 1 gives 16/7.",
+      "withinItemChoicePairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        }
+      ],
+      "otherConcerns": []
+    },
+    {
+      "id": "Q02",
+      "selectedChoice": "C",
+      "additionalViableKeys": [],
+      "ambiguousOrNoAnswer": false,
+      "difficulty1To5": 2,
+      "difficultyRationale": "Simplify a linear inequality and count five bounded integers; within target 2–3.",
+      "independentSolution": "3(x+2)-2x=x+6<=13 means x<=7; integers 3, 4, 5, 6, and 7 satisfy it, for a count of 5.",
+      "withinItemChoicePairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        }
+      ],
+      "otherConcerns": []
+    },
+    {
+      "id": "Q03",
+      "selectedChoice": "A",
+      "additionalViableKeys": [],
+      "ambiguousOrNoAnswer": false,
+      "difficulty1To5": 3,
+      "difficultyRationale": "Two inverted clauses require locating each subject after the verb; within target 2–3.",
+      "independentSolution": "The postverbal subject notes is plural, so are; sample is singular, so is.",
+      "withinItemChoicePairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The verb pairs differ in both positions, so they assert different agreement choices."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The verb pairs differ in the first position, so they assert different agreement choices."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The verb pairs differ in the second position, so they assert different agreement choices."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The verb pairs differ in the second position, so they assert different agreement choices."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The verb pairs differ in the first position, so they assert different agreement choices."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The verb pairs differ in both positions, so they assert different agreement choices."
+        }
+      ],
+      "otherConcerns": []
+    },
+    {
+      "id": "Q04",
+      "selectedChoice": "B",
+      "additionalViableKeys": [],
+      "ambiguousOrNoAnswer": false,
+      "difficulty1To5": 3,
+      "difficultyRationale": "Clear a positive denominator and solve a linear equation; within target 2–3.",
+      "independentSolution": "9(x+5)=13(x+1) gives 9x+45=13x+13, hence x=8.",
+      "withinItemChoicePairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The choices are different numerical values for the exact requested result."
+        }
+      ],
+      "otherConcerns": []
+    },
+    {
+      "id": "Q05",
+      "selectedChoice": "B",
+      "additionalViableKeys": [],
+      "ambiguousOrNoAnswer": false,
+      "difficulty1To5": 3,
+      "difficultyRationale": "Check four distinct agreement constructions rather than fill one obvious blank; within target 2–3.",
+      "independentSolution": "The nearer subject assistants in neither...nor is plural and takes sort. The other sentences have agreement errors with a gerund, a compound subject modified by each, or each of.",
+      "withinItemChoicePairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with distinct subject–verb constructions."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with distinct subject–verb constructions."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with distinct subject–verb constructions."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with distinct subject–verb constructions."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with distinct subject–verb constructions."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with distinct subject–verb constructions."
+        }
+      ],
+      "otherConcerns": []
+    }
+  ],
+  "crossItemPairs": [
+    {
+      "items": [
+        "Q01",
+        "Q02"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Exact fraction evaluation and counting a bounded linear-inequality interval use different steps; both end in one numerical choice."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q03"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Exact arithmetic and inverted-clause agreement have unrelated methods and answer forms."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q04"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "moderate",
+      "overallSimilarity": "low",
+      "rationale": "Both show rational expressions and request one value, but Q01 evaluates q while Q04 solves an equation for x."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q05"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Exact arithmetic and sentence agreement have unrelated methods and answer forms."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q03"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Counting inequality solutions and filling agreement verbs have unrelated methods and answer forms."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q04"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "moderate",
+      "overallSimilarity": "moderate",
+      "rationale": "Both simplify a relation in x over a bounded integer domain; Q02 counts inequality solutions whereas Q04 chooses an equality solution."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q05"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Counting bounded integers and selecting a grammatical sentence have unrelated methods and answer forms."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q04"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Inverted-clause agreement and rational-equation solving have unrelated methods and answer forms."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q05"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both test present-tense subject–verb agreement, but Q03 fills two inverted clauses and Q05 compares four full sentences with different subject constructions."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q05"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Rational-equation solving and sentence agreement have unrelated methods and answer forms."
+    }
+  ],
+  "findings": {
+    "additionalViableKeys": 0,
+    "meaningfullyDistinctChoicePairs": 30,
+    "strongCrossItemPairs": 0,
+    "ambiguities": [],
+    "misleadingFeedbackConcerns": [],
+    "weakDistractors": []
+  }
+}

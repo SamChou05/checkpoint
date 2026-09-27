@@ -1,0 +1,397 @@
+{
+  "reviewer": "B",
+  "blind_review": true,
+  "worksheet_sha256": "21371050818585c2e443e58763e0082a1633fc22a3ea6d387f979eb9ca0a2ae6",
+  "rubric_read": true,
+  "items": [
+    {
+      "id": "Q01",
+      "key": "B",
+      "other_viable_keys": [],
+      "difficulty": 2,
+      "difficulty_rationale": "(6/7) divided by (4/6) is 9/7, then adding 1 gives 16/7. This requires two fraction operations but little abstraction.",
+      "self_contained": true,
+      "ambiguity": "none",
+      "distractor_note": "9/7 is the intermediate result before adding 1; the other fractions remain distinct wrong values.",
+      "target_difficulty_2_to_3": true,
+      "within_item_choice_pairs": [
+        {
+          "pair": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        }
+      ],
+      "within_item_non_distinct_pairs": []
+    },
+    {
+      "id": "Q02",
+      "key": "C",
+      "other_viable_keys": [],
+      "difficulty": 2,
+      "difficulty_rationale": "The left side simplifies to x + 6, so x <= 7; the integers 3, 4, 5, 6, 7 give a count of 5. The domain and inclusive inequality matter.",
+      "self_contained": true,
+      "ambiguity": "none",
+      "distractor_note": "All four count choices are close, so off-by-one counting is plausible; no alternative boundary reading is supported by the prompt.",
+      "target_difficulty_2_to_3": true,
+      "within_item_choice_pairs": [
+        {
+          "pair": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        }
+      ],
+      "within_item_non_distinct_pairs": []
+    },
+    {
+      "id": "Q03",
+      "key": "A",
+      "other_viable_keys": [],
+      "difficulty": 3,
+      "difficulty_rationale": "In the first inverted clause the postposed subject is plural notes, requiring are; in the second it is singular sample, requiring is. Identifying both subjects amid nearby nouns is moderately demanding.",
+      "self_contained": true,
+      "ambiguity": "none",
+      "distractor_note": "The four ordered pairs cover both verb choices for each blank; each wrong pair has at least one agreement error.",
+      "target_difficulty_2_to_3": true,
+      "within_item_choice_pairs": [
+        {
+          "pair": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        }
+      ],
+      "within_item_non_distinct_pairs": []
+    },
+    {
+      "id": "Q04",
+      "key": "B",
+      "other_viable_keys": [],
+      "difficulty": 3,
+      "difficulty_rationale": "With x in 0..15, x + 1 is nonzero. Cross-multiplication gives 9(x+5)=13(x+1), hence 32=4x and x=8. This is a one-variable rational equation.",
+      "self_contained": true,
+      "ambiguity": "none",
+      "distractor_note": "The offered integers are near the key but yield different ratios; the singular offered-value wording is unambiguous.",
+      "target_difficulty_2_to_3": true,
+      "within_item_choice_pairs": [
+        {
+          "pair": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        }
+      ],
+      "within_item_non_distinct_pairs": []
+    },
+    {
+      "id": "Q05",
+      "key": "B",
+      "other_viable_keys": [],
+      "difficulty": 3,
+      "difficulty_rationale": "In neither...nor, the plural nearer subject assistants takes sort. Verifying is a singular gerund subject (demands); Maya and Theo is plural despite each (prepare); each of the guests is singular (receives).",
+      "self_contained": true,
+      "ambiguity": "none",
+      "distractor_note": "The stem mentions several settings but the choices are independent sentences; that context is unnecessary and slightly noisy. The wrong options represent different agreement mistakes.",
+      "target_difficulty_2_to_3": true,
+      "within_item_choice_pairs": [
+        {
+          "pair": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        },
+        {
+          "pair": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true
+        }
+      ],
+      "within_item_non_distinct_pairs": []
+    }
+  ],
+  "cross_item_pairs": [
+    {
+      "pair": [
+        "Q01",
+        "Q02"
+      ],
+      "method_overlap": "low",
+      "response_format_overlap": "moderate",
+      "overall_overlap": "moderate",
+      "rationale": "Both offer numeric choices, but fraction evaluation and counting solutions of a linear inequality use different solution paths."
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q03"
+      ],
+      "method_overlap": "none",
+      "response_format_overlap": "none",
+      "overall_overlap": "none",
+      "rationale": "Exact fraction evaluation and choosing two verb forms differ in method and answer type."
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q04"
+      ],
+      "method_overlap": "moderate",
+      "response_format_overlap": "moderate",
+      "overall_overlap": "moderate",
+      "rationale": "Both use rational-number manipulation and numeric choices; Q01 evaluates an expression while Q04 solves an equation for x."
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q05"
+      ],
+      "method_overlap": "none",
+      "response_format_overlap": "none",
+      "overall_overlap": "none",
+      "rationale": "Fraction arithmetic and selecting a grammatical sentence differ in method and answer type."
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q03"
+      ],
+      "method_overlap": "none",
+      "response_format_overlap": "none",
+      "overall_overlap": "none",
+      "rationale": "Bounded inequality counting and inverted-clause agreement differ in method and answer type."
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q04"
+      ],
+      "method_overlap": "low",
+      "response_format_overlap": "moderate",
+      "overall_overlap": "moderate",
+      "rationale": "Both use a domain/condition stem and numeric options, but one counts solutions to a linear inequality while the other solves a rational equation."
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q05"
+      ],
+      "method_overlap": "none",
+      "response_format_overlap": "none",
+      "overall_overlap": "none",
+      "rationale": "Numeric counting and sentence-level agreement selection differ in method and answer type."
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q04"
+      ],
+      "method_overlap": "none",
+      "response_format_overlap": "none",
+      "overall_overlap": "none",
+      "rationale": "Postposed-subject agreement and rational-equation solving differ in method and answer type."
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q05"
+      ],
+      "method_overlap": "moderate",
+      "response_format_overlap": "low",
+      "overall_overlap": "moderate",
+      "rationale": "Both require identifying the subject and its number to enforce verb agreement, but Q03 fills an ordered verb pair in inverted clauses and Q05 selects a complete sentence across varied rules."
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q05"
+      ],
+      "method_overlap": "none",
+      "response_format_overlap": "none",
+      "overall_overlap": "none",
+      "rationale": "Solving a rational equation and selecting a grammatical sentence differ in method and answer type."
+    }
+  ],
+  "coverage": {
+    "items": 5,
+    "within_item_choice_pairs": 30,
+    "cross_item_pairs": 10
+  },
+  "strong_cross_item_pairs": [],
+  "overall_observations": "All five prompts support one apparent key each and are self-contained. Numeric items share a numeric answer format, but their operations differ. The two English items share an agreement objective while testing different sentence structures. Q05 includes unnecessary setup in its stem; this does not create a second key."
+}

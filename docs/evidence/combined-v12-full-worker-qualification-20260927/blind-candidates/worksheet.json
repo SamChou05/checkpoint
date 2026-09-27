@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "id": "Q01",
+      "prompt": "Let q be a unitless number, defined by q = (((6 / 7) / (4 / 6)) + 1). What is its exact value?",
+      "choices": {
+        "A": "5/4",
+        "B": "16/7",
+        "C": "10/7",
+        "D": "9/7"
+      }
+    },
+    {
+      "id": "Q02",
+      "prompt": "Let x be a unitless number. Its domain is integers from 3 through 10, inclusive. Condition: ((3 * (x + 2)) - (2 * x)) <= 13. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "3",
+        "B": "6",
+        "C": "5",
+        "D": "4"
+      }
+    },
+    {
+      "id": "Q03",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the scientist ___ the notes from the lab, while near the technicians ___ the sample from the lab. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "are; is",
+        "B": "is; are",
+        "C": "is; is",
+        "D": "are; are"
+      }
+    },
+    {
+      "id": "Q04",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 5) / (x + 1)) = (13 / 9). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "6",
+        "B": "8",
+        "C": "9",
+        "D": "7"
+      }
+    },
+    {
+      "id": "Q05",
+      "prompt": "An editor compares sentences about Maya and Theo, the assistants, and verifying the totals. Which sentence uses present-tense subject-verb agreement correctly in standard written American English?",
+      "choices": {
+        "A": "Verifying the totals demand careful work.",
+        "B": "Neither the curator nor the assistants sort the records.",
+        "C": "Maya and Theo each prepares lunch.",
+        "D": "Each of the guests receive a plate."
+      }
+    }
+  ]
+}

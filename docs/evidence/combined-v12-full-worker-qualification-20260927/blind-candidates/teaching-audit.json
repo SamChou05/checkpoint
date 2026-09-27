@@ -1,0 +1,294 @@
+{
+  "auditType": "post_lock_teaching_audit",
+  "captureSha256": "fe66f66fe9bc1b8eefa62c167447e73a62d41cf362850a3db8cbc912298af31d",
+  "worksheetSha256": "21371050818585c2e443e58763e0082a1633fc22a3ea6d387f979eb9ca0a2ae6",
+  "blindReviewASha256": "b5b6487b4351a3ae0d968e48eb06070264fcda17793c0aae1f128b551e8cbb0f",
+  "planSha256FromCapture": "bbac67ed6255db66c20404f37470a5c92a53e86d1a49a0ca41c90015f8f5217b",
+  "sourceCommitFromCapture": "01439703d647ab17246c4f9c821a4dd05b5b2a99",
+  "sourceHashesFromCapture": {
+    "backend/bedrock-question-service/agreement_task_constructor.py": "6a23d8245b9a9f3e9191eae108194a5df8a31cfab6a783700f7284c1e8be086e",
+    "backend/bedrock-question-service/mapped_quantitative_families.py": "1e93451560219eaaaf21db9edc3ee9c617c4d69f89f8313ec91300428d74dec6",
+    "backend/bedrock-question-service/quantitative_task_compiler.py": "031e27a338b2b0f3db1e75e94f4e91b35b36537f9d226f530429b9aeeb701775",
+    "backend/bedrock-question-service/question_generation.py": "4dfbecdb339077a4a125bfb3327c4ca8ab4ee8e6517cdc4b7b9645ee43c2b75e",
+    "backend/bedrock-question-service/question_teaching.py": "cbc8df3cb2dfeda54ddf1d3f9acd85e7becacf48d3b10982eb7ae885ffe55415",
+    "backend/bedrock-question-service/question_verification.py": "03d452d40b49ff2e985707c6104b5f0196716753bc9dc4eceda01c9ce9c9985c",
+    "backend/bedrock-question-service/verification_policy.py": "26d18cf8105cceba0cb694af85c044c2574d9b0080bd28f1d493035e29044519"
+  },
+  "coverage": {
+    "sanitizedCandidates": 5,
+    "mainExplanations": 5,
+    "perChoiceFeedbackEntries": 20,
+    "returnedCandidates": 4
+  },
+  "items": [
+    {
+      "id": "Q01",
+      "captureOriginalSlot": 0,
+      "candidateStage": "sanitized",
+      "provenanceKind": "compiled_quantitative",
+      "codeOwnedLearnerFieldsMatch": true,
+      "returnedByWorker": true,
+      "blindSelectedChoice": "B",
+      "blindSelectedText": "16/7",
+      "capturedExpectedAnswer": "16/7",
+      "keyAgreesWithBlindReview": true,
+      "mainExplanationSound": true,
+      "mainExplanationMisleading": false,
+      "mainExplanationReason": "Correctly evaluates (6/7)/(4/6)=9/7 and then adds 1 to obtain 16/7. The two preliminary reciprocal explanations are wordy but valid.",
+      "perChoiceFeedback": [
+        {
+          "choice": "A",
+          "choiceText": "5/4",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "5/4 is refuted; adding numerator to numerator and denominator to denominator in 9/7 + 1/1 would produce 10/8 = 5/4, so the stated error path is plausible."
+        },
+        {
+          "choice": "B",
+          "choiceText": "16/7",
+          "sound": true,
+          "misleading": false,
+          "judgment": "correct",
+          "reason": "Correct answer 16/7 is accurately supported."
+        },
+        {
+          "choice": "C",
+          "choiceText": "10/7",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "10/7 is refuted; treating 1 as 1/7 rather than 7/7 explains this distractor."
+        },
+        {
+          "choice": "D",
+          "choiceText": "9/7",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "9/7 is the intermediate quotient, so stopping before the final addition explains this distractor."
+        }
+      ],
+      "allPerChoiceFeedbackSound": true,
+      "misleadingWording": null,
+      "teachingConcern": null
+    },
+    {
+      "id": "Q02",
+      "captureOriginalSlot": 2,
+      "candidateStage": "sanitized",
+      "provenanceKind": "compiled_quantitative",
+      "codeOwnedLearnerFieldsMatch": true,
+      "returnedByWorker": true,
+      "blindSelectedChoice": "C",
+      "blindSelectedText": "5",
+      "capturedExpectedAnswer": "5",
+      "keyAgreesWithBlindReview": true,
+      "mainExplanationSound": true,
+      "mainExplanationMisleading": false,
+      "mainExplanationReason": "Correctly checks x=3 through 10, obtaining true for 3–7 and false for 8–10, so the count is 5.",
+      "perChoiceFeedback": [
+        {
+          "choice": "A",
+          "choiceText": "3",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "3 is accurately identified as too few."
+        },
+        {
+          "choice": "B",
+          "choiceText": "6",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "6 is accurately identified as too many."
+        },
+        {
+          "choice": "C",
+          "choiceText": "5",
+          "sound": true,
+          "misleading": false,
+          "judgment": "correct",
+          "reason": "5 is accurately identified as the correct count."
+        },
+        {
+          "choice": "D",
+          "choiceText": "4",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "4 is accurately identified as too few."
+        }
+      ],
+      "allPerChoiceFeedbackSound": true,
+      "misleadingWording": null,
+      "teachingConcern": "The wrong-choice feedback gives only too few or too many, without identifying a missed or extra integer; the main explanation provides the full enumeration."
+    },
+    {
+      "id": "Q03",
+      "captureOriginalSlot": 3,
+      "candidateStage": "sanitized",
+      "provenanceKind": "code_owned_agreement",
+      "codeOwnedLearnerFieldsMatch": true,
+      "returnedByWorker": true,
+      "blindSelectedChoice": "A",
+      "blindSelectedText": "are; is",
+      "capturedExpectedAnswer": "are; is",
+      "keyAgreesWithBlindReview": true,
+      "mainExplanationSound": true,
+      "mainExplanationMisleading": false,
+      "mainExplanationReason": "Correctly identifies postverbal plural notes and singular sample, yielding are; is.",
+      "perChoiceFeedback": [
+        {
+          "choice": "A",
+          "choiceText": "are; is",
+          "sound": true,
+          "misleading": false,
+          "judgment": "correct",
+          "reason": "Both verb forms agree with their postverbal subjects."
+        },
+        {
+          "choice": "B",
+          "choiceText": "is; are",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "is; are reverses both required forms; the feedback identifies both errors."
+        },
+        {
+          "choice": "C",
+          "choiceText": "is; is",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "is; is misses the plural first subject; the feedback identifies that error."
+        },
+        {
+          "choice": "D",
+          "choiceText": "are; are",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "are; are misses the singular second subject; the feedback identifies that error."
+        }
+      ],
+      "allPerChoiceFeedbackSound": true,
+      "misleadingWording": null,
+      "teachingConcern": null
+    },
+    {
+      "id": "Q04",
+      "captureOriginalSlot": 1,
+      "candidateStage": "sanitized",
+      "provenanceKind": "compiled_quantitative",
+      "codeOwnedLearnerFieldsMatch": true,
+      "returnedByWorker": true,
+      "blindSelectedChoice": "B",
+      "blindSelectedText": "8",
+      "capturedExpectedAnswer": "8",
+      "keyAgreesWithBlindReview": true,
+      "mainExplanationSound": true,
+      "mainExplanationMisleading": false,
+      "mainExplanationReason": "Correctly notes x+1 is nonzero on 0–15, cross-multiplies, and obtains the unique solution x=8.",
+      "perChoiceFeedback": [
+        {
+          "choice": "A",
+          "choiceText": "6",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "At x=6, 11/7 differs from 13/9, as stated."
+        },
+        {
+          "choice": "B",
+          "choiceText": "8",
+          "sound": true,
+          "misleading": false,
+          "judgment": "correct",
+          "reason": "At x=8, 13/9 equals 13/9, as stated."
+        },
+        {
+          "choice": "C",
+          "choiceText": "9",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "At x=9, 7/5 differs from 13/9, as stated."
+        },
+        {
+          "choice": "D",
+          "choiceText": "7",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "At x=7, 3/2 differs from 13/9, as stated."
+        }
+      ],
+      "allPerChoiceFeedbackSound": true,
+      "misleadingWording": null,
+      "teachingConcern": null
+    },
+    {
+      "id": "Q05",
+      "captureOriginalSlot": 4,
+      "candidateStage": "sanitized",
+      "provenanceKind": "code_owned_agreement",
+      "codeOwnedLearnerFieldsMatch": true,
+      "returnedByWorker": false,
+      "blindSelectedChoice": "B",
+      "blindSelectedText": "Neither the curator nor the assistants sort the records.",
+      "capturedExpectedAnswer": "Neither the curator nor the assistants sort the records.",
+      "keyAgreesWithBlindReview": true,
+      "mainExplanationSound": true,
+      "mainExplanationMisleading": false,
+      "mainExplanationReason": "Correctly selects neither...nor with plural nearer subject assistants and rejects the three other agreement errors.",
+      "perChoiceFeedback": [
+        {
+          "choice": "A",
+          "choiceText": "Verifying the totals demand careful work.",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "A gerund phrase is singular here, so demands is the needed verb."
+        },
+        {
+          "choice": "B",
+          "choiceText": "Neither the curator nor the assistants sort the records.",
+          "sound": true,
+          "misleading": false,
+          "judgment": "correct",
+          "reason": "The nearer plural assistants licenses sort; this is the correct sentence."
+        },
+        {
+          "choice": "C",
+          "choiceText": "Maya and Theo each prepares lunch.",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "The compound subject Maya and Theo remains plural with postpositive each, so prepare is needed."
+        },
+        {
+          "choice": "D",
+          "choiceText": "Each of the guests receive a plate.",
+          "sound": true,
+          "misleading": false,
+          "judgment": "incorrect",
+          "reason": "Each of the guests has singular head each, so receives is needed."
+        }
+      ],
+      "allPerChoiceFeedbackSound": true,
+      "misleadingWording": null,
+      "teachingConcern": null
+    }
+  ],
+  "overall": {
+    "allFiveKeysMatchBlindReview": true,
+    "allFiveMainExplanationsSound": true,
+    "allTwentyPerChoiceFeedbackEntriesSound": true,
+    "misleadingWordingFound": false,
+    "minorTeachingNote": "Q02 wrong-choice feedback is accurate but minimally diagnostic; its main explanation supplies the complete count.",
+    "fullWorkerOriginalSlotGate": "FAIL",
+    "fullWorkerGateReason": "Only four of five original slots returned. Q05/slot 4 was sanitized with sound teaching but was not returned after the reviewer rated its difficulty 4; the target permits 2–3. The captured outcome remains unqualified despite sound teaching."
+  }
+}
