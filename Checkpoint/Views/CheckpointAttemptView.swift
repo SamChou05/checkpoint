@@ -46,7 +46,16 @@ struct CheckpointAnswerReviewPresentation: Equatable {
         }
 
         self.answerText = answerText
-        answerLabel = Self.answerLabel(for: question.format)
+        answerLabel = Self.answerLabel(for: question)
+    }
+
+    static func answerLabel(for question: CheckpointQuestion) -> String {
+        if question.format == .multipleChoice, question.verificationVersion != 1 {
+            // Legacy answer resolution can use label or substring heuristics.
+            // Keep the saved grading while describing the reference honestly.
+            return "Answer shown at the time"
+        }
+        return answerLabel(for: question.format)
     }
 
     static func answerLabel(for format: QuestionFormat) -> String {
@@ -110,7 +119,7 @@ struct CheckpointTerminalAnswerReviewPresentation: Equatable {
                 result: result
             )
             referenceAnswerLabel = answerReview?.answerLabel
-                ?? CheckpointAnswerReviewPresentation.answerLabel(for: question.format)
+                ?? CheckpointAnswerReviewPresentation.answerLabel(for: question)
             referenceAnswerText = answerReview.flatMap {
                 Self.nonEmptyContent($0.answerText, preserve: preservesReviewedContent)
             } ?? "No reference answer is available."

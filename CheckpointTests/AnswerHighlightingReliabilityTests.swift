@@ -208,6 +208,25 @@ final class AnswerHighlightingReliabilityTests: XCTestCase {
         XCTAssertEqual(olderHistory.currentStoredAnswerKey, correctChoice)
     }
 
+    func testImmediateLegacyReviewLabelsItsReferenceAsTheAnswerShownAtTheTime() {
+        let legacy = question(
+            explanation: "\(distractor) is correct because this old explanation contradicts the key.",
+            version: 0
+        )
+        let review = CheckpointAnswerReviewPresentation(question: legacy, result: .incorrect)
+        XCTAssertEqual(review?.answerText, correctChoice)
+        XCTAssertEqual(review?.answerLabel, "Answer shown at the time")
+
+        let terminal = CheckpointTerminalAnswerReviewPresentation(
+            question: legacy, answer: distractor, result: .incorrect
+        )
+        XCTAssertEqual(terminal.referenceAnswerText, correctChoice)
+        XCTAssertEqual(terminal.referenceAnswerLabel, "Answer shown at the time")
+        XCTAssertTrue(terminal.accessibilityLabel.contains(
+            "Answer shown at the time: \(correctChoice)"
+        ))
+    }
+
     func testLegacyHistoryOnlyComparesTheSameRetainedQuestionAndNeverRewritesReviewedHistory() {
         let legacy = question(explanation: "A stack removes its newest item first.", version: 0)
         let snapshot = CheckpointAttemptReviewSnapshot(

@@ -255,13 +255,14 @@ final class CheckpointAttemptRenderingTests: XCTestCase {
         XCTAssertEqual(presentation.prompt, "Which value follows from the given condition?")
         XCTAssertEqual(presentation.answerText, "Another value")
         XCTAssertEqual(presentation.referenceAnswerText, "Chosen value")
+        XCTAssertEqual(presentation.referenceAnswerLabel, "Answer shown at the time")
         XCTAssertEqual(
             presentation.explanation,
             "This alternative does not follow.\r\n \n\n \tThe stated condition supports this result."
         )
         XCTAssertEqual(
             presentation.accessibilityLabel,
-            "Last answer. Not quite. Your answer: Another value. Correct answer: Chosen value."
+            "Last answer. Not quite. Your answer: Another value. Answer shown at the time: Chosen value."
         )
     }
 
