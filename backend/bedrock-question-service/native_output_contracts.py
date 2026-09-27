@@ -136,8 +136,8 @@ class AuthorSlotContract:
                                                ensure_ascii=True).encode()).hexdigest()[:16]
             if self.mapped_agreement_tasks:
                 if self.mapped_quantitative_families:
-                    return f"question_author_constructed_mapped_families_v4_n{self.count}_{digest}"
-                return f"question_author_constructed_mapped_agreement_v3_n{self.count}_{digest}"
+                    return f"question_author_constructed_mapped_families_v5_n{self.count}_{digest}"
+                return f"question_author_constructed_mapped_agreement_v4_n{self.count}_{digest}"
             return f"question_author_constructed_mapped_compact_v1_n{self.count}_{digest}"
         prefix = {
             "prose": "question_author_v4",
@@ -153,8 +153,8 @@ class AuthorSlotContract:
             return self.name
         if self.mapped_agreement_tasks:
             if self.mapped_quantitative_families:
-                return f"question_author_constructed_mapped_families_v4_n{self.count}"
-            return f"question_author_constructed_mapped_agreement_v3_n{self.count}"
+                return f"question_author_constructed_mapped_families_v5_n{self.count}"
+            return f"question_author_constructed_mapped_agreement_v4_n{self.count}"
         return f"question_author_constructed_mapped_compact_v1_n{self.count}"
 
 
@@ -456,7 +456,7 @@ def _compact_mapped_slot(kind: str, *, shared: bool) -> dict[str, Any]:
 
 def _mapped_agreement_slot(index: int) -> dict[str, Any]:
     from agreement_task_constructor import (
-        COMPOUND_SCENES, INVERSION_SCENES, NUMBER_SCENES, RELATIVE_SCENES,
+        COMPOUND_SCENES, CORRELATIVE_SCENES, INVERSION_SCENES, NUMBER_SCENES, RELATIVE_SCENES,
         SCENES, task_schema,
     )
     if index not in (3, 4):
@@ -464,7 +464,7 @@ def _mapped_agreement_slot(index: int) -> dict[str, Any]:
     schema = task_schema()
     schema["properties"]["scene"]["enum"] = (
         sorted((*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)) if index == 3
-        else sorted((*COMPOUND_SCENES, *NUMBER_SCENES))
+        else sorted((*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES))
     )
     return schema
 
@@ -480,8 +480,8 @@ def _author_slot_transport_schema(contract: AuthorSlotContract) -> dict[str, Any
             })})
             return schema
         slots = {str(index): {"$ref": "#/$defs/task" if kind == "quantitative"
-                              else "#/$defs/proximityTask" if kind == "agreement" and index == 3
-                              else "#/$defs/compoundTask" if kind == "agreement"
+                              else "#/$defs/slot3" if kind == "agreement" and index == 3
+                              else "#/$defs/slot4" if kind == "agreement"
                               else "#/$defs/proseQuestion"}
                  for index, (kind, _) in enumerate(_mapped_slot_kinds(contract))}
         task_schema = task_only_author_schema(
@@ -489,8 +489,8 @@ def _author_slot_transport_schema(contract: AuthorSlotContract) -> dict[str, Any
         )
         definitions = {**task_schema["$defs"]}
         if contract.mapped_agreement_tasks:
-            definitions["proximityTask"] = _mapped_agreement_slot(3)
-            definitions["compoundTask"] = _mapped_agreement_slot(4)
+            definitions["slot3"] = _mapped_agreement_slot(3)
+            definitions["slot4"] = _mapped_agreement_slot(4)
         else:
             definitions["proseQuestion"] = _compact_mapped_slot("prose", shared=True)
         schema = _object({"questions": _object(slots)})
@@ -563,8 +563,8 @@ def contract_metadata(contract: NativeContract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
     return {"name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract,
-            "version": ("6" if isinstance(contract, AuthorSlotContract) and contract.mapped_quantitative_families else
-                        "4" if isinstance(contract, AuthorSlotContract) and contract.mapped_agreement_tasks else
+            "version": ("7" if isinstance(contract, AuthorSlotContract) and contract.mapped_quantitative_families else
+                        "5" if isinstance(contract, AuthorSlotContract) and contract.mapped_agreement_tasks else
                         "1" if isinstance(contract, AuthorSlotContract) and contract.mapped_assignments is not None else
                         "4" if isinstance(contract, AuthorSlotContract) and contract.mode == "prose" else
                         "2" if isinstance(contract, AuthorSlotContract) else
@@ -633,7 +633,7 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
         if contract.mapped_assignments is not None:
             if contract.mapped_quantitative_families:
                 from agreement_task_constructor import (
-                    COMPOUND_SCENES, INVERSION_SCENES, NUMBER_SCENES,
+                    COMPOUND_SCENES, CORRELATIVE_SCENES, INVERSION_SCENES, NUMBER_SCENES,
                     RELATIVE_SCENES, SCENES,
                 )
                 return (
@@ -656,8 +656,8 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
                     'Slots 3 and 4 are {"kind":"agreement_pair_v1","scene":...,"order":...}; '
                     "slot 3 chooses a proximity, inverted-subject, or relative-clause scene from "
                     + "/".join(sorted((*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)))
-                    + "; slot 4 chooses compound/every or a-number/the-number from "
-                    + "/".join(sorted((*COMPOUND_SCENES, *NUMBER_SCENES)))
+                    + "; slot 4 chooses compound/every, a-number/the-number, or either/or-neither/nor from "
+                    + "/".join(sorted((*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES)))
                     + ". Order is singular_first or plural_first. "
                     "Choose varied families and operands within each slot's allowed values. "
                     "Return exactly five closed tasks. "
@@ -667,7 +667,7 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
                 )
             if contract.mapped_agreement_tasks:
                 from agreement_task_constructor import (
-                    COMPOUND_SCENES, INVERSION_SCENES, NUMBER_SCENES,
+                    COMPOUND_SCENES, CORRELATIVE_SCENES, INVERSION_SCENES, NUMBER_SCENES,
                     RELATIVE_SCENES, SCENES,
                 )
                 assignments = _mapped_slot_kinds(contract)
@@ -686,8 +686,9 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
                     '"order":"singular_first|plural_first"}. Slot 3 may use proximity, '
                     'inverted-subject, or relative-clause scenes: '
                     + '|'.join(sorted((*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)))
-                    + '. Slot 4 may use compound/every or a-number/the-number scenes: '
-                    + '|'.join(sorted((*COMPOUND_SCENES, *NUMBER_SCENES))) + '. '
+                    + '. Slot 4 may use compound/every, a-number/the-number, or '
+                    'either/or-neither/nor scenes: '
+                    + '|'.join(sorted((*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES))) + '. '
                     "The application injects all skill/objective tags from the trusted request and "
                     "derives every stem, choice, answer key, explanation and feedback in code. "
                     "Never write learner text, a key, choices, teaching, metadata or an index inside "

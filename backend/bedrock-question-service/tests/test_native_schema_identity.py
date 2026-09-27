@@ -22,10 +22,10 @@ class NativeSchemaIdentityTests(unittest.TestCase):
         for agreement, families, expected_name, expected_hash in (
             (False, False, "question_author_constructed_mapped_compact_v1_n5",
              "eee8c873b7892a8b96e510777fe9ffbbc8d10cf70846644ea0993946c9c2bb3c"),
-            (True, False, "question_author_constructed_mapped_agreement_v3_n5",
-             "5fde195cf2fffeff4b0b6f5035def6a68a497e12b0a2f6d09cd4ad7c1a774c47"),
-            (True, True, "question_author_constructed_mapped_families_v4_n5",
-             "ea9ebbe2e1cf7e594371991dd16059b0251938649db966c4d5fb334fde8058cc"),
+            (True, False, "question_author_constructed_mapped_agreement_v4_n5",
+             "d9d26fd3b54af91ff2aeac048924f4098e3382d2f8a6062634804c884d221ab2"),
+            (True, True, "question_author_constructed_mapped_families_v5_n5",
+             "be8391e81587d8dca861f46cfdb0f1a89e18d88ad19a3417105affab016f2d99"),
         ):
             with self.subTest(agreement=agreement, families=families):
                 original = AuthorSlotContract(5, "constructed_quantitative", first,

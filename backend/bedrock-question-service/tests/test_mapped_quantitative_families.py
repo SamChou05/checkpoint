@@ -134,24 +134,24 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
-        self.assertEqual(len(schema_json.encode()), 1966)
+        self.assertEqual(len(schema_json.encode()), 2013)
         self.assertEqual(hashlib.sha256(schema_json.encode()).hexdigest(),
-                         "ea9ebbe2e1cf7e594371991dd16059b0251938649db966c4d5fb334fde8058cc")
+                         "be8391e81587d8dca861f46cfdb0f1a89e18d88ad19a3417105affab016f2d99")
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"] for i in range(3)],
                          [list(families) for families in SLOT_FAMILIES])
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(self.contract())["version"], "6")
+        self.assertEqual(native.contract_metadata(self.contract())["version"], "7")
         agreement = self.contract(False)
         agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
-        self.assertEqual(len(agreement_schema.encode()), 2982)
+        self.assertEqual(len(agreement_schema.encode()), 2999)
         self.assertEqual(hashlib.sha256(agreement_schema.encode()).hexdigest(),
-                         "5fde195cf2fffeff4b0b6f5035def6a68a497e12b0a2f6d09cd4ad7c1a774c47")
+                         "d9d26fd3b54af91ff2aeac048924f4098e3382d2f8a6062634804c884d221ab2")
         self.assertEqual(hashlib.sha256(native.native_prompt(
             generation._system_prompt(), agreement,
         ).encode()).hexdigest(),
-                         "0ecb35b276910951c24807224b98e6d9bef5ddd6a9f0e47d9dedf54b086548f1")
+                         "2c12c19d1bacafdaae5a1950d63d292526d7aa95357e77c70f7340edc64e65be")
         family_prompt = native.native_prompt(generation._system_prompt(), self.contract())
         self.assertTrue(all(family in family_prompt for families in SLOT_FAMILIES
                             for family in families))

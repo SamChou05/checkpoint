@@ -79,6 +79,18 @@ class _RelativeScene:
 
 
 @dataclass(frozen=True)
+class _CorrelativeScene:
+    singular_subject: str
+    plural_subject: str
+    singular_object: str
+    plural_object: str
+    singular_base: str
+    singular_third: str
+    plural_base: str
+    plural_third: str
+
+
+@dataclass(frozen=True)
 class _Clause:
     text: str
     base: str
@@ -90,8 +102,8 @@ class _Clause:
 
 
 # Whole clause frames and inflections are reviewed code data, never model text.
-# Avoid collective nouns, possessives, relative clauses, ambiguous pronouns,
-# existential there, subjunctives, past tense, and register-dependent agreement.
+# Avoid collective nouns, possessives, ambiguous pronouns, existential there,
+# subjunctives, past tense, and register-dependent agreement.
 SCENES = {
     "coach": _Scene("the coach", "the players", "the schedule",
                     "the players", "the coach", "the drills",
@@ -144,6 +156,26 @@ RELATIVE_SCENES = {
     "relative_technicians": _RelativeScene("technicians", "the samples", "a log", "label", "labels", "keep", "keeps"),
     "relative_clerks": _RelativeScene("clerks", "the files", "a key", "sort", "sorts", "hold", "holds"),
 }
+CORRELATIVE_SCENES = {
+    # With either/or and neither/nor, the nearer subject controls the verb.
+    # Each task contrasts a singular nearer subject with a plural nearer one.
+    "or_archive": _CorrelativeScene(
+        "the curator", "the assistants", "the catalog", "the records",
+        "check", "checks", "sort", "sorts",
+    ),
+    "or_studio": _CorrelativeScene(
+        "the director", "the actors", "the script", "the props",
+        "review", "reviews", "move", "moves",
+    ),
+    "or_library": _CorrelativeScene(
+        "the librarian", "the volunteers", "the book", "the returns",
+        "examine", "examines", "arrange", "arranges",
+    ),
+    "or_lab": _CorrelativeScene(
+        "the scientist", "the technicians", "the log", "the samples",
+        "inspect", "inspects", "label", "labels",
+    ),
+}
 
 
 class AgreementTaskError(ValueError):
@@ -158,7 +190,7 @@ def task_schema() -> dict:
             "kind": {"type": "string", "enum": [TASK_KIND]},
             "scene": {"type": "string", "enum": sorted((*SCENES, *COMPOUND_SCENES,
                                                        *INVERSION_SCENES, *NUMBER_SCENES,
-                                                       *RELATIVE_SCENES))},
+                                                       *RELATIVE_SCENES, *CORRELATIVE_SCENES))},
             "order": {"type": "string", "enum": ["singular_first", "plural_first"]},
         },
         "required": ["kind", "scene", "order"],
@@ -170,7 +202,7 @@ def _checked_task(task: object) -> tuple[str, str]:
             or type(task["kind"]) is not str or task["kind"] != TASK_KIND
             or type(task["scene"]) is not str or task["scene"] not in {
                 *SCENES, *COMPOUND_SCENES, *INVERSION_SCENES, *NUMBER_SCENES,
-                *RELATIVE_SCENES,
+                *RELATIVE_SCENES, *CORRELATIVE_SCENES,
             }
             or type(task["order"]) is not str
             or task["order"] not in {"singular_first", "plural_first"}):
@@ -280,6 +312,18 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
             "are", "is", True, f"The number of {scene.things}", scene.plural_attractor,
             rule="number_singular",
         )
+    elif scene_id in CORRELATIVE_SCENES:
+        scene = CORRELATIVE_SCENES[scene_id]
+        first = _Clause(
+            f"Either {scene.plural_subject} or {scene.singular_subject} ___ {scene.singular_object}",
+            scene.singular_base, scene.singular_third, True,
+            scene.singular_subject, scene.plural_subject, rule="correlative",
+        )
+        second = _Clause(
+            f"Neither {scene.singular_subject} nor {scene.plural_subject} ___ {scene.plural_object}",
+            scene.plural_base, scene.plural_third, False,
+            scene.plural_subject, scene.singular_subject, rule="correlative",
+        )
     else:
         scene = SCENES[scene_id]
         first = _Clause(
@@ -294,7 +338,7 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
         )
     clauses = (first, second) if order == "singular_first" else (second, first)
     following = clauses[1].text
-    if following.startswith(("The ", "Every ", "Near ", "A ")):
+    if following.startswith(("The ", "Every ", "Near ", "A ", "Either ", "Neither ")):
         following = following[0].lower() + following[1:]
     prompt = ("Fill both blanks with the present-tense verb forms that agree with "
               "the subjects in standard written American English. "
@@ -334,6 +378,9 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
         elif clause.rule == "number_plural":
             support = (f'{position.capitalize()}, "{clause.subject}" means several and takes '
                        f'a plural verb; "near {clause.attractor}" does not change it.')
+        elif clause.rule == "correlative":
+            support = (f'{position.capitalize()}, the nearer subject "{clause.subject}" '
+                       f'is {number}; "{clause.attractor}" is farther away.')
         else:
             support = (f'{position.capitalize()}, "{clause.subject}" has the singular head '
                        f'"number"; "near {clause.attractor}" does not change it.')
@@ -402,7 +449,7 @@ def canonical_variant_identities() -> frozenset[str]:
             {"kind": TASK_KIND, "scene": scene, "order": order}, ordinal=slot,
         )["prompt"])
         for slot, scenes in ((3, (*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)),
-                             (4, (*COMPOUND_SCENES, *NUMBER_SCENES)))
+                             (4, (*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES)))
         for scene in scenes
         for order in ("singular_first", "plural_first")
     )
@@ -432,7 +479,7 @@ def _select_novel_task(
     if ordinal not in (3, 4):
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
     allowed = ({**SCENES, **INVERSION_SCENES, **RELATIVE_SCENES} if ordinal == 3
-               else {**COMPOUND_SCENES, **NUMBER_SCENES})
+               else {**COMPOUND_SCENES, **NUMBER_SCENES, **CORRELATIVE_SCENES})
     if scene not in allowed:
         raise AgreementTaskError("Agreement task is outside its mapped slot.")
     blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
@@ -458,6 +505,7 @@ def _select_novel_task(
     family_by_scene = {
         candidate_scene: ("relative" if candidate_scene in RELATIVE_SCENES else
                           "inversion" if candidate_scene in INVERSION_SCENES else
+                          "correlative" if candidate_scene in CORRELATIVE_SCENES else
                           "number" if candidate_scene in NUMBER_SCENES else
                           "compound" if candidate_scene in COMPOUND_SCENES else "proximity")
         for candidate_scene in allowed
@@ -494,7 +542,7 @@ def compile_mapped_english_slots(
         raise AgreementTaskError("Both original English slots must be present.")
     scenes = [_checked_task(tasks_by_slot[str(slot)])[0] for slot in (3, 4)]
     if scenes[0] not in {*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES} or scenes[1] not in {
-        *COMPOUND_SCENES, *NUMBER_SCENES,
+        *COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES,
     }:
         raise AgreementTaskError("Original English slots require their closed agreement families.")
     if type(existing_prompts) is not tuple or any(type(prompt) is not str for prompt in existing_prompts):

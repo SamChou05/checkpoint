@@ -7,10 +7,10 @@ from mapped_bank_capacity_harness import qualification_failures, simulate
 
 class MappedBankCapacityHarnessTests(unittest.TestCase):
     def test_repeated_bank_uses_current_compilers_and_full_history(self):
-        report = simulate((40, 80))
+        report = simulate((40, 80, 85))
         self.assertEqual(report["providerCalls"], 0)
         self.assertIsNone(report["exhaustion"])
-        self.assertEqual([row["items"] for row in report["snapshots"]], [40, 80])
+        self.assertEqual([row["items"] for row in report["snapshots"]], [40, 80, 85])
         for snapshot in report["snapshots"]:
             self.assertEqual(snapshot["uniqueExactStems"], snapshot["items"])
             for row in snapshot["slots"].values():
@@ -24,6 +24,11 @@ class MappedBankCapacityHarnessTests(unittest.TestCase):
         # reuse rather than require rewriting the test to preserve old counts.
         self.assertLessEqual(report["snapshots"][0]["sameSlotFamilyPairs"], 60)
         self.assertLessEqual(report["snapshots"][1]["sameSlotFamilyPairs"], 280)
+        self.assertEqual(report["snapshots"][2]["sameSlotFamilyPairs"], 200)
+        for snapshot in report["snapshots"]:
+            self.assertEqual(snapshot["slots"]["4"]["exactStemCapacity"], 24)
+            self.assertIn("correlative", snapshot["slots"]["4"]["familyUses"])
+        self.assertEqual(report["snapshots"][2]["slots"]["4"]["remainingExactStems"], 7)
 
     def test_unique_stems_do_not_override_family_capacity_gate(self):
         report = {"targets": (40,), "exhaustion": None, "snapshots": [{
@@ -73,16 +78,14 @@ class MappedBankCapacityHarnessTests(unittest.TestCase):
         ])
 
     def test_full_bank_variant_exhaustion_is_visible_at_next_batch(self):
-        report = simulate((80,))
-        if report["nextBatchFailureReasons"]:
-            self.assertIn("agreement_novelty_exhausted",
-                          report["nextBatchFailureReasons"])
-            self.assertTrue(any("unused exact stems" in failure for failure in
-                                qualification_failures(report)))
-        else:
-            # A future constructor may legitimately add English capacity.
-            self.assertGreater(report["snapshots"][0]["slots"]["3"]["remainingExactStems"], 0)
-            self.assertGreater(report["snapshots"][0]["slots"]["4"]["remainingExactStems"], 0)
+        report = simulate((120, 125))
+        self.assertEqual(report["exhaustion"]["atItems"], 120)
+        self.assertEqual(report["exhaustion"]["failureReasons"],
+                         ["agreement_novelty_exhausted"] * 2)
+        self.assertEqual(report["snapshots"][0]["slots"]["3"]["remainingExactStems"], 0)
+        self.assertEqual(report["snapshots"][0]["slots"]["4"]["remainingExactStems"], 0)
+        self.assertTrue(any("125 items unavailable" in failure for failure in
+                            qualification_failures(report)))
 
 
 if __name__ == "__main__":
