@@ -36,7 +36,8 @@ def strict_json(path):
     return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_members)
 
 
-def check_draft(protocol, request, *, directory=HERE, request_bytes=None):
+def check_draft(protocol, request, *, directory=HERE, request_bytes=None,
+                check_artifacts=True):
     """A passing draft check explicitly does not authorize live execution."""
     if request_bytes is None:
         request_bytes = (directory / "request.json").read_bytes()
@@ -75,6 +76,8 @@ def check_draft(protocol, request, *, directory=HERE, request_bytes=None):
         "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
         "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
         "BEDROCK_FALLBACK_MODEL_ID": "",
+        "BEDROCK_MAX_TOKENS": "6000",
+        "BEDROCK_THINKING_MAX_TOKENS": "16000",
     }
     require(all(env.get(key) == value for key, value in expected_env.items()),
             "The generic native author environment drifted.")
@@ -123,8 +126,9 @@ def check_draft(protocol, request, *, directory=HERE, request_bytes=None):
             and blind.get("hide_model_keys_reviewer_ratings_teaching_rejection_reasons_until_both_locked") is True
             and blind.get("unavailable_original_rows_recorded_explicitly") is True,
             "The blind-review protocol changed.")
-    require(not any((directory / name).exists() for name in FORBIDDEN_LAUNCH_ARTIFACTS),
-            "Draft contains a launch or capture artifact.")
+    if check_artifacts:
+        require(not any((directory / name).exists() for name in FORBIDDEN_LAUNCH_ARTIFACTS),
+                "Draft contains a launch or capture artifact.")
     return {"state": "draft_waiting_for_candidate", "request_sha256": REQUEST_SHA256,
             "provider_calls": 0, "launch_allowed": False}
 

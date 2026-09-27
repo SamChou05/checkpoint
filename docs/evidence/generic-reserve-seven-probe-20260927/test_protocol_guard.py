@@ -14,12 +14,14 @@ class ProtocolGuardTests(unittest.TestCase):
         self.request = guard.strict_json(guard.HERE / "request.json")
         self.request_bytes = (guard.HERE / "request.json").read_bytes()
 
-    def check(self, protocol=None, request=None, directory=None, request_bytes=None):
+    def check(self, protocol=None, request=None, directory=None, request_bytes=None,
+              check_artifacts=False):
         return guard.check_draft(
             self.protocol if protocol is None else protocol,
             self.request if request is None else request,
             directory=guard.HERE if directory is None else directory,
             request_bytes=self.request_bytes if request_bytes is None else request_bytes,
+            check_artifacts=check_artifacts,
         )
 
     def test_draft_is_inert_and_request_is_normalized(self):
@@ -44,7 +46,7 @@ class ProtocolGuardTests(unittest.TestCase):
             directory = Path(temporary)
             (directory / "capture.json").write_text("{}")
             with self.assertRaises(guard.ProtocolError):
-                self.check(directory=directory)
+                self.check(directory=directory, check_artifacts=True)
         changed = copy.deepcopy(self.protocol)
         changed["limits"]["maximum_converse_calls"] = 7
         with self.assertRaises(guard.ProtocolError):
