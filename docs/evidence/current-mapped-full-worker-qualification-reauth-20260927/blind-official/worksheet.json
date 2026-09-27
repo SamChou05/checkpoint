@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "kind": "prespecified_returned_output",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "5e2b09b15ad6a314751781b3",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Leah and Omar near the visitor ___ the doors, while every visitor near the guides ___ a ticket. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "closes; hold",
+        "B": "closes; holds",
+        "C": "close; holds",
+        "D": "close; hold"
+      }
+    },
+    {
+      "id": "d1cc82fa06ca5cbe83c6f8b5",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((4 / 5) / (6 / 8)) + 1). What is its exact value?",
+      "choices": {
+        "A": "16/15",
+        "B": "17/16",
+        "C": "31/15",
+        "D": "17/15"
+      }
+    },
+    {
+      "id": "5e981f5fccb01a3ec0a32046",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "774906289af1682fad6f24fd",
+      "requested_slot": true,
+      "stem": "Fill both blanks with present-tense forms in standard written American English. The editors who ___ the proofs are here. One of the editors ___ a notebook. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "checks; carry",
+        "B": "checks; carries",
+        "C": "check; carries",
+        "D": "check; carry"
+      }
+    },
+    {
+      "id": "1c9df427317d03ed71c953da",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 4 through 10, inclusive. Condition: (x / (x + 3)) >= (7 / 10). What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "6",
+        "C": "5",
+        "D": "7"
+      }
+    }
+  ]
+}
