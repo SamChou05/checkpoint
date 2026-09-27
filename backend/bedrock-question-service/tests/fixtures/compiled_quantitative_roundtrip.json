@@ -41,9 +41,9 @@
         "explanation": "Multiply by the reciprocal: (1/2) / (3/4) = (1/2) * (4/3) = 4/6 = 2/3. The answer is 2/3.",
         "choiceExplanations": {
           "2/3": "The expression evaluates exactly to 2/3; 2/3 is the requested value.",
-          "1/24": "The expression evaluates exactly to 2/3, not 1/24. 1/24 is not the requested value.",
-          "3/8": "The expression evaluates exactly to 2/3, not 3/8. 3/8 is not the requested value.",
-          "3/2": "The expression evaluates exactly to 2/3, not 3/2. 3/2 is not the requested value."
+          "1/24": "1/24: Check the final operation. (1/2) / (3/4) = 2/3, not 1/24.",
+          "3/8": "3/8: This can come from multiplying by 3/4 instead of dividing by it. (1/2) / (3/4) = 2/3, not 3/8.",
+          "3/2": "3/2: This can come from reversing the dividend and divisor. (1/2) / (3/4) = 2/3, not 3/2."
         }
       }
     },

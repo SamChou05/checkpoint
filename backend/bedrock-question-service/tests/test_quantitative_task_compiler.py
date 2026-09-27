@@ -120,6 +120,51 @@ class QuantitativeTaskCompilerTests(unittest.TestCase):
                 result = self.assert_worked_proof(operation(op, constant(a), constant(b)))
                 self.assertTrue(result["explanation"].startswith(teaching))
 
+    def test_captured_fraction_distractors_explain_distinct_final_step_errors(self):
+        cases = [
+            (operation("mul", operation("add", constant("3/4"), constant("5/6")), constant(8)),
+             ["2/3", "19/96", "38/3", "152"], "38/3",
+             {"2/3": "dropping the numerator 19", "19/96": "multiplying the denominator by 8",
+              "152": "dropping the denominator 12"}),
+            (operation("div", operation("sub", constant(15), constant("7/2")), constant("1/4")),
+             ["1/46", "8/23", "46", "23/8"], "46",
+             {"1/46": "reversing the dividend and divisor",
+              "8/23": "reciprocal of the product", "23/8": "multiplying by 1/4"}),
+        ]
+        for expression, choices, answer, mistake_text in cases:
+            with self.subTest(answer=answer):
+                content = compile_question(exact(expression, choices))
+                self.assert_payload(content)
+                self.assertEqual(content["expectedAnswer"], answer)
+                self.assertEqual(len({Fraction(value) for value in content["choices"]}), 4)
+                self.assertEqual(content["choices"], choices)
+                for value, mechanism in mistake_text.items():
+                    feedback = content["choiceExplanations"][value]
+                    self.assertIn(mechanism, feedback)
+                    self.assertIn(f"= {answer}, not {value}.", feedback)
+                self.assertEqual(len({content["choiceExplanations"][value]
+                                      for value in mistake_text}), 3)
+
+    def test_direct_fraction_procedure_feedback_names_the_wrong_step(self):
+        cases = [
+            (operation("add", constant("2/3"), constant("4/7")),
+             ["26/21", "3/5", "2/7", "2/3"],
+             {"3/5": "combining the numerators and denominators separately",
+              "2/7": "common denominator without scaling the numerators",
+              "2/3": "stops at the left operand"}),
+            (operation("mul", constant("2/3"), constant("4/7")),
+             ["8/21", "8/3", "8/7", "2/3"],
+             {"8/3": "leaving out the denominator 7",
+              "8/7": "leaving out the denominator 3",
+              "2/3": "stops at the left operand"}),
+        ]
+        for expression, choices, reasons in cases:
+            with self.subTest(expression=expression):
+                content = compile_question(exact(expression, choices))
+                self.assert_payload(content)
+                for value, reason in reasons.items():
+                    self.assertIn(reason, content["choiceExplanations"][value])
+
     def test_worked_arithmetic_oracle_covers_all_operations_signed_and_zero_fractions(self):
         values = ("-3", "-5/2", "-1/3", "0", "1/4", "2/3", "2", "3/2")
         checked = 0

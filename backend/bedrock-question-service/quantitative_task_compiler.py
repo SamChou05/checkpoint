@@ -215,6 +215,77 @@ def _unique_answer(supported):
     return supported[0]
 
 
+def _root_distractor_reasons(expression):
+    """Recognize exact values from common mistakes at the final operation.
+
+    These are possible paths to an offered value, not claims about a learner's
+    actual reasoning. Earlier-step mistakes receive the final-operation proof
+    instead. Preserve the first explanation when two mistakes have one value.
+    """
+    if expression[0] == "constant":
+        return {}
+    op, left_tree, right_tree = expression
+    left, right = _evaluate(left_tree), _evaluate(right_tree)
+    result = _calculate(op, left, right)
+    reasons = {}
+
+    def add(value, reason):
+        if value is not None and value != result:
+            reasons.setdefault(value, reason)
+
+    def calculate(other, a, b):
+        if a is None or b is None:
+            return None
+        try:
+            return _calculate(other, a, b)
+        except QuantitativeTaskError:
+            return None
+
+    if op in ("add", "sub") and (left.denominator != 1 or right.denominator != 1):
+        numerator = calculate(op, Fraction(left.numerator), Fraction(right.numerator))
+        denominator = calculate(op, Fraction(left.denominator), Fraction(right.denominator))
+        add(calculate("div", numerator, denominator),
+            "This can come from combining the numerators and denominators separately.")
+        add(calculate("div", numerator, Fraction(lcm(left.denominator, right.denominator))),
+            "This can come from using a common denominator without scaling the numerators.")
+    elif op == "mul" and left.denominator != 1 and right.denominator != 1:
+        numerator = calculate("mul", Fraction(left.numerator), Fraction(right.numerator))
+        add(calculate("div", numerator, Fraction(left.denominator)),
+            f"This can come from leaving out the denominator {right.denominator}.")
+        add(calculate("div", numerator, Fraction(right.denominator)),
+            f"This can come from leaving out the denominator {left.denominator}.")
+    elif op == "mul" and (left.denominator != 1) != (right.denominator != 1):
+        fraction, whole = (left, right) if left.denominator != 1 else (right, left)
+        if abs(whole) > 1:
+            numerator = Fraction(fraction.numerator)
+            denominator = Fraction(fraction.denominator)
+            add(calculate("div", whole, denominator),
+                f"This can come from dropping the numerator {numerator} of {fraction}.")
+            add(calculate("mul", numerator, whole),
+                f"This can come from dropping the denominator {denominator} of {fraction}.")
+            add(calculate("div", numerator, calculate("mul", denominator, whole)),
+                f"This can come from multiplying the denominator by {whole} instead of the numerator.")
+    elif op == "div" and (left.denominator != 1 or right.denominator != 1):
+        add(calculate("mul", left, right),
+            f"This can come from multiplying by {right} instead of dividing by it.")
+        add(calculate("div", right, left),
+            "This can come from reversing the dividend and divisor.")
+        product = calculate("mul", left, right)
+        add(calculate("div", Fraction(1), product),
+            "This can come from taking the reciprocal of the product of both operands.")
+
+    add(left, "This stops at the left operand before the final operation.")
+    add(right, "This stops at the right operand before the final operation.")
+    for other in OPERATORS:
+        if other != op:
+            add(calculate(other, left, right),
+                f"This can come from using {OPERATORS[other]} at the final step instead of {OPERATORS[op]}.")
+    if op in ("sub", "div"):
+        add(calculate(op, right, left),
+            "This can come from reversing the operands at the final step.")
+    return reasons
+
+
 def _finish(prompt, choices, answer, explanation, feedback):
     for text, minimum, maximum in (
         (prompt, 12, 320), (explanation, 12, 420),
@@ -262,12 +333,22 @@ def compile_question(spec):
         prompt = f"Let q be {measure}, defined by q = {text}. What is its exact value?"
         teaching = " ".join(steps) if steps else f"The definition directly gives q = {result}."
         explanation = f"{teaching} The answer is {_quantity(answer, unit)}."
-        feedback = {
-            shown: (f"The expression evaluates exactly to {result}; {shown} is the requested value."
-                    if value == answer else
-                    f"The expression evaluates exactly to {result}, not {value}. {shown} is not the requested value.")
-            for value, shown in zip(choices, rendered, strict=True)
-        }
+        reasons = _root_distractor_reasons(expression)
+        if expression[0] != "constant":
+            op, left_tree, right_tree = expression
+            left, right = _evaluate(left_tree), _evaluate(right_tree)
+            correction = f"{_operand(left)} {OPERATORS[op]} {_operand(right)} = {result}"
+        else:
+            correction = f"The definition directly gives {result}"
+        feedback = {}
+        for value, shown in zip(choices, rendered, strict=True):
+            if value == answer:
+                feedback[shown] = f"The expression evaluates exactly to {result}; {shown} is the requested value."
+                continue
+            reason = reasons.get(value, "Check the final operation.")
+            detail = f"{shown}: {reason} {correction}, not {value}."
+            feedback[shown] = (detail if len(detail) <= 280 else
+                               f"The expression evaluates exactly to {result}, not {value}. {shown} is not the requested value.")
         return _finish(prompt, rendered, _quantity(answer, unit), explanation, feedback)
 
     condition = spec["condition"]
