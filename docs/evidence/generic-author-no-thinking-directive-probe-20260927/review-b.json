@@ -1,0 +1,620 @@
+{
+  "reviewer": "B",
+  "basis": "Blinded BLIND_REVIEW.md and worksheet.json only",
+  "worksheet_sha256_expected": "6fbabc26cfed021228a9e6ec888a3d7144961a6742e918645f42b3ac240ea773",
+  "worksheet_sha256_verified": "6fbabc26cfed021228a9e6ec888a3d7144961a6742e918645f42b3ac240ea773",
+  "pair_interpretation": "A pair is meaningfully distinct when its alternatives assert different values or different event classifications; notes separately identify options with weak diagnostic explanations.",
+  "items": [
+    {
+      "id": "P01",
+      "selected_key": "C",
+      "alternative_defensible_choices": [],
+      "validity": "valid",
+      "correct_result": "1/4",
+      "answer_justification": "Each roll has three even faces out of six; two independent rolls give (3/6)^2 = 1/4.",
+      "difficulty_1_to_5": 2,
+      "requested_difficulty": 2,
+      "difficulty_fit": "at_target",
+      "topic_fit": "Probability of two even outcomes on repeated die rolls.",
+      "self_contained": true,
+      "assumptions": "Separate rolls of a fair die are treated as independent; this is the ordinary reading of “rolled twice.”",
+      "scenario_condition_use": {
+        "uses_stated_condition": true,
+        "assessment": "The learner must identify 2, 4, and 6 as even die faces, then combine the two roll probabilities."
+      },
+      "explicit_directive_exclusions": {
+        "direct_complement_of_supplied_probability": false,
+        "two_fair_coin_heads_with_independence_stated": false,
+        "obvious_one_die_threshold_count": false,
+        "flagged": false
+      },
+      "weak_distractors": [
+        "B (2/3) has no clear route from the three even faces.",
+        "D (1/3) has no clear two-roll calculation."
+      ],
+      "answer_cues": "No visible position or wording cue; the correct value is not uniquely styled.",
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "1/2 is the one-roll even chance; 2/3 is a different, less traceable fraction."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "1/2 omits the second roll; 1/4 accounts for both rolls."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "1/2 and 1/3 give different probabilities, though the 1/3 error is unclear."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "2/3 differs from the two-roll product 1/4; 2/3 is a weak distractor."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "2/3 and 1/3 differ numerically; neither has a clear two-roll derivation."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "1/4 follows the even-face count and two rolls; 1/3 does not."
+        }
+      ]
+    },
+    {
+      "id": "P02",
+      "selected_key": null,
+      "alternative_defensible_choices": [],
+      "validity": "invalid_no_correct_choice",
+      "correct_result": "-$1.00",
+      "answer_justification": "Expected gross prize is (1×$150 + 2×$25)/200 = $1.00; subtracting the $2 ticket price gives -$1.00. None of A–D matches.",
+      "difficulty_1_to_5": 3,
+      "requested_difficulty": 2,
+      "difficulty_fit": "above_target",
+      "topic_fit": "Expected value with unequal prize outcomes and a ticket cost.",
+      "self_contained": true,
+      "assumptions": "Each of the 200 tickets is equally likely to be the one purchased; the prize categories are disjoint.",
+      "scenario_condition_use": {
+        "uses_stated_condition": true,
+        "assessment": "The learner must use the counts and payouts for all prize categories and the $2 purchase cost to form the net payoff."
+      },
+      "explicit_directive_exclusions": {
+        "direct_complement_of_supplied_probability": false,
+        "two_fair_coin_heads_with_independence_stated": false,
+        "obvious_one_die_threshold_count": false,
+        "flagged": false
+      },
+      "weak_distractors": [
+        "All four choices are wrong; B (-$1.50) and C (-$0.50) lack an obvious calculation.",
+        "A ($0.75) is the gross contribution of the $150 prize alone; D (-$1.25) subtracts ticket cost from that contribution while omitting the two $25 prizes."
+      ],
+      "answer_cues": "The missing -$1.00 answer makes the item unanswerable; positive A might cue a failure to subtract cost, but no choice is valid.",
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "A is a positive gross component while B is a negative net figure; neither equals the full expected net."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "A is positive and C negative; both differ from the actual -$1.00."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "A can reflect only the top-prize gross contribution; D can reflect subtracting cost from that incomplete contribution."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "B and C are distinct negative values, though neither maps clearly to the stated full calculation."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "B differs from D; D has a plausible omitted-consolation-prizes route, B does not."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "C differs from D; D has a plausible incomplete-payout route, C does not."
+        }
+      ]
+    },
+    {
+      "id": "P03",
+      "selected_key": "D",
+      "alternative_defensible_choices": [],
+      "validity": "valid",
+      "correct_result": "7/12",
+      "answer_justification": "There are 4 + 3 = 7 non-green marbles among 4 + 3 + 5 = 12 total, so P(not green) = 7/12.",
+      "difficulty_1_to_5": 1,
+      "requested_difficulty": 2,
+      "difficulty_fit": "below_target",
+      "topic_fit": "Single-draw probability and a complement expressed through category counts.",
+      "self_contained": true,
+      "assumptions": "The marble is uniformly drawn from the bag, as “at random” implies.",
+      "scenario_condition_use": {
+        "uses_stated_condition": true,
+        "assessment": "The learner must combine the red and blue counts, or count five green out of twelve and complement that derived probability. No probability is supplied directly."
+      },
+      "explicit_directive_exclusions": {
+        "direct_complement_of_supplied_probability": false,
+        "two_fair_coin_heads_with_independence_stated": false,
+        "obvious_one_die_threshold_count": false,
+        "flagged": false
+      },
+      "weak_distractors": [
+        "C (5/7) compares green to non-green counts rather than an event count to the total."
+      ],
+      "answer_cues": "The capitalized NOT emphasizes the complement but does not disclose the answer; D has no special formatting.",
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "5/12 is green; 1/3 is red only."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "5/12 uses green over all marbles; 5/7 uses green relative to non-green marbles."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "5/12 is green; 7/12 is not green."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "1/3 is red only; 5/7 compares green with non-green counts."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "1/3 includes red only; 7/12 includes red and blue."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "5/7 uses the wrong denominator and event; 7/12 uses non-green over all marbles."
+        }
+      ]
+    },
+    {
+      "id": "P04",
+      "selected_key": "B",
+      "alternative_defensible_choices": [],
+      "validity": "valid",
+      "correct_result": "Mutually exclusive; 4/5",
+      "answer_justification": "A single spin cannot land on red and blue at once, so the events are mutually exclusive; four of five sectors are red or blue.",
+      "difficulty_1_to_5": 2,
+      "requested_difficulty": 2,
+      "difficulty_fit": "at_target",
+      "topic_fit": "Mutually exclusive events and their union on one spinner.",
+      "self_contained": true,
+      "assumptions": "One spin lands on exactly one of five equal sectors.",
+      "scenario_condition_use": {
+        "uses_stated_condition": true,
+        "assessment": "The learner must use the one-spin red/blue sector separation to classify the events, and count the four favorable sectors."
+      },
+      "explicit_directive_exclusions": {
+        "direct_complement_of_supplied_probability": false,
+        "two_fair_coin_heads_with_independence_stated": false,
+        "obvious_one_die_threshold_count": false,
+        "flagged": false
+      },
+      "weak_distractors": [
+        "D (not mutually exclusive; 2/25) combines a wrong relation with a product that lacks a clear route from the stated sector probabilities."
+      ],
+      "answer_cues": "A and B share 4/5, so the event-relation decision cannot be bypassed by spotting the correct fraction.",
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "The same 4/5 union probability is paired with opposite exclusivity judgments."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "A and C differ on exclusivity and on whether the union is 4/5 or 2/5."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "Both deny exclusivity but give different union probabilities."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "Both classify the events as exclusive; B counts red plus blue while C counts only two sectors."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "B and D differ on both event relation and union probability."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "C and D differ on both event relation and union probability."
+        }
+      ]
+    },
+    {
+      "id": "P05",
+      "selected_key": "D",
+      "alternative_defensible_choices": [],
+      "validity": "valid",
+      "correct_result": "9/24",
+      "answer_justification": "Given the first selected student was a boy, 9 boys remain among 24 students, so the second-boy probability is 9/24.",
+      "difficulty_1_to_5": 2,
+      "requested_difficulty": 2,
+      "difficulty_fit": "at_target",
+      "topic_fit": "Conditional probability for sampling without replacement.",
+      "self_contained": true,
+      "assumptions": "Students are selected uniformly; “without replacement” means the first student is removed before the second draw.",
+      "scenario_condition_use": {
+        "uses_stated_condition": true,
+        "assessment": "The learner must apply the given first-boy result and no-replacement condition to update both the boy count and class size."
+      },
+      "explicit_directive_exclusions": {
+        "direct_complement_of_supplied_probability": false,
+        "two_fair_coin_heads_with_independence_stated": false,
+        "obvious_one_die_threshold_count": false,
+        "flagged": false
+      },
+      "weak_distractors": [],
+      "answer_cues": "Each distractor preserves one or both pre-draw counts, so the correct option is not singled out by style.",
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "A updates only the boy count; B updates only the class size."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "A updates boys but not total; C updates neither count."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "A retains total 25; D updates it to 24."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "B updates total but not boys; C updates neither count."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "B retains 10 boys; D updates it to 9."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "C uses both original counts; D uses both post-draw counts."
+        }
+      ]
+    },
+    {
+      "id": "P06",
+      "selected_key": "A",
+      "alternative_defensible_choices": [],
+      "validity": "valid",
+      "correct_result": "$0.67 (rounded from $2/3)",
+      "answer_justification": "Mean prize is ($1 + $4 + $6)/3 = $11/3; subtracting $3 gives $2/3, or about $0.67.",
+      "difficulty_1_to_5": 2,
+      "requested_difficulty": 2,
+      "difficulty_fit": "at_target",
+      "topic_fit": "Expected net payoff with equally likely spinner outcomes and a fee.",
+      "self_contained": true,
+      "assumptions": "The three sectors are equal, so each payoff has probability 1/3; the fee is paid on every spin.",
+      "scenario_condition_use": {
+        "uses_stated_condition": true,
+        "assessment": "The learner must average the three stated dollar outcomes and subtract the fee for a net result."
+      },
+      "explicit_directive_exclusions": {
+        "direct_complement_of_supplied_probability": false,
+        "two_fair_coin_heads_with_independence_stated": false,
+        "obvious_one_die_threshold_count": false,
+        "flagged": false
+      },
+      "weak_distractors": [
+        "B (-$0.33) and C ($1.33) do not follow clear omissions or arithmetic traps from the stated payoffs.",
+        "D ($1.00) could come from rounding the gross mean to $4 before subtracting the fee, but is a weak exact alternative."
+      ],
+      "answer_cues": "A is the sole non-integer positive amount near the expected net; this is a modest cue alongside weak distractors.",
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "The results have opposite signs; B is not supported by the stated payoffs."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "Both are positive non-integers, but C is twice the correct net result and has no clear stated-payoff route."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "A preserves the exact average before rounding; D could reflect premature gross rounding."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "B and C differ in sign and amount; both are weakly diagnostic."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "B is negative while D is positive; D has a possible premature-rounding route."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "assessment": "C and D are different positive values; D may reflect premature rounding, C lacks a clear route."
+        }
+      ]
+    }
+  ],
+  "cross_item_pairs": [
+    {
+      "items": [
+        "P01",
+        "P02"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Two-roll intersection probability versus weighted expected net gain; answer formats differ."
+    },
+    {
+      "items": [
+        "P01",
+        "P03"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Two independent rolls versus a single category complement; both use fractions but central decisions differ."
+    },
+    {
+      "items": [
+        "P01",
+        "P04"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Joint two-roll probability versus classifying exclusive one-spin events and finding a union."
+    },
+    {
+      "items": [
+        "P01",
+        "P05"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Both involve two draws/rolls, but P01 uses independent even outcomes and P05 updates counts after a known no-replacement draw."
+    },
+    {
+      "items": [
+        "P01",
+        "P06"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Two-roll probability versus expected net money."
+    },
+    {
+      "items": [
+        "P02",
+        "P03"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Expected net money versus single-draw non-green probability."
+    },
+    {
+      "items": [
+        "P02",
+        "P04"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Expected net money versus event exclusivity and union."
+    },
+    {
+      "items": [
+        "P02",
+        "P05"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Weighted payout expectation versus conditional sampling without replacement."
+    },
+    {
+      "items": [
+        "P02",
+        "P06"
+      ],
+      "strong_repetition_central_decision_and_answer_format": true,
+      "assessment": "Both ask for expected net gain in dollars after paying to participate; the main decision is prize expectation minus cost, although P02 weights rare prizes and P06 averages equal sectors."
+    },
+    {
+      "items": [
+        "P03",
+        "P04"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Both are categorical one-trial events, but P03 finds a complement fraction while P04 decides exclusivity and computes a union in a combined verbal/numeric answer."
+    },
+    {
+      "items": [
+        "P03",
+        "P05"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Single category complement versus conditional second-draw probability."
+    },
+    {
+      "items": [
+        "P03",
+        "P06"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Marble category probability versus spinner expected net money."
+    },
+    {
+      "items": [
+        "P04",
+        "P05"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "One-spin event relation and union versus updated counts after the first student is a boy."
+    },
+    {
+      "items": [
+        "P04",
+        "P06"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Both use spinners, but exclusivity/union and expected monetary payoff are different decisions and formats."
+    },
+    {
+      "items": [
+        "P05",
+        "P06"
+      ],
+      "strong_repetition_central_decision_and_answer_format": false,
+      "assessment": "Conditional probability fraction versus expected net money."
+    }
+  ],
+  "summary": {
+    "valid_items": 5,
+    "invalid_items": [
+      "P02"
+    ],
+    "strong_repetition_pairs": [
+      [
+        "P02",
+        "P06"
+      ]
+    ],
+    "explicit_level_2_exclusion_flags": [],
+    "difficulty_below_target": [
+      "P03"
+    ],
+    "difficulty_above_target": [
+      "P02"
+    ],
+    "overall_assessment": "Five questions have supported keys. P02 is invalid because -$1.00 is absent. P02 and P06 strongly repeat the expected-net-gain decision and dollar-answer format. No complete item matches the three literal exclusion patterns; P03 is easy despite requiring counts before a complement can be taken. These author-only observations cannot establish worker qualification or repeated-bank reliability."
+  }
+}
