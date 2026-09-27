@@ -118,6 +118,8 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         self.assertEqual(proof.content(learner), learner)
                         if slot in (1, 2):
                             self.assertEqual(learner["expectedAnswer"], str(b))
+                        if family == "bounded_equation":
+                            self.assertGreaterEqual(learner["prompt"].count("x"), 2)
                         if slot == 2 and family == FAMILIES[slot]:
                             self.assertIn("The smaller domain values fail:", learner["explanation"])
                             self.assertIn(" / (x + ", learner["prompt"])
@@ -329,7 +331,10 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         self.assertEqual(len(rows), 5)
         for slot in range(3):
             source_row = source["questions"][str(slot)]
-            alternate = flat_task(slot, {**source_row, "family": SLOT_FAMILIES[slot][1]})
+            allowed_b = OPERANDS if slot == 0 else BOUNDARIES
+            next_b = allowed_b[(allowed_b.index(source_row["b"]) + 1) % len(allowed_b)]
+            alternate = flat_task(slot, {**source_row, "family": SLOT_FAMILIES[slot][1],
+                                         "b": next_b})
             expected = _constructed_candidate(alternate).content()
             self.assertEqual({field: rows[slot][field] for field in LEARNER_FIELDS}, expected)
             self.assertNotEqual(rows[slot]["prompt"], original[slot]["prompt"])

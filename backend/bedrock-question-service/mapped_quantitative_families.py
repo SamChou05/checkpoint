@@ -82,13 +82,15 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
             _binary("div", 2, 5), _literal(1), _binary("add", 6, 7),
         ], "root": 8}
     if family == FAMILIES[1]:
-        # ax+(a+3)=ab+(a+3) has the unique solution x=b in 0..15.
-        offset = a + 3
+        # a(x+2)+(a+3)=(a-1)x+(b+3a+3) reduces to x=b. The variable
+        # appears on both sides, so the learner must distribute and collect.
         return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
-            _literal(a), {"kind": "variable"}, _binary("mul", 0, 1),
-            _literal(offset), _binary("add", 2, 3),
-            _literal(a * b + offset),
-        ], "condition": {"left": 4, "relation": "eq", "right": 5},
+            _literal(a), {"kind": "variable"}, _literal(2),
+            _binary("add", 1, 2), _binary("mul", 0, 3),
+            _literal(a + 3), _binary("add", 4, 5),
+            _literal(a - 1), _binary("mul", 7, 1),
+            _literal(b + 3 * a + 3), _binary("add", 8, 9),
+        ], "condition": {"left": 6, "relation": "eq", "right": 10},
             "selection": "any_satisfying",
             "domain": {"kind": "integer_interval", "lower": 0, "upper": 15}}
     if family == "bounded_quadratic_equation":
@@ -197,6 +199,10 @@ def select_novel_task(
         return copy.deepcopy(min(eligible, key=lambda row: (
             family_use_counts[row[1]],
             row[1] != source_family,
-            (row[0] % per_family - source_index % per_family) % per_family,
+            # A newly selected family should not preserve the same operands,
+            # domain and answer as the authored task merely by changing its
+            # expression shape.
+            (row[0] % per_family - source_index % per_family
+             - (1 if row[1] != source_family else 0)) % per_family,
         ))[2])
     raise MappedQuantitativeFamilyError("Quantitative family inventory exhausted.")

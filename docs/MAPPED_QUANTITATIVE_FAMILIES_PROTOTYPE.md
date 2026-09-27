@@ -9,8 +9,8 @@ different closed families rather than model-written expression graphs.
 
 The model supplies only a slot-specific closed family label and two bounded
 integers. Code expands slot 0 to either a two-fraction sum scaled by three or
-a fraction quotient plus one; slot 1 to a linear or quadratic equation with
-one solution in an explicit integer domain; and slot 2 to either the first
+a fraction quotient plus one; slot 1 to a two-sided linear or quadratic
+equation with one solution in an explicit integer domain; and slot 2 to either the first
 integer satisfying a ratio threshold or the last integer within a quadratic
 product bound.
 The ratio family was added after a source audit found the initial linear
@@ -25,7 +25,9 @@ use their own closed scene inventory and full-bank history/fingerprint selection
 The selector counts each family's use in recent prompts, blocked fingerprints,
 and a private projection of all 416 canonical numeric stems in the durable
 bank. It prefers the less-used solve mechanism in each assigned slot and then
-an unused parameter pair. Every replacement passes the compiler and private
+an unused parameter pair. Switching families also advances the second operand,
+so the first refill does not preserve the exact domain and answer boundary.
+Every replacement passes the compiler and private
 proof. Exhausting both families in a slot fails the one-pass batch explicitly
 without another provider call. This prevents exact numeric stem reuse beyond
 the recent-30 context, but a third chunk must reuse each slot's solve
