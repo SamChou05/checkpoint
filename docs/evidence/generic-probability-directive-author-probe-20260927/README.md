@@ -35,9 +35,10 @@ ratings prove five verified worker survivors.
 the harness is SHA-256
 `e9c7cc3b0a6dc53ca79263e3738c4e0b14d621a54518914d63b5d3e0ca5fcd95`.
 An independent reviewer approved the revised source-ordinal-blind worksheet
-builder after identifying and correcting an ordinal-leaking draft. No identity
-precheck, AWS call, or content review has occurred. Run `python -B -m unittest -q test_author_probe.py`
+builder after identifying and correcting an ordinal-leaking draft. The
+one-shot AWS call is now terminal and failed at the shared output-token limit;
+see [results](RESULTS.md). Run `python -B -m unittest -q test_author_probe.py`
 and `python -B author_probe.py --preflight` to inspect the socket-free design.
-Trial 03's high-effort author call stopped at `max_tokens` before sanitization;
-this experiment deliberately holds that author configuration fixed to isolate
-the directive, so truncation remains a terminal risk.
+Trial 03's high-effort author call also stopped at `max_tokens` before
+sanitization. This experiment held that configuration fixed to isolate the
+directive, and its own capture confirms the same terminal failure.
