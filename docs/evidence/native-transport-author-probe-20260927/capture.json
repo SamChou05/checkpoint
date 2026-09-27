@@ -1,0 +1,41 @@
+{
+  "plan_sha256": "794c1626bcefc30dbc3fc6b8db2013c4e11291e7bfed6b8789df99017e4f0926",
+  "status": "completed",
+  "sts_calls": 1,
+  "converse_calls": 1,
+  "author_response": {
+    "output": {
+      "message": {
+        "content": [
+          {
+            "text": "{\"questions\":{\"0\":{\"family\":\"fraction_reciprocal_sum\",\"a\":4,\"b\":6},\"1\":{\"family\":\"bounded_rational_equation\",\"a\":5,\"b\":8},\"2\":{\"family\":\"bounded_linear_budget_maximum\",\"a\":3,\"b\":7},\"3\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"relative_editors\",\"order\":\"singular_first\"},\"4\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"number_students\",\"order\":\"plural_first\"}}}"
+          }
+        ]
+      }
+    },
+    "stopReason": "end_turn",
+    "usage": {
+      "inputTokens": 4329,
+      "outputTokens": 953,
+      "totalTokens": 5282,
+      "cacheReadInputTokens": 0,
+      "cacheWriteInputTokens": 0
+    },
+    "metrics": {
+      "latencyMs": 26191
+    },
+    "safeResponseMetadata": {
+      "requestId": "e4335d91-2817-4a34-b08f-15280d4f4fbc",
+      "httpStatus": 200
+    }
+  },
+  "reasoning_blocks_omitted": 1,
+  "offline_compilation": {
+    "rows": 5,
+    "numeric_proofs": 3,
+    "english_proofs": 2,
+    "failures": []
+  },
+  "elapsed_seconds": 27.598,
+  "within_deadline": true
+}
