@@ -1,0 +1,118 @@
+{
+  "review_type": "independent_answer_blind_review",
+  "reviewer": "B",
+  "inputs": {
+    "keyless_sample": {
+      "path": "/private/tmp/checkpoint-english-format-diversity/docs/evidence/english-sentence-selection-20260927/KEYLESS_SAMPLE.json",
+      "sha256": "4b49ed977535b086ac1d7384ecc78a1683397c81bb8eedb482934b91771aea4c"
+    },
+    "baseline_worksheet": {
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/english-native-author-acceptance-20260927/worksheet.json",
+      "sha256": "86ab3293b3a212b3914a56fbd89c572c361f66ccddf741bebadf4a139a3d2488",
+      "scope": "Q04 only"
+    }
+  },
+  "choice_labels": "A-D follow the order of the choices array in KEYLESS_SAMPLE.json",
+  "difficulty_scale": "1=very easy, 5=very hard; target=2-3",
+  "questions": [
+    {
+      "id": "Q01",
+      "independent_answer": "A",
+      "additional_viable_key": [],
+      "answer_reason": "The plural compound subject 'Maya and Theo' takes 'prepare'; distributive 'each' does not change that agreement.",
+      "other_choices": {
+        "B": "'Each' is singular and takes 'receives'.",
+        "C": "With 'neither ... nor', the nearer plural subject 'assistants' takes 'sort'.",
+        "D": "The gerund phrase 'Proofreading the reports' is singular and takes 'requires'."
+      },
+      "difficulty": 2,
+      "difficulty_reason": "Common agreement rules; the four visibly different subject forms add a modest comparison step.",
+      "within_choice_pairs": [
+        {"pair":"A-B","meaningfully_distinct":true,"reason":"Plural coordinated subject with 'each' versus singular 'each of' subject."},
+        {"pair":"A-C","meaningfully_distinct":true,"reason":"Coordinated subject versus nearest-subject agreement under 'neither ... nor'."},
+        {"pair":"A-D","meaningfully_distinct":true,"reason":"Coordinated subject versus gerund phrase as subject."},
+        {"pair":"B-C","meaningfully_distinct":true,"reason":"Singular 'each of' subject versus nearest-subject agreement under 'neither ... nor'."},
+        {"pair":"B-D","meaningfully_distinct":true,"reason":"Singular 'each of' subject versus gerund phrase as subject."},
+        {"pair":"C-D","meaningfully_distinct":true,"reason":"Nearest-subject agreement under 'neither ... nor' versus gerund phrase as subject."}
+      ]
+    },
+    {
+      "id": "Q02",
+      "independent_answer": "B",
+      "additional_viable_key": [],
+      "answer_reason": "'Each of the guides' has singular head 'Each', so 'wears' agrees.",
+      "other_choices": {
+        "A": "The compound subject 'Nora and Eli' takes 'fold', despite distributive 'each'.",
+        "C": "The nearer plural subject 'volunteers' takes 'arrange'.",
+        "D": "The gerund phrase 'Cataloging the books' takes 'helps'."
+      },
+      "difficulty": 2,
+      "difficulty_reason": "The singular 'each of' construction is standard and the other three sentences have clear agreement errors.",
+      "within_choice_pairs": [
+        {"pair":"A-B","meaningfully_distinct":true,"reason":"Plural coordinated subject with 'each' versus singular 'each of' subject."},
+        {"pair":"A-C","meaningfully_distinct":true,"reason":"Coordinated subject versus nearest-subject agreement under 'neither ... nor'."},
+        {"pair":"A-D","meaningfully_distinct":true,"reason":"Coordinated subject versus gerund phrase as subject."},
+        {"pair":"B-C","meaningfully_distinct":true,"reason":"Singular 'each of' subject versus nearest-subject agreement under 'neither ... nor'."},
+        {"pair":"B-D","meaningfully_distinct":true,"reason":"Singular 'each of' subject versus gerund phrase as subject."},
+        {"pair":"C-D","meaningfully_distinct":true,"reason":"Nearest-subject agreement under 'neither ... nor' versus gerund phrase as subject."}
+      ]
+    },
+    {
+      "id": "Q03",
+      "independent_answer": "C",
+      "additional_viable_key": [],
+      "answer_reason": "In 'Neither the director nor the actors move', the nearer subject 'actors' is plural, so 'move' agrees.",
+      "other_choices": {
+        "A": "The compound subject 'Leah and Omar' takes 'close', despite distributive 'each'.",
+        "B": "'Each of the visitors' takes 'holds'.",
+        "D": "The gerund phrase 'Preparing the meals' takes 'requires'."
+      },
+      "difficulty": 3,
+      "difficulty_reason": "Selecting the correct sentence requires applying the less familiar proximity rule to 'neither ... nor'.",
+      "within_choice_pairs": [
+        {"pair":"A-B","meaningfully_distinct":true,"reason":"Plural coordinated subject with 'each' versus singular 'each of' subject."},
+        {"pair":"A-C","meaningfully_distinct":true,"reason":"Coordinated subject versus nearest-subject agreement under 'neither ... nor'."},
+        {"pair":"A-D","meaningfully_distinct":true,"reason":"Coordinated subject versus gerund phrase as subject."},
+        {"pair":"B-C","meaningfully_distinct":true,"reason":"Singular 'each of' subject versus nearest-subject agreement under 'neither ... nor'."},
+        {"pair":"B-D","meaningfully_distinct":true,"reason":"Singular 'each of' subject versus gerund phrase as subject."},
+        {"pair":"C-D","meaningfully_distinct":true,"reason":"Nearest-subject agreement under 'neither ... nor' versus gerund phrase as subject."}
+      ]
+    },
+    {
+      "id": "Q04",
+      "independent_answer": "D",
+      "additional_viable_key": [],
+      "answer_reason": "The gerund phrase 'Drawing the maps' functions as a singular subject and takes 'requires'.",
+      "other_choices": {
+        "A": "The compound subject 'Ava and Ben' takes 'review', despite distributive 'each'.",
+        "B": "'Each of the clerks' takes 'keeps'.",
+        "C": "The nearer plural subject 'technicians' takes 'label'."
+      },
+      "difficulty": 2,
+      "difficulty_reason": "The gerund-subject rule is moderately familiar, and the three alternatives have identifiable agreement errors.",
+      "within_choice_pairs": [
+        {"pair":"A-B","meaningfully_distinct":true,"reason":"Plural coordinated subject with 'each' versus singular 'each of' subject."},
+        {"pair":"A-C","meaningfully_distinct":true,"reason":"Coordinated subject versus nearest-subject agreement under 'neither ... nor'."},
+        {"pair":"A-D","meaningfully_distinct":true,"reason":"Coordinated subject versus gerund phrase as subject."},
+        {"pair":"B-C","meaningfully_distinct":true,"reason":"Singular 'each of' subject versus nearest-subject agreement under 'neither ... nor'."},
+        {"pair":"B-D","meaningfully_distinct":true,"reason":"Singular 'each of' subject versus gerund phrase as subject."},
+        {"pair":"C-D","meaningfully_distinct":true,"reason":"Nearest-subject agreement under 'neither ... nor' versus gerund phrase as subject."}
+      ]
+    }
+  ],
+  "new_new_pairs": [
+    {"pair":"Q01-Q02","method_similarity":"strong","format_similarity":"strong","reason":"Same four subject constructions in the same choice positions and same sentence-selection prompt; only names, nouns, verbs, and the correct slot differ."},
+    {"pair":"Q01-Q03","method_similarity":"strong","format_similarity":"strong","reason":"Same four subject constructions in the same choice positions and same sentence-selection prompt; only names, nouns, verbs, and the correct slot differ."},
+    {"pair":"Q01-Q04","method_similarity":"strong","format_similarity":"strong","reason":"Same four subject constructions in the same choice positions and same sentence-selection prompt; only names, nouns, verbs, and the correct slot differ."},
+    {"pair":"Q02-Q03","method_similarity":"strong","format_similarity":"strong","reason":"Same four subject constructions in the same choice positions and same sentence-selection prompt; only names, nouns, verbs, and the correct slot differ."},
+    {"pair":"Q02-Q04","method_similarity":"strong","format_similarity":"strong","reason":"Same four subject constructions in the same choice positions and same sentence-selection prompt; only names, nouns, verbs, and the correct slot differ."},
+    {"pair":"Q03-Q04","method_similarity":"strong","format_similarity":"strong","reason":"Same four subject constructions in the same choice positions and same sentence-selection prompt; only names, nouns, verbs, and the correct slot differ."}
+  ],
+  "new_baseline_q04_pairs": [
+    {"pair":"Q01-baseline-Q04","method_similarity":"moderate","format_similarity":"low","reason":"Both test present-tense subject-verb agreement, but baseline Q04 uses two blanks and inverted subjects; this item selects one complete sentence from four different constructions."},
+    {"pair":"Q02-baseline-Q04","method_similarity":"moderate","format_similarity":"low","reason":"Both test present-tense subject-verb agreement, but baseline Q04 uses two blanks and inverted subjects; this item selects one complete sentence from four different constructions."},
+    {"pair":"Q03-baseline-Q04","method_similarity":"moderate","format_similarity":"low","reason":"Both test present-tense subject-verb agreement, but baseline Q04 uses two blanks and inverted subjects; this item selects one complete sentence from four different constructions."},
+    {"pair":"Q04-baseline-Q04","method_similarity":"moderate","format_similarity":"low","reason":"Both test present-tense subject-verb agreement, but baseline Q04 uses two blanks and inverted subjects; this item selects one complete sentence from four different constructions."}
+  ],
+  "overall_assessment": "Each new question has one clear correct answer and meaningfully distinct choices within that question. Difficulty meets the 2-3 target. Across the four new questions, the method and format are strongly repetitive: they reuse the exact same four syntactic slots and nearly identical prompts, changing surface vocabulary and which slot is correct."
+}

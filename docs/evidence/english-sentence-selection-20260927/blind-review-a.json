@@ -1,0 +1,254 @@
+{
+  "review_type": "independent answer-blind review",
+  "sources": {
+    "new_sample": {
+      "path": "/private/tmp/checkpoint-english-format-diversity/docs/evidence/english-sentence-selection-20260927/KEYLESS_SAMPLE.json",
+      "sha256": "4b49ed977535b086ac1d7384ecc78a1683397c81bb8eedb482934b91771aea4c",
+      "hash_verified": true
+    },
+    "baseline_format_comparator": {
+      "path": "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/english-native-author-acceptance-20260927/worksheet.json",
+      "sha256": "86ab3293b3a212b3914a56fbd89c572c361f66ccddf741bebadf4a139a3d2488",
+      "hash_verified": true,
+      "portion_used": "Q04 only"
+    }
+  },
+  "questions": [
+    {
+      "id": "Q01",
+      "selected_answer": "A",
+      "uncertain": false,
+      "second_viable_key": null,
+      "answer_reason": "A has plural Maya and Theo with plural prepare. B needs receives for singular Each; C needs sort for nearer plural assistants; D needs requires for the singular gerund phrase Proofreading the reports.",
+      "difficulty_1_to_5": 2,
+      "difficulty_target_2_to_3": "within target",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct_responses": true,
+          "reason": "Both contain each, but A has a plural compound subject with distributive each, while B has singular Each of ... as the subject; the sentences express different events."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct_responses": true,
+          "reason": "A tests a plural compound subject with each; C tests verb agreement with the nearer subject in neither ... nor; the events differ."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "A tests a plural compound subject with each; D tests a singular gerund phrase as subject; the events differ."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct_responses": true,
+          "reason": "B tests singular Each of ... agreement; C tests neither ... nor agreement with the nearer subject; the events differ."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "B tests singular Each of ... agreement; D tests a singular gerund phrase as subject; the events differ."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "C tests neither ... nor agreement with the nearer subject; D tests a singular gerund phrase as subject; the events differ."
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "selected_answer": "B",
+      "uncertain": false,
+      "second_viable_key": null,
+      "answer_reason": "B has singular Each of the guides with singular wears. A needs fold for plural Nora and Eli; C needs arrange for nearer plural volunteers; D needs helps for the singular gerund phrase Cataloging the books.",
+      "difficulty_1_to_5": 2,
+      "difficulty_target_2_to_3": "within target",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct_responses": true,
+          "reason": "Both contain each, but A has a plural compound subject with distributive each, while B has singular Each of ... as the subject; the sentences express different events."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct_responses": true,
+          "reason": "A tests a plural compound subject with each; C tests verb agreement with the nearer subject in neither ... nor; the events differ."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "A tests a plural compound subject with each; D tests a singular gerund phrase as subject; the events differ."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct_responses": true,
+          "reason": "B tests singular Each of ... agreement; C tests neither ... nor agreement with the nearer subject; the events differ."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "B tests singular Each of ... agreement; D tests a singular gerund phrase as subject; the events differ."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "C tests neither ... nor agreement with the nearer subject; D tests a singular gerund phrase as subject; the events differ."
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "selected_answer": "C",
+      "uncertain": false,
+      "second_viable_key": null,
+      "answer_reason": "C has plural actors nearest the verb in neither ... nor and plural move. A needs close for plural Leah and Omar; B needs holds for singular Each; D needs requires for the singular gerund phrase Preparing the meals.",
+      "difficulty_1_to_5": 3,
+      "difficulty_target_2_to_3": "within target",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct_responses": true,
+          "reason": "Both contain each, but A has a plural compound subject with distributive each, while B has singular Each of ... as the subject; the sentences express different events."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct_responses": true,
+          "reason": "A tests a plural compound subject with each; C tests verb agreement with the nearer subject in neither ... nor; the events differ."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "A tests a plural compound subject with each; D tests a singular gerund phrase as subject; the events differ."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct_responses": true,
+          "reason": "B tests singular Each of ... agreement; C tests neither ... nor agreement with the nearer subject; the events differ."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "B tests singular Each of ... agreement; D tests a singular gerund phrase as subject; the events differ."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "C tests neither ... nor agreement with the nearer subject; D tests a singular gerund phrase as subject; the events differ."
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "selected_answer": "D",
+      "uncertain": false,
+      "second_viable_key": null,
+      "answer_reason": "D has the singular gerund phrase Drawing the maps with singular requires. A needs review for plural Ava and Ben; B needs keeps for singular Each; C needs label for nearer plural technicians.",
+      "difficulty_1_to_5": 2,
+      "difficulty_target_2_to_3": "within target",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct_responses": true,
+          "reason": "Both contain each, but A has a plural compound subject with distributive each, while B has singular Each of ... as the subject; the sentences express different events."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct_responses": true,
+          "reason": "A tests a plural compound subject with each; C tests verb agreement with the nearer subject in neither ... nor; the events differ."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "A tests a plural compound subject with each; D tests a singular gerund phrase as subject; the events differ."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct_responses": true,
+          "reason": "B tests singular Each of ... agreement; C tests neither ... nor agreement with the nearer subject; the events differ."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "B tests singular Each of ... agreement; D tests a singular gerund phrase as subject; the events differ."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct_responses": true,
+          "reason": "C tests neither ... nor agreement with the nearer subject; D tests a singular gerund phrase as subject; the events differ."
+        }
+      ]
+    }
+  ],
+  "sample_to_sample_pairs": [
+    {
+      "pair": "Q01-Q02",
+      "similarity": "strong",
+      "reason": "The prompt is the same editor-comparison sentence with substituted names and nouns. A through D retain the same four subject patterns in the same order, so the solve path and response format are effectively identical."
+    },
+    {
+      "pair": "Q01-Q03",
+      "similarity": "strong",
+      "reason": "The prompt is the same editor-comparison sentence with substituted names and nouns. A through D retain the same four subject patterns in the same order, so the solve path and response format are effectively identical."
+    },
+    {
+      "pair": "Q01-Q04",
+      "similarity": "strong",
+      "reason": "The prompt is the same editor-comparison sentence with substituted names and nouns. A through D retain the same four subject patterns in the same order, so the solve path and response format are effectively identical."
+    },
+    {
+      "pair": "Q02-Q03",
+      "similarity": "strong",
+      "reason": "The prompt is the same editor-comparison sentence with substituted names and nouns. A through D retain the same four subject patterns in the same order, so the solve path and response format are effectively identical."
+    },
+    {
+      "pair": "Q02-Q04",
+      "similarity": "strong",
+      "reason": "The prompt is the same editor-comparison sentence with substituted names and nouns. A through D retain the same four subject patterns in the same order, so the solve path and response format are effectively identical."
+    },
+    {
+      "pair": "Q03-Q04",
+      "similarity": "strong",
+      "reason": "The prompt is the same editor-comparison sentence with substituted names and nouns. A through D retain the same four subject patterns in the same order, so the solve path and response format are effectively identical."
+    }
+  ],
+  "sample_to_baseline_Q04": [
+    {
+      "sample_id": "Q01",
+      "baseline_id": "Q04",
+      "similarity": "low",
+      "reason": "Both assess present-tense subject-verb agreement, but baseline Q04 is a two-blank ordered-pair completion about inverted subjects near the librarian/volunteers. This sample is a one-sentence selection among four standalone subject patterns."
+    },
+    {
+      "sample_id": "Q02",
+      "baseline_id": "Q04",
+      "similarity": "low",
+      "reason": "Both assess present-tense subject-verb agreement, but baseline Q04 is a two-blank ordered-pair completion about inverted subjects near the librarian/volunteers. This sample is a one-sentence selection among four standalone subject patterns."
+    },
+    {
+      "sample_id": "Q03",
+      "baseline_id": "Q04",
+      "similarity": "low",
+      "reason": "Both assess present-tense subject-verb agreement, but baseline Q04 is a two-blank ordered-pair completion about inverted subjects near the librarian/volunteers. This sample is a one-sentence selection among four standalone subject patterns."
+    },
+    {
+      "sample_id": "Q04",
+      "baseline_id": "Q04",
+      "similarity": "low",
+      "reason": "Both assess present-tense subject-verb agreement, but baseline Q04 is a two-blank ordered-pair completion about inverted subjects near the librarian/volunteers. This sample is a one-sentence selection among four standalone subject patterns."
+    }
+  ],
+  "coverage": {
+    "new_questions": 4,
+    "choice_pairs_per_question": 6,
+    "total_choice_pairs": 24,
+    "sample_to_sample_pairs": 6,
+    "sample_to_baseline_pairs": 4
+  },
+  "overall_findings": [
+    "All four questions appear to have exactly one defensible answer in standard written American English; no second viable key found.",
+    "Each item is individually around target difficulty, although a learner who sees multiple items can reuse the same solve pattern and may find later items easier.",
+    "Within each item all six choice pairs express different events and exercise distinguishable subject structures, including the two different uses of each.",
+    "Across the four-item sample, format and solve-path diversity is very weak: the prompts and A/B/C/D grammatical constructions are near clones with vocabulary substitutions and a rotating correct position.",
+    "Baseline Q04 shares the agreement objective but uses a materially different two-blank ordered-pair format and inverted-subject construction."
+  ]
+}
