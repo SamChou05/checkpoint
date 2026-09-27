@@ -1,0 +1,64 @@
+{
+  "all_reviewed_display_keys_match_exact_source": true,
+  "author_only_compiled_candidates": 5,
+  "capture_status_remains_failed": true,
+  "correct_reviewed_keys": 5,
+  "difficulty_2_or_3_reviewed": 5,
+  "frozen_source_sha256": {
+    "blind-official/RUBRIC.md": "5d247f82c0a8dc62ad4cb2f0c557617ee6545909f75fdf10ddf5c3ed2ad9b9ee",
+    "blind-official/worksheet.json": "f1cf83c7ea68e7b1796572316f09e408940b0e880f5297b39e1adeaac39d55b7",
+    "blind-private.json": "3392b07bad490ded6a3ed0bbd1a488c376939aa7c5a3c73fe7dcf042886ed431",
+    "blind-review.json": "d2d7c28fd0366e2aed68ffbca30498179fb7ccf1805312f9cc0779e0ddf8be36",
+    "capture.json": "17575d5a62b1fde235c3d43c7c9bc1d9e40385466e30b973fde1ca9cf1bbc9aa",
+    "offline-replay.json": "00e3d6638a6095bc0edddf668388f76ca893c1d51be23606d2f64a6254c99722",
+    "plan.json": "fdaf5ba1558c578aec177ba289f894577d65ddc57de1e86177fa5550d7d2d9ab"
+  },
+  "full_worker_returned_questions_in_this_trial": 0,
+  "meaningfully_distinct_pairs_reviewed": 30,
+  "review_files_embed_worksheet_digest": false,
+  "reviewer_count": 1,
+  "rows": [
+    {
+      "difficulty": 2,
+      "meaningfully_distinct_pairs": 6,
+      "original_author_slot": 4,
+      "review_selected_source_key": true,
+      "source_key_display_label": "B",
+      "worksheet_id": "52f63c0975cfdbc7879aaafa"
+    },
+    {
+      "difficulty": 2,
+      "meaningfully_distinct_pairs": 6,
+      "original_author_slot": 0,
+      "review_selected_source_key": true,
+      "source_key_display_label": "B",
+      "worksheet_id": "2d9255a666051fe3c94134a6"
+    },
+    {
+      "difficulty": 2,
+      "meaningfully_distinct_pairs": 6,
+      "original_author_slot": 1,
+      "review_selected_source_key": true,
+      "source_key_display_label": "D",
+      "worksheet_id": "09d0f1f297ef778df2bd29e8"
+    },
+    {
+      "difficulty": 2,
+      "meaningfully_distinct_pairs": 6,
+      "original_author_slot": 2,
+      "review_selected_source_key": true,
+      "source_key_display_label": "B",
+      "worksheet_id": "35c6d7321662113606a722d0"
+    },
+    {
+      "difficulty": 3,
+      "meaningfully_distinct_pairs": 6,
+      "original_author_slot": 3,
+      "review_selected_source_key": true,
+      "source_key_display_label": "D",
+      "worksheet_id": "c20ebc072c19fdbdc214aa60"
+    }
+  ],
+  "self_contained_stems_reviewed": 5,
+  "strong_within_batch_near_duplicates_reported": false
+}

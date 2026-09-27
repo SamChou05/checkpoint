@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "capture_sha256": "17575d5a62b1fde235c3d43c7c9bc1d9e40385466e30b973fde1ca9cf1bbc9aa",
+  "replay_sha256": "00e3d6638a6095bc0edddf668388f76ca893c1d51be23606d2f64a6254c99722",
+  "worksheet_sha256": "f1cf83c7ea68e7b1796572316f09e408940b0e880f5297b39e1adeaac39d55b7",
+  "mapping": {
+    "2d9255a666051fe3c94134a6": {
+      "original_author_slot": 0,
+      "display_to_source_index": [
+        0,
+        2,
+        3,
+        1
+      ],
+      "correct_display_label": "B"
+    },
+    "09d0f1f297ef778df2bd29e8": {
+      "original_author_slot": 1,
+      "display_to_source_index": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "correct_display_label": "D"
+    },
+    "35c6d7321662113606a722d0": {
+      "original_author_slot": 2,
+      "display_to_source_index": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "correct_display_label": "B"
+    },
+    "c20ebc072c19fdbdc214aa60": {
+      "original_author_slot": 3,
+      "display_to_source_index": [
+        0,
+        1,
+        3,
+        2
+      ],
+      "correct_display_label": "D"
+    },
+    "52f63c0975cfdbc7879aaafa": {
+      "original_author_slot": 4,
+      "display_to_source_index": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "correct_display_label": "B"
+    }
+  }
+}

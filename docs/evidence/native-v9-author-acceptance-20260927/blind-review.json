@@ -1,0 +1,123 @@
+{
+  "review_type": "blind_official_native_v9_author_acceptance",
+  "locked": true,
+  "scope": "Only worksheet.json and adjacent RUBRIC.md were inspected before this review was locked.",
+  "candidate_count": 5,
+  "summary": {
+    "sole_correct_choices": ["B", "B", "D", "B", "D"],
+    "ambiguous_or_unsupported_count": 0,
+    "semantically_distinct_choice_pairs": 30,
+    "choice_pairs_assessed": 30,
+    "all_stems_self_contained": true,
+    "all_objectives_visible_from_stem": true,
+    "all_items_at_target_difficulty_2_to_3": true,
+    "strong_within_batch_near_duplicates": false,
+    "content_concerns": [
+      "The two integer-algebra items repeat formulaic 'unitless number', domain, and condition phrasing, although one tests solving an equation and the other tests counting solutions to an inequality.",
+      "The last grammar item is grammatically sound but its repeated 'from the library' phrasing and contrived spatial scene reduce naturalness.",
+      "The arithmetic item has an implausible 34/53 distractor relative to the denominators in the computation."
+    ]
+  },
+  "items": [
+    {
+      "id": "52f63c0975cfdbc7879aaafa",
+      "correct_choice": "B",
+      "reason": "The gerund phrase 'Preparing the meals' is a singular subject, so it requires 'requires'; plural 'cooks' takes 'measure'.",
+      "self_contained": true,
+      "objective_visible": true,
+      "objective": "Present-tense subject-verb agreement for a gerund phrase and a plural noun.",
+      "difficulty_1_to_5": 2,
+      "naturalness": "Mostly natural; the instruction is clear and the sentence is plausible.",
+      "within_batch_novelty": "Shares the broad agreement topic with the fifth item but tests a different subject structure.",
+      "uncertainty": "None about the key; difficulty is an estimate.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "assessment": "Both verb forms differ; A has two agreement errors and B has none."},
+        {"pair": "A-C", "meaningfully_distinct": true, "assessment": "The first verb differs; A is wrong on both subjects and C only on 'cooks'."},
+        {"pair": "A-D", "meaningfully_distinct": true, "assessment": "The second verb differs; A is wrong on both subjects and D only on the gerund subject."},
+        {"pair": "B-C", "meaningfully_distinct": true, "assessment": "The second verb differs; B agrees with 'cooks' and C does not."},
+        {"pair": "B-D", "meaningfully_distinct": true, "assessment": "The first verb differs; B agrees with the gerund subject and D does not."},
+        {"pair": "C-D", "meaningfully_distinct": true, "assessment": "Both verb forms differ; each option places its single error in a different blank."}
+      ]
+    },
+    {
+      "id": "2d9255a666051fe3c94134a6",
+      "correct_choice": "B",
+      "reason": "(5/6)(7/9) = 35/54, hence 1 - 35/54 = 19/54.",
+      "self_contained": true,
+      "objective_visible": true,
+      "objective": "Exact fraction multiplication and subtraction from one.",
+      "difficulty_1_to_5": 2,
+      "naturalness": "Clear mathematical question, though the extra parentheses and 'unitless number' wording are formal; 34/53 is a weak distractor.",
+      "within_batch_novelty": "The only fraction-arithmetic item in the batch.",
+      "uncertainty": "None about the key; difficulty is an estimate.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "assessment": "Different exact fractions with opposite signs."},
+        {"pair": "A-C", "meaningfully_distinct": true, "assessment": "A is a negative fraction and C is one."},
+        {"pair": "A-D", "meaningfully_distinct": true, "assessment": "Different fractions with opposite signs."},
+        {"pair": "B-C", "meaningfully_distinct": true, "assessment": "The computed fraction differs from one."},
+        {"pair": "B-D", "meaningfully_distinct": true, "assessment": "The fractions have distinct values and denominators; D is a less plausible calculation error."},
+        {"pair": "C-D", "meaningfully_distinct": true, "assessment": "One differs from the fraction 34/53."}
+      ]
+    },
+    {
+      "id": "09d0f1f297ef778df2bd29e8",
+      "correct_choice": "D",
+      "reason": "Cross-multiplication gives 10x + 40 = 13x + 13, so x = 9, which lies in the stated domain.",
+      "self_contained": true,
+      "objective_visible": true,
+      "objective": "Solve a rational equation and identify the offered integer solution.",
+      "difficulty_1_to_5": 2,
+      "naturalness": "Understandable, but 'unitless number', 'Its domain', 'Condition', and nested parentheses make the stem sound generated.",
+      "within_batch_novelty": "Shares formulaic domain/condition wording with the next item, but its equation-solving objective is distinct from inequality counting.",
+      "uncertainty": "None about the key; difficulty is an estimate.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "assessment": "8 and 7 are different candidate integers."},
+        {"pair": "A-C", "meaningfully_distinct": true, "assessment": "8 and 10 are different candidate integers."},
+        {"pair": "A-D", "meaningfully_distinct": true, "assessment": "8 and the unique solution 9 are different integers."},
+        {"pair": "B-C", "meaningfully_distinct": true, "assessment": "7 and 10 are different candidate integers."},
+        {"pair": "B-D", "meaningfully_distinct": true, "assessment": "7 and the unique solution 9 are different integers."},
+        {"pair": "C-D", "meaningfully_distinct": true, "assessment": "10 and the unique solution 9 are different integers."}
+      ]
+    },
+    {
+      "id": "35c6d7321662113606a722d0",
+      "correct_choice": "B",
+      "reason": "The left side simplifies to x + 6, so x <= 8; the domain contributes 4, 5, 6, 7, and 8, for five integers.",
+      "self_contained": true,
+      "objective_visible": true,
+      "objective": "Simplify a linear inequality and count integer solutions in a specified domain.",
+      "difficulty_1_to_5": 2,
+      "naturalness": "Clear but formulaic, with avoidable 'unitless number', 'Its domain', and 'Condition' boilerplate.",
+      "within_batch_novelty": "Similar presentation to the preceding algebra item, but a distinct count-of-solutions operation.",
+      "uncertainty": "None about the key; difficulty is an estimate.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "assessment": "Four and five are distinct solution counts."},
+        {"pair": "A-C", "meaningfully_distinct": true, "assessment": "Four and six are distinct solution counts."},
+        {"pair": "A-D", "meaningfully_distinct": true, "assessment": "Four and three are distinct solution counts."},
+        {"pair": "B-C", "meaningfully_distinct": true, "assessment": "The correct count five differs from six."},
+        {"pair": "B-D", "meaningfully_distinct": true, "assessment": "The correct count five differs from three."},
+        {"pair": "C-D", "meaningfully_distinct": true, "assessment": "Six and three are distinct solution counts."}
+      ]
+    },
+    {
+      "id": "c20ebc072c19fdbdc214aa60",
+      "correct_choice": "D",
+      "reason": "In each inverted clause, the postverbal noun is the subject: plural 'returns' takes 'are', and singular 'book' takes 'is'.",
+      "self_contained": true,
+      "objective_visible": true,
+      "objective": "Subject-verb agreement with subjects following the verbs in locative inversion.",
+      "difficulty_1_to_5": 3,
+      "naturalness": "The construction is grammatical, but the sentence is contrived and 'from the library' is repeated unnecessarily.",
+      "within_batch_novelty": "Shares agreement as a broad topic with the first item but tests inversion rather than a gerund subject; no strong near-duplicate.",
+      "uncertainty": "The key is clear under standard written English; difficulty is an estimate.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "assessment": "Both forms differ; A gets only 'book' right and B gets only 'returns' right."},
+        {"pair": "A-C", "meaningfully_distinct": true, "assessment": "The second verb differs; A gets 'book' right and C gets neither subject right."},
+        {"pair": "A-D", "meaningfully_distinct": true, "assessment": "The first verb differs; A misses plural 'returns' and D agrees in both clauses."},
+        {"pair": "B-C", "meaningfully_distinct": true, "assessment": "The first verb differs; B gets 'returns' right and C gets neither subject right."},
+        {"pair": "B-D", "meaningfully_distinct": true, "assessment": "The second verb differs; B misses singular 'book' and D agrees in both clauses."},
+        {"pair": "C-D", "meaningfully_distinct": true, "assessment": "Both verb forms differ; C has two agreement errors and D has none."}
+      ]
+    }
+  ]
+}
