@@ -134,6 +134,11 @@ including the rejected item at 3. A post-lock audit found all five main
 explanations and 20 choice-feedback entries sound. This is a failed worker
 trial with a measured difficulty-calibration disagreement; it cannot be
 retroactively counted as 5/5. Repeated-bank yield also remains unqualified.
+The subsequent source revision prefers a blind-rated level-2 variant when
+first adding this format from another authored family. The reviewer-4 veto
+and learner difficulty metadata remain unchanged. This is an offline-verified
+selection change, not a successful new live worker trial or a claim that all
+eight scene/order variants have independent difficulty ratings.
 
 The [current combined-source offline replay](evidence/combined-current-bank-replay-20260927/RESULTS.md)
 constructed 20/40/80 unique exact stems, but found 1/14/78 same numeric

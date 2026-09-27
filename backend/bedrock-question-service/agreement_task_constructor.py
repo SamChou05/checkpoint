@@ -740,7 +740,14 @@ def _select_novel_task(
         if ordinal == 4:
             return (by_scene[candidate_scene],
                     (candidate_scene in SENTENCE_SELECTION_SCENES) != sentence_due,
-                    family_use, candidate != task,
+                    family_use,
+                    # In the level-2 pilot, the first selected full-sentence
+                    # variant should use the order independently rated 2/2.
+                    # Keep an authored selection unchanged when it is fresh.
+                    (scene not in SENTENCE_SELECTION_SCENES
+                     and candidate_scene in SENTENCE_SELECTION_SCENES
+                     and candidate["order"] != "singular_first"),
+                    candidate != task,
                     candidate_scene, candidate["order"])
         return (family_use, by_scene[candidate_scene], candidate != task,
                 candidate_scene, candidate["order"])

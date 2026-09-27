@@ -489,6 +489,7 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
         history = []
         chosen_scenes = []
+        chosen_orders = []
         for _ in range(40):
             candidate = compile_mapped_english_slots(
                 source, contract(), existing_prompts=tuple(history),
@@ -497,8 +498,12 @@ class AgreementTaskConstructorTests(unittest.TestCase):
             prompt = candidate.content()["prompt"]
             self.assertNotIn(prompt, history)
             history.append(prompt)
-            chosen_scenes.append(json.loads(candidate.task_json)["scene"])
+            selected_task = json.loads(candidate.task_json)
+            chosen_scenes.append(selected_task["scene"])
+            chosen_orders.append(selected_task["order"])
         self.assertIn(chosen_scenes[0], SENTENCE_SELECTION_SCENES)
+        self.assertEqual(chosen_scenes[0], "select_archive")
+        self.assertEqual(chosen_orders[0], "singular_first")
         self.assertEqual(chosen_scenes[1], COMPOUND_SCENE)
         self.assertEqual([index for index, scene in enumerate(chosen_scenes[:16])
                           if scene in SENTENCE_SELECTION_SCENES], [0, 3, 7, 11])

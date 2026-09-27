@@ -108,6 +108,27 @@ class MappedAgreementRouteTests(unittest.TestCase):
         self.assertEqual(set(agreement_proof), {3, 4})
         return rows, math_proof, agreement_proof
 
+    def test_level_two_first_sentence_selection_from_other_authored_family(self):
+        raw = self.raw()
+        raw["questions"]["4"] = agreement("gerund_meals")
+        adapted = json.loads(native.adapt_native_response(json.dumps(raw), self.contract()))
+        rows, math_proof, english_proof, failures = prepare_mapped_agreement_rows(
+            adapted, self.contract(),
+        )
+        self.assertEqual(failures, [])
+        self.assertEqual(json.loads(english_proof[4].task_json),
+                         agreement("select_archive", "singular_first"))
+        self.assertEqual(rows[4]["difficulty"], 2)
+        self.assertEqual(rows[4]["expectedAnswer"], "Maya and Theo each prepare lunch.")
+        english_output = {}
+        sanitized = _sanitize_questions(
+            rows, self.request, compiled_candidates=math_proof, compiled_output={},
+            agreement_candidates=english_proof, agreement_output=english_output,
+            preserve_authored_explanation=True,
+        )
+        self.assertEqual(len(sanitized), 5)
+        self.assertEqual(english_output[4].content(sanitized[4]), sanitized[4])
+
     def test_new_schema_is_closed_bounded_and_old_v1_bytes_unchanged(self):
         new = self.contract()
         schema_json = native.native_output_config(new)["textFormat"]["structure"]["jsonSchema"]["schema"]
