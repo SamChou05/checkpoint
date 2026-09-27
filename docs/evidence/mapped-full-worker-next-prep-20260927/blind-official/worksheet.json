@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "prespecified_returned_output",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "68b2b844b55d13fbb7e928f0",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 4) / (x + 1)) = (11 / 8). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "7",
+        "B": "8",
+        "C": "6",
+        "D": "5"
+      }
+    },
+    {
+      "id": "184e194715f3e9dc57bbf377",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the scientist ___ the notes from the lab, while near the technicians ___ the sample from the lab. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "are; is",
+        "B": "are; are",
+        "C": "is; are",
+        "D": "is; is"
+      }
+    },
+    {
+      "id": "f133ea5a2ba3538a7c60da8f",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((3 / 4) / (5 / 7)) + 1). What is its exact value?",
+      "choices": {
+        "A": "21/20",
+        "B": "22/21",
+        "C": "41/20",
+        "D": "11/10"
+      }
+    },
+    {
+      "id": "59865b790ff36f1011c785f9",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: (x * (x + 5)) <= 104. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "7",
+        "C": "9",
+        "D": "10"
+      }
+    },
+    {
+      "id": "eb1037712e5ce7a49e2cb9a9",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Preparing the meals ___ planning, and the cooks ___ the ingredients. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "require; measures",
+        "B": "requires; measures",
+        "C": "requires; measure",
+        "D": "require; measure"
+      }
+    }
+  ]
+}
