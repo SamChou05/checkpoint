@@ -1,0 +1,79 @@
+{
+  "allCandidateLearnerFieldsMatchCodeProvenance": true,
+  "candidateCount": 5,
+  "captureSha256": "fe66f66fe9bc1b8eefa62c167447e73a62d41cf362850a3db8cbc912298af31d",
+  "englishSolverOneKeyAndSixDistinctPairs": 2,
+  "independentBlindContentReview": "pending",
+  "numericExactProofs": 3,
+  "planSha256": "bbac67ed6255db66c20404f37470a5c92a53e86d1a49a0ca41c90015f8f5217b",
+  "providerCalls": 3,
+  "returnedOriginalSlots": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "reviewerMarkedAllFiveValidAndExplanationsSupported": true,
+  "reviewerSlotFourDifficulty": 4,
+  "rows": [
+    {
+      "codeOwnedLearnerFieldsMatch": true,
+      "literalDistinctChoicePairs": 6,
+      "numericProof": {
+        "independentAnswer": "16/7",
+        "kind": "exact_value"
+      },
+      "originalSlot": 0,
+      "workerStatus": "returned"
+    },
+    {
+      "codeOwnedLearnerFieldsMatch": true,
+      "literalDistinctChoicePairs": 6,
+      "numericProof": {
+        "independentAnswer": "8",
+        "kind": "scalar_condition",
+        "satisfyingDomainValues": [
+          8
+        ],
+        "selection": "any_satisfying"
+      },
+      "originalSlot": 1,
+      "workerStatus": "returned"
+    },
+    {
+      "codeOwnedLearnerFieldsMatch": true,
+      "literalDistinctChoicePairs": 6,
+      "numericProof": {
+        "independentAnswer": "5",
+        "kind": "scalar_condition",
+        "satisfyingDomainValues": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selection": "count_satisfying"
+      },
+      "originalSlot": 2,
+      "workerStatus": "returned"
+    },
+    {
+      "codeOwnedLearnerFieldsMatch": true,
+      "englishProof": "closed_agreement_constructor",
+      "literalDistinctChoicePairs": 6,
+      "originalSlot": 3,
+      "workerStatus": "returned"
+    },
+    {
+      "codeOwnedLearnerFieldsMatch": true,
+      "englishProof": "closed_agreement_constructor",
+      "literalDistinctChoicePairs": 6,
+      "originalSlot": 4,
+      "workerStatus": "unfilled"
+    }
+  ],
+  "unfilledOriginalSlots": [
+    4
+  ]
+}
