@@ -32,6 +32,24 @@ review](independent-review.json) approved the one-shot preparation, and the
 fresh [credential precheck](launch-precheck.json) passed before execution.
 The captured worker status is `completed_pending_review` and `qualified:false`.
 
-Answer-blind content assessment of all five sanitized candidates is separate
-and pending. This one batch cannot establish reliable 20-, 40-, or 80-item
-yield, and the current mapped route remains opt-in.
+After the capture was locked, two independent reviewers saw only the same
+[keyless worksheet](blind-candidates/worksheet.json), SHA-256
+`de706786fdad59260b636ea2ab36260a44a8bdaf2034f4786a27855c303b0d34`.
+[Review A](blind-candidates/review-a.json) (SHA-256
+`3d9cdf7fa0ac608b1eb60b4172829341107969235cbf6ca798059f987d720a79`)
+and [review B](blind-candidates/review-b.json) (SHA-256
+`cd99f7f51a1459950a35c08a3fc983bdad2a4de146bd300f6d906f7bc32f4a11`)
+independently selected the code-owned key for **all five** sanitized
+candidates, found no alternative viable key, rated each difficulty 2–3, and
+judged **all 30 of 30** within-item choice pairs meaningfully distinct. Both
+rated the withheld full-sentence item **3**, in disagreement with the live
+reviewer's 4. Both called the English Q01/Q04 pair a strong repetition of
+subject–verb agreement; A also called the two integer-response Q02/Q05 items
+strongly similar in format while B rated that pair moderate. Both noted some
+weak numeric distractors even though the responses are distinct. The private
+answer map was opened only after both reviews were locked; it matched every
+selected key. These blind assessments do not retroactively change the failed
+worker return or resolve the subjective difficulty disagreement.
+
+This one batch cannot establish reliable 20-, 40-, or 80-item yield, and the
+current mapped route remains opt-in.

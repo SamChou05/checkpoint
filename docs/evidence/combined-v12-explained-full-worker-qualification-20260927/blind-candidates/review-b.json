@@ -1,0 +1,299 @@
+{
+  "reviewer": "B",
+  "blind_review": true,
+  "worksheet_sha256": "de706786fdad59260b636ea2ab36260a44a8bdaf2034f4786a27855c303b0d34",
+  "items": [
+    {
+      "id": "Q01",
+      "key": "A",
+      "additional_defensible_keys": [],
+      "difficulty": 3,
+      "difficulty_reason": "Requires treating the compound subject as plural despite 'each', recognizing a gerund phrase as singular, and applying agreement with the nearer noun in 'neither ... nor'.",
+      "solution": "'Maya and Theo' is plural, so 'prepare' agrees. 'Proofreading' requires 'requires'; 'Each' requires 'receives'; and the nearer plural 'assistants' requires 'sort'.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The sentences are separate, meaningful agreement cases; their subject structures and/or verb agreement judgments differ."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The sentences are separate, meaningful agreement cases; their subject structures and/or verb agreement judgments differ."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The sentences are separate, meaningful agreement cases; their subject structures and/or verb agreement judgments differ."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The sentences are separate, meaningful agreement cases; their subject structures and/or verb agreement judgments differ."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The sentences are separate, meaningful agreement cases; their subject structures and/or verb agreement judgments differ."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The sentences are separate, meaningful agreement cases; their subject structures and/or verb agreement judgments differ."
+        }
+      ],
+      "ambiguity_or_feedback_concerns": [],
+      "weak_distractors": []
+    },
+    {
+      "id": "Q02",
+      "key": "D",
+      "additional_defensible_keys": [],
+      "difficulty": 2,
+      "difficulty_reason": "A direct strict-bound inequality followed by counting seven integers; the adjacent count choices make endpoint care necessary.",
+      "solution": "(x-7)^2 < 16 gives -4 < x-7 < 4, hence 3 < x < 11. The eligible integers are 4 through 10, seven values.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The two offered counts are numerically different; each represents a separate possible counting result."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The two offered counts are numerically different; each represents a separate possible counting result."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The two offered counts are numerically different; each represents a separate possible counting result."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The two offered counts are numerically different; each represents a separate possible counting result."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The two offered counts are numerically different; each represents a separate possible counting result."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The two offered counts are numerically different; each represents a separate possible counting result."
+        }
+      ],
+      "ambiguity_or_feedback_concerns": [],
+      "weak_distractors": []
+    },
+    {
+      "id": "Q03",
+      "key": "A",
+      "additional_defensible_keys": [],
+      "difficulty": 2,
+      "difficulty_reason": "Two routine exact fraction operations, multiplication and subtraction, with no variable or interpretive complication.",
+      "solution": "(7/8)(4/6) = 7/12, so 1 - 7/12 = 5/12.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The offered exact values are numerically different, including different signs or magnitudes."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The offered exact values are numerically different, including different signs or magnitudes."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The offered exact values are numerically different, including different signs or magnitudes."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The offered exact values are numerically different, including different signs or magnitudes."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The offered exact values are numerically different, including different signs or magnitudes."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The offered exact values are numerically different, including different signs or magnitudes."
+        }
+      ],
+      "ambiguity_or_feedback_concerns": [],
+      "weak_distractors": [
+        {
+          "choice": "B",
+          "reason": "-1/2 is negative even though one minus a positive fraction smaller than one must remain positive; it can be rejected without computing."
+        },
+        {
+          "choice": "D",
+          "reason": "6/11 does not suggest a clear single-step arithmetic error from the given fractions, making it a comparatively weak diagnostic distractor."
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "key": "C",
+      "additional_defensible_keys": [],
+      "difficulty": 2,
+      "difficulty_reason": "Requires matching a relative clause to plural 'guides' and a second verb to singular 'One'; each is a common agreement pattern.",
+      "solution": "'Who' refers to plural 'guides', so 'fold'; 'One' is singular, so 'wears'.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "Each ordered pair differs in at least one of the two independently judged verb forms."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "Each ordered pair differs in at least one of the two independently judged verb forms."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "Each ordered pair differs in at least one of the two independently judged verb forms."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "Each ordered pair differs in at least one of the two independently judged verb forms."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "Each ordered pair differs in at least one of the two independently judged verb forms."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "Each ordered pair differs in at least one of the two independently judged verb forms."
+        }
+      ],
+      "ambiguity_or_feedback_concerns": [],
+      "weak_distractors": []
+    },
+    {
+      "id": "Q05",
+      "key": "B",
+      "additional_defensible_keys": [],
+      "difficulty": 2,
+      "difficulty_reason": "Cross-multiplication yields a simple linear equation, and the offered integers sit near its solution.",
+      "solution": "9(x+5)=13(x+1), so 9x+45=13x+13 and x=8; checking gives 13/9.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The offered values of x are different integers, each producing a different value on substitution."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The offered values of x are different integers, each producing a different value on substitution."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The offered values of x are different integers, each producing a different value on substitution."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The offered values of x are different integers, each producing a different value on substitution."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The offered values of x are different integers, each producing a different value on substitution."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The offered values of x are different integers, each producing a different value on substitution."
+        }
+      ],
+      "ambiguity_or_feedback_concerns": [],
+      "weak_distractors": []
+    }
+  ],
+  "cross_item_pairs": [
+    {
+      "pair": "Q01-Q02",
+      "solving_method": "none",
+      "response_format": "none",
+      "overall": "none",
+      "reason": "Grammar agreement selection versus counting integer solutions of an inequality; sentence versus count."
+    },
+    {
+      "pair": "Q01-Q03",
+      "solving_method": "none",
+      "response_format": "none",
+      "overall": "none",
+      "reason": "Grammar agreement selection versus exact fraction arithmetic; sentence versus fraction."
+    },
+    {
+      "pair": "Q01-Q04",
+      "solving_method": "strong",
+      "response_format": "low",
+      "overall": "strong",
+      "reason": "Both turn on identifying the controlling subject and selecting present-tense verb agreement. Q01 asks for a correct whole sentence, while Q04 asks for an ordered pair of verb forms."
+    },
+    {
+      "pair": "Q01-Q05",
+      "solving_method": "none",
+      "response_format": "none",
+      "overall": "none",
+      "reason": "Grammar agreement selection versus solving a rational equation; sentence versus value of x."
+    },
+    {
+      "pair": "Q02-Q03",
+      "solving_method": "low",
+      "response_format": "low",
+      "overall": "low",
+      "reason": "Both involve elementary arithmetic, but Q02 bounds and counts integers whereas Q03 evaluates a rational expression; count versus fraction."
+    },
+    {
+      "pair": "Q02-Q04",
+      "solving_method": "none",
+      "response_format": "none",
+      "overall": "none",
+      "reason": "Inequality and integer counting versus two verb-agreement decisions; count versus ordered pair."
+    },
+    {
+      "pair": "Q02-Q05",
+      "solving_method": "moderate",
+      "response_format": "moderate",
+      "overall": "moderate",
+      "reason": "Both apply algebra to a constrained integer x and select an integer. Q02 solves a strict quadratic inequality and reports a count; Q05 solves a rational equation and reports x itself."
+    },
+    {
+      "pair": "Q03-Q04",
+      "solving_method": "none",
+      "response_format": "none",
+      "overall": "none",
+      "reason": "Exact fraction calculation versus selecting verb forms; fraction versus ordered pair."
+    },
+    {
+      "pair": "Q03-Q05",
+      "solving_method": "low",
+      "response_format": "low",
+      "overall": "low",
+      "reason": "Both use fraction arithmetic, but Q03 evaluates a fully numeric expression and Q05 isolates a variable in an equation; exact fraction versus integer x."
+    },
+    {
+      "pair": "Q04-Q05",
+      "solving_method": "none",
+      "response_format": "none",
+      "overall": "none",
+      "reason": "Verb agreement versus rational equation solving; ordered verb pair versus integer x."
+    }
+  ],
+  "overall_notes": "No item has an additional defensible key, missing answer, or apparent ambiguity under standard written American English and the stated integer domains."
+}

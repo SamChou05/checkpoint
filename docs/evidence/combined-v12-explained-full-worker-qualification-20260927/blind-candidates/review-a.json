@@ -1,0 +1,444 @@
+{
+  "reviewer": "A",
+  "worksheet_sha256": "de706786fdad59260b636ea2ab36260a44a8bdaf2034f4786a27855c303b0d34",
+  "items": {
+    "Q01": {
+      "key_status": "unique",
+      "key": "A",
+      "additional_defensible_keys": [],
+      "difficulty_1_to_5": 3,
+      "difficulty_reason": "Requires treating the compound subject as plural despite 'each' and applying proximity agreement in the neither/nor option.",
+      "alternative_assessments": {
+        "A": "Correct: the compound subject 'Maya and Theo' takes plural 'prepare'; 'each' distributes the action without changing agreement.",
+        "B": "Incorrect: the gerund phrase 'Proofreading the reports' is singular and takes 'requires'.",
+        "C": "Incorrect: 'Each' is singular and takes 'receives'.",
+        "D": "Incorrect: the nearer subject 'assistants' is plural and takes 'sort'."
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "A has a plural compound subject with correct agreement; B has a singular gerund subject with a plural verb."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "A agrees with a compound subject; C fails agreement with singular 'Each'."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "A is grammatical; D fails proximity agreement with plural 'assistants'."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "B tests a gerund phrase as subject; C tests singular 'Each'."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "B uses a singular gerund subject; D uses a neither/nor construction with a plural nearer subject."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "C's singular quantifier and D's correlative subject require different agreement analyses."
+        }
+      ],
+      "other_notes": [
+        "The opening says the sentences concern Maya and Theo, the assistants, and proofreading, although option C instead concerns guests; this does not alter the key."
+      ]
+    },
+    "Q02": {
+      "key_status": "unique",
+      "key": "D",
+      "additional_defensible_keys": [],
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "The strict square inequality gives 3 < x < 11, then a short count of integers 4 through 10.",
+      "alternative_assessments": {
+        "A": "Incorrect: 6 undercounts the seven solutions by one.",
+        "B": "Incorrect: 8 overcounts by one, likely including one strict boundary.",
+        "C": "Incorrect: 5 undercounts by two.",
+        "D": "Correct: x is any integer from 4 through 10, inclusive, so there are 7."
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "6 and 8 are different counts, one below and one above the correct count."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "6 and 5 are adjacent undercounts."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "6 omits one valid integer; 7 counts all valid integers."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "8 includes one extra boundary; 5 misses two valid integers."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "8 overcounts by one; 7 is the correct strict-boundary count."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "5 undercounts by two; 7 includes the full interior range."
+        }
+      ],
+      "other_notes": [
+        "The stated domain does not constrain the inequality further because all satisfying integers lie inside it.",
+        "Choice C is weaker than the adjacent off-by-one distractors because its count is two away."
+      ]
+    },
+    "Q03": {
+      "key_status": "unique",
+      "key": "A",
+      "additional_defensible_keys": [],
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Multiply to get 7/12 and subtract from 1 to get 5/12.",
+      "alternative_assessments": {
+        "A": "Correct: (7/8)(4/6) = 7/12, and 1 - 7/12 = 5/12.",
+        "B": "Incorrect: -1/2 is impossible because the positive product is below 1.",
+        "C": "Incorrect: 1 would require the subtracted product to be zero.",
+        "D": "Incorrect: 6/11 is not the result of the stated multiplication and subtraction."
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "5/12 is positive while -1/2 is negative, implying a different subtraction result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "5/12 reflects a nonzero product; 1 effectively ignores that product."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Both are positive fractions, but 5/12 and 6/11 have different exact values."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "-1/2 is negative while 1 is positive and corresponds to subtracting zero."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "-1/2 and 6/11 differ in sign and magnitude."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "1 and 6/11 differ as exact values; the latter at least retains a fractional result."
+        }
+      ],
+      "other_notes": [
+        "Choices B and C are weak distractors: since both multiplied fractions are between 0 and 1, the result must be strictly between 0 and 1. Choice D is in that interval but has no evident nearby arithmetic error."
+      ]
+    },
+    "Q04": {
+      "key_status": "unique",
+      "key": "C",
+      "additional_defensible_keys": [],
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "The relative-clause verb agrees with plural 'guides'; the second verb agrees with singular 'One'.",
+      "alternative_assessments": {
+        "A": "Incorrect in both blanks: use 'fold' for guides and 'wears' for One.",
+        "B": "Incorrect in the first blank: plural guides take 'fold'; 'wears' is correct for One.",
+        "C": "Correct: 'guides who fold' and 'One ... wears'.",
+        "D": "Incorrect in the second blank: 'fold' is correct, but singular One takes 'wears'."
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Both have the wrong first verb, but differ on whether the second verb agrees with singular 'One'."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "They differ at both independent agreement decisions; C gets both right."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Both have the wrong second verb, but differ on whether the first verb agrees with plural 'guides'."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "They differ on the first agreement decision; C uses plural 'fold'."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "They trade which blank is correct: B has the second correct; D has the first correct."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "They differ on the second agreement decision; C uses singular 'wears'."
+        }
+      ],
+      "other_notes": [
+        "Choice A is a relatively weak distractor because it gets both independent blanks wrong, but each choice still tests a distinct combination."
+      ]
+    },
+    "Q05": {
+      "key_status": "unique",
+      "key": "B",
+      "additional_defensible_keys": [],
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Cross-multiplication gives 9x + 45 = 13x + 13, so x = 8; direct substitution is also short.",
+      "alternative_assessments": {
+        "A": "Incorrect: at x = 6, the left side is 11/7, not 13/9.",
+        "B": "Correct: at x = 8, (8 + 5)/(8 + 1) = 13/9.",
+        "C": "Incorrect: at x = 7, the left side is 12/8 = 3/2.",
+        "D": "Incorrect: at x = 9, the left side is 14/10 = 7/5."
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "6 and 8 give different rational values; only 8 satisfies the equation."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "6 and 7 are distinct candidate inputs with distinct left-side values."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "6 and 9 are distinct candidate inputs on opposite sides of 8."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "8 satisfies the equation; 7 is one below the solution."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "8 satisfies the equation; 9 is one above the solution."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "7 and 9 flank the solution and yield different rational values."
+        }
+      ],
+      "other_notes": [
+        "The integer domain includes every offered value and excludes the denominator singularity x = -1."
+      ]
+    }
+  },
+  "cross_item_pairs": [
+    {
+      "items": [
+        "Q01",
+        "Q02"
+      ],
+      "solving_method_repetition": "none",
+      "response_format_repetition": "none",
+      "overall_repetition": "none",
+      "reason": "Grammar sentence selection versus counting integer solutions."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q03"
+      ],
+      "solving_method_repetition": "none",
+      "response_format_repetition": "none",
+      "overall_repetition": "none",
+      "reason": "Subject-verb agreement versus exact fraction computation."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q04"
+      ],
+      "solving_method_repetition": "strong",
+      "response_format_repetition": "moderate",
+      "overall_repetition": "strong",
+      "reason": "Both turn on present-tense subject-verb agreement, including deciding which noun controls each verb. One asks for a full sentence and the other for an ordered pair of verb forms, so the requested output differs."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q05"
+      ],
+      "solving_method_repetition": "none",
+      "response_format_repetition": "none",
+      "overall_repetition": "none",
+      "reason": "Grammar sentence selection versus identifying a numeric solution."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q03"
+      ],
+      "solving_method_repetition": "low",
+      "response_format_repetition": "low",
+      "overall_repetition": "low",
+      "reason": "Both involve arithmetic, but one solves an inequality and counts integers while the other evaluates a fraction expression."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q04"
+      ],
+      "solving_method_repetition": "none",
+      "response_format_repetition": "none",
+      "overall_repetition": "none",
+      "reason": "Counting solutions to an inequality versus selecting a pair of verb forms."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q05"
+      ],
+      "solving_method_repetition": "moderate",
+      "response_format_repetition": "strong",
+      "overall_repetition": "strong",
+      "reason": "Both use the same 'unitless number / integer domain / condition' setup and offer single integers as answers. Q02 solves a strict square inequality and reports a count, whereas Q05 solves a rational equation and reports x; the algebraic methods overlap only partly."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q04"
+      ],
+      "solving_method_repetition": "none",
+      "response_format_repetition": "none",
+      "overall_repetition": "none",
+      "reason": "Exact fraction computation versus selecting a pair of verb forms."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q05"
+      ],
+      "solving_method_repetition": "low",
+      "response_format_repetition": "moderate",
+      "overall_repetition": "moderate",
+      "reason": "Both have fractions and request one numeric result, but Q03 evaluates an expression to a fraction while Q05 solves an equation for an integer."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q05"
+      ],
+      "solving_method_repetition": "none",
+      "response_format_repetition": "none",
+      "overall_repetition": "none",
+      "reason": "Subject-verb agreement pair versus numeric equation solution."
+    }
+  ],
+  "overall_notes": [
+    "All five items have one defensible offered key.",
+    "All 30 within-item choice pairs are meaningfully distinct.",
+    "Q01 and Q04 substantially repeat the same grammar skill; Q02 and Q05 strongly repeat a single-integer response presentation."
+  ]
+}
