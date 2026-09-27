@@ -35,8 +35,8 @@ advisory for a revalidated private agreement proof; estimates of 1, 4 or 5
 still veto. A content-free quality metric counts admitted disagreements.
 Ordinary prose and quantitative rows keep their existing assessed-difficulty
 rules. Proven agreement rows receive explicit policy revision 10; quantitative
-proof remains revision 8, and ordinary
-prose without the private agreement proof remains revision 7.
+proof remains revision 8, and ordinary prose without the private agreement
+proof remains revision 7.
 
 The smaller schema was accepted in one frozen live worker trial (capture SHA-256
 `2bcb9b577d165b508debe70cf6d42b2cf749f006c03922650b9d154eab8ca251`).
@@ -49,9 +49,10 @@ the bounded English difficulty decision into the same closed constructor that
 owns its content. The change has only offline tests; the live qualification
 gate remains failed until a new bounded worker trial passes 5/5 and two blind
 reviews assess all keys, 30 pairs, teaching, scope, difficulty and novelty.
-Neither this trial nor the source change authorizes deployment. The opt-in has
-not been wired into worker deployment defaults. Code-owned answers in this
-subset do not prove broader language correctness, distractor usefulness,
+Neither this trial nor the source change authorizes deployment. Worker-only
+SAM and workflow settings exist but default to disabled with empty scope
+hashes; the deployed worker does not use this route. Code-owned answers in
+this subset do not prove broader language correctness, distractor usefulness,
 calibration across learners or non-repetition.
 
 The subset excludes pronoun reference, collective nouns, existential and

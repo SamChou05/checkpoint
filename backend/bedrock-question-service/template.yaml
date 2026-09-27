@@ -80,6 +80,21 @@ Parameters:
     Default: ""
     AllowedPattern: '^$|^[0-9a-f]{64}$'
     Description: Exact normalized-goal SHA-256 for a nonzero worker constructed author batch cap. Empty omits the runtime flag.
+  QuestionBankWorkerMappedFixedFiveGoalSHA256:
+    Type: String
+    Default: ""
+    AllowedPattern: '^$|^[0-9a-f]{64}$'
+    Description: Exact normalized-goal SHA-256 for the opt-in mapped agreement worker route.
+  QuestionBankWorkerMappedFixedFiveScopeSHA256:
+    Type: String
+    Default: ""
+    AllowedPattern: '^$|^[0-9a-f]{64}$'
+    Description: Exact full normalized first-pass request SHA-256 for the opt-in mapped agreement worker route.
+  QuestionBankWorkerMappedAgreementTasks:
+    Type: String
+    Default: disabled
+    AllowedValues: [disabled, enabled]
+    Description: Dormant worker-only closed agreement route. Enable only after separate full-worker qualification.
   BedrockReasoningEffort:
     Type: String
     Default: ""
@@ -307,6 +322,23 @@ Rules:
     Assertions:
       - Assert: !Equals [!Ref QuestionBankWorkerTaskOnlyNumericalGoalSHA256, !Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256]
         AssertDescription: Task-only and constructed-author batch scopes must be the same exact normalized-goal SHA-256.
+  WorkerMappedAgreementRequiresExactScopeAndRoute:
+    Assertions:
+      - Assert: !Or
+          - !And
+            - !Equals [!Ref QuestionBankWorkerMappedAgreementTasks, disabled]
+            - !Equals [!Ref QuestionBankWorkerMappedFixedFiveGoalSHA256, ""]
+            - !Equals [!Ref QuestionBankWorkerMappedFixedFiveScopeSHA256, ""]
+          - !And
+            - !Equals [!Ref QuestionBankWorkerMappedAgreementTasks, enabled]
+            - !Not [!Equals [!Ref QuestionBankWorkerMappedFixedFiveGoalSHA256, ""]]
+            - !Not [!Equals [!Ref QuestionBankWorkerMappedFixedFiveScopeSHA256, ""]]
+            - !Equals [!Ref QuestionBankWorkerStructuredOutputMode, native]
+            - !Equals [!Ref QuestionBankWorkerAuthorMode, constructed_quantitative]
+            - !Equals [!Ref QuestionBankWorkerAuthorCardinalityContract, array]
+            - !Equals [!Ref QuestionBankWorkerFeedbackContract, authored_solution]
+            - !Equals [!Ref BedrockFallbackModelArn, ""]
+        AssertDescription: Mapped agreement requires two exact hashes, no fallback, and explicit native constructed array authoring with authored-solution feedback; disabled requires empty hashes.
   WorkerCountBoundRequiresNativeTransport:
     RuleCondition: !Equals [!Ref QuestionBankWorkerAuthorCardinalityContract, count_bound]
     Assertions:
@@ -360,6 +392,8 @@ Conditions:
   HasWorkerTaskOnlyNumericalGoal: !Not [!Equals [!Ref QuestionBankWorkerTaskOnlyNumericalGoalSHA256, ""]]
   HasWorkerConstructedAuthorBatch: !Not [!Equals [!Ref QuestionBankWorkerConstructedAuthorBatchSize, 0]]
   HasWorkerConstructedAuthorBatchGoal: !Not [!Equals [!Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256, ""]]
+  HasWorkerMappedFixedFiveGoal: !Not [!Equals [!Ref QuestionBankWorkerMappedFixedFiveGoalSHA256, ""]]
+  HasWorkerMappedFixedFiveScope: !Not [!Equals [!Ref QuestionBankWorkerMappedFixedFiveScopeSHA256, ""]]
   HasGuardrailArn: !Not [!Equals [!Ref BedrockGuardrailArn, ""]]
   HasAlertEmail: !Not [!Equals [!Ref AlertEmail, ""]]
   HasBudgetEmail: !Not [!Equals [!Ref BudgetAlertEmail, ""]]
@@ -585,6 +619,9 @@ Resources:
           QUESTION_TASK_ONLY_NUMERICAL_GOAL_SHA256: !If [HasWorkerTaskOnlyNumericalGoal, !Ref QuestionBankWorkerTaskOnlyNumericalGoalSHA256, !Ref "AWS::NoValue"]
           QUESTION_CONSTRUCTED_AUTHOR_BATCH_SIZE: !If [HasWorkerConstructedAuthorBatch, !Ref QuestionBankWorkerConstructedAuthorBatchSize, !Ref "AWS::NoValue"]
           QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256: !If [HasWorkerConstructedAuthorBatchGoal, !Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256, !Ref "AWS::NoValue"]
+          QUESTION_MAPPED_FIXED_FIVE_GOAL_SHA256: !If [HasWorkerMappedFixedFiveGoal, !Ref QuestionBankWorkerMappedFixedFiveGoalSHA256, !Ref "AWS::NoValue"]
+          QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256: !If [HasWorkerMappedFixedFiveScope, !Ref QuestionBankWorkerMappedFixedFiveScopeSHA256, !Ref "AWS::NoValue"]
+          QUESTION_MAPPED_AGREEMENT_TASKS: !Ref QuestionBankWorkerMappedAgreementTasks
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort
           BEDROCK_MAX_TOKENS: !Ref BedrockMaxTokens
           BEDROCK_THINKING_MAX_TOKENS: !Ref BedrockThinkingMaxTokens

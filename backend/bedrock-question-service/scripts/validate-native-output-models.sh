@@ -151,7 +151,40 @@ validate_worker_exact_goal_scopes() {
   fi
 }
 
+validate_worker_mapped_agreement() {
+  local mode="${QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS-disabled}"
+  local goal="${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256:-}"
+  local scope="${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256:-}"
+  case "$mode" in
+    disabled)
+      if [[ -n "$goal" || -n "$scope" ]]; then
+        echo "Disabled mapped agreement requires empty worker goal and scope SHA-256 values." >&2
+        return 1
+      fi
+      ;;
+    enabled)
+      if [[ ! "$goal" =~ ^[0-9a-f]{64}$ || ! "$scope" =~ ^[0-9a-f]{64}$ ]]; then
+        echo "Mapped agreement requires exact lowercase worker goal and scope SHA-256 values." >&2
+        return 1
+      fi
+      if [[ "${QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE:-inherit}" != native ||
+            "${QUESTION_BANK_WORKER_AUTHOR_MODE:-inherit}" != constructed_quantitative ||
+            "${QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT:-array}" != array ||
+            "${QUESTION_BANK_WORKER_FEEDBACK_CONTRACT:-reviewer_written}" != authored_solution ||
+            -n "${BEDROCK_FALLBACK_MODEL_ARN:-}" ]]; then
+        echo "Mapped agreement requires explicit native constructed_quantitative array worker mode, authored_solution feedback, and no fallback model." >&2
+        return 1
+      fi
+      ;;
+    *)
+      echo "QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS must be enabled or disabled." >&2
+      return 1
+      ;;
+  esac
+}
+
 validate_worker_read_timeout
 validate_skill_map_override
 validate_native_output_models
 validate_worker_exact_goal_scopes
+validate_worker_mapped_agreement

@@ -358,6 +358,44 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
                      "WorkerTaskOnlyAndBatchScopesMatch"):
             self.assertIn("  " + rule + ":", self.template)
 
+    def test_mapped_agreement_opt_in_is_scoped_to_worker_and_qualified_prerequisites(self):
+        api = _indented_block(self.template, "CheckpointQuestionFunction")
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
+        fields = (
+            ("QuestionBankWorkerMappedFixedFiveGoalSHA256", "QUESTION_MAPPED_FIXED_FIVE_GOAL_SHA256",
+             "QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256", '""'),
+            ("QuestionBankWorkerMappedFixedFiveScopeSHA256", "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256",
+             "QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256", '""'),
+            ("QuestionBankWorkerMappedAgreementTasks", "QUESTION_MAPPED_AGREEMENT_TASKS",
+             "QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS", "disabled"),
+        )
+        for parameter, runtime_variable, workflow_variable, default in fields:
+            with self.subTest(parameter=parameter):
+                self.assertIn(f"Default: {default}", _indented_block(self.template, parameter))
+                self.assertNotIn(runtime_variable + ":", api)
+                self.assertIn(runtime_variable + ":", worker)
+                self.assertIn(f"vars.{workflow_variable}", self.deploy_workflow)
+                self.assertIn(f'"{parameter}=${{{workflow_variable}', self.deploy_script)
+        self.assertIn("AllowedValues: [disabled, enabled]",
+                      _indented_block(self.template, "QuestionBankWorkerMappedAgreementTasks"))
+        self.assertIn("QUESTION_MAPPED_AGREEMENT_TASKS: !Ref QuestionBankWorkerMappedAgreementTasks", worker)
+        for parameter, runtime_variable, _, _ in fields[:2]:
+            self.assertIn("AllowedPattern: '^$|^[0-9a-f]{64}$'", _indented_block(self.template, parameter))
+            self.assertIn(f"{runtime_variable}: !If [HasWorkerMappedFixedFive", worker)
+        rule = _indented_block(self.template, "WorkerMappedAgreementRequiresExactScopeAndRoute")
+        for setting in ("QuestionBankWorkerMappedAgreementTasks, enabled",
+                        "QuestionBankWorkerMappedAgreementTasks, disabled",
+                        "QuestionBankWorkerStructuredOutputMode, native",
+                        "QuestionBankWorkerAuthorMode, constructed_quantitative",
+                        "QuestionBankWorkerAuthorCardinalityContract, array",
+                        "QuestionBankWorkerFeedbackContract, authored_solution",
+                        'BedrockFallbackModelArn, ""'):
+            self.assertIn(setting, rule)
+        for parameter in ("QuestionBankWorkerMappedFixedFiveGoalSHA256",
+                          "QuestionBankWorkerMappedFixedFiveScopeSHA256"):
+            self.assertIn(f'!Equals [!Ref {parameter}, ""]', rule)
+            self.assertIn(f'!Not [!Equals [!Ref {parameter}, ""]]', rule)
+
     def test_worker_generation_chunk_size_defaults_to_one_checkpoint(self):
         parameter = self.template.split(
             "  QuestionBankGenerationChunkSize:", maxsplit=1

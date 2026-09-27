@@ -123,8 +123,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 66 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 66"
+[[ "${#sam_arguments[@]}" -eq 69 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 69"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -147,8 +147,64 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
-for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerAuthorCardinalityContract=array QuestionBankWorkerFeedbackContract=reviewer_written QuestionBankWorkerTaskOnlyNumericalGoalSHA256= QuestionBankWorkerConstructedAuthorBatchSize=0 QuestionBankWorkerConstructedAuthorBatchGoalSHA256=; do
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerAuthorCardinalityContract=array QuestionBankWorkerFeedbackContract=reviewer_written QuestionBankWorkerTaskOnlyNumericalGoalSHA256= QuestionBankWorkerConstructedAuthorBatchSize=0 QuestionBankWorkerConstructedAuthorBatchGoalSHA256= QuestionBankWorkerMappedFixedFiveGoalSHA256= QuestionBankWorkerMappedFixedFiveScopeSHA256= QuestionBankWorkerMappedAgreementTasks=disabled; do
   [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
+done
+
+# The closed agreement flag and both exact hashes are worker-only. Each entry
+# point accepts the complete configuration shape, and rejects partial scopes, bad values,
+# inherited prerequisites, and fallback before any SAM invocation.
+for checked_script in validate-deployment-config.sh deploy-sam.sh; do
+  mapped_settings=(
+    QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=native
+    QUESTION_BANK_WORKER_AUTHOR_MODE=constructed_quantitative
+    QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT=array
+    QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=authored_solution
+    "QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256=$scope_hash"
+    "QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256=$other_scope_hash"
+    QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS=enabled
+  )
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" "${mapped_settings[@]}" \
+    "$script_dir/$checked_script"
+  if [[ "$checked_script" == deploy-sam.sh ]]; then
+    mapfile -d '' -t mapped_arguments < "$sam_capture"
+    for setting in "QuestionBankWorkerMappedFixedFiveGoalSHA256=$scope_hash" \
+      "QuestionBankWorkerMappedFixedFiveScopeSHA256=$other_scope_hash" \
+      QuestionBankWorkerMappedAgreementTasks=enabled \
+      BedrockStructuredOutputMode=legacy QuestionAuthorMode=prose; do
+      [[ " ${mapped_arguments[*]} " == *" $setting "* ]] || \
+        fail "mapped agreement setting $setting was not forwarded"
+    done
+  fi
+  for case_name in invalid_mode empty_mode missing_goal missing_scope malformed_goal malformed_scope \
+    orphan_goal orphan_scope inherited_native legacy_worker prose_worker count_bound \
+    reviewer_feedback fallback_model; do
+    case_settings=("${mapped_settings[@]}")
+    case "$case_name" in
+      invalid_mode) case_settings+=(QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS=ENABLED) ;;
+      empty_mode) case_settings+=(QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS=) ;;
+      missing_goal) case_settings+=(QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256=) ;;
+      missing_scope) case_settings+=(QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256=) ;;
+      malformed_goal) case_settings+=(QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256=BAD) ;;
+      malformed_scope) case_settings+=(QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256=BAD) ;;
+      orphan_goal) case_settings+=(QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS=disabled QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256=) ;;
+      orphan_scope) case_settings+=(QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS=disabled QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256=) ;;
+      inherited_native) case_settings+=(QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=inherit) ;;
+      legacy_worker) case_settings+=(QUESTION_BANK_WORKER_STRUCTURED_OUTPUT_MODE=legacy) ;;
+      prose_worker) case_settings+=(QUESTION_BANK_WORKER_AUTHOR_MODE=prose) ;;
+      count_bound) case_settings+=(QUESTION_BANK_WORKER_AUTHOR_CARDINALITY_CONTRACT=count_bound) ;;
+      reviewer_feedback) case_settings+=(QUESTION_BANK_WORKER_FEEDBACK_CONTRACT=reviewer_written) ;;
+      fallback_model) case_settings+=("BEDROCK_FALLBACK_MODEL_ARN=$worker_model" "BEDROCK_INVOKE_RESOURCE_ARNS=$api_model,$worker_model") ;;
+    esac
+    rm -f "$sam_capture"
+    if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" "${case_settings[@]}" \
+      "$script_dir/$checked_script" >"$test_directory/mapped-error" 2>&1; then
+      fail "$checked_script accepted invalid mapped agreement case $case_name"
+    fi
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid mapped agreement case $case_name"
+  done
 done
 
 # Both deployment entry points reject malformed or incompatible exact-goal
