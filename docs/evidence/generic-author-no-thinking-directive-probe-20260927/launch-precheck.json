@@ -1,0 +1,9 @@
+{
+  "state": "passed",
+  "plan_sha256": "4904119d0e962b5fce8af6ba9645c1c320315eb533d9992e4e48f0560ddda73f",
+  "checked_at": "2026-09-27T15:46:00.306551+00:00",
+  "credential_expires_at": "2026-09-27T15:56:22+00:00",
+  "account": "239342516379",
+  "sts_requests": 1,
+  "provider_calls": 0
+}

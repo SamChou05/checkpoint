@@ -1,0 +1,66 @@
+{
+  "status": "keyless_author_sanitized_six",
+  "requestedDifficulty": 2,
+  "items": [
+    {
+      "id": "P01",
+      "prompt": "A fair six-sided die is rolled twice. What is the probability that both rolls show an even number?",
+      "choices": {
+        "A": "1/2",
+        "B": "2/3",
+        "C": "1/4",
+        "D": "1/3"
+      }
+    },
+    {
+      "id": "P02",
+      "prompt": "A raffle sells 200 tickets. One ticket wins $150, two tickets each win $25, and the rest win nothing. If you buy one ticket for $2, what is the expected net gain?",
+      "choices": {
+        "A": "$0.75",
+        "B": "-$1.50",
+        "C": "-$0.50",
+        "D": "-$1.25"
+      }
+    },
+    {
+      "id": "P03",
+      "prompt": "A bag holds 4 red, 3 blue, and 5 green marbles. One marble is drawn at random. What is the probability it is NOT green?",
+      "choices": {
+        "A": "5/12",
+        "B": "1/3",
+        "C": "5/7",
+        "D": "7/12"
+      }
+    },
+    {
+      "id": "P04",
+      "prompt": "A spinner has 5 equal sectors: 2 are red, 2 are blue, and 1 is yellow. Event A = lands on red; Event B = lands on blue. Are A and B mutually exclusive, and what is P(A or B)?",
+      "choices": {
+        "A": "Not mutually exclusive; 4/5",
+        "B": "Mutually exclusive; 4/5",
+        "C": "Mutually exclusive; 2/5",
+        "D": "Not mutually exclusive; 2/25"
+      }
+    },
+    {
+      "id": "P05",
+      "prompt": "A class has 10 boys and 15 girls. Two students are chosen one at a time without replacement. Given the first student chosen is a boy, what is the probability the second student is also a boy?",
+      "choices": {
+        "A": "9/25",
+        "B": "10/24",
+        "C": "10/25",
+        "D": "9/24"
+      }
+    },
+    {
+      "id": "P06",
+      "prompt": "A spinner has 3 equal sectors labeled $1, $4, and $6. You pay $3 to spin once and win the amount shown. What is the expected net gain per spin?",
+      "choices": {
+        "A": "$0.67",
+        "B": "-$0.33",
+        "C": "$1.33",
+        "D": "$1.00"
+      }
+    }
+  ]
+}
