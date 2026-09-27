@@ -262,9 +262,18 @@ kept Trial 03's request, model, and native schema unchanged while disabling
 adaptive thinking. Bedrock returned seven native rows in 48.980 seconds using
 1,162 output tokens, and the existing sanitizer accepted all seven offline.
 This shows a viable author transport on one sample, not a verified worker
-return or a model-quality pass; a blind content review is pending. The wire
+return. Two [locked blind reviews](evidence/generic-author-no-thinking-probe-20260927/RESULTS.md)
+matched all 7 source keys and found all 42 choice pairs distinct, yet both
+rated two items below the requested difficulty and agreed on a strong
+cross-item repetition; both also flagged an implicit sampling assumption.
+The wire
 also changed the output cap and temperature as a consequence of disabling
 thinking, so the observation does not isolate a single low-level parameter.
+A separately frozen [request-only difficulty directive probe](evidence/generic-probability-directive-author-probe-20260927/RESULTS.md)
+kept adaptive-high author settings but added explicit level-2 problem and
+diagnostic distractor guidance. It too stopped at the 16,000-token output
+limit, with incomplete native JSON after 165.589 seconds. Prompt wording
+could not be evaluated for content quality under that configuration.
 
 Two standalone math response-format constructors were compared against six
 quarantined level-2 examples in a [frozen 12-item blind worksheet](evidence/math-format-mixed-blind-20260927/RESULTS.md).
