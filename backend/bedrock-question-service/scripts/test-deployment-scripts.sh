@@ -123,8 +123,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 70 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 70"
+[[ "${#sam_arguments[@]}" -eq 71 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 71"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -147,7 +147,7 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
-for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerAuthorCardinalityContract=array QuestionBankWorkerFeedbackContract=reviewer_written QuestionBankWorkerTaskOnlyNumericalGoalSHA256= QuestionBankWorkerConstructedAuthorBatchSize=0 QuestionBankWorkerConstructedAuthorBatchGoalSHA256= QuestionBankWorkerMappedFixedFiveGoalSHA256= QuestionBankWorkerMappedFixedFiveScopeSHA256= QuestionBankWorkerMappedAgreementTasks=disabled QuestionBankWorkerMappedQuantitativeFamilies=disabled; do
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerAuthorCardinalityContract=array QuestionBankWorkerFeedbackContract=reviewer_written QuestionBankWorkerTaskOnlyNumericalGoalSHA256= QuestionBankWorkerConstructedAuthorBatchSize=0 QuestionBankWorkerConstructedAuthorBatchGoalSHA256= QuestionBankWorkerMappedFixedFiveGoalSHA256= QuestionBankWorkerMappedFixedFiveScopeSHA256= QuestionBankWorkerMappedFixedFiveScopeMode=exact QuestionBankWorkerMappedAgreementTasks=disabled QuestionBankWorkerMappedQuantitativeFamilies=disabled; do
   [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
 done
 
@@ -167,23 +167,30 @@ for checked_script in validate-deployment-config.sh deploy-sam.sh; do
   env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
     "${deployment_environment[@]}" "${mapped_settings[@]}" \
     "$script_dir/$checked_script"
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" "${mapped_settings[@]}" \
+    QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_MODE=refill_history \
+    "$script_dir/$checked_script"
   if [[ "$checked_script" == deploy-sam.sh ]]; then
     mapfile -d '' -t mapped_arguments < "$sam_capture"
     for setting in "QuestionBankWorkerMappedFixedFiveGoalSHA256=$scope_hash" \
       "QuestionBankWorkerMappedFixedFiveScopeSHA256=$other_scope_hash" \
+      QuestionBankWorkerMappedFixedFiveScopeMode=refill_history \
       QuestionBankWorkerMappedAgreementTasks=enabled \
       BedrockStructuredOutputMode=legacy QuestionAuthorMode=prose; do
       [[ " ${mapped_arguments[*]} " == *" $setting "* ]] || \
         fail "mapped agreement setting $setting was not forwarded"
     done
   fi
-  for case_name in invalid_mode empty_mode missing_goal missing_scope malformed_goal malformed_scope \
+  for case_name in invalid_mode empty_mode invalid_scope_mode disabled_refill_scope missing_goal missing_scope malformed_goal malformed_scope \
     orphan_goal orphan_scope inherited_native legacy_worker prose_worker count_bound \
     reviewer_feedback fallback_model; do
     case_settings=("${mapped_settings[@]}")
     case "$case_name" in
       invalid_mode) case_settings+=(QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS=ENABLED) ;;
       empty_mode) case_settings+=(QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS=) ;;
+      invalid_scope_mode) case_settings+=(QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_MODE=other) ;;
+      disabled_refill_scope) case_settings+=(QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS=disabled QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256= QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256= QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_MODE=refill_history) ;;
       missing_goal) case_settings+=(QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256=) ;;
       missing_scope) case_settings+=(QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256=) ;;
       malformed_goal) case_settings+=(QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256=BAD) ;;

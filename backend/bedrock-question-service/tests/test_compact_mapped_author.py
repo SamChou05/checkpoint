@@ -11,7 +11,9 @@ from botocore.session import get_session
 from botocore.validate import validate_parameters
 from jsonschema import Draft202012Validator
 
+import question_bank
 import question_generation as generation
+from agreement_task_constructor import canonical_variant_identities
 from lambda_test_support import _raw_question, _request_payload
 from native_output_contracts import AuthorSlotContract, adapt_native_response, native_output_config, native_prompt
 from quantitative_authoring import prepare_mixed_rows
@@ -172,6 +174,101 @@ class CompactMappedAuthorTests(unittest.TestCase):
             with patch.object(generation, "DEFAULT_FALLBACK_MODEL_ID", "different-model"):
                 with self.assertRaises(ServiceConfigurationError):
                     generation._mapped_fixed_slot_assignments(self.request, "constructed_quantitative", "array")
+
+    def test_refill_scope_preserves_worker_assignment_and_allows_history(self):
+        initial = copy.deepcopy(self.request)
+        initial["desiredSkillAllocation"] = {ARITHMETIC: 3, ENGLISH: 2}
+        initial["requestedSkillAllocation"] = question_bank._worker_skill_allocation(
+            initial, [], desired_count=11, low_watermark=0, target_count=5)
+        initial["requestedObjectiveAllocation"] = question_bank._worker_objective_allocation(
+            initial, [], desired_count=11, low_watermark=0,
+            requested_skill_allocation=initial["requestedSkillAllocation"])
+        prior_items = [
+            {"state": {"S": "ready"}, "questionJSON": {"S": json.dumps({
+                "skillID": ARITHMETIC if index < 3 else ENGLISH,
+                "objectiveID": EXPRESSION if index < 3 else AGREEMENT,
+            })}}
+            for index in range(5)
+        ]
+        refill = copy.deepcopy(initial)
+        refill["requestedSkillAllocation"] = question_bank._worker_skill_allocation(
+            refill, prior_items, desired_count=11, low_watermark=0, target_count=5)
+        refill["requestedObjectiveAllocation"] = question_bank._worker_objective_allocation(
+            refill, prior_items, desired_count=11, low_watermark=0,
+            requested_skill_allocation=refill["requestedSkillAllocation"])
+        refill["existingPrompts"] = ["Earlier bank expression"]
+        refill["existingQuestionCoverage"] = [{"prompt": "Earlier bank expression"}]
+        refill["reportedPrompts"] = ["Reported earlier sentence"]
+        refill["blockedStemFingerprints"] = ["a" * 16]
+        refill["_agreementVariantIdentities"] = [sorted(canonical_variant_identities())[0]]
+        self.assertEqual(initial["requestedSkillAllocation"],
+                         {ARITHMETIC: 3, ENGLISH: 2})
+        self.assertEqual(refill["requestedSkillAllocation"],
+                         initial["requestedSkillAllocation"])
+        self.assertEqual(refill["requestedObjectiveAllocation"],
+                         initial["requestedObjectiveAllocation"])
+        self.assertNotEqual(generation._mapped_author_scope_sha256(initial),
+                            generation._mapped_author_scope_sha256(refill))
+        self.assertEqual(generation._mapped_author_refill_scope_sha256(initial),
+                         generation._mapped_author_refill_scope_sha256(refill))
+        with patch.dict(os.environ, {
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256":
+                generation._mapped_author_refill_scope_sha256(initial),
+        }):
+            self.assertIsNone(generation._mapped_fixed_slot_assignments(
+                refill, "constructed_quantitative", "array"))
+        with patch.dict(os.environ, {
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE": "refill_history",
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256":
+                generation._mapped_author_refill_scope_sha256(initial),
+        }):
+            self.assertIsNotNone(generation._mapped_fixed_slot_assignments(
+                refill, "constructed_quantitative", "array"))
+            for field, value in (
+                ("goal", {**refill["goal"], "questionDirective": "Different goal"}),
+                ("requestedSkillAllocation", {ARITHMETIC: 2, ENGLISH: 3}),
+                ("requestedObjectiveAllocation", []),
+                ("skillMap", {**refill["skillMap"], "injected": "different map"}),
+                ("adaptiveSkillPlans", [{"skillID": ARITHMETIC, "targetDifficulty": 1}]),
+                ("stemFingerprintVersion", 2),
+                ("injectedContext", "unapproved"),
+            ):
+                with self.subTest(field=field):
+                    changed = copy.deepcopy(refill)
+                    changed[field] = value
+                    self.assertIsNone(generation._mapped_fixed_slot_assignments(
+                        changed, "constructed_quantitative", "array"))
+            with (patch.dict(os.environ, {"QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE": "unknown"}),
+                  self.assertRaises(ServiceConfigurationError)):
+                generation._mapped_fixed_slot_assignments(
+                    refill, "constructed_quantitative", "array")
+
+    def test_refill_scope_rejects_worker_rebalanced_forty_item_bank(self):
+        initial = copy.deepcopy(self.request)
+        initial["desiredSkillAllocation"] = {ARITHMETIC: 1, ENGLISH: 1}
+        initial["requestedSkillAllocation"] = question_bank._worker_skill_allocation(
+            initial, [], desired_count=40, low_watermark=0, target_count=5)
+        prior_items = [
+            {"state": {"S": "ready"}, "questionJSON": {"S": json.dumps({
+                "skillID": ARITHMETIC if index < 3 else ENGLISH,
+            })}}
+            for index in range(5)
+        ]
+        refill = copy.deepcopy(initial)
+        refill["requestedSkillAllocation"] = question_bank._worker_skill_allocation(
+            refill, prior_items, desired_count=40, low_watermark=0, target_count=5)
+        refill["existingPrompts"] = ["Earlier bank question"]
+        self.assertEqual(initial["requestedSkillAllocation"],
+                         {ARITHMETIC: 3, ENGLISH: 2})
+        self.assertEqual(refill["requestedSkillAllocation"],
+                         {ARITHMETIC: 2, ENGLISH: 3})
+        with patch.dict(os.environ, {
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE": "refill_history",
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256":
+                generation._mapped_author_refill_scope_sha256(initial),
+        }):
+            self.assertIsNone(generation._mapped_fixed_slot_assignments(
+                refill, "constructed_quantitative", "array"))
 
     def test_runtime_uses_one_compact_pass_and_preserves_partial_result(self):
         seen = []

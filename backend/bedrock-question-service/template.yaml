@@ -89,7 +89,12 @@ Parameters:
     Type: String
     Default: ""
     AllowedPattern: '^$|^[0-9a-f]{64}$'
-    Description: Exact full normalized first-pass request SHA-256 for the opt-in mapped agreement worker route.
+    Description: SHA-256 of the selected mapped request scope. Recompute when switching scope mode.
+  QuestionBankWorkerMappedFixedFiveScopeMode:
+    Type: String
+    Default: exact
+    AllowedValues: [exact, refill_history]
+    Description: Exact pins every normalized field; refill_history excludes only prior prompt, coverage, reported prompt, and blocked fingerprint lists.
   QuestionBankWorkerMappedAgreementTasks:
     Type: String
     Default: disabled
@@ -334,6 +339,7 @@ Rules:
             - !Equals [!Ref QuestionBankWorkerMappedAgreementTasks, disabled]
             - !Equals [!Ref QuestionBankWorkerMappedFixedFiveGoalSHA256, ""]
             - !Equals [!Ref QuestionBankWorkerMappedFixedFiveScopeSHA256, ""]
+            - !Equals [!Ref QuestionBankWorkerMappedFixedFiveScopeMode, exact]
           - !And
             - !Equals [!Ref QuestionBankWorkerMappedAgreementTasks, enabled]
             - !Not [!Equals [!Ref QuestionBankWorkerMappedFixedFiveGoalSHA256, ""]]
@@ -631,6 +637,7 @@ Resources:
           QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256: !If [HasWorkerConstructedAuthorBatchGoal, !Ref QuestionBankWorkerConstructedAuthorBatchGoalSHA256, !Ref "AWS::NoValue"]
           QUESTION_MAPPED_FIXED_FIVE_GOAL_SHA256: !If [HasWorkerMappedFixedFiveGoal, !Ref QuestionBankWorkerMappedFixedFiveGoalSHA256, !Ref "AWS::NoValue"]
           QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256: !If [HasWorkerMappedFixedFiveScope, !Ref QuestionBankWorkerMappedFixedFiveScopeSHA256, !Ref "AWS::NoValue"]
+          QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE: !Ref QuestionBankWorkerMappedFixedFiveScopeMode
           QUESTION_MAPPED_AGREEMENT_TASKS: !Ref QuestionBankWorkerMappedAgreementTasks
           QUESTION_MAPPED_QUANTITATIVE_FAMILIES: !Ref QuestionBankWorkerMappedQuantitativeFamilies
           BEDROCK_REASONING_EFFORT: !Ref BedrockReasoningEffort

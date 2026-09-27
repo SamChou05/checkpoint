@@ -32,6 +32,7 @@ parameters=(
   "QuestionBankWorkerConstructedAuthorBatchGoalSHA256=${QUESTION_BANK_WORKER_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256:-}"
   "QuestionBankWorkerMappedFixedFiveGoalSHA256=${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256:-}"
   "QuestionBankWorkerMappedFixedFiveScopeSHA256=${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256:-}"
+  "QuestionBankWorkerMappedFixedFiveScopeMode=${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_MODE:-exact}"
   "QuestionBankWorkerMappedAgreementTasks=${QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS-disabled}"
   "QuestionBankWorkerMappedQuantitativeFamilies=${QUESTION_BANK_WORKER_MAPPED_QUANTITATIVE_FAMILIES-disabled}"
   "BedrockGuardrailIdentifier=$BEDROCK_GUARDRAIL_IDENTIFIER"

@@ -155,10 +155,15 @@ validate_worker_mapped_agreement() {
   local mode="${QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS-disabled}"
   local goal="${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256:-}"
   local scope="${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256:-}"
+  local scope_mode="${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_MODE:-exact}"
+  if [[ "$scope_mode" != exact && "$scope_mode" != refill_history ]]; then
+    echo "Mapped agreement scope mode must be exact or refill_history." >&2
+    return 1
+  fi
   case "$mode" in
     disabled)
-      if [[ -n "$goal" || -n "$scope" ]]; then
-        echo "Disabled mapped agreement requires empty worker goal and scope SHA-256 values." >&2
+      if [[ -n "$goal" || -n "$scope" || "$scope_mode" != exact ]]; then
+        echo "Disabled mapped agreement requires empty worker hashes and exact scope mode." >&2
         return 1
       fi
       ;;

@@ -366,6 +366,8 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
              "QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256", '""'),
             ("QuestionBankWorkerMappedFixedFiveScopeSHA256", "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256",
              "QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256", '""'),
+            ("QuestionBankWorkerMappedFixedFiveScopeMode", "QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE",
+             "QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_MODE", "exact"),
             ("QuestionBankWorkerMappedAgreementTasks", "QUESTION_MAPPED_AGREEMENT_TASKS",
              "QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS", "disabled"),
         )
@@ -378,7 +380,10 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
                 self.assertIn(f'"{parameter}=${{{workflow_variable}', self.deploy_script)
         self.assertIn("AllowedValues: [disabled, enabled]",
                       _indented_block(self.template, "QuestionBankWorkerMappedAgreementTasks"))
+        self.assertIn("AllowedValues: [exact, refill_history]",
+                      _indented_block(self.template, "QuestionBankWorkerMappedFixedFiveScopeMode"))
         self.assertIn("QUESTION_MAPPED_AGREEMENT_TASKS: !Ref QuestionBankWorkerMappedAgreementTasks", worker)
+        self.assertIn("QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE: !Ref QuestionBankWorkerMappedFixedFiveScopeMode", worker)
         for parameter, runtime_variable, _, _ in fields[:2]:
             self.assertIn("AllowedPattern: '^$|^[0-9a-f]{64}$'", _indented_block(self.template, parameter))
             self.assertIn(f"{runtime_variable}: !If [HasWorkerMappedFixedFive", worker)

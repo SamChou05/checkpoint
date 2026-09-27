@@ -913,10 +913,19 @@ def _mapped_author_scope_sha256(request: dict[str, Any]) -> str:
     return hashlib.sha256(_mapped_author_scope_json(request).encode()).hexdigest()
 
 
+def _mapped_author_refill_scope_sha256(request: dict[str, Any]) -> str:
+    """Bind the mapped assignment while allowing only bank history to evolve."""
+    history_fields = {"existingPrompts", "existingQuestionCoverage",
+                      "reportedPrompts", "blockedStemFingerprints"}
+    scoped = {key: value for key, value in request.items()
+              if key not in history_fields}
+    return _mapped_author_scope_sha256(scoped)
+
+
 def _mapped_fixed_slot_assignments(
     request: dict[str, Any], author_mode: str, cardinality_mode: str,
 ) -> MappedAssignments | None:
-    """Select only the exact initial five-slot 3:2 request, never a top-up."""
+    """Select only a pinned five-slot 3:2 request, never a top-up."""
     setting = "QUESTION_MAPPED_FIXED_FIVE_GOAL_SHA256"
     if setting not in os.environ:
         return None
@@ -939,7 +948,12 @@ def _mapped_fixed_slot_assignments(
     target_count = request.get("targetCount")
     if type(target_count) is not int or target_count != 5:
         return None
-    if _mapped_author_scope_sha256(request) != scoped:
+    scope_mode = os.getenv("QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE", "exact").strip().lower()
+    if scope_mode not in {"exact", "refill_history"}:
+        raise ServiceConfigurationError("QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE is invalid.")
+    actual_scope = (_mapped_author_refill_scope_sha256(request)
+                    if scope_mode == "refill_history" else _mapped_author_scope_sha256(request))
+    if actual_scope != scoped:
         return None
     if os.getenv("BEDROCK_FALLBACK_MODEL_ID", DEFAULT_FALLBACK_MODEL_ID).strip():
         raise ServiceConfigurationError("Compact mapped author requires one pinned model with no fallback.")
@@ -990,7 +1004,7 @@ def _mapped_fixed_slot_assignments(
 def _mapped_agreement_route(
     request: dict[str, Any], assignments: MappedAssignments | None,
 ) -> bool:
-    """Opt in only after the existing exact goal and full-request scope match."""
+    """Opt in only after the exact goal and configured request scope match."""
     mode = os.getenv("QUESTION_MAPPED_AGREEMENT_TASKS", "disabled").strip().lower()
     if mode not in {"disabled", "enabled"}:
         raise ServiceConfigurationError("QUESTION_MAPPED_AGREEMENT_TASKS must be enabled or disabled.")

@@ -12,10 +12,11 @@ from botocore.validate import validate_parameters
 from jsonschema import Draft202012Validator
 
 import native_output_contracts as native
+import question_bank
 import question_generation as generation
 from agreement_task_constructor import (
     AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, LEARNER_FIELDS,
-    blocked_fingerprint_variant_identities, compile_question,
+    blocked_fingerprint_variant_identities, canonical_variant_identities, compile_question,
     prepare_mapped_agreement_rows,
 )
 from lambda_test_support import _request_payload
@@ -414,6 +415,95 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                 self.request, changed_assignments,
                 True,
             )
+
+    def test_refill_scope_reaches_both_closed_family_selectors(self):
+        refill = copy.deepcopy(self.request)
+        refill["existingPrompts"] = ["Earlier exact expression"]
+        refill["existingQuestionCoverage"] = [{"prompt": "Earlier agreement item"}]
+        refill["blockedStemFingerprints"] = ["a" * 16]
+        refill["_agreementVariantIdentities"] = [sorted(canonical_variant_identities())[0]]
+        with patch.dict(os.environ, {
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE": "refill_history",
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256":
+                generation._mapped_author_refill_scope_sha256(self.request),
+        }):
+            assignments = generation._mapped_fixed_slot_assignments(
+                refill, "constructed_quantitative", "array")
+            self.assertIsNotNone(assignments)
+            self.assertTrue(generation._mapped_agreement_route(refill, assignments))
+            self.assertTrue(generation._mapped_quantitative_family_route(
+                refill, assignments, True))
+
+    def test_normalized_worker_refill_keeps_pinned_closed_family_route(self):
+        payload = _request_payload(target_count=5, minimum_difficulty=2)
+        payload["goal"]["title"] = self.request["goal"]["title"]
+        payload["skillMap"] = self.request["skillMap"]
+        payload["desiredSkillAllocation"] = {MATH: 3, ENGLISH: 2}
+
+        stored = []
+        for index in range(5):
+            if index < 3:
+                question = {"prompt": f"Earlier arithmetic {index}",
+                            "skillID": MATH, "objectiveID": MATH_OBJECTIVE}
+            else:
+                scene = "coach" if index == 3 else COMPOUND_SCENE
+                question = compile_question(_agreement(scene), ordinal=index)
+                question.update(skillID=ENGLISH, objectiveID=ENGLISH_OBJECTIVE)
+            stored.append({
+                "state": {"S": "ready"},
+                "questionJSON": {"S": json.dumps(question)},
+                "createdAt": {"N": str(index)},
+                "sk": {"S": f"QUESTION#{index}"},
+            })
+
+        def worker_request(wire, prior):
+            request = _normalize_request(wire)
+            request["targetCount"] = 5
+            request["requestedSkillAllocation"] = question_bank._worker_skill_allocation(
+                request, prior, desired_count=11, low_watermark=0, target_count=5)
+            request["requestedObjectiveAllocation"] = question_bank._worker_objective_allocation(
+                request, prior, desired_count=11, low_watermark=0,
+                requested_skill_allocation=request["requestedSkillAllocation"])
+            recent = [question_bank._question_from_item(item)
+                      for item in question_bank._recent_question_items(prior, 30)]
+            request["existingPrompts"] = list(dict.fromkeys(
+                request["existingPrompts"] + [item.get("prompt", "") for item in recent]))[-30:]
+            request["existingQuestionCoverage"] = (
+                request["existingQuestionCoverage"] + [
+                    {"topic": item.get("topic", ""),
+                     "skillID": item.get("skillID", ""),
+                     "objectiveID": item.get("objectiveID", ""),
+                     "objective": item.get("objective", ""),
+                     "prompt": item.get("prompt", ""),
+                     "expectedAnswer": item.get("expectedAnswer", ""),
+                     "choices": item.get("choices", []),
+                     "difficulty": item.get("difficulty", 1)} for item in recent])[-30:]
+            request["_agreementVariantIdentities"] = question_bank._agreement_variant_history(prior)
+            return request
+
+        initial = worker_request(payload, [])
+        refill_wire = copy.deepcopy(payload)
+        refill_wire["reportedPrompts"] = ["Earlier learner report"]
+        refill_wire["blockedStemFingerprints"] = ["a" * 16]
+        refill = worker_request(refill_wire, stored)
+        self.assertEqual(refill["requestedSkillAllocation"], {MATH: 3, ENGLISH: 2})
+        self.assertEqual(len(refill["_agreementVariantIdentities"]), 2)
+        self.assertEqual(generation._mapped_author_refill_scope_sha256(initial),
+                         generation._mapped_author_refill_scope_sha256(refill))
+        with patch.dict(os.environ, {
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE": "refill_history",
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256":
+                generation._mapped_author_refill_scope_sha256(initial),
+            "QUESTION_MAPPED_FIXED_FIVE_GOAL_SHA256": hashlib.sha256(json.dumps(
+                initial["goal"], sort_keys=True, separators=(",", ":"),
+                ensure_ascii=True, allow_nan=False).encode()).hexdigest(),
+        }):
+            assignments = generation._mapped_fixed_slot_assignments(
+                refill, "constructed_quantitative", "array")
+            self.assertIsNotNone(assignments)
+            self.assertTrue(generation._mapped_agreement_route(refill, assignments))
+            self.assertTrue(generation._mapped_quantitative_family_route(
+                refill, assignments, True))
 
 
 if __name__ == "__main__":
