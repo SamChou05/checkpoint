@@ -118,8 +118,13 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         self.assertEqual(learner["choices"].count(learner["expectedAnswer"]), 1)
                         self.assertEqual(set(learner["choiceExplanations"]), set(learner["choices"]))
                         self.assertEqual(proof.content(learner), learner)
-                        if slot == 1 or (slot == 2 and family != "bounded_solution_count"):
+                        if (slot == 1 and family != "bounded_quadratic_exclusion_count"
+                                or slot == 2 and family != "bounded_solution_count"):
                             self.assertEqual(learner["expectedAnswer"], str(b))
+                        if family == "bounded_quadratic_exclusion_count":
+                            self.assertEqual(learner["expectedAnswer"], str(a + 1))
+                            self.assertIn("How many integers", learner["prompt"])
+                            self.assertIn("quadratic factors", learner["explanation"])
                         if family == "bounded_solution_count":
                             self.assertEqual(learner["expectedAnswer"], str(2 + a % 5))
                             self.assertIn("How many integers", learner["prompt"])
@@ -135,8 +140,8 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                             self.assertIn(str(b + a), learner["choices"])
                             self.assertIn("minimum", learner["choiceExplanations"][str(b + a)])
                         checked += 1
-        self.assertEqual(checked, 832)
-        self.assertEqual(len(numeric_variant_identities()), 832)
+        self.assertEqual(checked, 976)
+        self.assertEqual(len(numeric_variant_identities()), 976)
 
     def test_every_product_complement_variant_has_an_independent_exact_key(self):
         new_stems = set()
@@ -270,6 +275,94 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         self.assertIn("(x + 5) * (x + 1)", reviewer_veto["prompt"])
         self.assertIn("(7 + 5)(7 + 1) = 96", reviewer_veto["explanation"])
 
+    def test_every_quadratic_exclusion_count_proves_both_excluded_roots(self):
+        old_stems = {
+            _normalized_stem_identity(_constructed_candidate(flat_task(1, {
+                "family": family, "a": a, "b": b,
+            })).content()["prompt"])
+            for family in SLOT_FAMILIES[1][:-1] for a in OPERANDS for b in BOUNDARIES
+        }
+        new_stems = set()
+        for a in OPERANDS:
+            for b in BOUNDARIES:
+                with self.subTest(a=a, b=b):
+                    task = flat_task(1, {
+                        "family": "bounded_quadratic_exclusion_count", "a": a, "b": b,
+                    })
+                    proof = _constructed_candidate(task)
+                    learner = proof.content()
+                    domain = range(task["domain"]["lower"], task["domain"]["upper"] + 1)
+                    excluded = [x for x in domain
+                                if x * x - (2 * b + a) * x + b * (b + a) == 0]
+                    self.assertEqual(excluded, [b, b + a])
+                    self.assertEqual(len(domain) - len(excluded), a + 1)
+                    self.assertEqual(learner["expectedAnswer"], str(a + 1))
+                    self.assertIn(f"(x - {b})(x - {b + a})", learner["explanation"])
+                    self.assertIn(f"{len(domain)} - 2 = {a + 1}", learner["explanation"])
+                    self.assertEqual(len(set(learner["choices"])), 4)
+                    self.assertEqual(proof.content(learner), learner)
+                    new_stems.add(_normalized_stem_identity(learner["prompt"]))
+        self.assertEqual(len(new_stems), len(OPERANDS) * len(BOUNDARIES))
+        self.assertTrue(new_stems.isdisjoint(old_stems))
+
+    def test_every_expanded_three_root_minimum_proves_all_roots(self):
+        old_stems = {
+            _normalized_stem_identity(_constructed_candidate(flat_task(2, {
+                "family": family, "a": a, "b": b,
+            })).content()["prompt"])
+            for family in SLOT_FAMILIES[2][:-1] for a in OPERANDS for b in BOUNDARIES
+        }
+        new_stems = set()
+        for a in OPERANDS:
+            for b in BOUNDARIES:
+                with self.subTest(a=a, b=b):
+                    task = flat_task(2, {
+                        "family": "bounded_three_root_minimum", "a": a, "b": b,
+                    })
+                    proof = _constructed_candidate(task)
+                    learner = proof.content()
+                    roots = (b, b + a, b + a + 2)
+                    total = sum(roots)
+                    pairwise = sum(roots[i] * roots[j]
+                                   for i in range(3) for j in range(i + 1, 3))
+                    product = roots[0] * roots[1] * roots[2]
+                    domain = range(task["domain"]["lower"], task["domain"]["upper"] + 1)
+                    solutions = [x for x in domain
+                                 if x ** 3 - total * x ** 2 + pairwise * x - product == 0]
+                    self.assertEqual(solutions, list(roots))
+                    self.assertEqual(learner["expectedAnswer"], str(b))
+                    self.assertIn(str(b + a), learner["choices"])
+                    self.assertIn(f"(x - {roots[0]})(x - {roots[1]})(x - {roots[2]})",
+                                  learner["explanation"])
+                    self.assertIn(f"minimum is {b}", learner["explanation"])
+                    self.assertEqual(len(set(learner["choices"])), 4)
+                    self.assertEqual(proof.content(learner), learner)
+                    new_stems.add(_normalized_stem_identity(learner["prompt"]))
+        self.assertEqual(len(new_stems), len(OPERANDS) * len(BOUNDARIES))
+        self.assertTrue(new_stems.isdisjoint(old_stems))
+
+    def test_new_solve_mechanisms_survive_native_adapter(self):
+        raw = self.raw()
+        raw["questions"]["1"] = {
+            "family": "bounded_quadratic_exclusion_count", "a": 6, "b": 8,
+        }
+        raw["questions"]["2"] = {
+            "family": "bounded_three_root_minimum", "a": 4, "b": 7,
+        }
+        schema = json.loads(native.native_output_config(self.contract())
+                            ["textFormat"]["structure"]["jsonSchema"]["schema"])
+        Draft202012Validator(schema).validate(raw)
+        adapted = json.loads(native.adapt_native_response(json.dumps(raw), self.contract()))
+        rows, numeric, english, failures = prepare_mapped_agreement_rows(adapted, self.contract())
+        self.assertEqual(failures, [])
+        self.assertEqual(len(rows), 5)
+        self.assertEqual(rows[1]["expectedAnswer"], "7")
+        self.assertEqual(rows[2]["expectedAnswer"], "7")
+        self.assertEqual(set(numeric), {0, 1, 2})
+        self.assertEqual(set(english), {3, 4})
+        for slot in (1, 2):
+            self.assertEqual(numeric[slot].content(rows[slot]), numeric[slot].content())
+
     def test_count_family_is_available_only_to_the_closed_mapped_route(self):
         task = flat_task(2, {"family": "bounded_solution_count", "a": 4, "b": 8})
         row = {"kind": "quantitative", "task": task, "topic": SUPPORTED_TOPIC,
@@ -301,15 +394,15 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
-        self.assertEqual(len(schema_json.encode()), 2226)
+        self.assertEqual(len(schema_json.encode()), 2291)
         self.assertEqual(hashlib.sha256(schema_json.encode()).hexdigest(),
-                         "3ac240ae33163d16481c18a9eb8d1032404e5f06bf30cdac4a96304ff637edda")
+                         "5d3a2806ee06fa4958882dec5331b7dbf8abf49cfda5c53530c8c3b57c1d0e22")
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"] for i in range(3)],
                          [list(families) for families in SLOT_FAMILIES])
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(self.contract())["version"], "12")
+        self.assertEqual(native.contract_metadata(self.contract())["version"], "13")
         agreement = self.contract(False)
         agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
         self.assertEqual(len(agreement_schema.encode()), 3130)
@@ -710,14 +803,13 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             self.assertEqual(sum(count * (count - 1) // 2 for count in
                                  Counter(chosen_answers[slot]).values()), minimum_pairs)
         for slot in range(3):
-            self.assertEqual(chosen_families[slot], [
-                SLOT_FAMILIES[slot][index % len(SLOT_FAMILIES[slot])]
-                for index in range(16)
-            ])
-        # A fourth family in both slots zero and two lowers structural reuse;
+            family_counts = Counter(chosen_families[slot])
+            self.assertEqual(set(family_counts), set(SLOT_FAMILIES[slot]))
+            self.assertLessEqual(max(family_counts.values()) - min(family_counts.values()), 1)
+        # The added families lower structural reuse in both limited slots;
         # all exact stems remain unique across the full simulated history.
         self.assertEqual(slot_zero_pair_counts, {8: 4, 16: 24})
-        self.assertEqual(pair_counts, {8: 12, 16: 72})
+        self.assertEqual(pair_counts, {8: 10, 16: 60})
         request = {**self.request,
                    "_mappedQuantitativeVariantIdentities": list(full_identities)}
         self.assertEqual(generation._mapped_author_scope_sha256(request),

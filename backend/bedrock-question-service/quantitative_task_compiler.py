@@ -311,6 +311,64 @@ def _expanded_two_root_derivation(left, right, domain, feasible, answer, *,
             f"the minimum is {smaller}.")
 
 
+def _quadratic_exclusion_count_derivation(left, right, domain, feasible, *,
+                                         unit, relation, selection):
+    """Prove an expanded quadratic is nonzero at every domain point but its roots."""
+    variable = ("variable",)
+    if (unit != "unitless" or relation != "ne" or selection != "count_satisfying"
+            or right != ("constant", Fraction(0)) or left[0] != "add"
+            or left[1][0] != "sub" or left[2][0] != "constant"
+            or left[1][1] != ("mul", variable, variable)
+            or left[1][2][0] != "mul" or left[1][2][1][0] != "constant"
+            or left[1][2][2] != variable):
+        return None
+    coefficient, product = left[1][2][1][1], left[2][1]
+    if (coefficient.denominator != 1 or product.denominator != 1
+            or coefficient <= 0 or product <= 0):
+        return None
+    discriminant = coefficient * coefficient - 4 * product
+    if discriminant <= 0 or discriminant.denominator != 1:
+        return None
+    gap = isqrt(discriminant.numerator)
+    if gap * gap != discriminant.numerator:
+        return None
+    smaller, larger = (coefficient - gap) / 2, (coefficient + gap) / 2
+    if (smaller.denominator != 1 or larger.denominator != 1
+            or smaller not in domain or larger not in domain
+            or set(domain) - set(feasible) != {smaller, larger}):
+        return None
+    return (f"The quadratic factors as (x - {smaller})(x - {larger}). "
+            f"It is zero exactly at x = {smaller} and x = {larger}; both are in "
+            f"the {len(domain)}-integer domain. Every other domain integer is "
+            f"nonzero, so {len(domain)} - 2 = {len(feasible)} satisfy the condition.")
+
+
+def _expanded_three_root_derivation(left, right, domain, feasible, answer, *,
+                                    unit, relation, selection):
+    """Factor a checked monic cubic only when its three roots are proven."""
+    if (unit != "unitless" or relation != "eq" or selection != "minimum"
+            or right != ("constant", Fraction(0)) or len(feasible) != 3
+            or answer != min(feasible) or any(root.denominator != 1 for root in feasible)):
+        return None
+    roots = tuple(sorted(feasible))
+    variable = ("variable",)
+    square = ("mul", variable, variable)
+    total = sum(roots)
+    pairwise = sum(roots[i] * roots[j] for i in range(3) for j in range(i + 1, 3))
+    product = roots[0] * roots[1] * roots[2]
+    expected = ("sub", ("add", ("sub", ("mul", square, variable),
+                                  ("mul", ("constant", total), square)),
+                        ("mul", ("constant", pairwise), variable)),
+                ("constant", product))
+    if left != expected or any(root not in domain for root in roots):
+        return None
+    first, second, third = roots
+    return (f"The roots {first}, {second}, and {third} have sum {total}, "
+            f"pairwise-product sum {pairwise}, and product {product}. "
+            f"The cubic therefore factors as (x - {first})(x - {second})(x - {third}) = 0. "
+            f"These are its only roots, all in the domain; the minimum is {first}.")
+
+
 def _root_distractor_reasons(expression):
     """Recognize exact values from common mistakes at the final operation.
 
@@ -480,7 +538,10 @@ def compile_question(spec):
             f"{observations[value][1]} is {'true' if value in feasible else 'false'}"
             for value in domain
         )
-        explanation = f"Check every integer: {comparisons}. Exactly {answer} satisfy the condition."
+        explanation = (_quadratic_exclusion_count_derivation(
+            left, right, domain, feasible, unit=unit, relation=relation,
+            selection=selection,
+        ) or f"Check every integer: {comparisons}. Exactly {answer} satisfy the condition.")
         feedback = {}
         for value, shown in zip(choices, rendered, strict=True):
             if value == answer:
@@ -528,6 +589,9 @@ def compile_question(spec):
         left, right, domain, feasible, answer, unit=unit, relation=relation,
         selection=selection,
     ) or _expanded_two_root_derivation(
+        left, right, domain, feasible, answer, unit=unit, relation=relation,
+        selection=selection,
+    ) or _expanded_three_root_derivation(
         left, right, domain, feasible, answer, unit=unit, relation=relation,
         selection=selection,
     ) or _rational_equation_derivation(
