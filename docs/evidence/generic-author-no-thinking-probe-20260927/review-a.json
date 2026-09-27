@@ -1,0 +1,117 @@
+{
+  "reviewer": "blind_a",
+  "worksheet_sha256": "1eb44734bd8536b3b75ac16f123cd5091b995dad9f7c725bf2f91c2bdbb1dc30",
+  "scope": "keyless author-only worksheet; no worker verification",
+  "requested_difficulty": 2,
+  "items": [
+    {
+      "id": "Q01",
+      "supported_choice": "D",
+      "reason": "The intersection is the king of hearts, so P(A and B)=1/52. The product (13/52)(4/52) is also 1/52.",
+      "difficulty": 3,
+      "self_contained": true,
+      "unsupported_premise": null,
+      "meaningful_choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": ["C conflicts with the explicitly stated shared king of hearts; it is readily eliminated without calculating independence."],
+      "answer_cue": "The equality option states the definition of independence; this is a legitimate conceptual cue, although the other options are less plausible once the shared king is noticed."
+    },
+    {
+      "id": "Q02",
+      "supported_choice": "C",
+      "reason": "There are 3 blue marbles among 4+3+3=10 marbles, giving 3/10.",
+      "difficulty": 1,
+      "self_contained": true,
+      "unsupported_premise": null,
+      "meaningful_choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": ["B uses 7 as a denominator despite 10 stated marbles; it is possible as an error but less natural than the complement D."],
+      "answer_cue": null
+    },
+    {
+      "id": "Q03",
+      "supported_choice": "D",
+      "reason": "The qualifying sectors are 3, 6, 7, and 8, four of eight equally likely sectors, giving 1/2.",
+      "difficulty": 2,
+      "self_contained": true,
+      "unsupported_premise": null,
+      "meaningful_choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": ["C=3/4 is far from the four explicitly enumerable qualifying sectors and lacks an obvious single-step misconception."],
+      "answer_cue": null
+    },
+    {
+      "id": "Q04",
+      "supported_choice": "A",
+      "reason": "Conditioning restricts outcomes to 2, 4, and 6; two of those three exceed 2.",
+      "difficulty": 2,
+      "self_contained": true,
+      "unsupported_premise": null,
+      "meaningful_choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": ["C=3/4 has no clear numerator or denominator from the three even outcomes."],
+      "answer_cue": null
+    },
+    {
+      "id": "Q05",
+      "supported_choice": "B",
+      "reason": "The mean payout is (1/2)$5+(1/2)$0=$2.50.",
+      "difficulty": 1,
+      "self_contained": true,
+      "unsupported_premise": null,
+      "meaningful_choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": ["A=$1.00 and D=$0.50 do not follow an evident misconception from the stated fair-coin payouts."],
+      "answer_cue": "B is the only listed midpoint between $0 and $5, so the correct option is visible without formal expected-value calculation."
+    },
+    {
+      "id": "Q06",
+      "supported_choice": "B",
+      "reason": "The mean winnings are 0.02($100)+0.10($10)+0.88($0)=$3.00.",
+      "difficulty": 2,
+      "self_contained": true,
+      "unsupported_premise": null,
+      "meaningful_choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": ["The wrong amounts $4, $5, and $6 are nearby arithmetic guesses without an obvious distinct conceptual error."],
+      "answer_cue": null
+    },
+    {
+      "id": "Q07",
+      "supported_choice": "A",
+      "reason": "Assuming uniformly random draws, (5/20)(4/19)=1/19.",
+      "difficulty": 3,
+      "self_contained": false,
+      "unsupported_premise": "The stem does not explicitly say the two draws are random or that every remaining item is equally likely at each draw. That conventional classroom assumption is needed for a unique numerical probability.",
+      "meaningful_choice_pairs": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "weak_distractors": ["B=1/16 corresponds to treating the draws as independent with replacement; C=5/76 corresponds to failing to reduce the defective count on the second draw. Both are plausible, while D=1/4 reflects only the first draw."],
+      "answer_cue": null
+    }
+  ],
+  "cross_item_pairs": [
+    {"pair": "Q01-Q02", "strong_repetition": false, "reason": "Independence test versus a single-category probability; the answer formats differ."},
+    {"pair": "Q01-Q03", "strong_repetition": false, "reason": "Independence test versus union counting; the answer formats differ."},
+    {"pair": "Q01-Q04", "strong_repetition": false, "reason": "Independence test versus conditional probability; the answer formats differ."},
+    {"pair": "Q01-Q05", "strong_repetition": false, "reason": "Independence test versus monetary expectation."},
+    {"pair": "Q01-Q06", "strong_repetition": false, "reason": "Independence test versus monetary expectation."},
+    {"pair": "Q01-Q07", "strong_repetition": false, "reason": "Independence test versus sequential joint probability; answer formats differ."},
+    {"pair": "Q02-Q03", "strong_repetition": false, "reason": "Both return fractions from a finite sample space, but Q03 requires a union of two criteria while Q02 is a direct category count."},
+    {"pair": "Q02-Q04", "strong_repetition": false, "reason": "Direct category count versus conditioning on an observed event."},
+    {"pair": "Q02-Q05", "strong_repetition": false, "reason": "Probability fraction versus monetary expectation."},
+    {"pair": "Q02-Q06", "strong_repetition": false, "reason": "Probability fraction versus monetary expectation."},
+    {"pair": "Q02-Q07", "strong_repetition": false, "reason": "Single direct draw versus dependent sequential draws."},
+    {"pair": "Q03-Q04", "strong_repetition": false, "reason": "Union counting versus conditional sample-space restriction, though both have fractional answers."},
+    {"pair": "Q03-Q05", "strong_repetition": false, "reason": "Probability fraction versus monetary expectation."},
+    {"pair": "Q03-Q06", "strong_repetition": false, "reason": "Probability fraction versus monetary expectation."},
+    {"pair": "Q03-Q07", "strong_repetition": false, "reason": "Union of spinner events versus dependent sequential draws."},
+    {"pair": "Q04-Q05", "strong_repetition": false, "reason": "Conditional probability versus monetary expectation."},
+    {"pair": "Q04-Q06", "strong_repetition": false, "reason": "Conditional probability versus monetary expectation."},
+    {"pair": "Q04-Q07", "strong_repetition": false, "reason": "Conditional sample-space restriction versus product of dependent draw probabilities; both return fractions but use different central decisions."},
+    {"pair": "Q05-Q06", "strong_repetition": true, "reason": "Both ask for expected monetary winnings from a payout distribution and offer four dollar amounts; Q06 merely adds one payout tier."},
+    {"pair": "Q05-Q07", "strong_repetition": false, "reason": "Monetary expectation versus sequential joint probability."},
+    {"pair": "Q06-Q07", "strong_repetition": false, "reason": "Monetary expectation versus sequential joint probability."}
+  ],
+  "summary": {
+    "supported_unique_answers_under_standard_random_draw_assumption": 7,
+    "ambiguous_items_due_to_missing_assumption": ["Q07"],
+    "meaningful_within_item_choice_pairs": 42,
+    "within_item_choice_pairs_checked": 42,
+    "strong_repetition_pairs": ["Q05-Q06"],
+    "strong_repetition_pairs_checked": 21,
+    "difficulty_counts": {"1": 2, "2": 3, "3": 2, "4": 0, "5": 0}
+  }
+}
