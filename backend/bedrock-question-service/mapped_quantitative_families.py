@@ -195,15 +195,17 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
                        "upper": b + 7 - left_span}}
     if family == "bounded_centered_square_count":
         # A strict square bound creates a symmetric interior interval around
-        # b. Count that interval after rejecting two boundary values and two
-        # exterior values. This is not a monotone maximum/budget decision.
+        # b. The minimum radius is three; a radius of two made a blind-reviewed
+        # variant too easy for this level. Count the interior after rejecting
+        # two boundary values and two exterior values.
+        radius = a + 1
         return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
             {"kind": "variable"}, _literal(b), _binary("sub", 0, 1),
-            _binary("mul", 2, 2), _literal(a * a),
+            _binary("mul", 2, 2), _literal(radius * radius),
         ], "condition": {"left": 3, "relation": "lt", "right": 4},
             "selection": "count_satisfying",
-            "domain": {"kind": "integer_interval", "lower": b - a - 1,
-                       "upper": b + a + 1}}
+            "domain": {"kind": "integer_interval", "lower": b - radius - 1,
+                       "upper": b + radius + 1}}
     # The ratio x/(x+a) reaches b/(b+a) first at x=b for positive a.
     # Its entire interval is positive-denominator; the three smaller domain
     # values are all explicitly checked in the compiler's worked teaching.

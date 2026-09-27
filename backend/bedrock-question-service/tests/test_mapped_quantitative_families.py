@@ -132,7 +132,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                             self.assertIn("How many integers", learner["prompt"])
                             self.assertEqual(learner["explanation"].count("x = "), 8)
                         if family == "bounded_centered_square_count":
-                            self.assertEqual(learner["expectedAnswer"], str(2 * a - 1))
+                            self.assertEqual(learner["expectedAnswer"], str(2 * a + 1))
                             self.assertIn("How many integers", learner["prompt"])
                             self.assertIn("strict bound", learner["explanation"])
                         if family == "bounded_equation":
@@ -322,18 +322,19 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         for a in OPERANDS:
             for b in BOUNDARIES:
                 with self.subTest(a=a, b=b):
+                    radius = a + 1
                     task = flat_task(2, {
                         "family": "bounded_centered_square_count", "a": a, "b": b,
                     })
                     proof = _constructed_candidate(task)
                     learner = proof.content()
                     domain = range(task["domain"]["lower"], task["domain"]["upper"] + 1)
-                    satisfying = [x for x in domain if (x - b) ** 2 < a * a]
-                    self.assertEqual(satisfying, list(range(b - a + 1, b + a)))
-                    self.assertEqual(len(satisfying), 2 * a - 1)
-                    self.assertEqual(learner["expectedAnswer"], str(2 * a - 1))
-                    self.assertIn(f"-{a} < x - {b} < {a}", learner["explanation"])
-                    self.assertIn(f"from {b - a + 1} through {b + a - 1}",
+                    satisfying = [x for x in domain if (x - b) ** 2 < radius * radius]
+                    self.assertEqual(satisfying, list(range(b - radius + 1, b + radius)))
+                    self.assertEqual(len(satisfying), 2 * radius - 1)
+                    self.assertEqual(learner["expectedAnswer"], str(2 * radius - 1))
+                    self.assertIn(f"-{radius} < x - {b} < {radius}", learner["explanation"])
+                    self.assertIn(f"from {b - radius + 1} through {b + radius - 1}",
                                   learner["explanation"])
                     self.assertIn("four other domain values fail", learner["explanation"])
                     self.assertEqual(len(set(learner["choices"])), 4)
@@ -358,7 +359,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         self.assertEqual(failures, [])
         self.assertEqual(len(rows), 5)
         self.assertEqual(rows[1]["expectedAnswer"], "7")
-        self.assertEqual(rows[2]["expectedAnswer"], "7")
+        self.assertEqual(rows[2]["expectedAnswer"], "9")
         self.assertEqual(set(numeric), {0, 1, 2})
         self.assertEqual(set(english), {3, 4})
         for slot in (1, 2):
