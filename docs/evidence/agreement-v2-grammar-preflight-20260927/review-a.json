@@ -1,0 +1,149 @@
+{
+  "review_type": "blind_keyless_preflight",
+  "rubric_interpretation": "Rate each item independently: level 1 is immediate recognition; level 2 is an easy application requiring at least one meaningful reasoning step rather than a direct surface cue.",
+  "items": [
+    {
+      "id": "Q01",
+      "defensible_answers": ["B"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. The repeated 'near' modifiers are a little mechanical but grammatical.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q02",
+      "defensible_answers": ["C"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. 'The returns' is understandable in a library setting, though slightly vague; the mirrored 'near' phrases sound formulaic.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q03",
+      "defensible_answers": ["B"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. The reciprocal 'near' phrases are somewhat artificial but do not affect agreement.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q04",
+      "defensible_answers": ["A"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. 'Every guide near the hikers' and 'Nora and Eli near the guide' are grammatical but staged to create the same agreement contrast.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q05",
+      "defensible_answers": ["B"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. It repeats Q04 with the clauses reversed, making the wording conspicuously repetitive in the library.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q06",
+      "defensible_answers": ["D"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. It repeats Q03 with the clauses reversed.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q07",
+      "defensible_answers": ["A"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. 'Practice the drills' is acceptable but slightly less natural than 'practice drills'; the reciprocal 'near' phrases sound staged.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q08",
+      "defensible_answers": ["A"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. It repeats Q01 with the clauses reversed.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q09",
+      "defensible_answers": ["C"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. 'The returns' is slightly vague, and this repeats Q02 with the clauses reversed.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q10",
+      "defensible_answers": ["D"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. The reciprocal 'near' phrases are mechanical but grammatical.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q11",
+      "defensible_answers": ["B"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. It repeats Q10 with the clauses reversed.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q12",
+      "defensible_answers": ["C"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. 'A copy' has a somewhat implicit referent (the forms), but this does not affect the verb forms.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q13",
+      "defensible_answers": ["A"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. 'A copy' has a somewhat implicit referent, and this repeats Q12 with the clauses reversed.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q14",
+      "defensible_answers": ["D"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. It repeats Q07 with the clauses reversed; 'practice the drills' is acceptable but a little stiff.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q15",
+      "defensible_answers": ["C"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. The reciprocal 'near' phrases are mechanical but grammatical.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    },
+    {
+      "id": "Q16",
+      "defensible_answers": ["B"],
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_awkwardness": "No answer ambiguity. It repeats Q15 with the clauses reversed.",
+      "choices_genuinely_distinct": true,
+      "choice_distinctness_note": "All four unique singular/plural combinations are present."
+    }
+  ],
+  "cross_item_assessment": {
+    "reversal_pairs": [
+      ["Q01", "Q08"],
+      ["Q02", "Q09"],
+      ["Q03", "Q06"],
+      ["Q04", "Q05"],
+      ["Q07", "Q14"],
+      ["Q10", "Q11"],
+      ["Q12", "Q13"],
+      ["Q15", "Q16"]
+    ],
+    "novelty": "Low: 16 items contain only eight scenarios, each reproduced with clause order reversed. Every item uses the same two-clause template, a nearby noun of the opposite number after 'near,' and one singular and one plural subject. The within-item choices are unique, but they vary only the two agreement endings.",
+    "difficulty_effect": "Standalone items merit level 2 because the learner must identify two subject heads across intervening noun phrases. In a set, repeated structure and the reversal pairs would make later answers easier through recognition, plausibly closer to level 1 in practice.",
+    "recommendation": "Revise the library for scenario and sentence-structure variety if 16 genuinely novel level-2 items are required. The current keys are unambiguous and the answer choices are distinct within every item."
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "Q01": {
+    "key": "B",
+    "slot": 4,
+    "scene": "compound_every",
+    "order": "plural_first"
+  },
+  "Q02": {
+    "key": "C",
+    "slot": 3,
+    "scene": "librarian",
+    "order": "singular_first"
+  },
+  "Q03": {
+    "key": "B",
+    "slot": 3,
+    "scene": "curator",
+    "order": "singular_first"
+  },
+  "Q04": {
+    "key": "A",
+    "slot": 4,
+    "scene": "compound_guides",
+    "order": "plural_first"
+  },
+  "Q05": {
+    "key": "B",
+    "slot": 4,
+    "scene": "compound_guides",
+    "order": "singular_first"
+  },
+  "Q06": {
+    "key": "D",
+    "slot": 3,
+    "scene": "curator",
+    "order": "plural_first"
+  },
+  "Q07": {
+    "key": "A",
+    "slot": 3,
+    "scene": "coach",
+    "order": "plural_first"
+  },
+  "Q08": {
+    "key": "A",
+    "slot": 4,
+    "scene": "compound_every",
+    "order": "singular_first"
+  },
+  "Q09": {
+    "key": "C",
+    "slot": 3,
+    "scene": "librarian",
+    "order": "plural_first"
+  },
+  "Q10": {
+    "key": "D",
+    "slot": 4,
+    "scene": "compound_visitors",
+    "order": "singular_first"
+  },
+  "Q11": {
+    "key": "B",
+    "slot": 4,
+    "scene": "compound_visitors",
+    "order": "plural_first"
+  },
+  "Q12": {
+    "key": "C",
+    "slot": 4,
+    "scene": "compound_clerks",
+    "order": "singular_first"
+  },
+  "Q13": {
+    "key": "A",
+    "slot": 4,
+    "scene": "compound_clerks",
+    "order": "plural_first"
+  },
+  "Q14": {
+    "key": "D",
+    "slot": 3,
+    "scene": "coach",
+    "order": "singular_first"
+  },
+  "Q15": {
+    "key": "C",
+    "slot": 3,
+    "scene": "chef",
+    "order": "singular_first"
+  },
+  "Q16": {
+    "key": "B",
+    "slot": 3,
+    "scene": "chef",
+    "order": "plural_first"
+  }
+}

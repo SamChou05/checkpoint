@@ -1,0 +1,240 @@
+{
+  "review_type": "blind_keyless_preflight",
+  "source_worksheet": "/private/tmp/checkpoint-agreement-v2-keyless-worksheet.json",
+  "rubric_used": "For requested difficulty level 2: an easy application with at least one meaningful reasoning step, not a direct surface cue; level 1 is immediate recognition. Independently select every defensible answer, rate 1-5, and note awkward/ambiguous wording or repetitive items. Do not use source code, answer maps, or external files.",
+  "items": [
+    {
+      "id": "Q01",
+      "defensible_answer_letters": [
+        "B"
+      ],
+      "answer_text": "receives; prepare",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. The two clauses use different subjects and nearby nouns with the opposite number.",
+      "same_underlying_scenario_as": "Q08"
+    },
+    {
+      "id": "Q02",
+      "defensible_answer_letters": [
+        "C"
+      ],
+      "answer_text": "organizes; sort",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. “The returns” is understandable as library materials, though slightly elliptical.",
+      "same_underlying_scenario_as": "Q09"
+    },
+    {
+      "id": "Q03",
+      "defensible_answer_letters": [
+        "B"
+      ],
+      "answer_text": "labels; catalog",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. The reciprocal “curator near the assistants / assistants near the curator” wording feels mechanical.",
+      "same_underlying_scenario_as": "Q06"
+    },
+    {
+      "id": "Q04",
+      "defensible_answer_letters": [
+        "A"
+      ],
+      "answer_text": "wears; fold",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. “The guide” in the second clause is only loosely introduced by “every guide” in the first.",
+      "same_underlying_scenario_as": "Q05"
+    },
+    {
+      "id": "Q05",
+      "defensible_answer_letters": [
+        "B"
+      ],
+      "answer_text": "fold; wears",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. “The guide” in the first clause is only loosely connected to “every guide” in the second.",
+      "same_underlying_scenario_as": "Q04"
+    },
+    {
+      "id": "Q06",
+      "defensible_answer_letters": [
+        "D"
+      ],
+      "answer_text": "catalog; labels",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. The reciprocal “assistants near the curator / curator near the assistants” wording feels mechanical.",
+      "same_underlying_scenario_as": "Q03"
+    },
+    {
+      "id": "Q07",
+      "defensible_answer_letters": [
+        "A"
+      ],
+      "answer_text": "practice; checks",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. The reciprocal coach/players placement feels mechanical.",
+      "same_underlying_scenario_as": "Q14"
+    },
+    {
+      "id": "Q08",
+      "defensible_answer_letters": [
+        "A"
+      ],
+      "answer_text": "prepare; receives",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. The clauses are an exact reversal of Q01’s underlying scenario.",
+      "same_underlying_scenario_as": "Q01"
+    },
+    {
+      "id": "Q09",
+      "defensible_answer_letters": [
+        "C"
+      ],
+      "answer_text": "sort; organizes",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. “The returns” is understandable as library materials, though slightly elliptical.",
+      "same_underlying_scenario_as": "Q02"
+    },
+    {
+      "id": "Q10",
+      "defensible_answer_letters": [
+        "D"
+      ],
+      "answer_text": "close; holds",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. “The visitor” in the first clause is only loosely connected to “every visitor” in the second.",
+      "same_underlying_scenario_as": "Q11"
+    },
+    {
+      "id": "Q11",
+      "defensible_answer_letters": [
+        "B"
+      ],
+      "answer_text": "holds; close",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. “The visitor” in the second clause is only loosely introduced by “every visitor” in the first.",
+      "same_underlying_scenario_as": "Q10"
+    },
+    {
+      "id": "Q12",
+      "defensible_answer_letters": [
+        "C"
+      ],
+      "answer_text": "review; keeps",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. “The clerk” in the first clause is only loosely connected to “every clerk” in the second.",
+      "same_underlying_scenario_as": "Q13"
+    },
+    {
+      "id": "Q13",
+      "defensible_answer_letters": [
+        "A"
+      ],
+      "answer_text": "keeps; review",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. “The clerk” in the second clause is only loosely introduced by “every clerk” in the first.",
+      "same_underlying_scenario_as": "Q12"
+    },
+    {
+      "id": "Q14",
+      "defensible_answer_letters": [
+        "D"
+      ],
+      "answer_text": "checks; practice",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. The reciprocal coach/players placement feels mechanical.",
+      "same_underlying_scenario_as": "Q07"
+    },
+    {
+      "id": "Q15",
+      "defensible_answer_letters": [
+        "C"
+      ],
+      "answer_text": "plans; prepare",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. The reciprocal chef/cooks placement feels mechanical.",
+      "same_underlying_scenario_as": "Q16"
+    },
+    {
+      "id": "Q16",
+      "defensible_answer_letters": [
+        "B"
+      ],
+      "answer_text": "prepare; plans",
+      "standalone_difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses require identifying each head subject across an intervening near-phrase and applying present-tense agreement.",
+      "equivalent_choice_pairs": [],
+      "awkward_or_ambiguous_wording": "Clear agreement target. The reciprocal cooks/chef placement feels mechanical.",
+      "same_underlying_scenario_as": "Q15"
+    }
+  ],
+  "bank_assessment": {
+    "unique_underlying_scenarios": 8,
+    "scenario_reversal_pairs": [
+      [
+        "Q01",
+        "Q08"
+      ],
+      [
+        "Q02",
+        "Q09"
+      ],
+      [
+        "Q03",
+        "Q06"
+      ],
+      [
+        "Q04",
+        "Q05"
+      ],
+      [
+        "Q07",
+        "Q14"
+      ],
+      [
+        "Q10",
+        "Q11"
+      ],
+      [
+        "Q12",
+        "Q13"
+      ],
+      [
+        "Q15",
+        "Q16"
+      ]
+    ],
+    "novelty": "Low: all 16 use the same two-clause agreement template, eight are clause-order reversals of the other eight, and the nouns and verbs supply mostly cosmetic variety.",
+    "repeated_exposure_effect": "Standalone items merit level 2 under the stated rubric. After the first few, the learner can reuse the same identify-head-subject and ignore-near-phrase rule; reversed pairs also cue previously seen answers. Later items are likely experienced as level 1 recognition rather than independent level 2 application.",
+    "choice_equivalence": "No item has two answer choices with equivalent ordered verb forms; each letter expresses a distinct combination. Each item has exactly one defensible answer.",
+    "ambiguity": "No wording ambiguity changes the agreement answer. Some reciprocal near-phrases and definite references are stylistically forced."
+  }
+}
