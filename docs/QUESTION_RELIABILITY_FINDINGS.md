@@ -402,3 +402,15 @@ replay and full slot provenance passed independent audit. The frozen 5/5
 qualification gate failed, so this result supports the smaller grammar as a
 real structural improvement but does not justify deployment or population
 reliability. Generic fraction wrong-choice teaching remains repetitive.
+
+A September 27 read-only deployment refresh found the TestFlight API and worker
+still running September 11 Lambda packages with `BEDROCK_STRUCTURED_OUTPUT_MODE`
+set to `legacy`. Their deployed `question_generation.py` lacks the newer
+task-only and scoped-batch features; the API author is Nova Lite and the worker
+author is Kimi K2.5. Thus the fixes pushed to main, including the compact
+opt-in route, have not changed the live backend. In current iOS source, the
+explicit `expectedAnswer` remains authoritative for grading and the “Correct
+answer” display even when explanation text conflicts. Independent simulator
+runs passed 99 validation/session tests and 13 dedicated highlighting tests,
+including all 24 choice permutations. The installed TestFlight iOS binary was
+not inspected, so its revision cannot be inferred from these source tests.
