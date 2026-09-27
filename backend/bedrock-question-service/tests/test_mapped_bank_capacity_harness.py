@@ -26,7 +26,9 @@ class MappedBankCapacityHarnessTests(unittest.TestCase):
         self.assertLessEqual(report["snapshots"][1]["sameSlotFamilyPairs"], 280)
         self.assertLessEqual(report["snapshots"][2]["sameSlotFamilyPairs"], 188)
         self.assertEqual(report["snapshots"][1]["slots"]["1"]["substantiveFamilyCapacity"], 5)
-        self.assertEqual(report["snapshots"][1]["slots"]["1"]["sameFamilyPairs"], 18)
+        # Solve-signature balancing removes cross-family method repeats at
+        # 20 items, at the cost of two more same-family pairs by 80 items.
+        self.assertEqual(report["snapshots"][1]["slots"]["1"]["sameFamilyPairs"], 20)
         for snapshot in report["snapshots"]:
             self.assertEqual(snapshot["slots"]["4"]["exactStemCapacity"], 40)
             self.assertIn("correlative", snapshot["slots"]["4"]["familyUses"])

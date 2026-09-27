@@ -218,6 +218,67 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
         "domain": {"kind": "integer_interval", "lower": b - 3, "upper": b + 3}}
 
 
+def numeric_solve_signature(task: dict[str, Any]) -> str:
+    """Identify the solve kernel from a closed compiled graph, not its family label.
+
+    Scalar selections are deliberately omitted: choosing a maximum or counting
+    values after deriving the same bound repeats the principal solve method.
+    """
+    if type(task) is not dict:
+        raise ValueError("Numeric task is not a closed compiled task.")
+    nodes = task.get("nodes")
+    if type(nodes) is not list or not nodes:
+        raise ValueError("Numeric task has no closed graph.")
+    visiting: set[int] = set()
+
+    @lru_cache(maxsize=None)
+    def analyze(index: int) -> tuple[str, int, bool]:
+        if type(index) is not int or not 0 <= index < len(nodes) or index in visiting:
+            raise ValueError("Numeric task has an invalid graph reference.")
+        node = nodes[index]
+        if type(node) is not dict:
+            raise ValueError("Numeric task has an invalid graph node.")
+        if node.get("kind") == "literal":
+            return "c", 0, False
+        if node.get("kind") == "variable":
+            return "x", 1, False
+        if node.get("kind") != "binary" or node.get("op") not in {
+                "add", "sub", "mul", "div"}:
+            raise ValueError("Numeric task has an unsupported graph operation.")
+        visiting.add(index)
+        try:
+            left_shape, left_degree, left_rational = analyze(node.get("left"))
+            right_shape, right_degree, right_rational = analyze(node.get("right"))
+        finally:
+            visiting.remove(index)
+        op = node["op"]
+        if op in {"add", "sub"}:
+            degree = max(left_degree, right_degree)
+        elif op == "mul":
+            degree = left_degree + right_degree
+        else:
+            degree = left_degree
+        rational = (left_rational or right_rational
+                    or (op == "div" and right_degree > 0))
+        return f"{op}({left_shape},{right_shape})", degree, rational
+
+    if task.get("kind") == "exact_value":
+        return "exact:" + analyze(task.get("root"))[0]
+    if (task.get("kind") != "scalar_condition"
+            or type(task.get("domain")) is not dict
+            or task["domain"].get("kind") != "integer_interval"
+            or type(task.get("condition")) is not dict
+            or task["condition"].get("relation") not in {
+                "eq", "ne", "lt", "le", "gt", "ge"}):
+        raise ValueError("Numeric task is not a closed scalar condition.")
+    condition = task["condition"]
+    _, left_degree, left_rational = analyze(condition.get("left"))
+    _, right_degree, right_rational = analyze(condition.get("right"))
+    kernel = ("rational_variable_denominator" if left_rational or right_rational
+              else f"polynomial_degree_{max(left_degree, right_degree)}")
+    return f"scalar:integer_interval:{condition['relation']}:{kernel}"
+
+
 @lru_cache(maxsize=3)
 def _inventory_rows(slot: int) -> tuple[tuple[str, dict[str, Any], str, str, str], ...]:
     """Compile the finite inventory once, including exact stem and answer."""
@@ -245,6 +306,20 @@ def canonical_variant_identities() -> frozenset[str]:
     """All code-owned numeric stems that a durable bank can recognize."""
     return frozenset(identity for slot in range(3)
                      for _, _, _, identity in _inventory(slot))
+
+
+@lru_cache(maxsize=1)
+def _signature_by_identity() -> dict[str, str]:
+    """Resolve full-bank canonical stems to their compiled solve signatures."""
+    signatures = {}
+    for slot in range(3):
+        for _, task, _, identity, _ in _inventory_rows(slot):
+            signature = numeric_solve_signature(task)
+            if identity in signatures and signatures[identity] != signature:
+                raise MappedQuantitativeFamilyError(
+                    "Numeric stem has conflicting solve signatures.")
+            signatures[identity] = signature
+    return signatures
 
 
 @lru_cache(maxsize=1)
@@ -303,11 +378,11 @@ def select_novel_task(
     blocked_fingerprints: tuple[str, ...], fingerprint_version: int,
     blocked_variant_identities: tuple[str, ...] = (),
 ) -> dict[str, Any]:
-    """Prefer an unseen solve structure, then a fresh parameterization.
+    """Prefer the least-used compiled solve signature, then family and variant.
 
-    Prefer the least-used assigned-slot family. Within an equally used family,
-    prefer operand pairs and proven answers that have appeared less often across
-    the full bank, then prefer the source family. The inventory is compiled,
+    Full-bank canonical identities supply solve-signature use across all numeric
+    slots. Within an equally used signature, prefer the least-used assigned-slot
+    family, then operand pairs and proven answers. The inventory is compiled,
     and every candidate passes exact-stem and fingerprint checks.
     """
 
@@ -333,6 +408,15 @@ def select_novel_task(
     blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
     blocked.update(blocked_variant_identities)
     fingerprints = set(blocked_fingerprints)
+    signatures = _signature_by_identity()
+    signature_used = {identity for identity in blocked if identity in signatures}
+    if fingerprints:
+        signature_used.update(
+            identity for history_slot in range(3)
+            for _, _, prompt, identity, _ in _inventory_rows(history_slot)
+            if _stem_fingerprint(prompt, version=fingerprint_version) in fingerprints
+        )
+    signature_use_counts = Counter(signatures[identity] for identity in signature_used)
     per_family = len(OPERANDS) * (len(OPERANDS) if slot == 0 else len(BOUNDARIES))
     second_values = OPERANDS if slot == 0 else BOUNDARIES
 
@@ -359,10 +443,11 @@ def select_novel_task(
     ]
     if eligible:
         return copy.deepcopy(min(eligible, key=lambda row: (
+            signature_use_counts[signatures[inventory[row[0]][3]]],
             family_use_counts[row[1]],
             # Repeating operands or the same proven answer across
             # different families still makes a bank feel like a reworded quiz.
-            # Family balancing stays first; these counts only break ties.
+            # Signature and family balancing stay first; these counts break ties.
             pair_use_counts[operands(row[0])],
             answer_use_counts[inventory[row[0]][4]],
             second_use_counts[operands(row[0])[1]],

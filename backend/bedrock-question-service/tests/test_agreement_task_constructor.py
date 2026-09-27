@@ -198,8 +198,11 @@ class AgreementTaskConstructorTests(unittest.TestCase):
                     candidates = compile_mapped_english_slots(source, contract())
                     self.assertEqual(set(candidates), {3, 4})
                     self.assertEqual(json.loads(candidates[4].source_task_json), source["4"])
+                    self.assertIn(json.loads(candidates[4].task_json)["scene"],
+                                  SENTENCE_SELECTION_SCENES)
                     self.assertEqual(candidates[4].content()["expectedAnswer"],
-                                     compile_question(source["4"], ordinal=4)["expectedAnswer"])
+                                     compile_question(json.loads(candidates[4].task_json),
+                                                      ordinal=4)["expectedAnswer"])
 
     def test_correlative_nearer_subject_has_independent_keys_and_choice_feedback(self):
         expected = {
@@ -448,7 +451,7 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         self.assertNotEqual(json.loads(candidates[4].task_json)["scene"], COMPOUND_SCENE)
         self.assertIn(json.loads(candidates[3].task_json)["scene"], INVERSION_SCENES)
         self.assertIn(json.loads(candidates[4].task_json)["scene"],
-                      {**NUMBER_SCENES, **GERUND_SCENES, **CORRELATIVE_SCENES})
+                      SENTENCE_SELECTION_SCENES)
         self.assertTrue(all(candidate.content()["prompt"] not in prior for candidate in candidates.values()))
         self.assertTrue(all(not candidate.novelty_exhausted for candidate in candidates.values()))
         with self.assertRaises(AgreementTaskError):
@@ -464,7 +467,8 @@ class AgreementTaskConstructorTests(unittest.TestCase):
             source, contract(), existing_prompts=history)
         self.assertIn(json.loads(candidates[3].task_json)["scene"], INVERSION_SCENES)
         self.assertIn(json.loads(candidates[4].task_json)["scene"],
-                      {**NUMBER_SCENES, **GERUND_SCENES, **CORRELATIVE_SCENES})
+                      SENTENCE_SELECTION_SCENES)
+        self.assertNotIn("___", candidates[4].content()["prompt"])
         self.assertTrue(all(candidate.content()["prompt"] not in history
                             for candidate in candidates.values()))
 
@@ -494,9 +498,11 @@ class AgreementTaskConstructorTests(unittest.TestCase):
             self.assertNotIn(prompt, history)
             history.append(prompt)
             chosen_scenes.append(json.loads(candidate.task_json)["scene"])
-        self.assertEqual(chosen_scenes[0], COMPOUND_SCENE)
-        self.assertIn(chosen_scenes[1], {**NUMBER_SCENES, **GERUND_SCENES,
-                                         **CORRELATIVE_SCENES})
+        self.assertIn(chosen_scenes[0], SENTENCE_SELECTION_SCENES)
+        self.assertEqual(chosen_scenes[1], COMPOUND_SCENE)
+        self.assertEqual([index for index, scene in enumerate(chosen_scenes[:16])
+                          if scene in SENTENCE_SELECTION_SCENES], [0, 3, 7, 11])
+        self.assertEqual(len(set(chosen_scenes[:20])), 20)
         self.assertEqual(len(set(history)), 40)
         self.assertTrue(set(chosen_scenes) & set(NUMBER_SCENES))
         self.assertTrue(set(chosen_scenes) & set(CORRELATIVE_SCENES))
@@ -506,6 +512,42 @@ class AgreementTaskConstructorTests(unittest.TestCase):
             source, contract(), existing_prompts=tuple(history),
         )[4]
         self.assertTrue(exhausted.novelty_exhausted)
+
+    def test_slot_four_changes_format_early_and_keeps_full_bank_scene_novelty(self):
+        source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
+        history = []
+        chosen_scenes = []
+        full_sentences = 0
+        for _ in range(16):
+            candidates = compile_mapped_english_slots(
+                source, contract(), existing_prompts=tuple(history),
+            )
+            again = compile_mapped_english_slots(
+                source, contract(), existing_prompts=tuple(history),
+            )
+            self.assertEqual(candidates[4].task_json, again[4].task_json)
+            self.assertEqual(json.loads(candidates[4].source_task_json), source["4"])
+            self.assertFalse(candidates[4].novelty_exhausted)
+            for slot in (3, 4):
+                prompt = candidates[slot].content()["prompt"]
+                self.assertNotIn(prompt, history)
+                history.append(prompt)
+            scene = json.loads(candidates[4].task_json)["scene"]
+            chosen_scenes.append(scene)
+            full_sentences += scene in SENTENCE_SELECTION_SCENES
+            if len(chosen_scenes) == 4:
+                self.assertEqual(full_sentences, 2)
+        self.assertEqual(len(set(chosen_scenes)), 16)
+        self.assertEqual([index for index, scene in enumerate(chosen_scenes)
+                          if scene in SENTENCE_SELECTION_SCENES], [0, 3, 7, 11])
+        self.assertEqual(full_sentences, 4)
+
+    def test_authored_full_sentence_scene_remains_eligible_when_due(self):
+        source = {"3": task("coach"), "4": task("select_lab", "plural_first")}
+        candidate = compile_mapped_english_slots(source, contract())[4]
+        self.assertEqual(json.loads(candidate.source_task_json), source["4"])
+        self.assertEqual(json.loads(candidate.task_json), source["4"])
+        self.assertNotIn("___", candidate.content()["prompt"])
 
     def test_slot_three_balances_four_mechanisms_across_eighty_item_bank(self):
         source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
@@ -560,7 +602,13 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         self.assertEqual(set(candidates), {3, 4})
         first, second = candidates[3].content(), candidates[4].content()
         self.assertEqual(first["expectedAnswer"], "checks; practice")
-        self.assertEqual(second["expectedAnswer"], "receives; prepare")
+        self.assertIn(json.loads(candidates[4].task_json)["scene"],
+                      SENTENCE_SELECTION_SCENES)
+        self.assertEqual(json.loads(candidates[4].source_task_json),
+                         task(COMPOUND_SCENE, "plural_first"))
+        self.assertEqual(second["expectedAnswer"],
+                         compile_question(json.loads(candidates[4].task_json),
+                                          ordinal=4)["expectedAnswer"])
         for ordinal, question in ((3, first), (4, second)):
             self.assertEqual(candidates[ordinal].ordinal, ordinal)
             self.assertEqual(question["skillID"], "english-id")

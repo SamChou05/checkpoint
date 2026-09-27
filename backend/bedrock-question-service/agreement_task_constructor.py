@@ -671,11 +671,13 @@ def _select_novel_task(
     task: dict, ordinal: int, existing_prompts: tuple[str, ...],
     blocked_variant_identities: tuple[str, ...] = (),
 ) -> tuple[dict, bool]:
-    """Keep a fresh authored task, otherwise choose a fresh code-owned variant.
+    """Choose a fresh code-owned variant and retain its authored source.
 
-    Prefer the least-used solve mechanism, then a new scene, before swapping
-    clauses in an already seen scene. If the finite inventory is exhausted,
-    retain the authored task for the normal per-item duplicate filter.
+    Slot 3 prefers the least-used solve mechanism. Slot 4 introduces its
+    scarce full-sentence scenes in the first batch and then spaces them among
+    two-blank families. A never-used scene takes priority over a second
+    variant of any scene. If the finite inventory is exhausted, retain the
+    authored task for the normal per-item duplicate filter.
     """
     scene, _ = _checked_task(task)
     if ordinal not in (3, 4):
@@ -724,11 +726,26 @@ def _select_novel_task(
         )
         for family in set(family_by_scene.values())
     }
-    selected = min(fresh, key=lambda candidate: (
-        family_counts[family_by_scene[candidate["scene"]]],
-        by_scene[candidate["scene"]], candidate != task,
-        candidate["scene"], candidate["order"],
+    used_slot4 = sum(family_counts.values()) if ordinal == 4 else 0
+    sentence_uses = family_counts.get("sentence_selection", 0)
+    # Four distinct full-sentence scenes can appear at slot-4 positions
+    # 1, 4, 8, and 12 without clustering all four in the first four batches.
+    sentence_due = (ordinal == 4 and sentence_uses < min(
+        len(SENTENCE_SELECTION_SCENES), (used_slot4 + 5) // 4,
     ))
+
+    def priority(candidate: dict) -> tuple:
+        candidate_scene = candidate["scene"]
+        family_use = family_counts[family_by_scene[candidate_scene]]
+        if ordinal == 4:
+            return (by_scene[candidate_scene],
+                    (candidate_scene in SENTENCE_SELECTION_SCENES) != sentence_due,
+                    family_use, candidate != task,
+                    candidate_scene, candidate["order"])
+        return (family_use, by_scene[candidate_scene], candidate != task,
+                candidate_scene, candidate["order"])
+
+    selected = min(fresh, key=priority)
     return selected, False
 
 

@@ -25,7 +25,7 @@ from lambda_test_support import _request_payload
 from mapped_quantitative_families import (
     BOUNDARIES, FAMILIES, OPERANDS, SLOT_FAMILIES, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
     MappedQuantitativeFamilyError, canonical_variant_identities as numeric_variant_identities,
-    flat_task, historical_variant_identity_map, select_novel_task,
+    flat_task, historical_variant_identity_map, numeric_solve_signature, select_novel_task,
 )
 from native_output_contracts import AuthorSlotContract
 from quantitative_authoring import _constructed_candidate, prepare_mixed_rows
@@ -148,6 +148,72 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         checked += 1
         self.assertEqual(checked, 976)
         self.assertEqual(len(numeric_variant_identities()), 976)
+
+    def test_compiled_solve_signature_groups_shared_kernels_across_family_labels(self):
+        signatures_by_family = {}
+        for slot in range(3):
+            for family in SLOT_FAMILIES[slot]:
+                signatures = {
+                    numeric_solve_signature(flat_task(slot, {
+                        "family": family, "a": a, "b": b,
+                    }))
+                    for a in OPERANDS for b in (OPERANDS if slot == 0 else BOUNDARIES)
+                }
+                self.assertEqual(len(signatures), 1)
+                signatures_by_family[family] = signatures.pop()
+        self.assertEqual(signatures_by_family["bounded_quadratic_equation"],
+                         signatures_by_family["bounded_two_root_minimum"])
+        self.assertEqual(signatures_by_family["bounded_linear_budget_maximum"],
+                         signatures_by_family["bounded_solution_count"])
+        self.assertNotEqual(signatures_by_family["bounded_two_root_minimum"],
+                            signatures_by_family["bounded_quadratic_exclusion_count"])
+        self.assertEqual(len(set(signatures_by_family.values())), 12)
+        with self.assertRaisesRegex(ValueError, "invalid graph reference"):
+            numeric_solve_signature({"kind": "exact_value", "nodes": [{
+                "kind": "binary", "op": "add", "left": 0, "right": 0,
+            }], "root": 0})
+
+    def test_selector_ranks_history_solve_signature_before_unused_family(self):
+        used = [
+            ("bounded_equation", 2, 3),
+            ("bounded_quadratic_equation", 2, 3),
+            ("bounded_quadratic_equation", 3, 4),
+            ("bounded_rational_equation", 2, 3),
+            ("bounded_quadratic_exclusion_count", 2, 3),
+        ]
+        prompts = tuple(_constructed_candidate(flat_task(1, {
+            "family": family, "a": a, "b": b,
+        })).content()["prompt"] for family, a, b in used)
+        blocked = tuple(map(_normalized_stem_identity, prompts))
+        source = flat_task(1, {"family": "bounded_equation", "a": 4, "b": 5})
+        selected = select_novel_task(
+            1, source,
+            existing_prompts=(), blocked_fingerprints=(), fingerprint_version=2,
+            blocked_variant_identities=blocked,
+        )
+        repeated_quadratic = numeric_solve_signature(flat_task(1, {
+            "family": "bounded_two_root_minimum", "a": 4, "b": 5,
+        }))
+        self.assertEqual(selected, source)
+        self.assertNotEqual(numeric_solve_signature(selected), repeated_quadratic)
+        four_identities = blocked[:2] + blocked[3:]
+        fingerprint_only = select_novel_task(
+            1, source, existing_prompts=(),
+            blocked_fingerprints=(_stem_fingerprint(prompts[2], version=2),),
+            fingerprint_version=2, blocked_variant_identities=four_identities,
+        )
+        self.assertEqual(fingerprint_only, selected)
+        four_only = select_novel_task(
+            1, source, existing_prompts=(), blocked_fingerprints=(),
+            fingerprint_version=2, blocked_variant_identities=four_identities,
+        )
+        duplicate_block = select_novel_task(
+            1, source, existing_prompts=(),
+            blocked_fingerprints=(_stem_fingerprint(prompts[1], version=2),),
+            fingerprint_version=2, blocked_variant_identities=four_identities,
+        )
+        self.assertNotEqual(four_only, selected)
+        self.assertEqual(duplicate_block, four_only)
 
     def test_every_product_complement_variant_has_an_independent_exact_key(self):
         new_stems = set()
@@ -445,7 +511,24 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         raw["questions"][str(slot)] = source
                         validator.validate(raw)
                         adapted = json.loads(native.adapt_native_response(json.dumps(raw), contract))
-                        rows, numeric, english, failures = prepare_mapped_agreement_rows(adapted, contract)
+                        # The normal selector can replace a fresh authored scene to
+                        # vary response format. Leave only the two source English
+                        # variants fresh so this regression exercises every
+                        # schema-admitted scene through the final compiler.
+                        source_identities = {
+                            _normalized_stem_identity(compile_question(
+                                raw["questions"][str(english_slot)],
+                                ordinal=english_slot,
+                            )["prompt"])
+                            for english_slot in (3, 4)
+                        }
+                        blocked_english = tuple(sorted(
+                            canonical_variant_identities() - source_identities
+                        ))
+                        rows, numeric, english, failures = prepare_mapped_agreement_rows(
+                            adapted, contract,
+                            blocked_variant_identities=blocked_english,
+                        )
                         self.assertEqual(failures, [])
                         self.assertEqual(set(numeric), {0, 1, 2})
                         self.assertEqual(set(english), {3, 4})
@@ -738,6 +821,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         existing_items = []
         chosen = {slot: [] for slot in range(3)}
         chosen_families = {slot: [] for slot in range(3)}
+        chosen_signatures = {slot: [] for slot in range(3)}
         chosen_operands = {slot: [] for slot in range(3)}
         chosen_answers = {slot: [] for slot in range(3)}
         pair_counts = {}
@@ -771,6 +855,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                     if flat_task(slot, {"family": family, "a": a, "b": b}) == task
                 )
                 chosen_families[slot].append(family)
+                chosen_signatures[slot].append(numeric_solve_signature(task))
                 chosen_operands[slot].append((a, b))
                 chosen_answers[slot].append(question["expectedAnswer"])
                 self.assertNotIn(question["prompt"], chosen[slot])
@@ -801,17 +886,21 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             self.assertLessEqual(max(Counter(a for a, _ in chosen_operands[slot]).values()), 3)
         # Distinct centered-square counts spread slot-two keys beyond its
         # existing maximum/threshold answers in this durable-history replay.
-        for slot, expected_pairs in ((1, 7), (2, 3)):
+        for slot, expected_pairs in ((1, 7), (2, 4)):
             self.assertEqual(sum(count * (count - 1) // 2 for count in
                                  Counter(chosen_answers[slot]).values()), expected_pairs)
         for slot in range(3):
             family_counts = Counter(chosen_families[slot])
             self.assertEqual(set(family_counts), set(SLOT_FAMILIES[slot]))
-            self.assertLessEqual(max(family_counts.values()) - min(family_counts.values()), 1)
+            self.assertLessEqual(max(family_counts.values()), 4)
+            self.assertGreaterEqual(min(family_counts.values()), 2)
+            signature_counts = Counter(chosen_signatures[slot])
+            self.assertEqual(len(signature_counts), 4)
+            self.assertEqual(set(signature_counts.values()), {4})
         # The added families lower structural reuse in both limited slots;
         # all exact stems remain unique across the full simulated history.
         self.assertEqual(slot_zero_pair_counts, {8: 4, 16: 24})
-        self.assertEqual(pair_counts, {8: 10, 16: 60})
+        self.assertEqual(pair_counts, {8: 10, 16: 64})
         request = {**self.request,
                    "_mappedQuantitativeVariantIdentities": list(full_identities)}
         self.assertEqual(generation._mapped_author_scope_sha256(request),
