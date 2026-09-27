@@ -59,7 +59,10 @@ def contains_answer_label_references(text: str, question: dict[str, Any]) -> boo
         r"(?:[1-4]|1st|2nd|3rd|4th|one|two|three|four|first|second|third|fourth|last)\b(?![.,][0-9]|/|%)"
         # An explicit display marker also makes an out-of-range index unsafe.
         r"|\b(?:choices?|options?|answers?)(?:[\s-]+(?:number|no\.)[\s-]+|[\s-]*#\s*)"
-        r"(?:[0-9]+(?:st|nd|rd|th)?|one|two|three|four)\b",
+        r"(?:[0-9]+(?:st|nd|rd|th)?|one|two|three|four)\b"
+        # The answer is B / Answer: B is a display-position claim too. Limit
+        # this form to letters: "the answer is 2" can name the actual value.
+        r"|\b(?:choices?|options?|answers?)\s*(?::|=|\bis\b)\s*[A-D]\b",
         re.I,
     )
     def bound_literal(match):
@@ -88,6 +91,10 @@ def contains_answer_label_references(text: str, question: dict[str, Any]) -> boo
         r"\(\s*([A-D1-4])\s*\)\s+(?:is|was)\s+(?:the\s+)?"
         r"(?:correct|incorrect|right|wrong|best)\b", re.I,
     )
+    bare_judgment = re.compile(
+        r"\b([A-D])\b\s+(?:is|was)\s+(?:the\s+)?"
+        r"(?:correct|incorrect|right|wrong|best)\b", re.I,
+    )
     # A bare judgment must start a clause, optionally after a short connective.
     # Do not interpret f(b), f (b), or a larger expression's final (b) as a slot.
     clause_start = re.compile(r'''(?:^|[.!?;:]\s*|\b(?:so|thus|therefore|only)\s+)["'“‘`]*\s*$''', re.I)
@@ -96,4 +103,9 @@ def contains_answer_label_references(text: str, question: dict[str, Any]) -> boo
         and match.group(1).lower() not in subparts
         and not bound_literal(match)
         for match in judgment.finditer(text)
+    ) or any(
+        clause_start.search(text[:match.start()])
+        and match.group(1).lower() not in subparts
+        and not bound_literal(match)
+        for match in bare_judgment.finditer(text)
     )

@@ -50,6 +50,35 @@ class ParenthesizedAnswerReferenceTests(unittest.TestCase):
                 with self.subTest(text=text):
                     self.assertTrue(contains_answer_label_references(text, question()))
 
+    def test_bare_letter_verdicts_and_answer_assignments_are_not_shuffle_safe(self):
+        for text in (
+            "B is correct because the antecedent is unambiguous.",
+            "Only b is the best sentence under the stated rule.",
+            "The correct answer is B because the pronoun has one antecedent.",
+            "Answer: b, because the pronoun has one antecedent.",
+            "The answer = B under the stated rule.",
+            "The pronoun has one antecedent. C was wrong for another reason.",
+        ):
+            with self.subTest(text=text):
+                self.assertTrue(contains_answer_label_references(text, question()))
+                with self.assertRaises(AuthoredTeachingFormatError):
+                    freeze_authored_question({**question(), "explanation": text})
+
+    def test_bare_subject_letters_and_numeric_answers_are_preserved(self):
+        item = question()
+        for text in (
+            "The letter B is the symbol named by the stem.",
+            "For the variable b, the inequality is correct.",
+            "The answer is 2 because one and one sum to two.",
+            "B is positive because the stated value exceeds zero.",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(contains_answer_label_references(text, item))
+        named = {**item, "prompt": "Is statement (B) correct: every square has four equal sides?"}
+        self.assertFalse(contains_answer_label_references(
+            "B is correct because equal sides are required by the definition.", named,
+        ))
+
     def test_reviewer_main_and_each_choice_feedback_share_the_guard(self):
         item = question()
         for location in (None, *item["choices"]):

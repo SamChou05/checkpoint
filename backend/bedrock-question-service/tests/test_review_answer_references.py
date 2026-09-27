@@ -64,6 +64,9 @@ class ReviewAnswerReferenceTests(unittest.TestCase):
             "Option#42 names a nonexistent displayed option.",
             "Choice no. 5 names a nonexistent displayed choice.",
             "Option A gives the computed total.",
+            "B is correct because the sum is four.",
+            "The correct answer is B because the sum is four.",
+            "Answer: B, because the sum is four.",
         ]
         for text in references:
             for location in [None, *item["choices"]]:
