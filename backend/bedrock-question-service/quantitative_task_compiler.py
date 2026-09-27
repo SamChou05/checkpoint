@@ -251,6 +251,29 @@ def _rational_equation_derivation(left, right, domain, answer, *, unit, relation
     )
 
 
+def _nonnegative_product_equation_derivation(left, right, domain, feasible, answer, *,
+                                             unit, relation, selection):
+    """Prove the closed (x+a)(x+1) equation has one domain solution."""
+    variable = ("variable",)
+    if (unit != "unitless" or relation != "eq" or selection != "any_satisfying"
+            or left[0] != "mul" or right[0] != "constant"
+            or left[1][0] != "add" or left[2][0] != "add"
+            or left[1][1] != variable or left[2][1] != variable
+            or left[1][2][0] != "constant"
+            or left[2][2] != ("constant", Fraction(1))
+            or not domain or any(value < 0 for value in domain)
+            or answer.denominator != 1 or set(feasible) != {answer}):
+        return None
+    offset, target = left[1][2][1], right[1]
+    if (offset.denominator != 1 or offset <= 0
+            or target != (answer + offset) * (answer + 1)):
+        return None
+    return (f"On this nonnegative domain, x + {offset} and x + 1 are positive "
+            f"and strictly increase with x, so their product increases strictly. "
+            f"At x = {answer}, ({answer} + {offset})({answer} + 1) = {target}. "
+            f"Therefore x = {answer} is the only solution in the stated domain.")
+
+
 def _expanded_two_root_derivation(left, right, domain, feasible, answer, *,
                                   unit, relation, selection):
     """Factor a checked monic quadratic only when its two roots are proven.
@@ -501,7 +524,10 @@ def compile_question(spec):
         explicit_proof = f"The {direction} domain values fail: {comparisons}."
         if len(explanation_start) + len(explicit_proof) <= 420:
             proof = explicit_proof
-    explanation = (_expanded_two_root_derivation(
+    explanation = (_nonnegative_product_equation_derivation(
+        left, right, domain, feasible, answer, unit=unit, relation=relation,
+        selection=selection,
+    ) or _expanded_two_root_derivation(
         left, right, domain, feasible, answer, unit=unit, relation=relation,
         selection=selection,
     ) or _rational_equation_derivation(

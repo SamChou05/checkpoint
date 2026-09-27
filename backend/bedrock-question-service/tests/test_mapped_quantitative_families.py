@@ -243,6 +243,33 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         self.assertIn("((x * x) - (17 * x)) + 60", sample["prompt"])
         self.assertNotIn("(x - 5) * (x - 12)", sample["prompt"])
 
+    def test_every_bounded_quadratic_equation_proves_domain_wide_uniqueness(self):
+        for a in OPERANDS:
+            for b in BOUNDARIES:
+                with self.subTest(a=a, b=b):
+                    task = flat_task(1, {
+                        "family": "bounded_quadratic_equation", "a": a, "b": b,
+                    })
+                    proof = _constructed_candidate(task)
+                    learner = proof.content()
+                    target = (b + a) * (b + 1)
+                    solutions = [x for x in range(16) if (x + a) * (x + 1) == target]
+                    self.assertEqual(solutions, [b])
+                    self.assertEqual(learner["expectedAnswer"], str(b))
+                    self.assertEqual(len(set(learner["choices"])), 4)
+                    self.assertIn("their product increases strictly", learner["explanation"])
+                    self.assertIn(f"({b} + {a})({b} + 1) = {target}",
+                                  learner["explanation"])
+                    self.assertIn(f"x = {b} is the only solution in the stated domain",
+                                  learner["explanation"])
+                    self.assertEqual(proof.content(learner), learner)
+
+        reviewer_veto = _constructed_candidate(flat_task(1, {
+            "family": "bounded_quadratic_equation", "a": 5, "b": 7,
+        })).content()
+        self.assertIn("(x + 5) * (x + 1)", reviewer_veto["prompt"])
+        self.assertIn("(7 + 5)(7 + 1) = 96", reviewer_veto["explanation"])
+
     def test_count_family_is_available_only_to_the_closed_mapped_route(self):
         task = flat_task(2, {"family": "bounded_solution_count", "a": 4, "b": 8})
         row = {"kind": "quantitative", "task": task, "topic": SUPPORTED_TOPIC,
