@@ -1,4 +1,4 @@
-# Current mapped 20-item offline bank sample: review pending
+# Current mapped 20-item offline bank sample: post-lock review
 
 The current closed 3:2 mapped constructors compiled **20 of 20** items across
 four five-question refills from one saved native author task object. Every
@@ -13,7 +13,37 @@ The [keyless worksheet](worksheet.json) SHA-256 is
 The independent [rubric](RUBRIC.md) asks for each key, all six within-item
 choice-pair judgments, difficulty 1–5 against the 2–3 target, and moderate or
 strong reasoning-level near-duplicates across all 190 item pairs. The answer
-map is sealed outside the repository until the review file is locked.
+map stayed outside the repository until the review file was locked. The
+[review](review-a.json) SHA-256 is
+`63c833dcf02aea88f4ee8343b308e9b1203a841744f467eec41ee9d9d8579c74`;
+the now [archived answer map](post-lock-answer-map.json) SHA-256 is
+`40be5690f5f5733a986f85c0a3bf87703466a225bedb728ac0f68c3582f303c2`.
+
+**The reviewer selected 19 of the 20 code-owned keys.** The [post-lock
+audit](post-lock-audit.json) checks every displayed prompt, choice, key, and
+review selection against the frozen worksheet and map. On `Q08`, the reviewer
+selected `D` (`keep; review`), but their own explanation identifies singular
+“Every clerk” and plural “Ava and Ben.” The correct displayed choice is `C`
+(`keeps; review`), which is also the compiler's key. The locked review remains
+unchanged. This is a reviewer letter-selection error, not evidence that Q08
+has two valid answers or an incorrect constructed key.
+
+The reviewer judged all **120 within-item choice pairs** meaningfully
+distinct and all 20 stems self-contained with clear objectives. They rated
+`Q05`, the bounded two-root minimum item, difficulty **1**: its factors expose
+both roots directly, below the target 2–3. They flagged weak distractors in
+`Q02` and `Q19`, artificial wording in `Q17`, and thin context in `Q10`.
+Distinct choices and a single correct key therefore do not settle distractor
+quality or difficulty.
+
+Across the 190 cross-item pairs, the reviewer recorded **one strong** and
+**23 moderate** near-duplicates, leaving 166 unflagged. The strong pair
+`Q01/Q04` is the same slot-3 proximity agreement decision in batches 2 and
+4, with nouns and verbs changed. Seven of the moderate pairs cross the two
+English slots, and two cross numeric slots 1 and 2. The audit verifies the
+pair IDs, uniqueness, categories, and 190-pair arithmetic; it does not
+independently reproduce the reviewer's semantic judgments. This one reviewer
+and one offline sample cannot estimate live worker yield or general quality.
 
 | Items | Numeric family use | Same-slot family pairs | Reused numeric operand pairs in a slot | Reused numeric operand pairs across slots |
 | ---: | --- | ---: | ---: | ---: |
@@ -56,5 +86,7 @@ CHECKPOINT_PRIVATE_MAP_DIR=/path/only-the-preparer-can-open \
   python -B docs/evidence/current-20-bank-blind-20260927/prepare.py
 ```
 
-The keyless worksheet and structural summary are frozen. Content review and
-answer-map comparison are pending; no qualification conclusion is drawn yet.
+The keyless worksheet, review, answer map and [audit script](audit.py) are
+frozen. Rerunning `audit.py` verifies the hashes and result byte-for-byte.
+The semantic repeat and below-target difficulty mean this sample does not
+qualify an 80-item bank or the full worker for release.

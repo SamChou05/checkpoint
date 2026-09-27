@@ -1,0 +1,531 @@
+{
+  "review_type": "independent_answer_blind",
+  "source_scope": [
+    "worksheet.json",
+    "RUBRIC.md"
+  ],
+  "worksheet_sha256_as_stated_in_rubric": "ab3d3ab1b73c0bf6268a6c4cd5cc13d753ba804c77a1ca1e8e3635edbd960ab4",
+  "items_reviewed": 20,
+  "target_difficulty": [
+    2,
+    3
+  ],
+  "items": [
+    {
+      "id": "Q01",
+      "selected_answer": "C",
+      "answer_reason": "The plural head “cooks” takes prepare; the singular head “chef” takes plans.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q02",
+      "selected_answer": "D",
+      "answer_reason": "(5/6)(7/9)=35/54, so 1−35/54=19/54.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": [
+        "The negative and 34/53 distractors have no clear path from a common single arithmetic slip."
+      ]
+    },
+    {
+      "id": "Q03",
+      "selected_answer": "A",
+      "answer_reason": "At x=4 the product is 36; all larger positive integers make it greater than 36.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q04",
+      "selected_answer": "A",
+      "answer_reason": "The plural head “players” takes practice; the singular head “coach” takes checks.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q05",
+      "selected_answer": "C",
+      "answer_reason": "The zero-product equation has roots 5 and 12; the smaller is 5.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 1,
+      "target_difficulty_2_to_3_met": false,
+      "concerns": [
+        "The factors give both roots directly, making this easier than the target range."
+      ]
+    },
+    {
+      "id": "Q06",
+      "selected_answer": "A",
+      "answer_reason": "At x=4, (4+6)(4+1)=50; the other offered values fail.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q07",
+      "selected_answer": "B",
+      "answer_reason": "“Clerks” is plural in the relative clause, while “one” is singular in the second sentence.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q08",
+      "selected_answer": "D",
+      "answer_reason": "“Every clerk” is singular and “Ava and Ben” is plural, regardless of the nearby nouns.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q09",
+      "selected_answer": "C",
+      "answer_reason": "The gerund phrase “Preparing the meals” is singular; “the cooks” is plural.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q10",
+      "selected_answer": "B",
+      "answer_reason": "“The number” takes is, while “a number of readers” takes are.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 3,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": [
+        "The sentence is grammatical but “the number ... is known” and “readers ... are present” provide little meaningful context."
+      ]
+    },
+    {
+      "id": "Q11",
+      "selected_answer": "C",
+      "answer_reason": "The inequality becomes 7x+12≤54, hence x≤6 and the maximum is 6.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q12",
+      "selected_answer": "A",
+      "answer_reason": "6/7+2/4=19/14; multiplying by 3 gives 57/14.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q13",
+      "selected_answer": "C",
+      "answer_reason": "5x+18=4x+21 simplifies to x=3.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q14",
+      "selected_answer": "C",
+      "answer_reason": "The plural nearest conjunct “assistants” takes sort; the singular nearest conjunct “curator” takes checks.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 3,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q15",
+      "selected_answer": "D",
+      "answer_reason": "Cross multiplication gives 10x+40=13x+13, so x=9.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 3,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q16",
+      "selected_answer": "A",
+      "answer_reason": "The inequality reduces to x≤8; integers 4, 5, 6, 7, and 8 give a count of 5.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q17",
+      "selected_answer": "B",
+      "answer_reason": "In the inverted clauses, plural “returns” takes are and singular “book” takes is.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 3,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": [
+        "“The returns from the library” and repeated “from the library” sound artificial; the grammar target remains clear."
+      ]
+    },
+    {
+      "id": "Q18",
+      "selected_answer": "B",
+      "answer_reason": "(7/8)÷(3/5)=35/24, and adding 1 gives 59/24.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    },
+    {
+      "id": "Q19",
+      "selected_answer": "D",
+      "answer_reason": "8/9+4/6=14/9, whose reciprocal is 9/14.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 2,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": [
+        "The 23/9 distractor has no obvious relation to a likely arithmetic error."
+      ]
+    },
+    {
+      "id": "Q20",
+      "selected_answer": "B",
+      "answer_reason": "The positive denominator allows 7x≥3(x+4), giving x≥3 and minimum 3.",
+      "choice_distinctness": {
+        "pairs_checked": 6,
+        "all_pairs_meaningfully_distinct": true,
+        "equivalent_or_format_only_pairs": []
+      },
+      "self_contained": true,
+      "objective_clear": true,
+      "difficulty_1_to_5": 3,
+      "target_difficulty_2_to_3_met": true,
+      "concerns": []
+    }
+  ],
+  "cross_item_comparison": {
+    "total_pairs_checked": 190,
+    "near_duplicate_pairs": [
+      {
+        "ids": [
+          "Q01",
+          "Q04"
+        ],
+        "strength": "strong",
+        "reason": "Both use the same two-blank pattern: a plural head near a singular noun, then a singular head near a plural noun; only nouns and verbs change."
+      },
+      {
+        "ids": [
+          "Q01",
+          "Q08"
+        ],
+        "strength": "moderate",
+        "reason": "Both require ignoring a nearby noun in two subject–verb agreements, but “every” and a compound subject introduce different number cues."
+      },
+      {
+        "ids": [
+          "Q01",
+          "Q10"
+        ],
+        "strength": "moderate",
+        "reason": "Both use nearby plural/singular nouns to distract from each subject, while Q10 adds the distinct “the number” versus “a number” rule."
+      },
+      {
+        "ids": [
+          "Q01",
+          "Q17"
+        ],
+        "strength": "moderate",
+        "reason": "Both ask for plural and singular agreement around near-phrases, but Q17 places each grammatical subject after the verb."
+      },
+      {
+        "ids": [
+          "Q04",
+          "Q08"
+        ],
+        "strength": "moderate",
+        "reason": "Both require ignoring a nearby noun in two subject–verb agreements, but “every” and a compound subject introduce different number cues."
+      },
+      {
+        "ids": [
+          "Q04",
+          "Q10"
+        ],
+        "strength": "moderate",
+        "reason": "Both use nearby plural/singular nouns to distract from each subject, while Q10 adds the distinct “the number” versus “a number” rule."
+      },
+      {
+        "ids": [
+          "Q04",
+          "Q17"
+        ],
+        "strength": "moderate",
+        "reason": "Both ask for plural and singular agreement around near-phrases, but Q17 places each grammatical subject after the verb."
+      },
+      {
+        "ids": [
+          "Q07",
+          "Q10"
+        ],
+        "strength": "moderate",
+        "reason": "Both contrast agreement with a singular quantifying head and an embedded plural noun, though the constructions and first-blank decisions differ."
+      },
+      {
+        "ids": [
+          "Q08",
+          "Q10"
+        ],
+        "strength": "moderate",
+        "reason": "Both have two clauses with “near” phrases and contrasting singular/plural subject agreement, while the subject constructions differ."
+      },
+      {
+        "ids": [
+          "Q08",
+          "Q17"
+        ],
+        "strength": "moderate",
+        "reason": "Both use a near-phrase in singular/plural agreement decisions, but Q17 requires locating postverbal subjects."
+      },
+      {
+        "ids": [
+          "Q10",
+          "Q17"
+        ],
+        "strength": "moderate",
+        "reason": "Both use near-phrases with is/are choices in two clauses, but Q10 tests number idioms and Q17 tests inverted subject position."
+      },
+      {
+        "ids": [
+          "Q02",
+          "Q18"
+        ],
+        "strength": "moderate",
+        "reason": "Both multiply rational numbers and then combine the result with 1; Q18 first converts division to multiplication by a reciprocal."
+      },
+      {
+        "ids": [
+          "Q12",
+          "Q19"
+        ],
+        "strength": "moderate",
+        "reason": "Both first add unlike fractions inside parentheses, then apply an outer operation; Q12 scales and Q19 takes a reciprocal."
+      },
+      {
+        "ids": [
+          "Q18",
+          "Q19"
+        ],
+        "strength": "moderate",
+        "reason": "Both require a reciprocal operation on fractions, though one is a divisor before addition and the other is the reciprocal of an entire sum."
+      },
+      {
+        "ids": [
+          "Q03",
+          "Q06"
+        ],
+        "strength": "moderate",
+        "reason": "Both evaluate or solve a product of two expressions in x on a small nonnegative integer domain; the inequality extremum and equality selection differ."
+      },
+      {
+        "ids": [
+          "Q03",
+          "Q11"
+        ],
+        "strength": "moderate",
+        "reason": "Both find the maximum integer satisfying a ≤ inequality over a bounded domain, but one inequality is quadratic and the other linear."
+      },
+      {
+        "ids": [
+          "Q03",
+          "Q16"
+        ],
+        "strength": "moderate",
+        "reason": "Both establish an upper cutoff for integers satisfying a ≤ inequality; one asks for the maximum and the other counts feasible integers."
+      },
+      {
+        "ids": [
+          "Q03",
+          "Q20"
+        ],
+        "strength": "moderate",
+        "reason": "Both locate a boundary integer satisfying an inequality on an explicit domain; the expression type and extremum direction differ."
+      },
+      {
+        "ids": [
+          "Q05",
+          "Q06"
+        ],
+        "strength": "moderate",
+        "reason": "Both center on a product of two linear x factors in a bounded integer domain, but zero-product roots and a nonzero product require different steps."
+      },
+      {
+        "ids": [
+          "Q11",
+          "Q16"
+        ],
+        "strength": "moderate",
+        "reason": "Both simplify a linear ≤ inequality with a distributed x+2 term into an upper bound; Q11 asks for its maximum and Q16 counts values."
+      },
+      {
+        "ids": [
+          "Q11",
+          "Q20"
+        ],
+        "strength": "moderate",
+        "reason": "Both reduce a bounded-domain inequality to an integer cutoff and choose an extremum; Q20 adds a rational expression and reverses the cutoff direction."
+      },
+      {
+        "ids": [
+          "Q13",
+          "Q15"
+        ],
+        "strength": "moderate",
+        "reason": "Both reduce an equation to one linear x value and select it from offered integers; Q15 first clears a variable denominator."
+      },
+      {
+        "ids": [
+          "Q15",
+          "Q20"
+        ],
+        "strength": "moderate",
+        "reason": "Both involve rational expressions with x in a positive denominator and use cross multiplication; one solves equality and the other an inequality extremum."
+      },
+      {
+        "ids": [
+          "Q16",
+          "Q20"
+        ],
+        "strength": "moderate",
+        "reason": "Both turn an inequality over a small integer domain into a cutoff decision; one counts values and the other chooses a minimum."
+      }
+    ],
+    "unflagged_pairs_distinct": 166,
+    "strong_count": 1,
+    "moderate_count": 23
+  },
+  "overall_findings": [
+    "All 20 items have one supported answer and clear, self-contained objectives.",
+    "Every item has six meaningfully distinct choice pairs.",
+    "Q05 is below the target difficulty; Q02, Q17, and Q19 have minor distractor or wording concerns.",
+    "Q01 and Q04 are strong cross-item duplicates."
+  ]
+}

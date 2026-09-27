@@ -1,0 +1,64 @@
+{
+  "codeOwnedSingleKeyAndFourLiteralDistinctChoices": 20,
+  "crossItemPairsArithmeticVerified": 190,
+  "flaggedPairCountsByOriginalSlots": {
+    "moderate:0-0": 3,
+    "moderate:1-1": 2,
+    "moderate:1-2": 2,
+    "moderate:2-2": 6,
+    "moderate:3-3": 2,
+    "moderate:3-4": 7,
+    "moderate:4-4": 1,
+    "strong:3-3": 1
+  },
+  "items": 20,
+  "lockedReviewSha256": "63c833dcf02aea88f4ee8343b308e9b1203a841744f467eec41ee9d9d8579c74",
+  "postLockAnswerMapSha256": "40be5690f5f5733a986f85c0a3bf87703466a225bedb728ac0f68c3582f303c2",
+  "reviewAllSixChoicePairsDistinctItems": 20,
+  "reviewBelowTarget": [
+    {
+      "difficulty": 1,
+      "family": "bounded_two_root_minimum",
+      "id": "Q05",
+      "slot": 1
+    }
+  ],
+  "reviewModerateNearDuplicatePairs": 23,
+  "reviewSelectedKeyMismatches": [
+    {
+      "codeOwnedKey": "C",
+      "codeOwnedText": "keeps; review",
+      "family": "compound",
+      "id": "Q08",
+      "reviewSelected": "D",
+      "reviewSelectedText": "keep; review",
+      "slot": 4
+    }
+  ],
+  "reviewSelectedKeysMatchingCodeOwned": 19,
+  "reviewSelfContainedAndObjectiveClearItems": 20,
+  "reviewStrongNearDuplicatePairs": [
+    {
+      "batchById": {
+        "Q01": 2,
+        "Q04": 4
+      },
+      "familyById": {
+        "Q01": "proximity",
+        "Q04": "proximity"
+      },
+      "ids": [
+        "Q01",
+        "Q04"
+      ],
+      "slotById": {
+        "Q01": 3,
+        "Q04": 3
+      }
+    }
+  ],
+  "reviewTargetDifficultyItems": 19,
+  "reviewUnflaggedPairs": 166,
+  "semanticJudgmentsIndependentlyRecheckedByScript": false,
+  "worksheetSha256": "ab3d3ab1b73c0bf6268a6c4cd5cc13d753ba804c77a1ca1e8e3635edbd960ab4"
+}

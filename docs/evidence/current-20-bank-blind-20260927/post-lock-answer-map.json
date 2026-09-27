@@ -1,0 +1,685 @@
+{
+  "mapping": {
+    "Q01": {
+      "batch": 2,
+      "family": "proximity",
+      "key": "C",
+      "row": {
+        "choiceExplanations": {
+          "prepare; plan": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. The form \"prepare\" agrees. The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. \"plan\" does not agree; use \"plans\".",
+          "prepare; plans": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. The form \"prepare\" agrees. The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. The form \"plans\" agrees.",
+          "prepares; plan": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. \"prepares\" does not agree; use \"prepare\". The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. \"plan\" does not agree; use \"plans\".",
+          "prepares; plans": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. \"prepares\" does not agree; use \"prepare\". The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. The form \"plans\" agrees."
+        },
+        "choices": [
+          "prepares; plans",
+          "prepare; plan",
+          "prepare; plans",
+          "prepares; plan"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "prepare; plans",
+        "explanation": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. The form \"prepare\" agrees. The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. The form \"plans\" agrees. Therefore the ordered pair is prepare; plans.",
+        "format": "Multiple Choice",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "objectiveID": "bbbbbbbb-bbbb-4bbb-8bb8-bbbbbbbbbbbb",
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The cooks near the chef ___ the meals, while the chef near the cooks ___ the menu. Which ordered pair fills the blanks?",
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "topic": "Standard written English"
+      },
+      "slot": 3,
+      "task": {
+        "kind": "agreement_pair_v1",
+        "order": "plural_first",
+        "scene": "chef"
+      }
+    },
+    "Q02": {
+      "batch": 1,
+      "family": "fraction_product_complement",
+      "key": "D",
+      "row": {
+        "choiceExplanations": {
+          "-17/27": "-17/27: This can come from using a common denominator without scaling the numerators. 1 - (35/54) = 19/54, not -17/27.",
+          "1": "1: This stops at the left operand before the final operation. 1 - (35/54) = 19/54, not 1.",
+          "19/54": "The expression evaluates exactly to 19/54; 19/54 is the requested value.",
+          "34/53": "34/53: This can come from combining the numerators and denominators separately. 1 - (35/54) = 19/54, not 34/53."
+        },
+        "choices": [
+          "-17/27",
+          "34/53",
+          "19/54",
+          "1"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "19/54",
+        "explanation": "Multiply by the reciprocal: 5 / 6 = 5 * (1/6) = 5/6. Multiply by the reciprocal: 7 / 9 = 7 * (1/9) = 7/9. Multiply numerators and denominators: (5/6) * (7/9) = 35/54. Common denominator 54: 1 - (35/54) = (54/54) - (35/54) = 19/54. The answer is 19/54.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let q be a unitless number, defined by q = (1 - ((5 / 6) * (7 / 9))). What is its exact value?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 0,
+      "task": {
+        "a": 5,
+        "b": 7,
+        "family": "fraction_product_complement"
+      }
+    },
+    "Q03": {
+      "batch": 3,
+      "family": "bounded_quadratic_maximum",
+      "key": "A",
+      "row": {
+        "choiceExplanations": {
+          "3": "At x = 3, 24 <= 36 is true. The question asks for the maximum; that value is 4.",
+          "4": "At x = 4, 36 <= 36 is true. This is the maximum value satisfying the condition in this domain.",
+          "5": "At x = 5, 50 <= 36 is false. This value does not satisfy the condition.",
+          "6": "At x = 6, 66 <= 36 is false. This value does not satisfy the condition."
+        },
+        "choices": [
+          "3",
+          "5",
+          "4",
+          "6"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "4",
+        "explanation": "At x = 4, 36 <= 36 is true. 4 is the maximum value satisfying the condition in this domain. The larger domain values fail: x = 5: 50 <= 36 is false; x = 6: 66 <= 36 is false; x = 7: 84 <= 36 is false.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let x be a unitless number. Its domain is integers from 1 through 7, inclusive. Condition: (x * (x + 5)) <= 36. What is the maximum x in this domain satisfying the condition?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 2,
+      "task": {
+        "a": 5,
+        "b": 4,
+        "family": "bounded_quadratic_maximum"
+      }
+    },
+    "Q04": {
+      "batch": 4,
+      "family": "proximity",
+      "key": "A",
+      "row": {
+        "choiceExplanations": {
+          "practice; check": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. The form \"practice\" agrees. The second head subject \"the coach\" is singular; \"near the players\" does not change that. \"check\" does not agree; use \"checks\".",
+          "practice; checks": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. The form \"practice\" agrees. The second head subject \"the coach\" is singular; \"near the players\" does not change that. The form \"checks\" agrees.",
+          "practices; check": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. \"practices\" does not agree; use \"practice\". The second head subject \"the coach\" is singular; \"near the players\" does not change that. \"check\" does not agree; use \"checks\".",
+          "practices; checks": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. \"practices\" does not agree; use \"practice\". The second head subject \"the coach\" is singular; \"near the players\" does not change that. The form \"checks\" agrees."
+        },
+        "choices": [
+          "practices; checks",
+          "practice; check",
+          "practice; checks",
+          "practices; check"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "practice; checks",
+        "explanation": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. The form \"practice\" agrees. The second head subject \"the coach\" is singular; \"near the players\" does not change that. The form \"checks\" agrees. Therefore the ordered pair is practice; checks.",
+        "format": "Multiple Choice",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "objectiveID": "bbbbbbbb-bbbb-4bbb-8bb8-bbbbbbbbbbbb",
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The players near the coach ___ the drills, while the coach near the players ___ the schedule. Which ordered pair fills the blanks?",
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "topic": "Standard written English"
+      },
+      "slot": 3,
+      "task": {
+        "kind": "agreement_pair_v1",
+        "order": "plural_first",
+        "scene": "coach"
+      }
+    },
+    "Q05": {
+      "batch": 4,
+      "family": "bounded_two_root_minimum",
+      "key": "C",
+      "row": {
+        "choiceExplanations": {
+          "12": "At x = 12, 0 = 0 is true. The question asks for the minimum; that value is 5.",
+          "4": "At x = 4, 8 = 0 is false. This value does not satisfy the condition.",
+          "5": "At x = 5, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+          "6": "At x = 6, -6 = 0 is false. This value does not satisfy the condition."
+        },
+        "choices": [
+          "4",
+          "5",
+          "6",
+          "12"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "5",
+        "explanation": "At x = 5, 0 = 0 is true. 5 is the minimum value satisfying the condition in this domain. The smaller domain values fail: x = 0: 60 = 0 is false; x = 1: 44 = 0 is false; x = 2: 30 = 0 is false; x = 3: 18 = 0 is false; x = 4: 8 = 0 is false.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let x be a unitless number. Its domain is integers from 0 through 14, inclusive. Condition: ((x - 5) * (x - 12)) = 0. What is the minimum x in this domain satisfying the condition?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 1,
+      "task": {
+        "a": 7,
+        "b": 5,
+        "family": "bounded_two_root_minimum"
+      }
+    },
+    "Q06": {
+      "batch": 3,
+      "family": "bounded_quadratic_equation",
+      "key": "A",
+      "row": {
+        "choiceExplanations": {
+          "2": "At x = 2, 24 = 50 is false. This value does not satisfy the condition.",
+          "3": "At x = 3, 36 = 50 is false. This value does not satisfy the condition.",
+          "4": "At x = 4, 50 = 50 is true. This is the only offered value satisfying the condition.",
+          "5": "At x = 5, 66 = 50 is false. This value does not satisfy the condition."
+        },
+        "choices": [
+          "4",
+          "2",
+          "3",
+          "5"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "4",
+        "explanation": "At x = 4, 50 = 50 is true. 4 is the only offered value satisfying the condition. Every other offered value is outside the domain or fails the condition.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 6) * (x + 1)) = 50. Which offered value of x satisfies the condition?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 1,
+      "task": {
+        "a": 6,
+        "b": 4,
+        "family": "bounded_quadratic_equation"
+      }
+    },
+    "Q07": {
+      "batch": 3,
+      "family": "relative",
+      "key": "B",
+      "row": {
+        "choiceExplanations": {
+          "sort; hold": "The relative pronoun \"who\" refers to plural \"clerks\"; the relative-clause verb is \"sort\". \"hold\" does not agree with singular \"One\"; use \"holds\".",
+          "sort; holds": "The relative pronoun \"who\" refers to plural \"clerks\"; the relative-clause verb is \"sort\". The main-clause subject is singular \"One\"; the main-clause verb is \"holds\".",
+          "sorts; hold": "\"sorts\" does not agree with plural \"clerks\"; use \"sort\". \"hold\" does not agree with singular \"One\"; use \"holds\".",
+          "sorts; holds": "\"sorts\" does not agree with plural \"clerks\"; use \"sort\". The main-clause subject is singular \"One\"; the main-clause verb is \"holds\"."
+        },
+        "choices": [
+          "sorts; holds",
+          "sort; hold",
+          "sort; holds",
+          "sorts; hold"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "sort; holds",
+        "explanation": "The relative pronoun \"who\" refers to plural \"clerks\"; the relative-clause verb is \"sort\". The main-clause subject is singular \"One\"; the main-clause verb is \"holds\". Therefore the ordered pair is sort; holds.",
+        "format": "Multiple Choice",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "objectiveID": "bbbbbbbb-bbbb-4bbb-8bb8-bbbbbbbbbbbb",
+        "prompt": "Fill both blanks with present-tense forms in standard written American English. The clerks who ___ the files are here. One of the clerks ___ a key. Which ordered pair fills the blanks?",
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "topic": "Standard written English"
+      },
+      "slot": 3,
+      "task": {
+        "kind": "agreement_pair_v1",
+        "order": "plural_first",
+        "scene": "relative_clerks"
+      }
+    },
+    "Q08": {
+      "batch": 2,
+      "family": "compound",
+      "key": "C",
+      "row": {
+        "choiceExplanations": {
+          "keep; review": "First, the subject \"Every clerk\" is singular; \"near the visitors\" does not change it. \"keep\" does not agree; use \"keeps\". Second, the subject \"Ava and Ben\" is plural (\"and\" joins two); \"near the clerk\" does not change it. The form \"review\" agrees.",
+          "keep; reviews": "First, the subject \"Every clerk\" is singular; \"near the visitors\" does not change it. \"keep\" does not agree; use \"keeps\". Second, the subject \"Ava and Ben\" is plural (\"and\" joins two); \"near the clerk\" does not change it. \"reviews\" does not agree; use \"review\".",
+          "keeps; review": "First, the subject \"Every clerk\" is singular; \"near the visitors\" does not change it. The form \"keeps\" agrees. Second, the subject \"Ava and Ben\" is plural (\"and\" joins two); \"near the clerk\" does not change it. The form \"review\" agrees.",
+          "keeps; reviews": "First, the subject \"Every clerk\" is singular; \"near the visitors\" does not change it. The form \"keeps\" agrees. Second, the subject \"Ava and Ben\" is plural (\"and\" joins two); \"near the clerk\" does not change it. \"reviews\" does not agree; use \"review\"."
+        },
+        "choices": [
+          "keep; review",
+          "keep; reviews",
+          "keeps; review",
+          "keeps; reviews"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "keeps; review",
+        "explanation": "First, the subject \"Every clerk\" is singular; \"near the visitors\" does not change it. The form \"keeps\" agrees. Second, the subject \"Ava and Ben\" is plural (\"and\" joins two); \"near the clerk\" does not change it. The form \"review\" agrees. Therefore the ordered pair is keeps; review.",
+        "format": "Multiple Choice",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "objectiveID": "bbbbbbbb-bbbb-4bbb-8bb8-bbbbbbbbbbbb",
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Every clerk near the visitors ___ a copy, while Ava and Ben near the clerk ___ the forms. Which ordered pair fills the blanks?",
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "topic": "Standard written English"
+      },
+      "slot": 4,
+      "task": {
+        "kind": "agreement_pair_v1",
+        "order": "plural_first",
+        "scene": "compound_clerks"
+      }
+    },
+    "Q09": {
+      "batch": 1,
+      "family": "gerund",
+      "key": "C",
+      "row": {
+        "choiceExplanations": {
+          "require; measure": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+          "require; measures": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\".",
+          "requires; measure": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+          "requires; measures": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\"."
+        },
+        "choices": [
+          "requires; measure",
+          "requires; measures",
+          "require; measure",
+          "require; measures"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "requires; measure",
+        "explanation": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees. Therefore the ordered pair is requires; measure.",
+        "format": "Multiple Choice",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "objectiveID": "bbbbbbbb-bbbb-4bbb-8bb8-bbbbbbbbbbbb",
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Preparing the meals ___ planning, and the cooks ___ the ingredients. Which ordered pair fills the blanks?",
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "topic": "Standard written English"
+      },
+      "slot": 4,
+      "task": {
+        "kind": "agreement_pair_v1",
+        "order": "singular_first",
+        "scene": "gerund_meals"
+      }
+    },
+    "Q10": {
+      "batch": 3,
+      "family": "number",
+      "key": "B",
+      "row": {
+        "choiceExplanations": {
+          "are; are": "First, \"The number of copies\" has the singular head \"number\"; \"near the editors\" does not change it. \"are\" does not agree; use \"is\". Second, \"A number of readers\" means several and takes a plural verb; \"near the author\" does not change it. The form \"are\" agrees.",
+          "are; is": "First, \"The number of copies\" has the singular head \"number\"; \"near the editors\" does not change it. \"are\" does not agree; use \"is\". Second, \"A number of readers\" means several and takes a plural verb; \"near the author\" does not change it. \"is\" does not agree; use \"are\".",
+          "is; are": "First, \"The number of copies\" has the singular head \"number\"; \"near the editors\" does not change it. The form \"is\" agrees. Second, \"A number of readers\" means several and takes a plural verb; \"near the author\" does not change it. The form \"are\" agrees.",
+          "is; is": "First, \"The number of copies\" has the singular head \"number\"; \"near the editors\" does not change it. The form \"is\" agrees. Second, \"A number of readers\" means several and takes a plural verb; \"near the author\" does not change it. \"is\" does not agree; use \"are\"."
+        },
+        "choices": [
+          "are; are",
+          "are; is",
+          "is; are",
+          "is; is"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "is; are",
+        "explanation": "First, \"The number of copies\" has the singular head \"number\"; \"near the editors\" does not change it. The form \"is\" agrees. Second, \"A number of readers\" means several and takes a plural verb; \"near the author\" does not change it. The form \"are\" agrees. Therefore the ordered pair is is; are.",
+        "format": "Multiple Choice",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "objectiveID": "bbbbbbbb-bbbb-4bbb-8bb8-bbbbbbbbbbbb",
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The number of copies near the editors ___ known, while a number of readers near the author ___ present. Which ordered pair fills the blanks?",
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "topic": "Standard written English"
+      },
+      "slot": 4,
+      "task": {
+        "kind": "agreement_pair_v1",
+        "order": "plural_first",
+        "scene": "number_readers"
+      }
+    },
+    "Q11": {
+      "batch": 4,
+      "family": "bounded_linear_budget_maximum",
+      "key": "C",
+      "row": {
+        "choiceExplanations": {
+          "5": "At x = 5, 47 <= 54 is true. The question asks for the maximum; that value is 6.",
+          "6": "At x = 6, 54 <= 54 is true. This is the maximum value satisfying the condition in this domain.",
+          "7": "At x = 7, 61 <= 54 is false. This value does not satisfy the condition.",
+          "8": "At x = 8, 68 <= 54 is false. This value does not satisfy the condition."
+        },
+        "choices": [
+          "8",
+          "6",
+          "7",
+          "5"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "6",
+        "explanation": "At x = 6, 54 <= 54 is true. 6 is the maximum value satisfying the condition in this domain. The larger domain values fail: x = 7: 61 <= 54 is false; x = 8: 68 <= 54 is false; x = 9: 75 <= 54 is false.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let x be a unitless number. Its domain is integers from 3 through 9, inclusive. Condition: ((6 * (x + 2)) + x) <= 54. What is the maximum x in this domain satisfying the condition?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 2,
+      "task": {
+        "a": 6,
+        "b": 6,
+        "family": "bounded_linear_budget_maximum"
+      }
+    },
+    "Q12": {
+      "batch": 2,
+      "family": "fraction_evaluation",
+      "key": "A",
+      "row": {
+        "choiceExplanations": {
+          "19/42": "19/42: This can come from multiplying the denominator by 3 instead of the numerator. (19/14) * 3 = 57/14, not 19/42.",
+          "3/14": "3/14: This can come from dropping the numerator 19 of 19/14. (19/14) * 3 = 57/14, not 3/14.",
+          "57": "57: This can come from dropping the denominator 14 of 19/14. (19/14) * 3 = 57/14, not 57.",
+          "57/14": "The expression evaluates exactly to 57/14; 57/14 is the requested value."
+        },
+        "choices": [
+          "19/42",
+          "57",
+          "57/14",
+          "3/14"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "57/14",
+        "explanation": "Multiply by the reciprocal: 6 / 7 = 6 * (1/7) = 6/7. Multiply by the reciprocal: 2 / 4 = 2 * (1/4) = 2/4 = 1/2. Common denominator 14: (6/7) + (1/2) = (12/14) + (7/14) = 19/14. Multiply numerators and denominators: (19/14) * 3 = 57/14. The answer is 57/14.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let q be a unitless number, defined by q = (((6 / 7) + (2 / 4)) * 3). What is its exact value?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 0,
+      "task": {
+        "a": 6,
+        "b": 2,
+        "family": "fraction_evaluation"
+      }
+    },
+    "Q13": {
+      "batch": 2,
+      "family": "bounded_equation",
+      "key": "C",
+      "row": {
+        "choiceExplanations": {
+          "1": "At x = 1, 23 = 25 is false. This value does not satisfy the condition.",
+          "2": "At x = 2, 28 = 29 is false. This value does not satisfy the condition.",
+          "3": "At x = 3, 33 = 33 is true. This is the only offered value satisfying the condition.",
+          "4": "At x = 4, 38 = 37 is false. This value does not satisfy the condition."
+        },
+        "choices": [
+          "2",
+          "3",
+          "1",
+          "4"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "3",
+        "explanation": "At x = 3, 33 = 33 is true. 3 is the only offered value satisfying the condition. Every other offered value is outside the domain or fails the condition.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((5 * (x + 2)) + 8) = ((4 * x) + 21). Which offered value of x satisfies the condition?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 1,
+      "task": {
+        "a": 5,
+        "b": 3,
+        "family": "bounded_equation"
+      }
+    },
+    "Q14": {
+      "batch": 4,
+      "family": "correlative",
+      "key": "C",
+      "row": {
+        "choiceExplanations": {
+          "sort; check": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. The form \"sort\" agrees. Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. \"check\" does not agree; use \"checks\".",
+          "sort; checks": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. The form \"sort\" agrees. Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. The form \"checks\" agrees.",
+          "sorts; check": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. \"sorts\" does not agree; use \"sort\". Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. \"check\" does not agree; use \"checks\".",
+          "sorts; checks": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. \"sorts\" does not agree; use \"sort\". Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. The form \"checks\" agrees."
+        },
+        "choices": [
+          "sort; check",
+          "sort; checks",
+          "sorts; check",
+          "sorts; checks"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "sort; checks",
+        "explanation": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. The form \"sort\" agrees. Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. The form \"checks\" agrees. Therefore the ordered pair is sort; checks.",
+        "format": "Multiple Choice",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "objectiveID": "bbbbbbbb-bbbb-4bbb-8bb8-bbbbbbbbbbbb",
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Neither the curator nor the assistants ___ the records, while either the assistants or the curator ___ the catalog. Which ordered pair fills the blanks?",
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "topic": "Standard written English"
+      },
+      "slot": 4,
+      "task": {
+        "kind": "agreement_pair_v1",
+        "order": "plural_first",
+        "scene": "or_archive"
+      }
+    },
+    "Q15": {
+      "batch": 1,
+      "family": "bounded_rational_equation",
+      "key": "D",
+      "row": {
+        "choiceExplanations": {
+          "10": "At x = 10, 14/11 = 13/10 is false. This value does not satisfy the condition.",
+          "7": "At x = 7, 11/8 = 13/10 is false. This value does not satisfy the condition.",
+          "8": "At x = 8, 4/3 = 13/10 is false. This value does not satisfy the condition.",
+          "9": "At x = 9, 13/10 = 13/10 is true. This is the only offered value satisfying the condition."
+        },
+        "choices": [
+          "8",
+          "9",
+          "10",
+          "7"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "9",
+        "explanation": "Because x + 1 is nonzero throughout the domain, cross-multiply: 10(x + 4) = 13(x + 1). Expanding gives 10x + 40 = 13x + 13, so 27 = 3x. Divide by 3 to get x = 9. The nonzero x coefficient makes this the only solution in the domain.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 4) / (x + 1)) = (13 / 10). Which offered value of x satisfies the condition?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 1,
+      "task": {
+        "a": 4,
+        "b": 9,
+        "family": "bounded_rational_equation"
+      }
+    },
+    "Q16": {
+      "batch": 1,
+      "family": "bounded_solution_count",
+      "key": "A",
+      "row": {
+        "choiceExplanations": {
+          "3": "Exactly 5 domain integers satisfy the condition; 3 counts too few.",
+          "4": "Exactly 5 domain integers satisfy the condition; 4 counts too few.",
+          "5": "Exactly 5 domain integers satisfy the condition; 5 is the count.",
+          "6": "Exactly 5 domain integers satisfy the condition; 6 counts too many."
+        },
+        "choices": [
+          "4",
+          "3",
+          "6",
+          "5"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "5",
+        "explanation": "Check every integer: x = 4: 10 <= 14 is true; x = 5: 11 <= 14 is true; x = 6: 12 <= 14 is true; x = 7: 13 <= 14 is true; x = 8: 14 <= 14 is true; x = 9: 15 <= 14 is false; x = 10: 16 <= 14 is false; x = 11: 17 <= 14 is false. Exactly 5 satisfy the condition.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let x be a unitless number. Its domain is integers from 4 through 11, inclusive. Condition: ((3 * (x + 2)) - (2 * x)) <= 14. How many integers in this domain satisfy the condition?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 2,
+      "task": {
+        "a": 3,
+        "b": 8,
+        "family": "bounded_solution_count"
+      }
+    },
+    "Q17": {
+      "batch": 1,
+      "family": "inversion",
+      "key": "B",
+      "row": {
+        "choiceExplanations": {
+          "are; are": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. \"are\" does not agree; use \"is\".",
+          "are; is": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees.",
+          "is; are": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. \"is\" does not agree; use \"are\". Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. \"are\" does not agree; use \"is\".",
+          "is; is": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. \"is\" does not agree; use \"are\". Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees."
+        },
+        "choices": [
+          "is; is",
+          "are; are",
+          "are; is",
+          "is; are"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "are; is",
+        "explanation": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees. Therefore the ordered pair is are; is.",
+        "format": "Multiple Choice",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "objectiveID": "bbbbbbbb-bbbb-4bbb-8bb8-bbbbbbbbbbbb",
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the librarian ___ the returns from the library, while near the volunteers ___ the book from the library. Which ordered pair fills the blanks?",
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "topic": "Standard written English"
+      },
+      "slot": 3,
+      "task": {
+        "kind": "agreement_pair_v1",
+        "order": "plural_first",
+        "scene": "inversion_library"
+      }
+    },
+    "Q18": {
+      "batch": 3,
+      "family": "fraction_quotient",
+      "key": "B",
+      "row": {
+        "choiceExplanations": {
+          "3/2": "3/2: This can come from using a common denominator without scaling the numerators. (35/24) + 1 = 59/24, not 3/2.",
+          "35/24": "35/24: This stops at the left operand before the final operation. (35/24) + 1 = 59/24, not 35/24.",
+          "36/25": "36/25: This can come from combining the numerators and denominators separately. (35/24) + 1 = 59/24, not 36/25.",
+          "59/24": "The expression evaluates exactly to 59/24; 59/24 is the requested value."
+        },
+        "choices": [
+          "36/25",
+          "3/2",
+          "35/24",
+          "59/24"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "59/24",
+        "explanation": "Multiply by the reciprocal: 7 / 8 = 7 * (1/8) = 7/8. Multiply by the reciprocal: 3 / 5 = 3 * (1/5) = 3/5. Multiply by the reciprocal: (7/8) / (3/5) = (7/8) * (5/3) = 35/24. Common denominator 24: (35/24) + 1 = (35/24) + (24/24) = 59/24. The answer is 59/24.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let q be a unitless number, defined by q = (((7 / 8) / (3 / 5)) + 1). What is its exact value?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 0,
+      "task": {
+        "a": 7,
+        "b": 3,
+        "family": "fraction_quotient"
+      }
+    },
+    "Q19": {
+      "batch": 4,
+      "family": "fraction_reciprocal_sum",
+      "key": "D",
+      "row": {
+        "choiceExplanations": {
+          "1": "1: This stops at the left operand before the final operation. 1 / (14/9) = 9/14, not 1.",
+          "14/9": "14/9: This can come from multiplying by 14/9 instead of dividing by it. 1 / (14/9) = 9/14, not 14/9.",
+          "23/9": "23/9: This can come from using + at the final step instead of /. 1 / (14/9) = 9/14, not 23/9.",
+          "9/14": "The expression evaluates exactly to 9/14; 9/14 is the requested value."
+        },
+        "choices": [
+          "1",
+          "9/14",
+          "23/9",
+          "14/9"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "9/14",
+        "explanation": "Multiply by the reciprocal: 8 / 9 = 8 * (1/9) = 8/9. Multiply by the reciprocal: 4 / 6 = 4 * (1/6) = 4/6 = 2/3. Common denominator 9: (8/9) + (2/3) = (8/9) + (6/9) = 14/9. Multiply by the reciprocal: 1 / (14/9) = 1 * (9/14) = 9/14. The answer is 9/14.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let q be a unitless number, defined by q = (1 / ((8 / 9) + (4 / 6))). What is its exact value?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 0,
+      "task": {
+        "a": 8,
+        "b": 4,
+        "family": "fraction_reciprocal_sum"
+      }
+    },
+    "Q20": {
+      "batch": 2,
+      "family": "bounded_ratio_threshold",
+      "key": "B",
+      "row": {
+        "choiceExplanations": {
+          "1": "At x = 1, 1/5 >= 3/7 is false. This value does not satisfy the condition.",
+          "2": "At x = 2, 1/3 >= 3/7 is false. This value does not satisfy the condition.",
+          "3": "At x = 3, 3/7 >= 3/7 is true. This is the minimum value satisfying the condition in this domain.",
+          "4": "At x = 4, 1/2 >= 3/7 is true. The question asks for the minimum; that value is 3."
+        },
+        "choices": [
+          "3",
+          "4",
+          "2",
+          "1"
+        ],
+        "difficulty": 2,
+        "expectedAnswer": "3",
+        "explanation": "At x = 3, 3/7 >= 3/7 is true. 3 is the minimum value satisfying the condition in this domain. The smaller domain values fail: x = 0: 0 >= 3/7 is false; x = 1: 1/5 >= 3/7 is false; x = 2: 1/3 >= 3/7 is false.",
+        "format": "Multiple Choice",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "objectiveID": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "prompt": "Let x be a unitless number. Its domain is integers from 0 through 6, inclusive. Condition: (x / (x + 4)) >= (3 / 7). What is the minimum x in this domain satisfying the condition?",
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "topic": "Exact arithmetic"
+      },
+      "slot": 2,
+      "task": {
+        "a": 4,
+        "b": 3,
+        "family": "bounded_ratio_threshold"
+      }
+    }
+  },
+  "worksheetSha256": "ab3d3ab1b73c0bf6268a6c4cd5cc13d753ba804c77a1ca1e8e3635edbd960ab4"
+}
