@@ -1,0 +1,105 @@
+{
+  "reviewer": "independent answer-blind review",
+  "input": "blinded.json only; answer_key.json, capture.json, and call files not inspected",
+  "rubric": {
+    "self_contained": "The prompt alone states the operations and input needed to determine one answer; source document need not be opened.",
+    "difficulty": "1 = direct recall or one simple operation; 2 = two operations or a small edge case; 3 = several interacting steps; 4 = demanding transfer; 5 = advanced synthesis.",
+    "near_duplicate": "Same tested operation and response pattern with only a small input or wrapper change."
+  },
+  "ratings": [
+    {
+      "id": "Q001",
+      "self_contained": true,
+      "difficulty": 2,
+      "blind_correct_choice": "A",
+      "reason": "Skipping the empty string, replacing a leading or trailing double-space once, and stripping leaves [\"|ab\", \"cd|\"].",
+      "novelty": "Very close to Q010: same function and leading/trailing double-space transformations."
+    },
+    {
+      "id": "Q002",
+      "self_contained": true,
+      "difficulty": 1,
+      "blind_correct_choice": "A",
+      "reason": "Only the first of two double-spaces changes, yielding [\"x|y  z\"].",
+      "novelty": "Very close to Q004's first list element and first-only replacement trap."
+    },
+    {
+      "id": "Q003",
+      "self_contained": true,
+      "difficulty": 1,
+      "blind_correct_choice": "A",
+      "reason": "A single space stays unchanged while a double-space becomes a pipe.",
+      "novelty": "Another direct example of the same replacement rule used in Q001, Q002, Q004, Q005, and Q010."
+    },
+    {
+      "id": "Q004",
+      "self_contained": true,
+      "difficulty": 2,
+      "blind_correct_choice": "A",
+      "reason": "First-only replacement gives a|b  c, the empty element is skipped, and strip turns ' d ' into d.",
+      "novelty": "Near-duplicate of Q002 for the main expression, with a skip and strip wrapper."
+    },
+    {
+      "id": "Q005",
+      "self_contained": true,
+      "difficulty": 2,
+      "blind_correct_choice": "B",
+      "reason": "Only the exact empty string is skipped; two spaces become a pipe, which strip retains.",
+      "novelty": "Near-duplicate of Q010's all-space element and its pipe result."
+    },
+    {
+      "id": "Q006",
+      "self_contained": true,
+      "difficulty": 1,
+      "blind_correct_choice": "B",
+      "reason": "Explicit split on each space retains an empty string between adjacent spaces.",
+      "novelty": "Starts the explicit split cluster; Q007 and Q008 ask closely related count questions."
+    },
+    {
+      "id": "Q007",
+      "self_contained": true,
+      "difficulty": 2,
+      "blind_correct_choice": "C",
+      "reason": "The two leading and two trailing spaces create five list elements around ab.",
+      "novelty": "Near-duplicate of Q008: count the elements after an explicit split with doubled spaces."
+    },
+    {
+      "id": "Q008",
+      "self_contained": true,
+      "difficulty": 1,
+      "blind_correct_choice": "A",
+      "reason": "The four spaces in a  b  c delimit five elements, including two empty strings.",
+      "novelty": "Near-duplicate of Q007 with doubled spaces in the middle rather than at the ends."
+    },
+    {
+      "id": "Q009",
+      "self_contained": true,
+      "difficulty": 1,
+      "blind_correct_choice": "A",
+      "reason": "There is no literal space character, so the tab remains inside the sole string.",
+      "novelty": "Same split family as Q006-Q008, but the tab-versus-space distinction is a separate edge case."
+    },
+    {
+      "id": "Q010",
+      "self_contained": true,
+      "difficulty": 2,
+      "blind_correct_choice": "A",
+      "reason": "The leading and trailing double-spaces turn into pipes; the all-space string also becomes a pipe and is not skipped.",
+      "novelty": "Near-duplicate of Q001 for leading/trailing spaces and Q005 for the all-space string."
+    }
+  ],
+  "near_duplicate_pairs": [
+    {"ids": ["Q001", "Q010"], "basis": "Same normalized_labels pipeline and leading/trailing double-space outputs."},
+    {"ids": ["Q002", "Q004"], "basis": "Same first-only double-space replacement on a string with two double-spaces."},
+    {"ids": ["Q005", "Q010"], "basis": "Both test that an all-space string becomes a pipe rather than being skipped."},
+    {"ids": ["Q007", "Q008"], "basis": "Both count elements of an explicit split with doubled spaces."}
+  ],
+  "aggregate": {
+    "self_contained": "10/10",
+    "uniquely_solvable_from_choices": "10/10 by blind inspection",
+    "difficulty_distribution": {"1": 5, "2": 5, "3": 0, "4": 0, "5": 0},
+    "mean_difficulty": 1.5,
+    "near_duplicate_pairs": 4,
+    "concept_clusters": {"normalized_labels replacement/skip/strip": 6, "explicit split versus whitespace split": 4}
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "source_sha256": "3f837d04f953960b121093dc19c2c878d54194123bf3963608c436a34ff43400",
+  "method": "Execute exact synthetic source from frozen plan, then apply the literal calls described in each captured stem with CPython 3.12; render list outputs as JSON. This checks answers and listed choices, not independent difficulty or teaching quality.",
+  "results": [
+    {
+      "arm": "structured",
+      "item_index": 0,
+      "oracle": "[\"x|y  z\"]",
+      "author_key": "[\"x|y  z\"]",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": false
+    },
+    {
+      "arm": "structured",
+      "item_index": 1,
+      "oracle": "5",
+      "author_key": "5",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": true
+    },
+    {
+      "arm": "structured",
+      "item_index": 2,
+      "oracle": "[\"hello\\tworld\"]",
+      "author_key": "[\"hello\\tworld\"]",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": false
+    },
+    {
+      "arm": "structured",
+      "item_index": 3,
+      "oracle": "[\"|ab\", \"cd|\"]",
+      "author_key": "[\"|ab\", \"cd|\"]",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": true
+    },
+    {
+      "arm": "structured",
+      "item_index": 4,
+      "oracle": "[\"a b\", \"a|b\"]",
+      "author_key": "[\"a b\", \"a|b\"]",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": true
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 0,
+      "oracle": "[\"a|b  c\", \"d\"]",
+      "author_key": "[\"a|b  c\", \"d\"]",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": true
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 1,
+      "oracle": "[\"x\", \"\", \"y\", \"z\"]",
+      "author_key": "[\"x\", \"\", \"y\", \"z\"]",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": true
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 2,
+      "oracle": "[\"|\", \"hi\"]",
+      "author_key": "[\"|\", \"hi\"]",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": true
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 3,
+      "oracle": "[\"|a\", \"b|\", \"|\"]",
+      "author_key": "[\"|a\", \"b|\", \"|\"]",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": true
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 4,
+      "oracle": "5",
+      "author_key": "5",
+      "key_matches_oracle": true,
+      "oracle_choice_count": 1,
+      "distinct_choices": true,
+      "explanation_mentions_oracle": false
+    }
+  ]
+}

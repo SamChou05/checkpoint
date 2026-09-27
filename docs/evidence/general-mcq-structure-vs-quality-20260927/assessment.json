@@ -1,0 +1,99 @@
+{
+  "scope": "Post-key, nonblind content assessment of one response per arm. Difficulty ratings are judgments under the frozen 1–5 rubric, not a locked independent blind review.",
+  "model": "us.anthropic.claude-opus-4-6-v1",
+  "source_revision": "4c03889a802403cea6c9d4e485c8ccc384c33555",
+  "calls": 2,
+  "provider_dispatches": 2,
+  "hidden_sdk_retries": 0,
+  "same_request_except_output_config": true,
+  "reported_usage": {
+    "input_tokens": 4754,
+    "output_tokens": 17883,
+    "total_tokens": 22637
+  },
+  "estimated_cost_usd": 0.5179295,
+  "cost_basis": "Anthropic 2026-05-27 published AWS Bedrock US Geo Standard rates, $5.50/M input and $27.50/M output; reported tokens, before taxes/discounts; AWS bill may differ.",
+  "pricing_source": "https://www-cdn.anthropic.com/files/4zrzovbb/website/3684c2faafb97418665782cea0001f439f74b1d2.pdf",
+  "mechanical_findings": {
+    "schema_arm_bare_json": true,
+    "ordinary_arm_bare_json": false,
+    "both_runtime_parse": true,
+    "both_schema_match": true,
+    "both_sanitizer_retained": 5,
+    "python_supported_keys": 10,
+    "unique_listed_oracle_choices": 10
+  },
+  "content_findings": {
+    "clear_or_estimated_level_2": 7,
+    "estimated_level_3": 3,
+    "repeated_mechanisms": "All ten items apply either first double-space replacement/strip/skip or literal-space splitting; several differ chiefly by input values."
+  },
+  "item_assessments": [
+    {
+      "arm": "structured",
+      "item_index": 0,
+      "estimated_difficulty": 2,
+      "basis": "Apply first-occurrence replacement to one string; strip changes nothing."
+    },
+    {
+      "arm": "structured",
+      "item_index": 1,
+      "estimated_difficulty": 2,
+      "basis": "Count elements from one literal-space split."
+    },
+    {
+      "arm": "structured",
+      "item_index": 2,
+      "estimated_difficulty": 2,
+      "basis": "Apply one delimiter distinction to a tab-containing string."
+    },
+    {
+      "arm": "structured",
+      "item_index": 3,
+      "estimated_difficulty": 3,
+      "basis": "Trace skip, replacement, and strip across three list entries."
+    },
+    {
+      "arm": "structured",
+      "item_index": 4,
+      "estimated_difficulty": 2,
+      "basis": "Apply first-occurrence replacement independently to two simple strings."
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 0,
+      "estimated_difficulty": 3,
+      "basis": "Trace skip, replacement, and strip across three list entries."
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 1,
+      "estimated_difficulty": 2,
+      "basis": "Apply literal-space splitting to one string."
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 2,
+      "estimated_difficulty": 2,
+      "basis": "Distinguish empty from whitespace-only input, then apply replacement."
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 3,
+      "estimated_difficulty": 3,
+      "basis": "Trace replacement and strip across three list entries."
+    },
+    {
+      "arm": "ordinary",
+      "item_index": 4,
+      "estimated_difficulty": 2,
+      "basis": "Count elements from one literal-space split."
+    }
+  ],
+  "limits": [
+    "One author response per arm on one Python goal; no statistical claim about relative model or schema accuracy.",
+    "The schema allows arbitrary array lengths and strings, so this run does not show that native formatting guarantees five useful or correct questions.",
+    "No separate solver/reviewer or locked blind difficulty review ran.",
+    "No provider output reached the 16,000-token cap."
+  ]
+}

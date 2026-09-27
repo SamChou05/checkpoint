@@ -1,0 +1,322 @@
+[
+  {
+    "id": "Q001",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "A function iterates a list, uses continue to skip empty strings, replaces only the first double-space with \"|\", then strips whitespace. What does it return for [\"\", \"  ab\", \"cd  \"]?",
+    "choices": [
+      "[\"|ab\", \"cd|\"]",
+      "[\"ab\", \"cd\"]",
+      "[\"\", \"|ab\", \"cd|\"]",
+      "[\"|ab\", \"cd| \"]"
+    ]
+  },
+  {
+    "id": "Q002",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "A function processes each string in a list: it skips empty strings, replaces only the first double-space with \"|\" (count=1), then calls strip(). What does it return for the input [\"x  y  z\"]?",
+    "choices": [
+      "[\"x|y  z\"]",
+      "[\"x|y|z\"]",
+      "[\"x  y  z\"]",
+      "[\"x|y z\"]"
+    ]
+  },
+  {
+    "id": "Q003",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "A function replaces only the first double-space with \"|\" (count=1), then strips. Applied to each non-empty string in a list, what is returned for [\"a b\", \"a  b\"]?",
+    "choices": [
+      "[\"a b\", \"a|b\"]",
+      "[\"a|b\", \"a|b\"]",
+      "[\"a b\", \"a  b\"]",
+      "[\"a|b\", \"a b\"]"
+    ]
+  },
+  {
+    "id": "Q004",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "normalized_labels iterates a list, skips empty strings via continue, and appends value.replace(\"  \", \"|\", 1).strip(). What does normalized_labels([\"a  b  c\", \"\", \" d \"]) return?",
+    "choices": [
+      "[\"a|b  c\", \"d\"]",
+      "[\"a|b|c\", \"d\"]",
+      "[\"a|b  c\", \"\", \"d\"]",
+      "[\"a|b  c\", \" d \"]"
+    ]
+  },
+  {
+    "id": "Q005",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "normalized_labels skips values equal to \"\" with continue, then appends value.replace(\"  \", \"|\", 1).strip(). What does normalized_labels([\"\", \"  \", \"hi\"]) return?",
+    "choices": [
+      "[\"hi\"]",
+      "[\"|\", \"hi\"]",
+      "[\"\", \"|\", \"hi\"]",
+      "[\"  \", \"hi\"]"
+    ]
+  },
+  {
+    "id": "Q006",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "words(text, explicit=False) returns text.split(\" \") when explicit is True, otherwise text.split(). What does words(\"x  y z\", True) return?",
+    "choices": [
+      "[\"x\", \"y\", \"z\"]",
+      "[\"x\", \"\", \"y\", \"z\"]",
+      "[\"x  y\", \"z\"]",
+      "[\"x\", \" \", \"y\", \"z\"]"
+    ]
+  },
+  {
+    "id": "Q007",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "words(text, explicit=False) returns text.split(\" \") if explicit is True, else text.split(). How many elements are in the list returned by words(\"  ab  \", True)?",
+    "choices": [
+      "1",
+      "3",
+      "5",
+      "4"
+    ]
+  },
+  {
+    "id": "Q008",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "In Python, \"a  b  c\".split(\" \") splits on each individual space character. How many elements does the resulting list contain?",
+    "choices": [
+      "5",
+      "3",
+      "4",
+      "2"
+    ]
+  },
+  {
+    "id": "Q009",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "In Python, text.split(\" \") splits only on space characters, while text.split() splits on any whitespace. What does \"hello\\tworld\".split(\" \") return?",
+    "choices": [
+      "[\"hello\\tworld\"]",
+      "[\"hello\", \"world\"]",
+      "[\"hello\", \"\\tworld\"]",
+      "[\"hello\", \"\\t\", \"world\"]"
+    ]
+  },
+  {
+    "id": "Q010",
+    "goal": {
+      "title": "Learn Python control flow and string handling",
+      "category": "",
+      "focusAreas": "loops, conditionals, string replacement, splitting and whitespace",
+      "currentLevel": "",
+      "learningTarget": "Learn Python control flow and string handling",
+      "contentTopics": [
+        "loops",
+        "conditionals",
+        "string replacement",
+        "splitting and whitespace"
+      ],
+      "questionDirective": "",
+      "needsSkillMap": false,
+      "preferredQuestionStyle": "Multiple Choice"
+    },
+    "sourceDocuments": [
+      {
+        "name": "Python string examples.py",
+        "text": "# Python 3 examples. Indentation and spaces inside strings are significant.\ndef normalized_labels(values):\n    labels = []\n    for value in values:\n        if value == \"\":\n            continue\n        labels.append(value.replace(\"  \", \"|\", 1).strip())\n    return labels\n\ndef words(text, explicit=False):\n    if explicit:\n        return text.split(\" \")\n    return text.split()"
+      }
+    ],
+    "prompt": "normalized_labels loops over a list, skips empty strings, and appends value.replace(\"  \", \"|\", 1).strip(). What does normalized_labels([\"  a  \", \"b  \", \"  \"]) return?",
+    "choices": [
+      "[\"|a\", \"b|\", \"|\"]",
+      "[\"|a\", \"b|\"]",
+      "[\"a\", \"b\", \"\"]",
+      "[\"|a  \", \"b|\", \"|\"]"
+    ]
+  }
+]

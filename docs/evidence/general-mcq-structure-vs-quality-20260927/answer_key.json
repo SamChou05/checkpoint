@@ -1,0 +1,212 @@
+[
+  {
+    "id": "Q001",
+    "batch_index": 0,
+    "question_index": 3,
+    "case_id": "python_control_flow_strings",
+    "arm": "structured",
+    "question": {
+      "prompt": "A function iterates a list, uses continue to skip empty strings, replaces only the first double-space with \"|\", then strips whitespace. What does it return for [\"\", \"  ab\", \"cd  \"]?",
+      "expectedAnswer": "[\"|ab\", \"cd|\"]",
+      "explanation": "The empty string triggers continue and is skipped. \"  ab\".replace(\"  \", \"|\", 1) produces \"|ab\"; strip() leaves it unchanged because \"|\" is not whitespace. \"cd  \" becomes \"cd|\" the same way. The result is [\"|ab\", \"cd|\"].",
+      "topic": "loops",
+      "choices": [
+        "[\"|ab\", \"cd|\"]",
+        "[\"ab\", \"cd\"]",
+        "[\"\", \"|ab\", \"cd|\"]",
+        "[\"|ab\", \"cd| \"]"
+      ],
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  {
+    "id": "Q002",
+    "batch_index": 0,
+    "question_index": 0,
+    "case_id": "python_control_flow_strings",
+    "arm": "structured",
+    "question": {
+      "prompt": "A function processes each string in a list: it skips empty strings, replaces only the first double-space with \"|\" (count=1), then calls strip(). What does it return for the input [\"x  y  z\"]?",
+      "expectedAnswer": "[\"x|y  z\"]",
+      "explanation": ".replace(\"  \", \"|\", 1) replaces only the first occurrence of two consecutive spaces, giving \"x|y  z\". The second double-space is untouched. strip() has no effect here since there is no leading or trailing whitespace.",
+      "topic": "string replacement",
+      "choices": [
+        "[\"x|y  z\"]",
+        "[\"x|y|z\"]",
+        "[\"x  y  z\"]",
+        "[\"x|y z\"]"
+      ],
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  {
+    "id": "Q003",
+    "batch_index": 0,
+    "question_index": 4,
+    "case_id": "python_control_flow_strings",
+    "arm": "structured",
+    "question": {
+      "prompt": "A function replaces only the first double-space with \"|\" (count=1), then strips. Applied to each non-empty string in a list, what is returned for [\"a b\", \"a  b\"]?",
+      "expectedAnswer": "[\"a b\", \"a|b\"]",
+      "explanation": "\"a b\" contains only a single space, so .replace(\"  \", \"|\", 1) finds no double-space and returns it unchanged. \"a  b\" contains a double-space, which is replaced to give \"a|b\". strip() has no effect on either string. The result is [\"a b\", \"a|b\"].",
+      "topic": "conditionals",
+      "choices": [
+        "[\"a b\", \"a|b\"]",
+        "[\"a|b\", \"a|b\"]",
+        "[\"a b\", \"a  b\"]",
+        "[\"a|b\", \"a b\"]"
+      ],
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  {
+    "id": "Q004",
+    "batch_index": 1,
+    "question_index": 0,
+    "case_id": "python_control_flow_strings",
+    "arm": "ordinary",
+    "question": {
+      "prompt": "normalized_labels iterates a list, skips empty strings via continue, and appends value.replace(\"  \", \"|\", 1).strip(). What does normalized_labels([\"a  b  c\", \"\", \" d \"]) return?",
+      "explanation": "\"a  b  c\" contains two double-spaces but replace(..., 1) only substitutes the first, producing \"a|b  c\"; strip has no effect. \"\" triggers continue and is skipped. \" d \" has no double-space so replace is a no-op; strip yields \"d\". Result: [\"a|b  c\", \"d\"].",
+      "expectedAnswer": "[\"a|b  c\", \"d\"]",
+      "choices": [
+        "[\"a|b  c\", \"d\"]",
+        "[\"a|b|c\", \"d\"]",
+        "[\"a|b  c\", \"\", \"d\"]",
+        "[\"a|b  c\", \" d \"]"
+      ],
+      "topic": "string replacement",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  {
+    "id": "Q005",
+    "batch_index": 1,
+    "question_index": 2,
+    "case_id": "python_control_flow_strings",
+    "arm": "ordinary",
+    "question": {
+      "prompt": "normalized_labels skips values equal to \"\" with continue, then appends value.replace(\"  \", \"|\", 1).strip(). What does normalized_labels([\"\", \"  \", \"hi\"]) return?",
+      "explanation": "\"\" equals the empty string so it is skipped. \"  \" (two spaces) is not equal to \"\", so it is processed: replace converts the double-space to \"|\", and strip has nothing more to remove. \"hi\" passes through unchanged. Result: [\"|\", \"hi\"].",
+      "expectedAnswer": "[\"|\", \"hi\"]",
+      "choices": [
+        "[\"hi\"]",
+        "[\"|\", \"hi\"]",
+        "[\"\", \"|\", \"hi\"]",
+        "[\"  \", \"hi\"]"
+      ],
+      "topic": "conditionals",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  {
+    "id": "Q006",
+    "batch_index": 1,
+    "question_index": 1,
+    "case_id": "python_control_flow_strings",
+    "arm": "ordinary",
+    "question": {
+      "prompt": "words(text, explicit=False) returns text.split(\" \") when explicit is True, otherwise text.split(). What does words(\"x  y z\", True) return?",
+      "explanation": "split(\" \") splits on every single space. In \"x  y z\" the two consecutive spaces between x and y produce an empty string between them. The result is [\"x\", \"\", \"y\", \"z\"]. By contrast, split() without arguments would collapse all whitespace and return [\"x\", \"y\", \"z\"].",
+      "expectedAnswer": "[\"x\", \"\", \"y\", \"z\"]",
+      "choices": [
+        "[\"x\", \"y\", \"z\"]",
+        "[\"x\", \"\", \"y\", \"z\"]",
+        "[\"x  y\", \"z\"]",
+        "[\"x\", \" \", \"y\", \"z\"]"
+      ],
+      "topic": "splitting and whitespace",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  {
+    "id": "Q007",
+    "batch_index": 1,
+    "question_index": 4,
+    "case_id": "python_control_flow_strings",
+    "arm": "ordinary",
+    "question": {
+      "prompt": "words(text, explicit=False) returns text.split(\" \") if explicit is True, else text.split(). How many elements are in the list returned by words(\"  ab  \", True)?",
+      "explanation": "\"  ab  \".split(\" \") splits on each individual space character. The two leading spaces produce two empty strings before \"ab\", and the two trailing spaces produce two empty strings after it: [\"\", \"\", \"ab\", \"\", \"\"] — five elements. Using split() without arguments would yield [\"ab\"], just one element.",
+      "expectedAnswer": "5",
+      "choices": [
+        "1",
+        "3",
+        "5",
+        "4"
+      ],
+      "topic": "splitting and whitespace",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  {
+    "id": "Q008",
+    "batch_index": 0,
+    "question_index": 1,
+    "case_id": "python_control_flow_strings",
+    "arm": "structured",
+    "question": {
+      "prompt": "In Python, \"a  b  c\".split(\" \") splits on each individual space character. How many elements does the resulting list contain?",
+      "expectedAnswer": "5",
+      "explanation": "Splitting \"a  b  c\" on a single space yields [\"a\", \"\", \"b\", \"\", \"c\"]. Each double-space produces an empty string between the two delimiters, giving 5 elements. Using .split() without arguments would collapse consecutive whitespace and return 3 elements.",
+      "topic": "splitting and whitespace",
+      "choices": [
+        "5",
+        "3",
+        "4",
+        "2"
+      ],
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  {
+    "id": "Q009",
+    "batch_index": 0,
+    "question_index": 2,
+    "case_id": "python_control_flow_strings",
+    "arm": "structured",
+    "question": {
+      "prompt": "In Python, text.split(\" \") splits only on space characters, while text.split() splits on any whitespace. What does \"hello\\tworld\".split(\" \") return?",
+      "expectedAnswer": "[\"hello\\tworld\"]",
+      "explanation": ".split(\" \") searches only for the literal space character. Since \"hello\\tworld\" contains a tab (\\t) rather than a space, no split point is found and the result is a single-element list. .split() without arguments would split on the tab and return two elements.",
+      "topic": "splitting and whitespace",
+      "choices": [
+        "[\"hello\\tworld\"]",
+        "[\"hello\", \"world\"]",
+        "[\"hello\", \"\\tworld\"]",
+        "[\"hello\", \"\\t\", \"world\"]"
+      ],
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  },
+  {
+    "id": "Q010",
+    "batch_index": 1,
+    "question_index": 3,
+    "case_id": "python_control_flow_strings",
+    "arm": "ordinary",
+    "question": {
+      "prompt": "normalized_labels loops over a list, skips empty strings, and appends value.replace(\"  \", \"|\", 1).strip(). What does normalized_labels([\"  a  \", \"b  \", \"  \"]) return?",
+      "explanation": "\"  a  \": first double-space is the leading pair, replaced to give \"|a  \"; strip removes trailing spaces → \"|a\". \"b  \": double-space after b is replaced → \"b|\"; strip has no effect. \"  \" (two spaces, not empty): replaced → \"|\"; strip has no effect. Result: [\"|a\", \"b|\", \"|\"].",
+      "expectedAnswer": "[\"|a\", \"b|\", \"|\"]",
+      "choices": [
+        "[\"|a\", \"b|\", \"|\"]",
+        "[\"|a\", \"b|\"]",
+        "[\"a\", \"b\", \"\"]",
+        "[\"|a  \", \"b|\", \"|\"]"
+      ],
+      "topic": "loops",
+      "difficulty": 3,
+      "format": "Multiple Choice"
+    }
+  }
+]
