@@ -6,12 +6,14 @@ import unittest
 
 from agreement_task_constructor import (
     AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, CORRELATIVE_SCENES, GERUND_SCENES,
-    INVERSION_SCENES, LEARNER_FIELDS, NUMBER_SCENES, RELATIVE_SCENES, SUPPORTED_OBJECTIVE,
+    INVERSION_SCENES, LEARNER_FIELDS, NUMBER_SCENES, PARTITIVE_SCENES, RELATIVE_SCENES,
+    SUPPORTED_OBJECTIVE,
     SUPPORTED_TOPIC,
     TASK_KIND, canonical_variant_identities, compile_mapped_english_slots,
     compile_question, task_schema,
 )
 from native_output_contracts import AuthorSlotContract
+from native_output_contracts import adapt_native_response, native_output_config
 
 
 # Manually reviewed present-tense forms and clause-order keys. This table is
@@ -39,7 +41,62 @@ def contract():
 
 class AgreementTaskConstructorTests(unittest.TestCase):
     def test_all_slot_variants_have_distinct_canonical_stems(self):
-        self.assertEqual(len(canonical_variant_identities()), 56)
+        self.assertEqual(len(canonical_variant_identities()), 64)
+
+    def test_partitive_mass_and_count_agreement_has_one_independent_key(self):
+        # These keys follow the mass/count nouns in the written clauses; this
+        # expected table is independent of the constructor's stored flags.
+        expected = {
+            "partitive_paint": ("covers", "rest", "paint", "brushes"),
+            "partitive_rice": ("remains", "sit", "rice", "plates"),
+            "partitive_water": ("flows", "stand", "water", "bottles"),
+            "partitive_mail": ("arrives", "include", "mail", "letters"),
+        }
+        self.assertEqual(set(expected), set(PARTITIVE_SCENES))
+        for scene, (singular, plural, mass_noun, count_noun) in expected.items():
+            for order in ("singular_first", "plural_first"):
+                with self.subTest(scene=scene, order=order):
+                    result = compile_question(task(scene, order), ordinal=3)
+                    key = (f"{singular}; {plural}" if order == "singular_first"
+                           else f"{plural}; {singular}")
+                    self.assertEqual(result["expectedAnswer"], key)
+                    self.assertEqual(result["choices"].count(key), 1)
+                    self.assertEqual(len(set(result["choices"])), 4)
+                    self.assertEqual(set(result["choices"]), set(result["choiceExplanations"]))
+                    self.assertIn(f"of the {mass_noun}", result["prompt"])
+                    self.assertIn(f"of the {count_noun}", result["prompt"])
+                    self.assertIn("uncountable material", result["explanation"])
+                    self.assertIn("multiple countable items", result["explanation"])
+                    for choice in result["choices"]:
+                        wrong = sum(chosen != correct for chosen, correct in zip(
+                            choice.split("; "), key.split("; "), strict=True))
+                        self.assertEqual(result["choiceExplanations"][choice].count(
+                            "does not agree"), wrong)
+                    self.assertLessEqual(len(result["prompt"]), 320)
+                    self.assertLessEqual(len(result["explanation"]), 420)
+                    self.assertTrue(all(len(value) <= 280 for value in
+                                        result["choiceExplanations"].values()))
+
+    def test_partitive_scene_is_admitted_only_in_slot_three_and_compiles_after_adapter(self):
+        mapped = replace(contract(), mapped_agreement_tasks=True,
+                         mapped_quantitative_families=True)
+        schema = json.loads(native_output_config(mapped)[
+            "textFormat"]["structure"]["jsonSchema"]["schema"])
+        slots = schema["properties"]["questions"]["properties"]
+        self.assertIn("partitive_mail", slots["3"]["properties"]["scene"]["enum"])
+        self.assertNotIn("partitive_mail", slots["4"]["properties"]["scene"]["enum"])
+        source = {"questions": {
+            "0": {"family": "fraction_evaluation", "a": 4, "b": 5},
+            "1": {"family": "bounded_equation", "a": 6, "b": 8},
+            "2": {"family": "bounded_ratio_threshold", "a": 3, "b": 7},
+            "3": task("partitive_mail"), "4": task("compound_clerks"),
+        }}
+        adapted = json.loads(adapt_native_response(json.dumps(source), mapped))
+        english = {str(slot): adapted["questions"][slot]["task"] for slot in (3, 4)}
+        candidates = compile_mapped_english_slots(english, mapped)
+        self.assertEqual(candidates[3].content()["expectedAnswer"], "arrives; include")
+        self.assertEqual(candidates[3].content()["prompt"],
+                         compile_question(task("partitive_mail"), ordinal=3)["prompt"])
 
     def test_gerund_subject_keys_and_nonmirror_frames(self):
         # Manually checked against the written clauses, independent of the
@@ -213,24 +270,24 @@ class AgreementTaskConstructorTests(unittest.TestCase):
                     self.assertEqual(result["expectedAnswer"], "; ".join(expected))
                     self.assertEqual(len(set(result["choices"])), 4)
                     self.assertEqual(set(result["choiceExplanations"]), set(result["choices"]))
-                    self.assertIn('subject "Maya and Theo" is plural ("and" joins two)',
+                    self.assertIn('"Maya and Theo" is a plural joined subject',
                                   result["explanation"])
-                    self.assertIn('subject "Every guest" is singular', result["explanation"])
-                    self.assertIn('"near the cook" does not change it', result["explanation"])
-                    self.assertIn('"near the servers" does not change it', result["explanation"])
+                    self.assertIn('"Each of the guests" has singular "Each"',
+                                  result["explanation"])
+                    self.assertNotIn(" near ", result["prompt"])
                     self.assertLessEqual(len(result["explanation"]), 420)
                     self.assertTrue(all(len(text) <= 280 for text in
                                         result["choiceExplanations"].values()))
                     self.assertIn("Maya and Theo", result["prompt"])
 
-    def test_captured_compound_task_keeps_exact_key_with_opposing_attractors(self):
+    def test_captured_compound_task_keeps_exact_key_without_proximity_attractors(self):
         result = compile_question(task(COMPOUND_SCENE, "plural_first"), ordinal=4)
         self.assertEqual(result["expectedAnswer"], "receives; prepare")
         self.assertEqual(set(result["choices"]), {
             "receive; prepare", "receive; prepares", "receives; prepare", "receives; prepares",
         })
-        self.assertIn("Every guest near the servers ___ a plate", result["prompt"])
-        self.assertIn("Maya and Theo near the cook ___ lunch", result["prompt"])
+        self.assertIn("Each of the guests ___ a plate", result["prompt"])
+        self.assertIn("Maya and Theo each ___ lunch", result["prompt"])
 
     def test_expanded_compound_scenes_have_exact_keys_and_bounded_teaching(self):
         expected = {
@@ -277,33 +334,33 @@ class AgreementTaskConstructorTests(unittest.TestCase):
 
     def test_exhaustive_compound_choices_and_feedback_survive_choice_shuffle(self):
         facts = {
-            COMPOUND_SCENE: ("Maya and Theo", "the cook", "prepare", "prepares",
-                             "Every guest", "the servers", "receive", "receives"),
-            "compound_guides": ("Nora and Eli", "the guide", "fold", "folds",
-                                "Every guide", "the hikers", "wear", "wears"),
-            "compound_visitors": ("Leah and Omar", "the visitor", "close", "closes",
-                                  "Every visitor", "the guides", "hold", "holds"),
-            "compound_clerks": ("Ava and Ben", "the clerk", "review", "reviews",
-                                "Every clerk", "the visitors", "keep", "keeps"),
+            COMPOUND_SCENE: ("Maya and Theo", "prepare", "prepares",
+                             "Each of the guests", "receive", "receives"),
+            "compound_guides": ("Nora and Eli", "fold", "folds",
+                                "Each of the guides", "wear", "wears"),
+            "compound_visitors": ("Leah and Omar", "close", "closes",
+                                  "Each of the visitors", "hold", "holds"),
+            "compound_clerks": ("Ava and Ben", "review", "reviews",
+                                "Each of the clerks", "keep", "keeps"),
         }
         self.assertEqual(set(facts), set(COMPOUND_SCENES))
-        for scene, (compound, singular_attractor, base, third, distributive,
-                    plural_attractor, other_base, other_third) in facts.items():
+        for scene, (compound, base, third, distributive,
+                    other_base, other_third) in facts.items():
             self.assertIn(" and ", compound)
-            self.assertTrue(distributive.startswith("Every "))
+            self.assertTrue(distributive.startswith("Each of "))
             self.assertNotEqual(base, third)
             self.assertNotEqual(other_base, other_third)
             for order in ("singular_first", "plural_first"):
-                ordered = ((compound, singular_attractor, base, third, False),
-                           (distributive, plural_attractor, other_base, other_third, True))
+                ordered = ((compound, base, third, False),
+                           (distributive, other_base, other_third, True))
                 if order == "plural_first":
                     ordered = ordered[::-1]
                 expected_key = "; ".join(third if correct_third else bare
-                                         for _, _, bare, third, correct_third in ordered)
+                                         for _, bare, third, correct_third in ordered)
                 expected_choices = {
                     f"{first}; {second}"
-                    for first in (ordered[0][2], ordered[0][3])
-                    for second in (ordered[1][2], ordered[1][3])
+                    for first in (ordered[0][1], ordered[0][2])
+                    for second in (ordered[1][1], ordered[1][2])
                 }
                 for ordinal in (3, 4):
                     with self.subTest(scene=scene, order=order, ordinal=ordinal):
@@ -312,14 +369,14 @@ class AgreementTaskConstructorTests(unittest.TestCase):
                         self.assertEqual(set(result["choices"]), expected_choices)
                         self.assertEqual(len(result["choices"]), 4)
                         self.assertEqual(sum(choice == expected_key for choice in result["choices"]), 1)
-                        for subject, attractor, *_ in ordered:
+                        for subject, *_ in ordered:
                             self.assertIn(subject.casefold(), result["prompt"].casefold())
-                            self.assertIn("near " + attractor, result["prompt"])
+                        self.assertNotIn(" near ", result["prompt"])
                         for choice in reversed(result["choices"]):
                             selected = choice.split("; ")
                             wrong_count = sum(
                                 chosen != (third if correct_third else bare)
-                                for chosen, (_, _, bare, third, correct_third) in zip(
+                                for chosen, (_, bare, third, correct_third) in zip(
                                     selected, ordered, strict=True,
                                 )
                             )
@@ -402,24 +459,25 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         )[4]
         self.assertTrue(exhausted.novelty_exhausted)
 
-    def test_slot_three_balances_three_mechanisms_across_eighty_item_bank(self):
+    def test_slot_three_balances_four_mechanisms_across_eighty_item_bank(self):
         source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
         history = []
-        families = {"proximity": 0, "inversion": 0, "relative": 0}
+        families = {"proximity": 0, "inversion": 0, "relative": 0, "partitive": 0}
         for _ in range(16):
             candidate = compile_mapped_english_slots(
                 source, contract(), existing_prompts=tuple(history),
             )[3]
             self.assertFalse(candidate.novelty_exhausted)
             scene = json.loads(candidate.task_json)["scene"]
-            family = ("relative" if scene in RELATIVE_SCENES else
+            family = ("partitive" if scene in PARTITIVE_SCENES else
+                      "relative" if scene in RELATIVE_SCENES else
                       "inversion" if scene in INVERSION_SCENES else "proximity")
             families[family] += 1
             prompt = candidate.content()["prompt"]
             self.assertNotIn(prompt, history)
             history.append(prompt)
         self.assertEqual(len(set(history)), 16)
-        self.assertEqual(sorted(families.values()), [5, 5, 6])
+        self.assertEqual(sorted(families.values()), [4, 4, 4, 4])
         self.assertFalse(compile_mapped_english_slots(
             source, contract(), existing_prompts=tuple(history),
         )[3].novelty_exhausted)

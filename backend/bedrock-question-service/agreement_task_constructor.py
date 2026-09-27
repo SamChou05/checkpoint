@@ -16,7 +16,7 @@ from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 SUPPORTED_TOPIC = "Standard written English"
 SUPPORTED_OBJECTIVE = "Apply subject-verb agreement or unambiguous pronoun reference"
 TASK_KIND = "agreement_pair_v1"
-COMPOUND_SCENE = "compound_every"
+COMPOUND_SCENE = "compound_every"  # Preserve the wire scene ID across prompt revisions.
 LEARNER_FIELDS = ("prompt", "choices", "expectedAnswer", "explanation", "choiceExplanations")
 
 
@@ -37,10 +37,8 @@ class _Scene:
 @dataclass(frozen=True)
 class _CompoundScene:
     compound_subject: str
-    singular_attractor: str
     compound_object: str
-    distributive_subject: str
-    plural_attractor: str
+    distributive_group: str
     distributive_object: str
     compound_base: str
     compound_third: str
@@ -103,6 +101,18 @@ class _GerundFrame:
 
 
 @dataclass(frozen=True)
+class _PartitiveScene:
+    mass_subject: str
+    mass_object: str
+    mass_base: str
+    mass_third: str
+    count_subject: str
+    count_object: str
+    count_base: str
+    count_third: str
+
+
+@dataclass(frozen=True)
 class _Clause:
     text: str
     base: str
@@ -132,19 +142,19 @@ SCENES = {
 }
 COMPOUND_SCENES = {
     COMPOUND_SCENE: _CompoundScene(
-        "Maya and Theo", "the cook", "lunch", "Every guest", "the servers", "a plate",
+        "Maya and Theo", "lunch", "the guests", "a plate",
         "prepare", "prepares", "receive", "receives",
     ),
     "compound_guides": _CompoundScene(
-        "Nora and Eli", "the guide", "the maps", "Every guide", "the hikers", "a badge",
+        "Nora and Eli", "the maps", "the guides", "a badge",
         "fold", "folds", "wear", "wears",
     ),
     "compound_visitors": _CompoundScene(
-        "Leah and Omar", "the visitor", "the doors", "Every visitor", "the guides", "a ticket",
+        "Leah and Omar", "the doors", "the visitors", "a ticket",
         "close", "closes", "hold", "holds",
     ),
     "compound_clerks": _CompoundScene(
-        "Ava and Ben", "the clerk", "the forms", "Every clerk", "the visitors", "a copy",
+        "Ava and Ben", "the forms", "the clerks", "a copy",
         "review", "reviews", "keep", "keeps",
     ),
 }
@@ -216,6 +226,26 @@ GERUND_SCENES = {
                      "take", "takes", "record", "records"),
     ),
 }
+PARTITIVE_SCENES = {
+    # The same quantifier can refer to a mass or to plural countable items.
+    # Agreement follows the measured noun, not the surface quantifier.
+    "partitive_paint": _PartitiveScene(
+        "Half of the paint", "the wall", "cover", "covers",
+        "Half of the brushes", "on the rack", "rest", "rests",
+    ),
+    "partitive_rice": _PartitiveScene(
+        "Most of the rice", "in the pot", "remain", "remains",
+        "Most of the plates", "on the shelf", "sit", "sits",
+    ),
+    "partitive_water": _PartitiveScene(
+        "Some of the water", "through the pipe", "flow", "flows",
+        "Some of the bottles", "on the table", "stand", "stands",
+    ),
+    "partitive_mail": _PartitiveScene(
+        "Most of the mail", "by noon", "arrive", "arrives",
+        "Most of the letters", "return addresses", "include", "includes",
+    ),
+}
 
 
 class AgreementTaskError(ValueError):
@@ -231,7 +261,7 @@ def task_schema() -> dict:
             "scene": {"type": "string", "enum": sorted((*SCENES, *COMPOUND_SCENES,
                                                        *INVERSION_SCENES, *NUMBER_SCENES,
                                                        *RELATIVE_SCENES, *CORRELATIVE_SCENES,
-                                                       *GERUND_SCENES))},
+                                                       *GERUND_SCENES, *PARTITIVE_SCENES))},
             "order": {"type": "string", "enum": ["singular_first", "plural_first"]},
         },
         "required": ["kind", "scene", "order"],
@@ -244,6 +274,7 @@ def _checked_task(task: object) -> tuple[str, str]:
             or type(task["scene"]) is not str or task["scene"] not in {
                 *SCENES, *COMPOUND_SCENES, *INVERSION_SCENES, *NUMBER_SCENES,
                 *RELATIVE_SCENES, *CORRELATIVE_SCENES, *GERUND_SCENES,
+                *PARTITIVE_SCENES,
             }
             or type(task["order"]) is not str
             or task["order"] not in {"singular_first", "plural_first"}):
@@ -317,17 +348,30 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
     if scene_id in RELATIVE_SCENES:
         return _compile_relative_question(RELATIVE_SCENES[scene_id], order, ordinal)
-    if scene_id in COMPOUND_SCENES:
-        scene = COMPOUND_SCENES[scene_id]
+    if scene_id in PARTITIVE_SCENES:
+        scene = PARTITIVE_SCENES[scene_id]
         first = _Clause(
-            _clause(scene.compound_subject, scene.singular_attractor, scene.compound_object),
-            scene.compound_base, scene.compound_third, False,
-            scene.compound_subject, scene.singular_attractor, rule="compound",
+            f"{scene.mass_subject} ___ {scene.mass_object}",
+            scene.mass_base, scene.mass_third, True, scene.mass_subject,
+            rule="partitive_mass",
         )
         second = _Clause(
-            _clause(scene.distributive_subject, scene.plural_attractor, scene.distributive_object),
+            f"{scene.count_subject} ___ {scene.count_object}",
+            scene.count_base, scene.count_third, False, scene.count_subject,
+            rule="partitive_count",
+        )
+    elif scene_id in COMPOUND_SCENES:
+        scene = COMPOUND_SCENES[scene_id]
+        first = _Clause(
+            f"{scene.compound_subject} each ___ {scene.compound_object}",
+            scene.compound_base, scene.compound_third, False,
+            scene.compound_subject, rule="compound",
+        )
+        second = _Clause(
+            f"Each of {scene.distributive_group} ___ {scene.distributive_object}",
             scene.distributive_base, scene.distributive_third, True,
-            scene.distributive_subject, scene.plural_attractor, rule="every",
+            f"Each of {scene.distributive_group}", scene.distributive_group,
+            rule="each_of",
         )
     elif scene_id in INVERSION_SCENES:
         scene = INVERSION_SCENES[scene_id]
@@ -392,7 +436,8 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
     clauses = (first, second) if order == "singular_first" else (second, first)
     following = clauses[1].text
     if (clauses[1].rule == "gerund"
-            or following.startswith(("The ", "Every ", "Near ", "A ", "Either ", "Neither "))):
+            or following.startswith(("The ", "Every ", "Each ", "Near ", "A ", "Either ", "Neither ",
+                                     "Half ", "Most ", "Some "))):
         following = following[0].lower() + following[1:]
     connector = "and" if scene_id in GERUND_SCENES else "while"
     prompt = ("Fill both blanks with the present-tense verb forms that agree with "
@@ -426,11 +471,11 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
             support = (f'The {position} head subject "{clause.subject}" is {number}; '
                        f'"near {clause.attractor}" does not change that.')
         elif clause.rule == "compound":
-            support = (f'{position.capitalize()}, the subject "{clause.subject}" is plural '
-                       f'("and" joins two); "near {clause.attractor}" does not change it.')
-        elif clause.rule == "every":
-            support = (f'{position.capitalize()}, the subject "{clause.subject}" is singular; '
-                       f'"near {clause.attractor}" does not change it.')
+            support = (f'{position.capitalize()}, "{clause.subject}" is a plural joined subject; '
+                       'the following "each" does not replace it.')
+        elif clause.rule == "each_of":
+            support = (f'{position.capitalize()}, "{clause.subject}" has singular "Each"; '
+                       f'"{clause.attractor}" follows "of".')
         elif clause.rule == "inversion":
             support = (f'{position.capitalize()}, the {number} subject "{clause.subject}" '
                        f'follows the blank; "near {clause.attractor}" is not the subject.')
@@ -445,6 +490,12 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
                        'singular subject, even though it contains a plural object.')
         elif clause.rule == "plural_noun":
             support = (f'{position.capitalize()}, the subject "{clause.subject}" is plural.')
+        elif clause.rule == "partitive_mass":
+            support = (f'{position.capitalize()}, "{clause.subject}" refers to an amount of '
+                       'uncountable material, so it takes a singular verb.')
+        elif clause.rule == "partitive_count":
+            support = (f'{position.capitalize()}, "{clause.subject}" refers to multiple '
+                       'countable items, so it takes a plural verb.')
         else:
             support = (f'{position.capitalize()}, "{clause.subject}" has the singular head '
                        f'"number"; "near {clause.attractor}" does not change it.')
@@ -512,7 +563,8 @@ def canonical_variant_identities() -> frozenset[str]:
         _normalized_stem_identity(compile_question(
             {"kind": TASK_KIND, "scene": scene, "order": order}, ordinal=slot,
         )["prompt"])
-        for slot, scenes in ((3, (*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)),
+        for slot, scenes in ((3, (*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES,
+                                   *PARTITIVE_SCENES)),
                              (4, (*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES,
                                   *GERUND_SCENES)))
         for scene in scenes
@@ -543,7 +595,8 @@ def _select_novel_task(
     scene, _ = _checked_task(task)
     if ordinal not in (3, 4):
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
-    allowed = ({**SCENES, **INVERSION_SCENES, **RELATIVE_SCENES} if ordinal == 3
+    allowed = ({**SCENES, **INVERSION_SCENES, **RELATIVE_SCENES,
+                **PARTITIVE_SCENES} if ordinal == 3
                else {**COMPOUND_SCENES, **NUMBER_SCENES, **CORRELATIVE_SCENES, **GERUND_SCENES})
     if scene not in allowed:
         raise AgreementTaskError("Agreement task is outside its mapped slot.")
@@ -568,7 +621,8 @@ def _select_novel_task(
     if not fresh:
         return task, True
     family_by_scene = {
-        candidate_scene: ("relative" if candidate_scene in RELATIVE_SCENES else
+        candidate_scene: ("partitive" if candidate_scene in PARTITIVE_SCENES else
+                          "relative" if candidate_scene in RELATIVE_SCENES else
                           "inversion" if candidate_scene in INVERSION_SCENES else
                           "correlative" if candidate_scene in CORRELATIVE_SCENES else
                           "gerund" if candidate_scene in GERUND_SCENES else
@@ -607,7 +661,8 @@ def compile_mapped_english_slots(
     if type(tasks_by_slot) is not dict or set(tasks_by_slot) != {"3", "4"}:
         raise AgreementTaskError("Both original English slots must be present.")
     scenes = [_checked_task(tasks_by_slot[str(slot)])[0] for slot in (3, 4)]
-    if scenes[0] not in {*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES} or scenes[1] not in {
+    if scenes[0] not in {*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES,
+                         *PARTITIVE_SCENES} or scenes[1] not in {
         *COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES, *GERUND_SCENES,
     }:
         raise AgreementTaskError("Original English slots require their closed agreement families.")

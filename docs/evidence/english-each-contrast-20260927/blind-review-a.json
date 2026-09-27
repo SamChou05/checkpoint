@@ -1,0 +1,2888 @@
+{
+  "review_type": "independent_answer_blind_worksheet_review",
+  "worksheet_path": "/private/tmp/checkpoint-english-each-contrast/docs/evidence/english-each-contrast-20260927/worksheet.json",
+  "worksheet_sha256": "636811004c5b9d3e99a275a432222f2af51fcd6748a453805b27088264146b18",
+  "source_scope": "Only the stated worksheet JSON was opened; no answer map, source, earlier worksheet, review, or agent message was consulted.",
+  "frozen_before_answer_map": true,
+  "target_difficulty": "2–3",
+  "summary": {
+    "item_count": 20,
+    "unique_supported_key_count": 20,
+    "ambiguous_item_count": 0,
+    "within_item_pairs_reviewed": 120,
+    "within_item_equivalent_pairs": 0,
+    "cross_item_pairs_reviewed": 190,
+    "strong_reasoning_duplication_pairs": 2,
+    "moderate_reasoning_duplication_pairs": 19,
+    "difficulty_outside_target_count": 0,
+    "clarity_concerns": [
+      "Q17 phrasing is somewhat artificial/repetitive but its agreement is clear"
+    ],
+    "key_sequence_ordered_Q01_to_Q20": "CDABDACDCBCACCDABBDB"
+  },
+  "items": [
+    {
+      "id": "Q01",
+      "selected_key": "C",
+      "unique_supported_key": true,
+      "rationale": "The subject cooks is plural despite near the chef, so prepare; chef is singular despite near the cooks, so plans.",
+      "choice_assessment": {
+        "A": "incorrect verb agreement in blank 2",
+        "B": "incorrect verb agreement in blank 1",
+        "C": "correct",
+        "D": "incorrect verb agreement in blank 1 and 2"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear; near phrases deliberately test identification of the subject head.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q02",
+      "selected_key": "D",
+      "unique_supported_key": true,
+      "rationale": "5/6 times 7/9 is 35/54; 1 minus 35/54 is 19/54.",
+      "choice_assessment": {
+        "A": "numerically unequal to the required result",
+        "B": "numerically unequal to the required result",
+        "C": "numerically unequal to the required result",
+        "D": "correct"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (-17/27 versus 34/53)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (-17/27 versus 1)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (-17/27 versus 19/54)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (34/53 versus 1)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (34/53 versus 19/54)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (1 versus 19/54)"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear and exact; unitless q and explicit parentheses remove order-of-operations ambiguity.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q03",
+      "selected_key": "A",
+      "unique_supported_key": true,
+      "rationale": "x=4 gives 4(9)=36. For positive x the product grows, so all larger domain values fail; 4 is the maximum.",
+      "choice_assessment": {
+        "A": "correct",
+        "B": "numerically unequal to the required result",
+        "C": "numerically unequal to the required result",
+        "D": "numerically unequal to the required result"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 5)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 6)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 3)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (5 versus 6)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (5 versus 3)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (6 versus 3)"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear integer domain and inclusive inequality.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q04",
+      "selected_key": "B",
+      "unique_supported_key": true,
+      "rationale": "Who refers to plural clerks and takes sort. The head of One of the clerks is singular One and takes holds.",
+      "choice_assessment": {
+        "A": "incorrect verb agreement in blank 1",
+        "B": "correct",
+        "C": "incorrect verb agreement in blank 2",
+        "D": "incorrect verb agreement in blank 1 and 2"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear. The relative pronoun and One of construction test separate agreement decisions.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q05",
+      "selected_key": "D",
+      "unique_supported_key": true,
+      "rationale": "x²−17x+60=(x−5)(x−12). Both roots lie in the domain; the minimum is 5.",
+      "choice_assessment": {
+        "A": "numerically unequal to the required result",
+        "B": "numerically unequal to the required result",
+        "C": "numerically unequal to the required result",
+        "D": "correct"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 6)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 12)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 5)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (6 versus 12)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (6 versus 5)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (12 versus 5)"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear; the minimum instruction distinguishes the two roots.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q06",
+      "selected_key": "A",
+      "unique_supported_key": true,
+      "rationale": "At x=4, (4+6)(4+1)=10·5=50. The product increases throughout the stated nonnegative domain, making 4 unique.",
+      "choice_assessment": {
+        "A": "correct",
+        "B": "numerically unequal to the required result",
+        "C": "numerically unequal to the required result",
+        "D": "numerically unequal to the required result"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 2)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 3)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 5)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (2 versus 3)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (2 versus 5)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (3 versus 5)"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear; the offered-value wording and domain are explicit.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q07",
+      "selected_key": "C",
+      "unique_supported_key": true,
+      "rationale": "Most of the letters is plural because letters is count plural, so include. Most of the mail has a mass-noun complement and takes arrives.",
+      "choice_assessment": {
+        "A": "incorrect verb agreement in blank 2",
+        "B": "incorrect verb agreement in blank 1 and 2",
+        "C": "correct",
+        "D": "incorrect verb agreement in blank 1"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear under standard American agreement. Mail is a mass noun; most of the letters is plural.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q08",
+      "selected_key": "D",
+      "unique_supported_key": true,
+      "rationale": "Each of the clerks has singular head Each, so keeps. Ava and Ben is a plural compound subject; appositive each does not make the verb singular, so review.",
+      "choice_assessment": {
+        "A": "incorrect verb agreement in blank 1",
+        "B": "incorrect verb agreement in blank 2",
+        "C": "incorrect verb agreement in blank 1 and 2",
+        "D": "correct"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear in standard written American English. Each of is singular; each after the plural compound subject is distributive and leaves plural agreement.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q09",
+      "selected_key": "C",
+      "unique_supported_key": true,
+      "rationale": "The gerund phrase Preparing the meals is a singular subject and takes requires; plural cooks takes measure.",
+      "choice_assessment": {
+        "A": "incorrect verb agreement in blank 1",
+        "B": "incorrect verb agreement in blank 1 and 2",
+        "C": "correct",
+        "D": "incorrect verb agreement in blank 2"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear; Preparing the meals is a gerund phrase, and cooks is a straightforward plural subject.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q10",
+      "selected_key": "B",
+      "unique_supported_key": true,
+      "rationale": "The number of copies is a singular quantity phrase and takes is. A number of readers is plural in meaning and takes are; nearby nouns do not govern either verb.",
+      "choice_assessment": {
+        "A": "incorrect verb agreement in blank 2",
+        "B": "correct",
+        "C": "incorrect verb agreement in blank 1",
+        "D": "incorrect verb agreement in blank 1 and 2"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear; the number of and a number of have established contrasting agreement.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q11",
+      "selected_key": "C",
+      "unique_supported_key": true,
+      "rationale": "6(x+2)+x≤54 gives 7x+12≤54, hence x≤6. Six is the maximum in the domain.",
+      "choice_assessment": {
+        "A": "numerically unequal to the required result",
+        "B": "numerically unequal to the required result",
+        "C": "correct",
+        "D": "numerically unequal to the required result"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (8 versus 7)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (8 versus 6)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (8 versus 5)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (7 versus 6)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (7 versus 5)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (6 versus 5)"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear integer domain and maximum instruction.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q12",
+      "selected_key": "A",
+      "unique_supported_key": true,
+      "rationale": "6/7+2/4=12/14+7/14=19/14; multiplying by 3 gives 57/14.",
+      "choice_assessment": {
+        "A": "correct",
+        "B": "numerically unequal to the required result",
+        "C": "numerically unequal to the required result",
+        "D": "numerically unequal to the required result"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (57/14 versus 3/14)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (57/14 versus 57)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (57/14 versus 19/42)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (3/14 versus 57)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (3/14 versus 19/42)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (57 versus 19/42)"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear grouping and exact-value instruction.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q13",
+      "selected_key": "C",
+      "unique_supported_key": true,
+      "rationale": "5(x+2)+8=4x+21 reduces to 5x+18=4x+21 and x=3.",
+      "choice_assessment": {
+        "A": "numerically unequal to the required result",
+        "B": "numerically unequal to the required result",
+        "C": "correct",
+        "D": "numerically unequal to the required result"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 1)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 3)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 2)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (1 versus 3)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (1 versus 2)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (3 versus 2)"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear equality and offered-value instruction.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q14",
+      "selected_key": "C",
+      "unique_supported_key": true,
+      "rationale": "With neither...nor, the nearer assistants is plural, so sort. With either...or, the nearer curator is singular, so checks.",
+      "choice_assessment": {
+        "A": "incorrect verb agreement in blank 1 and 2",
+        "B": "incorrect verb agreement in blank 1",
+        "C": "correct",
+        "D": "incorrect verb agreement in blank 2"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear under the usual standard written American English proximity convention for either/or and neither/nor. Slightly formal but unambiguous here.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q15",
+      "selected_key": "D",
+      "unique_supported_key": true,
+      "rationale": "Since x+1 is positive in the domain, cross multiplication gives 10(x+4)=13(x+1), hence x=9.",
+      "choice_assessment": {
+        "A": "numerically unequal to the required result",
+        "B": "numerically unequal to the required result",
+        "C": "numerically unequal to the required result",
+        "D": "correct"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (7 versus 10)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (7 versus 8)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (7 versus 9)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (10 versus 8)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (10 versus 9)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (8 versus 9)"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear; the denominator cannot vanish within the stated domain.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q16",
+      "selected_key": "A",
+      "unique_supported_key": true,
+      "rationale": "3(x+2)−2x≤14 reduces to x+6≤14, hence x≤8. The domain values 4,5,6,7,8 make five solutions.",
+      "choice_assessment": {
+        "A": "correct",
+        "B": "numerically unequal to the required result",
+        "C": "numerically unequal to the required result",
+        "D": "numerically unequal to the required result"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (5 versus 6)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (5 versus 4)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (5 versus 3)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (6 versus 4)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (6 versus 3)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 3)"
+        }
+      ],
+      "difficulty_level_estimate": 2,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear; asks for the count of satisfying integers, not the largest one.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q17",
+      "selected_key": "B",
+      "unique_supported_key": true,
+      "rationale": "The inverted subject of the first clause is plural returns, so are; the inverted subject of the second is singular book, so is.",
+      "choice_assessment": {
+        "A": "incorrect verb agreement in blank 1",
+        "B": "correct",
+        "C": "incorrect verb agreement in blank 1 and 2",
+        "D": "incorrect verb agreement in blank 2"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1 and 2"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 2"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct verb form in blank 1"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Grammatically clear, though both clauses use slightly artificial locative inversion and repeat from the library.",
+      "clarity_flag": "minor_stylistic"
+    },
+    {
+      "id": "Q18",
+      "selected_key": "B",
+      "unique_supported_key": true,
+      "rationale": "(7/8)/(3/5)=(7/8)(5/3)=35/24; adding one gives 59/24.",
+      "choice_assessment": {
+        "A": "numerically unequal to the required result",
+        "B": "correct",
+        "C": "numerically unequal to the required result",
+        "D": "numerically unequal to the required result"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (36/25 versus 59/24)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (36/25 versus 3/2)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (36/25 versus 35/24)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (59/24 versus 3/2)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (59/24 versus 35/24)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (3/2 versus 35/24)"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear parentheses distinguish division from addition.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q19",
+      "selected_key": "D",
+      "unique_supported_key": true,
+      "rationale": "8/9+4/6=8/9+2/3=14/9; its reciprocal is 9/14.",
+      "choice_assessment": {
+        "A": "numerically unequal to the required result",
+        "B": "numerically unequal to the required result",
+        "C": "numerically unequal to the required result",
+        "D": "correct"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (1 versus 23/9)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (1 versus 14/9)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (1 versus 9/14)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (23/9 versus 14/9)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (23/9 versus 9/14)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (14/9 versus 9/14)"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear parentheses identify the entire sum as denominator.",
+      "clarity_flag": "clear"
+    },
+    {
+      "id": "Q20",
+      "selected_key": "B",
+      "unique_supported_key": true,
+      "rationale": "x+4 is positive in the domain. 7x≥3(x+4) gives x≥3; the minimum domain solution is 3.",
+      "choice_assessment": {
+        "A": "numerically unequal to the required result",
+        "B": "correct",
+        "C": "numerically unequal to the required result",
+        "D": "numerically unequal to the required result"
+      },
+      "all_six_within_item_pairs": [
+        {
+          "pair": "A-B",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 3)"
+        },
+        {
+          "pair": "A-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 1)"
+        },
+        {
+          "pair": "A-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (4 versus 2)"
+        },
+        {
+          "pair": "B-C",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (3 versus 1)"
+        },
+        {
+          "pair": "B-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (3 versus 2)"
+        },
+        {
+          "pair": "C-D",
+          "judgment": "distinct; cannot both be correct",
+          "basis": "distinct exact numeric values (1 versus 2)"
+        }
+      ],
+      "difficulty_level_estimate": 3,
+      "difficulty_target_2_to_3_met": true,
+      "clarity": "Clear; denominator is positive throughout the domain, so inequality direction is fixed.",
+      "clarity_flag": "clear"
+    }
+  ],
+  "all_190_cross_item_pairs": [
+    {
+      "pair": [
+        "Q01",
+        "Q02"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "multiply two fractions, then subtract product from one"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q03"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q04"
+      ],
+      "strength": "moderate",
+      "reason": "Both ask for one plural and one singular verb despite neighboring nouns of another number; Q04 adds relative-pronoun and One of structures.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "plural relative-clause antecedent versus singular One of subject"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q05"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "factor quadratic equality; select smaller of two in-domain roots"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q06"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "solve or test binomial-product equality in bounded nonnegative domain"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q07"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "most of plural count noun versus most of mass noun"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q08"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "singular Each of versus plural compound subject with distributive each"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q09"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "singular gerund-phrase subject versus ordinary plural noun"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q10"
+      ],
+      "strength": "moderate",
+      "reason": "Both place near phrases beside the subject and require resisting attraction in two clauses; Q10 also tests the/a number idiom.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "the number of singular versus a number of plural, with distracting near phrases"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q11"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q17"
+      ],
+      "strength": "moderate",
+      "reason": "Both use near plus opposite-number nouns to distract from the true subject; Q17 uses locative inversion.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "two ordinary subject heads with opposite number; misleading near-prepositional nouns",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q03"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q04"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "plural relative-clause antecedent versus singular One of subject"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q05"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "factor quadratic equality; select smaller of two in-domain roots"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q06"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "solve or test binomial-product equality in bounded nonnegative domain"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q07"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "most of plural count noun versus most of mass noun"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q08"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "singular Each of versus plural compound subject with distributive each"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q09"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "singular gerund-phrase subject versus ordinary plural noun"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q10"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "the number of singular versus a number of plural, with distracting near phrases"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q11"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q18"
+      ],
+      "strength": "moderate",
+      "reason": "Both perform a binary fraction operation and then combine that result with one; multiplication/subtraction versus division/addition differs.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "multiply two fractions, then subtract product from one",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q04"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "plural relative-clause antecedent versus singular One of subject"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q05"
+      ],
+      "strength": "moderate",
+      "reason": "Both use a quadratic relation over a bounded integer domain and select an extremal valid value; inequality versus two-root equality differs.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "factor quadratic equality; select smaller of two in-domain roots"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q06"
+      ],
+      "strength": "moderate",
+      "reason": "Both require evaluating a quadratic expression over a bounded positive/nonnegative integer domain; one is a threshold, the other equality.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "solve or test binomial-product equality in bounded nonnegative domain"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q07"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "most of plural count noun versus most of mass noun"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q08"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "singular Each of versus plural compound subject with distributive each"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q09"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "singular gerund-phrase subject versus ordinary plural noun"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q10"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "the number of singular versus a number of plural, with distracting near phrases"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q11"
+      ],
+      "strength": "moderate",
+      "reason": "Both ask for the greatest domain integer under an inclusive upper threshold; quadratic versus linear algebra differs.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q16"
+      ],
+      "strength": "moderate",
+      "reason": "Both resolve an upper threshold in a bounded integer domain; one finds the maximum and the other counts solutions.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "bounded positive-integer quadratic inequality; find maximum feasible x",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q05"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "factor quadratic equality; select smaller of two in-domain roots"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q06"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "solve or test binomial-product equality in bounded nonnegative domain"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q07"
+      ],
+      "strength": "moderate",
+      "reason": "Both require agreement decisions in of phrases with a plural noun; most of changes agreement by complement whereas One of is singular.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "most of plural count noun versus most of mass noun"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q08"
+      ],
+      "strength": "moderate",
+      "reason": "One of the clerks holds and Each of the clerks keeps share singular quantifier-plus-of-plural agreement; the other blanks test different rules.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "singular Each of versus plural compound subject with distributive each"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q09"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "singular gerund-phrase subject versus ordinary plural noun"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q10"
+      ],
+      "strength": "moderate",
+      "reason": "One of and the number of put plural nouns in of phrases after a singular agreement controller; Q10 adds contrasting a number of.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "the number of singular versus a number of plural, with distracting near phrases"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q11"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "plural relative-clause antecedent versus singular One of subject",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q06"
+      ],
+      "strength": "strong",
+      "reason": "Both are quadratic equalities constrained to an integer domain; solve/factor and discard other roots or choose the requested valid root.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "solve or test binomial-product equality in bounded nonnegative domain"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q07"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "most of plural count noun versus most of mass noun"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q08"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "singular Each of versus plural compound subject with distributive each"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q09"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "singular gerund-phrase subject versus ordinary plural noun"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q10"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "the number of singular versus a number of plural, with distracting near phrases"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q11"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "factor quadratic equality; select smaller of two in-domain roots",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q07"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "most of plural count noun versus most of mass noun"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q08"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "singular Each of versus plural compound subject with distributive each"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q09"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "singular gerund-phrase subject versus ordinary plural noun"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q10"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "the number of singular versus a number of plural, with distracting near phrases"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q11"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve or test binomial-product equality in bounded nonnegative domain",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q08"
+      ],
+      "strength": "moderate",
+      "reason": "Both test agreement of an of-quantifier phrase against another subject form; the specific rule for most differs from each.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "singular Each of versus plural compound subject with distributive each"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q09"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "singular gerund-phrase subject versus ordinary plural noun"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q10"
+      ],
+      "strength": "moderate",
+      "reason": "Both contrast singular and plural agreement in quantified of phrases over two clauses; most of and number of use different semantic/lexical rules.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "the number of singular versus a number of plural, with distracting near phrases"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q11"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "most of plural count noun versus most of mass noun",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q09"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "singular gerund-phrase subject versus ordinary plural noun"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q10"
+      ],
+      "strength": "moderate",
+      "reason": "Each of and the number of both take singular agreement despite a following plural noun, paired with a plural clause; the second contrast differs.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "the number of singular versus a number of plural, with distracting near phrases"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q11"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular Each of versus plural compound subject with distributive each",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q10"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "the number of singular versus a number of plural, with distracting near phrases"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q11"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "singular gerund-phrase subject versus ordinary plural noun",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q11"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "simplify linear upper-bound inequality; find maximum integer"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "the number of singular versus a number of plural, with distracting near phrases",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q12"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "simplify linear upper-bound inequality; find maximum integer",
+      "second_reasoning": "add two fractions, then multiply their sum by integer"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "simplify linear upper-bound inequality; find maximum integer",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "simplify linear upper-bound inequality; find maximum integer",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "simplify linear upper-bound inequality; find maximum integer",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q16"
+      ],
+      "strength": "strong",
+      "reason": "Both simplify an inclusive linear inequality to an upper integer bound within an explicit finite domain; only the final query changes from maximum to count.",
+      "first_reasoning": "simplify linear upper-bound inequality; find maximum integer",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "simplify linear upper-bound inequality; find maximum integer",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "simplify linear upper-bound inequality; find maximum integer",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "simplify linear upper-bound inequality; find maximum integer",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q20"
+      ],
+      "strength": "moderate",
+      "reason": "Both solve an inequality over a bounded integer domain to identify an endpoint; Q20 needs positive-denominator reasoning and uses minimum.",
+      "first_reasoning": "simplify linear upper-bound inequality; find maximum integer",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q12",
+        "Q13"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "add two fractions, then multiply their sum by integer",
+      "second_reasoning": "solve single linear equality for offered integer"
+    },
+    {
+      "pair": [
+        "Q12",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "add two fractions, then multiply their sum by integer",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q12",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "add two fractions, then multiply their sum by integer",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q12",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "add two fractions, then multiply their sum by integer",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q12",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "add two fractions, then multiply their sum by integer",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q12",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "add two fractions, then multiply their sum by integer",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q12",
+        "Q19"
+      ],
+      "strength": "moderate",
+      "reason": "Both first add two fractions and then transform the sum; multiplication by three versus reciprocal distinguishes the final step.",
+      "first_reasoning": "add two fractions, then multiply their sum by integer",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q12",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "add two fractions, then multiply their sum by integer",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q13",
+        "Q14"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "solve single linear equality for offered integer",
+      "second_reasoning": "nearest-conjunct agreement with neither/nor and either/or"
+    },
+    {
+      "pair": [
+        "Q13",
+        "Q15"
+      ],
+      "strength": "moderate",
+      "reason": "Both identify the integer solving an equality after reduction to a linear equation; Q15 first requires valid cross multiplication.",
+      "first_reasoning": "solve single linear equality for offered integer",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q13",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve single linear equality for offered integer",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q13",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "solve single linear equality for offered integer",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q13",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve single linear equality for offered integer",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q13",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve single linear equality for offered integer",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q13",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "solve single linear equality for offered integer",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q14",
+        "Q15"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "nearest-conjunct agreement with neither/nor and either/or",
+      "second_reasoning": "cross-multiply rational equality, then solve linear equation"
+    },
+    {
+      "pair": [
+        "Q14",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "nearest-conjunct agreement with neither/nor and either/or",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q14",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Different governing agreement construction; shared selection of verb forms is too generic for reasoning-level duplication.",
+      "first_reasoning": "nearest-conjunct agreement with neither/nor and either/or",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q14",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "nearest-conjunct agreement with neither/nor and either/or",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q14",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "nearest-conjunct agreement with neither/nor and either/or",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q14",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "nearest-conjunct agreement with neither/nor and either/or",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q15",
+        "Q16"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "cross-multiply rational equality, then solve linear equation",
+      "second_reasoning": "simplify linear upper-bound inequality; count feasible integers"
+    },
+    {
+      "pair": [
+        "Q15",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "cross-multiply rational equality, then solve linear equation",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q15",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "cross-multiply rational equality, then solve linear equation",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q15",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "cross-multiply rational equality, then solve linear equation",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q15",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "cross-multiply rational equality, then solve linear equation",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q16",
+        "Q17"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "simplify linear upper-bound inequality; count feasible integers",
+      "second_reasoning": "identify postverbal subject after locative near inversion, plural then singular"
+    },
+    {
+      "pair": [
+        "Q16",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "simplify linear upper-bound inequality; count feasible integers",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q16",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "simplify linear upper-bound inequality; count feasible integers",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q16",
+        "Q20"
+      ],
+      "strength": "moderate",
+      "reason": "Both solve an inequality over a bounded integer domain; Q16 counts a linear upper-bound set while Q20 takes a rational lower-bound minimum.",
+      "first_reasoning": "simplify linear upper-bound inequality; count feasible integers",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q17",
+        "Q18"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "identify postverbal subject after locative near inversion, plural then singular",
+      "second_reasoning": "divide two fractions, then add one"
+    },
+    {
+      "pair": [
+        "Q17",
+        "Q19"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "identify postverbal subject after locative near inversion, plural then singular",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q17",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Agreement judgment versus numerical computation; no shared reasoning operation.",
+      "first_reasoning": "identify postverbal subject after locative near inversion, plural then singular",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q18",
+        "Q19"
+      ],
+      "strength": "moderate",
+      "reason": "Both involve complex fractions and reciprocals, but Q18 divides fractions before adding one and Q19 inverts a fraction sum.",
+      "first_reasoning": "divide two fractions, then add one",
+      "second_reasoning": "add two fractions, then take reciprocal of sum"
+    },
+    {
+      "pair": [
+        "Q18",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "divide two fractions, then add one",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    },
+    {
+      "pair": [
+        "Q19",
+        "Q20"
+      ],
+      "strength": "none",
+      "reason": "Different operation, relation, or target; common use of numbers/domains is too generic for reasoning-level duplication.",
+      "first_reasoning": "add two fractions, then take reciprocal of sum",
+      "second_reasoning": "positive-denominator rational inequality; find minimum feasible integer"
+    }
+  ],
+  "deduplication_recommendation": "Revise one item from each strong-overlap pair Q05/Q06 and Q11/Q16; consider the moderate clusters if broader reasoning coverage is desired."
+}

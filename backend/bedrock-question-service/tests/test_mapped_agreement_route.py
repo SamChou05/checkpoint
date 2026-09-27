@@ -18,7 +18,8 @@ import question_bank
 import question_generation as generation
 from agreement_task_constructor import (
     AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, GERUND_SCENES, INVERSION_SCENES,
-    NUMBER_SCENES, CORRELATIVE_SCENES, RELATIVE_SCENES, SCENES, LEARNER_FIELDS,
+    NUMBER_SCENES, CORRELATIVE_SCENES, PARTITIVE_SCENES, RELATIVE_SCENES, SCENES,
+    LEARNER_FIELDS,
     SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
     blocked_fingerprint_variant_identities, checked_agreement_provenance,
     compile_mapped_english_slots, compile_question, prepare_mapped_agreement_rows,
@@ -114,13 +115,14 @@ class MappedAgreementRouteTests(unittest.TestCase):
         self.assertLess(len(schema_json.encode()), 3200)
         self.assertEqual(set(schema["$defs"]), {"node", "task", "slot3", "slot4"})
         self.assertEqual(schema["$defs"]["slot3"]["properties"]["scene"]["enum"],
-                         sorted((*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES)))
+                         sorted((*SCENES, *INVERSION_SCENES, *RELATIVE_SCENES,
+                                 *PARTITIVE_SCENES)))
         self.assertEqual(schema["$defs"]["slot4"]["properties"]["scene"]["enum"],
                          sorted((*COMPOUND_SCENES, *NUMBER_SCENES, *CORRELATIVE_SCENES,
                                  *GERUND_SCENES)))
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(new)["version"], "5")
+        self.assertEqual(native.contract_metadata(new)["version"], "6")
         old = self.contract(False)
         self.assertEqual(native.contract_metadata(old)["version"], "1")
         old_schema = native.native_output_config(old)["textFormat"]["structure"]["jsonSchema"]["schema"]
@@ -235,18 +237,18 @@ class MappedAgreementRouteTests(unittest.TestCase):
         self.assertEqual([row["skillID"] for row in result], [MATH] * 3 + [ENGLISH] * 2)
         self.assertEqual(client.steps, [])
 
-    def test_bank_history_keeps_twenty_four_unique_pairs_beyond_recent_thirty(self):
+    def test_bank_history_keeps_thirty_two_unique_pairs_beyond_recent_thirty(self):
         source = {"3": agreement("coach"), "4": agreement(COMPOUND_SCENE)}
         bank_id = "a" * 64
         existing_items = []
         chosen = {3: [], 4: []}
-        for batch in range(24):
+        for batch in range(32):
             recent = question_bank._recent_question_items(existing_items, 30)
             recent_prompts = tuple(
                 question_bank._question_from_item(item)["prompt"] for item in recent
             )
             full_identities = tuple(question_bank._agreement_variant_history(existing_items))
-            self.assertLessEqual(len(full_identities), 56)
+            self.assertLessEqual(len(full_identities), 64)
             if batch == 7:
                 self.assertEqual(len(existing_items), 35)
                 self.assertEqual(len(recent), 30)
@@ -280,17 +282,17 @@ class MappedAgreementRouteTests(unittest.TestCase):
                 "questionJSON": {"S": json.dumps(question)},
             } for slot, question in enumerate(prepared))
 
-        self.assertEqual(len(set(chosen[3])), 24)
-        self.assertEqual(len(set(chosen[4])), 24)
+        self.assertEqual(len(set(chosen[3])), 32)
+        self.assertEqual(len(set(chosen[4])), 32)
         exhausted = compile_mapped_english_slots(
             source, self.contract(),
             blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),
         )
         self.assertTrue(exhausted[3].novelty_exhausted)
-        self.assertFalse(exhausted[4].novelty_exhausted)
+        self.assertTrue(exhausted[4].novelty_exhausted)
         self.assertEqual(len(question_bank._prepare_questions(
             bank_id, [exhausted[4].content()], existing_items,
-        )), 1)
+        )), 0)
 
     def test_fingerprint_only_block_and_private_history_preserve_scope_and_prompt(self):
         source = {"3": agreement("coach"), "4": agreement(COMPOUND_SCENE)}

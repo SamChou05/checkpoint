@@ -1,0 +1,3131 @@
+{
+  "review_kind": "independent_answer_blind_second_review",
+  "source_file": "/private/tmp/checkpoint-english-each-contrast/docs/evidence/english-each-contrast-20260927/worksheet.json",
+  "source_sha256": "636811004c5b9d3e99a275a432222f2af51fcd6748a453805b27088264146b18",
+  "source_scope": "worksheet.json only; no source, answer map, previous reviews, results, or agent messages consulted",
+  "target_difficulty": "2–3",
+  "summary": {
+    "items_reviewed": 20,
+    "single_defensible_keys": 20,
+    "ambiguous_items": [],
+    "within_item_option_pairs_reviewed": 120,
+    "cross_item_pairs_reviewed": 190,
+    "target_difficulty_items": 20,
+    "highest_semantic_overlap_pairs": [
+      [
+        "Q05",
+        "Q06"
+      ],
+      [
+        "Q11",
+        "Q16"
+      ]
+    ],
+    "review_flags": [
+      {
+        "id": "Q08",
+        "severity": "none",
+        "finding": "Each of the clerks keeps; Ava and Ben each review. The second each is distributive after the plural compound subject, so D alone is defensible."
+      },
+      {
+        "id": "Q02",
+        "severity": "minor_quality",
+        "finding": "Choice B (34/53) lacks an apparent common arithmetic-error path; it is distinct and does not create ambiguity."
+      },
+      {
+        "id": "Q05/Q06",
+        "severity": "overlap_watch",
+        "finding": "Both are integer-domain quadratic equations that factor into roots; Q05 adds a two-root minimum decision."
+      },
+      {
+        "id": "Q11/Q16",
+        "severity": "overlap_watch",
+        "finding": "Both simplify a linear ≤ inequality over an integer domain; Q11 selects a maximum and Q16 counts valid integers."
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "Q01",
+      "selected_key": "C",
+      "selected_text": "prepare; plans",
+      "ambiguity": "none",
+      "key_reasoning": "cooks is plural despite near the chef; chef is singular despite near the cooks.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "prepare; plan",
+          "role": "second verb wrongly plural"
+        },
+        "B": {
+          "text": "prepares; plans",
+          "role": "first verb wrongly singular"
+        },
+        "C": {
+          "text": "prepare; plans",
+          "role": "both subjects control their verbs"
+        },
+        "D": {
+          "text": "prepares; plan",
+          "role": "both verbs use the nearest noun instead of the subject"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        }
+      ],
+      "semantic_mechanism": "grammar_head_near"
+    },
+    {
+      "id": "Q02",
+      "selected_key": "D",
+      "selected_text": "19/54",
+      "ambiguity": "none",
+      "key_reasoning": "5/6 times 7/9 = 35/54; 1 minus that is 19/54.",
+      "difficulty_estimate_1_to_5": 2,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "-17/27",
+          "role": "negative fraction cannot result from subtracting 35/54 from 1"
+        },
+        "B": {
+          "text": "34/53",
+          "role": "unmotivated denominator 53; weak distractor"
+        },
+        "C": {
+          "text": "1",
+          "role": "omits the subtracted product"
+        },
+        "D": {
+          "text": "19/54",
+          "role": "exact result"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1819/1431."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 44/27."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 53/54."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 19/53."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 829/2862."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 35/54."
+        }
+      ],
+      "semantic_mechanism": "fraction_product_subtract"
+    },
+    {
+      "id": "Q03",
+      "selected_key": "A",
+      "selected_text": "4",
+      "ambiguity": "none",
+      "key_reasoning": "At x=4, x(x+5)=36; x=5 already gives 50, so maximum is 4.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "4",
+          "role": "boundary value"
+        },
+        "B": {
+          "text": "5",
+          "role": "one above the boundary"
+        },
+        "C": {
+          "text": "6",
+          "role": "two above the boundary"
+        },
+        "D": {
+          "text": "3",
+          "role": "one below the boundary"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 3."
+        }
+      ],
+      "semantic_mechanism": "quadratic_inequality_boundary"
+    },
+    {
+      "id": "Q04",
+      "selected_key": "B",
+      "selected_text": "sort; holds",
+      "ambiguity": "none",
+      "key_reasoning": "who refers to plural clerks, so sort; One is singular, so holds.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "sorts; holds",
+          "role": "relative-clause verb wrongly singular"
+        },
+        "B": {
+          "text": "sort; holds",
+          "role": "both clauses agree"
+        },
+        "C": {
+          "text": "sort; hold",
+          "role": "main-clause verb wrongly plural"
+        },
+        "D": {
+          "text": "sorts; hold",
+          "role": "both verbs disagree"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        }
+      ],
+      "semantic_mechanism": "grammar_relative_one"
+    },
+    {
+      "id": "Q05",
+      "selected_key": "D",
+      "selected_text": "5",
+      "ambiguity": "none",
+      "key_reasoning": "x²−17x+60=(x−5)(x−12), yielding 5 and 12; minimum is 5.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "4",
+          "role": "one below smaller root"
+        },
+        "B": {
+          "text": "6",
+          "role": "one above smaller root"
+        },
+        "C": {
+          "text": "12",
+          "role": "other valid root, but not minimum"
+        },
+        "D": {
+          "text": "5",
+          "role": "smaller valid root"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 8."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 6."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 7."
+        }
+      ],
+      "semantic_mechanism": "quadratic_roots_min"
+    },
+    {
+      "id": "Q06",
+      "selected_key": "A",
+      "selected_text": "4",
+      "ambiguity": "none",
+      "key_reasoning": "(x+6)(x+1)=50 gives x²+7x−44=0=(x−4)(x+11); only 4 is in the domain and offered.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "4",
+          "role": "unique offered solution"
+        },
+        "B": {
+          "text": "2",
+          "role": "below solution"
+        },
+        "C": {
+          "text": "3",
+          "role": "one below solution"
+        },
+        "D": {
+          "text": "5",
+          "role": "one above solution"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 3."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        }
+      ],
+      "semantic_mechanism": "quadratic_product_solution"
+    },
+    {
+      "id": "Q07",
+      "selected_key": "C",
+      "selected_text": "include; arrives",
+      "ambiguity": "none",
+      "key_reasoning": "Most of the letters refers to plural letters, hence include; most of the mail refers to mass singular mail, hence arrives.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "include; arrive",
+          "role": "mail verb wrongly plural"
+        },
+        "B": {
+          "text": "includes; arrive",
+          "role": "letters verb wrongly singular and mail verb wrongly plural"
+        },
+        "C": {
+          "text": "include; arrives",
+          "role": "both partitives agree"
+        },
+        "D": {
+          "text": "includes; arrives",
+          "role": "letters verb wrongly singular"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        }
+      ],
+      "semantic_mechanism": "grammar_partitive"
+    },
+    {
+      "id": "Q08",
+      "selected_key": "D",
+      "selected_text": "keeps; review",
+      "ambiguity": "none",
+      "key_reasoning": "Each of the clerks has singular head Each and takes keeps. In Ava and Ben each review, the compound plural subject controls review; each distributes the action.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "keep; review",
+          "role": "both clauses wrongly use plural forms"
+        },
+        "B": {
+          "text": "keeps; reviews",
+          "role": "second verb wrongly singular"
+        },
+        "C": {
+          "text": "keep; reviews",
+          "role": "first verb wrongly plural"
+        },
+        "D": {
+          "text": "keeps; review",
+          "role": "both clauses agree"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        }
+      ],
+      "semantic_mechanism": "grammar_each"
+    },
+    {
+      "id": "Q09",
+      "selected_key": "C",
+      "selected_text": "requires; measure",
+      "ambiguity": "none",
+      "key_reasoning": "The gerund phrase Preparing the meals is a singular subject, hence requires; cooks is plural, hence measure.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "require; measure",
+          "role": "gerund-phrase verb wrongly plural"
+        },
+        "B": {
+          "text": "require; measures",
+          "role": "both verbs disagree"
+        },
+        "C": {
+          "text": "requires; measure",
+          "role": "both verbs agree"
+        },
+        "D": {
+          "text": "requires; measures",
+          "role": "cooks verb wrongly singular"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        }
+      ],
+      "semantic_mechanism": "grammar_gerund"
+    },
+    {
+      "id": "Q10",
+      "selected_key": "B",
+      "selected_text": "is; are",
+      "ambiguity": "none",
+      "key_reasoning": "The number of copies is singular and takes is; a number of readers has plural agreement and takes are.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "is; is",
+          "role": "a number of readers wrongly singular"
+        },
+        "B": {
+          "text": "is; are",
+          "role": "both number expressions agree"
+        },
+        "C": {
+          "text": "are; are",
+          "role": "the number of copies wrongly plural"
+        },
+        "D": {
+          "text": "are; is",
+          "role": "both expressions disagree"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        }
+      ],
+      "semantic_mechanism": "grammar_number"
+    },
+    {
+      "id": "Q11",
+      "selected_key": "C",
+      "selected_text": "6",
+      "ambiguity": "none",
+      "key_reasoning": "6(x+2)+x≤54 simplifies to 7x≤42, hence x≤6; maximum is 6.",
+      "difficulty_estimate_1_to_5": 2,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "8",
+          "role": "two above maximum"
+        },
+        "B": {
+          "text": "7",
+          "role": "one above maximum"
+        },
+        "C": {
+          "text": "6",
+          "role": "boundary maximum"
+        },
+        "D": {
+          "text": "5",
+          "role": "one below maximum"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 3."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        }
+      ],
+      "semantic_mechanism": "linear_inequality_boundary"
+    },
+    {
+      "id": "Q12",
+      "selected_key": "A",
+      "selected_text": "57/14",
+      "ambiguity": "none",
+      "key_reasoning": "(6/7+1/2)×3=(12/14+7/14)×3=57/14.",
+      "difficulty_estimate_1_to_5": 2,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "57/14",
+          "role": "exact result"
+        },
+        "B": {
+          "text": "3/14",
+          "role": "numerator/denominator manipulation error"
+        },
+        "C": {
+          "text": "57",
+          "role": "drops denominator 14"
+        },
+        "D": {
+          "text": "19/42",
+          "role": "divides the fraction sum by 3 instead of multiplying"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 27/7."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 741/14."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 76/21."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 795/14."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 5/21."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2375/42."
+        }
+      ],
+      "semantic_mechanism": "fraction_sum_scale"
+    },
+    {
+      "id": "Q13",
+      "selected_key": "C",
+      "selected_text": "3",
+      "ambiguity": "none",
+      "key_reasoning": "5(x+2)+8=4x+21 simplifies to x=3.",
+      "difficulty_estimate_1_to_5": 2,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "4",
+          "role": "one above solution"
+        },
+        "B": {
+          "text": "1",
+          "role": "two below solution"
+        },
+        "C": {
+          "text": "3",
+          "role": "unique solution"
+        },
+        "D": {
+          "text": "2",
+          "role": "one below solution"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 3."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        }
+      ],
+      "semantic_mechanism": "linear_equation_solution"
+    },
+    {
+      "id": "Q14",
+      "selected_key": "C",
+      "selected_text": "sort; checks",
+      "ambiguity": "none",
+      "key_reasoning": "With neither/nor and either/or, the nearer subject governs: assistants sort, curator checks.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "sorts; check",
+          "role": "second verb wrongly plural"
+        },
+        "B": {
+          "text": "sorts; checks",
+          "role": "first verb wrongly singular"
+        },
+        "C": {
+          "text": "sort; checks",
+          "role": "both nearest-subject agreements correct"
+        },
+        "D": {
+          "text": "sort; check",
+          "role": "both verbs disagree"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        }
+      ],
+      "semantic_mechanism": "grammar_correlative"
+    },
+    {
+      "id": "Q15",
+      "selected_key": "D",
+      "selected_text": "9",
+      "ambiguity": "none",
+      "key_reasoning": "10(x+4)=13(x+1), so 3x=27 and x=9; x+1 is nonzero throughout domain.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "7",
+          "role": "two below solution"
+        },
+        "B": {
+          "text": "10",
+          "role": "one above solution"
+        },
+        "C": {
+          "text": "8",
+          "role": "one below solution"
+        },
+        "D": {
+          "text": "9",
+          "role": "unique solution"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 3."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        }
+      ],
+      "semantic_mechanism": "rational_equation_solution"
+    },
+    {
+      "id": "Q16",
+      "selected_key": "A",
+      "selected_text": "5",
+      "ambiguity": "none",
+      "key_reasoning": "3(x+2)−2x≤14 becomes x≤8; integers 4,5,6,7,8 give a count of 5.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "5",
+          "role": "correct inclusive count"
+        },
+        "B": {
+          "text": "6",
+          "role": "overcounts by one"
+        },
+        "C": {
+          "text": "4",
+          "role": "undercounts by one"
+        },
+        "D": {
+          "text": "3",
+          "role": "undercounts by two"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 3."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        }
+      ],
+      "semantic_mechanism": "linear_inequality_count"
+    },
+    {
+      "id": "Q17",
+      "selected_key": "B",
+      "selected_text": "are; is",
+      "ambiguity": "none",
+      "key_reasoning": "After initial near-phrases, the postverbal subjects are returns (plural) and book (singular), giving are; is.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "is; is",
+          "role": "returns wrongly singular"
+        },
+        "B": {
+          "text": "are; is",
+          "role": "both postverbal subjects agree"
+        },
+        "C": {
+          "text": "is; are",
+          "role": "book wrongly plural"
+        },
+        "D": {
+          "text": "are; are",
+          "role": "both subjects disagree"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1, 2."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 2."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct ordered pairs; differing blank(s): 1."
+        }
+      ],
+      "semantic_mechanism": "grammar_inversion"
+    },
+    {
+      "id": "Q18",
+      "selected_key": "B",
+      "selected_text": "59/24",
+      "ambiguity": "none",
+      "key_reasoning": "(7/8)/(3/5)+1=35/24+1=59/24.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "36/25",
+          "role": "incorrect quotient"
+        },
+        "B": {
+          "text": "59/24",
+          "role": "exact result"
+        },
+        "C": {
+          "text": "3/2",
+          "role": "incorrect approximation"
+        },
+        "D": {
+          "text": "35/24",
+          "role": "omits the added 1"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 611/600."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 3/50."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 11/600."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 23/24."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1/24."
+        }
+      ],
+      "semantic_mechanism": "fraction_quotient_add"
+    },
+    {
+      "id": "Q19",
+      "selected_key": "D",
+      "selected_text": "9/14",
+      "ambiguity": "none",
+      "key_reasoning": "8/9+4/6=14/9, whose reciprocal is 9/14.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "1",
+          "role": "omits the denominator sum"
+        },
+        "B": {
+          "text": "23/9",
+          "role": "sum or reciprocal error"
+        },
+        "C": {
+          "text": "14/9",
+          "role": "inner sum, omits outer reciprocal"
+        },
+        "D": {
+          "text": "9/14",
+          "role": "exact reciprocal"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 14/9."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 5/9."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 5/14."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 241/126."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 115/126."
+        }
+      ],
+      "semantic_mechanism": "fraction_sum_reciprocal"
+    },
+    {
+      "id": "Q20",
+      "selected_key": "B",
+      "selected_text": "3",
+      "ambiguity": "none",
+      "key_reasoning": "x+4 is positive on the domain; 7x≥3(x+4) gives x≥3, so minimum is 3.",
+      "difficulty_estimate_1_to_5": 3,
+      "target_2_to_3": "within",
+      "option_judgments": {
+        "A": {
+          "text": "4",
+          "role": "one above minimum"
+        },
+        "B": {
+          "text": "3",
+          "role": "boundary minimum"
+        },
+        "C": {
+          "text": "1",
+          "role": "two below minimum"
+        },
+        "D": {
+          "text": "2",
+          "role": "one below minimum"
+        }
+      },
+      "six_within_item_option_pair_reviews": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 3."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 2."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "judgment": "distinct; one or both excluded by reasoning",
+          "reason": "Distinct numeric values; no equivalent fraction. Absolute separation: 1."
+        }
+      ],
+      "semantic_mechanism": "rational_inequality_boundary"
+    }
+  ],
+  "all_190_cross_item_pair_reviews": [
+    {
+      "items": [
+        "Q01",
+        "Q02"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q03"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q04"
+      ],
+      "overlap": "moderate",
+      "reason": "Both select plural then singular agreement despite intervening nouns; relative who and singular One make Q04 a distinct construction."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q05"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q06"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q07"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q08"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q09"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q10"
+      ],
+      "overlap": "moderate",
+      "reason": "Both use misleading near-phrases and mixed singular/plural agreement; Q10 additionally tests the number versus a number."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q11"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q13"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q14"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q15"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q16"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q17"
+      ],
+      "overlap": "low",
+      "reason": "Both resist nearby nouns, but Q17 requires identifying subjects after locative inversion."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q03"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q04"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q05"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q06"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q07"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q08"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q09"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q10"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q11"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q12"
+      ],
+      "overlap": "moderate",
+      "reason": "Both evaluate nested fraction arithmetic; product then subtraction differs from addition then scaling."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q13"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q14"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q15"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q16"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q17"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q18"
+      ],
+      "overlap": "moderate",
+      "reason": "Both combine a fraction product/quotient with an integer offset; operation order and division differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q19"
+      ],
+      "overlap": "low",
+      "reason": "Both require exact fraction arithmetic but multiplication/subtraction differs from sum/reciprocal."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q04"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q05"
+      ],
+      "overlap": "moderate",
+      "reason": "Both involve a quadratic polynomial and boundary/root work; inequality maximum differs from equality smaller-root selection."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q06"
+      ],
+      "overlap": "moderate",
+      "reason": "Both use a product containing x and another x-term; inequality boundary differs from equation solution."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q07"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q08"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q09"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q10"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q11"
+      ],
+      "overlap": "moderate",
+      "reason": "Both find maximum x in a finite integer domain under ≤; Q03 has a quadratic boundary and Q11 a linear one."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q13"
+      ],
+      "overlap": "low",
+      "reason": "Both reason about x in an integer domain, but equality/root selection and inequality/boundary counting are different tasks."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q14"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q15"
+      ],
+      "overlap": "low",
+      "reason": "Both solve for x, but a quadratic inequality and rational equality require different reasoning."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q16"
+      ],
+      "overlap": "moderate",
+      "reason": "Both intersect a ≤ inequality with an integer domain; Q03 is quadratic and asks maximum, Q16 linear and asks count."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q17"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q20"
+      ],
+      "overlap": "moderate",
+      "reason": "Both find a domain boundary under an inequality; quadratic ≤ maximum differs from rational ≥ minimum."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q05"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q06"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q07"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q08"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q09"
+      ],
+      "overlap": "low",
+      "reason": "Both pair singular with plural agreement; gerund subject differs from a relative clause and One."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q10"
+      ],
+      "overlap": "low",
+      "reason": "Both include mixed agreement and embedded plurals; relative who/One differs from number idioms."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q11"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q13"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q14"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q15"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q16"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q17"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q06"
+      ],
+      "overlap": "high",
+      "reason": "Both require solving a quadratic from a product and inspecting integer roots; Q05 has two in-domain roots and asks for the smaller, whereas Q06 offers one in-domain root."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q07"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q08"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q09"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q10"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q11"
+      ],
+      "overlap": "low",
+      "reason": "Both inspect finite integer domains, but quadratic equality roots differ from linear inequality boundary."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q13"
+      ],
+      "overlap": "low",
+      "reason": "Both solve for x, but the equation forms and root-selection requirements differ."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q14"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q15"
+      ],
+      "overlap": "low",
+      "reason": "Both solve for x, but the equation forms and root-selection requirements differ."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q16"
+      ],
+      "overlap": "low",
+      "reason": "Both use a finite domain and an extremal/count instruction; algebraic test differs."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q17"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q20"
+      ],
+      "overlap": "low",
+      "reason": "Both reason about x in an integer domain, but equality/root selection and inequality/boundary counting are different tasks."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q07"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q08"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q09"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q10"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q11"
+      ],
+      "overlap": "low",
+      "reason": "Both have parenthesized x expressions, but equation factoring differs from linear inequality."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q13"
+      ],
+      "overlap": "low",
+      "reason": "Both solve for x, but the equation forms and root-selection requirements differ."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q14"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q15"
+      ],
+      "overlap": "low",
+      "reason": "Both solve for x, but the equation forms and root-selection requirements differ."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q16"
+      ],
+      "overlap": "low",
+      "reason": "Both reason about x in an integer domain, but equality/root selection and inequality/boundary counting are different tasks."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q17"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q20"
+      ],
+      "overlap": "low",
+      "reason": "Both reason about x in an integer domain, but equality/root selection and inequality/boundary counting are different tasks."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q08"
+      ],
+      "overlap": "moderate",
+      "reason": "Both use distributive/quantified phrases to decide number; partitive most of differs from head Each versus postpositive each."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q09"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q10"
+      ],
+      "overlap": "moderate",
+      "reason": "Both contrast agreement of quantifier-like expressions; count/mass most of differs from the number/a number idiom."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q11"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q13"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q14"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q15"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q16"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q17"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q09"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q10"
+      ],
+      "overlap": "moderate",
+      "reason": "Both contrast a singular-looking quantified subject with a plural clause, but each has different subject structure."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q11"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q13"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q14"
+      ],
+      "overlap": "low",
+      "reason": "Both require looking beyond a nearby noun for the governing subject, but correlative proximity and each constructions differ."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q15"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q16"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q17"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q10"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q11"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q13"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q14"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q15"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q16"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q17"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q11"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q13"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q14"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q15"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q16"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q17"
+      ],
+      "overlap": "low",
+      "reason": "Both include initial/nearby phrases that obscure agreement; inversion differs from number quantifiers."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q12"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q13"
+      ],
+      "overlap": "moderate",
+      "reason": "Both distribute and collect linear x terms; inequality boundary differs from equation solution."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q14"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q15"
+      ],
+      "overlap": "low",
+      "reason": "Both reason about x in an integer domain, but equality/root selection and inequality/boundary counting are different tasks."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q16"
+      ],
+      "overlap": "high",
+      "reason": "Both simplify a linear inequality and intersect x≤boundary with an integer domain; Q11 asks for maximum, Q16 for count."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q17"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q20"
+      ],
+      "overlap": "moderate",
+      "reason": "Both solve inequality and choose an extremal integer; Q20 requires handling a positive rational denominator and opposite direction."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q13"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q14"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q15"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q16"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q17"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q18"
+      ],
+      "overlap": "moderate",
+      "reason": "Both evaluate fraction operations and a final integer operation; sum/scale differs from quotient/add."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q19"
+      ],
+      "overlap": "moderate",
+      "reason": "Both first add unlike fractions; Q12 multiplies the sum and Q19 reciprocates it."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q14"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q15"
+      ],
+      "overlap": "moderate",
+      "reason": "Both solve an equation that reduces to linear x; Q15 must clear a rational denominator."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q16"
+      ],
+      "overlap": "moderate",
+      "reason": "Both distribute bracketed linear expressions; equality solution differs from inequality count."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q17"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q20"
+      ],
+      "overlap": "low",
+      "reason": "Both reason about x in an integer domain, but equality/root selection and inequality/boundary counting are different tasks."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q15"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q16"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q17"
+      ],
+      "overlap": "low",
+      "reason": "Both require subject–verb agreement, but the grammatical structure and deciding cue differ."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q16"
+      ],
+      "overlap": "low",
+      "reason": "Both reason about x in an integer domain, but equality/root selection and inequality/boundary counting are different tasks."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q17"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q20"
+      ],
+      "overlap": "moderate",
+      "reason": "Both manipulate a rational expression in x with a nonzero denominator; equality versus inequality and requested output differ."
+    },
+    {
+      "items": [
+        "Q16",
+        "Q17"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q16",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q16",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q16",
+        "Q20"
+      ],
+      "overlap": "moderate",
+      "reason": "Both reduce an inequality and inspect a finite integer domain; one counts values, the other finds minimum."
+    },
+    {
+      "items": [
+        "Q17",
+        "Q18"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q17",
+        "Q19"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q17",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One tests grammatical agreement and the other numeric algebra/arithmetic; no semantic reasoning overlap."
+    },
+    {
+      "items": [
+        "Q18",
+        "Q19"
+      ],
+      "overlap": "moderate",
+      "reason": "Both involve a reciprocal step with fractions; Q18 divides two fractions, Q19 reciprocates a sum."
+    },
+    {
+      "items": [
+        "Q18",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    },
+    {
+      "items": [
+        "Q19",
+        "Q20"
+      ],
+      "overlap": "none",
+      "reason": "One evaluates an exact constant fraction expression; the other solves a variable equation/inequality."
+    }
+  ]
+}

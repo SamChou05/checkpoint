@@ -1,0 +1,38 @@
+{
+  "answerMapSha256": "f33733e1d451ca3d77cd7cd9ac5caafc9a538645ecc642fd549c88daa2a384eb",
+  "crossItemPairsA": {
+    "moderate": 19,
+    "none": 169,
+    "strong": 2
+  },
+  "crossItemPairsB": {
+    "high": 2,
+    "low": 39,
+    "moderate": 21,
+    "none": 128
+  },
+  "distinctWithinItemChoicePairsPerReviewer": 120,
+  "eachRoleItem": {
+    "difficultyA": 3,
+    "difficultyB": 3,
+    "id": "Q08",
+    "key": "D"
+  },
+  "fullBankQualified": false,
+  "keysMatchedByBothReviewers": 20,
+  "reviewSha256": [
+    "46ed9c44a4c988dda8ee81ebae42e569fece7c3fdfbca02eb507fe7fc3fe2b01",
+    "1c1a72cc93ccf1cf9f18da23866e19c6b9666fde2cbaf018c03f06f61bccf4cc"
+  ],
+  "topOverlapConsensus": [
+    [
+      "Q05",
+      "Q06"
+    ],
+    [
+      "Q11",
+      "Q16"
+    ]
+  ],
+  "worksheetSha256": "636811004c5b9d3e99a275a432222f2af51fcd6748a453805b27088264146b18"
+}

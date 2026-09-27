@@ -81,13 +81,13 @@ class MappedBankCapacityHarnessTests(unittest.TestCase):
         ])
 
     def test_full_bank_variant_exhaustion_is_visible_at_next_batch(self):
-        report = simulate((120, 125))
-        self.assertEqual(report["exhaustion"]["atItems"], 120)
+        report = simulate((160, 165))
+        self.assertEqual(report["exhaustion"]["atItems"], 160)
         self.assertEqual(report["exhaustion"]["failureReasons"],
-                         ["agreement_novelty_exhausted"])
+                         ["agreement_novelty_exhausted", "agreement_novelty_exhausted"])
         self.assertEqual(report["snapshots"][0]["slots"]["3"]["remainingExactStems"], 0)
-        self.assertEqual(report["snapshots"][0]["slots"]["4"]["remainingExactStems"], 8)
-        self.assertTrue(any("125 items unavailable" in failure for failure in
+        self.assertEqual(report["snapshots"][0]["slots"]["4"]["remainingExactStems"], 0)
+        self.assertTrue(any("165 items unavailable" in failure for failure in
                             qualification_failures(report)))
 
 
