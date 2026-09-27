@@ -10,11 +10,13 @@ from unittest.mock import patch
 
 import probe
 
+PLAN_SHA256 = "634d19695af337950e0465322c729446030dbfb18419f4ada12c53348522f2fb"
+
 
 class EnglishNativeAuthorProbeTest(unittest.TestCase):
     def test_frozen_wire_schema_and_fake_provider_compile(self):
         with patch.object(socket.socket, "connect", side_effect=AssertionError("network")):
-            plan, wire, contract, request = probe.build()
+            plan, wire, contract, request = probe.checked(PLAN_SHA256)
 
         self.assertEqual(plan["current_schema_bytes"], 2226)
         self.assertEqual(plan["current_schema_sha256"],

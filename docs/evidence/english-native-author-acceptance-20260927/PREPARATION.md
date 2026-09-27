@@ -1,9 +1,19 @@
 # English partitive and each native-author acceptance probe
 
 This directory prepares an **author-only, one-call** acceptance trial for the
-mapped five-slot native route. Its source candidate is `cfad5e5`. The final
-plan will be frozen only after the partitive and each candidate lands in the
-clean integration checkout; this preparation has made **no AWS calls**.
+mapped five-slot native route. Its clean, verified integration source is
+`3456177f1f18cb6658ab1fdf78aaadc5df04b202`. This preparation has made
+**no AWS calls**.
+
+The frozen [plan](plan.json) SHA-256 is
+`634d19695af337950e0465322c729446030dbfb18419f4ada12c53348522f2fb`;
+the [harness](probe.py) SHA-256 is
+`fb3a8b556a21c5b2bc139adc83f9531ecfa13f5a3d2f3f69bf01e91525455208`.
+The exact author wire SHA-256 is
+`b567ab253394aef2945e13a03b36f423340e884fd07e62007bbae49475d3f378`.
+The system and user prompt SHA-256 values are
+`264910b1209215c0ef17f11729fd0fbd3692513fb6e3b76c7d69351d7a3432e2`
+and `fb4a783e3e205d08ddf87f6595da72c78c6117be7caddb3b33da83bf49fae4d4`.
 
 The real source currently emits native contract
 `question_author_constructed_mapped_families_v10_n5_56d4204a9b0238f6`
@@ -15,8 +25,9 @@ scenes. The exact five-task request reuses the already qualified synthetic
 them, so a live run may choose different English scenes.
 
 `probe.py` reconstructs the production author contract and Converse wire,
-validates its JSON Schema and Botocore request shape, then sends that exact
-wire to a socket-free fake provider. The fake response selects
+validates its JSON Schema and Botocore request shape, then verifies that the
+real production wire builder sends precisely that wire to a socket-free fake
+provider. The fake response selects
 `partitive_paint` at slot 3 and `compound_guides` at slot 4 and runs through
 the **same** native adapter and mapped compiler as the live response. The
 offline result is five compiled rows (three numeric, two English), with zero

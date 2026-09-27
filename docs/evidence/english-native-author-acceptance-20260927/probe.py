@@ -28,7 +28,7 @@ import question_generation as generation  # noqa: E402
 from agreement_task_constructor import prepare_mapped_agreement_rows  # noqa: E402
 from evals import bounded_bedrock_capture as safe  # noqa: E402
 
-SOURCE_COMMIT = "cfad5e5c1d44a19521b03fc4e09bfdbc73480b9f"
+SOURCE_COMMIT = "3456177f1f18cb6658ab1fdf78aaadc5df04b202"
 PREVIOUS_PLAN = ROOT / "docs/evidence/mapped-full-worker-next-prep-20260927/plan.json"
 PREVIOUS_CAPTURE = ROOT / "docs/evidence/mapped-full-worker-next-prep-20260927/capture.json"
 PREVIOUS_CAPTURE_SHA256 = "1ab308db5ea2aeedea0655a7886886c4851fbfa9278b22b5c9413cacaf45af4a"
@@ -93,7 +93,7 @@ def source_guard():
             "Predecessor 5/5 capture changed.")
 
 
-def fake_english_repertoire(contract, wire):
+def fake_english_repertoire(contract, wire, request):
     """Run the real adapter/compiler against a fake Converse result, without sockets."""
     tasks = {"questions": {
         "0": {"family": "fraction_product_complement", "a": 4, "b": 6},
@@ -106,13 +106,28 @@ def fake_english_repertoire(contract, wire):
     Draft202012Validator(schema).validate(tasks)
 
     class FakeProvider:
+        def __init__(self):
+            self.calls = 0
+            self.response = None
+
         def converse(self, **received):
             require(received == wire, "Fake provider did not receive the frozen author wire.")
-            return {"stopReason": "end_turn", "output": {"message": {"content": [
+            self.calls += 1
+            self.response = {"stopReason": "end_turn", "output": {"message": {"content": [
                 {"text": json.dumps(tasks, separators=(",", ":"))}
             ]}}}
+            return self.response
 
-    result = compile_author_response(FakeProvider().converse(**wire), contract)
+    provider = FakeProvider()
+    # Exercise the production wire builder, not merely this probe's duplicate.
+    generated = generation._generate_with_bedrock(
+        normalized_request=request, bedrock_client=provider, model_id=MODEL,
+        contract=contract)
+    require(safe.strict_json(generated) == safe.strict_json(
+        native.adapt_native_response(json.dumps(tasks, separators=(",", ":")), contract)),
+        "Production native adapter disagreed with the probe adapter.")
+    require(provider.calls == 1, "Production author made more than one fake-provider call.")
+    result = compile_author_response(provider.response, contract)
     require(result["offline_compilation"] == {
         "rows": 5, "numeric_proofs": 3, "english_proofs": 2, "failures": []},
         "Offline fake provider English repertoire compile failed.")
@@ -123,7 +138,8 @@ def fake_english_repertoire(contract, wire):
 
 def compile_author_response(response, contract):
     """Shared live/fake parser; adapter yields a list, indexed by integers."""
-    require(response["stopReason"] == "end_turn", "Author response did not end normally.")
+    require(response["stopReason"] in {"end_turn", "stop_sequence"},
+            "Author response did not end normally.")
     content = response["output"]["message"]["content"]
     require(len(content) == 1 and set(content[0]) == {"text"},
             "Author text cardinality changed.")
@@ -181,7 +197,7 @@ def build():
                 "outputConfig": config, "inferenceConfig": {"maxTokens": 16000},
                 "additionalModelRequestFields": {"thinking": {"type": "adaptive"},
                                                   "output_config": {"effort": "high"}}}
-        scripted = fake_english_repertoire(contract, wire)
+        scripted = fake_english_repertoire(contract, wire, request)
     offline = boto3.Session(aws_access_key_id="offline", aws_secret_access_key="offline",
                             region_name="us-east-1").client(
         "bedrock-runtime", endpoint_url=BEDROCK_ENDPOINT)
