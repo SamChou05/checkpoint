@@ -568,16 +568,25 @@ def _authored_flag_review_prompt(system_prompt: str, contract: AuthoredSolutionF
 def native_prompt(system_prompt: str, contract: NativeContract) -> str:
     if isinstance(contract, AuthorSlotContract):
         if contract.mapped_assignments is not None:
-            marker = "\n\nReturn only one JSON object:"
-            if system_prompt.count(marker) != 1 or system_prompt.count(_LEGACY_AUTHOR_EXAMPLE) != 1:
+            legacy_output = "\n\nReturn only one JSON object:\n" + _LEGACY_AUTHOR_EXAMPLE + "\n\n"
+            legacy_choices = "Exactly four distinct choices; expectedAnswer exactly equals one of them."
+            legacy_assignment = (
+                "Generate exactly targetCount items and honor requestedSkillAllocation and\n"
+                "requestedObjectiveAllocation. For a supplied skillMap, copy its skillID and\n"
+                "objectiveID and use its skill/objective names as topic/objective. If a skill has\n"
+                "no objectives, supply a concrete objective label and omit objectiveID. Without\n"
+                "a map, use goal-aligned topics and omit the skill/objective identifier fields."
+            )
+            if (system_prompt.count(legacy_output) != 1 or system_prompt.count(legacy_choices) != 1
+                    or system_prompt.count(legacy_assignment) != 1
+                    or system_prompt.count("For each requested item:") != 1):
                 raise ServiceConfigurationError("Compact mapped author requires the owned base security prompt.")
             assignments = _mapped_slot_kinds(contract)
             slots = "; ".join(
                 f'{index}: {kind} task for {assignment[2]} / {assignment[3]}'
                 for index, (kind, assignment) in enumerate(assignments)
             )
-            return (system_prompt.split(marker, 1)[0] + "\n\n"
-                    + f"COMPACT MAPPED AUTHOR ({contract.name}): Return exactly one questions object "
+            instruction = (f"COMPACT MAPPED AUTHOR ({contract.name}): Return exactly one questions object "
                     + f"with keys {', '.join(json.dumps(str(i)) for i in range(contract.count))}. "
                     + "The required slot types and assigned objectives are: " + slots + ". "
                     + "The application supplies topic, skillID, objectiveID, objective "
@@ -590,8 +599,22 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
                     + "answers the self-contained stem, all six choice pairs differ in meaning, "
                     + "and the explanation supports the selected key. Do not duplicate or pad rows. "
                     + "For quantitative tasks, do not author choices, key, stem or teaching; code "
-                    + "constructs them and rejects unsupported tasks. "
-                    + "Task kind exact_value uses"
+                    + "constructs them and rejects unsupported tasks.")
+            prompt = system_prompt.replace(legacy_output, "\n\n" + instruction + "\n\n", 1)
+            prompt = prompt.replace("For each requested item:", "For each prose slot:", 1)
+            prompt = prompt.replace(
+                legacy_choices,
+                "For each prose slot, write four distinct choices; correctChoice selects one slot.", 1,
+            )
+            prompt = prompt.replace(
+                legacy_assignment,
+                "Generate exactly targetCount items and honor requestedSkillAllocation and\n"
+                "requestedObjectiveAllocation. The trusted server binds every slot to the\n"
+                "original skill and objective and injects topic, skillID, objectiveID and\n"
+                "objective. Use those assignments to choose substantive content, but do not\n"
+                "output those metadata fields.", 1,
+            )
+            return (prompt + "\n\nQuantitative slots follow this task grammar. Task kind exact_value uses"
                     + TASK_ONLY_AUTHOR_INSTRUCTIONS.split("Task kind exact_value uses", 1)[1])
         prompt = native_prompt(system_prompt, contract.base_contract)
         examples = [line for line in prompt.splitlines() if line.startswith('{"questions":')]

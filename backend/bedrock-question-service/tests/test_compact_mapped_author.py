@@ -13,7 +13,7 @@ from jsonschema import Draft202012Validator
 
 import question_generation as generation
 from lambda_test_support import _raw_question, _request_payload
-from native_output_contracts import AuthorSlotContract, adapt_native_response, native_output_config
+from native_output_contracts import AuthorSlotContract, adapt_native_response, native_output_config, native_prompt
 from quantitative_authoring import prepare_mixed_rows
 from request_contract import _normalize_request
 from service_errors import ProviderError, ServiceConfigurationError
@@ -103,6 +103,13 @@ class CompactMappedAuthorTests(unittest.TestCase):
         rows, compiled, failures = prepare_mixed_rows(adapted, construct_choices=True)
         self.assertEqual((len(rows), len(compiled), failures), (5, 3, []))
         self.assertEqual(len({tuple(row["choices"]) for row in rows[:3]}), 3)
+        prompt = native_prompt(generation._system_prompt(), contract)
+        self.assertIn("Establish the facts and solve the problem.", prompt)
+        self.assertIn("Stem at most\n320 characters", prompt)
+        self.assertIn("Difficulty rubric:", prompt)
+        self.assertIn("The main explanation is the complete worked solution", prompt)
+        self.assertIn("For each prose slot:", prompt)
+        self.assertNotIn('"expectedAnswer":"..."', prompt)
 
     def test_wrong_kind_missing_slot_and_model_written_metadata_reject_whole_batch(self):
         contract = self.contract()
@@ -135,6 +142,16 @@ class CompactMappedAuthorTests(unittest.TestCase):
         altered["skillMap"]["skills"].reverse()
         self.assertIsNone(generation._mapped_fixed_slot_assignments(
             altered, "constructed_quantitative", "array"))
+        for field, value in (("existingPrompts", ["Earlier expression stem"]),
+                             ("reportedPrompts", ["Already reported"]),
+                             ("blockedStemFingerprints", ["deadbeef"]),
+                             ("stemFingerprintVersion", 2),
+                             ("existingQuestionCoverage", [{"prompt": "Earlier covered item"}])):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(self.request)
+                changed[field] = value
+                self.assertIsNone(generation._mapped_fixed_slot_assignments(
+                    changed, "constructed_quantitative", "array"))
         partial = copy.deepcopy(self.request)
         partial["targetCount"] = 2
         partial["requestedSkillAllocation"] = {ENGLISH: 2}
@@ -147,6 +164,14 @@ class CompactMappedAuthorTests(unittest.TestCase):
         with patch.object(generation, "_generate_with_bedrock", return_value='{"questions":[]}') as generate:
             self.assertEqual(generation._generate_provider_payload(partial, None), {"questions": []})
         self.assertEqual(generate.call_args.kwargs["contract"], "question_author_constructed_v1")
+        with patch.dict(os.environ, {"BEDROCK_FALLBACK_MODEL_ID": "different-model"}):
+            with self.assertRaises(ServiceConfigurationError):
+                generation._mapped_fixed_slot_assignments(self.request, "constructed_quantitative", "array")
+        with patch.dict(os.environ):
+            os.environ.pop("BEDROCK_FALLBACK_MODEL_ID")
+            with patch.object(generation, "DEFAULT_FALLBACK_MODEL_ID", "different-model"):
+                with self.assertRaises(ServiceConfigurationError):
+                    generation._mapped_fixed_slot_assignments(self.request, "constructed_quantitative", "array")
 
     def test_runtime_uses_one_compact_pass_and_preserves_partial_result(self):
         seen = []

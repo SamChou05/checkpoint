@@ -852,15 +852,10 @@ def _task_only_numerical_author(
     return True
 
 
-_MAPPED_SCOPE_FIELDS = (
-    "goal", "skillMap", "desiredSkillAllocation", "requestedSkillAllocation",
-    "requestedObjectiveAllocation", "adaptiveSkillPlans", "requiresFullObjectiveCoverage",
-    "minimumDifficulty", "difficultyGuidance", "sourceDocuments", "competencies", "targetCount",
-)
 def _mapped_author_scope_json(request: dict[str, Any]) -> str:
-    """Canonical initial request scope; order within the skill map is significant."""
-    return json.dumps({key: request[key] for key in _MAPPED_SCOPE_FIELDS if key in request},
-                      sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False)
+    """Bind every normalized first-pass field, including prior-item context."""
+    return json.dumps(request, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=True, allow_nan=False)
 
 
 def _mapped_author_scope_sha256(request: dict[str, Any]) -> str:
@@ -895,6 +890,8 @@ def _mapped_fixed_slot_assignments(
         return None
     if _mapped_author_scope_sha256(request) != scoped:
         return None
+    if os.getenv("BEDROCK_FALLBACK_MODEL_ID", DEFAULT_FALLBACK_MODEL_ID).strip():
+        raise ServiceConfigurationError("Compact mapped author requires one pinned model with no fallback.")
     if (output_mode() != "native" or author_mode != "constructed_quantitative"
             or cardinality_mode != "array" or _feedback_contract() != "authored_solution"):
         raise ServiceConfigurationError("Mapped fixed-five author requires native constructed array mode and authored-solution feedback.")
