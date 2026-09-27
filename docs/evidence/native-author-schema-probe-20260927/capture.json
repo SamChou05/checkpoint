@@ -1,0 +1,41 @@
+{
+  "plan_sha256": "abfb96c1dbb533d4b2da2882a7c5f222a7464c5441335cb97f575eb6795b02cd",
+  "status": "completed",
+  "sts_calls": 1,
+  "converse_calls": 1,
+  "author_response": {
+    "output": {
+      "message": {
+        "content": [
+          {
+            "text": "{\"questions\":{\"0\":{\"family\":\"fraction_quotient\",\"a\":3,\"b\":4},\"1\":{\"family\":\"bounded_quadratic_equation\",\"a\":5,\"b\":7},\"2\":{\"family\":\"bounded_quadratic_maximum\",\"a\":4,\"b\":9},\"3\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"coach\",\"order\":\"plural_first\"},\"4\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"number_students\",\"order\":\"singular_first\"}}}"
+          }
+        ]
+      }
+    },
+    "stopReason": "end_turn",
+    "usage": {
+      "inputTokens": 4134,
+      "outputTokens": 495,
+      "totalTokens": 4629,
+      "cacheReadInputTokens": 0,
+      "cacheWriteInputTokens": 0
+    },
+    "metrics": {
+      "latencyMs": 29627
+    },
+    "safeResponseMetadata": {
+      "requestId": "6bdf2372-610b-413f-8f92-4ca8a7f91b2a",
+      "httpStatus": 200
+    }
+  },
+  "reasoning_blocks_omitted": 1,
+  "offline_compilation": {
+    "rows": 5,
+    "numeric_proofs": 3,
+    "english_proofs": 2,
+    "failures": []
+  },
+  "elapsed_seconds": 30.521,
+  "within_deadline": true
+}
