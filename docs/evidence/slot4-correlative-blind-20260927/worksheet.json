@@ -1,0 +1,85 @@
+{
+  "instructions": "For each learner-facing item, independently select the one correct displayed choice (or mark none/multiple), assess whether the four choices differ meaningfully, and rate naturalness/idiomaticity on a 1-5 scale (1 unusable, 5 natural). Note any ambiguity or awkward mixed singular/plural constructions. Do not inspect source or private mapping until review is locked.",
+  "items": [
+    {
+      "id": "C01",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Either the assistants or the curator ___ the catalog, while neither the curator nor the assistants ___ the records. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "checks; sorts",
+        "B": "checks; sort",
+        "C": "check; sort",
+        "D": "check; sorts"
+      }
+    },
+    {
+      "id": "C02",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Neither the curator nor the assistants ___ the records, while either the assistants or the curator ___ the catalog. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "sort; checks",
+        "B": "sorts; check",
+        "C": "sorts; checks",
+        "D": "sort; check"
+      }
+    },
+    {
+      "id": "C03",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Either the volunteers or the librarian ___ the book, while neither the librarian nor the volunteers ___ the returns. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "examine; arrange",
+        "B": "examines; arranges",
+        "C": "examines; arrange",
+        "D": "examine; arranges"
+      }
+    },
+    {
+      "id": "C04",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Neither the librarian nor the volunteers ___ the returns, while either the volunteers or the librarian ___ the book. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "arranges; examines",
+        "B": "arranges; examine",
+        "C": "arrange; examines",
+        "D": "arrange; examine"
+      }
+    },
+    {
+      "id": "C05",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Neither the director nor the actors ___ the props, while either the actors or the director ___ the script. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "moves; review",
+        "B": "move; review",
+        "C": "moves; reviews",
+        "D": "move; reviews"
+      }
+    },
+    {
+      "id": "C06",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Neither the scientist nor the technicians ___ the samples, while either the technicians or the scientist ___ the log. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "labels; inspects",
+        "B": "label; inspects",
+        "C": "label; inspect",
+        "D": "labels; inspect"
+      }
+    },
+    {
+      "id": "C07",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Either the actors or the director ___ the script, while neither the director nor the actors ___ the props. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "review; moves",
+        "B": "reviews; move",
+        "C": "review; move",
+        "D": "reviews; moves"
+      }
+    },
+    {
+      "id": "C08",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Either the technicians or the scientist ___ the log, while neither the scientist nor the technicians ___ the samples. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "inspect; label",
+        "B": "inspects; label",
+        "C": "inspects; labels",
+        "D": "inspect; labels"
+      }
+    }
+  ]
+}

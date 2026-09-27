@@ -1,0 +1,180 @@
+{
+  "mapping": {
+    "C01": {
+      "scene": "or_archive",
+      "order": "singular_first",
+      "key": "B",
+      "row": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Either the assistants or the curator ___ the catalog, while neither the curator nor the assistants ___ the records. Which ordered pair fills the blanks?",
+        "choices": [
+          "check; sort",
+          "check; sorts",
+          "checks; sort",
+          "checks; sorts"
+        ],
+        "expectedAnswer": "checks; sort",
+        "explanation": "First, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. The form \"checks\" agrees. Second, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. The form \"sort\" agrees. Therefore the ordered pair is checks; sort.",
+        "choiceExplanations": {
+          "check; sort": "First, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. \"check\" does not agree; use \"checks\". Second, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. The form \"sort\" agrees.",
+          "check; sorts": "First, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. \"check\" does not agree; use \"checks\". Second, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. \"sorts\" does not agree; use \"sort\".",
+          "checks; sort": "First, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. The form \"checks\" agrees. Second, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. The form \"sort\" agrees.",
+          "checks; sorts": "First, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. The form \"checks\" agrees. Second, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. \"sorts\" does not agree; use \"sort\"."
+        }
+      }
+    },
+    "C02": {
+      "scene": "or_archive",
+      "order": "plural_first",
+      "key": "A",
+      "row": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Neither the curator nor the assistants ___ the records, while either the assistants or the curator ___ the catalog. Which ordered pair fills the blanks?",
+        "choices": [
+          "sort; check",
+          "sort; checks",
+          "sorts; check",
+          "sorts; checks"
+        ],
+        "expectedAnswer": "sort; checks",
+        "explanation": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. The form \"sort\" agrees. Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. The form \"checks\" agrees. Therefore the ordered pair is sort; checks.",
+        "choiceExplanations": {
+          "sort; check": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. The form \"sort\" agrees. Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. \"check\" does not agree; use \"checks\".",
+          "sort; checks": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. The form \"sort\" agrees. Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. The form \"checks\" agrees.",
+          "sorts; check": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. \"sorts\" does not agree; use \"sort\". Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. \"check\" does not agree; use \"checks\".",
+          "sorts; checks": "First, the nearer subject \"the assistants\" is plural; \"the curator\" is farther away. \"sorts\" does not agree; use \"sort\". Second, the nearer subject \"the curator\" is singular; \"the assistants\" is farther away. The form \"checks\" agrees."
+        }
+      }
+    },
+    "C03": {
+      "scene": "or_library",
+      "order": "singular_first",
+      "key": "C",
+      "row": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Either the volunteers or the librarian ___ the book, while neither the librarian nor the volunteers ___ the returns. Which ordered pair fills the blanks?",
+        "choices": [
+          "examine; arrange",
+          "examine; arranges",
+          "examines; arrange",
+          "examines; arranges"
+        ],
+        "expectedAnswer": "examines; arrange",
+        "explanation": "First, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. The form \"examines\" agrees. Second, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. The form \"arrange\" agrees. Therefore the ordered pair is examines; arrange.",
+        "choiceExplanations": {
+          "examine; arrange": "First, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. \"examine\" does not agree; use \"examines\". Second, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. The form \"arrange\" agrees.",
+          "examine; arranges": "First, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. \"examine\" does not agree; use \"examines\". Second, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. \"arranges\" does not agree; use \"arrange\".",
+          "examines; arrange": "First, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. The form \"examines\" agrees. Second, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. The form \"arrange\" agrees.",
+          "examines; arranges": "First, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. The form \"examines\" agrees. Second, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. \"arranges\" does not agree; use \"arrange\"."
+        }
+      }
+    },
+    "C04": {
+      "scene": "or_library",
+      "order": "plural_first",
+      "key": "C",
+      "row": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Neither the librarian nor the volunteers ___ the returns, while either the volunteers or the librarian ___ the book. Which ordered pair fills the blanks?",
+        "choices": [
+          "arrange; examine",
+          "arrange; examines",
+          "arranges; examine",
+          "arranges; examines"
+        ],
+        "expectedAnswer": "arrange; examines",
+        "explanation": "First, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. The form \"arrange\" agrees. Second, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. The form \"examines\" agrees. Therefore the ordered pair is arrange; examines.",
+        "choiceExplanations": {
+          "arrange; examine": "First, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. The form \"arrange\" agrees. Second, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. \"examine\" does not agree; use \"examines\".",
+          "arrange; examines": "First, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. The form \"arrange\" agrees. Second, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. The form \"examines\" agrees.",
+          "arranges; examine": "First, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. \"arranges\" does not agree; use \"arrange\". Second, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. \"examine\" does not agree; use \"examines\".",
+          "arranges; examines": "First, the nearer subject \"the volunteers\" is plural; \"the librarian\" is farther away. \"arranges\" does not agree; use \"arrange\". Second, the nearer subject \"the librarian\" is singular; \"the volunteers\" is farther away. The form \"examines\" agrees."
+        }
+      }
+    },
+    "C05": {
+      "scene": "or_studio",
+      "order": "plural_first",
+      "key": "D",
+      "row": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Neither the director nor the actors ___ the props, while either the actors or the director ___ the script. Which ordered pair fills the blanks?",
+        "choices": [
+          "move; review",
+          "move; reviews",
+          "moves; review",
+          "moves; reviews"
+        ],
+        "expectedAnswer": "move; reviews",
+        "explanation": "First, the nearer subject \"the actors\" is plural; \"the director\" is farther away. The form \"move\" agrees. Second, the nearer subject \"the director\" is singular; \"the actors\" is farther away. The form \"reviews\" agrees. Therefore the ordered pair is move; reviews.",
+        "choiceExplanations": {
+          "move; review": "First, the nearer subject \"the actors\" is plural; \"the director\" is farther away. The form \"move\" agrees. Second, the nearer subject \"the director\" is singular; \"the actors\" is farther away. \"review\" does not agree; use \"reviews\".",
+          "move; reviews": "First, the nearer subject \"the actors\" is plural; \"the director\" is farther away. The form \"move\" agrees. Second, the nearer subject \"the director\" is singular; \"the actors\" is farther away. The form \"reviews\" agrees.",
+          "moves; review": "First, the nearer subject \"the actors\" is plural; \"the director\" is farther away. \"moves\" does not agree; use \"move\". Second, the nearer subject \"the director\" is singular; \"the actors\" is farther away. \"review\" does not agree; use \"reviews\".",
+          "moves; reviews": "First, the nearer subject \"the actors\" is plural; \"the director\" is farther away. \"moves\" does not agree; use \"move\". Second, the nearer subject \"the director\" is singular; \"the actors\" is farther away. The form \"reviews\" agrees."
+        }
+      }
+    },
+    "C06": {
+      "scene": "or_lab",
+      "order": "plural_first",
+      "key": "B",
+      "row": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Neither the scientist nor the technicians ___ the samples, while either the technicians or the scientist ___ the log. Which ordered pair fills the blanks?",
+        "choices": [
+          "label; inspect",
+          "label; inspects",
+          "labels; inspect",
+          "labels; inspects"
+        ],
+        "expectedAnswer": "label; inspects",
+        "explanation": "First, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. The form \"label\" agrees. Second, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. The form \"inspects\" agrees. Therefore the ordered pair is label; inspects.",
+        "choiceExplanations": {
+          "label; inspect": "First, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. The form \"label\" agrees. Second, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. \"inspect\" does not agree; use \"inspects\".",
+          "label; inspects": "First, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. The form \"label\" agrees. Second, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. The form \"inspects\" agrees.",
+          "labels; inspect": "First, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. \"labels\" does not agree; use \"label\". Second, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. \"inspect\" does not agree; use \"inspects\".",
+          "labels; inspects": "First, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. \"labels\" does not agree; use \"label\". Second, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. The form \"inspects\" agrees."
+        }
+      }
+    },
+    "C07": {
+      "scene": "or_studio",
+      "order": "singular_first",
+      "key": "B",
+      "row": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Either the actors or the director ___ the script, while neither the director nor the actors ___ the props. Which ordered pair fills the blanks?",
+        "choices": [
+          "review; move",
+          "review; moves",
+          "reviews; move",
+          "reviews; moves"
+        ],
+        "expectedAnswer": "reviews; move",
+        "explanation": "First, the nearer subject \"the director\" is singular; \"the actors\" is farther away. The form \"reviews\" agrees. Second, the nearer subject \"the actors\" is plural; \"the director\" is farther away. The form \"move\" agrees. Therefore the ordered pair is reviews; move.",
+        "choiceExplanations": {
+          "review; move": "First, the nearer subject \"the director\" is singular; \"the actors\" is farther away. \"review\" does not agree; use \"reviews\". Second, the nearer subject \"the actors\" is plural; \"the director\" is farther away. The form \"move\" agrees.",
+          "review; moves": "First, the nearer subject \"the director\" is singular; \"the actors\" is farther away. \"review\" does not agree; use \"reviews\". Second, the nearer subject \"the actors\" is plural; \"the director\" is farther away. \"moves\" does not agree; use \"move\".",
+          "reviews; move": "First, the nearer subject \"the director\" is singular; \"the actors\" is farther away. The form \"reviews\" agrees. Second, the nearer subject \"the actors\" is plural; \"the director\" is farther away. The form \"move\" agrees.",
+          "reviews; moves": "First, the nearer subject \"the director\" is singular; \"the actors\" is farther away. The form \"reviews\" agrees. Second, the nearer subject \"the actors\" is plural; \"the director\" is farther away. \"moves\" does not agree; use \"move\"."
+        }
+      }
+    },
+    "C08": {
+      "scene": "or_lab",
+      "order": "singular_first",
+      "key": "B",
+      "row": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Either the technicians or the scientist ___ the log, while neither the scientist nor the technicians ___ the samples. Which ordered pair fills the blanks?",
+        "choices": [
+          "inspect; label",
+          "inspect; labels",
+          "inspects; label",
+          "inspects; labels"
+        ],
+        "expectedAnswer": "inspects; label",
+        "explanation": "First, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. The form \"inspects\" agrees. Second, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. The form \"label\" agrees. Therefore the ordered pair is inspects; label.",
+        "choiceExplanations": {
+          "inspect; label": "First, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. \"inspect\" does not agree; use \"inspects\". Second, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. The form \"label\" agrees.",
+          "inspect; labels": "First, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. \"inspect\" does not agree; use \"inspects\". Second, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. \"labels\" does not agree; use \"label\".",
+          "inspects; label": "First, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. The form \"inspects\" agrees. Second, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. The form \"label\" agrees.",
+          "inspects; labels": "First, the nearer subject \"the scientist\" is singular; \"the technicians\" is farther away. The form \"inspects\" agrees. Second, the nearer subject \"the technicians\" is plural; \"the scientist\" is farther away. \"labels\" does not agree; use \"label\"."
+        }
+      }
+    }
+  }
+}

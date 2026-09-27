@@ -29,14 +29,13 @@ unclassified new scene fails the harness until its mechanism is reviewed.
 This keeps the [frozen 40/80 evidence](evidence/mapped-bank-diversity-simulation-20260927/RESULTS.md)
 immutable while allowing the current constructors to be evaluated again.
 
-At the current source, the gate reports 40/40 and 80/80 unique stems, yet
-three substantive families in numeric slots and English slot 3, with two in
-English slot 4. The 40-item bank has 40 same-slot/family item pairs and the
-80-item bank has 196 such pairs. English slot 4
-have zero unused exact stem variants after 80, and the next five-item batch
-reports `agreement_novelty_exhausted`. The default gate therefore fails at
-both targets. Its messages say how many families are needed for the selected
-use limit and which slots have run out of exact variants.
+At the current source, the gate reports 40/40, 80/80, and 85/85 unique exact
+stems. Each slot has three substantive families. The 40-, 80-, and 85-item
+banks have 35, 175, and 200 same-slot/family pairs, respectively. The new
+slot-4 correlative family leaves eight unused exact stems at 80 items and
+seven at 85. The default gate still fails because each slot reuses its three
+families many times. Its messages identify insufficient family capacity and
+actual overuse.
 
 This is a structural capacity gate, not an automatic judgment of semantic
 novelty. Two distinct families can still ask nearly the same question, and

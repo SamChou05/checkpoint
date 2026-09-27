@@ -1,0 +1,73 @@
+{
+  "reviewer": "blind-a",
+  "locked": true,
+  "worksheet_sha256": "0a4d6417329fb1924d797dbd846bb0511478812f6bcbc58afe28aafc9d775ca6",
+  "standard": "Standard written American English; with mixed singular and plural either/or or neither/nor subjects, the verb agrees with the nearer noun phrase.",
+  "items": [
+    {
+      "id": "C01",
+      "answer_status": "one_correct_choice",
+      "correct_choice": "B",
+      "choice_distinctness": "All four ordered pairs are unique and test different agreement combinations.",
+      "ambiguity": "Low under the stated standard; curator is nearest to checks and assistants is nearest to sort. Mixed-number coordination sounds somewhat constructed.",
+      "naturalness_1_to_5": 3
+    },
+    {
+      "id": "C02",
+      "answer_status": "one_correct_choice",
+      "correct_choice": "A",
+      "choice_distinctness": "All four ordered pairs are unique and test different agreement combinations.",
+      "ambiguity": "Low under the stated standard; assistants is nearest to sort and curator is nearest to checks. This mirrors C01 with the clauses reversed.",
+      "naturalness_1_to_5": 3
+    },
+    {
+      "id": "C03",
+      "answer_status": "one_correct_choice",
+      "correct_choice": "C",
+      "choice_distinctness": "All four ordered pairs are unique and test different agreement combinations.",
+      "ambiguity": "Low under the stated standard; librarian is nearest to examines and volunteers is nearest to arrange. 'Arrange the returns' is a little unnatural without specifying returned books.",
+      "naturalness_1_to_5": 3
+    },
+    {
+      "id": "C04",
+      "answer_status": "one_correct_choice",
+      "correct_choice": "C",
+      "choice_distinctness": "All four ordered pairs are unique and test different agreement combinations.",
+      "ambiguity": "Low under the stated standard; volunteers is nearest to arrange and librarian is nearest to examines. This mirrors C03 with the clauses reversed; 'arrange the returns' is slightly awkward.",
+      "naturalness_1_to_5": 3
+    },
+    {
+      "id": "C05",
+      "answer_status": "one_correct_choice",
+      "correct_choice": "D",
+      "choice_distinctness": "All four ordered pairs are unique and test different agreement combinations.",
+      "ambiguity": "Low under the stated standard; actors is nearest to move and director is nearest to reviews. The mixed-number either/or phrase may invite a reread.",
+      "naturalness_1_to_5": 4
+    },
+    {
+      "id": "C06",
+      "answer_status": "one_correct_choice",
+      "correct_choice": "B",
+      "choice_distinctness": "All four ordered pairs are unique and test different agreement combinations.",
+      "ambiguity": "Low under the stated standard; technicians is nearest to label and scientist is nearest to inspects. The mixed-number either/or phrase is a bit formal.",
+      "naturalness_1_to_5": 4
+    },
+    {
+      "id": "C07",
+      "answer_status": "one_correct_choice",
+      "correct_choice": "B",
+      "choice_distinctness": "All four ordered pairs are unique and test different agreement combinations.",
+      "ambiguity": "Low under the stated standard; director is nearest to reviews and actors is nearest to move. This mirrors C05 with the clauses reversed.",
+      "naturalness_1_to_5": 4
+    },
+    {
+      "id": "C08",
+      "answer_status": "one_correct_choice",
+      "correct_choice": "B",
+      "choice_distinctness": "All four ordered pairs are unique and test different agreement combinations.",
+      "ambiguity": "Low under the stated standard; scientist is nearest to inspects and technicians is nearest to label. This mirrors C06 with the clauses reversed.",
+      "naturalness_1_to_5": 4
+    }
+  ],
+  "overall": "No item has none or multiple correct choices under proximity agreement. The four choices within each item are meaningfully distinct. Across the set, C01/C02, C03/C04, C05/C07, and C06/C08 repeat the same two clauses in reverse order, reducing variety; mixed-number subjects and the repeated 'while' framing make the set somewhat artificial."
+}

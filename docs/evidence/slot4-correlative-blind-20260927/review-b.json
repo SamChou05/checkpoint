@@ -1,0 +1,73 @@
+{
+  "reviewer": "blind-b",
+  "locked": true,
+  "worksheet_sha256": "0a4d6417329fb1924d797dbd846bb0511478812f6bcbc58afe28aafc9d775ca6",
+  "method": "Reviewed only the displayed worksheet. Applied nearest-subject agreement to mixed-number either/or and neither/nor subjects in standard written American English.",
+  "items": [
+    {
+      "id": "C01",
+      "selected": "B",
+      "choice_distinctness": "All four ordered pairs are distinct and represent the four singular/plural combinations.",
+      "ambiguity": "None under the stated agreement convention: curator calls for checks; assistants calls for sort.",
+      "naturalness_1_to_5": 3,
+      "notes": "Grammatical but constructed; the reversed mixed-number coordinations and weak contrast introduced by while make the sentence less idiomatic."
+    },
+    {
+      "id": "C02",
+      "selected": "A",
+      "choice_distinctness": "All four ordered pairs are distinct and represent the four singular/plural combinations.",
+      "ambiguity": "None under the stated agreement convention: assistants calls for sort; curator calls for checks.",
+      "naturalness_1_to_5": 3,
+      "notes": "Grammatical but constructed; two reversed mixed-number coordinations in one sentence sound like an exercise rather than ordinary prose."
+    },
+    {
+      "id": "C03",
+      "selected": "C",
+      "choice_distinctness": "All four ordered pairs are distinct and represent the four singular/plural combinations.",
+      "ambiguity": "None under the stated agreement convention: librarian calls for examines; volunteers calls for arrange.",
+      "naturalness_1_to_5": 3,
+      "notes": "The actions are plausible, but the repeated role reversal and while linkage are somewhat artificial."
+    },
+    {
+      "id": "C04",
+      "selected": "C",
+      "choice_distinctness": "All four ordered pairs are distinct and represent the four singular/plural combinations.",
+      "ambiguity": "None under the stated agreement convention: volunteers calls for arrange; librarian calls for examines.",
+      "naturalness_1_to_5": 3,
+      "notes": "Grammatical; mixed-number subjects and paired role reversal make it slightly awkward in ordinary prose."
+    },
+    {
+      "id": "C05",
+      "selected": "D",
+      "choice_distinctness": "All four ordered pairs are distinct and represent the four singular/plural combinations.",
+      "ambiguity": "None under the stated agreement convention: actors calls for move; director calls for reviews.",
+      "naturalness_1_to_5": 3,
+      "notes": "The theater actions fit the roles, but the two mixed-number coordinations sound deliberately engineered for the agreement test."
+    },
+    {
+      "id": "C06",
+      "selected": "B",
+      "choice_distinctness": "All four ordered pairs are distinct and represent the four singular/plural combinations.",
+      "ambiguity": "None under the stated agreement convention: technicians calls for label; scientist calls for inspects.",
+      "naturalness_1_to_5": 3,
+      "notes": "The lab actions are plausible; the reverse-ordered subjects in adjacent clauses still feel formulaic."
+    },
+    {
+      "id": "C07",
+      "selected": "B",
+      "choice_distinctness": "All four ordered pairs are distinct and represent the four singular/plural combinations.",
+      "ambiguity": "None under the stated agreement convention: director calls for reviews; actors calls for move.",
+      "naturalness_1_to_5": 3,
+      "notes": "Grammatical and understandable, though the paired mixed-number coordinations are stiff."
+    },
+    {
+      "id": "C08",
+      "selected": "B",
+      "choice_distinctness": "All four ordered pairs are distinct and represent the four singular/plural combinations.",
+      "ambiguity": "None under the stated agreement convention: scientist calls for inspects; technicians calls for label.",
+      "naturalness_1_to_5": 3,
+      "notes": "Grammatical and understandable, but its mirrored clause pattern sounds constructed."
+    }
+  ],
+  "overall": "Each item has exactly one correct displayed choice under nearest-subject agreement. Across the set, pairs of items reverse the same clauses, making the collection repetitive. Mixed-number either/or and neither/nor subjects are acceptable for an agreement exercise but would often be recast in polished prose."
+}
