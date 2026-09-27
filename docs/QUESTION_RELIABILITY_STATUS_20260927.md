@@ -239,7 +239,12 @@ the seven-row answer-blind solver request with `ValidationException`. No
 reviewer ran and the worker returned **0/5**; the capture retains only the
 error code, so the precise provider validation cause is unknown. Smaller
 verification batches are being tested but are not yet live-qualified. The
-seven authored rows are under independent keyless content review.
+seven authored rows then passed [independent keyless content review](evidence/generic-reserve-author7-blind-20260927/RESULTS.md)
+for key and choice distinctness: both reviewers matched 7/7 private keys and
+42/42 choice pairs. Both rated three rows difficulty 1 despite the level-2
+request, leaving at most four strict difficulty-2 survivors. They disagreed
+about one possible cross-item repeat and G04 self-containment. This author-only
+result does not repair the 0/5 worker failure.
 
 Two standalone math response-format constructors were compared against six
 quarantined level-2 examples in a [frozen 12-item blind worksheet](evidence/math-format-mixed-blind-20260927/RESULTS.md).
