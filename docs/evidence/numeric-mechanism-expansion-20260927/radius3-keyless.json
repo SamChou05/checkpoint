@@ -1,0 +1,48 @@
+{
+  "targetDifficultyRange": [
+    2,
+    3
+  ],
+  "questions": [
+    {
+      "id": "Q01",
+      "prompt": "Let x be a unitless number. Its domain is integers from -1 through 7, inclusive. Condition: ((x - 3) * (x - 3)) < 9. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "5",
+        "B": "6",
+        "C": "4",
+        "D": "3"
+      }
+    },
+    {
+      "id": "Q02",
+      "prompt": "Let x be a unitless number. Its domain is integers from 3 through 11, inclusive. Condition: ((x - 7) * (x - 7)) < 9. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "5",
+        "B": "4",
+        "C": "3",
+        "D": "6"
+      }
+    },
+    {
+      "id": "Q03",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 10, inclusive. Condition: ((x - 5) * (x - 5)) < 16. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "7",
+        "B": "8",
+        "C": "5",
+        "D": "6"
+      }
+    },
+    {
+      "id": "Q04",
+      "prompt": "Let x be a unitless number. Its domain is integers from 2 through 14, inclusive. Condition: ((x - 8) * (x - 8)) < 25. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "10",
+        "B": "9",
+        "C": "7",
+        "D": "8"
+      }
+    }
+  ]
+}

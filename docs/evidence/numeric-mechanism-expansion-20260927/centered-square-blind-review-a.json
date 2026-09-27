@@ -1,0 +1,468 @@
+{
+  "worksheet_sha256": "93b4e6cef064efbd2ec60ae8d1317dba8ff0db4cd82ab78ef4d6e212c90bc65e",
+  "target_difficulty_range_1_to_5": [
+    2,
+    3
+  ],
+  "items": [
+    {
+      "id": "Q01",
+      "key": "C",
+      "key_uncertain": false,
+      "other_key_viable": false,
+      "other_key_reason": "The other three choices are different counts.",
+      "solution": "Five domain integers; x²−8x+15=(x−3)(x−5), so exclude 3 and 5.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Factor a monic quadratic, remove its two integer roots, and count the inclusive domain.",
+      "within_item_choice_pair_distinctness": [
+        {
+          "pair": "A-B",
+          "distinct": true
+        },
+        {
+          "pair": "A-C",
+          "distinct": true
+        },
+        {
+          "pair": "A-D",
+          "distinct": true
+        },
+        {
+          "pair": "B-C",
+          "distinct": true
+        },
+        {
+          "pair": "B-D",
+          "distinct": true
+        },
+        {
+          "pair": "C-D",
+          "distinct": true
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "key": "D",
+      "key_uncertain": false,
+      "other_key_viable": false,
+      "other_key_reason": "The other three choices are different counts.",
+      "solution": "Eight domain integers; x²−21x+104=(x−8)(x−13), so exclude 8 and 13.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Factor a monic quadratic, remove its two integer roots, and count the inclusive domain.",
+      "within_item_choice_pair_distinctness": [
+        {
+          "pair": "A-B",
+          "distinct": true
+        },
+        {
+          "pair": "A-C",
+          "distinct": true
+        },
+        {
+          "pair": "A-D",
+          "distinct": true
+        },
+        {
+          "pair": "B-C",
+          "distinct": true
+        },
+        {
+          "pair": "B-D",
+          "distinct": true
+        },
+        {
+          "pair": "C-D",
+          "distinct": true
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "key": "B",
+      "key_uncertain": false,
+      "other_key_viable": false,
+      "other_key_reason": "The other three choices are different counts.",
+      "solution": "Eleven domain integers; x²−18x+65=(x−5)(x−13), so exclude 5 and 13.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Factor a monic quadratic, remove its two integer roots, and count the inclusive domain.",
+      "within_item_choice_pair_distinctness": [
+        {
+          "pair": "A-B",
+          "distinct": true
+        },
+        {
+          "pair": "A-C",
+          "distinct": true
+        },
+        {
+          "pair": "A-D",
+          "distinct": true
+        },
+        {
+          "pair": "B-C",
+          "distinct": true
+        },
+        {
+          "pair": "B-D",
+          "distinct": true
+        },
+        {
+          "pair": "C-D",
+          "distinct": true
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "key": "C",
+      "key_uncertain": false,
+      "other_key_viable": false,
+      "other_key_reason": "The other three choices are different counts.",
+      "solution": "Twelve domain integers; x²−31x+220=(x−11)(x−20), so exclude 11 and 20.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Factor a monic quadratic, remove its two integer roots, and count the inclusive domain.",
+      "within_item_choice_pair_distinctness": [
+        {
+          "pair": "A-B",
+          "distinct": true
+        },
+        {
+          "pair": "A-C",
+          "distinct": true
+        },
+        {
+          "pair": "A-D",
+          "distinct": true
+        },
+        {
+          "pair": "B-C",
+          "distinct": true
+        },
+        {
+          "pair": "B-D",
+          "distinct": true
+        },
+        {
+          "pair": "C-D",
+          "distinct": true
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "key": "D",
+      "key_uncertain": false,
+      "other_key_viable": false,
+      "other_key_reason": "The other three choices are different counts.",
+      "solution": "(x−3)²<4 gives integer x=2,3,4.",
+      "difficulty_1_to_5": 1,
+      "difficulty_reason": "A short direct integer check around one small square.",
+      "within_item_choice_pair_distinctness": [
+        {
+          "pair": "A-B",
+          "distinct": true
+        },
+        {
+          "pair": "A-C",
+          "distinct": true
+        },
+        {
+          "pair": "A-D",
+          "distinct": true
+        },
+        {
+          "pair": "B-C",
+          "distinct": true
+        },
+        {
+          "pair": "B-D",
+          "distinct": true
+        },
+        {
+          "pair": "C-D",
+          "distinct": true
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "key": "B",
+      "key_uncertain": false,
+      "other_key_viable": false,
+      "other_key_reason": "The other three choices are different counts.",
+      "solution": "(x−8)²<25 gives integers x=4 through 12.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Use a perfect-square threshold to find an open integer interval and count it.",
+      "within_item_choice_pair_distinctness": [
+        {
+          "pair": "A-B",
+          "distinct": true
+        },
+        {
+          "pair": "A-C",
+          "distinct": true
+        },
+        {
+          "pair": "A-D",
+          "distinct": true
+        },
+        {
+          "pair": "B-C",
+          "distinct": true
+        },
+        {
+          "pair": "B-D",
+          "distinct": true
+        },
+        {
+          "pair": "C-D",
+          "distinct": true
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "key": "B",
+      "key_uncertain": false,
+      "other_key_viable": false,
+      "other_key_reason": "The other three choices are different counts.",
+      "solution": "(x−5)²<64 gives integers x=−2 through 12.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Use a perfect-square threshold to find an open integer interval and count it.",
+      "within_item_choice_pair_distinctness": [
+        {
+          "pair": "A-B",
+          "distinct": true
+        },
+        {
+          "pair": "A-C",
+          "distinct": true
+        },
+        {
+          "pair": "A-D",
+          "distinct": true
+        },
+        {
+          "pair": "B-C",
+          "distinct": true
+        },
+        {
+          "pair": "B-D",
+          "distinct": true
+        },
+        {
+          "pair": "C-D",
+          "distinct": true
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "key": "A",
+      "key_uncertain": false,
+      "other_key_viable": false,
+      "other_key_reason": "The other three choices are different counts.",
+      "solution": "(x−11)²<81 gives integers x=3 through 19.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Use a perfect-square threshold to find an open integer interval and count it.",
+      "within_item_choice_pair_distinctness": [
+        {
+          "pair": "A-B",
+          "distinct": true
+        },
+        {
+          "pair": "A-C",
+          "distinct": true
+        },
+        {
+          "pair": "A-D",
+          "distinct": true
+        },
+        {
+          "pair": "B-C",
+          "distinct": true
+        },
+        {
+          "pair": "B-D",
+          "distinct": true
+        },
+        {
+          "pair": "C-D",
+          "distinct": true
+        }
+      ]
+    }
+  ],
+  "cross_item_pairs": [
+    {
+      "pair": "Q01-Q02",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both factor a monic quadratic, exclude its two roots, then count; the sentence template and expanded expression match."
+    },
+    {
+      "pair": "Q01-Q03",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both factor a monic quadratic, exclude its two roots, then count; the sentence template and expanded expression match."
+    },
+    {
+      "pair": "Q01-Q04",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both factor a monic quadratic, exclude its two roots, then count; the sentence template and expanded expression match."
+    },
+    {
+      "pair": "Q01-Q05",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q01-Q06",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q01-Q07",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q01-Q08",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q02-Q03",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both factor a monic quadratic, exclude its two roots, then count; the sentence template and expanded expression match."
+    },
+    {
+      "pair": "Q02-Q04",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both factor a monic quadratic, exclude its two roots, then count; the sentence template and expanded expression match."
+    },
+    {
+      "pair": "Q02-Q05",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q02-Q06",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q02-Q07",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q02-Q08",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q03-Q04",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both factor a monic quadratic, exclude its two roots, then count; the sentence template and expanded expression match."
+    },
+    {
+      "pair": "Q03-Q05",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q03-Q06",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q03-Q07",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q03-Q08",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q04-Q05",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q04-Q06",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q04-Q07",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q04-Q08",
+      "solve_method_similarity": "low",
+      "format_similarity": "strong",
+      "reason": "Factoring and excluding roots differs from bounding a square; both use the same domain-and-condition counting sentence template."
+    },
+    {
+      "pair": "Q05-Q06",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both turn a centered square bound into an open integer interval, then count; the sentence template and expression shape match."
+    },
+    {
+      "pair": "Q05-Q07",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both turn a centered square bound into an open integer interval, then count; the sentence template and expression shape match."
+    },
+    {
+      "pair": "Q05-Q08",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both turn a centered square bound into an open integer interval, then count; the sentence template and expression shape match."
+    },
+    {
+      "pair": "Q06-Q07",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both turn a centered square bound into an open integer interval, then count; the sentence template and expression shape match."
+    },
+    {
+      "pair": "Q06-Q08",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both turn a centered square bound into an open integer interval, then count; the sentence template and expression shape match."
+    },
+    {
+      "pair": "Q07-Q08",
+      "solve_method_similarity": "strong",
+      "format_similarity": "strong",
+      "reason": "Both turn a centered square bound into an open integer interval, then count; the sentence template and expression shape match."
+    }
+  ],
+  "conclusion": "All eight questions have unique correct choices and all six choice pairs in each item are distinct. Seven items meet the target difficulty range; Q05 is easier at 1/5. The worksheet contains two four-item near-duplicate solution families, and all eight share a nearly identical prompt format."
+}

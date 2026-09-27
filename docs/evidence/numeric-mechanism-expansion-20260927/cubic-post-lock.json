@@ -1,0 +1,114 @@
+[
+  {
+    "id": "Q01",
+    "family": "bounded_quadratic_exclusion_count",
+    "a": 2,
+    "b": 3,
+    "expectedAnswer": "3",
+    "explanation": "The quadratic factors as (x - 3)(x - 5). It is zero exactly at x = 3 and x = 5; both are in the 5-integer domain. Every other domain integer is nonzero, so 5 - 2 = 3 satisfy the condition.",
+    "choiceExplanations": {
+      "1": "Exactly 3 domain integers satisfy the condition; 1 counts too few.",
+      "4": "Exactly 3 domain integers satisfy the condition; 4 counts too many.",
+      "3": "Exactly 3 domain integers satisfy the condition; 3 is the count.",
+      "2": "Exactly 3 domain integers satisfy the condition; 2 counts too few."
+    }
+  },
+  {
+    "id": "Q02",
+    "family": "bounded_quadratic_exclusion_count",
+    "a": 5,
+    "b": 8,
+    "expectedAnswer": "6",
+    "explanation": "The quadratic factors as (x - 8)(x - 13). It is zero exactly at x = 8 and x = 13; both are in the 8-integer domain. Every other domain integer is nonzero, so 8 - 2 = 6 satisfy the condition.",
+    "choiceExplanations": {
+      "7": "Exactly 6 domain integers satisfy the condition; 7 counts too many.",
+      "4": "Exactly 6 domain integers satisfy the condition; 4 counts too few.",
+      "5": "Exactly 6 domain integers satisfy the condition; 5 counts too few.",
+      "6": "Exactly 6 domain integers satisfy the condition; 6 is the count."
+    }
+  },
+  {
+    "id": "Q03",
+    "family": "bounded_quadratic_exclusion_count",
+    "a": 8,
+    "b": 5,
+    "expectedAnswer": "9",
+    "explanation": "The quadratic factors as (x - 5)(x - 13). It is zero exactly at x = 5 and x = 13; both are in the 11-integer domain. Every other domain integer is nonzero, so 11 - 2 = 9 satisfy the condition.",
+    "choiceExplanations": {
+      "8": "Exactly 9 domain integers satisfy the condition; 8 counts too few.",
+      "9": "Exactly 9 domain integers satisfy the condition; 9 is the count.",
+      "7": "Exactly 9 domain integers satisfy the condition; 7 counts too few.",
+      "10": "Exactly 9 domain integers satisfy the condition; 10 counts too many."
+    }
+  },
+  {
+    "id": "Q04",
+    "family": "bounded_quadratic_exclusion_count",
+    "a": 9,
+    "b": 11,
+    "expectedAnswer": "10",
+    "explanation": "The quadratic factors as (x - 11)(x - 20). It is zero exactly at x = 11 and x = 20; both are in the 12-integer domain. Every other domain integer is nonzero, so 12 - 2 = 10 satisfy the condition.",
+    "choiceExplanations": {
+      "9": "Exactly 10 domain integers satisfy the condition; 9 counts too few.",
+      "8": "Exactly 10 domain integers satisfy the condition; 8 counts too few.",
+      "10": "Exactly 10 domain integers satisfy the condition; 10 is the count.",
+      "11": "Exactly 10 domain integers satisfy the condition; 11 counts too many."
+    }
+  },
+  {
+    "id": "Q05",
+    "family": "bounded_three_root_minimum",
+    "a": 2,
+    "b": 3,
+    "expectedAnswer": "3",
+    "explanation": "The roots 3, 5, and 7 have sum 15, pairwise-product sum 71, and product 105. The cubic therefore factors as (x - 3)(x - 5)(x - 7) = 0. These are its only roots, all in the domain; the minimum is 3.",
+    "choiceExplanations": {
+      "4": "At x = 4, 3 = 0 is false. This value does not satisfy the condition.",
+      "5": "At x = 5, 0 = 0 is true. The question asks for the minimum; that value is 3.",
+      "3": "At x = 3, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "2": "At x = 2, -15 = 0 is false. This value does not satisfy the condition."
+    }
+  },
+  {
+    "id": "Q06",
+    "family": "bounded_three_root_minimum",
+    "a": 5,
+    "b": 8,
+    "expectedAnswer": "8",
+    "explanation": "The roots 8, 13, and 15 have sum 36, pairwise-product sum 419, and product 1560. The cubic therefore factors as (x - 8)(x - 13)(x - 15) = 0. These are its only roots, all in the domain; the minimum is 8.",
+    "choiceExplanations": {
+      "8": "At x = 8, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "13": "At x = 13, 0 = 0 is true. The question asks for the minimum; that value is 8.",
+      "7": "At x = 7, -48 = 0 is false. This value does not satisfy the condition.",
+      "9": "At x = 9, 24 = 0 is false. This value does not satisfy the condition."
+    }
+  },
+  {
+    "id": "Q07",
+    "family": "bounded_three_root_minimum",
+    "a": 8,
+    "b": 5,
+    "expectedAnswer": "5",
+    "explanation": "The roots 5, 13, and 15 have sum 33, pairwise-product sum 335, and product 975. The cubic therefore factors as (x - 5)(x - 13)(x - 15) = 0. These are its only roots, all in the domain; the minimum is 5.",
+    "choiceExplanations": {
+      "6": "At x = 6, 63 = 0 is false. This value does not satisfy the condition.",
+      "4": "At x = 4, -99 = 0 is false. This value does not satisfy the condition.",
+      "5": "At x = 5, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "13": "At x = 13, 0 = 0 is true. The question asks for the minimum; that value is 5."
+    }
+  },
+  {
+    "id": "Q08",
+    "family": "bounded_three_root_minimum",
+    "a": 9,
+    "b": 11,
+    "expectedAnswer": "11",
+    "explanation": "The roots 11, 20, and 22 have sum 53, pairwise-product sum 902, and product 4840. The cubic therefore factors as (x - 11)(x - 20)(x - 22) = 0. These are its only roots, all in the domain; the minimum is 11.",
+    "choiceExplanations": {
+      "11": "At x = 11, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "20": "At x = 20, 0 = 0 is true. The question asks for the minimum; that value is 11.",
+      "10": "At x = 10, -120 = 0 is false. This value does not satisfy the condition.",
+      "12": "At x = 12, 80 = 0 is false. This value does not satisfy the condition."
+    }
+  }
+]

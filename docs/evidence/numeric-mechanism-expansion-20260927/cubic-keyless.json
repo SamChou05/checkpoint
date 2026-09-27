@@ -1,0 +1,82 @@
+[
+  {
+    "id": "Q01",
+    "prompt": "Let x be a unitless number. Its domain is integers from 2 through 6, inclusive. Condition: (((x * x) - (8 * x)) + 15) != 0. How many integers in this domain satisfy the condition?",
+    "choices": [
+      "1",
+      "4",
+      "3",
+      "2"
+    ]
+  },
+  {
+    "id": "Q02",
+    "prompt": "Let x be a unitless number. Its domain is integers from 7 through 14, inclusive. Condition: (((x * x) - (21 * x)) + 104) != 0. How many integers in this domain satisfy the condition?",
+    "choices": [
+      "7",
+      "4",
+      "5",
+      "6"
+    ]
+  },
+  {
+    "id": "Q03",
+    "prompt": "Let x be a unitless number. Its domain is integers from 4 through 14, inclusive. Condition: (((x * x) - (18 * x)) + 65) != 0. How many integers in this domain satisfy the condition?",
+    "choices": [
+      "8",
+      "9",
+      "7",
+      "10"
+    ]
+  },
+  {
+    "id": "Q04",
+    "prompt": "Let x be a unitless number. Its domain is integers from 10 through 21, inclusive. Condition: (((x * x) - (31 * x)) + 220) != 0. How many integers in this domain satisfy the condition?",
+    "choices": [
+      "9",
+      "8",
+      "10",
+      "11"
+    ]
+  },
+  {
+    "id": "Q05",
+    "prompt": "Let x be a unitless number. Its domain is integers from 0 through 9, inclusive. Condition: (((((x * x) * x) - (15 * (x * x))) + (71 * x)) - 105) = 0. What is the minimum x in this domain satisfying the condition?",
+    "choices": [
+      "4",
+      "5",
+      "3",
+      "2"
+    ]
+  },
+  {
+    "id": "Q06",
+    "prompt": "Let x be a unitless number. Its domain is integers from 0 through 17, inclusive. Condition: (((((x * x) * x) - (36 * (x * x))) + (419 * x)) - 1560) = 0. What is the minimum x in this domain satisfying the condition?",
+    "choices": [
+      "8",
+      "13",
+      "7",
+      "9"
+    ]
+  },
+  {
+    "id": "Q07",
+    "prompt": "Let x be a unitless number. Its domain is integers from 0 through 17, inclusive. Condition: (((((x * x) * x) - (33 * (x * x))) + (335 * x)) - 975) = 0. What is the minimum x in this domain satisfying the condition?",
+    "choices": [
+      "6",
+      "4",
+      "5",
+      "13"
+    ]
+  },
+  {
+    "id": "Q08",
+    "prompt": "Let x be a unitless number. Its domain is integers from 0 through 24, inclusive. Condition: (((((x * x) * x) - (53 * (x * x))) + (902 * x)) - 4840) = 0. What is the minimum x in this domain satisfying the condition?",
+    "choices": [
+      "11",
+      "20",
+      "10",
+      "12"
+    ]
+  }
+]

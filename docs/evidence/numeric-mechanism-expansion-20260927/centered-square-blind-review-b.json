@@ -1,0 +1,1010 @@
+{
+  "worksheet_path": "/private/tmp/checkpoint-numeric-expansion-v2-blind.json",
+  "worksheet_sha256": "93b4e6cef064efbd2ec60ae8d1317dba8ff0db4cd82ab78ef4d6e212c90bc65e",
+  "review_type": "independent_answer_blind",
+  "items": [
+    {
+      "id": "Q01",
+      "answer_status": "certain",
+      "key": {
+        "choice_index_zero_based": 2,
+        "choice_text": "3"
+      },
+      "second_viable_key": null,
+      "solution": "There are 5 domain integers; x^2-8x+15=(x-3)(x-5) vanishes at 3 and 5, leaving 3.",
+      "difficulty_1_to_5": 2,
+      "target_difficulty_range": [
+        2,
+        3
+      ],
+      "difficulty_vs_target": "within",
+      "choice_pair_judgments": [
+        {
+          "choice_indices_zero_based": [
+            0,
+            1
+          ],
+          "choice_texts": [
+            "1",
+            "4"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            2
+          ],
+          "choice_texts": [
+            "1",
+            "3"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            3
+          ],
+          "choice_texts": [
+            "1",
+            "2"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "4",
+            "3"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "4",
+            "2"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "3",
+            "2"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "answer_status": "certain",
+      "key": {
+        "choice_index_zero_based": 3,
+        "choice_text": "6"
+      },
+      "second_viable_key": null,
+      "solution": "There are 8 domain integers; x^2-21x+104=(x-8)(x-13) vanishes at 8 and 13, leaving 6.",
+      "difficulty_1_to_5": 2,
+      "target_difficulty_range": [
+        2,
+        3
+      ],
+      "difficulty_vs_target": "within",
+      "choice_pair_judgments": [
+        {
+          "choice_indices_zero_based": [
+            0,
+            1
+          ],
+          "choice_texts": [
+            "7",
+            "4"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            2
+          ],
+          "choice_texts": [
+            "7",
+            "5"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            3
+          ],
+          "choice_texts": [
+            "7",
+            "6"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "4",
+            "5"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "4",
+            "6"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "5",
+            "6"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "answer_status": "certain",
+      "key": {
+        "choice_index_zero_based": 1,
+        "choice_text": "9"
+      },
+      "second_viable_key": null,
+      "solution": "There are 11 domain integers; x^2-18x+65=(x-5)(x-13) vanishes at 5 and 13, leaving 9.",
+      "difficulty_1_to_5": 2,
+      "target_difficulty_range": [
+        2,
+        3
+      ],
+      "difficulty_vs_target": "within",
+      "choice_pair_judgments": [
+        {
+          "choice_indices_zero_based": [
+            0,
+            1
+          ],
+          "choice_texts": [
+            "8",
+            "9"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            2
+          ],
+          "choice_texts": [
+            "8",
+            "7"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            3
+          ],
+          "choice_texts": [
+            "8",
+            "10"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "9",
+            "7"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "9",
+            "10"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "7",
+            "10"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "answer_status": "certain",
+      "key": {
+        "choice_index_zero_based": 2,
+        "choice_text": "10"
+      },
+      "second_viable_key": null,
+      "solution": "There are 12 domain integers; x^2-31x+220=(x-11)(x-20) vanishes at 11 and 20, leaving 10.",
+      "difficulty_1_to_5": 2,
+      "target_difficulty_range": [
+        2,
+        3
+      ],
+      "difficulty_vs_target": "within",
+      "choice_pair_judgments": [
+        {
+          "choice_indices_zero_based": [
+            0,
+            1
+          ],
+          "choice_texts": [
+            "9",
+            "8"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            2
+          ],
+          "choice_texts": [
+            "9",
+            "10"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            3
+          ],
+          "choice_texts": [
+            "9",
+            "11"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "8",
+            "10"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "8",
+            "11"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "10",
+            "11"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "answer_status": "certain",
+      "key": {
+        "choice_index_zero_based": 3,
+        "choice_text": "3"
+      },
+      "second_viable_key": null,
+      "solution": "The strict inequality |x-3|<2 admits x=2,3,4, giving 3 integers.",
+      "difficulty_1_to_5": 1,
+      "target_difficulty_range": [
+        2,
+        3
+      ],
+      "difficulty_vs_target": "below",
+      "choice_pair_judgments": [
+        {
+          "choice_indices_zero_based": [
+            0,
+            1
+          ],
+          "choice_texts": [
+            "4",
+            "1"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            2
+          ],
+          "choice_texts": [
+            "4",
+            "2"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            3
+          ],
+          "choice_texts": [
+            "4",
+            "3"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "1",
+            "2"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "1",
+            "3"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "2",
+            "3"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "answer_status": "certain",
+      "key": {
+        "choice_index_zero_based": 1,
+        "choice_text": "9"
+      },
+      "second_viable_key": null,
+      "solution": "The strict inequality |x-8|<5 admits x=4 through 12, giving 9 integers.",
+      "difficulty_1_to_5": 2,
+      "target_difficulty_range": [
+        2,
+        3
+      ],
+      "difficulty_vs_target": "within",
+      "choice_pair_judgments": [
+        {
+          "choice_indices_zero_based": [
+            0,
+            1
+          ],
+          "choice_texts": [
+            "10",
+            "9"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            2
+          ],
+          "choice_texts": [
+            "10",
+            "7"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            3
+          ],
+          "choice_texts": [
+            "10",
+            "8"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "9",
+            "7"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "9",
+            "8"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "7",
+            "8"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "answer_status": "certain",
+      "key": {
+        "choice_index_zero_based": 1,
+        "choice_text": "15"
+      },
+      "second_viable_key": null,
+      "solution": "The strict inequality |x-5|<8 admits x=-2 through 12, giving 15 integers.",
+      "difficulty_1_to_5": 2,
+      "target_difficulty_range": [
+        2,
+        3
+      ],
+      "difficulty_vs_target": "within",
+      "choice_pair_judgments": [
+        {
+          "choice_indices_zero_based": [
+            0,
+            1
+          ],
+          "choice_texts": [
+            "13",
+            "15"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            2
+          ],
+          "choice_texts": [
+            "13",
+            "16"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            3
+          ],
+          "choice_texts": [
+            "13",
+            "14"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "15",
+            "16"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "15",
+            "14"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "16",
+            "14"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "answer_status": "certain",
+      "key": {
+        "choice_index_zero_based": 0,
+        "choice_text": "17"
+      },
+      "second_viable_key": null,
+      "solution": "The strict inequality |x-11|<9 admits x=3 through 19, giving 17 integers.",
+      "difficulty_1_to_5": 2,
+      "target_difficulty_range": [
+        2,
+        3
+      ],
+      "difficulty_vs_target": "within",
+      "choice_pair_judgments": [
+        {
+          "choice_indices_zero_based": [
+            0,
+            1
+          ],
+          "choice_texts": [
+            "17",
+            "16"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            2
+          ],
+          "choice_texts": [
+            "17",
+            "15"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            0,
+            3
+          ],
+          "choice_texts": [
+            "17",
+            "18"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            2
+          ],
+          "choice_texts": [
+            "16",
+            "15"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            1,
+            3
+          ],
+          "choice_texts": [
+            "16",
+            "18"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        },
+        {
+          "choice_indices_zero_based": [
+            2,
+            3
+          ],
+          "choice_texts": [
+            "15",
+            "18"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different integer counts imply different answers to the question."
+        }
+      ]
+    }
+  ],
+  "cross_item_pairs": [
+    {
+      "item_pair": [
+        "Q01",
+        "Q02"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count a finite integer domain after excluding the two roots of a factored quadratic.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q01",
+        "Q03"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count a finite integer domain after excluding the two roots of a factored quadratic.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q01",
+        "Q04"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count a finite integer domain after excluding the two roots of a factored quadratic.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q01",
+        "Q05"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q01",
+        "Q06"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q01",
+        "Q07"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q01",
+        "Q08"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q02",
+        "Q03"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count a finite integer domain after excluding the two roots of a factored quadratic.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q02",
+        "Q04"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count a finite integer domain after excluding the two roots of a factored quadratic.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q02",
+        "Q05"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q02",
+        "Q06"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q02",
+        "Q07"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q02",
+        "Q08"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q03",
+        "Q04"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count a finite integer domain after excluding the two roots of a factored quadratic.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q03",
+        "Q05"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q03",
+        "Q06"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q03",
+        "Q07"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q03",
+        "Q08"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q04",
+        "Q05"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q04",
+        "Q06"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q04",
+        "Q07"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q04",
+        "Q08"
+      ],
+      "solving_method_similarity": "moderate",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both count qualifying integers in an inclusive domain, but one excludes quadratic zeros and the other solves a strict square inequality.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q05",
+        "Q06"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both turn a strict square inequality into an open interval and count its integer members.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q05",
+        "Q07"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both turn a strict square inequality into an open interval and count its integer members.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q05",
+        "Q08"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both turn a strict square inequality into an open interval and count its integer members.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q06",
+        "Q07"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both turn a strict square inequality into an open interval and count its integer members.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q06",
+        "Q08"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both turn a strict square inequality into an open interval and count its integer members.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    },
+    {
+      "item_pair": [
+        "Q07",
+        "Q08"
+      ],
+      "solving_method_similarity": "strong",
+      "format_similarity": "strong",
+      "solving_method_reason": "Both turn a strict square inequality into an open interval and count its integer members.",
+      "format_reason": "Both use the same variable/domain/condition/count prompt template and four numeric choices."
+    }
+  ],
+  "conclusion": "All eight items have one defensible key and all choice pairs give distinct counts. Q05 is below the target difficulty; the other seven are within it. The four root-exclusion items and four square-inequality items each repeat a solving pattern, and all eight closely repeat the same prompt format."
+}

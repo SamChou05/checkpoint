@@ -1,0 +1,91 @@
+{
+  "sourceSha256": "1b38c104e41b93c68f2170a73f4cbc198397a382bda21f7ca83b0d100351747a",
+  "targetDifficultyRange": [2, 3],
+  "blindAudit": true,
+  "items": [
+    {
+      "id": "Q01",
+      "solvedAnswer": "A",
+      "solvedCount": 5,
+      "solution": "(x - 3)^2 < 9 means |x - 3| < 3, so the qualifying integers are 1, 2, 3, 4, and 5.",
+      "keyUncertainty": "None; the strict inequality excludes x = 0 and x = 6.",
+      "secondViableKey": null,
+      "difficultyRating": 2,
+      "difficultyReason": "A short two-step task: interpret a strict squared-distance bound, then count five integers. The excluded boundary values create a real but small trap.",
+      "meetsTargetDifficulty": true,
+      "choicePairs": [
+        {"pair": "A-B", "values": [5, 6], "meaningfullyDistinct": true, "reason": "Different counts; B is one above the valid count."},
+        {"pair": "A-C", "values": [5, 4], "meaningfullyDistinct": true, "reason": "Different counts; C is one below the valid count."},
+        {"pair": "A-D", "values": [5, 3], "meaningfullyDistinct": true, "reason": "Different counts; D is two below the valid count."},
+        {"pair": "B-C", "values": [6, 4], "meaningfullyDistinct": true, "reason": "The proposed counts differ by two integers."},
+        {"pair": "B-D", "values": [6, 3], "meaningfullyDistinct": true, "reason": "The proposed counts differ by three integers."},
+        {"pair": "C-D", "values": [4, 3], "meaningfullyDistinct": true, "reason": "The proposed counts differ by one integer."}
+      ]
+    },
+    {
+      "id": "Q02",
+      "solvedAnswer": "A",
+      "solvedCount": 5,
+      "solution": "(x - 7)^2 < 9 means |x - 7| < 3, so the qualifying integers are 5, 6, 7, 8, and 9.",
+      "keyUncertainty": "None; the strict inequality excludes x = 4 and x = 10.",
+      "secondViableKey": null,
+      "difficultyRating": 2,
+      "difficultyReason": "The strict square bound and integer count require a small amount of reasoning. As the second item in this set, its near-exact repetition of Q01 lowers effective difficulty to 1 for a learner who has just solved Q01.",
+      "meetsTargetDifficulty": true,
+      "choicePairs": [
+        {"pair": "A-B", "values": [5, 4], "meaningfullyDistinct": true, "reason": "Different counts; B is one below the valid count."},
+        {"pair": "A-C", "values": [5, 3], "meaningfullyDistinct": true, "reason": "Different counts; C is two below the valid count."},
+        {"pair": "A-D", "values": [5, 6], "meaningfullyDistinct": true, "reason": "Different counts; D is one above the valid count."},
+        {"pair": "B-C", "values": [4, 3], "meaningfullyDistinct": true, "reason": "The proposed counts differ by one integer."},
+        {"pair": "B-D", "values": [4, 6], "meaningfullyDistinct": true, "reason": "The proposed counts differ by two integers."},
+        {"pair": "C-D", "values": [3, 6], "meaningfullyDistinct": true, "reason": "The proposed counts differ by three integers."}
+      ]
+    },
+    {
+      "id": "Q03",
+      "solvedAnswer": "A",
+      "solvedCount": 7,
+      "solution": "(x - 5)^2 < 16 means |x - 5| < 4, so the qualifying integers are 2 through 8 inclusive, seven in total.",
+      "keyUncertainty": "None; x = 1 and x = 9 are excluded boundary values.",
+      "secondViableKey": null,
+      "difficultyRating": 2,
+      "difficultyReason": "The radius is slightly larger, but the same strict-bound-and-count reasoning applies. In this sequence the repeated template lowers effective difficulty to 1 after Q01 and Q02.",
+      "meetsTargetDifficulty": true,
+      "choicePairs": [
+        {"pair": "A-B", "values": [7, 8], "meaningfullyDistinct": true, "reason": "Different counts; B is one above the valid count."},
+        {"pair": "A-C", "values": [7, 5], "meaningfullyDistinct": true, "reason": "Different counts; C is two below the valid count."},
+        {"pair": "A-D", "values": [7, 6], "meaningfullyDistinct": true, "reason": "Different counts; D is one below the valid count."},
+        {"pair": "B-C", "values": [8, 5], "meaningfullyDistinct": true, "reason": "The proposed counts differ by three integers."},
+        {"pair": "B-D", "values": [8, 6], "meaningfullyDistinct": true, "reason": "The proposed counts differ by two integers."},
+        {"pair": "C-D", "values": [5, 6], "meaningfullyDistinct": true, "reason": "The proposed counts differ by one integer."}
+      ]
+    },
+    {
+      "id": "Q04",
+      "solvedAnswer": "B",
+      "solvedCount": 9,
+      "solution": "(x - 8)^2 < 25 means |x - 8| < 5, so the qualifying integers are 4 through 12 inclusive, nine in total.",
+      "keyUncertainty": "None; x = 3 and x = 13 are excluded boundary values.",
+      "secondViableKey": null,
+      "difficultyRating": 2,
+      "difficultyReason": "The task still requires interpreting a strict square bound and counting integers. The larger radius does not add a new method; as the fourth item in this set, effective difficulty falls to 1 through repetition.",
+      "meetsTargetDifficulty": true,
+      "choicePairs": [
+        {"pair": "A-B", "values": [10, 9], "meaningfullyDistinct": true, "reason": "Different counts; A is one above the valid count."},
+        {"pair": "A-C", "values": [10, 7], "meaningfullyDistinct": true, "reason": "The proposed counts differ by three integers."},
+        {"pair": "A-D", "values": [10, 8], "meaningfullyDistinct": true, "reason": "The proposed counts differ by two integers."},
+        {"pair": "B-C", "values": [9, 7], "meaningfullyDistinct": true, "reason": "Different counts; C is two below the valid count."},
+        {"pair": "B-D", "values": [9, 8], "meaningfullyDistinct": true, "reason": "Different counts; D is one below the valid count."},
+        {"pair": "C-D", "values": [7, 8], "meaningfullyDistinct": true, "reason": "The proposed counts differ by one integer."}
+      ]
+    }
+  ],
+  "setAssessment": {
+    "smallestRadiusVariants": ["Q01", "Q02"],
+    "smallestRadiusMeetsDifficulty2Standalone": true,
+    "smallestRadiusReason": "Both radius-3 items require handling strict endpoints and counting the five interior integers, so each merits 2/5 when seen alone. Q02 is only a translation of Q01 and has lower effective difficulty when presented immediately after it.",
+    "all24ChoicePairsMeaningfullyDistinct": true,
+    "repetitionConcern": "All four items use the same squared-distance inequality, centered domain, and counting procedure. Q01 and Q02 are mathematically identical after translating x. Once the learner sees that a strict radius r includes 2r - 1 integers, the remaining items are direct substitutions.",
+    "answerPatternConcern": "The independently solved answers are A, A, A, B; the first three share the same answer position."
+  }
+}

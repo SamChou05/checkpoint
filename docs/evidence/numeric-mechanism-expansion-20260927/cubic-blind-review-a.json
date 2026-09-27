@@ -1,0 +1,534 @@
+{
+  "review_type": "independent_answer_blind",
+  "worksheet_sha256": "a93cdbba675283d8955e681720f0488534adfd905a0b6a33dc2754ec2f5b6244",
+  "difficulty_scale": "1=very easy, 5=very hard",
+  "target_difficulty": "2–3",
+  "question_reviews": [
+    {
+      "id": "Q01",
+      "chosen_answer": "C",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution": "x²−8x+15=(x−3)(x−5). The domain 2–6 has five integers; excluding roots 3 and 5 leaves three.",
+      "difficulty_1_to_5": 2,
+      "target_difficulty": "2–3",
+      "within_target_difficulty": true,
+      "choice_values_by_letter": {
+        "A": "1",
+        "B": "4",
+        "C": "3",
+        "D": "2"
+      },
+      "choice_pair_reviews": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (1 versus 4); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (1 versus 3); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (1 versus 2); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (4 versus 3); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (4 versus 2); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (3 versus 2); only C matches domain size minus the two excluded roots."
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "chosen_answer": "D",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution": "x²−21x+104=(x−8)(x−13). The domain 7–14 has eight integers; excluding roots 8 and 13 leaves six.",
+      "difficulty_1_to_5": 3,
+      "target_difficulty": "2–3",
+      "within_target_difficulty": true,
+      "choice_values_by_letter": {
+        "A": "7",
+        "B": "4",
+        "C": "5",
+        "D": "6"
+      },
+      "choice_pair_reviews": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (7 versus 4); only D matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (7 versus 5); only D matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (7 versus 6); only D matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (4 versus 5); only D matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (4 versus 6); only D matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (5 versus 6); only D matches domain size minus the two excluded roots."
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "chosen_answer": "B",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution": "x²−18x+65=(x−5)(x−13). The domain 4–14 has eleven integers; excluding roots 5 and 13 leaves nine.",
+      "difficulty_1_to_5": 3,
+      "target_difficulty": "2–3",
+      "within_target_difficulty": true,
+      "choice_values_by_letter": {
+        "A": "8",
+        "B": "9",
+        "C": "7",
+        "D": "10"
+      },
+      "choice_pair_reviews": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (8 versus 9); only B matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (8 versus 7); only B matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (8 versus 10); only B matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (9 versus 7); only B matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (9 versus 10); only B matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (7 versus 10); only B matches domain size minus the two excluded roots."
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "chosen_answer": "C",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution": "x²−31x+220=(x−11)(x−20). The domain 10–21 has twelve integers; excluding roots 11 and 20 leaves ten.",
+      "difficulty_1_to_5": 3,
+      "target_difficulty": "2–3",
+      "within_target_difficulty": true,
+      "choice_values_by_letter": {
+        "A": "9",
+        "B": "8",
+        "C": "10",
+        "D": "11"
+      },
+      "choice_pair_reviews": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (9 versus 8); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (9 versus 10); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (9 versus 11); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (8 versus 10); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (8 versus 11); only C matches domain size minus the two excluded roots."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The options propose different exact counts (10 versus 11); only C matches domain size minus the two excluded roots."
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "chosen_answer": "C",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution": "x³−15x²+71x−105=(x−3)(x−5)(x−7). The minimum domain root is 3.",
+      "difficulty_1_to_5": 3,
+      "target_difficulty": "2–3",
+      "within_target_difficulty": true,
+      "choice_values_by_letter": {
+        "A": "4",
+        "B": "5",
+        "C": "3",
+        "D": "2"
+      },
+      "choice_pair_reviews": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The values 4 and 5 differ on whether the candidate solves the equation or is a later root."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The values 4 and 3 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": false,
+          "reason": "Both 4 and 2 fail the equation; they are merely different non-root integers, so this contrast adds little diagnostic value."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The values 5 and 3 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The values 5 and 2 differ on whether the candidate solves the equation or is a later root."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The values 3 and 2 differ on whether the selected integer is the minimum root."
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "chosen_answer": "A",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution": "x³−36x²+419x−1560=(x−8)(x−13)(x−15). The minimum domain root is 8.",
+      "difficulty_1_to_5": 4,
+      "target_difficulty": "2–3",
+      "within_target_difficulty": false,
+      "choice_values_by_letter": {
+        "A": "8",
+        "B": "13",
+        "C": "7",
+        "D": "9"
+      },
+      "choice_pair_reviews": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The values 8 and 13 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The values 8 and 7 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The values 8 and 9 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The values 13 and 7 differ on whether the candidate solves the equation or is a later root."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The values 13 and 9 differ on whether the candidate solves the equation or is a later root."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": false,
+          "reason": "Both 7 and 9 fail the equation; the two adjacent non-roots serve essentially the same distractor role."
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "chosen_answer": "C",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution": "x³−33x²+335x−975=(x−5)(x−13)(x−15). The minimum domain root is 5.",
+      "difficulty_1_to_5": 4,
+      "target_difficulty": "2–3",
+      "within_target_difficulty": false,
+      "choice_values_by_letter": {
+        "A": "6",
+        "B": "4",
+        "C": "5",
+        "D": "13"
+      },
+      "choice_pair_reviews": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": false,
+          "reason": "Both 6 and 4 fail the equation; the two adjacent non-roots serve essentially the same distractor role."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The values 6 and 5 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The values 6 and 13 differ on whether the candidate solves the equation or is a later root."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The values 4 and 5 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The values 4 and 13 differ on whether the candidate solves the equation or is a later root."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The values 5 and 13 differ on whether the selected integer is the minimum root."
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "chosen_answer": "A",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution": "x³−53x²+902x−4840=(x−11)(x−20)(x−22). The minimum domain root is 11.",
+      "difficulty_1_to_5": 4,
+      "target_difficulty": "2–3",
+      "within_target_difficulty": false,
+      "choice_values_by_letter": {
+        "A": "11",
+        "B": "20",
+        "C": "10",
+        "D": "12"
+      },
+      "choice_pair_reviews": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The values 11 and 20 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The values 11 and 10 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The values 11 and 12 differ on whether the selected integer is the minimum root."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The values 20 and 10 differ on whether the candidate solves the equation or is a later root."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The values 20 and 12 differ on whether the candidate solves the equation or is a later root."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": false,
+          "reason": "Both 10 and 12 fail the equation; the two adjacent non-roots serve essentially the same distractor role."
+        }
+      ]
+    }
+  ],
+  "cross_item_pair_reviews": [
+    {
+      "pair": "Q01-Q02",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the count of domain integers making a factorizable quadratic nonzero; find the two roots (3, 5) and (8, 13), then subtract two from the inclusive domain size."
+    },
+    {
+      "pair": "Q01-Q03",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the count of domain integers making a factorizable quadratic nonzero; find the two roots (3, 5) and (5, 13), then subtract two from the inclusive domain size."
+    },
+    {
+      "pair": "Q01-Q04",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the count of domain integers making a factorizable quadratic nonzero; find the two roots (3, 5) and (11, 20), then subtract two from the inclusive domain size."
+    },
+    {
+      "pair": "Q01-Q05",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (3, 5) versus (3, 5, 7)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q01-Q06",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (3, 5) versus (8, 13, 15)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q01-Q07",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (3, 5) versus (5, 13, 15)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q01-Q08",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (3, 5) versus (11, 20, 22)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q02-Q03",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the count of domain integers making a factorizable quadratic nonzero; find the two roots (8, 13) and (5, 13), then subtract two from the inclusive domain size."
+    },
+    {
+      "pair": "Q02-Q04",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the count of domain integers making a factorizable quadratic nonzero; find the two roots (8, 13) and (11, 20), then subtract two from the inclusive domain size."
+    },
+    {
+      "pair": "Q02-Q05",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (8, 13) versus (3, 5, 7)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q02-Q06",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (8, 13) versus (8, 13, 15)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q02-Q07",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (8, 13) versus (5, 13, 15)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q02-Q08",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (8, 13) versus (11, 20, 22)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q03-Q04",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the count of domain integers making a factorizable quadratic nonzero; find the two roots (5, 13) and (11, 20), then subtract two from the inclusive domain size."
+    },
+    {
+      "pair": "Q03-Q05",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (5, 13) versus (3, 5, 7)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q03-Q06",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (5, 13) versus (8, 13, 15)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q03-Q07",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (5, 13) versus (5, 13, 15)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q03-Q08",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (5, 13) versus (11, 20, 22)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q04-Q05",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (11, 20) versus (3, 5, 7)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q04-Q06",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (11, 20) versus (8, 13, 15)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q04-Q07",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (11, 20) versus (5, 13, 15)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q04-Q08",
+      "repeated_solve_mechanism": "moderate",
+      "reason": "Both require finding integer polynomial roots in a bounded domain (roots (11, 20) versus (11, 20, 22)), but the quadratic item counts non-roots while the cubic item selects the minimum root."
+    },
+    {
+      "pair": "Q05-Q06",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the minimum integer root of a factorizable cubic in a bounded domain; their root sets are (3, 5, 7) and (8, 13, 15), with the same test/select-minimum mechanism."
+    },
+    {
+      "pair": "Q05-Q07",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the minimum integer root of a factorizable cubic in a bounded domain; their root sets are (3, 5, 7) and (5, 13, 15), with the same test/select-minimum mechanism."
+    },
+    {
+      "pair": "Q05-Q08",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the minimum integer root of a factorizable cubic in a bounded domain; their root sets are (3, 5, 7) and (11, 20, 22), with the same test/select-minimum mechanism."
+    },
+    {
+      "pair": "Q06-Q07",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the minimum integer root of a factorizable cubic in a bounded domain; their root sets are (8, 13, 15) and (5, 13, 15), with the same test/select-minimum mechanism."
+    },
+    {
+      "pair": "Q06-Q08",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the minimum integer root of a factorizable cubic in a bounded domain; their root sets are (8, 13, 15) and (11, 20, 22), with the same test/select-minimum mechanism."
+    },
+    {
+      "pair": "Q07-Q08",
+      "repeated_solve_mechanism": "strong",
+      "reason": "Both ask for the minimum integer root of a factorizable cubic in a bounded domain; their root sets are (5, 13, 15) and (11, 20, 22), with the same test/select-minimum mechanism."
+    }
+  ]
+}
