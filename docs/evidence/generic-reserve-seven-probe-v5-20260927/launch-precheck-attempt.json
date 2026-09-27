@@ -1,0 +1,7 @@
+{
+  "status": "started",
+  "plan_sha256": "308cfdef571eb58e01b873ba0b2416eb5725c5fa3c5b1ecc239f1ea0435bd9e7",
+  "started_at": "2026-09-27T16:43:36.095161+00:00",
+  "maximum_sts_requests": 1,
+  "provider_calls": 0
+}
