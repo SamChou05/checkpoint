@@ -1,0 +1,79 @@
+{
+  "review_type": "independent_frozen_preparation_audit",
+  "reviewed_at_utc": "2026-09-27T12:13:06.438699+00:00",
+  "trial_id": "combined-v12-mapped-3x2-full-worker-20260927-01",
+  "source_commit": "01439703d647ab17246c4f9c821a4dd05b5b2a99",
+  "decision": {
+    "frozen_offline_preparation": "GO",
+    "independent_exact_hash_review_go": true,
+    "live_dispatch_at_review_time": "NO-GO",
+    "live_dispatch_reason": "The separate exact-hash review-approval.json and fresh launch-precheck record are absent. Their creation and live AWS activity were outside this read-only audit."
+  },
+  "verified_hashes": {
+    "plan_sha256": "bbac67ed6255db66c20404f37470a5c92a53e86d1a49a0ca41c90015f8f5217b",
+    "harness_sha256": "d7bd8cc215219c63fe16c8f90d85e3c46f42d22a4b891aae709321f2b6620462",
+    "tests_sha256": "b65595c98a9f32790dd8796ba183c957fcd80ba4287a2b8f204c1b2bfbc185b7",
+    "request_bytes_sha256": "b6c0f712b693deeedbb03919a920499fa1d0d3abdfa97b857e68ad10d0bd1714",
+    "request_canonical_sha256": "212cea7d53ddefe17fbe8f2459705b46b871793e62e0e58b56cc11e3626e63ae",
+    "author_wire_sha256": "0317c2b75115c309232c02e6eddcedd230461fc63f5d18da7312502868092a0a",
+    "native_schema_sha256": "495db717d6b3fd6cc5272cdb289c7d77d9ca2e275b7c1d3f0cb856c1a18b6934",
+    "native_schema_bytes": 2357,
+    "system_prompt_sha256": "3bd6e28e9cacb12b8fdec9d34d4ca6410e81f86020c76fdbd48c9e4ee41ec4f6",
+    "user_prompt_sha256": "fb4a783e3e205d08ddf87f6595da72c78c6117be7caddb3b33da83bf49fae4d4",
+    "native_config_sha256": "f3929703e32a10429dcd2ec3a1439d28c8a72314b19e28685424c4a51d7fa34f"
+  },
+  "findings": [
+    {
+      "gate": "source_pins",
+      "result": "PASS",
+      "evidence": "All 40 plan source_hashes match local bytes; all 34 backend pins match blobs in source commit 01439703d647ab17246c4f9c821a4dd05b5b2a99. That commit is contained in origin/main. The harness also fails closed on backend drift and rechecks plan/source before dispatch."
+    },
+    {
+      "gate": "schema_and_wire",
+      "result": "PASS",
+      "evidence": "Recomputed the exact author wire, native schema, prompts, config, and canonical request hashes from frozen plan/request bytes. Wire and schema match the predecessor v12 author plan. The offline preflight validates the 2,357-byte JSON schema and Converse input shape."
+    },
+    {
+      "gate": "offline_no_network",
+      "result": "PASS",
+      "evidence": "Direct 10-case test suite passed. The harness --preflight passed with provider_calls=0. A second preflight with socket.connect and socket.create_connection blocked throughout parent import/build also passed. No AWS provider request was initiated."
+    },
+    {
+      "gate": "bounded_execution",
+      "result": "PASS",
+      "evidence": "Exactly one mixed job and five original slots are materialized; the frozen request allocates three arithmetic and two English slots. A durable six-slot reservation precedes Converse, SDK total_max_attempts is one, connect timeout is three seconds, read timeout is capped at 200 seconds, and SIGALRM covers the 240-second execute interval beginning before credential export and STS."
+    },
+    {
+      "gate": "pre_execution_identity",
+      "result": "PASS_WITH_SCOPE_NOTE",
+      "evidence": "Offline build and --preflight do not call AWS. The distinct --launch-precheck path intentionally permits one STS identity request and possible login refresh during profile resolution or CLI credential export; it records a one-shot attempt and requires at least 360 seconds of credential life. Execute exports a fresh snapshot requiring at least 300 seconds and makes at most one additional STS identity request. The CLI login refresh count is declared unobserved in the plan."
+    },
+    {
+      "gate": "no_unplanned_work",
+      "result": "PASS",
+      "evidence": "The mapped runtime breaks after its initial batch, and harness guards reject a second author stage or changed request. Empty fallback model, exact request/model checks, one-shot capture, and absence of bank, queue, or deployment calls prevent a retry, repair, top-up, fallback, or downstream write in this harness."
+    },
+    {
+      "gate": "redaction_and_content_gate",
+      "result": "PASS",
+      "evidence": "Credential fields remain in memory; captured errors retain only bounded type/code. Provider visible text is bounded, exact credential echoes are rejected before persistence, decoded JSON strings are checked, and native reasoning is omitted. The capture records original-slot provenance and policy revisions; qualification requires all five original slots, revisions 8/8/8/10/10, exact 3:2 allocation, independent keys, six meaningful choice pairs per item, sound teaching, English difficulty 2–3, and full execute timing within 240 seconds. This content gate remains pending a live capture and locked blind reviews."
+    },
+    {
+      "gate": "candidate_runtime",
+      "result": "PASS",
+      "evidence": "With PYTHONPATH=/tmp/checkpoint-count-crt-deps:/tmp/checkpoint-probe-pinned-deps:/tmp/checkpoint-reliability-jsonschema-deps and /tmp/checkpoint-reliability-20260921-venv/bin/python, Boto3 1.43.91, Botocore 1.43.91, and awscrt 0.36.0 match the frozen transport. The installed AWS CLI reports 2.33.15."
+    }
+  ],
+  "test_results": {
+    "direct_socket_free_tests": "10 passed",
+    "harness_preflight": "passed; provider_calls=0",
+    "socket_blocked_preflight": "passed; provider_calls=0",
+    "aws_provider_calls_made_by_reviewer": 0
+  },
+  "blocking_issues": [],
+  "pending_live_gates": [
+    "Exact-hash root/independent review lock",
+    "Fresh one-shot launch precheck and credential expiry window",
+    "Live capture followed by two locked answer-blind reviews and teaching audit"
+  ]
+}
