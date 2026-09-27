@@ -1,0 +1,49 @@
+{
+  "reviewer": "A",
+  "worksheet_sha256": "b5242f35510dc00c845024add39eded5fb3f768c068f2bff71d7ec0ed07cb5e5",
+  "defensibly_correct_choices": ["D"],
+  "answer_reasoning": {
+    "A": "Incorrect: 'each' is singular, so the verb should be 'carries'; the plural 'painters' is inside the of-phrase.",
+    "B": "Incorrect: the singular subject 'curator' requires 'checks'; 'interns' is inside a modifying phrase.",
+    "C": "Incorrect: the plural subject 'interns' requires 'check'; 'curator' is inside a modifying phrase.",
+    "D": "Correct: the singular subject 'painter' agrees with 'carries'; the intervening plural 'interns' does not control the verb."
+  },
+  "cognitive_difficulty": {
+    "rating_1_to_5": 2,
+    "reason": "A familiar subject–verb agreement rule must be applied while ignoring a nearby noun. The 'each of' construction adds a familiar special case, but the item does not require several linked steps or interacting constraints."
+  },
+  "pair_rating_scale": "0 = only lexical or redundant variation; 1 = limited reasoning distinction; 2 = clear reasoning distinction",
+  "choice_pairs": [
+    {
+      "pair": "A-B",
+      "rating": 1,
+      "reason": "Both are wrong because a singular subject takes a plural-form verb despite a nearby plural noun. A requires recognizing singular 'each' in an of-phrase, while B uses an ordinary singular noun with a beside-phrase; this is a limited grammatical distinction."
+    },
+    {
+      "pair": "A-C",
+      "rating": 2,
+      "reason": "A has a singular 'each' with an erroneously plural-form verb; C has a plural noun subject with an erroneously singular verb. The direction of the agreement error reverses."
+    },
+    {
+      "pair": "A-D",
+      "rating": 2,
+      "reason": "Both require a singular verb despite a nearby plural noun, but A incorrectly uses 'carry' and D correctly uses 'carries'. A also tests the singular status of 'each'."
+    },
+    {
+      "pair": "B-C",
+      "rating": 2,
+      "reason": "The same beside-phrase pattern reverses the number of the true subject and the nearby noun: B needs 'checks' for singular 'curator', while C needs 'check' for plural 'interns'."
+    },
+    {
+      "pair": "B-D",
+      "rating": 2,
+      "reason": "Both have a singular noun subject followed by a plural noun in a beside-phrase. B uses a plural-form verb and is wrong; D uses a singular-form verb and is right. The agreement contrast is meaningful despite different nouns and verb roots."
+    },
+    {
+      "pair": "C-D",
+      "rating": 2,
+      "reason": "C has a plural subject and incorrectly singular verb; D has a singular subject and correctly singular verb. The nearby noun's number also reverses, requiring the reader to identify the actual subject."
+    }
+  ],
+  "weak_distractors_or_ambiguity": "No defensible alternate answer or wording ambiguity in standard written American English. A and B partly repeat the same singular-subject/plural-verb trap; A additionally invokes the familiar 'each of' rule, so its reasoning differs somewhat from the noun-headed choices. C adds the opposite, plural-subject/singular-verb trap."
+}

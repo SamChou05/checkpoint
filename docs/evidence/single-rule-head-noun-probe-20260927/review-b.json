@@ -1,0 +1,42 @@
+{
+  "reviewer": "blind_b",
+  "worksheet_sha256": "b5242f35510dc00c845024add39eded5fb3f768c068f2bff71d7ec0ed07cb5e5",
+  "item_id": "Q01",
+  "defensible_correct_answers": ["D"],
+  "answer_reasoning": {
+    "A": "Incorrect: the subject each is singular, so the verb should be carries.",
+    "B": "Incorrect: curator is the singular subject; interns is inside a modifying phrase, so the verb should be checks.",
+    "C": "Incorrect: interns is the plural subject; curator is inside a modifying phrase, so the verb should be check.",
+    "D": "Correct: painter is the singular subject and carries agrees with it; interns is inside a modifying phrase."
+  },
+  "cognitive_difficulty_1_to_5": 2,
+  "difficulty_reasoning": "A solver applies the familiar present-tense agreement rule after identifying the actual subject instead of the nearby noun. The each construction adds a small variation, but no linked or interacting rules are needed.",
+  "pair_rating_scale": "0 = no meaningful subject-verb reasoning difference; 1 = limited difference; 2 = clear difference",
+  "choice_pairs": {
+    "A-B": {
+      "rating": 1,
+      "reason": "Both have a singular subject followed by a plural noun in a prepositional phrase and both use an incorrect plural verb. Each versus curator changes the kind of subject, but the agreement decision is nearly the same."
+    },
+    "A-C": {
+      "rating": 2,
+      "reason": "Each is singular despite painters nearby, while interns is plural despite curator nearby. The solver must assign opposite numbers to the true subjects."
+    },
+    "A-D": {
+      "rating": 2,
+      "reason": "Both have a singular subject with a nearby plural noun, but A uses the singular pronoun each with a wrong verb and D uses a singular noun with a correctly inflected verb."
+    },
+    "B-C": {
+      "rating": 2,
+      "reason": "These reverse the subject and nearby noun numbers: singular curator versus plural interns. Both verbs are wrong, but for opposite agreement directions."
+    },
+    "B-D": {
+      "rating": 1,
+      "reason": "Both use the same singular-subject plus beside-the-plural-noun structure. The only agreement contrast is that B's verb is plural and wrong while D's is singular and right; the subject-identification reasoning repeats."
+    },
+    "C-D": {
+      "rating": 2,
+      "reason": "C has a plural subject with a nearby singular noun and an incorrect singular verb; D has a singular subject with a nearby plural noun and a correct singular verb. The true subject's number changes."
+    }
+  },
+  "weak_distractors_or_ambiguity": "No defensible alternate answer or material ambiguity. A tests the singular pronoun each, which slightly widens the construction beyond ordinary noun heads. B is the weakest distractor relative to D because their sentence structures and subject-selection steps are almost identical; the difference reduces to checking the verb ending."
+}
