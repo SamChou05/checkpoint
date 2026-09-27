@@ -7,12 +7,22 @@ choices, answer keys, feedback and the independently rechecked provenance.
 
 from __future__ import annotations
 
+import copy
+from functools import lru_cache
 from typing import Any
 
 from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 
 
 FAMILIES = ("fraction_evaluation", "bounded_equation", "bounded_ratio_threshold")
+# Each slot keeps its original assignment while switching to a different
+# mathematical decision on a refill. Operands within one family are examples
+# of the same decision, not evidence of bank-level variety.
+SLOT_FAMILIES = (
+    (FAMILIES[0], "fraction_quotient"),
+    (FAMILIES[1], "bounded_quadratic_equation"),
+    (FAMILIES[2], "bounded_quadratic_maximum"),
+)
 SUPPORTED_TOPIC = "Exact arithmetic"
 SUPPORTED_OBJECTIVE = "Evaluate an exact rational expression or explicit bounded condition"
 OPERANDS = tuple(range(2, 10))
@@ -30,7 +40,7 @@ def task_schema(slot: int) -> dict[str, Any]:
     return {
         "type": "object", "additionalProperties": False,
         "properties": {
-            "family": {"type": "string", "enum": [FAMILIES[slot]]},
+            "family": {"type": "string", "enum": list(SLOT_FAMILIES[slot])},
             "a": {"type": "integer", "enum": list(OPERANDS)},
             "b": {"type": "integer", "enum": list(OPERANDS if slot == 0 else BOUNDARIES)},
         },
@@ -50,20 +60,28 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
     """Expand only the closed family assigned to this original slot."""
     if (type(slot) is not int or slot not in (0, 1, 2)
             or type(row) is not dict or set(row) != {"family", "a", "b"}
-            or type(row["family"]) is not str or row["family"] != FAMILIES[slot]
+            or type(row["family"]) is not str or row["family"] not in SLOT_FAMILIES[slot]
             or type(row["a"]) is not int or row["a"] not in OPERANDS
             or type(row["b"]) is not int
             or row["b"] not in (OPERANDS if slot == 0 else BOUNDARIES)):
         raise MappedQuantitativeFamilyError("Unsupported quantitative family row.")
-    a, b = row["a"], row["b"]
-    if slot == 0:
+    a, b, family = row["a"], row["b"], row["family"]
+    if family == FAMILIES[0]:
         # (a/(a+1) + b/(b+2)) * 3: two nonintegral operands and two steps.
         return {"kind": "exact_value", "unit": "unitless", "nodes": [
             _literal(a), _literal(a + 1), _binary("div", 0, 1),
             _literal(b), _literal(b + 2), _binary("div", 3, 4),
             _binary("add", 2, 5), _literal(3), _binary("mul", 6, 7),
         ], "root": 8}
-    if slot == 1:
+    if family == "fraction_quotient":
+        # (a/(a+1)) / (b/(b+2)) + 1: dividing exact fractions instead of
+        # summing them and scaling the result.
+        return {"kind": "exact_value", "unit": "unitless", "nodes": [
+            _literal(a), _literal(a + 1), _binary("div", 0, 1),
+            _literal(b), _literal(b + 2), _binary("div", 3, 4),
+            _binary("div", 2, 5), _literal(1), _binary("add", 6, 7),
+        ], "root": 8}
+    if family == FAMILIES[1]:
         # ax+(a+3)=ab+(a+3) has the unique solution x=b in 0..15.
         offset = a + 3
         return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
@@ -73,6 +91,25 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
         ], "condition": {"left": 4, "relation": "eq", "right": 5},
             "selection": "any_satisfying",
             "domain": {"kind": "integer_interval", "lower": 0, "upper": 15}}
+    if family == "bounded_quadratic_equation":
+        # On nonnegative integers (x+a)(x+1) is strictly increasing, so the
+        # target product has exactly one solution, x=b, in the stated domain.
+        return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
+            {"kind": "variable"}, _literal(a), _binary("add", 0, 1),
+            _literal(1), _binary("add", 0, 3), _binary("mul", 2, 4),
+            _literal((b + a) * (b + 1)),
+        ], "condition": {"left": 5, "relation": "eq", "right": 6},
+            "selection": "any_satisfying",
+            "domain": {"kind": "integer_interval", "lower": 0, "upper": 15}}
+    if family == "bounded_quadratic_maximum":
+        # x(x+a) is strictly increasing on this nonnegative interval. The
+        # greatest integer satisfying its bound is therefore x=b.
+        return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
+            {"kind": "variable"}, _literal(a), _binary("add", 0, 1),
+            _binary("mul", 0, 2), _literal(b * (b + a)),
+        ], "condition": {"left": 3, "relation": "le", "right": 4},
+            "selection": "maximum",
+            "domain": {"kind": "integer_interval", "lower": b - 3, "upper": b + 3}}
     # The ratio x/(x+a) reaches b/(b+a) first at x=b for positive a.
     # Its entire interval is positive-denominator; the three smaller domain
     # values are all explicitly checked in the compiler's worked teaching.
@@ -85,43 +122,81 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
         "domain": {"kind": "integer_interval", "lower": b - 3, "upper": b + 3}}
 
 
+@lru_cache(maxsize=3)
+def _inventory(slot: int) -> tuple[tuple[str, dict[str, Any], str, str], ...]:
+    """Compile the finite inventory once, with its exact learner stem identity."""
+    from quantitative_authoring import _constructed_candidate
+
+    return tuple(
+        (family, task, prompt, _normalized_stem_identity(prompt))
+        for family in SLOT_FAMILIES[slot]
+        for a in OPERANDS
+        for b in (OPERANDS if slot == 0 else BOUNDARIES)
+        for task in (flat_task(slot, {"family": family, "a": a, "b": b}),)
+        for prompt in (_constructed_candidate(task).content()["prompt"],)
+    )
+
+
+def canonical_variant_identities() -> frozenset[str]:
+    """All code-owned numeric stems that a durable bank can recognize."""
+    return frozenset(identity for slot in range(3)
+                     for _, _, _, identity in _inventory(slot))
+
+
 def select_novel_task(
     slot: int, source_task: dict, *, existing_prompts: tuple[str, ...],
     blocked_fingerprints: tuple[str, ...], fingerprint_version: int,
+    blocked_variant_identities: tuple[str, ...] = (),
 ) -> dict[str, Any]:
-    """Keep fresh model operands; otherwise search this slot's finite family.
+    """Prefer an unseen solve structure, then a fresh parameterization.
 
-    Search starts at the source pair and wraps in fixed parameter order. Every
-    candidate is compiled before its stem is compared with the same recent and
-    full-bank identities used by sanitization. Exhaustion fails the whole mapped
-    pass rather than emitting a known duplicate or changing its assigned family.
+    Keep the source task when its family is among the least-used structures in
+    supplied history. Otherwise choose an underused assigned-slot family before
+    considering a new operand pair in an overused family. The inventory is
+    compiled, and every candidate passes exact-stem and fingerprint checks.
     """
-    from quantitative_authoring import _constructed_candidate
 
     if (type(slot) is not int or slot not in (0, 1, 2)
             or type(source_task) is not dict or type(existing_prompts) is not tuple
             or any(type(prompt) is not str for prompt in existing_prompts)
             or type(blocked_fingerprints) is not tuple
-            or any(type(value) is not str for value in blocked_fingerprints)):
+            or any(type(value) is not str for value in blocked_fingerprints)
+            or type(blocked_variant_identities) is not tuple
+            or any(type(identity) is not str for identity in blocked_variant_identities)
+            or not set(blocked_variant_identities) <= canonical_variant_identities()):
         raise MappedQuantitativeFamilyError("Invalid quantitative novelty input.")
     try:
         _stem_fingerprint("", version=fingerprint_version)
     except ValueError as error:
         raise MappedQuantitativeFamilyError("Invalid fingerprint version.") from error
-    pairs = [(a, b) for a in OPERANDS
-             for b in (OPERANDS if slot == 0 else BOUNDARIES)]
-    tasks = [flat_task(slot, {"family": FAMILIES[slot], "a": a, "b": b})
-             for a, b in pairs]
+    inventory = _inventory(slot)
     try:
-        start = tasks.index(source_task)
-    except ValueError as error:
+        source_index = next(index for index, (_, task, _, _) in enumerate(inventory)
+                            if task == source_task)
+    except StopIteration as error:
         raise MappedQuantitativeFamilyError("Source task is outside its assigned family.") from error
     blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
+    blocked.update(blocked_variant_identities)
     fingerprints = set(blocked_fingerprints)
-    for offset in range(len(tasks)):
-        candidate = tasks[(start + offset) % len(tasks)]
-        prompt = _constructed_candidate(candidate).content()["prompt"]
-        if (_normalized_stem_identity(prompt) not in blocked
-                and _stem_fingerprint(prompt, version=fingerprint_version) not in fingerprints):
-            return candidate
+    family_use_counts = {
+        family: sum(identity in blocked
+                    or _stem_fingerprint(prompt, version=fingerprint_version) in fingerprints
+                    for candidate_family, _, prompt, identity in inventory
+                    if candidate_family == family)
+        for family in SLOT_FAMILIES[slot]
+    }
+    source_family = inventory[source_index][0]
+    eligible = [
+        (index, family, task)
+        for index, (family, task, prompt, identity) in enumerate(inventory)
+        if identity not in blocked
+        and _stem_fingerprint(prompt, version=fingerprint_version) not in fingerprints
+    ]
+    if eligible:
+        per_family = len(OPERANDS) * (len(OPERANDS) if slot == 0 else len(BOUNDARIES))
+        return copy.deepcopy(min(eligible, key=lambda row: (
+            family_use_counts[row[1]],
+            row[1] != source_family,
+            (row[0] % per_family - source_index % per_family) % per_family,
+        ))[2])
     raise MappedQuantitativeFamilyError("Quantitative family inventory exhausted.")

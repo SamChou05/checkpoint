@@ -21,8 +21,9 @@ from agreement_task_constructor import (
 )
 from lambda_test_support import _request_payload
 from mapped_quantitative_families import (
-    BOUNDARIES, FAMILIES, OPERANDS, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
-    MappedQuantitativeFamilyError, flat_task,
+    BOUNDARIES, FAMILIES, OPERANDS, SLOT_FAMILIES, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
+    MappedQuantitativeFamilyError, canonical_variant_identities as numeric_variant_identities,
+    flat_task, select_novel_task,
 )
 from native_output_contracts import AuthorSlotContract
 from quantitative_authoring import _constructed_candidate
@@ -105,34 +106,38 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
     def test_all_allowed_parameters_compile_with_four_distinct_choices(self):
         checked = 0
         for slot in range(3):
-            for a in OPERANDS:
-                for b in OPERANDS if slot == 0 else BOUNDARIES:
-                    task = flat_task(slot, {"family": FAMILIES[slot], "a": a, "b": b})
-                    proof = _constructed_candidate(task)
-                    learner = proof.content()
-                    self.assertEqual(len(set(learner["choices"])), 4)
-                    self.assertEqual(learner["choices"].count(learner["expectedAnswer"]), 1)
-                    self.assertEqual(set(learner["choiceExplanations"]), set(learner["choices"]))
-                    self.assertEqual(proof.content(learner), learner)
-                    if slot in (1, 2):
-                        self.assertEqual(learner["expectedAnswer"], str(b))
-                    if slot == 2:
-                        self.assertIn("The smaller domain values fail:", learner["explanation"])
-                        self.assertIn(" / (x + ", learner["prompt"])
-                    checked += 1
-        self.assertEqual(checked, 208)
+            for family in SLOT_FAMILIES[slot]:
+                for a in OPERANDS:
+                    for b in OPERANDS if slot == 0 else BOUNDARIES:
+                        task = flat_task(slot, {"family": family, "a": a, "b": b})
+                        proof = _constructed_candidate(task)
+                        learner = proof.content()
+                        self.assertEqual(len(set(learner["choices"])), 4)
+                        self.assertEqual(learner["choices"].count(learner["expectedAnswer"]), 1)
+                        self.assertEqual(set(learner["choiceExplanations"]), set(learner["choices"]))
+                        self.assertEqual(proof.content(learner), learner)
+                        if slot in (1, 2):
+                            self.assertEqual(learner["expectedAnswer"], str(b))
+                        if slot == 2 and family == FAMILIES[slot]:
+                            self.assertIn("The smaller domain values fail:", learner["explanation"])
+                            self.assertIn(" / (x + ", learner["prompt"])
+                        if family == "bounded_quadratic_maximum":
+                            self.assertIn("The larger domain values fail:", learner["explanation"])
+                        checked += 1
+        self.assertEqual(checked, 416)
+        self.assertEqual(len(numeric_variant_identities()), 416)
 
     def test_family_schema_is_small_closed_and_agreement_route_matches_current_contract(self):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
         self.assertLess(len(schema_json.encode()), 3000)
-        self.assertEqual(len(schema_json.encode()), 1725)
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
-                          ["properties"]["family"]["enum"][0] for i in range(3)], list(FAMILIES))
+                          ["properties"]["family"]["enum"] for i in range(3)],
+                         [list(families) for families in SLOT_FAMILIES])
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(self.contract())["version"], "3")
+        self.assertEqual(native.contract_metadata(self.contract())["version"], "4")
         agreement = self.contract(False)
         agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
         self.assertEqual(len(agreement_schema.encode()), 2904)
@@ -143,6 +148,8 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         ).encode()).hexdigest(),
                          "8b5e972e1f9b0467e4899654dcac068aa1088209dc8f89c73a824c121e84c6bf")
         family_prompt = native.native_prompt(generation._system_prompt(), self.contract())
+        self.assertTrue(all(family in family_prompt for families in SLOT_FAMILIES
+                            for family in families))
         self.assertTrue(all(scene in family_prompt for scene in COMPOUND_SCENES))
         shape = get_session().get_service_model("bedrock-runtime").operation_model("Converse").input_shape
         validate_parameters({
@@ -267,7 +274,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                              {field: proof.content()[field] for field in LEARNER_FIELDS})
         self.assertEqual(client.steps, [])
 
-    def test_repeated_numeric_source_selects_unused_same_family_with_proof(self):
+    def test_repeated_numeric_source_selects_unused_structure_with_proof(self):
         source = self.raw()
         original = copy.deepcopy(source)
         adapted = json.loads(native.adapt_native_response(json.dumps(source), self.contract()))
@@ -308,6 +315,125 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             )
         self.assertEqual([row["prompt"] for row in piped], [row["prompt"] for row in rows])
         self.assertEqual(len(client.calls), 1)
+
+    def test_first_refill_rotates_all_three_solve_structures_and_keeps_five_slots(self):
+        source = self.raw()
+        adapted = json.loads(native.adapt_native_response(json.dumps(source), self.contract()))
+        original, _, _, failures = prepare_mapped_agreement_rows(adapted, self.contract())
+        self.assertEqual(failures, [])
+        history = tuple(item["prompt"] for item in original)
+        rows, math_proof, english_proof, failures = prepare_mapped_agreement_rows(
+            adapted, self.contract(), existing_prompts=history,
+        )
+        self.assertEqual(failures, [])
+        self.assertEqual(len(rows), 5)
+        for slot in range(3):
+            source_row = source["questions"][str(slot)]
+            alternate = flat_task(slot, {**source_row, "family": SLOT_FAMILIES[slot][1]})
+            expected = _constructed_candidate(alternate).content()
+            self.assertEqual({field: rows[slot][field] for field in LEARNER_FIELDS}, expected)
+            self.assertNotEqual(rows[slot]["prompt"], original[slot]["prompt"])
+            self.assertEqual(rows[slot]["expectedAnswer"], expected["expectedAnswer"])
+            self.assertEqual(math_proof[slot].content(rows[slot]), expected)
+        self.assertEqual([row["skillID"] for row in rows], [MATH] * 3 + [ENGLISH] * 2)
+        self.assertEqual({field: rows[3][field] for field in LEARNER_FIELDS},
+                         {field: english_proof[3].content()[field] for field in LEARNER_FIELDS})
+        self.assertEqual({field: rows[4][field] for field in LEARNER_FIELDS},
+                         {field: english_proof[4].content()[field] for field in LEARNER_FIELDS})
+
+        request = copy.deepcopy(self.request)
+        request["existingPrompts"] = list(history)
+        by_prompt = {row["prompt"]: row for row in rows}
+
+        def solver(provider_request):
+            items = task_data(provider_request, "question_solution_json")["items"]
+            return solver_map(*(solver_record(item, by_prompt[item["prompt"]]["expectedAnswer"])
+                                for item in items))
+
+        def audit(provider_request):
+            items = task_data(provider_request, "question_review_json")["items"]
+            return {"reviews": {str(item["index"]): {
+                "valid": True, "answer": by_prompt[item["prompt"]]["expectedAnswer"],
+                "difficulty": 2, "explanationSupport": "supported",
+                "issueFlags": authored_issue_flags(),
+            } for item in items}}
+
+        client = ScriptedNativeClient(
+            (self.contract().name, source),
+            ("complete_choice_solver_v5_n2", solver),
+            ("authored_solution_reviewer_v3_n5", audit),
+        )
+        with patch.dict(os.environ, {
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(request),
+        }):
+            result = generation._generate_sanitized_questions(
+                request, client, generation.ProviderCallBudget(6),
+            )
+        self.assertEqual(len(result), 5)
+        self.assertEqual([row["prompt"] for row in result], [row["prompt"] for row in rows])
+        self.assertEqual(len(client.calls), 3)
+        self.assertEqual(client.steps, [])
+
+    def test_durable_numeric_history_prevents_exact_reuse_after_recent_window(self):
+        source = [flat_task(slot, self.raw()["questions"][str(slot)])
+                  for slot in range(3)]
+        existing_items = []
+        chosen = {slot: [] for slot in range(3)}
+        chosen_families = {slot: [] for slot in range(3)}
+        for batch in range(8):
+            recent = question_bank._recent_question_items(existing_items, 30)
+            recent_prompts = tuple(question_bank._question_from_item(item)["prompt"]
+                                   for item in recent)
+            full_identities = tuple(question_bank._mapped_quantitative_variant_history(
+                existing_items,
+            ))
+            self.assertLessEqual(len(full_identities), 3 * batch)
+            self.assertTrue(set(full_identities) <= numeric_variant_identities())
+            if batch == 7:
+                self.assertEqual(len(existing_items), 35)
+                self.assertEqual(len(recent), 30)
+                self.assertTrue(all(chosen[slot][0] not in recent_prompts
+                                    for slot in range(3)))
+            generated = []
+            for slot in range(3):
+                task = select_novel_task(
+                    slot, source[slot], existing_prompts=recent_prompts,
+                    blocked_fingerprints=(), fingerprint_version=2,
+                    blocked_variant_identities=full_identities,
+                )
+                question = _constructed_candidate(task).content()
+                chosen_families[slot].append(next(
+                    family for family in SLOT_FAMILIES[slot]
+                    for a in OPERANDS
+                    for b in (OPERANDS if slot == 0 else BOUNDARIES)
+                    if flat_task(slot, {"family": family, "a": a, "b": b}) == task
+                ))
+                self.assertNotIn(question["prompt"], chosen[slot])
+                self.assertEqual(len(set(question["choices"])), 4)
+                self.assertEqual(set(question["choiceExplanations"]), set(question["choices"]))
+                chosen[slot].append(question["prompt"])
+                generated.append(question)
+            generated.extend({"prompt": f"English marker {batch} slot {slot}"}
+                             for slot in (3, 4))
+            existing_items.extend({
+                "sk": {"S": f"QUESTION#{batch:02d}#{slot}"},
+                "createdAt": {"N": str(batch * 5 + slot)},
+                "questionJSON": {"S": json.dumps(question)},
+            } for slot, question in enumerate(generated))
+        self.assertEqual([len(set(chosen[slot])) for slot in range(3)], [8] * 3)
+        for slot in range(3):
+            self.assertEqual(chosen_families[slot], list(SLOT_FAMILIES[slot]) * 4)
+        request = {**self.request,
+                   "_mappedQuantitativeVariantIdentities": list(full_identities)}
+        self.assertEqual(generation._mapped_author_scope_sha256(request),
+                         generation._mapped_author_scope_sha256(self.request))
+        self.assertEqual(generation._provider_visible_request(request),
+                         generation._provider_visible_request(self.request))
+        with self.assertRaises(MappedQuantitativeFamilyError):
+            select_novel_task(
+                0, source[0], existing_prompts=(), blocked_fingerprints=(),
+                fingerprint_version=2, blocked_variant_identities=("forged identity",),
+            )
 
     def test_numeric_fingerprint_block_uses_requested_version(self):
         source = self.raw()
@@ -369,10 +495,11 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         source = self.raw()
         adapted = json.loads(native.adapt_native_response(json.dumps(source), self.contract()))
         prompts = tuple(_constructed_candidate(flat_task(0, {
-            "family": FAMILIES[0], "a": a, "b": b,
-        })).content()["prompt"] for a in OPERANDS for b in OPERANDS)
+            "family": family, "a": a, "b": b,
+        })).content()["prompt"] for family in SLOT_FAMILIES[0]
+            for a in OPERANDS for b in OPERANDS)
         blocked = tuple(_stem_fingerprint(prompt, version=2) for prompt in prompts)
-        self.assertEqual(len(set(blocked)), len(OPERANDS) ** 2)
+        self.assertEqual(len(set(blocked)), len(SLOT_FAMILIES[0]) * len(OPERANDS) ** 2)
         with self.assertRaisesRegex(AgreementTaskError, "inventory exhausted") as caught:
             prepare_mapped_agreement_rows(
                 adapted, self.contract(), blocked_stem_fingerprints=blocked,
@@ -479,6 +606,9 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                      "choices": item.get("choices", []),
                      "difficulty": item.get("difficulty", 1)} for item in recent])[-30:]
             request["_agreementVariantIdentities"] = question_bank._agreement_variant_history(prior)
+            request["_mappedQuantitativeVariantIdentities"] = (
+                question_bank._mapped_quantitative_variant_history(prior)
+            )
             return request
 
         initial = worker_request(payload, [])

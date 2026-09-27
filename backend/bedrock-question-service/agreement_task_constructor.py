@@ -445,6 +445,7 @@ def compile_mapped_english_slots(
 def prepare_mapped_agreement_rows(
     payload: dict, contract: AuthorSlotContract, *, existing_prompts: tuple[str, ...] = (),
     blocked_variant_identities: tuple[str, ...] = (),
+    blocked_quantitative_variant_identities: tuple[str, ...] = (),
     blocked_stem_fingerprints: tuple[str, ...] = (), stem_fingerprint_version: int = 1,
 ):
     """Compile a complete 3:2 native batch without relabeling source ordinals.
@@ -484,6 +485,7 @@ def prepare_mapped_agreement_rows(
                     ordinal, row["task"], existing_prompts=existing_prompts,
                     blocked_fingerprints=blocked_stem_fingerprints,
                     fingerprint_version=stem_fingerprint_version,
+                    blocked_variant_identities=blocked_quantitative_variant_identities,
                 )}
                 for ordinal, row in enumerate(quantitative_sources)
             ]

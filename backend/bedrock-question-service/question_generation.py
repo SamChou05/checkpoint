@@ -356,6 +356,9 @@ def _generate_sanitized_questions(
                                 blocked_stem_fingerprints=tuple(current_request.get(
                                     "blockedStemFingerprints", []
                                 )),
+                                blocked_quantitative_variant_identities=tuple(
+                                    current_request.get("_mappedQuantitativeVariantIdentities", [])
+                                ),
                                 stem_fingerprint_version=current_request.get(
                                     "stemFingerprintVersion", 1
                                 ),
@@ -904,7 +907,7 @@ def _task_only_numerical_author(
 def _mapped_author_scope_json(request: dict[str, Any]) -> str:
     """Bind every normalized first-pass field, including prior-item context."""
     scoped = {key: value for key, value in request.items()
-              if key != "_agreementVariantIdentities"}
+              if key not in {"_agreementVariantIdentities", "_mappedQuantitativeVariantIdentities"}}
     return json.dumps(scoped, sort_keys=True, separators=(",", ":"),
                       ensure_ascii=True, allow_nan=False)
 
@@ -1639,7 +1642,7 @@ def _provider_visible_request(request: dict[str, Any]) -> dict[str, Any]:
         key: value
         for key, value in request.items()
         if key not in {"blockedStemFingerprints", "stemFingerprintVersion",
-                       "_agreementVariantIdentities"}
+                       "_agreementVariantIdentities", "_mappedQuantitativeVariantIdentities"}
     }
     visible["difficultyGuidance"] = _generation_difficulty_guidance(request)
     return visible

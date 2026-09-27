@@ -17,6 +17,9 @@ from typing import Any, Callable
 
 from verification_policy import MAX_SUPPORTED_VERIFICATION_POLICY_REVISION, meets_verification_policy
 from agreement_task_constructor import canonical_variant_identities
+from mapped_quantitative_families import (
+    canonical_variant_identities as canonical_quantitative_variant_identities,
+)
 
 from question_bank_common import (
     DEFAULT_BANK_TTL_SECONDS,
@@ -124,7 +127,7 @@ MAX_CLAIM_TRANSACTION_QUESTION_UPDATES = 22
 MAX_DUPLICATE_CLEANUP_QUESTION_UPDATES = 23
 
 
-def _stored_agreement_variant_identity(item: dict[str, Any]) -> str:
+def _stored_variant_identity(item: dict[str, Any]) -> str:
     try:
         question = _question_from_item(item)
     except (json.JSONDecodeError, TypeError):
@@ -139,7 +142,18 @@ def _agreement_variant_history(existing_items: list[dict[str, Any]]) -> list[str
     canonical = canonical_variant_identities()
     identities = set()
     for item in existing_items:
-        identity = _stored_agreement_variant_identity(item)
+        identity = _stored_variant_identity(item)
+        if identity in canonical:
+            identities.add(identity)
+    return sorted(identities)
+
+
+def _mapped_quantitative_variant_history(existing_items: list[dict[str, Any]]) -> list[str]:
+    """Project the entire durable bank onto its finite numeric stem library."""
+    canonical = canonical_quantitative_variant_identities()
+    identities = set()
+    for item in existing_items:
+        identity = _stored_variant_identity(item)
         if identity in canonical:
             identities.add(identity)
     return sorted(identities)
@@ -900,6 +914,10 @@ def _process_job(
     existing_items = _query_question_history(client, table_name, bank_key)
     if os.getenv("QUESTION_MAPPED_AGREEMENT_TASKS", "disabled").strip().lower() == "enabled":
         generation_request["_agreementVariantIdentities"] = _agreement_variant_history(existing_items)
+    if os.getenv("QUESTION_MAPPED_QUANTITATIVE_FAMILIES", "disabled").strip().lower() == "enabled":
+        generation_request["_mappedQuantitativeVariantIdentities"] = (
+            _mapped_quantitative_variant_history(existing_items)
+        )
     recent_items = _recent_question_items(
         [item for item in existing_items if _string(item, "state") != "discarded"],
         30,
