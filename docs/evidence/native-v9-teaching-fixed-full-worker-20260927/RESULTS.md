@@ -1,0 +1,11 @@
+# Teaching-fixed v9 mapped 3:2 full-worker trial: five returned, content review pending
+
+The single frozen full-worker trial returned **all five originally requested slots**. This passes the mechanical return gate, but the overall qualification is **pending independent answer-blind content reviews and a post-lock teaching audit**. No retry, fallback, repair, top-up or second live trial occurred under this plan.
+
+The source revision is `5687283850ad8bb8705fc2664f4c57b49e7413ba`. The [frozen plan](plan.json) SHA-256 is `5a6b2a1e6eb63c5803ceb8e155fe29d486bea0dc7c5ac2d5081a030fe8858003`; the [harness](full_worker_probe.py) SHA-256 is `6d1b615b87febccb2de8aea08a0f1ca2c4d7ad414a89f3e675d24ff3587ea03a`. Exact-hash root and independent approvals are in [review-approval.json](review-approval.json). The [launch precheck](launch-precheck.json) passed for account `239342516379` with 869 seconds of credential life and zero provider calls before dispatch.
+
+The [sanitized capture](capture.json) SHA-256 is `a880fcf748b75f2c9ebcd7170edeb412b4f83712602ee3becdee7de929bf874a`. The one job used three Bedrock Converse calls, one SDK attempt each, and completed in 62.707 seconds under the 240-second hard deadline. Native author produced five typed tasks. The compiler accepted three quantitative tasks; the sanitizer and authored-solution reviewer each accepted all five candidates. Original slots 0–4 were returned. Reported usage was 9,956 input tokens and 4,943 output tokens across the three calls.
+
+The [keyless worksheet](blind-official/worksheet.json) SHA-256 is `0cb3bc9eebc17805703b4d9760135b896d0258987b335f95254480c79af185f5`; the [rubric](blind-official/RUBRIC.md) SHA-256 is `0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2`. It contains five readable items with randomized opaque IDs, item order and choice labels. The private answer/slot map remains withheld until both independent reviews lock. Blind reviewers must use only the worksheet and rubric, not the keyed capture.
+
+The predecessor [v9 full-worker trial](../native-v9-full-worker-qualification-20260927/RESULTS.md) remains a separate official 4/5 failure. This new trial does not reclassify it or establish a deterministic yield guarantee from one success.

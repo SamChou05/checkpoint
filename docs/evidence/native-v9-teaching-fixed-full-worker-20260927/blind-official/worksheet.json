@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "prespecified_returned_output",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "c1b4fa9e73de434842c81c98",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 5) / (x + 1)) = (13 / 9). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "8",
+        "B": "9",
+        "C": "6",
+        "D": "7"
+      }
+    },
+    {
+      "id": "38cc15a571187b9ecaf65ef9",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Preparing the meals ___ planning, and the cooks ___ the ingredients. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "require; measures",
+        "B": "requires; measure",
+        "C": "require; measure",
+        "D": "requires; measures"
+      }
+    },
+    {
+      "id": "9fd1fff0a4a5520a137f0e80",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 4 through 10, inclusive. Condition: (x * (x + 3)) <= 70. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "6",
+        "C": "7",
+        "D": "9"
+      }
+    },
+    {
+      "id": "96f3c9035683595962bbb6ff",
+      "requested_slot": true,
+      "stem": "Fill both blanks with present-tense forms in standard written American English. The editors who ___ the proofs are here. One of the editors ___ a notebook. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "checks; carry",
+        "B": "check; carry",
+        "C": "checks; carries",
+        "D": "check; carries"
+      }
+    },
+    {
+      "id": "36b23db42b56a00d757b3445",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((4 / 5) / (6 / 8)) + 1). What is its exact value?",
+      "choices": {
+        "A": "17/16",
+        "B": "31/15",
+        "C": "16/15",
+        "D": "17/15"
+      }
+    }
+  ]
+}
