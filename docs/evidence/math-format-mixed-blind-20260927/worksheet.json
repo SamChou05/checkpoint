@@ -1,0 +1,126 @@
+{
+  "status": "keyless",
+  "targetDifficulty": 2,
+  "items": [
+    {
+      "id": "M01",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 6) * (x + 1)) = 50. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "4",
+        "B": "3",
+        "C": "5",
+        "D": "2"
+      }
+    },
+    {
+      "id": "M02",
+      "prompt": "Let A = 2/3 + 3/5 and B = 2/4 + 3/4. Which is larger, and by exactly how much?",
+      "choices": {
+        "A": "B is larger than A by 1/60.",
+        "B": "A is larger than B by 1/6.",
+        "C": "B is larger than A by 1/6.",
+        "D": "A is larger than B by 1/60."
+      }
+    },
+    {
+      "id": "M03",
+      "prompt": "Which worked evaluation correctly computes 3/4 + 2/3 \u00d7 3/5?",
+      "choices": {
+        "A": "2/3 \u00d7 3/5 = 2/5; (3+2)/(4+5) = 5/9.",
+        "B": "2/3 \u00d7 3/5 = 6/8; 3/4 + 3/4 = 3/2.",
+        "C": "2/3 \u00d7 3/5 = 2/5; 3/4 + 2/5 = 23/20.",
+        "D": "3/4 + 2/3 = 17/12; 17/12 \u00d7 3/5 = 17/20."
+      }
+    },
+    {
+      "id": "M04",
+      "prompt": "Let x be a unitless number. Its domain is integers from 4 through 13, inclusive. Condition: (((x * x) - (17 * x)) + 60) != 0. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "8",
+        "B": "7",
+        "C": "9",
+        "D": "6"
+      }
+    },
+    {
+      "id": "M05",
+      "prompt": "Let A = 5/7 \u00d7 3/4 and B = 5/6 \u00d7 3/5. Which is larger, and by exactly how much?",
+      "choices": {
+        "A": "A is larger than B by 1/28.",
+        "B": "B is larger than A by 1/28.",
+        "C": "A is larger than B by 5/56.",
+        "D": "B is larger than A by 5/56."
+      }
+    },
+    {
+      "id": "M06",
+      "prompt": "Which worked evaluation correctly computes 3/5 + 2/3 \u00f7 4/5?",
+      "choices": {
+        "A": "3/5 + 2/3 = 19/15; 19/15 \u00f7 4/5 = 19/12.",
+        "B": "2/3 \u00f7 4/5 = 5/6; (3+5)/(5+6) = 8/11.",
+        "C": "2/3 \u00f7 4/5 = 8/15; 3/5 + 8/15 = 17/15.",
+        "D": "2/3 \u00f7 4/5 = 5/6; 3/5 + 5/6 = 43/30."
+      }
+    },
+    {
+      "id": "M07",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 4) / (x + 1)) = (13 / 10). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "7",
+        "B": "10",
+        "C": "8",
+        "D": "9"
+      }
+    },
+    {
+      "id": "M08",
+      "prompt": "Let A = 4/5 + 5/7 and B = 4/6 + 5/6. Which is larger, and by exactly how much?",
+      "choices": {
+        "A": "B is larger than A by 2/15.",
+        "B": "A is larger than B by 1/70.",
+        "C": "B is larger than A by 1/70.",
+        "D": "A is larger than B by 2/15."
+      }
+    },
+    {
+      "id": "M09",
+      "prompt": "Which worked evaluation correctly computes 2/5 + 3/4 \u00d7 2/3?",
+      "choices": {
+        "A": "3/4 \u00d7 2/3 = 1/2; 2/5 + 1/2 = 9/10.",
+        "B": "2/5 + 3/4 = 23/20; 23/20 \u00d7 2/3 = 23/30.",
+        "C": "3/4 \u00d7 2/3 = 1/2; (2+1)/(5+2) = 3/7.",
+        "D": "3/4 \u00d7 2/3 = 6/7; 2/5 + 6/7 = 44/35."
+      }
+    },
+    {
+      "id": "M10",
+      "prompt": "Let x be a unitless number. Its domain is integers from 4 through 11, inclusive. Condition: ((3 * (x + 2)) - (2 * x)) <= 14. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "5",
+        "B": "3",
+        "C": "6",
+        "D": "4"
+      }
+    },
+    {
+      "id": "M11",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((5 * (x + 2)) + 8) = ((4 * x) + 21). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "4",
+        "B": "1",
+        "C": "2",
+        "D": "3"
+      }
+    },
+    {
+      "id": "M12",
+      "prompt": "Let x be a unitless number. Its domain is integers from -3 through 13, inclusive. Condition: ((x - 5) * (x - 5)) < 49. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "11",
+        "B": "12",
+        "C": "14",
+        "D": "13"
+      }
+    }
+  ]
+}
