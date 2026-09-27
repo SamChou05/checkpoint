@@ -1,0 +1,98 @@
+{
+  "captureSha256": "aba1f209f51bcf25b2f419bcdb5c1a77b61351b36bfcaba4d3a360104a38373a",
+  "reviewASha256": "69e0b4324fb1036f0843308e86070ceb08bdfcdc07e28eb5cf8ed35bb6c3b677",
+  "reviewBSha256": "bf0ff2c3c96c798210d53e82b3a80e86d9145eabfdb42f1784a8d4756101773d",
+  "worksheetSha256": "6fbabc26cfed021228a9e6ec888a3d7144961a6742e918645f42b3ac240ea773",
+  "pairs": {
+    "p12": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p13": {
+      "model": true,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p14": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p15": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p16": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p23": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p24": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p25": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p26": {
+      "model": true,
+      "reviewA": true,
+      "reviewB": true
+    },
+    "p34": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p35": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p36": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p45": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p46": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    },
+    "p56": {
+      "model": false,
+      "reviewA": false,
+      "reviewB": false
+    }
+  },
+  "modelTruePairs": [
+    "p13",
+    "p26"
+  ],
+  "reviewATruePairs": [
+    "p26"
+  ],
+  "reviewBTruePairs": [
+    "p26"
+  ],
+  "modelDisagreementsWithBoth": [
+    "p13"
+  ],
+  "allThreeAgreementCount": 14,
+  "comparisonMadeAfterCapture": true
+}

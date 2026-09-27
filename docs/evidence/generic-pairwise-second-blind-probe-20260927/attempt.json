@@ -1,0 +1,6 @@
+{
+  "maxAttempts": 1,
+  "operation": "aws bedrock-runtime converse",
+  "requestSha256": "7434d923ee4422679a59dea16fbf9ae62ea6374491057a7e525b7a2610303d85",
+  "startedAtUtc": "2026-09-27T16:17:00.781612+00:00"
+}

@@ -1,0 +1,49 @@
+{
+  "objective": "Independent second blind pairwise-diversity judgment of six keyless multiple-choice questions",
+  "sourceWorksheet": "docs/evidence/generic-author-no-thinking-directive-probe-20260927/worksheet.json",
+  "sourceWorksheetSha256": "6fbabc26cfed021228a9e6ec888a3d7144961a6742e918645f42b3ac240ea773",
+  "questionIds": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06"
+  ],
+  "modelId": "us.anthropic.claude-sonnet-4-6",
+  "region": "us-east-1",
+  "account": "239342516379",
+  "protocol": {
+    "inputFields": [
+      "prompt",
+      "four visible choices"
+    ],
+    "pairKeys": [
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p16",
+      "p23",
+      "p24",
+      "p25",
+      "p26",
+      "p34",
+      "p35",
+      "p36",
+      "p45",
+      "p46",
+      "p56"
+    ],
+    "trueCriterion": "Both the central learner decision or operation and answer format materially repeat",
+    "nativeSchema": true,
+    "thinking": "disabled",
+    "temperature": 0,
+    "maxTokens": 1200,
+    "awsConverseAttempts": 1,
+    "awsCliMaxAttempts": 1,
+    "retryOnFailure": false,
+    "comparisonWithEarlierReviews": "Only after capture.json is locked"
+  },
+  "capturePolicy": "Save only parsed pair flags, timing, usage, stop reason, response metrics, and sanitized error type; no raw model output or credentials."
+}

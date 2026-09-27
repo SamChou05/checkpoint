@@ -1,0 +1,41 @@
+{
+  "account": "239342516379",
+  "cliMaxAttempts": 1,
+  "elapsedMs": 2369,
+  "exitCode": 0,
+  "finishedAtUtc": "2026-09-27T16:17:03.150665+00:00",
+  "freezeSha256": "2183df8ef040928bcc8822109879b2b9b848037d62225425027fff06e6614a68",
+  "metrics": {
+    "latencyMs": 1414
+  },
+  "modelId": "us.anthropic.claude-sonnet-4-6",
+  "pairFlags": {
+    "p12": false,
+    "p13": true,
+    "p14": false,
+    "p15": false,
+    "p16": false,
+    "p23": false,
+    "p24": false,
+    "p25": false,
+    "p26": true,
+    "p34": false,
+    "p35": false,
+    "p36": false,
+    "p45": false,
+    "p46": false,
+    "p56": false
+  },
+  "region": "us-east-1",
+  "requestSha256": "7434d923ee4422679a59dea16fbf9ae62ea6374491057a7e525b7a2610303d85",
+  "startedAtUtc": "2026-09-27T16:17:00.781612+00:00",
+  "status": "success",
+  "stopReason": "end_turn",
+  "usage": {
+    "cacheReadInputTokens": 0,
+    "cacheWriteInputTokens": 0,
+    "inputTokens": 1076,
+    "outputTokens": 79,
+    "totalTokens": 1155
+  }
+}
