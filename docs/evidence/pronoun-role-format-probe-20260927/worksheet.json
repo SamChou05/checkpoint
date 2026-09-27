@@ -1,0 +1,27 @@
+{
+  "probe": "pronoun_role_format_v1",
+  "items": [
+    {
+      "id": "PR-01",
+      "mechanism": "single_speaker_two_actions_two_possessions",
+      "prompt": "Mara told Nia, \"I will catalog your sketches after you photograph my model.\" In Mara's stated plan, who catalogs whose sketches, and who photographs whose model?",
+      "choices": [
+        {"label": "A", "text": "Nia catalogs Mara's sketches; Mara photographs Nia's model."},
+        {"label": "B", "text": "Mara catalogs Nia's sketches; Nia photographs Mara's model."},
+        {"label": "C", "text": "Mara catalogs Mara's sketches; Nia photographs Nia's model."},
+        {"label": "D", "text": "Nia catalogs Nia's sketches; Mara photographs Mara's model."}
+      ]
+    },
+    {
+      "id": "PR-02",
+      "mechanism": "speaker_shift_across_two_turns",
+      "prompt": "Iris: \"I will deliver your poster.\" Caleb: \"Use my cart for that delivery.\" Which account matches what the two speakers propose?",
+      "choices": [
+        {"label": "A", "text": "Caleb plans to deliver Iris's poster; Iris offers Iris's cart."},
+        {"label": "B", "text": "Iris plans to deliver Iris's poster; Caleb offers Caleb's cart."},
+        {"label": "C", "text": "Iris plans to deliver Caleb's poster; Caleb offers Caleb's cart."},
+        {"label": "D", "text": "Iris plans to deliver Caleb's poster; Caleb offers Iris's cart."}
+      ]
+    }
+  ]
+}
