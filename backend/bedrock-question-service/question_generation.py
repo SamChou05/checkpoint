@@ -280,8 +280,9 @@ def _generate_sanitized_questions(
 ) -> list[dict[str, Any]]:
     feedback_contract = _feedback_contract()
     author_mode = _author_mode()
+    cardinality_mode = _author_cardinality_mode()
     mapped_initial_assignments = _mapped_fixed_slot_assignments(
-        request, author_mode, _author_cardinality_mode(),
+        request, author_mode, cardinality_mode,
     )
     mapped_agreement = _mapped_agreement_route(request, mapped_initial_assignments)
     mapped_quantitative_families = _mapped_quantitative_family_route(
@@ -292,13 +293,19 @@ def _generate_sanitized_questions(
     # make four choice judgments plus six unordered pair judgments explicit.
     choice_slots = output_mode() == "native"
     target_count = request["targetCount"]
+    generic_reserve = _generic_prose_reserve_enabled(
+        request, author_mode, cardinality_mode, feedback_contract,
+    )
     questions: list[dict[str, Any]] = []
-    attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
+    configured_attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
+    attempts = 1 if generic_reserve else configured_attempts
     author_batch_size = _constructed_author_batch_size(request, author_mode)
     if mapped_initial_assignments is not None and author_batch_size != 5:
         raise ServiceConfigurationError("Compact mapped author requires the full five-slot batch.")
     current_request = copy.deepcopy(request)
-    current_request["targetCount"] = min(target_count, author_batch_size)
+    current_request["targetCount"] = 7 if generic_reserve else min(
+        target_count, author_batch_size,
+    )
     rejected_prompts: list[str] = []
     # Feedback is needed even for callers that do not collect telemetry.
     if request_metrics is None:
@@ -450,7 +457,7 @@ def _generate_sanitized_questions(
         questions.extend(generated_questions)
         # This exact five-slot pilot is one author batch. A partial verified
         # return cannot be relabeled as original slots by an untracked top-up.
-        if mapped_initial_assignments is not None:
+        if mapped_initial_assignments is not None or generic_reserve:
             break
         approved_prompts = {question["prompt"] for question in generated_questions}
         rejected_prompts.extend(
@@ -484,7 +491,43 @@ def _generate_sanitized_questions(
                     _remaining_requested_objective_allocation(request, questions)
                 )
 
+    # This single-pass experiment is useful only if the reserve yields the
+    # complete requested batch. Never publish an underfilled trial result.
+    if generic_reserve and len(questions) < target_count:
+        return []
     return questions[:target_count]
+
+
+def _generic_prose_reserve_enabled(
+    request: dict[str, Any], author_mode: str, cardinality_mode: str,
+    feedback_contract: str,
+) -> bool:
+    """Reserve two unassigned prose rows without weakening any admission gate.
+
+    Structured assignments cannot safely use surplus rows: the sanitizer's
+    assignment quota is applied before the solver, so a rejected assigned row
+    would still leave its objective unfilled. Keep this experiment to the
+    unmapped five-question authored-solution route.
+    """
+    if _model_setting(
+        "QUESTION_GENERIC_PROSE_RESERVE_7", "disabled", {"disabled", "enabled"},
+    ) != "enabled":
+        return False
+    return (
+        output_mode() == "native"
+        and author_mode == "prose"
+        and cardinality_mode == "count_bound"
+        and feedback_contract == "authored_solution"
+        and request.get("targetCount") == 5
+        and not request.get("goal", {}).get("needsSkillMap")
+        and not any(key in request for key in (
+            "skillMap", "desiredSkillAllocation", "requestedSkillAllocation",
+            "requestedObjectiveAllocation",
+        ))
+        and not request.get("adaptiveSkillPlans")
+        and not request.get("requiresFullObjectiveCoverage")
+        and not request.get("sourceDocuments")
+    )
 
 
 def _constructed_author_batch_size(request: dict[str, Any], author_mode: str) -> int:
