@@ -1,0 +1,36 @@
+{
+  "plan_sha256": "a5fbfa6e57a1891da4638f5e047794491f618572714627b9abc88b96e7f36333",
+  "request_sha256": "cceca442cfaee580e3b7fe1606e78476f30a58b6f428e209311dda55fa9b3b24",
+  "source_capture_sha256": "da76d3c3a1dcfb9faebbc4da9345f2b73188c121ca46e2697233d29f948b0e8f",
+  "status": "completed",
+  "started_at": "2026-09-27T16:11:14.992275+00:00",
+  "converse_attempts_reserved": 1,
+  "converse_attempts_dispatched": 1,
+  "account": "239342516379",
+  "pair_flags": {
+    "p12": false,
+    "p13": false,
+    "p14": false,
+    "p15": false,
+    "p16": false,
+    "p23": false,
+    "p24": false,
+    "p25": false,
+    "p26": false,
+    "p34": false,
+    "p35": true,
+    "p36": false,
+    "p45": false,
+    "p46": false,
+    "p56": false
+  },
+  "elapsed_converse_seconds": 2.69819,
+  "visible_response": "{\"p12\":false,\"p13\":false,\"p14\":false,\"p15\":false,\"p16\":false,\"p23\":false,\"p24\":false,\"p25\":false,\"p26\":false,\"p34\":false,\"p35\":true,\"p36\":false,\"p45\":false,\"p46\":false,\"p56\":false}",
+  "usage": {
+    "inputTokens": 1185,
+    "outputTokens": 79,
+    "totalTokens": 1264
+  },
+  "stop_reason": "end_turn",
+  "whole_execute_seconds": 2.699044
+}

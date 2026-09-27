@@ -1,0 +1,51 @@
+{
+  "state": "frozen",
+  "trial_id": "generic-reserve-pairwise-diversity-20260927-01",
+  "source_capture": "docs/evidence/generic-reserve-seven-probe-v4-20260927/capture.json",
+  "source_capture_sha256": "da76d3c3a1dcfb9faebbc4da9345f2b73188c121ca46e2697233d29f948b0e8f",
+  "source_ordinals": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "visible_fields": [
+    "prompt",
+    "choices"
+  ],
+  "question_count": 6,
+  "pair_ids": [
+    "p12",
+    "p13",
+    "p14",
+    "p15",
+    "p16",
+    "p23",
+    "p24",
+    "p25",
+    "p26",
+    "p34",
+    "p35",
+    "p36",
+    "p45",
+    "p46",
+    "p56"
+  ],
+  "pair_count": 15,
+  "model": "us.anthropic.claude-sonnet-4-6",
+  "region": "us-east-1",
+  "account": "239342516379",
+  "maximum_converse_attempts": 1,
+  "sdk_total_max_attempts": 1,
+  "request_sha256": "cceca442cfaee580e3b7fe1606e78476f30a58b6f428e209311dda55fa9b3b24",
+  "harness_sha256": "fb8f7e77f5d64706761b0bcccaee0e753e210dfe83df52097e22899ef0cb4572",
+  "schema_sha256": "dd0f60655830d6a548387fef88f9b60106b6175d601524b93ca66966d1cc6c47",
+  "credential_source": "AWS CLI default profile, no inherited credential overrides",
+  "cli_connect_timeout_seconds": 3,
+  "cli_read_timeout_seconds": 120,
+  "credential_export_timeout_seconds": 15,
+  "response_capture": "visible text and bounded usage only; no reasoning, signatures, credentials, or raw error text",
+  "no_retry_or_repair": true
+}
