@@ -1,0 +1,81 @@
+{
+  "reviewer": "B",
+  "review_mode": "answer_blind",
+  "locked": true,
+  "locked_at_utc": "2026-09-27T13:49:42Z",
+  "worksheet_sha256": "8dc06af7d3581cae627fe2570b8b186b7b7b8609bfb6309df45a8434e5d96685",
+  "scale": "1=very easy, 5=very hard; target=2-3",
+  "items": [
+    {
+      "id": "PR-01",
+      "defensible_answer_labels": ["B"],
+      "answer_status": "single",
+      "reason": "Mara speaks to Nia. Mara will catalog Nia's sketches after Nia photographs Mara's model.",
+      "reference_map": {
+        "I": "Mara, the speaker and planned cataloger",
+        "your": "Nia, the addressee and sketch owner",
+        "you": "Nia, the addressee and prospective photographer",
+        "my": "Mara, the speaker and model owner"
+      },
+      "temporal_status": "The sentence states Mara's future cataloging plan and places Nia's photographing before it. It does not report that either action has happened, and it does not by itself establish that Nia promised to photograph.",
+      "difficulty_1_to_5": 3,
+      "difficulty_reason": "Two actions and two possessions must be mapped across speaker and addressee, but the single quoted speaker is explicit. Within the level 2-3 goal.",
+      "choice_assessment": {
+        "A": "Coherent English; plausible speaker/addressee reversal of the entire quotation, although the attribution makes it clearly wrong.",
+        "B": "Coherent English and the sole matching role map.",
+        "C": "Coherent English; plausible error that assigns each object to the person acting on it while keeping both actors correct.",
+        "D": "Coherent English; plausible mixed actor/possession error, though weaker as a single consistent misreading than A or C."
+      },
+      "choice_pairs": [
+        {"pair": "A-B", "materially_distinct": true, "difference": "Cataloger, sketch owner, photographer, and model owner all differ."},
+        {"pair": "A-C", "materially_distinct": true, "difference": "Cataloger and photographer differ; sketch and model owners match."},
+        {"pair": "A-D", "materially_distinct": true, "difference": "Sketch and model owners differ; cataloger and photographer match."},
+        {"pair": "B-C", "materially_distinct": true, "difference": "Sketch and model owners differ; cataloger and photographer match."},
+        {"pair": "B-D", "materially_distinct": true, "difference": "Cataloger and photographer differ; sketch and model owners match."},
+        {"pair": "C-D", "materially_distinct": true, "difference": "Cataloger, sketch owner, photographer, and model owner all differ."}
+      ],
+      "ambiguity": "No second defensible answer. The 'after' clause presents Nia's photographing as a prerequisite in Mara's plan, not as an accomplished action or an independent promise by Nia.",
+      "wording_change_needed": false,
+      "outside_dialogue_fact_required": false
+    },
+    {
+      "id": "PR-02",
+      "defensible_answer_labels": ["C"],
+      "answer_status": "single",
+      "reason": "Iris proposes delivering Caleb's poster. Caleb then offers his own cart for that delivery.",
+      "reference_map": {
+        "first_turn_I": "Iris, the first speaker and planned deliverer",
+        "first_turn_your": "Caleb, the addressee and poster owner",
+        "second_turn_my": "Caleb, the second speaker and cart owner",
+        "second_turn_use": "An imperative addressed to Iris, implicitly 'you use'; it does not name a completed use or delivery"
+      },
+      "temporal_status": "Iris says she will deliver; Caleb offers use of his cart. Neither delivery nor cart use is reported as completed.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "The speaker changes between lines, so 'I' and 'my' require tracking turn labels, but each line has a short and explicit role map. Within the level 2-3 goal.",
+      "choice_assessment": {
+        "A": "Coherent English; possible speaker-label reversal, but a weaker distractor because it misattributes both explicitly labeled turns.",
+        "B": "Coherent English; plausible confusion of 'your' with Iris's own poster while correctly resolving the cart.",
+        "C": "Coherent English and the sole matching role map.",
+        "D": "Coherent English; plausible failure to reset 'my' at Caleb's turn, although Caleb offering Iris's cart is less natural."
+      },
+      "choice_pairs": [
+        {"pair": "A-B", "materially_distinct": true, "difference": "Deliverer, cart offerer, and cart owner differ; poster owner matches."},
+        {"pair": "A-C", "materially_distinct": true, "difference": "Deliverer, poster owner, cart offerer, and cart owner all differ."},
+        {"pair": "A-D", "materially_distinct": true, "difference": "Deliverer, poster owner, and cart offerer differ; cart owner matches."},
+        {"pair": "B-C", "materially_distinct": true, "difference": "Only poster owner differs."},
+        {"pair": "B-D", "materially_distinct": true, "difference": "Poster owner and cart owner differ."},
+        {"pair": "C-D", "materially_distinct": true, "difference": "Only cart owner differs."}
+      ],
+      "ambiguity": "No second defensible answer. With only Iris and Caleb in the labeled exchange, 'your poster' naturally addresses Caleb, and 'my cart' belongs to Caleb. 'Use' is an offer or permission in context, not an assertion of completed use.",
+      "wording_change_needed": false,
+      "outside_dialogue_fact_required": false
+    }
+  ],
+  "cross_item_assessment": {
+    "shared_solve_procedure": "Both require binding first- and second-person words to the current speaker/addressee, then mapping named people to actions and possessions.",
+    "mechanism_distinction": "PR-01 holds one speaker across two ordered actions and two possessions; PR-02 changes speakers across turns and resets the reference of 'my'. This distinction is substantive enough to retain both.",
+    "format_repetition": "Both use a short quotation or dialogue followed by four fully expanded role-map choices. That presentation repeats, but their referent-tracking demands differ.",
+    "bank_scaling_concern": "For a 20-item mixed bank, repeated 'who acts on whose object' choices could let learners use a format routine. Vary the number and placement of turns, speech acts, temporal relations, and response formats while preserving unambiguous referents.",
+    "overall": "Both items meet the level 2-3 goal, have a single defensible answer, and test pronoun reference from the dialogue alone."
+  }
+}

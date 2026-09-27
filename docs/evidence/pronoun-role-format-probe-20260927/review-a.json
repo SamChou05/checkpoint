@@ -1,0 +1,79 @@
+{
+  "reviewer": "blind-a",
+  "reviewed_files": ["worksheet.json", "RUBRIC.md"],
+  "worksheet_sha256": "8dc06af7d3581cae627fe2570b8b186b7b7b8609bfb6309df45a8434e5d96685",
+  "answer_blind": true,
+  "locked_at_utc": "2026-09-27T13:50:13Z",
+  "items": [
+    {
+      "id": "PR-01",
+      "defensible_answer_labels": ["B"],
+      "answer_status": "single",
+      "pronoun_referents": {
+        "I": "Mara, the speaker",
+        "your": "Nia, the addressee; Nia owns the sketches",
+        "you": "Nia, who would photograph the model",
+        "my": "Mara, who owns the model"
+      },
+      "reasoning": "Mara proposes to catalog Nia's sketches after Nia photographs Mara's model. The future wording states a plan and a condition, not that either action has happened.",
+      "challenge_1_to_5": 3,
+      "level_2_to_3_goal": "meets",
+      "choice_assessments": [
+        {"label": "A", "coherent_english": true, "plausible_learner_selection": true, "note": "Reverses the proposed actors and both ownership assignments; a possible speaker/addressee swap."},
+        {"label": "B", "coherent_english": true, "plausible_learner_selection": true, "note": "Matches both proposed actions and owners."},
+        {"label": "C", "coherent_english": true, "plausible_learner_selection": true, "note": "Keeps the actors but assigns each the object they own, a plausible possessive slip."},
+        {"label": "D", "coherent_english": true, "plausible_learner_selection": true, "note": "Reverses the actors and gives each actor their own object, a compound role and possessive slip."}
+      ],
+      "choice_pairs": [
+        {"pair": "A-B", "materially_distinct": true, "difference": "Both action actors and both object owners differ."},
+        {"pair": "A-C", "materially_distinct": true, "difference": "The cataloger and photographer differ; the sketches and model owners match."},
+        {"pair": "A-D", "materially_distinct": true, "difference": "Both actors match; both object owners differ."},
+        {"pair": "B-C", "materially_distinct": true, "difference": "Both actors match; both object owners differ."},
+        {"pair": "B-D", "materially_distinct": true, "difference": "The cataloger and photographer differ; the sketches and model owners match."},
+        {"pair": "C-D", "materially_distinct": true, "difference": "Both actors and both object owners differ, although both choices use a self-owned-object pattern."}
+      ],
+      "ambiguity_or_second_defensible_reading": "None under the stated dialogue. Mara addresses Nia directly, so the pronouns have stable referents.",
+      "wording_change_needed": false,
+      "outside_dialogue_fact_required": false,
+      "unintended_completed_action_assertion": false
+    },
+    {
+      "id": "PR-02",
+      "defensible_answer_labels": ["C"],
+      "answer_status": "single",
+      "pronoun_referents": {
+        "I": "Iris in Iris's turn; Iris proposes to deliver",
+        "your": "Caleb, the addressee of Iris's turn; Caleb owns the poster",
+        "my": "Caleb in Caleb's turn; Caleb owns the cart"
+      },
+      "reasoning": "Iris proposes to deliver Caleb's poster. Caleb's instruction to use his cart for that delivery functions as an offer of Caleb's cart. Neither utterance establishes that the delivery happened or the cart was used.",
+      "challenge_1_to_5": 2,
+      "level_2_to_3_goal": "meets",
+      "choice_assessments": [
+        {"label": "A", "coherent_english": true, "plausible_learner_selection": true, "note": "A possible full speaker-role reversal, though it contradicts both turn labels."},
+        {"label": "B", "coherent_english": true, "plausible_learner_selection": true, "note": "Keeps deliverer and cart offer correct but mistakes who owns 'your poster'."},
+        {"label": "C", "coherent_english": true, "plausible_learner_selection": true, "note": "Matches the proposed deliverer, poster owner, cart offerer, and cart owner."},
+        {"label": "D", "coherent_english": true, "plausible_learner_selection": true, "note": "Keeps deliverer, poster owner, and offerer correct but mistakes who owns 'my cart'."}
+      ],
+      "choice_pairs": [
+        {"pair": "A-B", "materially_distinct": true, "difference": "The deliverer, cart offerer, and cart owner differ; poster owner matches."},
+        {"pair": "A-C", "materially_distinct": true, "difference": "The deliverer, poster owner, cart offerer, and cart owner all differ."},
+        {"pair": "A-D", "materially_distinct": true, "difference": "The deliverer, poster owner, and cart offerer differ; cart owner matches."},
+        {"pair": "B-C", "materially_distinct": true, "difference": "Only the poster owner differs."},
+        {"pair": "B-D", "materially_distinct": true, "difference": "The poster owner and cart owner differ; deliverer and offerer match."},
+        {"pair": "C-D", "materially_distinct": true, "difference": "Only the cart owner differs."}
+      ],
+      "ambiguity_or_second_defensible_reading": "No material ambiguity. In this two-person exchange, Caleb's imperative is naturally an offer of his cart to Iris for the delivery she proposed.",
+      "wording_change_needed": false,
+      "outside_dialogue_fact_required": false,
+      "unintended_completed_action_assertion": false
+    }
+  ],
+  "cross_item_review": {
+    "shared_solve_procedure": "Identify the speaker and addressee for each quoted pronoun, then assign the action and possessed object to those people.",
+    "format_repetition": "Both use two named people, future proposals, possessive pronouns, and four complete role-map choices; this creates a recognizable surface pattern.",
+    "mechanism_difference": "PR-01 keeps one speaker while mapping two reciprocal actions and two possessions across one sentence. PR-02 changes speakers between turns and asks the learner to track 'my' after that shift, with an offer rather than a second action plan.",
+    "distinct_enough_for_same_bank": true,
+    "scaling_concern_for_20_item_mixed_bank": "These two can coexist, but many more two-person I/you/my/your questions with the same four full-sentence role maps would become formulaic. Vary dialogue structures, the number and placement of referents, and the decision the learner must make while keeping each referent unambiguous."
+  }
+}
