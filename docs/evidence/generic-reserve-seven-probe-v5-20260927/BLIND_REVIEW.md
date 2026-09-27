@@ -1,0 +1,7 @@
+# Trial 05 keyless content review rubric
+
+If the full worker returns five questions and the capture's machine qualification is `pending_content_review`, use `make_blind_worksheet.py --capture-sha256 CAPTURE_SHA256` to create the exact learner-facing worksheet from those five. The source/key map is saved outside Git with mode `0600` in a Trial05-specific private directory. This rubric is frozen before dispatch; no worksheet exists yet.
+
+Reviewers: use only this rubric and the generated `worksheet.json`. Do not read the live capture, source, key map, another review, or Git history before both reviews are saved and hashed. For each Q01–Q05, choose the one supported letter or record ambiguity/another defensible answer; independently rate difficulty 1–5 against requested introductory-probability level 2, topic fit, and self-containment. Judge all six unordered choice pairs for meaningful semantic differences, identify weak distractors or answer cues, and briefly justify the answer. Assess all ten cross-item pairs for strong repetition of both central solving decision and response format. Record unstated sampling or payoff assumptions. Do not use model-authored explanations to infer keys; audit those separately after both reviews lock.
+
+Five worker returns and matching private keys are insufficient if any item is ambiguous, below difficulty, misleading, or strongly repetitive. One batch does not establish a sustained 40/80-question bank success rate.

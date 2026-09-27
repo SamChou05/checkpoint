@@ -1,0 +1,27 @@
+{
+  "adaptiveSkillPlans": [],
+  "blockedStemFingerprints": [],
+  "competencies": [],
+  "difficultyGuidance": "Apply one familiar rule directly.",
+  "existingPrompts": [],
+  "existingQuestionCoverage": [],
+  "goal": {
+    "category": "Mathematics",
+    "contentTopics": [
+      "Probability"
+    ],
+    "currentLevel": "",
+    "focusAreas": "Finite equally likely outcomes, conditional probability, independence, expected value, and interpretation",
+    "learningTarget": "Solve self-contained introductory probability problems",
+    "needsSkillMap": false,
+    "preferredQuestionStyle": "Multiple Choice",
+    "questionDirective": "Create self-contained application questions. State all quantities and assumptions needed to solve each item. Vary the reasoning task across counting, conditional probability, independence, expected value, and interpretation; avoid repeated templates and unsupported real-world facts.",
+    "title": "Foundations of Probability"
+  },
+  "minimumDifficulty": 2,
+  "reportedPrompts": [],
+  "requiresFullObjectiveCoverage": false,
+  "sourceDocuments": [],
+  "stemFingerprintVersion": 1,
+  "targetCount": 5
+}
