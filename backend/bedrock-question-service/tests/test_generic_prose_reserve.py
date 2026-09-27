@@ -39,57 +39,73 @@ class GenericProseReserveTests(unittest.TestCase):
             self.questions.append(question)
         self.request = _normalize_request(_request_payload(target_count=5))
 
-    def client(self, *, authored_count=7, solver_rejected=(), review_rejected=()):
+    def client(self, *, authored_count=7, solver_rejected=(), review_rejected=(),
+               chunked=True, sanitized_indexes=None):
         originals = {question["prompt"]: question for question in self.questions[:authored_count]}
+        source_index = {question["prompt"]: index for index, question in enumerate(self.questions[:authored_count])}
         solver_rejected = set(solver_rejected)
         review_rejected = set(review_rejected)
 
-        def solve(request):
-            items = task_data(request, "question_solution_json")["items"]
-            self.assertEqual(len(items), authored_count)
-            rows = []
-            for item in items:
-                self.assertNotIn("expectedAnswer", item)
-                self.assertNotIn("explanation", item)
-                row = solver_record(item, originals[item["prompt"]]["expectedAnswer"])
-                if item["index"] in solver_rejected:
-                    for choice in row["choices"].values():
-                        choice["judgment"] = "refuted"
-                rows.append(row)
-            return solver_map(*rows)
+        source_order = (list(range(authored_count)) if sanitized_indexes is None
+                        else list(sanitized_indexes))
+        batches = ([source_order[:4], source_order[4:]] if chunked else [source_order])
+        steps = [(f"question_author_v4_n{authored_count}",
+                  author_payload(*self.questions[:authored_count]))]
+        for batch in batches:
+            if not batch:
+                continue
 
-        def review(request):
-            items = task_data(request, "question_review_json")["items"]
-            self.assertEqual(len(items), authored_count - len(solver_rejected))
-            rows = {}
-            for item in items:
-                original = originals[item["prompt"]]
-                self.assertEqual(item["explanation"], original["explanation"])
-                self.assertNotIn("expectedAnswer", item)
-                self.assertNotIn("difficulty", item)
-                rows[str(item["index"])] = {
-                    "valid": item["index"] not in review_rejected,
-                    "answer": original["expectedAnswer"],
-                    "difficulty": 3,
-                    "explanationSupport": "supported",
-                    "issueFlags": authored_issue_flags(),
-                }
-            return {"reviews": rows}
+            def solve(request, expected=batch):
+                items = task_data(request, "question_solution_json")["items"]
+                self.assertEqual([source_index[item["prompt"]] for item in items], expected)
+                rows = []
+                for item in items:
+                    self.assertNotIn("expectedAnswer", item)
+                    self.assertNotIn("explanation", item)
+                    row = solver_record(item, originals[item["prompt"]]["expectedAnswer"])
+                    if source_index[item["prompt"]] in solver_rejected:
+                        for choice in row["choices"].values():
+                            choice["judgment"] = "refuted"
+                    rows.append(row)
+                return solver_map(*rows)
 
-        survivor_count = authored_count - len(solver_rejected)
-        return ScriptedNativeClient(
-            (f"question_author_v4_n{authored_count}", author_payload(*self.questions[:authored_count])),
-            (f"complete_choice_solver_v5_n{authored_count}", solve),
-            (f"authored_solution_reviewer_v3_n{survivor_count}", review),
-        )
+            def review(request, expected=batch):
+                data = task_data(request, "question_review_json")
+                items = data["items"]
+                self.assertEqual([source_index[item["prompt"]] for item in items],
+                                 [index for index in expected if index not in solver_rejected])
+                if chunked and expected[0] >= 4:
+                    self.assertEqual([item["prompt"] for item in data["existingQuestions"]][-4:],
+                                     [self.questions[index]["prompt"] for index in source_order[:4]])
+                    self.assertTrue(all("expectedAnswer" not in item for item in data["existingQuestions"]))
+                rows = {}
+                for item in items:
+                    original = originals[item["prompt"]]
+                    self.assertEqual(item["explanation"], original["explanation"])
+                    self.assertNotIn("expectedAnswer", item)
+                    self.assertNotIn("difficulty", item)
+                    rows[str(item["index"])] = {
+                        "valid": source_index[item["prompt"]] not in review_rejected,
+                        "answer": original["expectedAnswer"],
+                        "difficulty": 3,
+                        "explanationSupport": "supported",
+                        "issueFlags": authored_issue_flags(),
+                    }
+                return {"reviews": rows}
+
+            steps.append((f"complete_choice_solver_v5_n{len(batch)}", solve))
+            survivor_count = len(batch) - len(set(batch) & solver_rejected)
+            if survivor_count:
+                steps.append((f"authored_solution_reviewer_v3_n{survivor_count}", review))
+        return ScriptedNativeClient(*steps)
 
     def test_seven_authored_and_verified_rows_return_only_five_unchanged(self):
         client = self.client()
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
         result = generation._generate_sanitized_questions(self.request, client, budget)
-        self.assertEqual(len(client.calls), 3)
-        self.assertEqual((budget.calls, reserve.call_count), (3, 3))
+        self.assertEqual(len(client.calls), 5)
+        self.assertEqual((budget.calls, reserve.call_count), (5, 5))
         self.assertEqual(task_data(client.calls[0], "generation_request_json")["targetCount"], 7)
         self.assertEqual(self.request["targetCount"], 5)
         author_schema = json.loads(client.calls[0]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["schema"])
@@ -122,22 +138,24 @@ class GenericProseReserveTests(unittest.TestCase):
                                      [q["expectedAnswer"] for q in surviving])
                     self.assertEqual([q["explanation"] for q in result],
                                      [q["explanation"] for q in surviving])
-                self.assertEqual(len(client.calls), 3)
+                self.assertEqual(len(client.calls), 5)
 
     def test_solver_rejection_uses_dense_review_count_and_original_key(self):
         client = self.client(solver_rejected={2})
         result = generation._generate_sanitized_questions(
-            self.request, client, generation.ProviderCallBudget(3),
+            self.request, client, generation.ProviderCallBudget(5),
         )
         self.assertEqual([q["prompt"] for q in result],
                          [self.questions[i]["prompt"] for i in (0, 1, 3, 4, 5)])
         self.assertEqual(client.calls[2]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"],
-                         "authored_solution_reviewer_v3_n6")
+                         "authored_solution_reviewer_v3_n3")
+        self.assertEqual(client.calls[4]["outputConfig"]["textFormat"]["structure"]["jsonSchema"]["name"],
+                         "authored_solution_reviewer_v3_n3")
 
     def test_budget_and_deadline_refuse_before_provider_call(self):
         for budget, error in (
-            (generation.ProviderCallBudget(2), ProviderCallBudgetExceededError),
-            (generation.ProviderCallBudget(3, context=FakeLambdaContext(0)),
+            (generation.ProviderCallBudget(4), ProviderCallBudgetExceededError),
+            (generation.ProviderCallBudget(5, context=FakeLambdaContext(0)),
              ProviderDeadlineExceededError),
         ):
             with self.subTest(error=error):
@@ -157,13 +175,13 @@ class GenericProseReserveTests(unittest.TestCase):
         client.steps[0] = (client.steps[0][0], author_then_expire)
         with self.assertRaises(ProviderDeadlineExceededError):
             generation._generate_sanitized_questions(
-                self.request, client, generation.ProviderCallBudget(3, context=context),
+                self.request, client, generation.ProviderCallBudget(5, context=context),
             )
         self.assertEqual(len(client.calls), 1)
 
     def test_flag_is_off_by_default_and_excludes_mapped_or_source_requests(self):
         with patch.dict(os.environ, {"QUESTION_GENERIC_PROSE_RESERVE_7": "disabled"}):
-            client = self.client(authored_count=5)
+            client = self.client(authored_count=5, chunked=False)
             result = generation._generate_sanitized_questions(
                 self.request, client, generation.ProviderCallBudget(3),
             )

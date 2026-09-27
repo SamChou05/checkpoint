@@ -296,6 +296,12 @@ def _generate_sanitized_questions(
     generic_reserve = _generic_prose_reserve_enabled(
         request, author_mode, cardinality_mode, feedback_contract,
     )
+    if generic_reserve:
+        # Keep this experimental pass within six actual Converse attempts even
+        # if the service-wide provider budget was configured above six.
+        if call_budget is None:
+            call_budget = _new_provider_call_budget(None)
+        call_budget.maximum_calls = min(call_budget.maximum_calls, call_budget.calls + 6)
     questions: list[dict[str, Any]] = []
     configured_attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
     attempts = 1 if generic_reserve else configured_attempts
@@ -318,9 +324,10 @@ def _generate_sanitized_questions(
     for _ in range(attempts):
         # A question needs an author, an answer-key-blind solution, and a final
         # audit. Do not start a pass whose full verification cannot be afforded.
+        required_calls = 5 if generic_reserve else MIN_VERIFIED_PASS_CALLS
         if (
             call_budget is not None
-            and call_budget.maximum_calls - call_budget.calls < MIN_VERIFIED_PASS_CALLS
+            and call_budget.maximum_calls - call_budget.calls < required_calls
         ):
             if questions:
                 break
@@ -423,22 +430,55 @@ def _generate_sanitized_questions(
                     contract=SolverSlotContract(count) if count is not None else "complete_choice_solver_v1",
                 )
 
-            generated_questions = verify_questions(
-                candidates,
-                current_request,
-                review_stage,
-                review_with_count=review_stage if choice_slots else None,
-                request_metrics=request_metrics,
-                solve=solve_stage,
-                solve_with_count=solve_stage if choice_slots else None,
-                solver_contract="complete_choices",
-                feedback_contract=feedback_contract,
-                preserve_reviewed_text=output_mode() == "native",
-                audit_choice_pairs=choice_slots,
-                choice_slots=choice_slots,
-                **({"compiled_questions": compiled_output} if mixed_quantitative else {}),
-                **({"agreement_questions": agreement_output} if mapped_agreement else {}),
-            )
+            def verify_batch(
+                batch: list[dict[str, Any]], batch_request: dict[str, Any],
+            ) -> list[dict[str, Any]]:
+                return verify_questions(
+                    batch,
+                    batch_request,
+                    review_stage,
+                    review_with_count=review_stage if choice_slots else None,
+                    request_metrics=request_metrics,
+                    solve=solve_stage,
+                    solve_with_count=solve_stage if choice_slots else None,
+                    solver_contract="complete_choices",
+                    feedback_contract=feedback_contract,
+                    preserve_reviewed_text=output_mode() == "native",
+                    audit_choice_pairs=choice_slots,
+                    choice_slots=choice_slots,
+                    **({"compiled_questions": compiled_output} if mixed_quantitative else {}),
+                    **({"agreement_questions": agreement_output} if mapped_agreement else {}),
+                )
+
+            if generic_reserve:
+                # Sanitize the whole author response before splitting, retaining
+                # the existing full-source exact-stem and fingerprint vetoes.
+                # Trial 02's seven-row solver request was rejected by Bedrock;
+                # two at-most-four-row passes use previously accepted contracts.
+                generated_questions = []
+                if len(candidates) >= target_count:
+                    first_batch = candidates[:4]
+                    second_batch = candidates[4:]
+                    generated_questions.extend(verify_batch(first_batch, current_request))
+                    if (call_budget is not None
+                            and call_budget.maximum_calls - call_budget.calls < 2):
+                        raise ProviderCallBudgetExceededError(
+                            "Insufficient call budget for the second reserve verification chunk."
+                        )
+                    second_request = copy.deepcopy(current_request)
+                    # Show every first-chunk candidate to the second reviewer
+                    # as keyless prior coverage. This keeps cross-chunk prompt
+                    # comparisons visible, but semantic novelty remains a
+                    # fallible model judgment, not a deterministic guarantee.
+                    second_request["existingQuestionCoverage"] += [
+                        {key: question[key] for key in (
+                            "prompt", "topic", "skillID", "objectiveID", "objective",
+                        ) if key in question}
+                        for question in first_batch
+                    ]
+                    generated_questions.extend(verify_batch(second_batch, second_request))
+            else:
+                generated_questions = verify_batch(candidates, current_request)
         except DurableProviderCallBudgetExceededError:
             # A refused durable reservation means the asynchronous job or its
             # install quota is exhausted. Let the worker persist that terminal
