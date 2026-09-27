@@ -1,0 +1,264 @@
+{
+  "review_type": "answer_blind_worksheet_review",
+  "scope": {
+    "worksheet": "/private/tmp/checkpoint-grammar-frames-official-17387b0850e06f15/worksheet.json",
+    "rubric": "/private/tmp/checkpoint-grammar-frames-official-17387b0850e06f15/RUBRIC.md",
+    "reviewed_items": 5,
+    "unblinded_material_consulted": false
+  },
+  "difficulty_scale": "Reviewer judgment: 1 = very easy, 5 = very difficult.",
+  "items": [
+    {
+      "id": "16b9d075bea359b2c1fca5df",
+      "defensible_answer_letters": [
+        "B"
+      ],
+      "answer_reason": "(3/4 + 1/2) × 8 = (5/4) × 8 = 10.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "2 and 10 are unequal numeric values."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "2 and 5/32 are unequal numeric values."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "2 and 40 are unequal numeric values."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "10 and 5/32 are unequal numeric values."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "10 and 40 are unequal numeric values."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "5/32 and 40 are unequal numeric values."
+        }
+      ],
+      "stem_self_contained": true,
+      "apparent_topic": "Arithmetic with fractions and order of operations",
+      "apparent_objective": "Evaluate a fully parenthesized numerical expression exactly.",
+      "visible_objective_fit": true,
+      "difficulty_1_to_5": 2,
+      "ambiguity": "None apparent; the expression and requested exact value are explicit.",
+      "material_defect": null,
+      "nonfatal_observation": "Some distractors, especially 5/32, may be less plausible than a typical calculation error."
+    },
+    {
+      "id": "ba4375d99f37f695ff7e2a53",
+      "defensible_answer_letters": [
+        "B"
+      ],
+      "answer_reason": "The singular subject 'Every guest' takes 'receives'; the compound subject 'Maya and Theo' takes 'prepare'. Nearby plural or singular nouns do not change the subjects.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "Both verb forms differ."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The first verb form differs."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The second verb form differs."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The second verb form differs."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The first verb form differs."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "Both verb forms differ."
+        }
+      ],
+      "stem_self_contained": true,
+      "apparent_topic": "Present-tense subject-verb agreement",
+      "apparent_objective": "Choose verb forms that agree with singular and compound subjects despite intervening prepositional phrases.",
+      "visible_objective_fit": true,
+      "difficulty_1_to_5": 2,
+      "ambiguity": "None apparent in standard written American English.",
+      "material_defect": null,
+      "nonfatal_observation": null
+    },
+    {
+      "id": "658b4c4d94a95810e7363d1d",
+      "defensible_answer_letters": [
+        "D"
+      ],
+      "answer_reason": "3x + 7 > 25 implies x > 6; the minimum integer in the stated domain is 7.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "5 and 8 are unequal integers."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "5 and 6 are unequal integers."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "5 and 7 are unequal integers."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "8 and 6 are unequal integers."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "8 and 7 are unequal integers."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "6 and 7 are unequal integers; only 7 satisfies the strict boundary as the minimum."
+        }
+      ],
+      "stem_self_contained": true,
+      "apparent_topic": "One-variable linear inequalities over integers",
+      "apparent_objective": "Solve a strict inequality and select the minimum integer in a specified domain.",
+      "visible_objective_fit": true,
+      "difficulty_1_to_5": 2,
+      "ambiguity": "None apparent; the domain, strict inequality, and minimum criterion are explicit.",
+      "material_defect": null,
+      "nonfatal_observation": null
+    },
+    {
+      "id": "d3613d7a5412df67b6cdd07b",
+      "defensible_answer_letters": [
+        "A"
+      ],
+      "answer_reason": "((15 − 3) / (2 + 1)) × 5 = (12 / 3) × 5 = 20.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "20 and 4/5 are unequal numeric values."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "20 and −1 are unequal numeric values."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "20 and 9 are unequal numeric values."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "4/5 and −1 are unequal numeric values."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "4/5 and 9 are unequal numeric values."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "−1 and 9 are unequal numeric values."
+        }
+      ],
+      "stem_self_contained": true,
+      "apparent_topic": "Arithmetic and order of operations",
+      "apparent_objective": "Evaluate a fully parenthesized numerical expression exactly.",
+      "visible_objective_fit": true,
+      "difficulty_1_to_5": 2,
+      "ambiguity": "None apparent; the expression has one exact value.",
+      "material_defect": null,
+      "nonfatal_observation": "The distractors 4/5 and −1 have weak apparent links to routine calculation mistakes."
+    },
+    {
+      "id": "dfc67ef6d30ca9ecb9bd41a0",
+      "defensible_answer_letters": [
+        "D"
+      ],
+      "answer_reason": "The singular subject 'The coach' takes 'checks'; the plural subject 'the players' takes 'practice'. Nearby nouns do not change the subjects.",
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The second verb form differs."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "Both verb forms differ."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The first verb form differs."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The first verb form differs."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "Both verb forms differ."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The second verb form differs."
+        }
+      ],
+      "stem_self_contained": true,
+      "apparent_topic": "Present-tense subject-verb agreement",
+      "apparent_objective": "Choose verb forms that agree with singular and plural subjects despite intervening prepositional phrases.",
+      "visible_objective_fit": true,
+      "difficulty_1_to_5": 2,
+      "ambiguity": "None apparent in standard written American English.",
+      "material_defect": null,
+      "nonfatal_observation": null
+    }
+  ],
+  "cross_item_novelty": {
+    "judgment": "Limited: five items use three task forms.",
+    "observations": [
+      "The two arithmetic-expression items have the same framing and operation-evaluation objective, with different numbers.",
+      "The two subject-verb-agreement items have the same two-blank sentence structure and intervening near-phrase distractor pattern, with different subjects and verbs.",
+      "The integer-inequality minimum item contributes a distinct objective and response process."
+    ],
+    "material_defect": "Batch-level repetition may fail a strong novelty requirement, although the supplied rubric gives no numerical novelty threshold."
+  },
+  "overall": {
+    "readable_requested_slots": 5,
+    "single_supported_answer_items": 5,
+    "choice_pairs_reviewed": 30,
+    "meaningfully_distinct_pairs": 30,
+    "apparent_item_level_material_defects": 0,
+    "uncertainty": "No answer ambiguity found; difficulty and novelty judgments are subjective because the rubric supplies no detailed scale or novelty threshold."
+  }
+}

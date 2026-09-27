@@ -57,8 +57,14 @@ while warning that clause reversals leave bank novelty low. Selection now
 checks the full stored bank's finite agreement variants as well as recent
 prompts and client-blocked fingerprints. A single pinned full-request digest
 still applies only to its exact request state; later refills with changed
-history need separate routing and qualification. None of this has a new live
-worker result or deployment.
+history need separate routing and qualification. A subsequent
+[one-shot full-worker qualification](evidence/agreement-grammar-frames-qualification-20260927/RESULTS.md)
+did return 5/5 original slots in three calls. Both blind reviewers chose all
+five keys, found all 30 choice pairs distinct and rated both strengthened
+English questions level 2. One reviewer rated a fully parenthesized arithmetic
+expression level 1, so the prespecified strict content gate again failed at
+4/5. The numeric explanations were accurate, but the batch also repeated
+close arithmetic and agreement forms. No route was activated or deployed.
 
 ## Findings and verified fixes
 
@@ -86,6 +92,7 @@ worker result or deployment.
 | Even a closed, code-authored question can be discarded by a fallible difficulty judgment. | The [mapped agreement full-worker trial](evidence/mapped-agreement-full-worker-qualification-20260927/RESULTS.md) accepted a five-slot native schema and constructed five questions. The final model reviewer called both English tasks level 3 and the exact-level gate returned 3/5. Two independent blind reviewers rated the five sanitized drafts level 2, picked all five code-owned keys, and found all within-item choice pairs distinct. | Policy 10 on main uses the freshly revalidated agreement template's calibrated level 2 when the reviewer estimates 2 or 3. Ratings 1, 4, 5 and all other solver/reviewer vetoes remain binding; ordinary prose and quantitative difficulty rules are unchanged. An independent source review and 1,395 backend tests passed. The opt-in remains inactive in deployment and needs a fresh worker qualification; the failed trial remains 3/5. |
 | A code-owned key and complete response still cannot establish requested difficulty or bank variety. | The [fresh bounded policy-10 trial](evidence/agreement-difficulty-calibration-qualification-20260927/RESULTS.md) returned 5/5 original slots with all keys and 30 choice pairs accepted by two independent blind reviewers. Both nevertheless rated the simple compound/`every` item level 1 against a level-2 request; content qualification was 4/5. They also noted near-duplicate fraction task forms, while the closed agreement library has little slot-4 variety. | Keep the exact mapped route disabled. Strengthen the finite agreement frames and cross-batch selection, then require a new frozen worker trial and blind difficulty/novelty review before promotion. The later numeric feedback improvement has offline verification but was outside this live capture. |
 | A finite code-owned library can still repeat older bank questions when selection sees only recent prompt history. | The bank feeds the author its latest 30 questions but deduplicates against all stored items. An eight-batch regression reproduced a repeated agreement stem while another variant remained unused. The stronger 16-frame [offline preflight](evidence/agreement-v2-grammar-preflight-20260927/RESULTS.md) passed standalone key and difficulty review but found formulaic repetition. | For the opt-in exact mapped route, project the full stored bank onto the bounded 16 agreement stem identities and combine those with recent prompts and blocked fingerprints before selecting a scene/order. Preserve the source and selected task in private proof and reject once the finite inventory is exhausted. Exact scope pinning still limits which refill states can use this route, and live qualification remains open. |
+| A full five-slot worker pass can be mathematically correct yet too easy and repetitive for the requested level. | The [strengthened-frame live trial](evidence/agreement-grammar-frames-qualification-20260927/RESULTS.md) returned all five assigned slots in three calls, and two blind reviewers found every key and within-item choice pair sound. Reviewer B rated arithmetic slot 1 level 1 against a minimum of 2; both reviewers rated the two new English frames level 2. They also found two close arithmetic-expression tasks and two similar agreement forms. | Keep the route inactive at a 4/5 strict content result. A rejection-only numeric novelty gate reduced recorded yield to 4/5 in offline replay, so it was not promoted. Evaluate distinct code-owned numerical task families without dropping a required slot, then repeat provider and blind content qualification before rollout. |
 
 These changes make structure, key membership, exact identity and admission rules
 deterministic. They do not make a model's factual statements deterministic or

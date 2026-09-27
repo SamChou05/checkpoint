@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "prespecified_returned_output",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "16b9d075bea359b2c1fca5df",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((3/4) + (1/2)) * 8). What is its exact value?",
+      "choices": {
+        "A": "2",
+        "B": "10",
+        "C": "5/32",
+        "D": "40"
+      }
+    },
+    {
+      "id": "ba4375d99f37f695ff7e2a53",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Every guest near the servers ___ a plate, while Maya and Theo near the cook ___ lunch. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "receive; prepares",
+        "B": "receives; prepare",
+        "C": "receives; prepares",
+        "D": "receive; prepare"
+      }
+    },
+    {
+      "id": "658b4c4d94a95810e7363d1d",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: ((3 * x) + 7) > 25. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "5",
+        "B": "8",
+        "C": "6",
+        "D": "7"
+      }
+    },
+    {
+      "id": "d3613d7a5412df67b6cdd07b",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((15 - 3) / (2 + 1)) * 5). What is its exact value?",
+      "choices": {
+        "A": "20",
+        "B": "4/5",
+        "C": "-1",
+        "D": "9"
+      }
+    },
+    {
+      "id": "dfc67ef6d30ca9ecb9bd41a0",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The coach near the players ___ the schedule, while the players near the coach ___ the drills. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "check; practice",
+        "B": "check; practices",
+        "C": "checks; practices",
+        "D": "checks; practice"
+      }
+    }
+  ]
+}

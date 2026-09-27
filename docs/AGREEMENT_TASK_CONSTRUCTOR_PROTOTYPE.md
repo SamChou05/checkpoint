@@ -65,7 +65,12 @@ They also found limited variety across fraction tasks and agreement frames.
 The [keyless offline preflight](evidence/agreement-v2-grammar-preflight-20260927/RESULTS.md)
 of the strengthened frames found 16/16 unique keys and standalone level-2
 ratings from each of two independent reviewers, but both flagged low bank
-novelty. A new bounded full-worker trial is still required.
+novelty. A [new bounded full-worker trial](evidence/agreement-grammar-frames-qualification-20260927/RESULTS.md)
+returned 5/5 original slots in three calls. Both blind reviewers selected all
+five keys and rated the two strengthened agreement items level 2, but one
+reviewer rated a simple quantitative expression item level 1. The strict
+five-item content gate failed at 4/5. The route remains inactive while math
+task-family variety and difficulty are addressed.
 Neither trial nor the source change authorizes deployment. Worker-only
 SAM and workflow settings exist but default to disabled with empty scope
 hashes; the deployed worker does not use this route. Code-owned answers in

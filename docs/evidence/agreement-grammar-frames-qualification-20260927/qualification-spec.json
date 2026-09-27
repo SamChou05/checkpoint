@@ -1,0 +1,143 @@
+{
+  "baseline_failed_capture_sha256": "f8a912da0c29df783303d9afca5f0af0b559408f80ff6b37eae7755a285ff145",
+  "baseline_result": "5/5_original_slots_4/5_level2_FAIL",
+  "blind_review": {
+    "answer_blind": true,
+    "display_order_and_choices_shuffled": true,
+    "keys_sources_model_ratings_rejection_reasons_teaching_hidden_until_both_reviews_locked": true,
+    "post_lock_audit": [
+      "source_objective_fit",
+      "all_five_learner_fields_recompiled",
+      "main_explanation",
+      "per_choice_feedback",
+      "shuffle_safety",
+      "bank_novelty"
+    ],
+    "review_fields": [
+      "single_correct_answer",
+      "all_six_choice_pairs",
+      "self_contained",
+      "difficulty_1_to_5",
+      "apparent_objective",
+      "within_batch_novelty"
+    ],
+    "reviewers": 2,
+    "slot_blind": true,
+    "unavailable_original_slots_explicit": true
+  },
+  "candidate_source_revision": "db3e10e4098f5fdad13ceb73616603417ef6fde1",
+  "environment": {
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "200",
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "GENERATION_ATTEMPTS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "MAX_QUESTIONS_PER_BATCH": "20",
+    "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+    "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "array",
+    "QUESTION_AUTHOR_MODE": "constructed_quantitative",
+    "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+    "QUESTION_MAPPED_AGREEMENT_TASKS": "enabled",
+    "QUESTION_MAPPED_FIXED_FIVE_GOAL_SHA256": "6730fa057871c71d661c6260040fab2713a58eff36d8319326b2fed7b67ddb46",
+    "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": "212cea7d53ddefe17fbe8f2459705b46b871793e62e0e58b56cc11e3626e63ae"
+  },
+  "expected_author_contract": {
+    "exact_author_wire_sha256": "44a7f9e7235fea136d41ca6fc94103e1d0079ff3a4099be3f53878cb0f94924c",
+    "name": "question_author_constructed_mapped_agreement_v1_n5_56d4204a9b0238f6",
+    "native_config_sha256": "0c403d9871c7511800de11e864b6ba6fc953ffd4889a7cf9dc6071836277c163",
+    "native_schema_bytes": 2757,
+    "native_schema_sha256": "2a11817d040fe0fb34a413604b9b8ee3118fb631944c2bbf038c54076a95156d",
+    "system_prompt_sha256": "016e595b20d7b2b1a6c8b94880ea4f3800de9105a740b35263a1521f380bed5a",
+    "user_prompt_sha256": "358316024851b745bc5ecb525f562ce52d33d3e330f0fba7c353d4b4ba646c6d"
+  },
+  "goal_sha256": "6730fa057871c71d661c6260040fab2713a58eff36d8319326b2fed7b67ddb46",
+  "limits": {
+    "calls_per_job": 6,
+    "connect_timeout_seconds": 3,
+    "deadline_origin": "execute_capture_start_before_credentials_and_sts",
+    "one_trial_execution": true,
+    "original_jobs": 1,
+    "original_slots": 5,
+    "read_timeout_ceiling_seconds": 200,
+    "sdk_attempts_per_call": 1,
+    "seconds_per_job": 240,
+    "sts_execute_requests": 1,
+    "sts_preflight_requests": 1,
+    "sts_sdk_attempts_per_request": 1,
+    "sts_total_requests": 2
+  },
+  "original_slot_skill_allocation": [
+    [
+      "11111111-1111-4111-8111-111111111111",
+      "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+      3
+    ],
+    [
+      "22222222-2222-4222-8222-222222222222",
+      "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+      2
+    ]
+  ],
+  "prespecified_gate": {
+    "agreement_policy10_required": 2,
+    "all_30_within_item_choice_pairs_distinct_per_reviewer": true,
+    "blind_minimum_difficulty_per_slot": 2,
+    "cross_item_and_bank_novelty": "report_separately_without_recasting_gate",
+    "every_key_matches_independent_solution": true,
+    "exact_requested_skill_allocation_and_objective_fit": true,
+    "execute_elapsed_seconds_max": 240,
+    "expected_success_actual_converse_calls": 3,
+    "expected_success_stage_order": [
+      "question_author_constructed_mapped_agreement_v1_n5_56d4204a9b0238f6",
+      "complete_choice_solver_v5_n2",
+      "authored_solution_reviewer_v3_n5"
+    ],
+    "original_slot_denominator": 5,
+    "provider_call_reservation_ceiling": 6,
+    "quantitative_policy8_required": 3,
+    "retry_repair_fallback_topup_resume_allowed": false,
+    "returned_original_slots_required": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "sts_execute_requests": 1,
+    "sts_preflight_requests": 1,
+    "teaching_sound_complete_and_shuffle_safe": true,
+    "two_independent_reviewers_required": true,
+    "unresolved_content_uncertainty_max": 0,
+    "whole_execute_deadline_includes_credential_export_and_identity": true
+  },
+  "provider_transport": {
+    "connect_timeout_seconds": 3,
+    "effort": "high",
+    "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com",
+    "fallback_model": "",
+    "max_output_tokens": 16000,
+    "model": "us.anthropic.claude-sonnet-4-6",
+    "read_timeout_seconds": 200,
+    "region": "us-east-1",
+    "sdk_attempts_per_call": 1,
+    "structured_output_mode": "native",
+    "thinking": "adaptive",
+    "verification_model": "us.anthropic.claude-sonnet-4-6"
+  },
+  "request_file": "request.json",
+  "request_sha256": "212cea7d53ddefe17fbe8f2459705b46b871793e62e0e58b56cc11e3626e63ae",
+  "state": "candidate_source_pinned"
+}

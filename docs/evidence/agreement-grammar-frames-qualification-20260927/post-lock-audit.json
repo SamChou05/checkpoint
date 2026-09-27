@@ -1,0 +1,116 @@
+{
+  "kind": "locked_post_trial_offline_audit",
+  "source_commit": "db3e10e4098f5fdad13ceb73616603417ef6fde1",
+  "locked_file_hashes": {
+    "plan.json": "23c3c0bca2ecfc185ca5998812c3c32bd89e1bec5a939260f6877e449664e742",
+    "capture.json": "de6c6c160fbf36772e78317f060062f8955433f0d850f384f879482f3536dc4f",
+    "official-worksheet.json": "92a3be8c3a9508866ce0114111adf5083f61aa1806fc66619f1923fe84607ad0",
+    "official-RUBRIC.md": "0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2",
+    "blind-private-returned_output.json": "3381d47820035f066b0f9dda3b189f3420ae5ecd30ea71108ede8a65ddfcf739",
+    "blind-review-a.json": "13e10433e5a94ae09854aeb4d2b435a150b34550591a35b4c0aeeb2e34c9534a",
+    "blind-review-b.json": "da3d43136d149009c0b2d71487f9e58ba5ceeb815e00892baa5874eaf974e22e"
+  },
+  "mechanical_return": "5/5_original_slots",
+  "three_expected_converse_calls": true,
+  "six_reservation_slots_bounded": true,
+  "execute_elapsed_seconds": 93.522787,
+  "all_25_learner_fields_exactly_recompiled": true,
+  "five_independently_rechecked_keys": true,
+  "both_reviewers_match_all_five_keys": true,
+  "both_reviewers_find_all_30_pairs_distinct": true,
+  "per_reviewer_minimum_difficulty_2_passed_slots": [
+    0,
+    2,
+    3,
+    4
+  ],
+  "per_reviewer_minimum_difficulty_2_passed_count": 4,
+  "prespecified_content_gate": "FAIL",
+  "slots": [
+    {
+      "original_slot": 0,
+      "opaque_id": "16b9d075bea359b2c1fca5df",
+      "correct_display_label": "B",
+      "key": "10",
+      "policy_revision": 8,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 2,
+      "returned_difficulty_metadata": 2,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    },
+    {
+      "original_slot": 1,
+      "opaque_id": "d3613d7a5412df67b6cdd07b",
+      "correct_display_label": "A",
+      "key": "20",
+      "policy_revision": 8,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 1
+      },
+      "model_reviewer_difficulty": 2,
+      "returned_difficulty_metadata": 2,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    },
+    {
+      "original_slot": 2,
+      "opaque_id": "658b4c4d94a95810e7363d1d",
+      "correct_display_label": "D",
+      "key": "7",
+      "policy_revision": 8,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 3,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    },
+    {
+      "original_slot": 3,
+      "opaque_id": "dfc67ef6d30ca9ecb9bd41a0",
+      "correct_display_label": "D",
+      "key": "checks; practice",
+      "policy_revision": 10,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 2,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    },
+    {
+      "original_slot": 4,
+      "opaque_id": "ba4375d99f37f695ff7e2a53",
+      "correct_display_label": "B",
+      "key": "receives; prepare",
+      "policy_revision": 10,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 2,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "review_type": "independent_answer_blind",
+  "reviewer": "b",
+  "sources_inspected": [
+    "/private/tmp/checkpoint-grammar-frames-official-17387b0850e06f15/worksheet.json",
+    "/private/tmp/checkpoint-grammar-frames-official-17387b0850e06f15/RUBRIC.md"
+  ],
+  "scope_note": "The worksheet states no external learning objective or target grade. Objective fit below refers to the skill apparent from each visible stem; alignment with an undisclosed objective cannot be established blindly. Difficulty uses 1=easiest and 5=hardest, with no grade-level calibration supplied.",
+  "requested_slots": 5,
+  "readable_items": 5,
+  "unavailable_slots": 0,
+  "items": [
+    {
+      "id": "16b9d075bea359b2c1fca5df",
+      "defensible_answer_letters": ["B"],
+      "answer_status": "single_supported_answer",
+      "answer_basis": "3/4 + 1/2 = 5/4; multiplying by 8 gives 10.",
+      "choice_pairs": {
+        "A-B": "meaningfully_distinct; 2 and 10 are different exact values",
+        "A-C": "meaningfully_distinct; 2 and 5/32 are different exact values",
+        "A-D": "meaningfully_distinct; 2 and 40 are different exact values",
+        "B-C": "meaningfully_distinct; 10 and 5/32 are different exact values",
+        "B-D": "meaningfully_distinct; 10 and 40 are different exact values",
+        "C-D": "meaningfully_distinct; 5/32 and 40 are different exact values"
+      },
+      "stem_self_contained": true,
+      "apparent_objective": "Evaluate a fully parenthesized arithmetic expression involving fraction addition and multiplication.",
+      "visible_objective_fit": "yes, for the apparent arithmetic objective; external objective unspecified",
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_defects": ["No answer ambiguity. Some wrong values have no clear diagnostic connection to a likely arithmetic mistake, which weakens distractor quality."],
+      "uncertainty": "low on answer and pair distinctness; moderate on difficulty and external objective fit",
+      "within_batch_novelty": "low relative to d3613d7a5412df67b6cdd07b: both ask the exact value of a fully parenthesized q expression with the same framing"
+    },
+    {
+      "id": "ba4375d99f37f695ff7e2a53",
+      "defensible_answer_letters": ["B"],
+      "answer_status": "single_supported_answer",
+      "answer_basis": "The head of 'Every guest near the servers' is singular guest, so receives; Maya and Theo is plural, so prepare.",
+      "choice_pairs": {
+        "A-B": "meaningfully_distinct; the verb form differs in both blanks",
+        "A-C": "meaningfully_distinct; the verb form differs in the first blank",
+        "A-D": "meaningfully_distinct; the verb form differs in the second blank",
+        "B-C": "meaningfully_distinct; the verb form differs in the second blank",
+        "B-D": "meaningfully_distinct; the verb form differs in the first blank",
+        "C-D": "meaningfully_distinct; the verb form differs in both blanks"
+      },
+      "stem_self_contained": true,
+      "apparent_objective": "Select present-tense forms by subject–verb agreement, ignoring nearer nouns in prepositional phrases.",
+      "visible_objective_fit": "yes, directly tests the stated agreement objective; external objective unspecified",
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_defects": ["No material ambiguity or standalone defect found."],
+      "uncertainty": "low on answer and pair distinctness; moderate on difficulty and external objective fit",
+      "within_batch_novelty": "very low relative to dfc67ef6d30ca9ecb9bd41a0: same two-blank singular-then-plural agreement pattern and same 'near the ...' intervening phrase"
+    },
+    {
+      "id": "658b4c4d94a95810e7363d1d",
+      "defensible_answer_letters": ["D"],
+      "answer_status": "single_supported_answer",
+      "answer_basis": "3x + 7 > 25 implies x > 6; the least allowed integer is 7. The listed 6 is excluded by the strict inequality.",
+      "choice_pairs": {
+        "A-B": "meaningfully_distinct; 5 and 8 are different candidate integers",
+        "A-C": "meaningfully_distinct; 5 and 6 are different candidate integers",
+        "A-D": "meaningfully_distinct; 5 and 7 are different candidate integers",
+        "B-C": "meaningfully_distinct; 8 and 6 are different candidate integers",
+        "B-D": "meaningfully_distinct; 8 and 7 are different candidate integers",
+        "C-D": "meaningfully_distinct; 6 and 7 are different candidate integers on opposite sides of the strict threshold"
+      },
+      "stem_self_contained": true,
+      "apparent_objective": "Solve a linear inequality and identify the least integer satisfying it in a stated finite domain.",
+      "visible_objective_fit": "yes, for the apparent inequality objective; external objective unspecified",
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_defects": ["No material ambiguity or standalone defect found."],
+      "uncertainty": "low on answer and pair distinctness; moderate on difficulty and external objective fit",
+      "within_batch_novelty": "moderate to high: the only inequality/minimum-integer item, although it shares elementary math content with the two q-expression items"
+    },
+    {
+      "id": "d3613d7a5412df67b6cdd07b",
+      "defensible_answer_letters": ["A"],
+      "answer_status": "single_supported_answer",
+      "answer_basis": "15 - 3 = 12 and 2 + 1 = 3; 12/3 times 5 is 20.",
+      "choice_pairs": {
+        "A-B": "meaningfully_distinct; 20 and 4/5 are different exact values",
+        "A-C": "meaningfully_distinct; 20 and -1 are different exact values",
+        "A-D": "meaningfully_distinct; 20 and 9 are different exact values",
+        "B-C": "meaningfully_distinct; 4/5 and -1 are different exact values",
+        "B-D": "meaningfully_distinct; 4/5 and 9 are different exact values",
+        "C-D": "meaningfully_distinct; -1 and 9 are different exact values"
+      },
+      "stem_self_contained": true,
+      "apparent_objective": "Evaluate a fully parenthesized multistep arithmetic expression.",
+      "visible_objective_fit": "yes, for the apparent arithmetic objective; external objective unspecified",
+      "difficulty_1_to_5": 1,
+      "ambiguity_or_defects": ["No answer ambiguity. Several wrong values are not obvious products of common errors, limiting diagnostic value."],
+      "uncertainty": "low on answer and pair distinctness; moderate on difficulty and external objective fit",
+      "within_batch_novelty": "low relative to 16b9d075bea359b2c1fca5df: same q/exact-value framing and fully parenthesized arithmetic structure"
+    },
+    {
+      "id": "dfc67ef6d30ca9ecb9bd41a0",
+      "defensible_answer_letters": ["D"],
+      "answer_status": "single_supported_answer",
+      "answer_basis": "The singular coach checks; the plural players practice. Nouns inside 'near the ...' phrases do not control either verb.",
+      "choice_pairs": {
+        "A-B": "meaningfully_distinct; the verb form differs in the second blank",
+        "A-C": "meaningfully_distinct; the verb form differs in both blanks",
+        "A-D": "meaningfully_distinct; the verb form differs in the first blank",
+        "B-C": "meaningfully_distinct; the verb form differs in the first blank",
+        "B-D": "meaningfully_distinct; the verb form differs in both blanks",
+        "C-D": "meaningfully_distinct; the verb form differs in the second blank"
+      },
+      "stem_self_contained": true,
+      "apparent_objective": "Select present-tense forms by subject–verb agreement, ignoring nearer nouns in prepositional phrases.",
+      "visible_objective_fit": "yes, directly tests the stated agreement objective; external objective unspecified",
+      "difficulty_1_to_5": 2,
+      "ambiguity_or_defects": ["No material standalone ambiguity. It is near-duplicate of the other agreement item in this batch."],
+      "uncertainty": "low on answer and pair distinctness; moderate on difficulty and external objective fit",
+      "within_batch_novelty": "very low relative to ba4375d99f37f695ff7e2a53: same two-blank singular-then-plural agreement pattern and same 'near the ...' intervening phrase"
+    }
+  ],
+  "batch_assessment": {
+    "coverage": "All five requested slots are readable and answered.",
+    "pair_distinctness": "All 30 unordered pairs contain different numerical values or different ordered verb-form pairs; no semantically equivalent pair found.",
+    "novelty": "Five items instantiate about three visible task patterns: two near-duplicate arithmetic-expression items, two near-duplicate subject–verb agreement items, and one integer-inequality item. The agreement pair has especially little variation in syntax or misconception tested.",
+    "objective_limit": "The worksheet itself does not name a batch-wide objective. If the intended objective is subject–verb agreement, the three math items are off-objective; if it is mixed elementary skills, this cannot be judged without the withheld specification."
+  },
+  "locked_before_answer_map_reveal": true
+}
