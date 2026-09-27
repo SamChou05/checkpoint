@@ -31,6 +31,11 @@ the server rederives all five learner fields from an exact-type private sidecar,
 and retains the answer-blind complete-choice solver and immutable final audit.
 It does not imply quantitative proof or broader English correctness. This route
 remains unqualified and inactive by default.
+Revision 10 keeps those checks and makes the revalidated constructor's level 2
+authoritative for bounded agreement rows. A reviewer difficulty estimate of 3
+is recorded but does not veto; estimates of 1, 4 or 5 still veto. Ordinary prose
+and quantitative difficulty admission remain unchanged. The route is still
+unqualified and inactive by default.
 """
 
 from typing import Any
@@ -45,7 +50,7 @@ VERIFICATION_POLICY_REVISION = DISTINCT_CHOICE_VERIFICATION_POLICY_REVISION
 COMPILED_QUANTITATIVE_VERIFICATION_POLICY_REVISION = 6
 AUTHORED_PAIR_VERIFICATION_POLICY_REVISION = 7
 COMPILED_PROOF_VERIFICATION_POLICY_REVISION = 8
-COMPILED_AGREEMENT_VERIFICATION_POLICY_REVISION = 9
+COMPILED_AGREEMENT_VERIFICATION_POLICY_REVISION = 10
 MAX_SUPPORTED_VERIFICATION_POLICY_REVISION = COMPILED_AGREEMENT_VERIFICATION_POLICY_REVISION
 
 

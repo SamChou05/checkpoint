@@ -499,9 +499,22 @@ def verify_questions(
         if item.get("answer") != question["expectedAnswer"]:
             record_quality(request_metrics, "review", "answer_disagreement")
             continue
-        # Store the independently assessed challenge, not the author's label.
-        # Explicit adaptive targets still require that exact assessed level.
-        difficulty = item.get("difficulty")
+        # The review must still report a well-formed difficulty. A revalidated
+        # closed agreement task owns its calibrated level 2; other routes keep
+        # the independent assessment for admission and learner output.
+        reviewer_difficulty = item.get("difficulty")
+        if type(reviewer_difficulty) is not int or not 1 <= reviewer_difficulty <= 5:
+            record_quality(request_metrics, "review", "invalid_difficulty")
+            continue
+        agreement_content = None
+        if trusted_agreement[index] is not None:
+            try:
+                agreement_content = trusted_agreement[index].content(question)
+            except (ValueError, TypeError, KeyError):
+                record_quality(request_metrics, "review", "invalid_compiled_content")
+                continue
+        difficulty = (agreement_content["difficulty"] if agreement_content is not None
+                      else reviewer_difficulty)
         target = next(
             (
                 plan["targetDifficulty"]
@@ -510,16 +523,16 @@ def verify_questions(
             ),
             None,
         )
-        if type(difficulty) is not int or not 1 <= difficulty <= 5:
-            record_quality(request_metrics, "review", "invalid_difficulty")
-            continue
         if difficulty < request.get("minimumDifficulty", 1):
             record_quality(request_metrics, "review", "difficulty_floor")
             continue
         if target is not None and difficulty != target:
             record_quality(request_metrics, "review", "difficulty_target")
             continue
-        if trusted_agreement[index] is not None and difficulty != 2:
+        if agreement_content is not None and reviewer_difficulty not in (2, 3):
+            # Two independent blind reviews found level 2 for this closed subset.
+            # Only the observed one-level disagreement is advisory; larger
+            # disagreements still veto the item pending independent review.
             record_quality(request_metrics, "review", "difficulty_target")
             continue
         if authored_solution:
@@ -552,13 +565,6 @@ def verify_questions(
         if trusted_compiled[index] is not None:
             try:
                 compiled_content = trusted_compiled[index].content(question)
-            except (ValueError, TypeError, KeyError):
-                record_quality(request_metrics, "review", "invalid_compiled_content")
-                continue
-        agreement_content = None
-        if trusted_agreement[index] is not None:
-            try:
-                agreement_content = trusted_agreement[index].content(question)
             except (ValueError, TypeError, KeyError):
                 record_quality(request_metrics, "review", "invalid_compiled_content")
                 continue
@@ -599,13 +605,15 @@ def verify_questions(
             )
         if agreement_content is not None:
             # Unlike mathematical proof, this closed language proof still runs
-            # the independent blind solver. Both model stages may veto or rate,
-            # but neither may replace the code-owned key or teaching.
+            # the independent blind solver. Both model stages may veto; neither
+            # may replace the code-owned key, teaching, or calibrated difficulty.
             verified_question.update(agreement_content)
             verified_question["verificationPolicyRevision"] = (
                 COMPILED_AGREEMENT_VERIFICATION_POLICY_REVISION
             )
         accepted.append(verified_question)
+        if agreement_content is not None and reviewer_difficulty == 3:
+            record_quality(request_metrics, "review", "agreement_difficulty_disagreement")
         record_quality(request_metrics, "review", "accepted")
     return accepted
 

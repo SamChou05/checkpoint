@@ -44,6 +44,7 @@ QUALITY_REASONS = {
         "invalid_difficulty",
         "difficulty_floor",
         "difficulty_target",
+        "agreement_difficulty_disagreement",
         "invalid_feedback",
         "invalid_compiled_content",
         "invalid_authored_review",

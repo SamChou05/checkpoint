@@ -191,7 +191,11 @@ class MappedAgreementRouteTests(unittest.TestCase):
             self.assertEqual(len(items), 5)
             return {"reviews": {str(item["index"]): {
                 "valid": True, "answer": by_prompt[item["prompt"]]["expectedAnswer"],
-                "difficulty": 2, "explanationSupport": "supported",
+                # Both proven English items are admitted at their code-owned
+                # calibrated level even when the reviewer estimates level 3.
+                "difficulty": 3 if item["prompt"] in {
+                    prepared[3]["prompt"], prepared[4]["prompt"]
+                } else 2, "explanationSupport": "supported",
                 "issueFlags": authored_issue_flags(),
             } for item in items}}
 
@@ -202,9 +206,14 @@ class MappedAgreementRouteTests(unittest.TestCase):
         )
         reserve = Mock()
         budget = generation.ProviderCallBudget(6, reserve_call=reserve)
-        result = generation._generate_sanitized_questions(copy.deepcopy(self.request), client, budget)
+        metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
+        result = generation._generate_sanitized_questions(
+            copy.deepcopy(self.request), client, budget, metrics,
+        )
         self.assertEqual((len(result), budget.calls, reserve.call_count), (5, 3, 3))
-        self.assertEqual([row["verificationPolicyRevision"] for row in result], [8, 8, 8, 9, 9])
+        self.assertEqual([row["verificationPolicyRevision"] for row in result], [8, 8, 8, 10, 10])
+        self.assertEqual([row["difficulty"] for row in result], [2] * 5)
+        self.assertEqual(metrics["QuestionQuality"]["review"]["agreement_difficulty_disagreement"], 2)
         for index, question in enumerate(result):
             proof = math_proof[index] if index < 3 else english_proof[index]
             if index >= 3:
@@ -256,6 +265,17 @@ class MappedAgreementRouteTests(unittest.TestCase):
         self.assertEqual(set(english_output), {3})
         self.assertEqual(english_output[3].ordinal, 4)
         self.assertEqual(english_output[3].content(survivors[3]), survivors[3])
+        changed_difficulty = copy.deepcopy(rows)
+        changed_difficulty[3]["difficulty"] = 3
+        difficulty_output = {}
+        difficulty_survivors = _sanitize_questions(
+            changed_difficulty, self.request, compiled_candidates=math_proof,
+            compiled_output={}, agreement_candidates=english_proof,
+            agreement_output=difficulty_output, preserve_authored_explanation=True,
+        )
+        self.assertEqual(len(difficulty_survivors), 4)
+        self.assertEqual(set(difficulty_output), {3})
+        self.assertEqual(difficulty_output[3].ordinal, 4)
         # A sidecar for a different original slot cannot be reattached to a
         # surviving question after sanitizer filtering.
         with self.assertRaises(AgreementTaskError):
@@ -298,7 +318,9 @@ class MappedAgreementRouteTests(unittest.TestCase):
             return json.dumps({"reviews": [{
                 "index": item["index"], "valid": True,
                 "answer": by_prompt[item["prompt"]]["expectedAnswer"],
-                "difficulty": 2, "explanationSupport": "supported", "issues": [],
+                "difficulty": 3 if item["prompt"] in {
+                    rows[3]["prompt"], rows[4]["prompt"]
+                } else 2, "explanationSupport": "supported", "issues": [],
             } for item in items]})
 
         accepted = verify_questions(
@@ -309,7 +331,18 @@ class MappedAgreementRouteTests(unittest.TestCase):
         )
         self.assertEqual([row["verificationPolicyRevision"] for row in accepted],
                          [8, 8, 8, 7, 7])
+        self.assertEqual([row["difficulty"] for row in accepted], [2, 2, 2, 3, 3])
         self.assertEqual([row["choiceExplanations"] for row in accepted[3:]], [{}, {}])
+        targeted = copy.deepcopy(self.request)
+        targeted["adaptiveSkillPlans"] = [{"skillID": ENGLISH, "targetDifficulty": 2}]
+        target_survivors = verify_questions(
+            sanitized, targeted, audit, review_with_count=audit,
+            solve=solver, solve_with_count=solver,
+            feedback_contract="authored_solution", solver_contract="complete_choices",
+            audit_choice_pairs=True, choice_slots=True, compiled_questions=math_output,
+        )
+        self.assertEqual([row["verificationPolicyRevision"] for row in target_survivors],
+                         [8, 8, 8])
 
     def test_solver_or_reviewer_key_disagreement_cannot_rewrite_agreement_question(self):
         prepared, _, english_proof = self.prepared()
@@ -351,9 +384,55 @@ class MappedAgreementRouteTests(unittest.TestCase):
                 )
                 self.assertEqual(len(accepted), 4)
                 self.assertEqual([row["verificationPolicyRevision"] for row in accepted],
-                                 [8, 8, 8, 9])
+                                 [8, 8, 8, 10])
                 self.assertEqual(english_proof[4].content(),
                                  {key: accepted[3][key] for key in english_proof[4].content()})
+
+    def test_other_reviewer_difficulty_disagreements_still_veto_proven_agreement(self):
+        rows, math_proof, english_proof = self.prepared()
+        by_prompt = {row["prompt"]: row for row in rows}
+
+        def body(prompt, tag):
+            return json.loads(prompt.split(f"<{tag}>\n", 1)[1].split(f"\n</{tag}>", 1)[0])
+
+        def solver(_system, prompt, count):
+            items = body(prompt, "question_solution_json")["items"]
+            self.assertEqual((count, len(items)), (2, 2))
+            return json.dumps({"solutions": [
+                solver_record(item, by_prompt[item["prompt"]]["expectedAnswer"])
+                for item in items
+            ]})
+
+        for rating in (1, 4, 5, "3"):
+            def audit(_system, prompt, count):
+                items = body(prompt, "question_review_json")["items"]
+                self.assertEqual((count, len(items)), (5, 5))
+                return json.dumps({"reviews": [{
+                    "index": item["index"], "valid": True,
+                    "answer": by_prompt[item["prompt"]]["expectedAnswer"],
+                    "difficulty": rating if item["prompt"] == rows[3]["prompt"] else 2,
+                    "explanationSupport": "supported", "issues": [],
+                } for item in items]})
+
+            metrics = {}
+            with self.subTest(rating=rating):
+                accepted = verify_questions(
+                    rows, self.request, audit, review_with_count=audit,
+                    solve=solver, solve_with_count=solver, request_metrics=metrics,
+                    feedback_contract="authored_solution", solver_contract="complete_choices",
+                    audit_choice_pairs=True, choice_slots=True,
+                    compiled_questions=math_proof, agreement_questions=english_proof,
+                )
+                if rating == "3":
+                    self.assertEqual(accepted, [])
+                    self.assertEqual(metrics["QuestionQuality"]["review"]["invalid_authored_review"], 5)
+                else:
+                    self.assertEqual([row["verificationPolicyRevision"] for row in accepted],
+                                     [8, 8, 8, 10])
+                    self.assertEqual(accepted[3]["difficulty"], 2)
+                    self.assertEqual(metrics["QuestionQuality"]["review"]["difficulty_target"], 1)
+                    self.assertNotIn("agreement_difficulty_disagreement",
+                                     metrics["QuestionQuality"]["review"])
 
     def test_opt_in_requires_full_exact_scope_and_level_two(self):
         assignments = generation._mapped_fixed_slot_assignments(
