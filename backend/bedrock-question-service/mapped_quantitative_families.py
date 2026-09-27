@@ -8,6 +8,7 @@ choices, answer keys, feedback and the independently rechecked provenance.
 from __future__ import annotations
 
 import copy
+from collections import Counter
 from functools import lru_cache
 from typing import Any
 
@@ -226,10 +227,10 @@ def select_novel_task(
 ) -> dict[str, Any]:
     """Prefer an unseen solve structure, then a fresh parameterization.
 
-    Keep the source task when its family is among the least-used structures in
-    supplied history. Otherwise choose an underused assigned-slot family before
-    considering a new operand pair in an overused family. The inventory is
-    compiled, and every candidate passes exact-stem and fingerprint checks.
+    Prefer the least-used assigned-slot family. Within an equally used family,
+    prefer operands and answer boundaries that have appeared less often across
+    the full bank, then prefer the source family. The inventory is compiled,
+    and every candidate passes exact-stem and fingerprint checks.
     """
 
     if (type(slot) is not int or slot not in (0, 1, 2)
@@ -254,13 +255,22 @@ def select_novel_task(
     blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
     blocked.update(blocked_variant_identities)
     fingerprints = set(blocked_fingerprints)
-    family_use_counts = {
-        family: sum(identity in blocked
-                    or _stem_fingerprint(prompt, version=fingerprint_version) in fingerprints
-                    for candidate_family, _, prompt, identity in inventory
-                    if candidate_family == family)
-        for family in SLOT_FAMILIES[slot]
-    }
+    per_family = len(OPERANDS) * (len(OPERANDS) if slot == 0 else len(BOUNDARIES))
+    second_values = OPERANDS if slot == 0 else BOUNDARIES
+
+    def operands(index: int) -> tuple[int, int]:
+        offset = index % per_family
+        return OPERANDS[offset // len(second_values)], second_values[offset % len(second_values)]
+
+    used = [
+        (index, family) for index, (family, _, prompt, identity) in enumerate(inventory)
+        if identity in blocked
+        or _stem_fingerprint(prompt, version=fingerprint_version) in fingerprints
+    ]
+    family_use_counts = Counter(family for _, family in used)
+    pair_use_counts = Counter(operands(index) for index, _ in used)
+    first_use_counts = Counter(operands(index)[0] for index, _ in used)
+    second_use_counts = Counter(operands(index)[1] for index, _ in used)
     source_family = inventory[source_index][0]
     eligible = [
         (index, family, task)
@@ -269,13 +279,15 @@ def select_novel_task(
         and _stem_fingerprint(prompt, version=fingerprint_version) not in fingerprints
     ]
     if eligible:
-        per_family = len(OPERANDS) * (len(OPERANDS) if slot == 0 else len(BOUNDARIES))
         return copy.deepcopy(min(eligible, key=lambda row: (
             family_use_counts[row[1]],
+            # Repeating operands or the same scalar answer boundary across
+            # different families still makes a bank feel like a reworded quiz.
+            # Family balancing stays first; these counts only break ties.
+            pair_use_counts[operands(row[0])],
+            second_use_counts[operands(row[0])[1]],
+            first_use_counts[operands(row[0])[0]],
             row[1] != source_family,
-            # A newly selected family should not preserve the same operands,
-            # domain and answer as the authored task merely by changing its
-            # expression shape.
             (row[0] % per_family - source_index % per_family
              - (1 if row[1] != source_family else 0)) % per_family,
         ))[2])

@@ -442,10 +442,14 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         self.assertEqual(len(rows), 5)
         for slot in range(3):
             source_row = source["questions"][str(slot)]
-            allowed_b = OPERANDS if slot == 0 else BOUNDARIES
-            next_b = allowed_b[(allowed_b.index(source_row["b"]) + 1) % len(allowed_b)]
-            alternate = flat_task(slot, {**source_row, "family": SLOT_FAMILIES[slot][1],
-                                         "b": next_b})
+            alternate = select_novel_task(
+                slot, flat_task(slot, source_row), existing_prompts=history,
+                blocked_fingerprints=(), fingerprint_version=1,
+            )
+            self.assertIn(alternate, [flat_task(slot, {
+                "family": SLOT_FAMILIES[slot][1], "a": a, "b": b,
+            }) for a in OPERANDS for b in (OPERANDS if slot == 0 else BOUNDARIES)
+                if a != source_row["a"] and b != source_row["b"]])
             expected = _constructed_candidate(alternate).content()
             self.assertEqual({field: rows[slot][field] for field in LEARNER_FIELDS}, expected)
             self.assertNotEqual(rows[slot]["prompt"], original[slot]["prompt"])
@@ -496,6 +500,8 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         existing_items = []
         chosen = {slot: [] for slot in range(3)}
         chosen_families = {slot: [] for slot in range(3)}
+        chosen_operands = {slot: [] for slot in range(3)}
+        chosen_answers = {slot: [] for slot in range(3)}
         pair_counts = {}
         for batch in range(16):
             recent = question_bank._recent_question_items(existing_items, 30)
@@ -519,12 +525,15 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                     blocked_variant_identities=full_identities,
                 )
                 question = _constructed_candidate(task).content()
-                chosen_families[slot].append(next(
-                    family for family in SLOT_FAMILIES[slot]
+                family, a, b = next(
+                    (family, a, b) for family in SLOT_FAMILIES[slot]
                     for a in OPERANDS
                     for b in (OPERANDS if slot == 0 else BOUNDARIES)
                     if flat_task(slot, {"family": family, "a": a, "b": b}) == task
-                ))
+                )
+                chosen_families[slot].append(family)
+                chosen_operands[slot].append((a, b))
+                chosen_answers[slot].append(question["expectedAnswer"])
                 self.assertNotIn(question["prompt"], chosen[slot])
                 self.assertEqual(len(set(question["choices"])), 4)
                 self.assertEqual(set(question["choiceExplanations"]), set(question["choices"]))
@@ -544,6 +553,14 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                     for count in Counter(chosen_families[slot]).values()
                 )
         self.assertEqual([len(set(chosen[slot])) for slot in range(3)], [16] * 3)
+        self.assertEqual([len(set(chosen_operands[slot])) for slot in range(3)], [16] * 3)
+        for slot in range(3):
+            self.assertLessEqual(max(Counter(a for a, _ in chosen_operands[slot]).values()), 3)
+        # Sixteen scalar answers from nine allowed boundaries require at least
+        # seven repeated-answer pairs; the selector reaches that lower bound.
+        for slot in (1, 2):
+            self.assertEqual(sum(count * (count - 1) // 2 for count in
+                                 Counter(chosen_answers[slot]).values()), 7)
         for slot in range(3):
             self.assertEqual(chosen_families[slot], [
                 SLOT_FAMILIES[slot][index % len(SLOT_FAMILIES[slot])]
