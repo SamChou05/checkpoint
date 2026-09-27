@@ -9,3 +9,11 @@ The single Bedrock author call took **21.55s**; the entire execute phase, includ
 The [offline replay](offline-replay.json) SHA-256 `7e9698c35a29bdc32a4c5be3166edfcac8e8346e0f521e5120e076b190065a22`, produced by [replay code](offline_replay.py) SHA-256 `7dcbf37eb8a29a604d7b463dd2d1d85b5108f9ad81eba33f3f3f80aaa4f94686`, reproduces the failure without AWS calls. The captured author object contains all original keys `0`–`4` and passes the current native response adapter. Its slot 4 selects `gerund_meals`, a scene admitted by the native schema and defined in `GERUND_SCENES`. The frozen `compile_mapped_english_slots()` slot-4 allowlist contains only compound, number and correlative scenes, omitting gerunds. It raises `AgreementTaskError("Original English slots require their closed agreement families.")` before a candidate pass is recorded; the worker surfaces `ProviderError` and returns no questions. This is a source contract mismatch, not a model failure to supply five typed records.
 
 The harness passed 16 socket-free tests before launch; the replay, Ruff and `git diff --check` passed afterward. No keyless worksheet was produced because the worker returned no readable questions. The one-shot trial is complete and was not repeated.
+
+The omitted allowlist entry was then fixed on `main` at `c12d554`, without
+changing this official trial. A separate [fixed-source replay](fixed-source-replay.json)
+uses the exact captured five-task author object and the pinned patched backend
+([replay code](fixed_source_replay.py)). It now prepares three quantitative
+and two English questions with zero compiler failures and sanitizes all five.
+That offline replay makes no provider call and does not establish that the
+downstream solver or reviewer would return five questions.

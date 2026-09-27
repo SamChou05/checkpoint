@@ -1,0 +1,15 @@
+{
+  "capture_sha256": "5d4212bbc7dbc852645c99d7f737311957250239dded3aee9f785ae4a74405e3",
+  "captured_bedrock_calls": 1,
+  "captured_original_slots_returned": 0,
+  "captured_slot4_scene": "gerund_meals",
+  "compiled_english": 2,
+  "compiled_numeric": 3,
+  "compiler_failures": 0,
+  "downstream_model_review_exercised": false,
+  "native_slots": 5,
+  "plan_sha256": "36f7a318314a7abccd822f23bfe3d06c729cee656e97218d1585f35c97316775",
+  "prepared_original_slots": 5,
+  "sanitized_candidates": 5,
+  "source_commit": "c12d554"
+}
