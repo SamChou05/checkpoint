@@ -27,6 +27,7 @@ deployment_environment=(
   "SAM_STACK_NAME=checkpoint-question-service-testflight"
   "SAM_ARTIFACT_BUCKET=checkpoint-test-artifacts"
   "CLOUDFORMATION_EXECUTION_ROLE_ARN=arn:aws:iam::123456789012:role/checkpoint-testflight-cfn"
+  "LAMBDA_PERMISSIONS_BOUNDARY_ARN=arn:aws:iam::123456789012:policy/checkpoint-question-service-testflight-lambda-boundary"
   "CHECKPOINT_BACKEND_TOKEN=$backend_token"
   "QUOTA_HASH_SECRET=$quota_secret"
   "BEDROCK_MODEL_ARN=$api_model"
@@ -96,7 +97,7 @@ printf '%s\n' \
 chmod 0755 "$test_bin/sam"
 
 sam_capture="$test_directory/sam-arguments"
-for required in SAM_ARTIFACT_BUCKET CLOUDFORMATION_EXECUTION_ROLE_ARN \
+for required in SAM_ARTIFACT_BUCKET CLOUDFORMATION_EXECUTION_ROLE_ARN LAMBDA_PERMISSIONS_BOUNDARY_ARN \
   RESERVED_CONCURRENCY QUESTION_BANK_WORKER_RESERVED_CONCURRENCY \
   QUESTION_BANK_MAX_RECEIVE_COUNT BEDROCK_REASONING_EFFORT MONTHLY_BEDROCK_BUDGET_USD; do
   rm -f "$sam_capture"
@@ -150,8 +151,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 76 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 76"
+[[ "${#sam_arguments[@]}" -eq 77 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 77"
 expected_prefix=(
   deploy
   --stack-name checkpoint-question-service-testflight

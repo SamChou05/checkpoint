@@ -23,6 +23,35 @@ def _indented_block(document: str, heading: str) -> str:
 
 
 class BackendInfrastructureTemplateTests(unittest.TestCase):
+    def test_testflight_boundary_covers_all_generated_lambda_roles(self):
+        boundary = _indented_block(self.template, "LambdaPermissionsBoundaryArn")
+        self.assertIn('Default: ""', boundary)
+        self.assertIn(
+            "RuleCondition: !Equals [!Ref DeploymentEnvironment, testflight]",
+            _indented_block(self.template, "TestFlightRequiresLambdaBoundary"),
+        )
+        self.assertIn(
+            'HasLambdaPermissionsBoundary: !Not [!Equals [!Ref LambdaPermissionsBoundaryArn, ""]]',
+            self.template,
+        )
+        for function in (
+            "CheckpointQuestionFunction",
+            "QuestionBankWorkerFunction",
+            "QuestionBankOutboxFunction",
+        ):
+            self.assertIn(
+                'PermissionsBoundary: !If [HasLambdaPermissionsBoundary, !Ref LambdaPermissionsBoundaryArn, !Ref "AWS::NoValue"]',
+                _indented_block(self.template, function),
+            )
+        self.assertIn(
+            "LAMBDA_PERMISSIONS_BOUNDARY_ARN: ${{ vars.LAMBDA_PERMISSIONS_BOUNDARY_ARN }}",
+            self.deploy_workflow,
+        )
+        self.assertIn(
+            '"LambdaPermissionsBoundaryArn=${LAMBDA_PERMISSIONS_BOUNDARY_ARN:-}"',
+            self.deploy_script,
+        )
+
     def test_max_claude_effort_is_available_without_changing_deployment_default(self):
         parameter = _indented_block(self.template, "BedrockClaudeEffort")
         self.assertIn("Default: high", parameter)

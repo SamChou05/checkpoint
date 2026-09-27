@@ -8,6 +8,7 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_dir/validate-deployment-config.sh"
 
 parameters=(
+  "LambdaPermissionsBoundaryArn=${LAMBDA_PERMISSIONS_BOUNDARY_ARN:-}"
   "BackendToken=$CHECKPOINT_BACKEND_TOKEN"
   "QuotaHashSecret=$QUOTA_HASH_SECRET"
   "AllowUnauthenticatedBackend=false"

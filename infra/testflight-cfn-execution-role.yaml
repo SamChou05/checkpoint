@@ -1,0 +1,345 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Scoped CloudFormation service role and Lambda permissions boundary for the existing Checkpoint TestFlight SAM stack
+
+Parameters:
+  ArtifactBucketName:
+    Type: String
+    Description: ArtifactBucketName output from testflight-deploy-bootstrap.yaml.
+    AllowedPattern: '^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$'
+  BackendApiId:
+    Type: String
+    Description: Physical ID of BackendApi in checkpoint-question-service-testflight; pinning this ID intentionally blocks API replacement.
+    AllowedPattern: '^[a-z0-9]+$'
+  ApiStageName:
+    Type: String
+    Default: prod
+    AllowedPattern: '^[A-Za-z0-9_$-]+$'
+  EnableBudgetManagement:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Explicitly opt in to account-wide aws-portal billing permissions if the optional stack budget must change.
+
+Conditions:
+  ManageBudget: !Equals [!Ref EnableBudgetManagement, 'true']
+
+Resources:
+  LambdaPermissionsBoundary:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: checkpoint-question-service-testflight-lambda-boundary
+      Description: Upper bound for the three SAM-generated Lambda roles; the SAM template's inline policies remain narrower.
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: RuntimeLogs
+            Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource:
+              - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/checkpoint/checkpoint-question-service-testflight/*
+              - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/checkpoint/checkpoint-question-service-testflight/*:*
+          - Sid: RuntimeTracing
+            Effect: Allow
+            Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+              - xray:GetSamplingRules
+              - xray:GetSamplingTargets
+              - xray:GetSamplingStatisticSummaries
+            Resource: '*'
+          - Sid: RuntimeBedrock
+            Effect: Allow
+            Action:
+              - bedrock:InvokeModel
+              - bedrock:InvokeModelWithResponseStream
+            Resource:
+              - !Sub arn:${AWS::Partition}:bedrock:*::foundation-model/*
+              - !Sub arn:${AWS::Partition}:bedrock:*:${AWS::AccountId}:inference-profile/*
+              - !Sub arn:${AWS::Partition}:bedrock:*:${AWS::AccountId}:application-inference-profile/*
+              - !Sub arn:${AWS::Partition}:bedrock:*::inference-profile/*
+          - Sid: RuntimeGuardrail
+            Effect: Allow
+            Action: bedrock:ApplyGuardrail
+            Resource: !Sub arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:guardrail/*
+          - Sid: RuntimeTables
+            Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:Query
+              - dynamodb:ConditionCheckItem
+              - dynamodb:UpdateItem
+            Resource:
+              - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/checkpoint-question-service-testflight-QuestionRateLimitTable-*
+              - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/checkpoint-question-service-testflight-QuestionBankTable-*
+          - Sid: RuntimeBankStream
+            Effect: Allow
+            Action:
+              - dynamodb:DescribeStream
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+            Resource: !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/checkpoint-question-service-testflight-QuestionBankTable-*/stream/*
+          - Sid: RuntimeListStreams
+            Effect: Allow
+            Action: dynamodb:ListStreams
+            Resource: '*'
+          - Sid: RuntimeQueue
+            Effect: Allow
+            Action:
+              - sqs:ChangeMessageVisibility
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+              - sqs:ReceiveMessage
+              - sqs:SendMessage
+            Resource:
+              - !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:checkpoint-question-service-testflight-QuestionBankQueue-*
+              - !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:checkpoint-question-service-testflig-QuestionBankOutboxFailureQueue-*
+
+  CloudFormationExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: checkpoint-question-service-testflight-cfn-execution
+      Description: CloudFormation service role for the existing TestFlight backend stack only
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: testflight-lambda-and-iam
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: GeneratedLambdaRoles
+                Effect: Allow
+                Action:
+                  - iam:GetRole
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:UpdateAssumeRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:TagRole
+                  - iam:UntagRole
+                  - iam:ListRoleTags
+                  - iam:ListAttachedRolePolicies
+                  - iam:ListRolePolicies
+                Resource:
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-CheckpointQuestionFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankWorkerFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankOutboxFunctio-*
+              - Sid: RequireBoundaryWhenCreatingGeneratedRoles
+                Effect: Deny
+                Action: iam:CreateRole
+                Resource:
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-CheckpointQuestionFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankWorkerFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankOutboxFunctio-*
+                Condition:
+                  ArnNotEquals:
+                    iam:PermissionsBoundary: !Ref LambdaPermissionsBoundary
+              - Sid: SetOnlyReviewedBoundary
+                Effect: Allow
+                Action: iam:PutRolePermissionsBoundary
+                Resource:
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-CheckpointQuestionFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankWorkerFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankOutboxFunctio-*
+                Condition:
+                  ArnEquals:
+                    iam:PermissionsBoundary: !Ref LambdaPermissionsBoundary
+              - Sid: AttachOnlySAMManagedRuntimePolicies
+                Effect: Allow
+                Action:
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                Resource:
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-CheckpointQuestionFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankWorkerFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankOutboxFunctio-*
+                Condition:
+                  ArnEquals:
+                    iam:PolicyARN:
+                      - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+                      - !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess
+                      - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
+              - Sid: PassOnlyGeneratedRolesToLambda
+                Effect: Allow
+                Action: iam:PassRole
+                Resource:
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-CheckpointQuestionFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankWorkerFunctio-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/checkpoint-question-servi-QuestionBankOutboxFunctio-*
+                Condition:
+                  StringEquals:
+                    iam:PassedToService: lambda.amazonaws.com
+              - Sid: TestFlightFunctions
+                Effect: Allow
+                Action:
+                  - lambda:CreateFunction
+                  - lambda:DeleteFunction
+                  - lambda:GetFunction
+                  - lambda:GetFunctionConfiguration
+                  - lambda:UpdateFunctionCode
+                  - lambda:UpdateFunctionConfiguration
+                  - lambda:PutFunctionConcurrency
+                  - lambda:DeleteFunctionConcurrency
+                  - lambda:AddPermission
+                  - lambda:RemovePermission
+                  - lambda:GetPolicy
+                  - lambda:TagResource
+                  - lambda:UntagResource
+                  - lambda:ListTags
+                Resource:
+                  - !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:checkpoint-question-servi-CheckpointQuestionFuncti-*
+                  - !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:checkpoint-question-servi-QuestionBankWorkerFuncti-*
+                  - !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:checkpoint-question-servi-QuestionBankOutboxFuncti-*
+              - Sid: TestFlightEventSourceMappings
+                Effect: Allow
+                Action:
+                  - lambda:CreateEventSourceMapping
+                  - lambda:GetEventSourceMapping
+                  - lambda:UpdateEventSourceMapping
+                  - lambda:DeleteEventSourceMapping
+                Resource: '*'
+                Condition:
+                  ArnLike:
+                    lambda:FunctionArn:
+                      - !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:checkpoint-question-servi-QuestionBankWorkerFuncti-*
+                      - !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:checkpoint-question-servi-QuestionBankOutboxFuncti-*
+        - PolicyName: testflight-data-and-observability
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ReadPackagedCode
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource: !Sub arn:${AWS::Partition}:s3:::${ArtifactBucketName}/checkpoint-question-service-testflight/*
+              - Sid: TestFlightTables
+                Effect: Allow
+                Action:
+                  - dynamodb:CreateTable
+                  - dynamodb:DeleteTable
+                  - dynamodb:DescribeTable
+                  - dynamodb:UpdateTable
+                  - dynamodb:DescribeTimeToLive
+                  - dynamodb:UpdateTimeToLive
+                  - dynamodb:TagResource
+                  - dynamodb:UntagResource
+                  - dynamodb:ListTagsOfResource
+                Resource:
+                  - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/checkpoint-question-service-testflight-QuestionRateLimitTable-*
+                  - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/checkpoint-question-service-testflight-QuestionBankTable-*
+              - Sid: TestFlightQueues
+                Effect: Allow
+                Action:
+                  - sqs:CreateQueue
+                  - sqs:DeleteQueue
+                  - sqs:GetQueueAttributes
+                  - sqs:GetQueueUrl
+                  - sqs:SetQueueAttributes
+                  - sqs:TagQueue
+                  - sqs:UntagQueue
+                  - sqs:ListQueueTags
+                Resource:
+                  - !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:checkpoint-question-service-testflight-QuestionBankQueue-*
+                  - !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:checkpoint-question-service-testflight-QuestionBankDeadLetterQueue-*
+                  - !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:checkpoint-question-service-testflig-QuestionBankOutboxFailureQueue-*
+              - Sid: TestFlightLogGroups
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:DeleteLogGroup
+                  - logs:PutRetentionPolicy
+                  - logs:DeleteRetentionPolicy
+                  - logs:TagResource
+                  - logs:UntagResource
+                  - logs:ListTagsForResource
+                Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/checkpoint/checkpoint-question-service-testflight/*
+              - Sid: DescribeLogGroupsForCloudFormation
+                Effect: Allow
+                Action: logs:DescribeLogGroups
+                Resource: '*'
+              - Sid: TestFlightAlarms
+                Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricAlarm
+                  - cloudwatch:DeleteAlarms
+                  - cloudwatch:DescribeAlarms
+                  - cloudwatch:TagResource
+                  - cloudwatch:UntagResource
+                  - cloudwatch:ListTagsForResource
+                Resource: !Sub arn:${AWS::Partition}:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:checkpoint-question-service-testflight-*
+              - Sid: TestFlightTopic
+                Effect: Allow
+                Action:
+                  - sns:CreateTopic
+                  - sns:DeleteTopic
+                  - sns:GetTopicAttributes
+                  - sns:SetTopicAttributes
+                  - sns:Subscribe
+                  - sns:Unsubscribe
+                  - sns:GetSubscriptionAttributes
+                  - sns:SetSubscriptionAttributes
+                  - sns:ListSubscriptionsByTopic
+                  - sns:TagResource
+                  - sns:UntagResource
+                  - sns:ListTagsForResource
+                Resource: !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:checkpoint-question-service-testflight-BackendAlertTopic-*
+              - !If
+                - ManageBudget
+                - Sid: TestFlightBudget
+                  Effect: Allow
+                  Action:
+                    - budgets:ModifyBudget
+                    - budgets:ViewBudget
+                    - budgets:TagResource
+                    - budgets:UntagResource
+                  Resource: !Sub arn:${AWS::Partition}:budgets::${AWS::AccountId}:budget/checkpoint-question-service-testflight-bedrock-monthly
+                - !Ref AWS::NoValue
+              - !If
+                - ManageBudget
+                - Sid: BudgetBillingDependency
+                  Effect: Allow
+                  Action:
+                    - aws-portal:ModifyBilling
+                    - aws-portal:ViewBilling
+                  Resource: '*'
+                - !Ref AWS::NoValue
+        - PolicyName: testflight-api
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ExistingTestFlightHttpApiAndStage
+                Effect: Allow
+                Action:
+                  - apigateway:GET
+                  - apigateway:POST
+                  - apigateway:PUT
+                  - apigateway:PATCH
+                  - apigateway:DELETE
+                Resource:
+                  - !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/apis/${BackendApiId}
+                  - !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/apis/${BackendApiId}/routes
+                  - !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/apis/${BackendApiId}/routes/*
+                  - !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/apis/${BackendApiId}/integrations
+                  - !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/apis/${BackendApiId}/integrations/*
+                  - !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/apis/${BackendApiId}/stages
+                  - !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/apis/${BackendApiId}/stages/${ApiStageName}
+
+Outputs:
+  ExecutionRoleArn:
+    Description: Use for CloudFormationExecutionRoleArn in the OIDC bootstrap and CLOUDFORMATION_EXECUTION_ROLE_ARN in the protected environment.
+    Value: !GetAtt CloudFormationExecutionRole.Arn
+  LambdaPermissionsBoundaryArn:
+    Description: Set as LAMBDA_PERMISSIONS_BOUNDARY_ARN in the protected backend-testflight environment.
+    Value: !Ref LambdaPermissionsBoundary

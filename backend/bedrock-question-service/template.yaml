@@ -3,6 +3,11 @@ Transform: AWS::Serverless-2016-10-31
 Description: Checkpoint Bedrock question-generation backend
 
 Parameters:
+  LambdaPermissionsBoundaryArn:
+    Type: String
+    Default: ""
+    AllowedPattern: '^$|^arn:aws:iam::[0-9]{12}:policy/checkpoint-question-service-testflight-lambda-boundary$'
+    Description: Optional managed-policy boundary for all three SAM-generated Lambda roles; required by the protected TestFlight deploy.
   BedrockModelArn:
     Type: String
     Description: Exact Bedrock foundation-model or inference-profile ARN used by Converse.
@@ -302,6 +307,11 @@ Parameters:
     MinValue: 1
 
 Rules:
+  TestFlightRequiresLambdaBoundary:
+    RuleCondition: !Equals [!Ref DeploymentEnvironment, testflight]
+    Assertions:
+      - Assert: !Not [!Equals [!Ref LambdaPermissionsBoundaryArn, ""]]
+        AssertDescription: TestFlight requires the reviewed boundary on all generated Lambda roles.
   WorkerTaskOnlyRequiresQualifiedRoute:
     RuleCondition: !Not [!Equals [!Ref QuestionBankWorkerTaskOnlyNumericalGoalSHA256, ""]]
     Assertions:
@@ -399,6 +409,7 @@ Rules:
         AssertDescription: Production requires a complete Bedrock Guardrail configuration plus operations and budget alert emails.
 
 Conditions:
+  HasLambdaPermissionsBoundary: !Not [!Equals [!Ref LambdaPermissionsBoundaryArn, ""]]
   HasSkillMapModelOverride: !And
     - !Not [!Equals [!Ref SkillMapModelArn, ""]]
     - !Not [!Equals [!Select [0, !Ref SkillMapInvokeResourceArns], ""]]
@@ -495,6 +506,7 @@ Resources:
       MemorySize: 256
       ReservedConcurrentExecutions: !Ref ReservedConcurrency
       Tracing: Active
+      PermissionsBoundary: !If [HasLambdaPermissionsBoundary, !Ref LambdaPermissionsBoundaryArn, !Ref "AWS::NoValue"]
       LoggingConfig:
         LogGroup: !Ref CheckpointQuestionFunctionLogGroup
         LogFormat: Text
@@ -620,6 +632,7 @@ Resources:
       MemorySize: 256
       ReservedConcurrentExecutions: !Ref QuestionBankWorkerReservedConcurrency
       Tracing: Active
+      PermissionsBoundary: !If [HasLambdaPermissionsBoundary, !Ref LambdaPermissionsBoundaryArn, !Ref "AWS::NoValue"]
       LoggingConfig:
         LogGroup: !Ref QuestionBankWorkerFunctionLogGroup
         LogFormat: Text
@@ -733,6 +746,7 @@ Resources:
       MemorySize: 128
       ReservedConcurrentExecutions: 2
       Tracing: Active
+      PermissionsBoundary: !If [HasLambdaPermissionsBoundary, !Ref LambdaPermissionsBoundaryArn, !Ref "AWS::NoValue"]
       LoggingConfig:
         LogGroup: !Ref QuestionBankOutboxFunctionLogGroup
         LogFormat: Text

@@ -22,6 +22,7 @@ missing=()
 if [[ "$DEPLOYMENT_ENVIRONMENT" == testflight ]]; then
   [[ -n "$SAM_ARTIFACT_BUCKET" ]] || missing+=(SAM_ARTIFACT_BUCKET)
   [[ -n "$CLOUDFORMATION_EXECUTION_ROLE_ARN" ]] || missing+=(CLOUDFORMATION_EXECUTION_ROLE_ARN)
+  [[ -n "$LAMBDA_PERMISSIONS_BOUNDARY_ARN" ]] || missing+=(LAMBDA_PERMISSIONS_BOUNDARY_ARN)
 fi
 if (( ${#missing[@]} > 0 )); then
   printf 'Missing required environment secrets or variables: %s\n' "${missing[*]}" >&2
@@ -32,6 +33,7 @@ if [[ "$DEPLOYMENT_ENVIRONMENT" == testflight ]]; then
   [[ "$SAM_STACK_NAME" == checkpoint-question-service-testflight ]] || { echo 'TestFlight requires the existing stack name.' >&2; exit 1; }
   [[ "$SAM_ARTIFACT_BUCKET" =~ ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$ ]] || { echo 'SAM_ARTIFACT_BUCKET must be an S3 bucket name.' >&2; exit 1; }
   [[ "$CLOUDFORMATION_EXECUTION_ROLE_ARN" =~ ^arn:aws:iam::[0-9]{12}:role/[A-Za-z0-9_+=,.@/-]+$ ]] || { echo 'CLOUDFORMATION_EXECUTION_ROLE_ARN must be an IAM role ARN.' >&2; exit 1; }
+  [[ "$LAMBDA_PERMISSIONS_BOUNDARY_ARN" =~ ^arn:aws:iam::[0-9]{12}:policy/checkpoint-question-service-testflight-lambda-boundary$ ]] || { echo 'LAMBDA_PERMISSIONS_BOUNDARY_ARN must be the reviewed TestFlight Lambda boundary ARN.' >&2; exit 1; }
 fi
 if (( ${#CHECKPOINT_BACKEND_TOKEN} < 32 )); then
   echo "CHECKPOINT_BACKEND_TOKEN must contain at least 32 characters." >&2

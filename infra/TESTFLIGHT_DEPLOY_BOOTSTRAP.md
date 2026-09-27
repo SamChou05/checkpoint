@@ -16,15 +16,14 @@ or IAM provisioning operations to the GitHub role. The provider is account-wide:
 check for an existing provider before creating this stack, and import or reuse
 it rather than creating a duplicate.
 
-The separately reviewed **CloudFormation execution role** must trust
-`cloudformation.amazonaws.com` and have only the permissions needed to update
-the resources in the backend SAM template, pass its three Lambda execution
-roles, and read objects under this bootstrap's artifact prefix. The role must
-exist in the same account as the stack. The current stack has no service role;
-passing one with `sam deploy --role-arn` attaches it to future stack operations.
-CloudFormation does not support removing that association later, so review the
-execution-role policy and this transition before applying it. The bootstrap
-does not create or grant a broad execution role automatically.
+The separately reviewed **CloudFormation execution role** and Lambda
+permissions boundary are defined in [TESTFLIGHT_EXECUTION_ROLE.md](TESTFLIGHT_EXECUTION_ROLE.md)
+and `testflight-cfn-execution-role.yaml`. The role must exist in the same
+account as the stack. The current stack has no service role; passing one with
+`sam deploy --role-arn` attaches it to future stack operations. CloudFormation
+does not support removing that association later, so review the execution-role
+policy and this transition before applying it. The bootstrap does not create
+the execution role automatically.
 
 Read-only checks from this repository:
 
@@ -74,7 +73,8 @@ If rotating the app bearer, coordinate the TestFlight client configuration.
 Set the environment variables `AWS_REGION=us-east-1`,
 `SAM_STACK_NAME=checkpoint-question-service-testflight`,
 `SAM_ARTIFACT_BUCKET` from the bootstrap output, and
-`CLOUDFORMATION_EXECUTION_ROLE_ARN` to the reviewed service role. Copy the
+`CLOUDFORMATION_EXECUTION_ROLE_ARN` to the reviewed service role, and
+`LAMBDA_PERMISSIONS_BOUNDARY_ARN` to the role stack's boundary output. Copy the
 three exact model/profile ARNs and their complete invoke-resource lists from
 the current stack's **nonsecret** configuration:
 `BEDROCK_MODEL_ARN`/`BEDROCK_INVOKE_RESOURCE_ARNS`,
