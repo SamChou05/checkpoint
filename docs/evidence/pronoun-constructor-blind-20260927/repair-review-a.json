@@ -1,0 +1,65 @@
+{
+  "reviewer": "A",
+  "status": "locked_targeted_blind_repair_review",
+  "repairedPromptsSha256": "b3c6b2d8338ed277064838969877f1ee5c844523136d46da483a196afe8aeab6",
+  "scope": "Q01–Q08 revised prompts and unchanged keyless choices only; no source, private key, or other review consulted",
+  "items": [
+    {
+      "id": "Q01",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestAnswer": "A",
+      "roleMapUnambiguous": true,
+      "rationale": "The question is expressly hypothetical (“If the actions occur”), and asks only who performs each action and who owns each object. It does not say the addressee has proposed, promised, or independently planned the action."
+    },
+    {
+      "id": "Q02",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestAnswer": "D",
+      "roleMapUnambiguous": true,
+      "rationale": "The question is expressly hypothetical (“If the actions occur”), and asks only who performs each action and who owns each object. It does not say the addressee has proposed, promised, or independently planned the action."
+    },
+    {
+      "id": "Q03",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestAnswer": "C",
+      "roleMapUnambiguous": true,
+      "rationale": "The question is expressly hypothetical (“If the actions occur”), and asks only who performs each action and who owns each object. It does not say the addressee has proposed, promised, or independently planned the action."
+    },
+    {
+      "id": "Q04",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestAnswer": "B",
+      "roleMapUnambiguous": true,
+      "rationale": "The question is expressly hypothetical (“If the actions occur”), and asks only who performs each action and who owns each object. It does not say the addressee has proposed, promised, or independently planned the action."
+    },
+    {
+      "id": "Q05",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestAnswer": "A",
+      "roleMapUnambiguous": true,
+      "rationale": "The question is expressly hypothetical (“If the actions occur”), and asks only who performs each action and who owns each object. It does not say the addressee has proposed, promised, or independently planned the action."
+    },
+    {
+      "id": "Q06",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestAnswer": "D",
+      "roleMapUnambiguous": true,
+      "rationale": "The question is expressly hypothetical (“If the actions occur”), and asks only who performs each action and who owns each object. It does not say the addressee has proposed, promised, or independently planned the action."
+    },
+    {
+      "id": "Q07",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestAnswer": "C",
+      "roleMapUnambiguous": true,
+      "rationale": "The question is expressly hypothetical (“If the actions occur”), and asks only who performs each action and who owns each object. It does not say the addressee has proposed, promised, or independently planned the action."
+    },
+    {
+      "id": "Q08",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestAnswer": "B",
+      "roleMapUnambiguous": true,
+      "rationale": "The question is expressly hypothetical (“If the actions occur”), and asks only who performs each action and who owns each object. It does not say the addressee has proposed, promised, or independently planned the action."
+    }
+  ],
+  "overall": "The repair resolves the unsupported-proposal implication for all eight prompts while preserving one clear role-map answer in each. The after/before distinction still does not affect the choices or solving decision; this targeted wording repair does not resolve the previously identified cross-item repetition."
+}
