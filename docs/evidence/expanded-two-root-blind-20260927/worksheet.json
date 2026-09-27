@@ -1,0 +1,84 @@
+{
+  "items": [
+    {
+      "id": "R01",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 14, inclusive. Condition: (((x * x) - (17 * x)) + 60) = 0. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "6",
+        "B": "5",
+        "C": "4",
+        "D": "12"
+      }
+    },
+    {
+      "id": "R02",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 7, inclusive. Condition: (((x * x) - (8 * x)) + 15) = 0. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "5",
+        "B": "4",
+        "C": "3",
+        "D": "2"
+      }
+    },
+    {
+      "id": "R03",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 22, inclusive. Condition: (((x * x) - (31 * x)) + 220) = 0. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "10",
+        "B": "12",
+        "C": "20",
+        "D": "11"
+      }
+    },
+    {
+      "id": "R04",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 14, inclusive. Condition: (((x * x) - (20 * x)) + 96) = 0. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "9",
+        "B": "7",
+        "C": "12",
+        "D": "8"
+      }
+    },
+    {
+      "id": "R05",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 12, inclusive. Condition: (((x * x) - (14 * x)) + 40) = 0. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "4",
+        "B": "5",
+        "C": "10",
+        "D": "3"
+      }
+    },
+    {
+      "id": "R06",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: (((x * x) - (23 * x)) + 130) = 0. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "10",
+        "B": "13",
+        "C": "11",
+        "D": "9"
+      }
+    },
+    {
+      "id": "R07",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 17, inclusive. Condition: (((x * x) - (22 * x)) + 105) = 0. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "6",
+        "C": "7",
+        "D": "15"
+      }
+    },
+    {
+      "id": "R08",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 16, inclusive. Condition: (((x * x) - (23 * x)) + 126) = 0. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "9",
+        "C": "14",
+        "D": "10"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1222 @@
+{
+  "review_type": "independent_answer_blind_numeric_difficulty_review",
+  "input_file": "/private/tmp/checkpoint-numeric-difficulty-blind/worksheet.json",
+  "input_sha256_verified": "fc34d0dd16f21923af2cfeb1a3e0467d0b8be00f13b9a72ff56caa6aa97b82d6",
+  "blindness_statement": "Only the specified keyless worksheet was read as source material. No answer map, source code, repository evidence, or other agent work was consulted.",
+  "scale_assumption": "Difficulty 2–3 is interpreted as ordinal levels on a 1–5 scale because the worksheet specifies no separate rubric.",
+  "item_count": 8,
+  "conclusions": {
+    "selected_choices": {
+      "R01": "B",
+      "R02": "C",
+      "R03": "D",
+      "R04": "D",
+      "R05": "A",
+      "R06": "A",
+      "R07": "C",
+      "R08": "B"
+    },
+    "unique_supported_answer_for_every_item": true,
+    "second_valid_answer_to_question_found": false,
+    "note_on_larger_roots": "Every item includes its larger root as a choice; that choice satisfies the equation but does not answer the minimum question.",
+    "within_item_choice_pairs_checked": 48,
+    "within_item_choice_pairs_all_distinct": true,
+    "items_within_target_difficulty_2_to_3": 8,
+    "individual_teaching_feasibility": true,
+    "cross_item_pair_count": 28,
+    "cross_item_reasoning_level_repetition_pairs": 28,
+    "set_level_judgment": "All eight items are the same exercise template. They support factorization/minimum-root practice, but provide little variety for assessing distinct reasoning. Once the first item is learned, the remaining items likely feel easier than their standalone ratings."
+  },
+  "items": [
+    {
+      "id": "R01",
+      "selected_choice": "B",
+      "selected_value": 5,
+      "independent_math": "x² − 17x + 60 = (x − 5)(x − 12) = 0. Thus x = 5 or 12; both lie in [0, 14], and the minimum is 5.",
+      "roots": [
+        5,
+        12
+      ],
+      "choice_evaluations": {
+        "A": {
+          "value": 6,
+          "polynomial_value": -6,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "B": {
+          "value": 5,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": true
+        },
+        "C": {
+          "value": 4,
+          "polynomial_value": 8,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "D": {
+          "value": 12,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": false
+        }
+      },
+      "second_valid_answer_to_question": false,
+      "larger_root_distractor": {
+        "choice": "D",
+        "value": 12,
+        "condition_true": true,
+        "minimum_question_false": true
+      },
+      "all_six_within_item_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "values": [
+            6,
+            5
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "values": [
+            6,
+            4
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "values": [
+            6,
+            12
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "values": [
+            5,
+            4
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "values": [
+            5,
+            12
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "values": [
+            4,
+            12
+          ],
+          "numerically_distinct": true
+        }
+      ],
+      "all_choice_pairs_distinct": true,
+      "estimated_difficulty_ordinal_1_to_5": 2,
+      "within_target_2_to_3": true,
+      "difficulty_basis": "Requires factoring a monic quadratic into two integer roots, then applying the minimum qualifier. Arithmetic is small enough for hand work.",
+      "teaching_feasible": true,
+      "teaching_note": "A teacher can use the larger root distractor to check whether students distinguish satisfying the equation from answering the minimum question, and the adjacent values to probe substitution/factoring errors."
+    },
+    {
+      "id": "R02",
+      "selected_choice": "C",
+      "selected_value": 3,
+      "independent_math": "x² − 8x + 15 = (x − 3)(x − 5) = 0. Thus x = 3 or 5; both lie in [0, 7], and the minimum is 3.",
+      "roots": [
+        3,
+        5
+      ],
+      "choice_evaluations": {
+        "A": {
+          "value": 5,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": false
+        },
+        "B": {
+          "value": 4,
+          "polynomial_value": -1,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "C": {
+          "value": 3,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": true
+        },
+        "D": {
+          "value": 2,
+          "polynomial_value": 3,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        }
+      },
+      "second_valid_answer_to_question": false,
+      "larger_root_distractor": {
+        "choice": "A",
+        "value": 5,
+        "condition_true": true,
+        "minimum_question_false": true
+      },
+      "all_six_within_item_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "values": [
+            5,
+            4
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "values": [
+            5,
+            3
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "values": [
+            5,
+            2
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "values": [
+            4,
+            3
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "values": [
+            4,
+            2
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "values": [
+            3,
+            2
+          ],
+          "numerically_distinct": true
+        }
+      ],
+      "all_choice_pairs_distinct": true,
+      "estimated_difficulty_ordinal_1_to_5": 2,
+      "within_target_2_to_3": true,
+      "difficulty_basis": "Requires factoring a monic quadratic into two integer roots, then applying the minimum qualifier. Arithmetic is small enough for hand work.",
+      "teaching_feasible": true,
+      "teaching_note": "A teacher can use the larger root distractor to check whether students distinguish satisfying the equation from answering the minimum question, and the adjacent values to probe substitution/factoring errors."
+    },
+    {
+      "id": "R03",
+      "selected_choice": "D",
+      "selected_value": 11,
+      "independent_math": "x² − 31x + 220 = (x − 11)(x − 20) = 0. Thus x = 11 or 20; both lie in [0, 22], and the minimum is 11.",
+      "roots": [
+        11,
+        20
+      ],
+      "choice_evaluations": {
+        "A": {
+          "value": 10,
+          "polynomial_value": 10,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "B": {
+          "value": 12,
+          "polynomial_value": -8,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "C": {
+          "value": 20,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": false
+        },
+        "D": {
+          "value": 11,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": true
+        }
+      },
+      "second_valid_answer_to_question": false,
+      "larger_root_distractor": {
+        "choice": "C",
+        "value": 20,
+        "condition_true": true,
+        "minimum_question_false": true
+      },
+      "all_six_within_item_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "values": [
+            10,
+            12
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "values": [
+            10,
+            20
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "values": [
+            10,
+            11
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "values": [
+            12,
+            20
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "values": [
+            12,
+            11
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "values": [
+            20,
+            11
+          ],
+          "numerically_distinct": true
+        }
+      ],
+      "all_choice_pairs_distinct": true,
+      "estimated_difficulty_ordinal_1_to_5": 3,
+      "within_target_2_to_3": true,
+      "difficulty_basis": "Requires factoring a monic quadratic with a larger constant into two integer roots, then applying the minimum qualifier; still accessible by factor-pair search.",
+      "teaching_feasible": true,
+      "teaching_note": "A teacher can use the larger root distractor to check whether students distinguish satisfying the equation from answering the minimum question, and the adjacent values to probe substitution/factoring errors."
+    },
+    {
+      "id": "R04",
+      "selected_choice": "D",
+      "selected_value": 8,
+      "independent_math": "x² − 20x + 96 = (x − 8)(x − 12) = 0. Thus x = 8 or 12; both lie in [0, 14], and the minimum is 8.",
+      "roots": [
+        8,
+        12
+      ],
+      "choice_evaluations": {
+        "A": {
+          "value": 9,
+          "polynomial_value": -3,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "B": {
+          "value": 7,
+          "polynomial_value": 5,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "C": {
+          "value": 12,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": false
+        },
+        "D": {
+          "value": 8,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": true
+        }
+      },
+      "second_valid_answer_to_question": false,
+      "larger_root_distractor": {
+        "choice": "C",
+        "value": 12,
+        "condition_true": true,
+        "minimum_question_false": true
+      },
+      "all_six_within_item_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "values": [
+            9,
+            7
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "values": [
+            9,
+            12
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "values": [
+            9,
+            8
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "values": [
+            7,
+            12
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "values": [
+            7,
+            8
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "values": [
+            12,
+            8
+          ],
+          "numerically_distinct": true
+        }
+      ],
+      "all_choice_pairs_distinct": true,
+      "estimated_difficulty_ordinal_1_to_5": 2,
+      "within_target_2_to_3": true,
+      "difficulty_basis": "Requires factoring a monic quadratic into two integer roots, then applying the minimum qualifier. Arithmetic is small enough for hand work.",
+      "teaching_feasible": true,
+      "teaching_note": "A teacher can use the larger root distractor to check whether students distinguish satisfying the equation from answering the minimum question, and the adjacent values to probe substitution/factoring errors."
+    },
+    {
+      "id": "R05",
+      "selected_choice": "A",
+      "selected_value": 4,
+      "independent_math": "x² − 14x + 40 = (x − 4)(x − 10) = 0. Thus x = 4 or 10; both lie in [0, 12], and the minimum is 4.",
+      "roots": [
+        4,
+        10
+      ],
+      "choice_evaluations": {
+        "A": {
+          "value": 4,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": true
+        },
+        "B": {
+          "value": 5,
+          "polynomial_value": -5,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "C": {
+          "value": 10,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": false
+        },
+        "D": {
+          "value": 3,
+          "polynomial_value": 7,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        }
+      },
+      "second_valid_answer_to_question": false,
+      "larger_root_distractor": {
+        "choice": "C",
+        "value": 10,
+        "condition_true": true,
+        "minimum_question_false": true
+      },
+      "all_six_within_item_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "values": [
+            4,
+            5
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "values": [
+            4,
+            10
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "values": [
+            4,
+            3
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "values": [
+            5,
+            10
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "values": [
+            5,
+            3
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "values": [
+            10,
+            3
+          ],
+          "numerically_distinct": true
+        }
+      ],
+      "all_choice_pairs_distinct": true,
+      "estimated_difficulty_ordinal_1_to_5": 2,
+      "within_target_2_to_3": true,
+      "difficulty_basis": "Requires factoring a monic quadratic into two integer roots, then applying the minimum qualifier. Arithmetic is small enough for hand work.",
+      "teaching_feasible": true,
+      "teaching_note": "A teacher can use the larger root distractor to check whether students distinguish satisfying the equation from answering the minimum question, and the adjacent values to probe substitution/factoring errors."
+    },
+    {
+      "id": "R06",
+      "selected_choice": "A",
+      "selected_value": 10,
+      "independent_math": "x² − 23x + 130 = (x − 10)(x − 13) = 0. Thus x = 10 or 13; both lie in [0, 15], and the minimum is 10.",
+      "roots": [
+        10,
+        13
+      ],
+      "choice_evaluations": {
+        "A": {
+          "value": 10,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": true
+        },
+        "B": {
+          "value": 13,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": false
+        },
+        "C": {
+          "value": 11,
+          "polynomial_value": -2,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "D": {
+          "value": 9,
+          "polynomial_value": 4,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        }
+      },
+      "second_valid_answer_to_question": false,
+      "larger_root_distractor": {
+        "choice": "B",
+        "value": 13,
+        "condition_true": true,
+        "minimum_question_false": true
+      },
+      "all_six_within_item_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "values": [
+            10,
+            13
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "values": [
+            10,
+            11
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "values": [
+            10,
+            9
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "values": [
+            13,
+            11
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "values": [
+            13,
+            9
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "values": [
+            11,
+            9
+          ],
+          "numerically_distinct": true
+        }
+      ],
+      "all_choice_pairs_distinct": true,
+      "estimated_difficulty_ordinal_1_to_5": 2,
+      "within_target_2_to_3": true,
+      "difficulty_basis": "Requires factoring a monic quadratic into two integer roots, then applying the minimum qualifier. Arithmetic is small enough for hand work.",
+      "teaching_feasible": true,
+      "teaching_note": "A teacher can use the larger root distractor to check whether students distinguish satisfying the equation from answering the minimum question, and the adjacent values to probe substitution/factoring errors."
+    },
+    {
+      "id": "R07",
+      "selected_choice": "C",
+      "selected_value": 7,
+      "independent_math": "x² − 22x + 105 = (x − 7)(x − 15) = 0. Thus x = 7 or 15; both lie in [0, 17], and the minimum is 7.",
+      "roots": [
+        7,
+        15
+      ],
+      "choice_evaluations": {
+        "A": {
+          "value": 8,
+          "polynomial_value": -7,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "B": {
+          "value": 6,
+          "polynomial_value": 9,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "C": {
+          "value": 7,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": true
+        },
+        "D": {
+          "value": 15,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": false
+        }
+      },
+      "second_valid_answer_to_question": false,
+      "larger_root_distractor": {
+        "choice": "D",
+        "value": 15,
+        "condition_true": true,
+        "minimum_question_false": true
+      },
+      "all_six_within_item_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "values": [
+            8,
+            6
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "values": [
+            8,
+            7
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "values": [
+            8,
+            15
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "values": [
+            6,
+            7
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "values": [
+            6,
+            15
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "values": [
+            7,
+            15
+          ],
+          "numerically_distinct": true
+        }
+      ],
+      "all_choice_pairs_distinct": true,
+      "estimated_difficulty_ordinal_1_to_5": 2,
+      "within_target_2_to_3": true,
+      "difficulty_basis": "Requires factoring a monic quadratic into two integer roots, then applying the minimum qualifier. Arithmetic is small enough for hand work.",
+      "teaching_feasible": true,
+      "teaching_note": "A teacher can use the larger root distractor to check whether students distinguish satisfying the equation from answering the minimum question, and the adjacent values to probe substitution/factoring errors."
+    },
+    {
+      "id": "R08",
+      "selected_choice": "B",
+      "selected_value": 9,
+      "independent_math": "x² − 23x + 126 = (x − 9)(x − 14) = 0. Thus x = 9 or 14; both lie in [0, 16], and the minimum is 9.",
+      "roots": [
+        9,
+        14
+      ],
+      "choice_evaluations": {
+        "A": {
+          "value": 8,
+          "polynomial_value": 6,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        },
+        "B": {
+          "value": 9,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": true
+        },
+        "C": {
+          "value": 14,
+          "polynomial_value": 0,
+          "satisfies_condition": true,
+          "answers_minimum_question": false
+        },
+        "D": {
+          "value": 10,
+          "polynomial_value": -4,
+          "satisfies_condition": false,
+          "answers_minimum_question": false
+        }
+      },
+      "second_valid_answer_to_question": false,
+      "larger_root_distractor": {
+        "choice": "C",
+        "value": 14,
+        "condition_true": true,
+        "minimum_question_false": true
+      },
+      "all_six_within_item_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "values": [
+            8,
+            9
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "values": [
+            8,
+            14
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "values": [
+            8,
+            10
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "values": [
+            9,
+            14
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "values": [
+            9,
+            10
+          ],
+          "numerically_distinct": true
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "values": [
+            14,
+            10
+          ],
+          "numerically_distinct": true
+        }
+      ],
+      "all_choice_pairs_distinct": true,
+      "estimated_difficulty_ordinal_1_to_5": 2,
+      "within_target_2_to_3": true,
+      "difficulty_basis": "Requires factoring a monic quadratic into two integer roots, then applying the minimum qualifier. Arithmetic is small enough for hand work.",
+      "teaching_feasible": true,
+      "teaching_note": "A teacher can use the larger root distractor to check whether students distinguish satisfying the equation from answering the minimum question, and the adjacent values to probe substitution/factoring errors."
+    }
+  ],
+  "all_28_cross_item_pair_reviews": [
+    {
+      "pair": [
+        "R01",
+        "R02"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [5, 12] versus [3, 5]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R01",
+        "R03"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [5, 12] versus [11, 20]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R01",
+        "R04"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [5, 12] versus [8, 12]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R01",
+        "R05"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [5, 12] versus [4, 10]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R01",
+        "R06"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [5, 12] versus [10, 13]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R01",
+        "R07"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [5, 12] versus [7, 15]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R01",
+        "R08"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [5, 12] versus [9, 14]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R02",
+        "R03"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [3, 5] versus [11, 20]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R02",
+        "R04"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [3, 5] versus [8, 12]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R02",
+        "R05"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [3, 5] versus [4, 10]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R02",
+        "R06"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [3, 5] versus [10, 13]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R02",
+        "R07"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [3, 5] versus [7, 15]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R02",
+        "R08"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [3, 5] versus [9, 14]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R03",
+        "R04"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [11, 20] versus [8, 12]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R03",
+        "R05"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [11, 20] versus [4, 10]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R03",
+        "R06"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [11, 20] versus [10, 13]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R03",
+        "R07"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [11, 20] versus [7, 15]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R03",
+        "R08"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [11, 20] versus [9, 14]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R04",
+        "R05"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [8, 12] versus [4, 10]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R04",
+        "R06"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [8, 12] versus [10, 13]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R04",
+        "R07"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [8, 12] versus [7, 15]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R04",
+        "R08"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [8, 12] versus [9, 14]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R05",
+        "R06"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [4, 10] versus [10, 13]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R05",
+        "R07"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [4, 10] versus [7, 15]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R05",
+        "R08"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [4, 10] versus [9, 14]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R06",
+        "R07"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [10, 13] versus [7, 15]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R06",
+        "R08"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [10, 13] versus [9, 14]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    },
+    {
+      "pair": [
+        "R07",
+        "R08"
+      ],
+      "reasoning_level_repetition": true,
+      "severity": "near_duplicate",
+      "specific_comparison": "Both use the same monic-quadratic factoring and minimum-root decision: roots [7, 15] versus [9, 14]. In each, all roots are in domain and the four choices are the minimum, its adjacent integers, and the larger root; only numbers and answer positions change."
+    }
+  ]
+}

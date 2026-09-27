@@ -1,0 +1,82 @@
+{
+  "R01": {
+    "key": "B",
+    "explanation": "The integers 5 and 12 add to 17 and multiply to 60, so the equation factors as (x - 5)(x - 12) = 0. Both roots are in the domain; the minimum is 5.",
+    "feedback": {
+      "6": "At x = 6, -6 = 0 is false. This value does not satisfy the condition.",
+      "5": "At x = 5, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "4": "At x = 4, 8 = 0 is false. This value does not satisfy the condition.",
+      "12": "At x = 12, 0 = 0 is true. The question asks for the minimum; that value is 5."
+    }
+  },
+  "R02": {
+    "key": "C",
+    "explanation": "The integers 3 and 5 add to 8 and multiply to 15, so the equation factors as (x - 3)(x - 5) = 0. Both roots are in the domain; the minimum is 3.",
+    "feedback": {
+      "5": "At x = 5, 0 = 0 is true. The question asks for the minimum; that value is 3.",
+      "4": "At x = 4, -1 = 0 is false. This value does not satisfy the condition.",
+      "3": "At x = 3, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "2": "At x = 2, 3 = 0 is false. This value does not satisfy the condition."
+    }
+  },
+  "R03": {
+    "key": "D",
+    "explanation": "The integers 11 and 20 add to 31 and multiply to 220, so the equation factors as (x - 11)(x - 20) = 0. Both roots are in the domain; the minimum is 11.",
+    "feedback": {
+      "10": "At x = 10, 10 = 0 is false. This value does not satisfy the condition.",
+      "12": "At x = 12, -8 = 0 is false. This value does not satisfy the condition.",
+      "20": "At x = 20, 0 = 0 is true. The question asks for the minimum; that value is 11.",
+      "11": "At x = 11, 0 = 0 is true. This is the minimum value satisfying the condition in this domain."
+    }
+  },
+  "R04": {
+    "key": "D",
+    "explanation": "The integers 8 and 12 add to 20 and multiply to 96, so the equation factors as (x - 8)(x - 12) = 0. Both roots are in the domain; the minimum is 8.",
+    "feedback": {
+      "9": "At x = 9, -3 = 0 is false. This value does not satisfy the condition.",
+      "7": "At x = 7, 5 = 0 is false. This value does not satisfy the condition.",
+      "12": "At x = 12, 0 = 0 is true. The question asks for the minimum; that value is 8.",
+      "8": "At x = 8, 0 = 0 is true. This is the minimum value satisfying the condition in this domain."
+    }
+  },
+  "R05": {
+    "key": "A",
+    "explanation": "The integers 4 and 10 add to 14 and multiply to 40, so the equation factors as (x - 4)(x - 10) = 0. Both roots are in the domain; the minimum is 4.",
+    "feedback": {
+      "4": "At x = 4, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "5": "At x = 5, -5 = 0 is false. This value does not satisfy the condition.",
+      "10": "At x = 10, 0 = 0 is true. The question asks for the minimum; that value is 4.",
+      "3": "At x = 3, 7 = 0 is false. This value does not satisfy the condition."
+    }
+  },
+  "R06": {
+    "key": "A",
+    "explanation": "The integers 10 and 13 add to 23 and multiply to 130, so the equation factors as (x - 10)(x - 13) = 0. Both roots are in the domain; the minimum is 10.",
+    "feedback": {
+      "10": "At x = 10, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "13": "At x = 13, 0 = 0 is true. The question asks for the minimum; that value is 10.",
+      "11": "At x = 11, -2 = 0 is false. This value does not satisfy the condition.",
+      "9": "At x = 9, 4 = 0 is false. This value does not satisfy the condition."
+    }
+  },
+  "R07": {
+    "key": "C",
+    "explanation": "The integers 7 and 15 add to 22 and multiply to 105, so the equation factors as (x - 7)(x - 15) = 0. Both roots are in the domain; the minimum is 7.",
+    "feedback": {
+      "8": "At x = 8, -7 = 0 is false. This value does not satisfy the condition.",
+      "6": "At x = 6, 9 = 0 is false. This value does not satisfy the condition.",
+      "7": "At x = 7, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "15": "At x = 15, 0 = 0 is true. The question asks for the minimum; that value is 7."
+    }
+  },
+  "R08": {
+    "key": "B",
+    "explanation": "The integers 9 and 14 add to 23 and multiply to 126, so the equation factors as (x - 9)(x - 14) = 0. Both roots are in the domain; the minimum is 9.",
+    "feedback": {
+      "8": "At x = 8, 6 = 0 is false. This value does not satisfy the condition.",
+      "9": "At x = 9, 0 = 0 is true. This is the minimum value satisfying the condition in this domain.",
+      "14": "At x = 14, 0 = 0 is true. The question asks for the minimum; that value is 9.",
+      "10": "At x = 10, -4 = 0 is false. This value does not satisfy the condition."
+    }
+  }
+}
