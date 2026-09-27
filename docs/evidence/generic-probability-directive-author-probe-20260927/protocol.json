@@ -1,0 +1,66 @@
+{
+  "state": "draft_waiting_for_candidate",
+  "trial_id": "generic-probability-directive-author-only-20260927-01",
+  "source_commit": "d1483312b71f6b1335d1630547c85260aab8ef64",
+  "baseline_request_sha256": "bcfbc829725c6d568cfc755b82a1210d9d284b1c58d24f81ad01fb63e9ce7d58",
+  "directive_source": "docs/evidence/generic-reserve-author7-blind-20260927/DIFFICULTY_ANALYSIS.md",
+  "directive_character_count": 681,
+  "environment": {
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "QUESTION_AUTHOR_MODE": "prose",
+    "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound",
+    "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+    "QUESTION_GENERIC_PROSE_RESERVE_7": "enabled",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "200",
+    "GENERATION_ATTEMPTS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6"
+  },
+  "limits": {
+    "original_jobs": 1,
+    "native_author_rows": 7,
+    "author_calls": 1,
+    "maximum_converse_calls": 1,
+    "sdk_attempts_per_call": 1,
+    "whole_execute_seconds": 240,
+    "deadline_origin": "before_credential_export_and_execute_sts",
+    "connect_timeout_seconds": 3,
+    "read_timeout_seconds": 200,
+    "sts_precheck_requests": 1,
+    "sts_execute_requests": 1,
+    "sts_sdk_attempts_per_request": 1,
+    "resume_retry_fallback_topup_bank_queue_deploy": false
+  },
+  "author_gate": {
+    "raw_rows": 7,
+    "sanitized_rows": 7,
+    "source_ordinals_exact": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "no_worker_verification": true,
+    "blind_review_pending_on_success": true
+  },
+  "blind_review": {
+    "independent_reviewers": 2,
+    "answer_blind": true,
+    "source_ordinal_blind": true,
+    "worksheet_from_all_seven_sanitized_rows": true,
+    "private_answer_map_outside_git_mode": "0600",
+    "hide_model_keys_until_both_locked": true
+  }
+}
