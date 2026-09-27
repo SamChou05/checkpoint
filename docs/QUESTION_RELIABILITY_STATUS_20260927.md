@@ -231,8 +231,25 @@ targeted keyless reviews. The prototype remains outside the production schema
 and author route. An [opt-in generic seven-candidate reserve](evidence/generic-reserve-seven-probe-20260927/README.md)
 now runs the existing sanitizer, answer-blind solver, and reviewer once and
 returns five only if five survive. It is disabled by default, excludes mapped
-and source-bound requests, and has only socket-free tests so far. A live
-Bedrock trial is still needed to measure its yield and content quality.
+and source-bound requests. Its first [frozen live trial](evidence/generic-reserve-seven-probe-20260927/RESULTS.md)
+failed in the harness before any provider dispatch, so it did not measure
+model quality. The corrected, separately frozen [second trial](evidence/generic-reserve-seven-probe-v2-20260927/RESULTS.md)
+returned seven schema-valid authored rows, all sanitized, but Bedrock rejected
+the seven-row answer-blind solver request with `ValidationException`. No
+reviewer ran and the worker returned **0/5**; the capture retains only the
+error code, so the precise provider validation cause is unknown. Smaller
+verification batches are being tested but are not yet live-qualified. The
+seven authored rows are under independent keyless content review.
+
+Two standalone math response-format constructors were compared against six
+quarantined level-2 examples in a [frozen 12-item blind worksheet](evidence/math-format-mixed-blind-20260927/RESULTS.md).
+Both reviewers matched all 12 code-owned keys and found all 72 within-item
+choice pairs meaningful, yet flagged 7 and 12 of 66 cross-item pairs as
+strong repetition. Both agreed that the three comparison items repeat each
+other's direction-plus-gap response and the three worked-evaluation items
+repeat each other's precedence-and-error-pattern response. These constructors
+are not production-wired; one-key and choice validity alone do not establish
+bank novelty.
 
 ## Established causes and fixes
 
@@ -251,7 +268,7 @@ Bedrock trial is still needed to measure its yield and content quality.
 | Rebalancing a finite repertoire cannot eliminate repeated decisions. | The frozen [cross-slot audit](evidence/mapped-cross-slot-mechanism-audit-20260927/RESULTS.md) counted 2/18/76 structural pair patterns at 15/40/80 items that resemble earlier blind-rated strong overlaps. The new gerund family lowers this heuristic to 2/13/55, but its own blind review finds repeated templates. A trial selector reduced maximum-decision pairings but created near-identical minimum-ratio tasks; it was reverted. | These counts are heuristic warnings, not newly blind-confirmed duplicates. Expand substantively different, code-owned objectives and require repeated-bank blind review; do not promote a selector that merely moves the repetition. |
 | Passing local tests does not update TestFlight. | The active workflow is manual, has never run, and the required protected environment and AWS OIDC identity were absent in the read-only audit. | [Release audit](evidence/testflight-release-readiness-20260927/RESULTS.md), [scoped bootstrap](../infra/TESTFLIGHT_DEPLOY_BOOTSTRAP.md), and [service-role design](../infra/TESTFLIGHT_EXECUTION_ROLE.md) specify the identity, protected variables, role boundary, rollback artifacts, and live-setting comparison. Nothing was deployed. |
 
-The integrated backend passed **1,484 unit tests**, Ruff on changed Python
+The integrated backend passed **1,494 unit tests**, Ruff on changed Python
 files, and `git diff --check`. Both SAM templates passed lint; the deployment
 script suite, actionlint, shellcheck, and AWS's read-only CloudFormation
 template validation also passed. The earlier bootstrap audit compared five
