@@ -343,30 +343,33 @@ def _quadratic_exclusion_count_derivation(left, right, domain, feasible, *,
             f"nonzero, so {len(domain)} - 2 = {len(feasible)} satisfy the condition.")
 
 
-def _expanded_three_root_derivation(left, right, domain, feasible, answer, *,
-                                    unit, relation, selection):
-    """Factor a checked monic cubic only when its three roots are proven."""
-    if (unit != "unitless" or relation != "eq" or selection != "minimum"
-            or right != ("constant", Fraction(0)) or len(feasible) != 3
-            or answer != min(feasible) or any(root.denominator != 1 for root in feasible)):
-        return None
-    roots = tuple(sorted(feasible))
+def _centered_square_count_derivation(left, right, domain, feasible, *,
+                                     unit, relation, selection):
+    """Prove the entire symmetric integer interval under a strict square bound."""
     variable = ("variable",)
-    square = ("mul", variable, variable)
-    total = sum(roots)
-    pairwise = sum(roots[i] * roots[j] for i in range(3) for j in range(i + 1, 3))
-    product = roots[0] * roots[1] * roots[2]
-    expected = ("sub", ("add", ("sub", ("mul", square, variable),
-                                  ("mul", ("constant", total), square)),
-                        ("mul", ("constant", pairwise), variable)),
-                ("constant", product))
-    if left != expected or any(root not in domain for root in roots):
+    if (unit != "unitless" or relation != "lt" or selection != "count_satisfying"
+            or left[0] != "mul" or left[1] != left[2]
+            or left[1][0] != "sub" or left[1][1] != variable
+            or left[1][2][0] != "constant" or right[0] != "constant"):
         return None
-    first, second, third = roots
-    return (f"The roots {first}, {second}, and {third} have sum {total}, "
-            f"pairwise-product sum {pairwise}, and product {product}. "
-            f"The cubic therefore factors as (x - {first})(x - {second})(x - {third}) = 0. "
-            f"These are its only roots, all in the domain; the minimum is {first}.")
+    center, bound = left[1][2][1], right[1]
+    if (center.denominator != 1 or bound.denominator != 1 or bound <= 0
+            or not domain or any(value.denominator != 1 for value in domain)):
+        return None
+    radius = isqrt(bound.numerator)
+    if (radius < 2 or radius * radius != bound
+            or domain[0] != center - radius - 1
+            or domain[-1] != center + radius + 1):
+        return None
+    interior = tuple(Fraction(value) for value in range(
+        int(center - radius + 1), int(center + radius)))
+    if tuple(feasible) != interior:
+        return None
+    return (f"(x - {center}) squared is less than {radius} squared exactly when "
+            f"-{radius} < x - {center} < {radius}. The satisfying integers run "
+            f"from {center - radius + 1} through {center + radius - 1}, inclusive. "
+            f"There are {len(interior)} such integers; the four other domain "
+            "values fail the strict bound.")
 
 
 def _root_distractor_reasons(expression):
@@ -541,6 +544,9 @@ def compile_question(spec):
         explanation = (_quadratic_exclusion_count_derivation(
             left, right, domain, feasible, unit=unit, relation=relation,
             selection=selection,
+        ) or _centered_square_count_derivation(
+            left, right, domain, feasible, unit=unit, relation=relation,
+            selection=selection,
         ) or f"Check every integer: {comparisons}. Exactly {answer} satisfy the condition.")
         feedback = {}
         for value, shown in zip(choices, rendered, strict=True):
@@ -589,9 +595,6 @@ def compile_question(spec):
         left, right, domain, feasible, answer, unit=unit, relation=relation,
         selection=selection,
     ) or _expanded_two_root_derivation(
-        left, right, domain, feasible, answer, unit=unit, relation=relation,
-        selection=selection,
-    ) or _expanded_three_root_derivation(
         left, right, domain, feasible, answer, unit=unit, relation=relation,
         selection=selection,
     ) or _rational_equation_derivation(

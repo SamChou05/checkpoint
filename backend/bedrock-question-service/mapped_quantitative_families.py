@@ -25,7 +25,7 @@ SLOT_FAMILIES = (
     (FAMILIES[1], "bounded_quadratic_equation", "bounded_rational_equation",
      "bounded_two_root_minimum", "bounded_quadratic_exclusion_count"),
     (FAMILIES[2], "bounded_quadratic_maximum", "bounded_linear_budget_maximum",
-     "bounded_solution_count", "bounded_three_root_minimum"),
+     "bounded_solution_count", "bounded_centered_square_count"),
 )
 SUPPORTED_TOPIC = "Exact arithmetic"
 SUPPORTED_OBJECTIVE = "Evaluate an exact rational expression or explicit bounded condition"
@@ -193,23 +193,17 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
             "selection": "count_satisfying",
             "domain": {"kind": "integer_interval", "lower": b - left_span,
                        "upper": b + 7 - left_span}}
-    if family == "bounded_three_root_minimum":
-        # Expand (x-b)(x-(b+a))(x-(b+a+2)). The learner must recover all
-        # three integer roots before selecting the smallest one; the printed
-        # polynomial does not expose any of the linear factors.
-        roots = (b, b + a, b + a + 2)
-        total = sum(roots)
-        pairwise = sum(roots[i] * roots[j] for i in range(3) for j in range(i + 1, 3))
-        product = roots[0] * roots[1] * roots[2]
+    if family == "bounded_centered_square_count":
+        # A strict square bound creates a symmetric interior interval around
+        # b. Count that interval after rejecting two boundary values and two
+        # exterior values. This is not a monotone maximum/budget decision.
         return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
-            {"kind": "variable"}, _binary("mul", 0, 0), _binary("mul", 1, 0),
-            _literal(total), _binary("mul", 3, 1), _binary("sub", 2, 4),
-            _literal(pairwise), _binary("mul", 6, 0), _binary("add", 5, 7),
-            _literal(product), _binary("sub", 8, 9), _literal(0),
-        ], "condition": {"left": 10, "relation": "eq", "right": 11},
-            "selection": "minimum",
-            "domain": {"kind": "integer_interval", "lower": 0,
-                       "upper": b + a + 4}}
+            {"kind": "variable"}, _literal(b), _binary("sub", 0, 1),
+            _binary("mul", 2, 2), _literal(a * a),
+        ], "condition": {"left": 3, "relation": "lt", "right": 4},
+            "selection": "count_satisfying",
+            "domain": {"kind": "integer_interval", "lower": b - a - 1,
+                       "upper": b + a + 1}}
     # The ratio x/(x+a) reaches b/(b+a) first at x=b for positive a.
     # Its entire interval is positive-denominator; the three smaller domain
     # values are all explicitly checked in the compiler's worked teaching.

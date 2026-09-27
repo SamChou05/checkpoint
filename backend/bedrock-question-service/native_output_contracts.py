@@ -657,7 +657,7 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
                     "(maximum integer within a product bound) or bounded_linear_budget_maximum "
                     "(maximum integer within a distributed linear budget) or "
                     "bounded_solution_count (count integers satisfying a distributed inequality) or "
-                    "bounded_three_root_minimum (minimum of three expanded-cubic roots). "
+                    "bounded_centered_square_count (count integers inside a strict square bound). "
                     'Slots 3 and 4 are {"kind":"agreement_pair_v1","scene":...,"order":...}; '
                     "slot 3 chooses a proximity, inverted-subject, relative-clause, or "
                     "mass/count partitive scene from "
