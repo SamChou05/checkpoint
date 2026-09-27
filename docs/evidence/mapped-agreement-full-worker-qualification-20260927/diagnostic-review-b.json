@@ -1,0 +1,250 @@
+{
+  "reviewer": "B",
+  "review_type": "independent_blind",
+  "worksheet_sha256": "549796ba59e8593dfbd3db4d74862c46666771411c97caab2b52ee42d81c4b2c",
+  "kind": "pre_review_diagnostic",
+  "requested_slots": 5,
+  "readable_items": 5,
+  "unavailable_items": 0,
+  "items": [
+    {
+      "id": "aea5ace0d2df29313d6824fb",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "A",
+      "answer_basis": "Every guest is singular, so receives; Maya and Theo is a coordinated plural subject, so prepare.",
+      "needed_premises_displayed": true,
+      "premise_note": "The stem supplies the relevant expression or subject, domain and condition; no outside facts are needed beyond ordinary arithmetic or standard written American English grammar.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 2; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 1; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 1 and 2; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 1 and 2; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 1; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 2; the alternative verb number changes agreement with the corresponding subject."
+        }
+      },
+      "actual_difficulty_1_to_5": 2,
+      "requested_level_2_direct_application_fit": true,
+      "difficulty_note": "Direct application of singular and plural subject–verb agreement to two blanks.",
+      "objective_fit": {
+        "external_objective_supplied": false,
+        "inferred_skill": "Choose present-tense verbs that agree in number with two subjects.",
+        "judgment": "Fits the skill stated or implied by the stem; fit to an undisclosed external objective cannot be verified."
+      },
+      "cross_item_novelty_note": "Closely repeats the two-blank singular-then-plural agreement pattern of 52b8284056857740bd8570d3, although this item uses every and a coordinated subject.",
+      "uncertainty": "No material ambiguity in the visible stem or choices."
+    },
+    {
+      "id": "52b8284056857740bd8570d3",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "B",
+      "answer_basis": "Chef is the first singular head subject, so plans; cooks is the second plural head subject, so prepare. The near-phrases do not change those heads.",
+      "needed_premises_displayed": true,
+      "premise_note": "The stem supplies the relevant expression or subject, domain and condition; no outside facts are needed beyond ordinary arithmetic or standard written American English grammar.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 1 and 2; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 2; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 1; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 1; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 2; the alternative verb number changes agreement with the corresponding subject."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered pairs differ in blank 1 and 2; the alternative verb number changes agreement with the corresponding subject."
+        }
+      },
+      "actual_difficulty_1_to_5": 2,
+      "requested_level_2_direct_application_fit": true,
+      "difficulty_note": "Direct agreement application with nearby nouns serving as attractors; identifying each head adds a modest step.",
+      "objective_fit": {
+        "external_objective_supplied": false,
+        "inferred_skill": "Choose present-tense verbs that agree with the head subjects despite nearby nouns of opposite number.",
+        "judgment": "Fits the skill stated or implied by the stem; fit to an undisclosed external objective cannot be verified."
+      },
+      "cross_item_novelty_note": "Closely repeats the two-blank singular-then-plural agreement pattern of aea5ace0d2df29313d6824fb; prepositional phrases add a distinct distractor mechanism.",
+      "uncertainty": "No material ambiguity in the visible stem or choices."
+    },
+    {
+      "id": "5263a170d6ee57c2d46ed8b1",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "D",
+      "answer_basis": "5x - 3 <= 42 implies x <= 9; 9 is the largest allowed integer satisfying the condition.",
+      "needed_premises_displayed": true,
+      "premise_note": "The stem supplies the relevant expression or subject, domain and condition; no outside facts are needed beyond ordinary arithmetic or standard written American English grammar.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "10 and 8 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "10 and 7 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "10 and 9 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "8 and 7 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "8 and 9 are unequal exact numerical answers to the same requested quantity."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "7 and 9 are unequal exact numerical answers to the same requested quantity."
+        }
+      },
+      "actual_difficulty_1_to_5": 2,
+      "requested_level_2_direct_application_fit": true,
+      "difficulty_note": "Directly adding 3 and dividing by 5, then checking the maximum and domain.",
+      "objective_fit": {
+        "external_objective_supplied": false,
+        "inferred_skill": "Solve a one-variable linear inequality and select the maximum integer in a stated domain.",
+        "judgment": "Fits the skill stated or implied by the stem; fit to an undisclosed external objective cannot be verified."
+      },
+      "cross_item_novelty_note": "Uses a different procedure from the grammar and exact-value fraction pairs.",
+      "uncertainty": "No material ambiguity in the visible stem or choices."
+    },
+    {
+      "id": "3a8f7a112c74451c6a7f3132",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "B",
+      "answer_basis": "15 - 7/2 = 23/2; dividing by 1/4 gives 46.",
+      "needed_premises_displayed": true,
+      "premise_note": "The stem supplies the relevant expression or subject, domain and condition; no outside facts are needed beyond ordinary arithmetic or standard written American English grammar.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "23/8 and 46 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "23/8 and 8/23 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "23/8 and 1/46 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "46 and 8/23 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "46 and 1/46 are unequal exact numerical answers to the same requested quantity."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "8/23 and 1/46 are unequal exact numerical answers to the same requested quantity."
+        }
+      },
+      "actual_difficulty_1_to_5": 2,
+      "requested_level_2_direct_application_fit": true,
+      "difficulty_note": "Direct subtraction and division by a fraction in an explicitly ordered expression.",
+      "objective_fit": {
+        "external_objective_supplied": false,
+        "inferred_skill": "Exact evaluation of a parenthesized expression with fractions.",
+        "judgment": "Fits the skill stated or implied by the stem; fit to an undisclosed external objective cannot be verified."
+      },
+      "cross_item_novelty_note": "Closely repeats the exact-q fraction arithmetic frame of 664f2e5a14994e3563466cea; this item uses subtraction and division.",
+      "uncertainty": "No material ambiguity in the visible stem or choices."
+    },
+    {
+      "id": "664f2e5a14994e3563466cea",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "D",
+      "answer_basis": "3/4 + 5/6 = 19/12; multiplying by 8 gives 38/3.",
+      "needed_premises_displayed": true,
+      "premise_note": "The stem supplies the relevant expression or subject, domain and condition; no outside facts are needed beyond ordinary arithmetic or standard written American English grammar.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "152 and 19/96 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "152 and 2/3 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "152 and 38/3 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "19/96 and 2/3 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "19/96 and 38/3 are unequal exact numerical answers to the same requested quantity."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "2/3 and 38/3 are unequal exact numerical answers to the same requested quantity."
+        }
+      },
+      "actual_difficulty_1_to_5": 2,
+      "requested_level_2_direct_application_fit": true,
+      "difficulty_note": "Direct common-denominator addition and multiplication in an explicitly ordered expression.",
+      "objective_fit": {
+        "external_objective_supplied": false,
+        "inferred_skill": "Exact evaluation of a parenthesized expression with fractions.",
+        "judgment": "Fits the skill stated or implied by the stem; fit to an undisclosed external objective cannot be verified."
+      },
+      "cross_item_novelty_note": "Closely repeats the exact-q fraction arithmetic frame of 3a8f7a112c74451c6a7f3132; this item uses addition and multiplication.",
+      "uncertainty": "No material ambiguity in the visible stem or choices."
+    }
+  ],
+  "set_assessment": {
+    "literal_answerability": "All five diagnostic candidates have one unambiguous literal answer.",
+    "pair_distinction": "All six unordered pairs are meaningfully distinct within every item. Each grammar item presents the four number combinations; each numeric item presents unequal values.",
+    "premise_sufficiency": "Every item supplies the needed subjects or mathematical expression and domain.",
+    "level_2_fit": "All five are straightforward direct applications, rated 2 of 5; the second grammar item adds nearby noun distractors but remains direct.",
+    "objective_fit_limit": "No external learning objective was supplied; each item fits the skill visible in its stem, but broader target alignment cannot be verified.",
+    "novelty": "The set has three skill clusters: two very similar two-blank agreement items, two very similar exact-q fraction evaluations, and one inequality maximum item. Within-cluster novelty is limited.",
+    "scope_note": "This is an explicitly post-hoc diagnostic view of pre-review candidates; the presence of a candidate here does not establish that the worker returned it."
+  }
+}

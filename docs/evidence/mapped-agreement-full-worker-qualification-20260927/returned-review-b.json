@@ -1,0 +1,182 @@
+{
+  "reviewer": "B",
+  "review_type": "independent_blind",
+  "worksheet_sha256": "3a99a17dc43296e4a9c857d4c19042fa891e79d487bccd059a6c7ad8241ccb84",
+  "kind": "returned_output",
+  "requested_slots": 5,
+  "readable_items": 3,
+  "unavailable_items": 2,
+  "items": [
+    {
+      "id": "cf95ba378fe37bacf316ccb1",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "D",
+      "answer_basis": "3/4 + 5/6 = 9/12 + 10/12 = 19/12; multiplying by 8 gives 38/3.",
+      "needed_premises_displayed": true,
+      "premise_note": "The stem supplies the relevant expression or subject, domain and condition; no outside facts are needed beyond ordinary arithmetic or standard written American English grammar.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "152 and 2/3 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "152 and 19/96 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "152 and 38/3 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "2/3 and 19/96 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "2/3 and 38/3 are unequal exact numerical answers to the same requested quantity."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "19/96 and 38/3 are unequal exact numerical answers to the same requested quantity."
+        }
+      },
+      "actual_difficulty_1_to_5": 2,
+      "requested_level_2_direct_application_fit": true,
+      "difficulty_note": "Requires direct application of common denominators and multiplication; the operations and order are given explicitly.",
+      "objective_fit": {
+        "external_objective_supplied": false,
+        "inferred_skill": "Exact evaluation of a parenthesized expression with fractions.",
+        "judgment": "Fits the skill stated or implied by the stem; fit to an undisclosed external objective cannot be verified."
+      },
+      "cross_item_novelty_note": "Shares a near-identical exact-value expression frame and fraction-arithmetic mechanism with 7eee0a69030f19975f355919; the operations differ.",
+      "uncertainty": "No material ambiguity in the visible stem or choices."
+    },
+    {
+      "id": "a8da22513649c259893db6e4",
+      "status": "unavailable",
+      "answer_judgment": "unavailable",
+      "best_answer": null,
+      "choice_pair_audit": null,
+      "needed_premises_displayed": null,
+      "actual_difficulty_1_to_5": null,
+      "requested_level_2_direct_application_fit": null,
+      "objective_fit": null,
+      "cross_item_novelty_note": "Cannot assess an unavailable requested slot."
+    },
+    {
+      "id": "7eee0a69030f19975f355919",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "D",
+      "answer_basis": "15 - 7/2 = 23/2; dividing by 1/4 gives (23/2) × 4 = 46.",
+      "needed_premises_displayed": true,
+      "premise_note": "The stem supplies the relevant expression or subject, domain and condition; no outside facts are needed beyond ordinary arithmetic or standard written American English grammar.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "23/8 and 1/46 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "23/8 and 8/23 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "23/8 and 46 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "1/46 and 8/23 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "1/46 and 46 are unequal exact numerical answers to the same requested quantity."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "8/23 and 46 are unequal exact numerical answers to the same requested quantity."
+        }
+      },
+      "actual_difficulty_1_to_5": 2,
+      "requested_level_2_direct_application_fit": true,
+      "difficulty_note": "Requires direct application of subtraction and division by a fraction; the expression fixes the operation order.",
+      "objective_fit": {
+        "external_objective_supplied": false,
+        "inferred_skill": "Exact evaluation of a parenthesized expression with fractions.",
+        "judgment": "Fits the skill stated or implied by the stem; fit to an undisclosed external objective cannot be verified."
+      },
+      "cross_item_novelty_note": "Shares a near-identical exact-value expression frame and fraction-arithmetic mechanism with cf95ba378fe37bacf316ccb1; the operations differ.",
+      "uncertainty": "No material ambiguity in the visible stem or choices."
+    },
+    {
+      "id": "18f45f8ad1ae293923a540e4",
+      "status": "unavailable",
+      "answer_judgment": "unavailable",
+      "best_answer": null,
+      "choice_pair_audit": null,
+      "needed_premises_displayed": null,
+      "actual_difficulty_1_to_5": null,
+      "requested_level_2_direct_application_fit": null,
+      "objective_fit": null,
+      "cross_item_novelty_note": "Cannot assess an unavailable requested slot."
+    },
+    {
+      "id": "612af2d8c621bb69766d232f",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "D",
+      "answer_basis": "5x - 3 <= 42 implies x <= 9; 9 is in the stated integer domain and is its greatest satisfying value.",
+      "needed_premises_displayed": true,
+      "premise_note": "The stem supplies the relevant expression or subject, domain and condition; no outside facts are needed beyond ordinary arithmetic or standard written American English grammar.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "10 and 7 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "10 and 8 are unequal exact numerical answers to the same requested quantity."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "10 and 9 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "7 and 8 are unequal exact numerical answers to the same requested quantity."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "7 and 9 are unequal exact numerical answers to the same requested quantity."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "8 and 9 are unequal exact numerical answers to the same requested quantity."
+        }
+      },
+      "actual_difficulty_1_to_5": 2,
+      "requested_level_2_direct_application_fit": true,
+      "difficulty_note": "Directly adding 3 and dividing by 5, then checking the stated maximum and domain.",
+      "objective_fit": {
+        "external_objective_supplied": false,
+        "inferred_skill": "Solve a one-variable linear inequality and select the maximum integer in a stated domain.",
+        "judgment": "Fits the skill stated or implied by the stem; fit to an undisclosed external objective cannot be verified."
+      },
+      "cross_item_novelty_note": "Distinct from the two exact-value fraction expressions, though it remains a short symbolic arithmetic task.",
+      "uncertainty": "No material ambiguity in the visible stem or choices."
+    }
+  ],
+  "set_assessment": {
+    "literal_answerability": "All three readable items have one unambiguous literal answer; two requested slots are unavailable.",
+    "pair_distinction": "All six unordered answer-choice pairs are meaningfully distinct in each readable item. Some numerical distractors are weak or remote, but none duplicate another choice.",
+    "premise_sufficiency": "All necessary premises are visible for the three readable items.",
+    "level_2_fit": "The three readable items are straightforward direct applications, rated 2 of 5.",
+    "objective_fit_limit": "No external learning objective was supplied in the blinded worksheet; only fit to the visible item skill can be judged.",
+    "novelty": "Limited across the two fraction-expression items because both ask for exact q from explicit arithmetic; the inequality item supplies a different procedure. Unavailable slots cannot be assessed.",
+    "scope_note": "This is the prespecified returned-output set. Judgments cover only the three readable returned items."
+  }
+}

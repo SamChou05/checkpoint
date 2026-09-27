@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "kind": "returned_output",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "cf95ba378fe37bacf316ccb1",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((3/4) + (5/6)) * 8). What is its exact value?",
+      "choices": {
+        "A": "152",
+        "B": "2/3",
+        "C": "19/96",
+        "D": "38/3"
+      }
+    },
+    {
+      "id": "a8da22513649c259893db6e4",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "7eee0a69030f19975f355919",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = ((15 - (7/2)) / (1/4)). What is its exact value?",
+      "choices": {
+        "A": "23/8",
+        "B": "1/46",
+        "C": "8/23",
+        "D": "46"
+      }
+    },
+    {
+      "id": "18f45f8ad1ae293923a540e4",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "612af2d8c621bb69766d232f",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: ((5 * x) - 3) <= 42. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "10",
+        "B": "7",
+        "C": "8",
+        "D": "9"
+      }
+    }
+  ]
+}

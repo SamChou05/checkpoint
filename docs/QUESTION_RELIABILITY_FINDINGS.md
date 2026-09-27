@@ -6,7 +6,7 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,375 backend tests** and the latest full
+Current source verification passes **1,394 backend tests** and the latest full
 iOS suite completed **1,058 tests with three existing skips** after the optional
 timeout, fraction-distractor, compiled-surplus, scalar-explanation,
 author-cardinality, task-only numerical, numeric-choice and saved-inventory improvements. The latest
@@ -31,9 +31,16 @@ A [paired author-only prompt trial](evidence/compact-prose-v2-live-comparison-20
 returned all ten schema-valid slots, yet blinded content review credited only
 4/5 in the revised arm and 3/5 in the baseline. The revised arm still had an
 ambiguous pronoun item with a false exclusion in its explanation, so that prompt
-remains inactive. An [offline English agreement constructor](AGREEMENT_TASK_CONSTRUCTOR_PROTOTYPE.md)
-now derives a unique key and all teaching from closed, reviewed sentence frames;
-it is not connected to live generation or qualified for rollout.
+remains inactive. An [English agreement constructor](AGREEMENT_TASK_CONSTRUCTOR_PROTOTYPE.md)
+now derives a unique key and all teaching from closed, reviewed sentence frames.
+Its exact-request route is opt-in and inactive in deployment. A [one-shot live
+worker trial](evidence/mapped-agreement-full-worker-qualification-20260927/RESULTS.md)
+accepted the task schema and constructed all five questions, but returned only
+3/5 because the final model reviewer rated both code-owned agreement items 3
+instead of the requested 2. Two independently locked, answer-blind diagnostic
+reviews rated all five pre-review candidates 2 and selected their code-owned
+keys. This identifies a difficulty-gate disagreement; it does not turn the
+failed worker result into a qualified release.
 
 ## Findings and verified fixes
 
@@ -58,6 +65,7 @@ it is not connected to live generation or qualified for rollout.
 | A versioned task-only numerical contract removed the model's prose escape path for one exact goal. | The [one-shot task-only pilot](evidence/task-only-numerical-author-qualification-20260926/RESULTS.md) returned **5/5 sound, compiler-proven** questions in four native calls and 127.684 seconds. Two answer-blind reviewers selected all five captured keys and independently found all 30 choice pairs distinct; every learner field recompiled exactly. One otherwise sound decimal task was still vetoed by a fallible model scope review, and the bounded top-up filled its slot. | Keep the goal-hash-gated author and three-item batch cap opt-in. This passes the prespecified numerical pilot, not a multi-topic reliability or deployment gate. The compiler makes the released numerical answer and choices exact; model judgments and model-written prose in other topics remain fallible. |
 | A global three-item batch cap would also alter unallocated Python generation when applied to a shared worker. | The frozen three-topic request has an unallocated Python job; the previous batch-cap selector returned three for both that job and the numerical job. Offline goal-hash controls now return numerical 3, Python 5, and mapped mixed 5, while rejecting missing, blank, malformed, or conflicting scope when task-only mode and a cap are combined. | A separate opt-in `QUESTION_CONSTRUCTED_AUTHOR_BATCH_GOAL_SHA256` scopes the cap to the exact normalized goal. The older global cap remains available outside task-only mode. The later full-worker trial using this scope failed on the separate mapped mixed author. |
 | The mapped mixed author can ignore the requested five-item count even with native JSON schema, exhausting the output budget before yielding any parseable batch. | The [one-shot three-topic trial](evidence/task-only-full-worker-qualification-20260926/RESULTS.md) returned 5/5 compiled numerical and 5/5 Python items, but 0/5 mixed items. Its mixed author completed 37 top-level rows, began a 38th, then stopped at `max_tokens` with invalid JSON. Two locked blind reviewers chose all ten captured keys and found all 60 pairs distinct; the job-yield gate still failed. | Preserve rejection of truncated output and partial returns from other jobs. Keep the route opt-in while a bounded, allocation-preserving mixed-author contract is evaluated. Worker-only deployment variables now expose the exact tested numerical scope without altering the API defaults; they are configuration preparation, not a rollout. |
+| Even a closed, code-authored question can be discarded by a fallible difficulty judgment. | The [mapped agreement full-worker trial](evidence/mapped-agreement-full-worker-qualification-20260927/RESULTS.md) accepted a five-slot native schema and constructed five questions. The final model reviewer called both English tasks level 3 and the exact-level gate returned 3/5. Two independent blind reviewers rated the five sanitized drafts level 2, picked all five code-owned keys, and found all within-item choice pairs distinct. | The opt-in constructor and existing verifier remain inactive in deployment. A narrow code-owned difficulty policy needs independent source review and fresh worker qualification; the failed trial cannot be counted as 5/5. |
 
 These changes make structure, key membership, exact identity and admission rules
 deterministic. They do not make a model's factual statements deterministic or

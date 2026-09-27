@@ -1,0 +1,249 @@
+{
+  "version": 1,
+  "reviewer": "A",
+  "source_kind": "returned_output",
+  "worksheet_sha256": "3a99a17dc43296e4a9c857d4c19042fa891e79d487bccd059a6c7ad8241ccb84",
+  "blind_scope": "worksheet.json and RUBRIC.md in this reviewer directory only; no answer key or author explanation used",
+  "requested_level": "2: direct application",
+  "items": [
+    {
+      "id": "cf95ba378fe37bacf316ccb1",
+      "requested_slot": true,
+      "status": "readable",
+      "best_literal_answer": "D",
+      "answer_status": "single_supported_answer",
+      "answer_reasoning": "3/4 + 5/6 = 19/12; multiplying by 8 gives 38/3.",
+      "choice_pairs": [
+        {
+          "pair": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        }
+      ],
+      "all_six_pairs_meaningfully_distinct": true,
+      "needed_premises_displayed": true,
+      "premises_note": "The expression or sentence, applicable domain where relevant, and requested answer format are fully stated. No hidden passage or figure is needed.",
+      "difficulty_1_to_5": 2,
+      "level_2_direct_application_fit": true,
+      "difficulty_note": "Direct application of the stated arithmetic, inequality, or grammar rule with short routine work; little interpretation or transfer is required.",
+      "objective_fit": {
+        "explicit_objective_supplied_to_reviewer": false,
+        "inferred_objective": "evaluate an arithmetic expression with fractions",
+        "fits_inferred_objective": true,
+        "fit_to_unseen_actual_objective": "cannot_assess"
+      },
+      "cross_item_novelty": "Shares fraction-expression evaluation with 7eee0a69030f19975f355919; operation order differs, but the core procedure repeats.",
+      "choice_quality_note": "All four values are distinct. The 2/3 distractor has a less clear error path than the others."
+    },
+    {
+      "id": "a8da22513649c259893db6e4",
+      "requested_slot": true,
+      "status": "unavailable",
+      "reason": "Requested slot has no readable stem or choices in this worksheet."
+    },
+    {
+      "id": "7eee0a69030f19975f355919",
+      "requested_slot": true,
+      "status": "readable",
+      "best_literal_answer": "D",
+      "answer_status": "single_supported_answer",
+      "answer_reasoning": "15 - 7/2 = 23/2; dividing by 1/4 gives 46.",
+      "choice_pairs": [
+        {
+          "pair": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        }
+      ],
+      "all_six_pairs_meaningfully_distinct": true,
+      "needed_premises_displayed": true,
+      "premises_note": "The expression or sentence, applicable domain where relevant, and requested answer format are fully stated. No hidden passage or figure is needed.",
+      "difficulty_1_to_5": 2,
+      "level_2_direct_application_fit": true,
+      "difficulty_note": "Direct application of the stated arithmetic, inequality, or grammar rule with short routine work; little interpretation or transfer is required.",
+      "objective_fit": {
+        "explicit_objective_supplied_to_reviewer": false,
+        "inferred_objective": "evaluate an arithmetic expression with fractions",
+        "fits_inferred_objective": true,
+        "fit_to_unseen_actual_objective": "cannot_assess"
+      },
+      "cross_item_novelty": "Shares fraction-expression evaluation with cf95ba378fe37bacf316ccb1; it adds division by a fraction but is not a new core skill.",
+      "choice_quality_note": "All four values are distinct; the incorrect values suggest incomplete work or reciprocal errors."
+    },
+    {
+      "id": "18f45f8ad1ae293923a540e4",
+      "requested_slot": true,
+      "status": "unavailable",
+      "reason": "Requested slot has no readable stem or choices in this worksheet."
+    },
+    {
+      "id": "612af2d8c621bb69766d232f",
+      "requested_slot": true,
+      "status": "readable",
+      "best_literal_answer": "D",
+      "answer_status": "single_supported_answer",
+      "answer_reasoning": "5x - 3 <= 42 implies x <= 9, so the largest permitted integer is 9.",
+      "choice_pairs": [
+        {
+          "pair": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        },
+        {
+          "pair": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "basis": "Different exact numerical values; the choices imply different results for the stated calculation."
+        }
+      ],
+      "all_six_pairs_meaningfully_distinct": true,
+      "needed_premises_displayed": true,
+      "premises_note": "The expression or sentence, applicable domain where relevant, and requested answer format are fully stated. No hidden passage or figure is needed.",
+      "difficulty_1_to_5": 2,
+      "level_2_direct_application_fit": true,
+      "difficulty_note": "Direct application of the stated arithmetic, inequality, or grammar rule with short routine work; little interpretation or transfer is required.",
+      "objective_fit": {
+        "explicit_objective_supplied_to_reviewer": false,
+        "inferred_objective": "solve a linear inequality and select the largest integer in a stated domain",
+        "fits_inferred_objective": true,
+        "fit_to_unseen_actual_objective": "cannot_assess"
+      },
+      "cross_item_novelty": "Uses an inequality and bounded integer domain, a distinct mechanism from the two arithmetic-expression items.",
+      "choice_quality_note": "All four values are distinct integers; nearby distractors test the boundary."
+    }
+  ],
+  "overall": {
+    "requested_slots": 5,
+    "readable_items": 3,
+    "unavailable_items": 2,
+    "readable_items_with_single_supported_answer": 3,
+    "readable_items_with_all_six_meaningful_pairs": 3,
+    "readable_items_with_all_needed_premises_displayed": 3,
+    "readable_items_fitting_level_2_direct_application": 3,
+    "objective_fit_limit": "No explicit learning objective was displayed; fit can be judged only against the skill inferred from each stem.",
+    "cross_item_novelty_summary": "Three readable items cover two mechanisms: fraction-expression evaluation occurs twice, and linear-inequality boundary selection occurs once. Two requested slots are unavailable."
+  }
+}

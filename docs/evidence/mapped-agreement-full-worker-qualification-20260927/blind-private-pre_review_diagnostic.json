@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "kind": "pre_review_diagnostic",
+  "capture_sha256": "2bcb9b577d165b508debe70cf6d42b2cf749f006c03922650b9d154eab8ca251",
+  "plan_sha256": "361aa3aa99c456285309d31cdc7f60c058061a62dd2d89e32bbadefe3063cc6d",
+  "worksheet_sha256": "549796ba59e8593dfbd3db4d74862c46666771411c97caab2b52ee42d81c4b2c",
+  "mapping": {
+    "664f2e5a14994e3563466cea": {
+      "original_slot": 0,
+      "source": "pre_review_diagnostic",
+      "display_to_source_index": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "correct_display_label": "D",
+      "returned_by_worker": true
+    },
+    "3a8f7a112c74451c6a7f3132": {
+      "original_slot": 1,
+      "source": "pre_review_diagnostic",
+      "display_to_source_index": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "correct_display_label": "B",
+      "returned_by_worker": true
+    },
+    "5263a170d6ee57c2d46ed8b1": {
+      "original_slot": 2,
+      "source": "pre_review_diagnostic",
+      "display_to_source_index": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "correct_display_label": "D",
+      "returned_by_worker": true
+    },
+    "52b8284056857740bd8570d3": {
+      "original_slot": 3,
+      "source": "pre_review_diagnostic",
+      "display_to_source_index": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "correct_display_label": "B",
+      "returned_by_worker": false
+    },
+    "aea5ace0d2df29313d6824fb": {
+      "original_slot": 4,
+      "source": "pre_review_diagnostic",
+      "display_to_source_index": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "correct_display_label": "A",
+      "returned_by_worker": false
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "pre_review_diagnostic",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "aea5ace0d2df29313d6824fb",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Every guest ___ a plate, while Maya and Theo ___ lunch. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "receives; prepare",
+        "B": "receives; prepares",
+        "C": "receive; prepare",
+        "D": "receive; prepares"
+      }
+    },
+    {
+      "id": "52b8284056857740bd8570d3",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The chef near the cooks ___ the menu, while the cooks near the chef ___ the meals. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "plan; prepares",
+        "B": "plans; prepare",
+        "C": "plan; prepare",
+        "D": "plans; prepares"
+      }
+    },
+    {
+      "id": "5263a170d6ee57c2d46ed8b1",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 20, inclusive. Condition: ((5 * x) - 3) <= 42. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "10",
+        "B": "8",
+        "C": "7",
+        "D": "9"
+      }
+    },
+    {
+      "id": "3a8f7a112c74451c6a7f3132",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = ((15 - (7/2)) / (1/4)). What is its exact value?",
+      "choices": {
+        "A": "23/8",
+        "B": "46",
+        "C": "8/23",
+        "D": "1/46"
+      }
+    },
+    {
+      "id": "664f2e5a14994e3563466cea",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((3/4) + (5/6)) * 8). What is its exact value?",
+      "choices": {
+        "A": "152",
+        "B": "19/96",
+        "C": "2/3",
+        "D": "38/3"
+      }
+    }
+  ]
+}
