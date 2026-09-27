@@ -1,0 +1,27 @@
+{
+  "adaptiveSkillPlans": [],
+  "blockedStemFingerprints": [],
+  "competencies": [],
+  "difficultyGuidance": "Apply one familiar rule directly.",
+  "existingPrompts": [],
+  "existingQuestionCoverage": [],
+  "goal": {
+    "category": "Mathematics",
+    "contentTopics": [
+      "Probability"
+    ],
+    "currentLevel": "",
+    "focusAreas": "Finite equally likely outcomes, conditional probability, independence, expected value, and interpretation",
+    "learningTarget": "Solve self-contained introductory probability problems",
+    "needsSkillMap": false,
+    "preferredQuestionStyle": "Multiple Choice",
+    "questionDirective": "Write self-contained level-2 applications. In each stem, make the learner use a stated scenario condition to determine the relevant outcomes, sample space, event relationship, or payoff before applying one familiar probability rule. Do not use a direct complement of a supplied probability, two fair-coin heads with independence already stated, or an obvious one-die threshold count as a complete item. State explicitly what every spinner label pays. For each wrong option, silently derive it from a different plausible mistake with these exact quantities; replace options that are merely nearby guesses. Across the batch, vary the decision and answer format, not just the objects.",
+    "title": "Foundations of Probability"
+  },
+  "minimumDifficulty": 2,
+  "reportedPrompts": [],
+  "requiresFullObjectiveCoverage": false,
+  "sourceDocuments": [],
+  "stemFingerprintVersion": 1,
+  "targetCount": 5
+}

@@ -1,0 +1,39 @@
+{
+  "state": "draft",
+  "probe_id": "generic-probability-author-no-thinking-directive-20260927-01",
+  "baseline_plan_sha256": "e6b73e56fee680d8ea3725f7150b3a12596d014bb3ba102f3e423b7fb94444c9",
+  "source_commit": "d1483312b71f6b1335d1630547c85260aab8ef64",
+  "environment": {
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "QUESTION_AUTHOR_MODE": "prose",
+    "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "count_bound",
+    "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+    "QUESTION_GENERIC_PROSE_RESERVE_7": "enabled",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_CLAUDE_THINKING": "disabled",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "200",
+    "GENERATION_ATTEMPTS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6"
+  },
+  "limits": {
+    "original_jobs": 1,
+    "converse_reservations": 1,
+    "sdk_attempts_per_reservation": 1,
+    "whole_execute_seconds": 240,
+    "connect_timeout_seconds": 3,
+    "read_timeout_seconds": 200,
+    "preflight_sts_requests": 1,
+    "execute_sts_requests": 1,
+    "retries": 0,
+    "worker_verification": false
+  },
+  "question_quality_gate": "diagnostic author-only; seven schema-valid authored rows are a transport/content observation, not worker qualification"
+}
