@@ -1,0 +1,12 @@
+# Offline adaptation review notes
+
+This harness derives from the [failed mapped one-job harness](../mixed-fixed-slots-successor-qualification-20260926/HARNESS_ADAPTATION.md), but uses source commit `5183423ae31508ce0a8ac1eb316070a0230cf5d5` and a new exclusive capture path. The copied frozen plan, launch record, and capture from that failed trial are never inputs to execution. The reused job fixture remains byte-identical to its prior mixed assignment.
+
+| Previous mapped contract | Compact trial guard |
+| --- | --- |
+| Five row envelopes repeated model-written skill and objective enums, and eleven possible remaining-allocation schemas were pinned. | One 2,664-byte schema has direct typed slots `0`–`4`. Only its full five-slot prompt/config/schema are planned. The server injects assignment metadata and the harness rejects another mapped author stage. |
+| A rejected item could trigger an exact remaining-allocation top-up. | Source makes one mapped author pass. The harness keeps all five original slots in the denominator; a partial verifier return leaves its original slot unfilled. |
+| Sanitized and compiled lineage was recorded, but final slots were credited by returned array position. | Before adaptation, the recorder keeps bounded raw visible author text/object, the actual schema hash, and a trusted binding for every original slot. The prepared list retains injected rows; sanitizer records raw slot candidates; verifier entries inherit them. A final return must bind one unique original ordinal, and the worksheet projects by that ordinal. Ambiguous or duplicate final bindings fail closed. |
+| Keyless worksheet logic addressed fifteen slots across three jobs. | It now requires one mixed job, five original slots and six call slots. It preserves unavailable placeholders, rotates answer choices, hides keys and teaching, and stores its display-to-source mapping in a private file. |
+
+The full backend suite passed **1,381 tests** with the pinned Python 3.12.11 / boto3 1.43.91 / botocore 1.43.91 / awscrt 0.36.0 runtime. The successor harness, draft guard, and worksheet passed **48 socket-blocked tests**; the harness preflight ran its **34 worker tests** with zero provider calls. These checks establish local behavior only. The draft retains `independent_harness_review=pending` and `aws_launch_authorized=false`; `--launch-precheck`, `--freeze`, and `--execute` are blocked until a separate review and a new reviewed draft digest.

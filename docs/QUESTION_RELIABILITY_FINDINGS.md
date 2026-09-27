@@ -387,3 +387,18 @@ found a 2,601-byte direct typed-slot shape that keeps exact cardinality and
 the three numerical/two prose row types while injecting trusted assignment
 metadata in code. Its Bedrock acceptance and question quality are untested.
 The rejected candidate remains isolated and the frozen trial is closed.
+
+The [compact direct typed-slot successor](evidence/compact-typed-slots-qualification-20260926/RESULTS.md)
+reduced the five-slot author schema to 2,664 bytes and Bedrock accepted it on
+one bounded mixed-worker run. The author emitted all five required slots; three
+arithmetic tasks compiled exactly. The worker used three calls in 154.109
+seconds and returned 4/5 items: three compiler-proven arithmetic and one
+English prose. A deterministic teaching guard rejected the other English
+draft because its explanation referred to “choice b” after the sanitizer
+shuffled the key. Post-lock inspection also found an unsupported pronoun claim
+in that draft. Two independently locked blind reviewers agreed with all four
+explicit keys and judged all 24 visible choice pairs distinct. Exact compiler
+replay and full slot provenance passed independent audit. The frozen 5/5
+qualification gate failed, so this result supports the smaller grammar as a
+real structural improvement but does not justify deployment or population
+reliability. Generic fraction wrong-choice teaching remains repetitive.

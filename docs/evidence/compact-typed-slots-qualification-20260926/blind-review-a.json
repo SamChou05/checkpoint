@@ -1,0 +1,92 @@
+{
+  "reviewer": "blind-review-a",
+  "worksheet_sha256": "58b400e88cc197ab5747bf8c10e0ce7b2320ef2d296dc68fae43644cbbdb1e83",
+  "blind_review": true,
+  "items": [
+    {
+      "id": "1f2a63c0f0ae201a721d5313",
+      "status": "answered",
+      "selected_display_letter": "A",
+      "selected_display_literal": "2/3",
+      "reason": "5/6 + 7/12 = 17/12, and 17/12 - 3/4 = 8/12 = 2/3.",
+      "uncertainty_or_multiple_plausible": "None; the arithmetic has one exact value.",
+      "missing_premises": "None.",
+      "skill_and_difficulty_fit": "Tests exact fraction arithmetic at a basic level; the intended target skill and difficulty were not visible in the worksheet.",
+      "choice_pairs": [
+        { "pair": "A-B", "same_meaning": false, "reason": "2/3 and 7/4 are unequal rational numbers." },
+        { "pair": "A-C", "same_meaning": false, "reason": "2/3 and 7/6 are unequal rational numbers." },
+        { "pair": "A-D", "same_meaning": false, "reason": "2/3 and 17/12 are unequal rational numbers." },
+        { "pair": "B-C", "same_meaning": false, "reason": "7/4 and 7/6 are unequal rational numbers." },
+        { "pair": "B-D", "same_meaning": false, "reason": "7/4 = 21/12, which differs from 17/12." },
+        { "pair": "C-D", "same_meaning": false, "reason": "7/6 = 14/12, which differs from 17/12." }
+      ]
+    },
+    {
+      "id": "f4196ba948d44c8ef3c2b233",
+      "status": "answered",
+      "selected_display_letter": "D",
+      "selected_display_literal": "-1",
+      "reason": "3x + 7 > 1 reduces to x > -2. The least integer in the stated domain that satisfies this strict inequality is -1.",
+      "uncertainty_or_multiple_plausible": "None; the integer domain and strict inequality determine one minimum.",
+      "missing_premises": "None.",
+      "skill_and_difficulty_fit": "Tests a one-step linear inequality with an explicit integer domain at a basic level; the intended target skill and difficulty were not visible in the worksheet.",
+      "choice_pairs": [
+        { "pair": "A-B", "same_meaning": false, "reason": "-2 and -3 are different integers." },
+        { "pair": "A-C", "same_meaning": false, "reason": "-2 and 0 are different integers." },
+        { "pair": "A-D", "same_meaning": false, "reason": "-2 and -1 are different integers." },
+        { "pair": "B-C", "same_meaning": false, "reason": "-3 and 0 are different integers." },
+        { "pair": "B-D", "same_meaning": false, "reason": "-3 and -1 are different integers." },
+        { "pair": "C-D", "same_meaning": false, "reason": "0 and -1 are different integers." }
+      ]
+    },
+    {
+      "id": "1c11ba772fa33ce66c64906f",
+      "status": "answered",
+      "selected_display_letter": "A",
+      "selected_display_literal": "is",
+      "reason": "The grammatical head of the subject is the singular noun 'collection'; 'of rare stamps' is a modifying phrase. The singular present-tense form 'is' agrees with it.",
+      "uncertainty_or_multiple_plausible": "No equally valid displayed form for ordinary formal English subject-verb agreement. Some English varieties permit notional plural agreement with collective nouns, but 'collection' denotes the collection as a unit here; the prompt explicitly asks for agreement with the grammatical subject. The alternate plural forms also differ in tense or aspect.",
+      "missing_premises": "The sentence gives no time context, but among the choices only 'is' agrees grammatically with the singular head under the stated criterion.",
+      "skill_and_difficulty_fit": "Tests identifying the head of a subject despite an intervening plural noun at a basic to intermediate level; the intended target skill and difficulty were not visible in the worksheet.",
+      "choice_pairs": [
+        { "pair": "A-B", "same_meaning": false, "reason": "'Is' is singular present; 'are' is plural present." },
+        { "pair": "A-C", "same_meaning": false, "reason": "'Is' is singular present; 'were' is plural past or subjunctive in other contexts." },
+        { "pair": "A-D", "same_meaning": false, "reason": "'Is' is singular present; 'have been' is plural present perfect." },
+        { "pair": "B-C", "same_meaning": false, "reason": "'Are' is present; 'were' is past or subjunctive in other contexts." },
+        { "pair": "B-D", "same_meaning": false, "reason": "'Are' expresses present state; 'have been' adds present-perfect aspect." },
+        { "pair": "C-D", "same_meaning": false, "reason": "'Were' expresses past or subjunctive state; 'have been' is present perfect, which may overlap in some contexts but is not equivalent here." }
+      ]
+    },
+    {
+      "id": "6a28e943b9246f643256e0ca",
+      "status": "unavailable",
+      "selected_display_letter": null,
+      "selected_display_literal": null,
+      "reason": "The worksheet marks this requested slot unavailable and supplies no stem or displayed choices.",
+      "uncertainty_or_multiple_plausible": "Cannot assess an absent question.",
+      "missing_premises": "Stem and all four displayed choices are absent.",
+      "skill_and_difficulty_fit": "Cannot assess.",
+      "choice_pairs": [],
+      "choice_pair_review_status": "unavailable: no displayed choices exist to form the six unordered pairs"
+    },
+    {
+      "id": "3dc16ea440bc90357ca785c9",
+      "status": "answered",
+      "selected_display_letter": "C",
+      "selected_display_literal": "8/3",
+      "reason": "(7/4) times (8/3) is 14/3, and subtracting 2 gives 8/3.",
+      "uncertainty_or_multiple_plausible": "None; the arithmetic has one exact value.",
+      "missing_premises": "None.",
+      "skill_and_difficulty_fit": "Tests exact fraction arithmetic at a basic level; the intended target skill and difficulty were not visible in the worksheet.",
+      "choice_pairs": [
+        { "pair": "A-B", "same_meaning": false, "reason": "14/3 and 6 are unequal rational numbers." },
+        { "pair": "A-C", "same_meaning": false, "reason": "14/3 and 8/3 are unequal rational numbers." },
+        { "pair": "A-D", "same_meaning": false, "reason": "14/3 and 4 are unequal rational numbers." },
+        { "pair": "B-C", "same_meaning": false, "reason": "6 = 18/3, which differs from 8/3." },
+        { "pair": "B-D", "same_meaning": false, "reason": "6 and 4 are different integers." },
+        { "pair": "C-D", "same_meaning": false, "reason": "8/3 and 4 = 12/3 are unequal rational numbers." }
+      ]
+    }
+  ],
+  "cross_item_observation": "The two fraction-arithmetic questions use the same solve pattern of evaluating a short expression and selecting its exact rational value. Their operands and answers differ, but they offer limited topic variety across this five-slot worksheet."
+}

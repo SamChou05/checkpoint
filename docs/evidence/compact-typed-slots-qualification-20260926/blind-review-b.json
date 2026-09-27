@@ -1,0 +1,97 @@
+{
+  "reviewer": "blind-review-b",
+  "worksheet_sha256": "58b400e88cc197ab5747bf8c10e0ce7b2320ef2d296dc68fae43644cbbdb1e83",
+  "blind": true,
+  "reviewed_items": [
+    {
+      "id": "1f2a63c0f0ae201a721d5313",
+      "status": "answerable",
+      "best_display_letter": "A",
+      "best_display_literal": "2/3",
+      "single_best": true,
+      "uncertainty_or_multiple_plausible": "None. Converting to twelfths gives 10/12 + 7/12 - 9/12 = 8/12 = 2/3.",
+      "missing_premises": "None.",
+      "skill_difficulty_fit": "Basic exact fraction arithmetic; difficulty appears introductory. No requested skill or difficulty label is visible in the worksheet.",
+      "choice_pairs": [
+        {"pair": "A-B", "same_meaning": false, "reason": "2/3 and 7/4 are different rational numbers."},
+        {"pair": "A-C", "same_meaning": false, "reason": "2/3 and 7/6 are different rational numbers."},
+        {"pair": "A-D", "same_meaning": false, "reason": "2/3 and 17/12 are different rational numbers."},
+        {"pair": "B-C", "same_meaning": false, "reason": "7/4 and 7/6 are different rational numbers."},
+        {"pair": "B-D", "same_meaning": false, "reason": "7/4 is 21/12, different from 17/12."},
+        {"pair": "C-D", "same_meaning": false, "reason": "7/6 is 14/12, different from 17/12."}
+      ]
+    },
+    {
+      "id": "f4196ba948d44c8ef3c2b233",
+      "status": "answerable",
+      "best_display_letter": "D",
+      "best_display_literal": "-1",
+      "single_best": true,
+      "uncertainty_or_multiple_plausible": "None. The inequality reduces to x > -2, so -1 is the least permitted integer.",
+      "missing_premises": "None; the domain and strict inequality are explicit.",
+      "skill_difficulty_fit": "Basic linear inequality with an integer domain and strict boundary; difficulty appears introductory. No requested skill or difficulty label is visible.",
+      "choice_pairs": [
+        {"pair": "A-B", "same_meaning": false, "reason": "-2 and -3 are distinct integers."},
+        {"pair": "A-C", "same_meaning": false, "reason": "-2 and 0 are distinct integers."},
+        {"pair": "A-D", "same_meaning": false, "reason": "-2 and -1 are distinct integers."},
+        {"pair": "B-C", "same_meaning": false, "reason": "-3 and 0 are distinct integers."},
+        {"pair": "B-D", "same_meaning": false, "reason": "-3 and -1 are distinct integers."},
+        {"pair": "C-D", "same_meaning": false, "reason": "0 and -1 are distinct integers."}
+      ]
+    },
+    {
+      "id": "1c11ba772fa33ce66c64906f",
+      "status": "answerable",
+      "best_display_letter": "A",
+      "best_display_literal": "is",
+      "single_best": true,
+      "uncertainty_or_multiple_plausible": "The grammatical head of the subject is singular 'collection', making 'is' the best answer. Some English dialects allow plural agreement with collective nouns when emphasizing members; that reading is strained here because the collection itself is displayed. The stem's explicit grammatical-subject wording favors the singular rule.",
+      "missing_premises": "The dialect or style guide is unstated, which leaves a minor collective-noun agreement nuance; it does not overturn the best answer.",
+      "skill_difficulty_fit": "Subject-verb agreement with an intervening 'of' phrase; difficulty appears introductory to intermediate. No requested skill or difficulty label is visible.",
+      "choice_pairs": [
+        {"pair": "A-B", "same_meaning": false, "reason": "Both suggest present display, but 'is' is singular and 'are' is plural; they are distinct agreement choices."},
+        {"pair": "A-C", "same_meaning": false, "reason": "'Is' is singular present; 'were' is plural past."},
+        {"pair": "A-D", "same_meaning": false, "reason": "'Is' is singular simple present; 'have been' is plural present perfect."},
+        {"pair": "B-C", "same_meaning": false, "reason": "'Are' is plural present; 'were' is plural past."},
+        {"pair": "B-D", "same_meaning": false, "reason": "'Are' is plural simple present; 'have been' is plural present perfect."},
+        {"pair": "C-D", "same_meaning": false, "reason": "'Were' is plural simple past; 'have been' is plural present perfect."}
+      ]
+    },
+    {
+      "id": "6a28e943b9246f643256e0ca",
+      "status": "unavailable",
+      "best_display_letter": null,
+      "best_display_literal": null,
+      "single_best": null,
+      "uncertainty_or_multiple_plausible": "No stem or choices are present, so correctness and ambiguity cannot be assessed.",
+      "missing_premises": "The entire question and all four display choices are unavailable.",
+      "skill_difficulty_fit": "Cannot assess.",
+      "choice_pairs": [
+        {"pair": "A-B", "same_meaning": null, "reason": "Both choices are unavailable."},
+        {"pair": "A-C", "same_meaning": null, "reason": "Both choices are unavailable."},
+        {"pair": "A-D", "same_meaning": null, "reason": "Both choices are unavailable."},
+        {"pair": "B-C", "same_meaning": null, "reason": "Both choices are unavailable."},
+        {"pair": "B-D", "same_meaning": null, "reason": "Both choices are unavailable."},
+        {"pair": "C-D", "same_meaning": null, "reason": "Both choices are unavailable."}
+      ]
+    },
+    {
+      "id": "3dc16ea440bc90357ca785c9",
+      "status": "answerable",
+      "best_display_letter": "C",
+      "best_display_literal": "8/3",
+      "single_best": true,
+      "uncertainty_or_multiple_plausible": "None. (7/4) times (8/3) is 14/3, and subtracting 2 gives 8/3.",
+      "missing_premises": "None.",
+      "skill_difficulty_fit": "Basic exact fraction multiplication and subtraction; difficulty appears introductory. No requested skill or difficulty label is visible.",
+      "choice_pairs": [
+        {"pair": "A-B", "same_meaning": false, "reason": "14/3 and 6 are different rational numbers."},
+        {"pair": "A-C", "same_meaning": false, "reason": "14/3 and 8/3 are different rational numbers."},
+        {"pair": "A-D", "same_meaning": false, "reason": "14/3 and 4 are different rational numbers."},
+        {"pair": "B-C", "same_meaning": false, "reason": "6 and 8/3 are different rational numbers."},
+        {"pair": "B-D", "same_meaning": false, "reason": "6 and 4 are different rational numbers."},
+        {"pair": "C-D", "same_meaning": false, "reason": "8/3 and 4 are different rational numbers."}
+      ]
+    }
+  ]
+}

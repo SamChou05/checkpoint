@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "capture_sha256": "020354a65b6029b72a2f087e0f6317a6638878ffb3a1c0143e70e4cd1dfc0fd7",
+  "plan_sha256": "3e66ffd544aa05392febf11f57f1d609f44805ac98b5c1bf23bed4263caee62e",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "1f2a63c0f0ae201a721d5313",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((5 / 6) + (7 / 12)) - (3 / 4)). What is its exact value?",
+      "choices": {
+        "A": "2/3",
+        "B": "7/4",
+        "C": "7/6",
+        "D": "17/12"
+      }
+    },
+    {
+      "id": "f4196ba948d44c8ef3c2b233",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from -5 through 5, inclusive. Condition: ((3 * x) + 7) > 1. What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "-2",
+        "B": "-3",
+        "C": "0",
+        "D": "-1"
+      }
+    },
+    {
+      "id": "1c11ba772fa33ce66c64906f",
+      "requested_slot": true,
+      "stem": "In the sentence 'The collection of rare stamps _____ displayed in the museum,' which verb form correctly agrees with the grammatical subject?",
+      "choices": {
+        "A": "is",
+        "B": "are",
+        "C": "were",
+        "D": "have been"
+      }
+    },
+    {
+      "id": "6a28e943b9246f643256e0ca",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "3dc16ea440bc90357ca785c9",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((7 / 4) * (8 / 3)) - 2). What is its exact value?",
+      "choices": {
+        "A": "14/3",
+        "B": "6",
+        "C": "8/3",
+        "D": "4"
+      }
+    }
+  ]
+}
