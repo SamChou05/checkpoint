@@ -10,7 +10,10 @@ different closed families rather than model-written expression graphs.
 The model supplies only a family label fixed by the original slot and two
 bounded integers. Code expands slot 0 to an exact two-fraction expression,
 slot 1 to a linear equation with a unique solution in an explicit integer
-domain, and slot 2 to the maximum integer satisfying a bounded inequality.
+domain, and slot 2 to the first integer satisfying a bounded ratio threshold.
+The ratio family was added after a source audit found the initial linear
+inequality family too similar to the equation family; both could have the
+same key and choice set for the same operands.
 The existing quantitative compiler derives the stem, four distinct choices,
 answer, main explanation and per-choice feedback. The model cannot supply a
 key, choice, domain, graph or learner text. Existing blind solving, immutable
