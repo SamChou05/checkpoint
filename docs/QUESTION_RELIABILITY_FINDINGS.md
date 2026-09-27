@@ -6,10 +6,9 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,409 backend tests** and the latest full
-iOS suite completed **1,058 tests with three existing skips** after the optional
-timeout, fraction-distractor, compiled-surplus, scalar-explanation,
-author-cardinality, task-only numerical, numeric-choice and saved-inventory improvements. The latest
+Current source verification passes **1,427 backend tests** and the latest full
+iOS suite completed **1,060 tests with one existing skip**. Verified changes
+are pushed to main. The latest broad
 [current-source full-worker trial](evidence/current-source-worker-successor-qualification-20260926/RESULTS.md)
 failed qualification at 9/15 returns and three compiled items where six were
 required. Its numerical author exhausted 16,000 output tokens. A later one-job
@@ -19,9 +18,9 @@ passed at 5/5 compiler-proven returns. The subsequent
 returned 10/15: numerical and Python returned five sound items each, but the
 mixed author emitted 37 complete rows toward a request for five and exhausted
 its 16,000-token allowance before closing JSON. The full worker remains unqualified.
-Verified improvements are on main, while the [fresh September 26 deployment check](evidence/deployment-refresh-20260926/RESULTS.md)
-still finds the September 11 legacy API and worker packages. No deployment or
-inventory transition has occurred.
+The [last recorded TestFlight deployment check](evidence/deployment-refresh-20260926/RESULTS.md)
+found September 11 legacy API and worker packages. Pushing source to main does
+not deploy the opt-in routes or move bank inventory.
 
 The later [compact mapped trial](evidence/compact-typed-slots-qualification-20260926/RESULTS.md)
 proved that a smaller 2,664-byte native schema can force the exact five assigned
@@ -55,9 +54,10 @@ and two clause orders. Two independent reviewers of a
 selected all 16 code-owned keys and rated every standalone frame level 2,
 while warning that clause reversals leave bank novelty low. Selection now
 checks the full stored bank's finite agreement variants as well as recent
-prompts and client-blocked fingerprints. A single pinned full-request digest
-still applies only to its exact request state; later refills with changed
-history need separate routing and qualification. A subsequent
+prompts and client-blocked fingerprints. The default full-request pin
+still excludes changed refill history; a later worker-only `refill_history`
+mode pins the static request while allowing four history lists to evolve.
+That mode remains inactive and needs live repeated-bank qualification. A subsequent
 [one-shot full-worker qualification](evidence/agreement-grammar-frames-qualification-20260927/RESULTS.md)
 did return 5/5 original slots in three calls. Both blind reviewers chose all
 five keys, found all 30 choice pairs distinct and rated both strengthened
@@ -91,9 +91,30 @@ close arithmetic and agreement forms. No route was activated or deployed.
 | The mapped mixed author can ignore the requested five-item count even with native JSON schema, exhausting the output budget before yielding any parseable batch. | The [one-shot three-topic trial](evidence/task-only-full-worker-qualification-20260926/RESULTS.md) returned 5/5 compiled numerical and 5/5 Python items, but 0/5 mixed items. Its mixed author completed 37 top-level rows, began a 38th, then stopped at `max_tokens` with invalid JSON. Two locked blind reviewers chose all ten captured keys and found all 60 pairs distinct; the job-yield gate still failed. | Preserve rejection of truncated output and partial returns from other jobs. Keep the route opt-in while a bounded, allocation-preserving mixed-author contract is evaluated. Worker-only deployment variables now expose the exact tested numerical scope without altering the API defaults; they are configuration preparation, not a rollout. |
 | Even a closed, code-authored question can be discarded by a fallible difficulty judgment. | The [mapped agreement full-worker trial](evidence/mapped-agreement-full-worker-qualification-20260927/RESULTS.md) accepted a five-slot native schema and constructed five questions. The final model reviewer called both English tasks level 3 and the exact-level gate returned 3/5. Two independent blind reviewers rated the five sanitized drafts level 2, picked all five code-owned keys, and found all within-item choice pairs distinct. | Policy 10 on main uses the freshly revalidated agreement template's calibrated level 2 when the reviewer estimates 2 or 3. Ratings 1, 4, 5 and all other solver/reviewer vetoes remain binding; ordinary prose and quantitative difficulty rules are unchanged. An independent source review and 1,395 backend tests passed. The opt-in remains inactive in deployment and needs a fresh worker qualification; the failed trial remains 3/5. |
 | A code-owned key and complete response still cannot establish requested difficulty or bank variety. | The [fresh bounded policy-10 trial](evidence/agreement-difficulty-calibration-qualification-20260927/RESULTS.md) returned 5/5 original slots with all keys and 30 choice pairs accepted by two independent blind reviewers. Both nevertheless rated the simple compound/`every` item level 1 against a level-2 request; content qualification was 4/5. They also noted near-duplicate fraction task forms, while the closed agreement library has little slot-4 variety. | Keep the exact mapped route disabled. Strengthen the finite agreement frames and cross-batch selection, then require a new frozen worker trial and blind difficulty/novelty review before promotion. The later numeric feedback improvement has offline verification but was outside this live capture. |
-| A finite code-owned library can still repeat older bank questions when selection sees only recent prompt history. | The bank feeds the author its latest 30 questions but deduplicates against all stored items. An eight-batch regression reproduced a repeated agreement stem while another variant remained unused. The stronger 16-frame [offline preflight](evidence/agreement-v2-grammar-preflight-20260927/RESULTS.md) passed standalone key and difficulty review but found formulaic repetition. | For the opt-in exact mapped route, project the full stored bank onto the bounded 16 agreement stem identities and combine those with recent prompts and blocked fingerprints before selecting a scene/order. Preserve the source and selected task in private proof and reject once the finite inventory is exhausted. Exact scope pinning still limits which refill states can use this route, and live qualification remains open. |
-| Distinct code-owned numeric families can preserve five-slot yield while improving visible variety in one bounded sample. | The [new mapped-family trial](evidence/mapped-quant-families-qualification-20260927/RESULTS.md) returned 5/5 original slots in three calls; both independent blind reviewers selected every key, judged all 30 within-item pairs distinct, and rated every item at least level 2. All 25 learner fields recompiled exactly. The two English tasks remained similar in format, and the empty-history request did not exercise the finite numeric/English history selectors. | Retain the opt-in route disabled. This is a passing one-shot content gate, not evidence of deterministic repeated-bank or arbitrary-topic performance. The source-only numeric family flag has no SAM/workflow activation setting; the exact full-request pin excludes later refill states. |
+| A finite code-owned library can still repeat older bank questions when selection sees only recent prompt history. | The bank feeds the author its latest 30 questions but deduplicates against all stored items. An eight-batch regression reproduced a repeated agreement stem while another variant remained unused. The stronger 16-frame [offline preflight](evidence/agreement-v2-grammar-preflight-20260927/RESULTS.md) passed standalone key and difficulty review but found formulaic repetition. | For the opt-in exact mapped route, project the full stored bank onto the bounded 16 agreement stem identities and combine those with recent prompts and blocked fingerprints before selecting a scene/order. Preserve the source and selected task in private proof and reject once the finite inventory is exhausted. Default exact scope pinning still limits refills; explicit pinned-history mode now permits unchanged 3:2 refills, with live qualification still open. |
+| Distinct code-owned numeric families can preserve five-slot yield while improving visible variety in one bounded sample. | The [new mapped-family trial](evidence/mapped-quant-families-qualification-20260927/RESULTS.md) returned 5/5 original slots in three calls; both independent blind reviewers selected every key, judged all 30 within-item pairs distinct, and rated every item at least level 2. All 25 learner fields recompiled exactly. The two English tasks remained similar in format, and the empty-history request did not exercise the finite numeric/English history selectors. | Retain the opt-in route disabled. This is a passing one-shot content gate, not evidence of deterministic repeated-bank or arbitrary-topic performance. The numeric family and refill-history flags are now worker-only SAM/workflow options, disabled or exact by default. A normalized worker test reaches the route on an unchanged 3:2 refill; live repeated-bank qualification remains open. |
 | A full five-slot worker pass can be mathematically correct yet too easy and repetitive for the requested level. | The [strengthened-frame live trial](evidence/agreement-grammar-frames-qualification-20260927/RESULTS.md) returned all five assigned slots in three calls, and two blind reviewers found every key and within-item choice pair sound. Reviewer B rated arithmetic slot 1 level 1 against a minimum of 2; both reviewers rated the two new English frames level 2. They also found two close arithmetic-expression tasks and two similar agreement forms. | Keep the route inactive at a 4/5 strict content result. A rejection-only numeric novelty gate reduced recorded yield to 4/5 in offline replay, so it was not promoted. Evaluate distinct code-owned numerical task families without dropping a required slot, then repeat provider and blind content qualification before rollout. |
+
+The [two-call Opus author comparison](evidence/general-mcq-structure-vs-quality-20260927/RESULTS.md)
+directly tested the intuition that a modern model can make a five-question quiz.
+Native-schema and ordinary author responses both yielded five parseable items;
+CPython confirmed all ten keys and one distinct listed answer per item. An
+independent answer-blind reviewer also chose all ten keys, but rated five
+questions level 1 and five level 2 against a level-3 request, and flagged four
+near-duplicate pairs. It is one small Python topic and author-only, so it
+cannot establish broader model or full-worker reliability. It does show that
+correct keys and schema compliance are different from requested difficulty and
+bank variety.
+
+Two later deterministic gaps were closed in source. Legacy author parsing now
+requires the whole response to be one JSON object (or a sole JSON fence), so
+contradictory surrounding prose and arrays take the bounded retry path instead
+of being silently salvaged. Lowercase a–d choice echoes are removed only when
+they exactly repeat the offered choices; unmatched terminal answer blocks are
+rejected. In Practice History, version-0 frozen references are labeled as the
+answer shown at the time, with a different retained structured key disclosed
+separately. These changes have backend and iOS regression coverage on main;
+the last inspected TestFlight deployment was older.
 
 These changes make structure, key membership, exact identity and admission rules
 deterministic. They do not make a model's factual statements deterministic or
