@@ -44,18 +44,19 @@ five-question verified worker return or evidence of an 80-item varied bank.
 | Cause | Evidence | Current response |
 | --- | --- | --- |
 | A schema-valid rejection can violate a conditional application contract. | Earlier native reviewer output contained fields forbidden on a rejected row; the whole response was lost. | The adapter now discards unused fields only on a `valid:false` row while keeping that row rejected and checking surviving reviews. See [initial investigation](QUESTION_RELIABILITY_INVESTIGATION_20260921.md). |
+| Identical mapped author schemas had request-specific Bedrock declaration names. | Changing skill and difficulty metadata changed `jsonSchema.name` even though all three mapped route schemas had unchanged bytes. A first fix also changed the model prompt and failed prompt-identity tests. | The Bedrock transport name is now stable for each route and slot count; the prompt retains its prior hashed identity. Offline tests lock all three schema hashes and the existing prompt expectations. AWS documents a grammar cache, but whether the declaration name participates in its cache key remains unmeasured. |
 | Literal distinctness does not imply meaningfully different choices. | Historical model review admitted equivalent wrong answers; local scalar checks missed `21` versus `twenty-one`. | The generic path now vetoes more exact numeric representations, while the closed math/grammar path constructs four choices from a trusted task and checks the key. Paraphrases, units and arbitrary-topic truth still need semantic review. |
 | Answer highlighting could be changed by legacy explanatory prose. | The old iOS helper could interpret “incorrect” prose as a key and endorse a distractor. | Grading and highlighting now use the explicit key or a deterministic legacy label. Backend feedback referring to shuffled answer positions is rejected. See [client reproduction](evidence/answer-highlighting-20260921.md). |
 | Downstream review and deadlines reduce worker yield. | A mapped worker returned 3/5 when a model difficulty rating vetoed two code-owned English items; a later narrowly calibrated run returned 5/5 mechanically but failed blind level-2 content at 4/5. A refill returned 0/5 after its reviewer timed out. | The proof-scoped difficulty rule and deadline-clamped worker read setting already exist. Widening the rule or increasing timeout alone would not make the failed content qualify. See [difficulty trial](evidence/agreement-difficulty-calibration-qualification-20260927/RESULTS.md) and [refill trial](evidence/mapped-refill-qualification-20260927/RESULTS.md). |
 | Reuse history and repertoire were insufficient for a large bank. | The refill's five new candidates were rated strong near-duplicates of earlier items by both blind reviewers. Older linear stems dropped out of numeric history after a template upgrade. The [offline 40/80-item simulation](evidence/mapped-bank-diversity-simulation-20260927/RESULTS.md) produced unique exact stems but 60/280 same-slot-family pairs and exhausted both English inventories after 80. Those structural counts are not blind semantic-duplicate counts. | Full-bank English history, alternate numeric/grammar structures, and a 72-stem historical numeric mapping are now on `main`; an 80-item diversity qualification still has not passed. |
-| Passing local tests does not update TestFlight. | The active workflow is manual, has never run, and the required protected environment and AWS OIDC identity were absent in the read-only audit. | [Release audit](evidence/testflight-release-readiness-20260927/RESULTS.md) and [scoped bootstrap](../infra/TESTFLIGHT_DEPLOY_BOOTSTRAP.md) specify the needed identity, protected variables, rollback artifacts, and live-setting comparison. Nothing was deployed. |
+| Passing local tests does not update TestFlight. | The active workflow is manual, has never run, and the required protected environment and AWS OIDC identity were absent in the read-only audit. | [Release audit](evidence/testflight-release-readiness-20260927/RESULTS.md), [scoped bootstrap](../infra/TESTFLIGHT_DEPLOY_BOOTSTRAP.md), and [service-role design](../infra/TESTFLIGHT_EXECUTION_ROLE.md) specify the identity, protected variables, role boundary, rollback artifacts, and live-setting comparison. Nothing was deployed. |
 
-The recently integrated backend passed **1,439 unit tests**, Ruff on changed
-Python files, and `git diff --check`. The deployment bootstrap passed its
-script suite, actionlint, shellcheck, CloudFormation template validation, and
-a read-only comparison of five nonsecret TestFlight settings. These checks
-verify deterministic behavior and packaging preparation; they are not a
-statistical model-quality measurement.
+The integrated backend passed **1,441 unit tests**, Ruff on changed Python
+files, and `git diff --check`. Both SAM templates passed lint; the deployment
+script suite, actionlint, shellcheck, and AWS's read-only CloudFormation
+template validation also passed. The earlier bootstrap audit compared five
+nonsecret live TestFlight settings. These checks verify deterministic behavior
+and packaging preparation; they are not a statistical model-quality measurement.
 
 ## What would close the remaining gap
 
