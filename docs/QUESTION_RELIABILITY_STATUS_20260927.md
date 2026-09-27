@@ -249,6 +249,14 @@ for key and choice distinctness: both reviewers matched 7/7 private keys and
 request, leaving at most four strict difficulty-2 survivors. They disagreed
 about one possible cross-item repeat and G04 self-containment. This author-only
 result does not repair the 0/5 worker failure.
+The separately frozen [third reserve trial](evidence/generic-reserve-seven-probe-v3-20260927/RESULTS.md)
+tested the bounded 4+3 source but failed at the author stage: the single
+Sonnet 4.6 native seven-row call stopped at its shared 16,000-token output
+limit with incomplete JSON after 155.586 seconds. It returned **0/5** before
+any solver or reviewer call, so the smaller verification transport remains
+unmeasured live. This is a second independent obstacle to reliable seven-row
+reserve yield, alongside trial 02's seven-row solver validation error and
+the blind-rated difficulty misses in its authored content.
 
 Two standalone math response-format constructors were compared against six
 quarantined level-2 examples in a [frozen 12-item blind worksheet](evidence/math-format-mixed-blind-20260927/RESULTS.md).

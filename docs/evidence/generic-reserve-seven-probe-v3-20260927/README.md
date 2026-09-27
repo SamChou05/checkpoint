@@ -45,5 +45,5 @@ The harness performs no AWS operation on import, `--draft`,
 `--preflight`, or `--freeze`. It pins the reviewed chunked source commit
 `d1483312b71f6b1335d1630547c85260aab8ef64` and requires a reviewed
 frozen plan and harness hashes, independent review lock, and fresh account
-precheck before the one-shot `--execute`. The frozen plan has not yet been
-executed.
+precheck before the one-shot `--execute`. The one-shot execution has now ended
+and is final for this trial ID; see [results](RESULTS.md).
