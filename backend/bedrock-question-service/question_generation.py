@@ -37,7 +37,7 @@ from question_bank_common import (
 from question_difficulty import DIFFICULTY_RUBRIC, _difficulty_guidance
 
 from question_quality import (
-    _extract_json_object,
+    _strict_json_object,
     _question_coverage_payload,
     _remaining_requested_objective_allocation,
     _remaining_requested_skill_allocation,
@@ -206,7 +206,7 @@ def _generate_provider_payload(
             continue
 
         try:
-            payload = _extract_json_object(raw_text)
+            payload = _strict_json_object(raw_text)
         except ProviderError as first_error:
             record_quality(request_metrics, "provider", "invalid_json")
             errors.append(first_error)
@@ -250,7 +250,7 @@ def _generate_provider_payload(
             continue
 
         try:
-            payload = _extract_json_object(retry_text)
+            payload = _strict_json_object(retry_text)
         except ProviderError as second_error:
             record_quality(request_metrics, "provider", "invalid_json")
             errors.append(second_error)

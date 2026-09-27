@@ -94,7 +94,7 @@ class LambdaQualityTests(BackendTestCase):
         self.assertEqual(body["questions"][0]["difficulty"], 4)
         self.assertIn("Which flaw", body["questions"][0]["prompt"])
 
-    def test_accepts_provider_top_level_question_array(self):
+    def test_rejects_provider_top_level_question_array(self):
         client = FakeBedrockClient(
             json.dumps(
                 [
@@ -110,10 +110,10 @@ class LambdaQualityTests(BackendTestCase):
             bedrock_client=client,
         )
 
-        self.assertEqual(response["statusCode"], 200)
-        questions = json.loads(response["body"])["questions"]
-        self.assertEqual(len(questions), 1)
-        self.assertIn("LSAT Logical Reasoning", questions[0]["prompt"])
+        self.assertEqual(response["statusCode"], 502)
+        self.assertEqual(len(client.calls), 2)
+        self.assertEqual(len(client.solution_calls), 0)
+        self.assertEqual(len(client.review_calls), 0)
 
     def test_retries_once_when_provider_returns_non_json(self):
         client = FakeBedrockClient(

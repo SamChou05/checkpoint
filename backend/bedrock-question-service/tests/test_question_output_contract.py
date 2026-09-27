@@ -81,6 +81,38 @@ class QuestionOutputContractTests(unittest.TestCase):
         self.assertEqual(len(client.review_calls), 1)
         self.assertEqual(accepted[0]["verificationPolicyRevision"], 2)
 
+    def test_legacy_author_retries_instead_of_salvaging_surrounding_text(self):
+        whole = FakeBedrockClient.question_response(self.question)
+        malformed = (
+            "The stated conditions may not support this answer.\n" + whole,
+            whole + "\nA different choice may also be correct.",
+            json.dumps([self.question]),
+        )
+        for first_response in malformed:
+            with self.subTest(first_response=first_response), mock.patch.dict(
+                "os.environ", {"BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+                               "BEDROCK_FALLBACK_MODEL_ID": ""},
+            ):
+                client = FakeBedrockClient([first_response, whole])
+                budget = ProviderCallBudget(4)
+                accepted = _generate_sanitized_questions(self.request, client, budget)
+                self.assertEqual([item["prompt"] for item in accepted], [self.question["prompt"]])
+                self.assertEqual((budget.calls, len(client.calls)), (4, 2))
+                self.assertEqual((len(client.solution_calls), len(client.review_calls)), (1, 1))
+                retry_prompt = client.calls[1]["messages"][0]["content"][0]["text"]
+                self.assertIn("previous response could not be parsed", retry_prompt)
+
+    def test_legacy_author_accepts_sole_json_fence_without_retry(self):
+        whole = FakeBedrockClient.question_response(self.question)
+        with mock.patch.dict("os.environ", {"BEDROCK_STRUCTURED_OUTPUT_MODE": "legacy",
+                                             "BEDROCK_FALLBACK_MODEL_ID": ""}):
+            client = FakeBedrockClient("```json\n" + whole + "\n```")
+            budget = ProviderCallBudget(3)
+            accepted = _generate_sanitized_questions(self.request, client, budget)
+        self.assertEqual([item["prompt"] for item in accepted], [self.question["prompt"]])
+        self.assertEqual((budget.calls, len(client.calls)), (3, 1))
+        self.assertEqual((len(client.solution_calls), len(client.review_calls)), (1, 1))
+
     def test_malformed_author_top_up_preserves_prior_verified_question(self):
         request = _normalize_request(_request_payload(target_count=2))
         replacement = _raw_question(
