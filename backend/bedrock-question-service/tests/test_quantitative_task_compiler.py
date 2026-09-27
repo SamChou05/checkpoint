@@ -165,6 +165,29 @@ class QuantitativeTaskCompilerTests(unittest.TestCase):
                 for value, reason in reasons.items():
                     self.assertIn(reason, content["choiceExplanations"][value])
 
+    def test_literal_wrong_choices_cite_the_definition_without_an_operation(self):
+        content = compile_question(exact(constant("-0.5"),
+                                         ["-0.5", "0", "0.5", "1"], "cm"))
+        self.assert_payload(content)
+        self.assertEqual(content["expectedAnswer"], "-1/2 cm")
+        self.assertIn("definition directly gives q = -1/2", content["explanation"])
+        for choice in ("0 cm", "1/2 cm", "1 cm"):
+            feedback = content["choiceExplanations"][choice]
+            self.assertIn("definition gives q = -1/2 cm", feedback)
+            self.assertIn(f"not {choice}", feedback)
+            self.assertNotIn("operation", feedback)
+
+    def test_unmatched_wrong_value_uses_exact_final_calculation(self):
+        expression = operation("mul", operation("add", constant("3/4"), constant("5/6")),
+                               constant(8))
+        content = compile_question(exact(expression, ["38/3", "123", "124", "125"]))
+        self.assert_payload(content)
+        self.assertEqual(content["expectedAnswer"], "38/3")
+        self.assertIn("Common denominator 12", content["explanation"])
+        feedback = content["choiceExplanations"]["123"]
+        self.assertIn("Use the evaluated operands in the final calculation", feedback)
+        self.assertIn("(19/12) * 8 = 38/3, not 123", feedback)
+
     def test_worked_arithmetic_oracle_covers_all_operations_signed_and_zero_fractions(self):
         values = ("-3", "-5/2", "-1/3", "0", "1/4", "2/3", "2", "3/2")
         checked = 0

@@ -338,15 +338,16 @@ def compile_question(spec):
             op, left_tree, right_tree = expression
             left, right = _evaluate(left_tree), _evaluate(right_tree)
             correction = f"{_operand(left)} {OPERATORS[op]} {_operand(right)} = {result}"
-        else:
-            correction = f"The definition directly gives {result}"
         feedback = {}
         for value, shown in zip(choices, rendered, strict=True):
             if value == answer:
                 feedback[shown] = f"The expression evaluates exactly to {result}; {shown} is the requested value."
                 continue
-            reason = reasons.get(value, "Check the final operation.")
-            detail = f"{shown}: {reason} {correction}, not {value}."
+            if expression[0] == "constant":
+                detail = f"{shown}: The definition gives q = {_quantity(result, unit)}, not {shown}."
+            else:
+                reason = reasons.get(value, "Use the evaluated operands in the final calculation.")
+                detail = f"{shown}: {reason} {correction}, not {value}."
             feedback[shown] = (detail if len(detail) <= 280 else
                                f"The expression evaluates exactly to {result}, not {value}. {shown} is not the requested value.")
         return _finish(prompt, rendered, _quantity(answer, unit), explanation, feedback)
