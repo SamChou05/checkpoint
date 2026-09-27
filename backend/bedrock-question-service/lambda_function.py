@@ -719,12 +719,50 @@ def _emit_request_metrics(metrics: dict[str, Any]) -> None:
         "RequestId": str(metrics.get("RequestId", "unavailable")),
         **metric_values,
         "QuestionQuality": quality_summary(metrics),
+        # A failed native Converse call has no token usage or response. Preserve
+        # only its stage and elapsed time so worker timeouts can be attributed
+        # without logging the goal, question text, model response, or error.
+        "ProviderStages": _provider_stage_summaries(metrics),
     }
     try:
         # Raw JSON on stdout is the Lambda-supported Embedded Metric Format transport.
         print(json.dumps(payload, separators=(",", ":"), sort_keys=True))
     except Exception:
         LOGGER.exception("Failed to emit request metrics")
+
+
+def _provider_stage_summaries(metrics: dict[str, Any]) -> list[dict[str, Any]]:
+    observations = metrics.get("ProviderObservations")
+    if not isinstance(observations, list):
+        return []
+    summaries = []
+    for observation in observations[:20]:
+        if not isinstance(observation, dict):
+            continue
+        structured = observation.get("structuredOutput")
+        name = structured.get("name") if isinstance(structured, dict) else None
+        if isinstance(name, str) and name.startswith("question_author_"):
+            stage = "author"
+        elif isinstance(name, str) and name.startswith("complete_choice_solver_"):
+            stage = "solver"
+        elif isinstance(name, str) and name.startswith(
+            ("authored_solution_reviewer_", "default_reviewer_")
+        ):
+            stage = "reviewer"
+        else:
+            stage = "other"
+        elapsed = observation.get("elapsedSeconds")
+        if type(elapsed) not in (int, float) or not math.isfinite(elapsed) or elapsed < 0:
+            continue
+        outcome = observation.get("outcome")
+        if outcome not in ("request_failed", "request_invalid"):
+            outcome = "completed" if "stopReason" in observation else "unknown"
+        summaries.append({
+            "stage": stage,
+            "outcome": outcome,
+            "elapsedSeconds": round(elapsed, 3),
+        })
+    return summaries
 
 
 def _response(

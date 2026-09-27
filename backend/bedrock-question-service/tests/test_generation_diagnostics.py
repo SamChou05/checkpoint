@@ -1,7 +1,12 @@
 import copy
+import contextlib
+import io
 import json
+import os
 import unittest
+from unittest import mock
 
+import lambda_function
 from generation_diagnostics import quality_summary
 from lambda_test_support import _raw_question, _request_payload
 from question_generation import _generate_with_bedrock
@@ -101,3 +106,39 @@ class GenerationDiagnosticsTests(unittest.TestCase):
             ),
             {"review": {"answer_disagreement": 2}},
         )
+
+    def test_native_timeout_emits_stage_and_elapsed_without_private_details(self):
+        class TimedOutClient:
+            def converse(self, **_request):
+                raise TimeoutError("private-reviewer-error-marker")
+
+        metrics = {
+            "ProviderCalls": 0,
+            "BedrockInputTokens": 0,
+            "BedrockOutputTokens": 0,
+            "StatusCode": 502,
+            "Outcome": "provider_failure",
+        }
+        with mock.patch.dict(os.environ, {
+            "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+            "EMIT_STRUCTURED_METRICS": "true",
+        }):
+            with self.assertRaises(ProviderError):
+                _generate_with_bedrock(
+                    _normalize_request(_request_payload()),
+                    TimedOutClient(),
+                    "us.anthropic.claude-sonnet-4-6",
+                    request_metrics=metrics,
+                    contract="authored_solution_reviewer_v1",
+                )
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                lambda_function._emit_request_metrics(metrics)
+
+        emitted = json.loads(output.getvalue())
+        self.assertEqual(emitted["ProviderCalls"], 1)
+        self.assertEqual(len(emitted["ProviderStages"]), 1)
+        self.assertEqual(emitted["ProviderStages"][0]["stage"], "reviewer")
+        self.assertEqual(emitted["ProviderStages"][0]["outcome"], "request_failed")
+        self.assertGreaterEqual(emitted["ProviderStages"][0]["elapsedSeconds"], 0)
+        self.assertNotIn("private-reviewer-error-marker", output.getvalue())
