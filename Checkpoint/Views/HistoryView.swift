@@ -1878,6 +1878,8 @@ struct PracticeHistoryReviewPresentation: Equatable {
             for: attempt,
             retainedQuestion: retainedQuestion
         )
+        let hasFrozenLegacyChoiceReview = attempt.reviewSnapshot?.format == .multipleChoice
+            && (attempt.questionVerificationVersion ?? 0) == 0
 
         if let snapshot = attempt.reviewSnapshot {
             // Presence makes the persisted review authoritative, including omitted content.
@@ -1907,9 +1909,9 @@ struct PracticeHistoryReviewPresentation: Equatable {
         if attempt.result != .correct,
            let format,
            let candidateReferenceAnswer {
-            referenceLabel = conflictingLegacyKey == nil
-                ? CheckpointAnswerReviewPresentation.answerLabel(for: format)
-                : "Answer shown at the time"
+            referenceLabel = hasFrozenLegacyChoiceReview
+                ? "Answer shown at the time"
+                : CheckpointAnswerReviewPresentation.answerLabel(for: format)
             referenceAnswer = candidateReferenceAnswer
             currentStoredAnswerKey = conflictingLegacyKey
         } else {

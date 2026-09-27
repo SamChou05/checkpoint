@@ -969,7 +969,7 @@ final class PracticeHistoryReviewPresentationTests: XCTestCase {
 
     func testPersistedSnapshotUsesFormatSpecificReferenceLabels() {
         let expectations: [(QuestionFormat, String)] = [
-            (.multipleChoice, "Correct answer"),
+            (.multipleChoice, "Answer shown at the time"),
             (.shortAnswer, "Expected answer"),
             (.codeTrace, "Expected answer"),
             (.reflection, "Example response")

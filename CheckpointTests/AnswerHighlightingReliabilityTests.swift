@@ -157,7 +157,8 @@ final class AnswerHighlightingReliabilityTests: XCTestCase {
         let question = question(explanation: "A stack removes the last item added before earlier items.", version: 1)
         let terminal = CheckpointTerminalAnswerReviewPresentation(question: question, answer: distractor, result: .incorrect)
         let attempt = CheckpointAttempt(
-            questionID: question.id, goalID: question.goalID, prompt: question.prompt,
+            questionID: question.id, goalID: question.goalID,
+            questionVerificationVersion: 1, prompt: question.prompt,
             answer: distractor, result: .incorrect, unlockMinutes: 0,
             reviewSnapshot: CheckpointAttemptReviewSnapshot(
                 topic: question.topic, format: question.format,
@@ -195,6 +196,11 @@ final class AnswerHighlightingReliabilityTests: XCTestCase {
         XCTAssertEqual(history.currentStoredAnswerKey, correctChoice)
         XCTAssertEqual(restored.reviewSnapshot, attempt.reviewSnapshot)
 
+        let orphanedHistory = PracticeHistoryReviewPresentation(attempt: restored)
+        XCTAssertEqual(orphanedHistory.referenceLabel, "Answer shown at the time")
+        XCTAssertEqual(orphanedHistory.referenceAnswer, distractor)
+        XCTAssertNil(orphanedHistory.currentStoredAnswerKey)
+
         var olderAttempt = restored
         olderAttempt.questionVerificationVersion = nil
         let olderHistory = PracticeHistoryReviewPresentation(attempt: olderAttempt, retainedQuestion: question)
@@ -218,25 +224,25 @@ final class AnswerHighlightingReliabilityTests: XCTestCase {
         var changed = legacy
         changed.prompt = "A different question"
         var presentation = PracticeHistoryReviewPresentation(attempt: attempt, retainedQuestion: changed)
-        XCTAssertEqual(presentation.referenceLabel, "Correct answer")
+        XCTAssertEqual(presentation.referenceLabel, "Answer shown at the time")
         XCTAssertNil(presentation.currentStoredAnswerKey)
 
         changed = legacy
         changed.explanation = "A later explanation"
         presentation = PracticeHistoryReviewPresentation(attempt: attempt, retainedQuestion: changed)
-        XCTAssertEqual(presentation.referenceLabel, "Correct answer")
+        XCTAssertEqual(presentation.referenceLabel, "Answer shown at the time")
         XCTAssertNil(presentation.currentStoredAnswerKey)
 
         changed = legacy
         changed.expectedAnswer = "An answer not offered"
         presentation = PracticeHistoryReviewPresentation(attempt: attempt, retainedQuestion: changed)
-        XCTAssertEqual(presentation.referenceLabel, "Correct answer")
+        XCTAssertEqual(presentation.referenceLabel, "Answer shown at the time")
         XCTAssertNil(presentation.currentStoredAnswerKey)
 
         changed = legacy
         changed.verificationVersion = 1
         presentation = PracticeHistoryReviewPresentation(attempt: attempt, retainedQuestion: changed)
-        XCTAssertEqual(presentation.referenceLabel, "Correct answer")
+        XCTAssertEqual(presentation.referenceLabel, "Answer shown at the time")
         XCTAssertNil(presentation.currentStoredAnswerKey)
 
         var reviewedAttempt = attempt
