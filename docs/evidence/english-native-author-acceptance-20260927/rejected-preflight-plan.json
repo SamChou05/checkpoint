@@ -37,7 +37,7 @@
     "backend/bedrock-question-service/requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67",
     "backend/bedrock-question-service/evals/bounded_bedrock_capture.py": "cc547d6687ee81dc80c18615099d8b971955ceed95588acf8ab2d160cb3823f3"
   },
-  "harness_sha256": "056ab09a6163b8b063b125e1fb08a4408512cd2de4c9592f032a65644c41cbd3",
+  "harness_sha256": "fb3a8b556a21c5b2bc139adc83f9531ecfa13f5a3d2f3f69bf01e91525455208",
   "request_sha256": "b6c0f712b693deeedbb03919a920499fa1d0d3abdfa97b857e68ad10d0bd1714",
   "normalized_request_sha256": "212cea7d53ddefe17fbe8f2459705b46b871793e62e0e58b56cc11e3626e63ae",
   "previous_successful_worker_plan_sha256": "7be1e0b7079d4007623d39481189db48de016c459af89766d49367ae1a5d0bdb",
@@ -95,8 +95,6 @@
     "converse_calls": 1,
     "sdk_attempts_per_call": 1,
     "seconds_from_before_credential_export": 120,
-    "credential_min_remaining_seconds_at_dispatch": 150,
-    "credential_expiration_source": "single_cli_export_snapshot",
     "hard_deadline_enforcement": "SIGALRM_ITIMER_REAL_one_shot",
     "connect_timeout_seconds": 3,
     "read_timeout_seconds": 90,

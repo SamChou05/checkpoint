@@ -2,6 +2,7 @@
 
 import argparse
 import copy
+from datetime import datetime
 import hashlib
 import json
 import os
@@ -41,6 +42,8 @@ MODEL = "us.anthropic.claude-sonnet-4-6"
 BEDROCK_ENDPOINT = "https://bedrock-runtime.us-east-1.amazonaws.com"
 STS_ENDPOINT = "https://sts.us-east-1.amazonaws.com"
 MAX_SECONDS = 120
+CREDENTIAL_MARGIN_SECONDS = 30
+MIN_CREDENTIAL_REMAINING_SECONDS = MAX_SECONDS + CREDENTIAL_MARGIN_SECONDS
 
 
 class DeadlineExceeded(BaseException):
@@ -91,6 +94,40 @@ def source_guard():
             "Wrong service checkout imported.")
     require(file_sha(PREVIOUS_CAPTURE) == PREVIOUS_CAPTURE_SHA256,
             "Predecessor 5/5 capture changed.")
+
+
+def parse_credential_expiration(exported):
+    """Parse the Expiration from the single AWS CLI process-format snapshot."""
+    try:
+        credentials = safe.strict_json(exported.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        raise RuntimeError("Credential export could not be parsed.") from None
+    value = credentials.get("Expiration") if type(credentials) is dict else None
+    if type(value) is not str or not 10 <= len(value) <= 64:
+        raise RuntimeError("Credential export has no bounded Expiration.")
+    normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        raise RuntimeError("Credential export Expiration is invalid.") from None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise RuntimeError("Credential export Expiration lacks a timezone.")
+    return parsed.timestamp()
+
+
+def credential_session_with_expiration():
+    """Validate credentials and expiry from one export, never a second CLI read."""
+    exported = safe.export_credentials()
+    with patch.object(safe, "export_credentials", return_value=exported):
+        session, secrets = safe.credential_session()
+    return session, secrets, parse_credential_expiration(exported)
+
+
+def credential_remaining_at_dispatch(expiration, *, now=None):
+    remaining = expiration - (time.time() if now is None else now)
+    require(remaining >= MIN_CREDENTIAL_REMAINING_SECONDS,
+            "Credential session expires before the one-call deadline and margin.")
+    return int(remaining)
 
 
 def fake_english_repertoire(contract, wire, request):
@@ -228,6 +265,8 @@ def build():
         "limits": {"original_jobs": 1, "original_slots": 5, "sts_calls": 1,
                    "converse_calls": 1, "sdk_attempts_per_call": 1,
                    "seconds_from_before_credential_export": MAX_SECONDS,
+                   "credential_min_remaining_seconds_at_dispatch": MIN_CREDENTIAL_REMAINING_SECONDS,
+                   "credential_expiration_source": "single_cli_export_snapshot",
                    "hard_deadline_enforcement": "SIGALRM_ITIMER_REAL_one_shot",
                    "connect_timeout_seconds": 3, "read_timeout_seconds": 90,
                    "retry_fallback_topup": False,
@@ -278,7 +317,7 @@ def execute(expected):
         require(not any(os.environ.get(key) for key in
                         ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN")),
                 "Inherited credential override is present.")
-        session, secrets = safe.credential_session()
+        session, secrets, credential_expiration = credential_session_with_expiration()
         require(time.monotonic() - started < 20, "Credential setup exceeded the bound.")
         sts = session.client("sts", endpoint_url=STS_ENDPOINT,
                              config=Config(connect_timeout=3, read_timeout=10,
@@ -295,6 +334,8 @@ def execute(expected):
                 "Pinned transport or wire changed.")
         validate_parameters(wire, bedrock.meta.service_model.operation_model("Converse").input_shape)
         require(time.monotonic() - started < 30, "Identity setup exhausted dispatch budget.")
+        capture["credential_remaining_seconds_at_dispatch"] = credential_remaining_at_dispatch(
+            credential_expiration)
         capture["converse_calls"] = 1
         capture["status"] = "dispatched"
         update_capture(capture)

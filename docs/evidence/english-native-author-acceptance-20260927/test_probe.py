@@ -4,13 +4,15 @@ import hashlib
 import json
 import signal
 import socket
+import tempfile
 import time
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 import probe
 
-PLAN_SHA256 = "634d19695af337950e0465322c729446030dbfb18419f4ada12c53348522f2fb"
+PLAN_SHA256 = "db6295d74338ddfe0219645fe0e41539c2c144cd1b254e6d681b27af36d0ace5"
 
 
 class EnglishNativeAuthorProbeTest(unittest.TestCase):
@@ -49,6 +51,83 @@ class EnglishNativeAuthorProbeTest(unittest.TestCase):
             signal.setitimer(signal.ITIMER_REAL, 0)
             signal.signal(signal.SIGALRM, old_alarm)
         self.assertLess(time.monotonic() - started, 0.4)
+
+    def test_expiration_parses_utc_and_offset_and_rejects_naive(self):
+        def snapshot(expiration):
+            return json.dumps({"Expiration": expiration}).encode()
+
+        utc = probe.parse_credential_expiration(snapshot("2026-09-27T12:00:00Z"))
+        offset = probe.parse_credential_expiration(snapshot("2026-09-27T14:00:00+02:00"))
+        self.assertEqual(utc, offset)
+        for invalid in ("2026-09-27T12:00:00", "not-a-date", None):
+            with self.subTest(invalid=invalid), self.assertRaises(RuntimeError):
+                probe.parse_credential_expiration(snapshot(invalid))
+
+    def test_one_export_snapshot_supplies_session_and_expiration(self):
+        exported = json.dumps({
+            "Version": 1, "AccessKeyId": "offline-key", "SecretAccessKey": "offline-secret",
+            "SessionToken": "offline-token", "Expiration": "2026-09-27T12:00:00Z",
+        }).encode()
+        with (patch.object(socket.socket, "connect", side_effect=AssertionError("network")),
+              patch.object(probe.safe, "export_credentials", return_value=exported) as exporter):
+            session, secrets, expiration = probe.credential_session_with_expiration()
+        exporter.assert_called_once_with()
+        self.assertEqual(secrets, ("offline-key", "offline-secret", "offline-token"))
+        self.assertEqual(session.region_name, "us-east-1")
+        self.assertEqual(expiration,
+                         probe.parse_credential_expiration(exported))
+
+    def test_near_expiry_fails_closed_before_converse_with_safe_capture(self):
+        self.assertEqual(probe.credential_remaining_at_dispatch(1150, now=1000), 150)
+        with self.assertRaisesRegex(RuntimeError, "expires before"):
+            probe.credential_remaining_at_dispatch(1149.999, now=1000)
+
+        class FakeSTS:
+            def get_caller_identity(self):
+                return {"Account": probe.ACCOUNT}
+
+        class FakeBedrock:
+            def __init__(self):
+                self.meta = probe.boto3.Session(
+                    aws_access_key_id="offline", aws_secret_access_key="offline",
+                    region_name="us-east-1").client(
+                        "bedrock-runtime", endpoint_url=probe.BEDROCK_ENDPOINT,
+                        config=probe.Config(retries={"total_max_attempts": 1,
+                                                     "mode": "standard"})).meta
+                self.calls = 0
+
+            def converse(self, **_wire):
+                self.calls += 1
+                raise AssertionError("near-expiry capture dispatched Converse")
+
+        bedrock = FakeBedrock()
+
+        class FakeSession:
+            def client(self, name, **_kwargs):
+                return FakeSTS() if name == "sts" else bedrock
+
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            lock = folder / "review-approval.json"
+            capture = folder / "capture.json"
+            plan = probe.safe.strict_json(probe.PLAN.read_text())
+            lock.write_text(json.dumps({"plan_sha256": PLAN_SHA256,
+                                        "harness_sha256": plan["harness_sha256"],
+                                        "root_go": True, "independent_go": True}))
+            with (patch.object(socket.socket, "connect", side_effect=AssertionError("network")),
+                  patch.object(probe, "CAPTURE", capture),
+                  patch.object(probe, "REVIEW_LOCK", lock),
+                  patch.object(probe, "credential_session_with_expiration",
+                               return_value=(FakeSession(), ("offline-secret",),
+                                             time.time() + 100))):
+                result = probe.execute(PLAN_SHA256)
+            saved = probe.safe.strict_json(capture.read_text())
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["sts_calls"], 1)
+        self.assertEqual(result["converse_calls"], 0)
+        self.assertEqual(bedrock.calls, 0)
+        self.assertEqual(saved["status"], "failed")
+        self.assertNotIn("offline-secret", json.dumps(saved))
 
 
 if __name__ == "__main__":

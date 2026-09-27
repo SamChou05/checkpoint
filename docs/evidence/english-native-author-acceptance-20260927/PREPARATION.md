@@ -6,9 +6,9 @@ mapped five-slot native route. Its clean, verified integration source is
 **no AWS calls**.
 
 The frozen [plan](plan.json) SHA-256 is
-`634d19695af337950e0465322c729446030dbfb18419f4ada12c53348522f2fb`;
+`db6295d74338ddfe0219645fe0e41539c2c144cd1b254e6d681b27af36d0ace5`;
 the [harness](probe.py) SHA-256 is
-`fb3a8b556a21c5b2bc139adc83f9531ecfa13f5a3d2f3f69bf01e91525455208`.
+`056ab09a6163b8b063b125e1fb08a4408512cd2de4c9592f032a65644c41cbd3`.
 The exact author wire SHA-256 is
 `b567ab253394aef2945e13a03b36f423340e884fd07e62007bbae49475d3f378`.
 The system and user prompt SHA-256 values are
@@ -38,10 +38,19 @@ The future live run is reserved for one STS identity call and one Converse
 call, one SDK attempt each, no retry, fallback, repair, top-up, worker, queue,
 bank, deployment, or GitHub write. A 120-second process-wide hard deadline
 begins before credential export; the Converse socket read limit is 90 seconds.
-Execution creates a one-shot capture before exporting credentials and requires
+Execution creates a one-shot capture before exporting credentials. The same
+single AWS CLI credential snapshot is validated and its timezone-aware
+expiration checked immediately before Converse; at least 150 seconds must
+remain (the 120-second trial deadline plus a 30-second margin). Near-expiry
+credentials fail with zero Converse calls and a sanitized capture. Execution requires
 both root and independent exact-hash GO in `review-approval.json`. No live
 execution should occur until source commit, schema, prompts, wire, harness,
 and plan hashes are frozen and reviewed.
+
+The earlier [preflight plan](rejected-preflight-plan.json), SHA-256
+`634d19695af337950e0465322c729446030dbfb18419f4ada12c53348522f2fb`,
+was rejected by independent review because it lacked the credential lifetime
+check. It was not executed. The current frozen plan includes that check.
 
 This trial can show whether Bedrock accepts the v10 schema and what the model
 selects in one response. It cannot by itself establish full-worker yield,
