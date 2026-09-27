@@ -57,12 +57,30 @@ class PlainScalarChoiceTests(unittest.TestCase):
         self.assertFalse(has_plain_scalar_collision(prompt, distinct["choices"]))
         self.assertEqual(len(_sanitize_questions([distinct], self.request)), 1)
 
+    def test_compound_number_words_duplicate_digit_counts(self):
+        prompt = "How many seats are occupied in the stated row?"
+        for digit, word in (("21", "twenty-one"), ("30", "thirty"),
+                            ("42", "forty two"), ("99", "Ninety-Nine")):
+            item = question(prompt, [digit, word, "12", "15"], digit)
+            with self.subTest(word=word):
+                self.assertTrue(has_plain_scalar_collision(prompt, item["choices"]))
+                self.assertEqual(_sanitize_questions([item], self.request), [])
+                self.assertFalse(_has_reviewable_choices(item))
+
+        # Exact phrase parsing must not fold an unrelated word or literal.
+        self.assertFalse(has_plain_scalar_collision(prompt,
+                                                     ["21", "twenty-onetwo", "12", "15"]))
+        self.assertFalse(has_plain_scalar_collision(prompt,
+                                                     ["21", "twenty--one", "12", "15"]))
+
     def test_written_representation_and_code_output_are_not_collapsed(self):
         for item in (
             question("Which written notation uses a percent sign to represent one quarter?",
                      ["25%", "1/4", "0.25", "2/4"], "25%"),
             question("What string is printed by this Python code?",
                      ["2", "two", "3", "4"], "two"),
+            question("Which written notation spells out the count of 21?",
+                     ["21", "twenty-one", "twenty two", "22"], "twenty-one"),
         ):
             with self.subTest(prompt=item["prompt"]):
                 self.assertFalse(has_plain_scalar_collision(item["prompt"], item["choices"]))

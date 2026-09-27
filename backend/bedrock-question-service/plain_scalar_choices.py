@@ -17,6 +17,28 @@ _WORDS = {
     "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17,
     "eighteen": 18, "nineteen": 19, "twenty": 20,
 }
+_TENS = {
+    "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60,
+    "seventy": 70, "eighty": 80, "ninety": 90,
+}
+
+
+def _number_word(value: str) -> int | None:
+    normalized = value.casefold()
+    if normalized in _WORDS:
+        return _WORDS[normalized]
+    if normalized in _TENS:
+        return _TENS[normalized]
+    # Both spellings are common answers to a count question. Parse only a
+    # complete tens-and-ones phrase, never words embedded in prose or code.
+    parts = re.split(r"[ -]", normalized)
+    if len(parts) == 2 and parts[0] in _TENS and parts[1] in _WORDS:
+        ones = _WORDS[parts[1]]
+        if 1 <= ones <= 9:
+            return _TENS[parts[0]] + ones
+    return None
+
+
 _NUMERIC_TASK = re.compile(
     r"\b(?:value|sum|difference|product|quotient|probability|fraction|"
     r"percentage|percent|total|amount|ratio|mean|median|average|count|"
@@ -36,7 +58,7 @@ _REPRESENTATION_TASK = re.compile(
 
 def _plain_scalar(value: str) -> Fraction | None:
     value = value.strip(" \t\n\r\v\f")
-    word = _WORDS.get(value.casefold())
+    word = _number_word(value)
     if word is not None:
         return Fraction(word)
     if not _SCALAR.fullmatch(value):
