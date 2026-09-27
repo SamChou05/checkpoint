@@ -1864,6 +1864,7 @@ struct PracticeHistoryReviewPresentation: Equatable {
     let userAnswer: String
     let referenceLabel: String?
     let referenceAnswer: String?
+    let currentStoredAnswerKey: String?
     let explanation: String?
 
     init(
@@ -1873,6 +1874,10 @@ struct PracticeHistoryReviewPresentation: Equatable {
         userAnswer = Self.nonEmpty(attempt.answer) ?? "No answer recorded"
 
         let candidateReferenceAnswer: String?
+        let conflictingLegacyKey = Self.conflictingLegacyKey(
+            for: attempt,
+            retainedQuestion: retainedQuestion
+        )
 
         if let snapshot = attempt.reviewSnapshot {
             // Presence makes the persisted review authoritative, including omitted content.
@@ -1902,12 +1907,52 @@ struct PracticeHistoryReviewPresentation: Equatable {
         if attempt.result != .correct,
            let format,
            let candidateReferenceAnswer {
-            referenceLabel = CheckpointAnswerReviewPresentation.answerLabel(for: format)
+            referenceLabel = conflictingLegacyKey == nil
+                ? CheckpointAnswerReviewPresentation.answerLabel(for: format)
+                : "Answer shown at the time"
             referenceAnswer = candidateReferenceAnswer
+            currentStoredAnswerKey = conflictingLegacyKey
         } else {
             referenceLabel = nil
             referenceAnswer = nil
+            currentStoredAnswerKey = nil
         }
+    }
+
+    private static func conflictingLegacyKey(
+        for attempt: CheckpointAttempt,
+        retainedQuestion: CheckpointQuestion?
+    ) -> String? {
+        guard attempt.result != .correct,
+              (attempt.questionVerificationVersion ?? 0) == 0,
+              let snapshot = attempt.reviewSnapshot,
+              snapshot.format == .multipleChoice,
+              let savedAnswer = nonEmpty(snapshot.referenceAnswer),
+              let retainedQuestion,
+              retainedQuestion.id == attempt.questionID,
+              retainedQuestion.goalID == attempt.goalID,
+              retainedQuestion.verificationVersion == 0,
+              retainedQuestion.format == .multipleChoice,
+              retainedQuestion.prompt == attempt.prompt,
+              (snapshot.explanation == retainedQuestion.explanation
+                  || snapshot.explanation == retainedQuestion.feedbackExplanation(for: attempt.answer)),
+              retainedQuestion.choices.count == 4,
+              MultipleChoiceAnswerNormalizer.hasUnambiguousChoices(retainedQuestion.choices) else {
+            return nil
+        }
+
+        // A retained legacy question can have changed since the attempt. Show
+        // both records only when its explicit key is one exact offered choice;
+        // never replace the answer saved in the attempt snapshot.
+        let key = MultipleChoiceAnswerNormalizer.key(for: retainedQuestion.expectedAnswer)
+        let matchingChoices = retainedQuestion.choices.filter {
+            MultipleChoiceAnswerNormalizer.key(for: $0) == key
+        }
+        guard matchingChoices.count == 1,
+              MultipleChoiceAnswerNormalizer.key(for: savedAnswer) != key else {
+            return nil
+        }
+        return matchingChoices[0]
     }
 
     private static func nonEmpty(_ text: String?) -> String? {
@@ -2149,6 +2194,22 @@ private struct AttemptRow: View {
                     font: answerFont(for: review.format, emphasized: true),
                     color: CheckpointTheme.text
                 )
+            }
+
+            if let currentStoredAnswerKey = review.currentStoredAnswerKey {
+                reviewDivider
+
+                reviewSection(
+                    label: "Current stored key",
+                    text: currentStoredAnswerKey,
+                    font: answerFont(for: review.format, emphasized: true),
+                    color: CheckpointTheme.text
+                )
+
+                Text("This legacy question's stored key differs from the answer shown when you practiced. Your recorded result is unchanged.")
+                    .font(.footnote)
+                    .foregroundStyle(CheckpointTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             if let explanation = review.explanation {

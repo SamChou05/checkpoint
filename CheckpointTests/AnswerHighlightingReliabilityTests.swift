@@ -173,6 +173,80 @@ final class AnswerHighlightingReliabilityTests: XCTestCase {
         XCTAssertEqual(history.userAnswer, distractor)
     }
 
+    func testLegacyHistoryDoesNotCallAnOldConflictingSnapshotTheCorrectAnswer() throws {
+        let question = question(
+            explanation: "\(distractor) is incorrect because a stack removes the newest item.",
+            version: 0
+        )
+        let attempt = CheckpointAttempt(
+            questionID: question.id, goalID: question.goalID,
+            questionVerificationVersion: 0, prompt: question.prompt,
+            answer: "Remove a random element", result: .incorrect, unlockMinutes: 0,
+            reviewSnapshot: CheckpointAttemptReviewSnapshot(
+                topic: question.topic, format: .multipleChoice,
+                referenceAnswer: distractor, explanation: question.explanation
+            )
+        )
+        let restored = try JSONDecoder().decode(CheckpointAttempt.self, from: JSONEncoder().encode(attempt))
+        let history = PracticeHistoryReviewPresentation(attempt: restored, retainedQuestion: question)
+
+        XCTAssertEqual(history.referenceLabel, "Answer shown at the time")
+        XCTAssertEqual(history.referenceAnswer, distractor)
+        XCTAssertEqual(history.currentStoredAnswerKey, correctChoice)
+        XCTAssertEqual(restored.reviewSnapshot, attempt.reviewSnapshot)
+
+        var olderAttempt = restored
+        olderAttempt.questionVerificationVersion = nil
+        let olderHistory = PracticeHistoryReviewPresentation(attempt: olderAttempt, retainedQuestion: question)
+        XCTAssertEqual(olderHistory.referenceLabel, "Answer shown at the time")
+        XCTAssertEqual(olderHistory.currentStoredAnswerKey, correctChoice)
+    }
+
+    func testLegacyHistoryOnlyComparesTheSameRetainedQuestionAndNeverRewritesReviewedHistory() {
+        let legacy = question(explanation: "A stack removes its newest item first.", version: 0)
+        let snapshot = CheckpointAttemptReviewSnapshot(
+            topic: legacy.topic, format: .multipleChoice,
+            referenceAnswer: distractor, explanation: legacy.explanation
+        )
+        let attempt = CheckpointAttempt(
+            questionID: legacy.id, goalID: legacy.goalID,
+            questionVerificationVersion: 0, prompt: legacy.prompt,
+            answer: "Remove a random element", result: .incorrect, unlockMinutes: 0,
+            reviewSnapshot: snapshot
+        )
+
+        var changed = legacy
+        changed.prompt = "A different question"
+        var presentation = PracticeHistoryReviewPresentation(attempt: attempt, retainedQuestion: changed)
+        XCTAssertEqual(presentation.referenceLabel, "Correct answer")
+        XCTAssertNil(presentation.currentStoredAnswerKey)
+
+        changed = legacy
+        changed.explanation = "A later explanation"
+        presentation = PracticeHistoryReviewPresentation(attempt: attempt, retainedQuestion: changed)
+        XCTAssertEqual(presentation.referenceLabel, "Correct answer")
+        XCTAssertNil(presentation.currentStoredAnswerKey)
+
+        changed = legacy
+        changed.expectedAnswer = "An answer not offered"
+        presentation = PracticeHistoryReviewPresentation(attempt: attempt, retainedQuestion: changed)
+        XCTAssertEqual(presentation.referenceLabel, "Correct answer")
+        XCTAssertNil(presentation.currentStoredAnswerKey)
+
+        changed = legacy
+        changed.verificationVersion = 1
+        presentation = PracticeHistoryReviewPresentation(attempt: attempt, retainedQuestion: changed)
+        XCTAssertEqual(presentation.referenceLabel, "Correct answer")
+        XCTAssertNil(presentation.currentStoredAnswerKey)
+
+        var reviewedAttempt = attempt
+        reviewedAttempt.questionVerificationVersion = 1
+        presentation = PracticeHistoryReviewPresentation(attempt: reviewedAttempt, retainedQuestion: legacy)
+        XCTAssertEqual(presentation.referenceLabel, "Correct answer")
+        XCTAssertNil(presentation.currentStoredAnswerKey)
+        XCTAssertEqual(reviewedAttempt.reviewSnapshot, snapshot)
+    }
+
     func testDuplicateVisibleChoicesAreRejectedInsteadOfHighlightingTwoAnswers() {
         for duplicates in [["salt", " salt ", "sugar", "water"], ["café", "cafe\u{301}", "tea", "water"]] {
             var question = question(explanation: "This malformed fixture must not enter a practice session.", version: 1)
