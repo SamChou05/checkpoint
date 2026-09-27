@@ -151,6 +151,15 @@ found all five candidate keys unique, all 30 choice pairs distinct, and all
 five difficulty 2–3. They disagreed on within-batch repetition. The reviewer
 veto and failed trial remain in force. This source still lacks a successful
 current full-worker qualification.
+The compiler now makes the main explanation for each full-sentence scene
+state the required verb and agreement rule for **all four** offered sentences,
+because the final reviewer sees that main explanation but not the separate
+per-choice teaching. An independent read-only audit checked all eight
+scene/order variants and found their keys, distractor corrections, and main
+explanations sound; every main explanation is 331–362 characters under the
+420-character limit. The reviewer’s uncertainty veto remains unchanged.
+This teaching revision has passed only local checks; it requires a fresh
+full-worker qualification before a live-yield claim.
 An [offline single-rule full-sentence prototype](evidence/level2-sentence-selection-prototype-20260927/README.md)
 reached unique keys and level-2 ratings, but its best blind-reviewed version
 had only 3/6 and 5/6 meaningfully distinct choice pairs. It was not added to
@@ -194,7 +203,7 @@ objectives.
 | Rebalancing a finite repertoire cannot eliminate repeated decisions. | The frozen [cross-slot audit](evidence/mapped-cross-slot-mechanism-audit-20260927/RESULTS.md) counted 2/18/76 structural pair patterns at 15/40/80 items that resemble earlier blind-rated strong overlaps. The new gerund family lowers this heuristic to 2/13/55, but its own blind review finds repeated templates. A trial selector reduced maximum-decision pairings but created near-identical minimum-ratio tasks; it was reverted. | These counts are heuristic warnings, not newly blind-confirmed duplicates. Expand substantively different, code-owned objectives and require repeated-bank blind review; do not promote a selector that merely moves the repetition. |
 | Passing local tests does not update TestFlight. | The active workflow is manual, has never run, and the required protected environment and AWS OIDC identity were absent in the read-only audit. | [Release audit](evidence/testflight-release-readiness-20260927/RESULTS.md), [scoped bootstrap](../infra/TESTFLIGHT_DEPLOY_BOOTSTRAP.md), and [service-role design](../infra/TESTFLIGHT_EXECUTION_ROLE.md) specify the identity, protected variables, role boundary, rollback artifacts, and live-setting comparison. Nothing was deployed. |
 
-The integrated backend passed **1,471 unit tests**, Ruff on changed Python
+The integrated backend passed **1,473 unit tests**, Ruff on changed Python
 files, and `git diff --check`. Both SAM templates passed lint; the deployment
 script suite, actionlint, shellcheck, and AWS's read-only CloudFormation
 template validation also passed. The earlier bootstrap audit compared five

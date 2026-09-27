@@ -70,6 +70,14 @@ class AgreementTaskConstructorTests(unittest.TestCase):
                 self.assertNotIn("___", result["prompt"])
                 self.assertIn("Which sentence", result["prompt"])
                 self.assertIn(key, result["explanation"])
+                self.assertIn('is plural; following "each" does not change that',
+                              result["explanation"])
+                self.assertIn('has singular "Each" and needs', result["explanation"])
+                self.assertIn('After "neither...nor," nearer', result["explanation"])
+                self.assertIn('is one singular activity and needs', result["explanation"])
+                self.assertEqual(result["explanation"].count(' needs "'), 3)
+                self.assertEqual(result["explanation"].count('so use "'), 1)
+                self.assertLessEqual(len(result["explanation"]), 420)
                 self.assertEqual(sum("This sentence agrees." in feedback for feedback
                                      in result["choiceExplanations"].values()), 1)
                 self.assertTrue(all(len(feedback) <= 280 for feedback in
@@ -78,6 +86,13 @@ class AgreementTaskConstructorTests(unittest.TestCase):
                 with self.assertRaises(AgreementTaskError):
                     compile_question(task(scene, order), ordinal=3)
         self.assertEqual(sorted(answer_positions), [0, 0, 1, 1, 2, 2, 3, 3])
+
+    def test_first_selected_sentence_main_explanation_refutes_all_distractors(self):
+        result = compile_question(task("select_archive", "singular_first"), ordinal=4)
+        self.assertEqual(result["expectedAnswer"], "Maya and Theo each prepare lunch.")
+        for correction in ('"prepare"', '"receives"', '"sort"', '"requires"'):
+            self.assertIn(correction, result["explanation"])
+        self.assertNotIn("Each other sentence uses the wrong verb form", result["explanation"])
 
     def test_sentence_selection_reaches_complete_mapped_english_compiler(self):
         for scene in SENTENCE_SELECTION_SCENES:

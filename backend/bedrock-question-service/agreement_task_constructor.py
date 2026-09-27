@@ -412,8 +412,16 @@ def _compile_sentence_selection_question(scene_id: str, order: str) -> dict:
               f"{correlative.plural_subject}, and {gerund.activity.lower()}. "
               "Which sentence uses present-tense subject-verb agreement correctly "
               "in standard written American English?")
-    explanation = (f'Only "{answer}" is grammatical. {reasons[correct_rule]} '
-                   "Each other sentence uses the wrong verb form for its subject.")
+    # The final immutable-main reviewer does not see choice-specific teaching.
+    # Prove why all four sentences do or do not agree in the main explanation.
+    brief_reasons = (
+        f'"{compound.compound_subject}" is plural; following "each" does not change that, '
+        f'so use "{compound_forms[0]}".',
+        f'"Each of {compound.distributive_group}" has singular "Each" and needs "{each_forms[1]}".',
+        f'After "neither...nor," nearer "{correlative.plural_subject}" is plural and needs "{correlative_forms[0]}".',
+        f'"{gerund.activity}" is one singular activity and needs "{gerund_forms[1]}".',
+    )
+    explanation = f'Only "{answer}" agrees. ' + " ".join(brief_reasons)
     if (len(set(choices)) != 4 or choices.count(answer) != 1
             or len(prompt) > 320 or len(explanation) > 420
             or any(len(value) > 280 for value in feedback.values())):
