@@ -290,8 +290,16 @@ added an explicit material-repetition instruction to the same second-reviewer
 request. Sonnet still set every novelty flag false, including the repeat
 identified by both blind reviewers. The ineffective instruction was removed;
 the code now shows that reviewer only verified first-chunk survivors, avoiding
-false suppression by rejected candidates. A separate pairwise reviewer is
-being evaluated before the worker's spare sixth call is used.
+false suppression by rejected candidates. A [dedicated keyless pairwise
+probe](evidence/generic-reserve-pairwise-diversity-probe-20260927/RESULTS.md)
+used the spare sixth-call concept to judge all 15 pairs among six verified
+questions. It caught only the expected-money repeat that both blind reviews
+found. A [second independent pairwise probe](evidence/generic-pairwise-second-blind-probe-20260927/RESULTS.md)
+on another six-question worksheet caught that batch's expected-money repeat
+but also flagged two different probability operations as one strong repeat.
+The model-only pairwise gate is therefore not enabled: it improves recall in
+these samples but can falsely suppress a valid five-item batch. A narrower
+code-owned mechanism check is being evaluated separately.
 A separate disabled-thinking author-only trial added the explicit probability
 directive: it completed seven native rows in 19.641 seconds, but the existing
 sanitizer rejected one for duplicate choices. Two [independent blind
