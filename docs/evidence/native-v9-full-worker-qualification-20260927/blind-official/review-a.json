@@ -1,0 +1,121 @@
+{
+  "review_kind": "independent_blind_official_keyless_worksheet",
+  "worksheet_path": "/private/tmp/checkpoint-native-v9-full-worker-20260927/docs/evidence/native-v9-full-worker-qualification-20260927/blind-official/worksheet.json",
+  "worksheet_sha256_expected": "8b6a40d007d174408e48e9bb535f81ea0dac90877c65d716a92c8bbc56e4224f",
+  "worksheet_sha256_observed": "8b6a40d007d174408e48e9bb535f81ea0dac90877c65d716a92c8bbc56e4224f",
+  "rubric_path": "/private/tmp/checkpoint-native-v9-full-worker-20260927/docs/evidence/native-v9-full-worker-qualification-20260927/blind-official/RUBRIC.md",
+  "blindness": "Reviewed only the keyless worksheet and its adjacent RUBRIC.md. No source, capture, answer map, result summary, or agent messages were consulted.",
+  "requested_slots": 5,
+  "readable_items": 4,
+  "unfilled_slots": 1,
+  "items": [
+    {
+      "id": "0b929f1304a4debc7ce52daf",
+      "status": "readable",
+      "single_correct_letter": "D",
+      "key_defensibility": "unique",
+      "reasoning": "3/4 + 4/6 = 3/4 + 2/3 = 17/12; multiplying by 3 gives 17/4. No other displayed choice equals 17/4.",
+      "choice_pair_distinctness": {
+        "A-B": "meaningful: 17/36 and 1/4 are unequal exact fractions",
+        "A-C": "meaningful: 17/36 and 51 are unequal",
+        "A-D": "meaningful: 17/36 and 17/4 differ by a factor of nine",
+        "B-C": "meaningful: 1/4 and 51 are unequal",
+        "B-D": "meaningful: 1/4 and 17/4 are unequal",
+        "C-D": "meaningful: 51 and 17/4 are unequal"
+      },
+      "all_six_pairs_distinct": true,
+      "distractor_quality": "A, B, and C are mathematically distinct, though C = 51 is far from the correct magnitude and may be an easy elimination.",
+      "stem_self_contained": true,
+      "difficulty_1_to_5": 2,
+      "visible_objective_fit": "Fits exact rational arithmetic and order of operations. The prespecified objective is hidden, so alignment to that objective cannot be confirmed blind.",
+      "within_batch_novelty": "Distinct procedure from the inequality and grammar items; shares only broad mathematics category with the inequality item.",
+      "explanation_or_feedback_audit": "No explanation or feedback field is present in the worksheet; cannot judge authored teaching blind.",
+      "uncertainty": "Low on key and distinctness; objective alignment and teaching are unavailable."
+    },
+    {
+      "id": "9dbdab450fcc1c5aa5c98c8d",
+      "status": "unavailable_placeholder",
+      "counts_as_unfilled": true,
+      "single_correct_letter": null,
+      "review": "Missing item; no key, pairs, difficulty, objective fit, or teaching can be assessed."
+    },
+    {
+      "id": "2f24108169cc72374f0cb55e",
+      "status": "readable",
+      "single_correct_letter": "A",
+      "key_defensibility": "unique",
+      "reasoning": "4(x + 2) + x <= 53 simplifies to 5x + 8 <= 53, hence x <= 9. In the stated integer domain 6 through 12, the maximum feasible x is 9.",
+      "choice_pair_distinctness": {
+        "A-B": "meaningful: 9 and 11 are different integers; 11 violates the condition",
+        "A-C": "meaningful: 9 and 8 are different feasible integers, but only 9 is maximal",
+        "A-D": "meaningful: 9 and 10 differ across the feasibility boundary",
+        "B-C": "meaningful: 11 and 8 are different integers on opposite sides of the feasibility boundary",
+        "B-D": "meaningful: 11 and 10 are different infeasible integers",
+        "C-D": "meaningful: 8 and 10 are different integers on opposite sides of the feasibility boundary"
+      },
+      "all_six_pairs_distinct": true,
+      "distractor_quality": "The options are neighboring integers near the boundary; 8 tests the maximum requirement while 10 and 11 test the inequality.",
+      "stem_self_contained": true,
+      "difficulty_1_to_5": 3,
+      "visible_objective_fit": "Fits linear inequalities with an integer domain and a maximum-selection step. The prespecified objective is hidden, so alignment to that objective cannot be confirmed blind.",
+      "within_batch_novelty": "Distinct from exact fraction evaluation and both grammar items.",
+      "explanation_or_feedback_audit": "No explanation or feedback field is present in the worksheet; cannot judge authored teaching blind.",
+      "uncertainty": "Low on key and distinctness; objective alignment and teaching are unavailable."
+    },
+    {
+      "id": "6b1c86c9bf4e606a311b68ea",
+      "status": "readable",
+      "single_correct_letter": "B",
+      "key_defensibility": "unique",
+      "reasoning": "The gerund phrase 'Preparing the meals' is singular and takes 'requires'; the plural subject 'the cooks' takes 'measure'.",
+      "choice_pair_distinctness": {
+        "A-B": "meaningful: both verb forms differ and only B agrees in both clauses",
+        "A-C": "meaningful: first verb differs; C fixes agreement with the gerund subject",
+        "A-D": "meaningful: second verb differs; D fixes agreement with the plural subject",
+        "B-C": "meaningful: second verb differs; C is wrong for the plural subject",
+        "B-D": "meaningful: first verb differs; D is wrong for the gerund subject",
+        "C-D": "meaningful: both verb forms differ; each has a different agreement error"
+      },
+      "all_six_pairs_distinct": true,
+      "distractor_quality": "The four options cover all combinations of singular and plural verb endings, giving separate evidence for each blank.",
+      "stem_self_contained": true,
+      "difficulty_1_to_5": 2,
+      "visible_objective_fit": "Fits present-tense subject-verb agreement, especially a gerund phrase as singular subject and a plural noun subject. The prespecified objective is hidden, so alignment to that objective cannot be confirmed blind.",
+      "within_batch_novelty": "Substantially overlaps the other grammar item's two-blank agreement format and singular/plural contrast; the gerund-subject construction is distinct.",
+      "explanation_or_feedback_audit": "No explanation or feedback field is present in the worksheet; cannot judge authored teaching blind.",
+      "uncertainty": "Low on key and distinctness; the extent to which overlap violates the intended novelty criterion depends on the hidden objective."
+    },
+    {
+      "id": "ee692408cd2a469b77f4897b",
+      "status": "readable",
+      "single_correct_letter": "B",
+      "key_defensibility": "unique",
+      "reasoning": "In 'editors who check', the relative pronoun refers to plural editors, so 'check' agrees. 'One of the editors' is singular, so 'carries' agrees.",
+      "choice_pair_distinctness": {
+        "A-B": "meaningful: first verb differs; A incorrectly uses singular 'checks' for plural editors",
+        "A-C": "meaningful: both forms differ; each option has a different agreement error",
+        "A-D": "meaningful: second verb differs; D adds an error in the singular main clause",
+        "B-C": "meaningful: second verb differs; C incorrectly uses plural 'carry' for 'one'",
+        "B-D": "meaningful: both forms differ and only B agrees in both clauses",
+        "C-D": "meaningful: first verb differs; D adds an error in the relative clause"
+      },
+      "all_six_pairs_distinct": true,
+      "distractor_quality": "The four options cover all combinations of the two agreement decisions, isolating errors in each clause.",
+      "stem_self_contained": true,
+      "difficulty_1_to_5": 3,
+      "visible_objective_fit": "Fits present-tense subject-verb agreement across a relative clause and a singular 'one of' subject. The prespecified objective is hidden, so alignment to that objective cannot be confirmed blind.",
+      "within_batch_novelty": "Substantially overlaps the other grammar item's two-blank agreement format and singular/plural contrast; relative-clause antecedent and 'one of' are distinct constructions.",
+      "explanation_or_feedback_audit": "No explanation or feedback field is present in the worksheet; cannot judge authored teaching blind.",
+      "uncertainty": "Low on key and distinctness; the extent to which overlap violates the intended novelty criterion depends on the hidden objective."
+    }
+  ],
+  "cross_item_semantic_duplication": {
+    "0b929f1304a4debc7ce52daf__2f24108169cc72374f0cb55e": "low: both are math but fraction evaluation and bounded inequality are different skills",
+    "0b929f1304a4debc7ce52daf__6b1c86c9bf4e606a311b68ea": "none: arithmetic versus subject-verb agreement",
+    "0b929f1304a4debc7ce52daf__ee692408cd2a469b77f4897b": "none: arithmetic versus subject-verb agreement",
+    "2f24108169cc72374f0cb55e__6b1c86c9bf4e606a311b68ea": "none: inequality versus subject-verb agreement",
+    "2f24108169cc72374f0cb55e__ee692408cd2a469b77f4897b": "none: inequality versus subject-verb agreement",
+    "6b1c86c9bf4e606a311b68ea__ee692408cd2a469b77f4897b": "moderate: both ask for two present-tense agreement forms with a singular/plural contrast and the same 2-by-2 option structure; they test different subject constructions, so are not exact duplicates"
+  },
+  "overall_conclusion": "Four of five requested slots are readable and each readable item has a unique defensible key, a self-contained stem, six meaningful choice pairs, and difficulty 2 or 3. The fifth slot is unfilled. Batch novelty is weakened by the two similarly structured agreement items; source-objective fit and authored teaching cannot be verified from this keyless worksheet."
+}

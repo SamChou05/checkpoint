@@ -1,0 +1,128 @@
+{
+  "review_type": "independent_blind_worksheet_review",
+  "reviewer": "blind_b",
+  "worksheet_path": "/private/tmp/checkpoint-native-v9-full-worker-20260927/docs/evidence/native-v9-full-worker-qualification-20260927/blind-official/worksheet.json",
+  "worksheet_sha256_expected": "8b6a40d007d174408e48e9bb535f81ea0dac90877c65d716a92c8bbc56e4224f",
+  "worksheet_sha256_observed": "8b6a40d007d174408e48e9bb535f81ea0dac90877c65d716a92c8bbc56e4224f",
+  "worksheet_sha256_matches": true,
+  "rubric_path": "/private/tmp/checkpoint-native-v9-full-worker-20260927/docs/evidence/native-v9-full-worker-qualification-20260927/blind-official/RUBRIC.md",
+  "scope": "Worksheet and nearby rubric only; no answer key, source slot, capture, ratings, rejection reasons, authored teaching, or other review consulted.",
+  "requested_slots": 5,
+  "readable_items": 4,
+  "unfilled_slots": 1,
+  "items": [
+    {
+      "id": "0b929f1304a4debc7ce52daf",
+      "status": "readable",
+      "unique_correct_letter": "D",
+      "answer_basis": "3/4 + 4/6 = 9/12 + 8/12 = 17/12; multiplying by 3 gives 17/4.",
+      "answer_unique": true,
+      "stem_self_contained": true,
+      "clarity": "Clear exact-value arithmetic request. The word unitless does not affect the calculation.",
+      "difficulty_1_to_5": 2,
+      "difficulty_target_2_to_3": true,
+      "visible_objective_fit": "Fits fraction addition and multiplication with exact rational output; no separate objective is visible for comparison.",
+      "choice_pairs": {
+        "A-B": {"meaningfully_distinct": true, "reason": "17/36 and 1/4 are different exact values."},
+        "A-C": {"meaningfully_distinct": true, "reason": "17/36 and 51 are different exact values."},
+        "A-D": {"meaningfully_distinct": true, "reason": "17/36 and 17/4 differ by a factor of 9."},
+        "B-C": {"meaningfully_distinct": true, "reason": "1/4 and 51 are different exact values."},
+        "B-D": {"meaningfully_distinct": true, "reason": "1/4 and 17/4 have different numerators."},
+        "C-D": {"meaningfully_distinct": true, "reason": "51 and 17/4 are different exact values."}
+      },
+      "choice_quality_note": "All choices are distinct, but 51 is a conspicuous magnitude outlier and 1/4 is a weakly motivated distractor; this does not create ambiguity.",
+      "uncertainty": "Low for the answer and pairwise distinctness; objective alignment beyond visible arithmetic cannot be audited blind."
+    },
+    {
+      "id": "9dbdab450fcc1c5aa5c98c8d",
+      "status": "unavailable_placeholder",
+      "counts_as_unfilled": true,
+      "review": "No stem or choices are present, so answer, difficulty, clarity, objective fit, and pairwise distinctness cannot be assessed."
+    },
+    {
+      "id": "2f24108169cc72374f0cb55e",
+      "status": "readable",
+      "unique_correct_letter": "A",
+      "answer_basis": "4(x + 2) + x <= 53 reduces to 5x + 8 <= 53, hence x <= 9. Within integers 6 through 12, the maximum satisfying value is 9.",
+      "answer_unique": true,
+      "stem_self_contained": true,
+      "clarity": "The integer domain, inclusive endpoints, inequality, and maximum criterion are explicit.",
+      "difficulty_1_to_5": 2,
+      "difficulty_target_2_to_3": true,
+      "visible_objective_fit": "Fits solving a linear inequality under a bounded integer domain; no separate objective is visible for comparison.",
+      "choice_pairs": {
+        "A-B": {"meaningfully_distinct": true, "reason": "9 satisfies the condition and is maximal; 11 does not satisfy it."},
+        "A-C": {"meaningfully_distinct": true, "reason": "9 and 8 both satisfy the condition, but only 9 is maximal."},
+        "A-D": {"meaningfully_distinct": true, "reason": "9 satisfies the condition; 10 does not."},
+        "B-C": {"meaningfully_distinct": true, "reason": "11 fails the condition; 8 satisfies it but is not maximal."},
+        "B-D": {"meaningfully_distinct": true, "reason": "11 and 10 are different integers; both fail the inequality."},
+        "C-D": {"meaningfully_distinct": true, "reason": "8 satisfies the inequality while 10 fails it."}
+      },
+      "choice_quality_note": "The options test boundary and maximum reasoning, including a feasible but nonmaximal value.",
+      "uncertainty": "Low for the answer and choice judgments; objective alignment beyond the visible skill cannot be audited blind."
+    },
+    {
+      "id": "6b1c86c9bf4e606a311b68ea",
+      "status": "readable",
+      "unique_correct_letter": "B",
+      "answer_basis": "The gerund phrase 'Preparing the meals' is a singular subject, so it requires planning. 'The cooks' is plural, so the cooks measure the ingredients.",
+      "answer_unique": true,
+      "stem_self_contained": true,
+      "clarity": "The requested tense, dialect, agreement criterion, and order of blanks are explicit.",
+      "difficulty_1_to_5": 2,
+      "difficulty_target_2_to_3": true,
+      "visible_objective_fit": "Fits present-tense subject-verb agreement across a gerund phrase and a plural noun phrase; no separate objective is visible for comparison.",
+      "choice_pairs": {
+        "A-B": {"meaningfully_distinct": true, "reason": "Both verb forms differ; A disagrees in both clauses and B agrees in both."},
+        "A-C": {"meaningfully_distinct": true, "reason": "The first verb differs; C fixes the singular gerund-subject agreement while retaining the second error."},
+        "A-D": {"meaningfully_distinct": true, "reason": "The second verb differs; D fixes plural cooks agreement while retaining the first error."},
+        "B-C": {"meaningfully_distinct": true, "reason": "The second verb differs; B agrees with plural cooks and C does not."},
+        "B-D": {"meaningfully_distinct": true, "reason": "The first verb differs; B agrees with the singular gerund phrase and D does not."},
+        "C-D": {"meaningfully_distinct": true, "reason": "Both verb forms differ, swapping which clause has the agreement error."}
+      },
+      "choice_quality_note": "The four options exhaust the two-by-two agreement combinations, making each distractor diagnostically different.",
+      "uncertainty": "Low for the answer and pairwise judgments; objective alignment beyond the visible skill cannot be audited blind."
+    },
+    {
+      "id": "ee692408cd2a469b77f4897b",
+      "status": "readable",
+      "unique_correct_letter": "B",
+      "answer_basis": "'The editors' is plural and governs 'who check'; 'One' is singular and governs 'carries'.",
+      "answer_unique": true,
+      "stem_self_contained": true,
+      "clarity": "The requested tense, dialect, and ordered blanks are explicit. 'One of the editors' has singular head 'One'.",
+      "difficulty_1_to_5": 3,
+      "difficulty_target_2_to_3": true,
+      "visible_objective_fit": "Fits present-tense subject-verb agreement in a relative clause and an 'one of' construction; no separate objective is visible for comparison.",
+      "choice_pairs": {
+        "A-B": {"meaningfully_distinct": true, "reason": "The first verb differs; plural editors require 'check' in B."},
+        "A-C": {"meaningfully_distinct": true, "reason": "Both verbs differ; A gets the singular 'One' clause right, while C gets the plural editors clause right."},
+        "A-D": {"meaningfully_distinct": true, "reason": "The second verb differs; singular 'One' requires 'carries' in A."},
+        "B-C": {"meaningfully_distinct": true, "reason": "The second verb differs; B agrees with singular 'One' and C does not."},
+        "B-D": {"meaningfully_distinct": true, "reason": "Both verbs differ; B has agreement in both clauses and D has agreement in neither."},
+        "C-D": {"meaningfully_distinct": true, "reason": "The first verb differs; C agrees with plural editors and D does not."}
+      },
+      "choice_quality_note": "The four options exhaust the two-by-two agreement combinations; each error pattern is identifiable.",
+      "uncertainty": "Low for the answer and pairwise judgments; objective alignment beyond the visible skill cannot be audited blind."
+    }
+  ],
+  "cross_item_novelty": {
+    "assessment": "Partial semantic duplication between items 6b1c86c9bf4e606a311b68ea and ee692408cd2a469b77f4897b.",
+    "detail": "Both ask for an ordered pair of present-tense subject-verb agreement forms and use the same two-by-two choice pattern. The grammatical triggers differ: gerund subject plus plural noun phrase versus plural relative-clause antecedent plus singular 'One of' subject. They are distinct sentences and subcases, yet their shared answer procedure weakens within-batch novelty.",
+    "other_pairs": "The fraction arithmetic and integer-inequality items are semantically distinct from each other and from the two grammar items."
+  },
+  "overall_conclusions": {
+    "unique_answers_for_all_readable_items": true,
+    "readable_answer_letters_in_worksheet_order": ["D", "A", "B", "B"],
+    "all_six_choice_pairs_meaningfully_distinct_per_readable_item": true,
+    "all_readable_stems_self_contained_and_clear": true,
+    "all_readable_items_within_difficulty_target_2_to_3": true,
+    "availability": "Four of five requested slots are readable; one unavailable placeholder is unfilled.",
+    "main_quality_concerns": [
+      "The unavailable slot leaves the requested five-item return incomplete.",
+      "The two grammar items partly repeat the same subject-verb agreement task structure.",
+      "The arithmetic item includes conspicuous or weak distractors, especially 51 and 1/4."
+    ],
+    "qualification_decision": "No pass/fail threshold is stated in the blind rubric; this review records the findings without inventing one."
+  }
+}
