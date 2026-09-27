@@ -139,6 +139,11 @@ first adding this format from another authored family. The reviewer-4 veto
 and learner difficulty metadata remain unchanged. This is an offline-verified
 selection change, not a successful new live worker trial or a claim that all
 eight scene/order variants have independent difficulty ratings.
+An [offline single-rule full-sentence prototype](evidence/level2-sentence-selection-prototype-20260927/README.md)
+reached unique keys and level-2 ratings, but its best blind-reviewed version
+had only 3/6 and 5/6 meaningfully distinct choice pairs. It was not added to
+the constructor; simplifying this format alone does not solve distractor
+variety.
 
 The [current combined-source offline replay](evidence/combined-current-bank-replay-20260927/RESULTS.md)
 constructed 20/40/80 unique exact stems, but found 1/14/78 same numeric

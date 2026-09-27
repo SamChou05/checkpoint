@@ -1,0 +1,100 @@
+{
+  "reviewType": "independent_answer_blind",
+  "worksheetSha256": "70dc180f8f344846075651fa77c79fb3965844493f85feb100c485c35a4473eb",
+  "difficultyScale": "1=easiest, 5=hardest; target=2-3",
+  "items": [
+    {
+      "id": "Q01",
+      "selectedAnswer": "C",
+      "ambiguous": false,
+      "otherViableKeys": [],
+      "answerRationale": "Nobody is a singular indefinite pronoun, so knows agrees with it. Each, someone, and anybody are also singular; have, are, and need respectively fail to agree with those subjects.",
+      "difficulty": 2,
+      "difficultyAgainstTarget": "within_target",
+      "testsOnlyOneFamiliarAgreementRule": true,
+      "rule": "Singular indefinite pronouns take singular present-tense verbs, regardless of intervening or nearby words.",
+      "choicePairs": [
+        {
+          "pair": "A-B",
+          "meaningfullyDistinct": false,
+          "reason": "Both are singular indefinite subjects followed by a plural noun and an incorrectly plural verb; the of-phrase versus locative phrase changes the wording more than the agreement task."
+        },
+        {
+          "pair": "A-C",
+          "meaningfullyDistinct": false,
+          "reason": "Each of the markers and nobody among the volunteers both require a singular verb despite a nearby plural noun; correctness differs, but the subject-identification rule is the same."
+        },
+        {
+          "pair": "A-D",
+          "meaningfullyDistinct": true,
+          "reason": "A places a plural noun after the indefinite subject, while D uses a participial modifier without a competing plural noun. D is structurally simpler."
+        },
+        {
+          "pair": "B-C",
+          "meaningfullyDistinct": false,
+          "reason": "Both use a singular indefinite subject plus a prepositional phrase containing a plural noun; they differ mainly in vocabulary and verb correctness."
+        },
+        {
+          "pair": "B-D",
+          "meaningfullyDistinct": true,
+          "reason": "B has a plural-noun prepositional phrase that could attract the verb; D has an arriving modifier and no plural-noun attraction."
+        },
+        {
+          "pair": "C-D",
+          "meaningfullyDistinct": true,
+          "reason": "C has an intervening plural noun in an among-phrase; D has a participial modifier and no plural-noun attraction."
+        }
+      ],
+      "distractorQuality": "A and B are plausible agreement traps because plural nouns follow singular subjects. D is weaker because its singular subject has no competing plural noun. All three wrong choices repeat the same singular-indefinite-pronoun/plural-verb error, making elimination mechanical once that rule is recognized."
+    },
+    {
+      "id": "Q02",
+      "selectedAnswer": "B",
+      "ambiguous": false,
+      "otherViableKeys": [],
+      "answerRationale": "The singular head noun bundle agrees with rests. The plural directions requires explain; the singular key requires opens; the plural posters requires need.",
+      "difficulty": 2,
+      "difficultyAgainstTarget": "within_target",
+      "testsOnlyOneFamiliarAgreementRule": true,
+      "rule": "The present-tense verb agrees in number with the head of its subject, not with a noun in an intervening modifier.",
+      "choicePairs": [
+        {
+          "pair": "A-B",
+          "meaningfullyDistinct": true,
+          "reason": "A has a plural head and an incorrectly singular verb after a participial modifier; B has a singular head, an of-phrase with a plural noun, and a correctly singular verb."
+        },
+        {
+          "pair": "A-C",
+          "meaningfullyDistinct": true,
+          "reason": "A is a plural-head/singular-verb error and C is a singular-head/plural-verb error; their intervening modifiers also differ."
+        },
+        {
+          "pair": "A-D",
+          "meaningfullyDistinct": false,
+          "reason": "Both are plural-head/singular-verb errors with an intervening singular noun. The participial phrase versus unlike-phrase changes syntax somewhat, but the agreement decision is effectively identical."
+        },
+        {
+          "pair": "B-C",
+          "meaningfullyDistinct": false,
+          "reason": "Both have a singular head followed by a prepositional phrase containing a plural noun. Only the chosen verb number changes the agreement result."
+        },
+        {
+          "pair": "B-D",
+          "meaningfullyDistinct": true,
+          "reason": "B tests a singular head against a nearby plural noun and agrees; D tests a plural head against a nearby singular noun and disagrees."
+        },
+        {
+          "pair": "C-D",
+          "meaningfullyDistinct": true,
+          "reason": "C incorrectly gives a singular head a plural verb, whereas D incorrectly gives a plural head a singular verb; the attraction direction reverses."
+        }
+      ],
+      "distractorQuality": "A and D both plausibly draw attention to a nearby singular noun even though the head is plural; C reverses that attraction and is also plausible. The set offers both mismatch directions, but A/D and B/C form near-duplicate agreement decisions."
+    }
+  ],
+  "acrossItems": {
+    "repeatedFormat": true,
+    "repeatedSolvingMethod": true,
+    "assessment": "Both ask the learner to pick the sole complete sentence with correct present-tense agreement. In each, locate the subject head, ignore a nearby modifier, and choose the verb form that matches. Q01 narrows this to singular indefinite pronouns, while Q02 mixes singular and plural noun heads; the shared format and rapid elimination method still make the pair repetitive."
+  }
+}

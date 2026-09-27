@@ -1,0 +1,119 @@
+{
+  "reviewType": "independent_answer_blind",
+  "source": {
+    "file": "worksheet-v2.json",
+    "sha256": "6543527b43ac19e0b82799d7a0bd48f3460eaafa5837f52560f40fdfdb7581db"
+  },
+  "targetDifficulty": [2, 3],
+  "items": [
+    {
+      "id": "Q01",
+      "selectedKey": "C",
+      "keyStatus": "unique",
+      "otherViableKeys": [],
+      "keyReason": "Nobody is singular, so knows agrees with it. Everyone, someone, and anybody are also singular; their choices use plural verb forms.",
+      "cognitiveDifficulty": 2,
+      "difficultyWithinTarget": true,
+      "difficultyReason": "The intervening prepositional phrases add a small distraction, but every choice uses the same familiar singular-indefinite-pronoun pattern.",
+      "singleFamiliarRule": true,
+      "rule": "Singular indefinite pronouns take singular present-tense verbs, regardless of an intervening prepositional phrase.",
+      "pairwiseChoices": [
+        {
+          "pair": "A-B",
+          "meaningfullyDistinct": false,
+          "distractorQuality": "weak_redundancy",
+          "reason": "Both are singular indefinite pronouns followed by a prepositional phrase and an incorrectly plural verb; changing the pronoun and verb does not change the reasoning."
+        },
+        {
+          "pair": "A-C",
+          "meaningfullyDistinct": true,
+          "distractorQuality": "adequate_contrast",
+          "reason": "The verbs differ in agreement: have fails with Everyone, while knows agrees with Nobody. The sentence templates remain very similar."
+        },
+        {
+          "pair": "A-D",
+          "meaningfullyDistinct": false,
+          "distractorQuality": "weak_redundancy",
+          "reason": "Both use a singular indefinite pronoun with an incorrectly plural lexical verb after a prepositional phrase."
+        },
+        {
+          "pair": "B-C",
+          "meaningfullyDistinct": true,
+          "distractorQuality": "adequate_contrast",
+          "reason": "Are is plural with singular Someone; knows is singular with singular Nobody. The same template makes the contrast easy."
+        },
+        {
+          "pair": "B-D",
+          "meaningfullyDistinct": false,
+          "distractorQuality": "weak_redundancy",
+          "reason": "Both use a singular indefinite pronoun and an incorrectly plural verb after a prepositional phrase; the copula versus lexical verb is a surface variation."
+        },
+        {
+          "pair": "C-D",
+          "meaningfullyDistinct": true,
+          "distractorQuality": "adequate_contrast",
+          "reason": "Knows agrees with singular Nobody; need does not agree with singular Anybody. The contrast is valid but follows the same template."
+        }
+      ],
+      "overallDistractorQuality": "valid_but_repetitive",
+      "concern": "The three wrong answers all make the same error in nearly identical sentence structures, which reduces variety and may let a learner solve by spotting the lone verb ending in -s."
+    },
+    {
+      "id": "Q02",
+      "selectedKey": "B",
+      "keyStatus": "unique",
+      "otherViableKeys": [],
+      "keyReason": "The singular head noun bundle agrees with rests. Directions and posters are plural and need explain and need; the singular key needs opens.",
+      "cognitiveDifficulty": 2,
+      "difficultyWithinTarget": true,
+      "difficultyReason": "A reader must identify the head of each subject phrase despite a nearby noun, but each sentence has a short, familiar subject and present-tense verb.",
+      "singleFamiliarRule": true,
+      "rule": "A present-tense verb agrees with the head of its subject phrase, not a noun in an intervening prepositional phrase.",
+      "pairwiseChoices": [
+        {
+          "pair": "A-B",
+          "meaningfullyDistinct": true,
+          "distractorQuality": "adequate_contrast",
+          "reason": "Plural directions incorrectly takes explains; singular bundle correctly takes rests. The contrast requires locating the head noun."
+        },
+        {
+          "pair": "A-C",
+          "meaningfullyDistinct": true,
+          "distractorQuality": "adequate_variety",
+          "reason": "Both are wrong, but A assigns a singular verb to a plural head and C assigns a plural verb to a singular head."
+        },
+        {
+          "pair": "A-D",
+          "meaningfullyDistinct": false,
+          "distractorQuality": "weak_redundancy",
+          "reason": "Both have plural head nouns followed by singular verbs after prepositional phrases; they present the same error direction."
+        },
+        {
+          "pair": "B-C",
+          "meaningfullyDistinct": true,
+          "distractorQuality": "strong_contrast",
+          "reason": "Both have singular heads and intervening plural nouns, but rests agrees with bundle while open fails with key."
+        },
+        {
+          "pair": "B-D",
+          "meaningfullyDistinct": true,
+          "distractorQuality": "adequate_contrast",
+          "reason": "Singular bundle correctly takes rests; plural posters incorrectly takes needs. The difference follows the head nouns, not letters or hallway."
+        },
+        {
+          "pair": "C-D",
+          "meaningfullyDistinct": true,
+          "distractorQuality": "adequate_variety",
+          "reason": "Both are wrong, but C has a singular head with a plural verb and D has a plural head with a singular verb."
+        }
+      ],
+      "overallDistractorQuality": "adequate_with_one_redundant_pair",
+      "concern": "A and D repeat the same plural-subject/singular-verb error, though C supplies the reverse error and B gives a useful singular-head contrast."
+    }
+  ],
+  "acrossItems": {
+    "sameSolvingMethod": true,
+    "sameFormat": true,
+    "assessment": "Both are four-choice, full-sentence 'find the one with correct present-tense agreement' items. In each, the reader locates the subject head, ignores the intervening prepositional phrase, and checks the verb. Q01 narrows the heads to singular indefinite pronouns; Q02 varies singular and plural noun heads. The second item adds some variation, but the shared solving routine and all-correct-sentence format remain conspicuous."
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "reviewType": "independent_answer_blind",
+  "sourceFile": "worksheet.json",
+  "sourceSha256": "3612741f466bde9a071ea47bce03948a8f9d5763eeebaf4a83b4a6e07cfd29bb",
+  "difficultyScale": "1=very easy; 5=very hard",
+  "targetDifficulty": [
+    2,
+    3
+  ],
+  "items": [
+    {
+      "id": "Q01",
+      "uniqueKey": "C",
+      "ambiguous": false,
+      "otherViableKeys": [],
+      "keyReason": "Nobody is singular, so knows agrees with it. Everyone, someone, and anybody are also singular; have, are, and need do not agree with those subjects. The intervening prepositional phrases do not change the subject number.",
+      "cognitiveDifficulty": 2,
+      "withinTargetDifficulty": true,
+      "oneFamiliarAgreementRule": true,
+      "rule": "Singular indefinite pronouns such as everyone, someone, nobody, and anybody take singular present-tense verbs even when a plural noun follows in a prepositional phrase.",
+      "distractors": {
+        "A": {
+          "quality": "adequate",
+          "reason": "The nearby plural trails and the plural meaning of everyone can attract an incorrect plural verb, though the mismatch is conventional and easy to spot."
+        },
+        "B": {
+          "quality": "adequate",
+          "reason": "The nearby plural lockers offers an attraction cue; the wrong auxiliary are is conspicuous with someone."
+        },
+        "D": {
+          "quality": "adequate",
+          "reason": "The nearby plural batteries offers an attraction cue, but need repeats the same missing singular inflection used in A."
+        }
+      },
+      "pairwiseChoiceReview": [
+        {
+          "pair": "A-B",
+          "meaningfulDistinctness": "limited",
+          "distractorQuality": "Both are plausible attraction errors, but they test the same singular-indefinite-pronoun rule; B uses an auxiliary while A uses a lexical verb."
+        },
+        {
+          "pair": "A-C",
+          "meaningfulDistinctness": "limited",
+          "distractorQuality": "C is correctly inflected and A is not, but the options otherwise share an indefinite-pronoun subject followed by a prepositional phrase."
+        },
+        {
+          "pair": "A-D",
+          "meaningfulDistinctness": "low",
+          "distractorQuality": "Both wrong options use a singular indefinite pronoun, intervening plural noun, and uninflected lexical verb; changing the scene adds little diagnostic variety."
+        },
+        {
+          "pair": "B-C",
+          "meaningfulDistinctness": "limited",
+          "distractorQuality": "B has a wrong present-tense auxiliary and C a correct lexical verb, but both reduce to agreement with a singular indefinite pronoun across a prepositional phrase."
+        },
+        {
+          "pair": "B-D",
+          "meaningfulDistinctness": "limited",
+          "distractorQuality": "Both are plausible wrong agreement forms after a plural noun; the auxiliary versus lexical verb is the only substantive variation."
+        },
+        {
+          "pair": "C-D",
+          "meaningfulDistinctness": "limited",
+          "distractorQuality": "C is correctly inflected and D is not; both use the same subject and intervening-phrase pattern."
+        }
+      ],
+      "overallChoiceSet": "All four sentences are grammatical except for the intended agreement error in three choices. The options are clean but structurally repetitive, so the distractors do not probe substantially different misconceptions."
+    },
+    {
+      "id": "Q02",
+      "uniqueKey": "B",
+      "ambiguous": false,
+      "otherViableKeys": [],
+      "keyReason": "The kettle and the toaster is a compound subject joined by and, so the plural verb work agrees. The other options have two separately determined nouns joined by and but use singular is, belongs, or has.",
+      "cognitiveDifficulty": 1,
+      "withinTargetDifficulty": false,
+      "oneFamiliarAgreementRule": true,
+      "rule": "Two distinct singular nouns joined by and form a plural subject and take a plural present-tense verb.",
+      "distractors": {
+        "A": {
+          "quality": "weak",
+          "reason": "Is is a clear singular mismatch with two separately named objects; there is no intervening material or competing number cue."
+        },
+        "C": {
+          "quality": "weak",
+          "reason": "Belongs is the same obvious singular-for-plural error in the same noun-and-noun frame."
+        },
+        "D": {
+          "quality": "weak",
+          "reason": "Has again repeats the singular-for-plural error in the same frame; it adds little beyond a different verb."
+        }
+      },
+      "pairwiseChoiceReview": [
+        {
+          "pair": "A-B",
+          "meaningfulDistinctness": "limited",
+          "distractorQuality": "B has the required plural verb and A does not; both otherwise use the same two-determined-nouns joined by and construction."
+        },
+        {
+          "pair": "A-C",
+          "meaningfulDistinctness": "low",
+          "distractorQuality": "Both are the same singular-verb error after two nouns joined by and; changing is to belongs does not test a different misconception."
+        },
+        {
+          "pair": "A-D",
+          "meaningfulDistinctness": "low",
+          "distractorQuality": "Both are the same singular-verb error after two nouns joined by and; the objects and verb change only superficially."
+        },
+        {
+          "pair": "B-C",
+          "meaningfulDistinctness": "limited",
+          "distractorQuality": "The correct plural verb in B contrasts with the singular verb in C, within an otherwise identical compound-subject frame."
+        },
+        {
+          "pair": "B-D",
+          "meaningfulDistinctness": "limited",
+          "distractorQuality": "The correct plural verb in B contrasts with the singular verb in D, within an otherwise identical compound-subject frame."
+        },
+        {
+          "pair": "C-D",
+          "meaningfulDistinctness": "low",
+          "distractorQuality": "Both are near-duplicate wrong options with separately determined nouns joined by and and a singular lexical verb."
+        }
+      ],
+      "overallChoiceSet": "The key is secure, but three near-duplicate agreement errors make the correct option easy to isolate. The compound subject and verb are adjacent, so this falls below the requested 2-3 difficulty."
+    }
+  ],
+  "crossItemReview": {
+    "repeatedSolvingMethod": true,
+    "repeatedFormat": true,
+    "explanation": "Both ask the learner to choose the sole correct full sentence among four unrelated scenes by finding the subject and checking a single present-tense verb. Q01 tests singular indefinite pronouns with intervening phrases; Q02 tests plural and-compound subjects. Thus the underlying rules differ, while the answer-selection method and option construction repeat.",
+    "qualityImplication": "As a two-item set, the rule coverage is distinct, but the repeated one-correct/three-same-error format reduces variety. Q02 needs more demanding yet unambiguous distractors to meet the 2-3 target."
+  }
+}

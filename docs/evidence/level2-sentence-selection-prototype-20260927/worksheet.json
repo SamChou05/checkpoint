@@ -1,0 +1,26 @@
+{
+  "status": "answer_blind_prototype",
+  "targetDifficulty": [2, 3],
+  "items": [
+    {
+      "id": "Q01",
+      "prompt": "A copy editor reviews sentences from four unrelated notices. Which sentence has correct present-tense subject-verb agreement in standard written American English?",
+      "choices": {
+        "A": "Everyone on the hiking trails have a map.",
+        "B": "Someone beside the storage lockers are waiting for a key.",
+        "C": "Nobody among the volunteers knows the new route.",
+        "D": "Anybody with the spare batteries need to sign the sheet."
+      }
+    },
+    {
+      "id": "Q02",
+      "prompt": "Which complete sentence could be printed without changing its present-tense subject-verb agreement in standard written American English?",
+      "choices": {
+        "A": "The compass and the map is on the table.",
+        "B": "The kettle and the toaster work on the same outlet.",
+        "C": "The bicycle and the helmet belongs in the shed.",
+        "D": "The violin and the cello has new cases."
+      }
+    }
+  ]
+}
