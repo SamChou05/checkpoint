@@ -1,0 +1,66 @@
+{
+  "worksheet_sha256": "86ab3293b3a212b3914a56fbd89c572c361f66ccddf741bebadf4a139a3d2488",
+  "capture_sha256": "712f7f4bd1581e87583fea2dbd11ae772e32f1faac1356eb9f2e45f616c0809e",
+  "items": {
+    "Q01": {
+      "code_owned_key": "A",
+      "expected_answer": "16/7",
+      "difficulty": 2,
+      "explanation": "Multiply by the reciprocal: 6 / 7 = 6 * (1/7) = 6/7. Multiply by the reciprocal: 4 / 6 = 4 * (1/6) = 4/6 = 2/3. Multiply by the reciprocal: (6/7) / (2/3) = (6/7) * (3/2) = 18/14 = 9/7. Common denominator 7: (9/7) + 1 = (9/7) + (7/7) = 16/7. The answer is 16/7.",
+      "choice_explanations": {
+        "A": "The expression evaluates exactly to 16/7; 16/7 is the requested value.",
+        "B": "5/4: This can come from combining the numerators and denominators separately. (9/7) + 1 = 16/7, not 5/4.",
+        "C": "10/7: This can come from using a common denominator without scaling the numerators. (9/7) + 1 = 16/7, not 10/7.",
+        "D": "9/7: This stops at the left operand before the final operation. (9/7) + 1 = 16/7, not 9/7."
+      }
+    },
+    "Q02": {
+      "code_owned_key": "C",
+      "expected_answer": "7",
+      "difficulty": 2,
+      "explanation": "Because x + 1 is nonzero throughout the domain, cross-multiply: 2(x + 5) = 3(x + 1). Expanding gives 2x + 10 = 3x + 3, so 7 = x, giving x = 7. The nonzero x coefficient makes this the only solution in the domain.",
+      "choice_explanations": {
+        "A": "At x = 5, 5/3 = 3/2 is false. This value does not satisfy the condition.",
+        "B": "At x = 8, 13/9 = 3/2 is false. This value does not satisfy the condition.",
+        "C": "At x = 7, 3/2 = 3/2 is true. This is the only offered value satisfying the condition.",
+        "D": "At x = 6, 11/7 = 3/2 is false. This value does not satisfy the condition."
+      }
+    },
+    "Q03": {
+      "code_owned_key": "C",
+      "expected_answer": "8",
+      "difficulty": 2,
+      "explanation": "At x = 8, 88 <= 88 is true. 8 is the maximum value satisfying the condition in this domain. The larger domain values fail: x = 9: 108 <= 88 is false; x = 10: 130 <= 88 is false; x = 11: 154 <= 88 is false.",
+      "choice_explanations": {
+        "A": "At x = 7, 70 <= 88 is true. The question asks for the maximum; that value is 8.",
+        "B": "At x = 10, 130 <= 88 is false. This value does not satisfy the condition.",
+        "C": "At x = 8, 88 <= 88 is true. This is the maximum value satisfying the condition in this domain.",
+        "D": "At x = 9, 108 <= 88 is false. This value does not satisfy the condition."
+      }
+    },
+    "Q04": {
+      "code_owned_key": "C",
+      "expected_answer": "are; is",
+      "difficulty": 2,
+      "explanation": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees. Therefore the ordered pair is are; is.",
+      "choice_explanations": {
+        "A": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. \"is\" does not agree; use \"are\". Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees.",
+        "B": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. \"are\" does not agree; use \"is\".",
+        "C": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees.",
+        "D": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. \"is\" does not agree; use \"are\". Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. \"are\" does not agree; use \"is\"."
+      }
+    },
+    "Q05": {
+      "code_owned_key": "A",
+      "expected_answer": "requires; measure",
+      "difficulty": 2,
+      "explanation": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees. Therefore the ordered pair is requires; measure.",
+      "choice_explanations": {
+        "A": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+        "B": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\".",
+        "C": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+        "D": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\"."
+      }
+    }
+  }
+}

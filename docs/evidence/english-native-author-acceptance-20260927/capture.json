@@ -1,0 +1,51 @@
+{
+  "plan_sha256": "db6295d74338ddfe0219645fe0e41539c2c144cd1b254e6d681b27af36d0ace5",
+  "status": "completed",
+  "sts_calls": 1,
+  "converse_calls": 1,
+  "author_response": {
+    "output": {
+      "message": {
+        "content": [
+          {
+            "text": "{\"questions\":{\"0\":{\"family\":\"fraction_quotient\",\"a\":6,\"b\":4},\"1\":{\"family\":\"bounded_rational_equation\",\"a\":5,\"b\":7},\"2\":{\"family\":\"bounded_quadratic_maximum\",\"a\":3,\"b\":8},\"3\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"inversion_library\",\"order\":\"plural_first\"},\"4\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"gerund_meals\",\"order\":\"singular_first\"}}}"
+          }
+        ]
+      }
+    },
+    "stopReason": "end_turn",
+    "usage": {
+      "inputTokens": 2991,
+      "outputTokens": 383,
+      "totalTokens": 3374,
+      "cacheReadInputTokens": 0,
+      "cacheWriteInputTokens": 0
+    },
+    "metrics": {
+      "latencyMs": 18662
+    },
+    "safeResponseMetadata": {
+      "requestId": "15ae7d02-7cf0-48d1-894b-e5bb83393dfd",
+      "httpStatus": 200
+    }
+  },
+  "credential_remaining_seconds_at_dispatch": 866,
+  "reasoning_blocks_omitted": 1,
+  "chosen_families": {
+    "0": "fraction_quotient",
+    "1": "bounded_rational_equation",
+    "2": "bounded_quadratic_maximum"
+  },
+  "chosen_scenes": {
+    "3": "inversion_library",
+    "4": "gerund_meals"
+  },
+  "offline_compilation": {
+    "rows": 5,
+    "numeric_proofs": 3,
+    "english_proofs": 2,
+    "failures": []
+  },
+  "elapsed_seconds": 19.652,
+  "within_deadline": true
+}

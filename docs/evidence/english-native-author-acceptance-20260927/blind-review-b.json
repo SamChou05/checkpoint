@@ -1,0 +1,99 @@
+{
+  "worksheet_sha256": "86ab3293b3a212b3914a56fbd89c572c361f66ccddf741bebadf4a139a3d2488",
+  "review_type": "independent_answer_blind",
+  "minimum_difficulty": 2,
+  "question_reviews": [
+    {
+      "id": "Q01",
+      "chosen_key": "A",
+      "multiple_viable_keys": false,
+      "reason": "Dividing 6/7 by 4/6 gives 9/7; adding 1 gives 16/7.",
+      "difficulty_rating_1_to_5": 2,
+      "meets_minimum_difficulty": true,
+      "choice_pair_reviews": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "16/7 and 5/4 are different exact values."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "16/7 and 10/7 differ by 6/7."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "16/7 and 9/7 differ by the added 1."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "5/4 and 10/7 are unequal rational numbers."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "5/4 and 9/7 are unequal rational numbers."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "10/7 and 9/7 differ by 1/7."}
+      ]
+    },
+    {
+      "id": "Q02",
+      "chosen_key": "C",
+      "multiple_viable_keys": false,
+      "reason": "Cross-multiplication gives 8(x + 5) = 12(x + 1), so 28 = 4x and x = 7, within the stated domain.",
+      "difficulty_rating_1_to_5": 2,
+      "meets_minimum_difficulty": true,
+      "choice_pair_reviews": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "5 and 8 are different substitutions into the condition."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "5 and 7 give different ratios; only 7 satisfies the equation."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "5 and 6 are distinct integers yielding different ratios."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "8 and 7 give different ratios; only 7 satisfies the equation."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "8 and 6 are distinct integers yielding different ratios."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "7 and 6 give different ratios; only 7 satisfies the equation."}
+      ]
+    },
+    {
+      "id": "Q03",
+      "chosen_key": "C",
+      "multiple_viable_keys": false,
+      "reason": "At x = 8 the product is 8(11) = 88; at x = 9 it is 9(12) = 108, and the product increases over the given domain.",
+      "difficulty_rating_1_to_5": 2,
+      "meets_minimum_difficulty": true,
+      "choice_pair_reviews": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "7 satisfies the bound but is not the maximum; 10 exceeds it."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "Both satisfy the bound, but 8 is larger than 7."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "7 satisfies the bound whereas 9 exceeds it."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "10 exceeds the bound whereas 8 reaches it."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "Both exceed the bound but are different proposed maxima."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "8 reaches the bound whereas 9 exceeds it."}
+      ]
+    },
+    {
+      "id": "Q04",
+      "chosen_key": "C",
+      "multiple_viable_keys": false,
+      "reason": "The inverted subjects are plural 'returns' in the first clause and singular 'book' in the second, requiring 'are; is'.",
+      "difficulty_rating_1_to_5": 3,
+      "meets_minimum_difficulty": true,
+      "choice_pair_reviews": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "Both verb positions differ."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "The first verb differs, changing agreement with 'returns'."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "The second verb differs, changing agreement with 'book'."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "The second verb differs, changing agreement with 'book'."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "The first verb differs, changing agreement with 'returns'."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "Both verb positions differ."}
+      ]
+    },
+    {
+      "id": "Q05",
+      "chosen_key": "A",
+      "multiple_viable_keys": false,
+      "reason": "The gerund phrase 'Preparing the meals' is singular and takes 'requires'; plural 'cooks' takes 'measure'.",
+      "difficulty_rating_1_to_5": 2,
+      "meets_minimum_difficulty": true,
+      "choice_pair_reviews": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "The second verb differs, changing agreement with plural 'cooks'."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "The first verb differs, changing agreement with the gerund phrase."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "Both verb positions differ."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "Both verb positions differ."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "The first verb differs, changing agreement with the gerund phrase."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "The second verb differs, changing agreement with plural 'cooks'."}
+      ]
+    }
+  ],
+  "cross_pair_reviews": [
+    {"pair": "Q01-Q02", "similarity": "moderate", "reason": "Both use exact fractions and division, but Q01 evaluates an expression while Q02 solves for an integer."},
+    {"pair": "Q01-Q03", "similarity": "low", "reason": "Both are numeric, but fraction evaluation and bounded product maximization require different methods and formats."},
+    {"pair": "Q01-Q04", "similarity": "none", "reason": "Exact fraction computation and inverted subject-verb agreement have different methods and formats."},
+    {"pair": "Q01-Q05", "similarity": "none", "reason": "Exact fraction computation and subject-verb agreement have different methods and formats."},
+    {"pair": "Q02-Q03", "similarity": "strong", "reason": "Both state a bounded integer domain and a condition on x, then ask for an offered x; equality solving versus finding a maximum is the main method difference."},
+    {"pair": "Q02-Q04", "similarity": "none", "reason": "Solving a rational equation and choosing agreement forms use different methods and formats."},
+    {"pair": "Q02-Q05", "similarity": "none", "reason": "Solving a rational equation and choosing agreement forms use different methods and formats."},
+    {"pair": "Q03-Q04", "similarity": "none", "reason": "A bounded numeric inequality and inverted subject-verb agreement have different methods and formats."},
+    {"pair": "Q03-Q05", "similarity": "none", "reason": "A bounded numeric inequality and subject-verb agreement have different methods and formats."},
+    {"pair": "Q04-Q05", "similarity": "strong", "reason": "Both ask for two present-tense agreement forms and present all four combinations of singular and plural forms; their subject structures differ."}
+  ]
+}

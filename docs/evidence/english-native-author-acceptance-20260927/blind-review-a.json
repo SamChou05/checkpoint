@@ -1,0 +1,100 @@
+{
+  "review_type": "independent_answer_blind",
+  "worksheet_sha256": "86ab3293b3a212b3914a56fbd89c572c361f66ccddf741bebadf4a139a3d2488",
+  "difficulty_scale": "1=very easy, 5=very hard",
+  "requested_minimum_difficulty": 2,
+  "question_reviews": [
+    {
+      "id": "Q01",
+      "chosen_answer": "A",
+      "solution": "(6/7)/(4/6) = (6/7)(6/4) = 9/7; adding 1 gives 16/7.",
+      "multiple_viable_keys": false,
+      "difficulty": 2,
+      "meets_minimum_difficulty": true,
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "16/7 is the completed expression; 5/4 is a different exact value."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "16/7 includes the final addition; 10/7 is a distinct result."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "9/7 is the intermediate quotient before adding 1, making this a diagnostic contrast."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "5/4 and 10/7 are unequal exact rational values."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "5/4 and 9/7 differ by only 1/28 but exact evaluation distinguishes them; the diagnostic value of 5/4 is weaker."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "10/7 and 9/7 differ by 1/7, and 9/7 has a recognizable intermediate-step origin."}
+      ]
+    },
+    {
+      "id": "Q02",
+      "chosen_answer": "C",
+      "solution": "8(x+5)=12(x+1), so 8x+40=12x+12 and x=7. It lies in the stated domain.",
+      "multiple_viable_keys": false,
+      "difficulty": 2,
+      "meets_minimum_difficulty": true,
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "x=5 gives 5/3, whereas x=8 gives 13/9; neither equals 3/2."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "x=5 gives 5/3; x=7 gives the required 3/2."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "x=5 gives 5/3 and x=6 gives 11/7, distinct condition values."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "x=8 gives 13/9; x=7 gives the required 3/2."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "x=8 gives 13/9 and x=6 gives 11/7, on opposite sides of 3/2."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "x=7 satisfies the equation; x=6 gives 11/7."}
+      ]
+    },
+    {
+      "id": "Q03",
+      "chosen_answer": "C",
+      "solution": "At x=8, x(x+3)=88, so 8 qualifies. Every larger x in the domain has a larger product and fails; hence the maximum is 8.",
+      "multiple_viable_keys": false,
+      "difficulty": 2,
+      "meets_minimum_difficulty": true,
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "7 satisfies the bound with product 70; 10 violates it with product 130."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "Both 7 and 8 satisfy the bound, but only 8 is the maximum; this tests the word 'maximum'."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "7 satisfies with product 70; 9 violates with product 108."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "10 violates with product 130; 8 reaches the limit exactly."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "Both 10 and 9 violate the bound, but produce different products (130 and 108); this is a weaker diagnostic contrast."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "8 reaches the inclusive bound of 88; 9 exceeds it at 108."}
+      ]
+    },
+    {
+      "id": "Q04",
+      "chosen_answer": "C",
+      "solution": "The first post-verbal subject is plural 'the returns', so 'are'; the second is singular 'the book', so 'is'. The nearby librarian and volunteers are not the subjects.",
+      "multiple_viable_keys": false,
+      "difficulty": 3,
+      "meets_minimum_difficulty": true,
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "The forms differ at both blanks and represent opposite agreement patterns."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "The first blank differs: plural 'returns' requires 'are'."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "Both blanks differ; A uses singular agreement twice and D follows the nearby nouns."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "The second blank differs: singular 'book' requires 'is'."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "The first blank differs: plural 'returns' requires 'are'."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "Both blanks differ; C agrees with the actual subjects and D with the nearby nouns."}
+      ]
+    },
+    {
+      "id": "Q05",
+      "chosen_answer": "A",
+      "solution": "The gerund phrase 'Preparing the meals' is singular and takes 'requires'; plural 'the cooks' takes 'measure'.",
+      "multiple_viable_keys": false,
+      "difficulty": 2,
+      "meets_minimum_difficulty": true,
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "The second blank differs: plural 'cooks' takes 'measure'."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "The first blank differs: the singular gerund phrase takes 'requires'."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "Both agreement decisions differ; A agrees at both blanks."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "Both agreement decisions differ; each option misses a different subject."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "The first blank differs: the gerund phrase takes 'requires'."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "The second blank differs: plural 'cooks' takes 'measure'."}
+      ]
+    }
+  ],
+  "cross_item_pair_reviews": [
+    {"pair": "Q01-Q02", "similarity": "moderate", "reason": "Both use exact fractions, but Q01 evaluates a fixed expression while Q02 solves a rational equation for an integer."},
+    {"pair": "Q01-Q03", "similarity": "low", "reason": "Both are numeric and exact; Q01 computes one expression, whereas Q03 finds a maximum under an inequality."},
+    {"pair": "Q01-Q04", "similarity": "none", "reason": "Rational arithmetic and inverted subject-verb agreement have different formats and solving methods."},
+    {"pair": "Q01-Q05", "similarity": "none", "reason": "Rational arithmetic and two-clause subject-verb agreement have different formats and solving methods."},
+    {"pair": "Q02-Q03", "similarity": "strong", "reason": "Both state an integer domain and an explicit condition, then ask which offered integer meets a criterion; checking candidate values is viable for both, despite equation versus inequality."},
+    {"pair": "Q02-Q04", "similarity": "none", "reason": "Solving a rational condition for x differs from choosing agreement forms in inverted clauses."},
+    {"pair": "Q02-Q05", "similarity": "none", "reason": "Solving a rational condition for x differs from matching verbs to grammatical subjects."},
+    {"pair": "Q03-Q04", "similarity": "none", "reason": "A bounded numeric maximum and inverted subject-verb agreement have different solving methods and answer formats."},
+    {"pair": "Q03-Q05", "similarity": "none", "reason": "A bounded numeric inequality and verb-form selection have different solving methods and answer formats."},
+    {"pair": "Q04-Q05", "similarity": "strong", "reason": "Both use the same two-blank present-tense agreement format with four ordered-pair options covering all singular/plural combinations; the subject structures differ."}
+  ]
+}
