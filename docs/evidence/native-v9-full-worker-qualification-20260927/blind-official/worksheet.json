@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "kind": "prespecified_returned_output",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "0b929f1304a4debc7ce52daf",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((3 / 4) + (4 / 6)) * 3). What is its exact value?",
+      "choices": {
+        "A": "17/36",
+        "B": "1/4",
+        "C": "51",
+        "D": "17/4"
+      }
+    },
+    {
+      "id": "9dbdab450fcc1c5aa5c98c8d",
+      "requested_slot": true,
+      "unavailable": true
+    },
+    {
+      "id": "2f24108169cc72374f0cb55e",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 6 through 12, inclusive. Condition: ((4 * (x + 2)) + x) <= 53. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "9",
+        "B": "11",
+        "C": "8",
+        "D": "10"
+      }
+    },
+    {
+      "id": "6b1c86c9bf4e606a311b68ea",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Preparing the meals ___ planning, and the cooks ___ the ingredients. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "require; measures",
+        "B": "requires; measure",
+        "C": "requires; measures",
+        "D": "require; measure"
+      }
+    },
+    {
+      "id": "ee692408cd2a469b77f4897b",
+      "requested_slot": true,
+      "stem": "Fill both blanks with present-tense forms in standard written American English. The editors who ___ the proofs are here. One of the editors ___ a notebook. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "checks; carries",
+        "B": "check; carries",
+        "C": "check; carry",
+        "D": "checks; carry"
+      }
+    }
+  ]
+}
