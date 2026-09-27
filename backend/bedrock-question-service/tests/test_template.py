@@ -298,7 +298,7 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             2,
         )
         self.assertIn(
-            "BEDROCK_REASONING_EFFORT: ${{ vars.BEDROCK_REASONING_EFFORT || 'low' }}",
+            "BEDROCK_REASONING_EFFORT: ${{ vars.BEDROCK_REASONING_EFFORT }}",
             self.deploy_workflow,
         )
         self.assertIn(
