@@ -657,9 +657,16 @@ def _generate_with_bedrock(
         if mode == "native":
             from botocore.exceptions import ClientError, ParamValidationError
 
+            provider_error = error.response.get("Error", {}) if isinstance(error, ClientError) else {}
             incompatible_request = isinstance(error, ParamValidationError) or (
                 isinstance(error, ClientError)
-                and error.response.get("Error", {}).get("Code") == "ValidationException"
+                and provider_error.get("Code") == "ValidationException"
+            )
+            provider_message = provider_error.get("Message")
+            grammar_too_large = (
+                incompatible_request
+                and isinstance(provider_message, str)
+                and "compiled grammar is too large" in provider_message.casefold()
             )
             if request_metrics is not None:
                 request_metrics.setdefault("ProviderObservations", []).append({
@@ -670,6 +677,11 @@ def _generate_with_bedrock(
                 })
             if incompatible_request:
                 record_quality(request_metrics, "provider", "native_request_invalid")
+                if grammar_too_large:
+                    record_quality(request_metrics, "provider", "native_grammar_too_large")
+                    raise ServiceConfigurationError(
+                        "Bedrock rejected the native output schema because its compiled grammar is too large."
+                    ) from error
                 raise ServiceConfigurationError(
                     "Bedrock rejected the native request; qualify the configured model, "
                     "schema and packaged SDK before enabling native mode."

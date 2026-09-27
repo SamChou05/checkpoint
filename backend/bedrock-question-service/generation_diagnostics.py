@@ -57,6 +57,7 @@ QUALITY_REASONS = {
     "provider": {
         "output_truncated", "empty_output", "invalid_json", "request_failed",
         "native_incomplete", "native_contract_invalid", "native_request_invalid",
+        "native_grammar_too_large",
     },
 }
 

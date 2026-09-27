@@ -311,6 +311,34 @@ class NativePipelineTests(unittest.TestCase):
         self.assertEqual(budget.calls, 1)
         self.assertEqual(reserve.call_count, 1)
         self.assertEqual(metrics["ProviderCalls"], 1)
+        self.assertNotIn("native_grammar_too_large", metrics["QuestionQuality"]["provider"])
+
+    def test_compiled_grammar_rejection_has_bounded_diagnostic(self):
+        from botocore.exceptions import ClientError
+
+        secret = "private-learner-text"
+        error = ClientError({"Error": {
+            "Code": "ValidationException",
+            "Message": (
+                "The model returned the following errors: The compiled grammar is too large, "
+                f"which would cause performance issues. {secret}"
+            ),
+        }}, "Converse")
+        client = ScriptedNativeClient((AUTHOR, error), (AUTHOR, {"questions": []}))
+        budget = generation.ProviderCallBudget(2)
+        metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
+
+        with self.assertRaisesRegex(ServiceConfigurationError, "compiled grammar is too large") as caught:
+            generation._generate_provider_payload(self.request, client, budget, metrics)
+
+        self.assertNotIn(secret, str(caught.exception))
+        self.assertNotIn(secret, json.dumps(metrics))
+        self.assertEqual(metrics["QuestionQuality"]["provider"], {
+            "request_failed": 1, "native_request_invalid": 1, "native_grammar_too_large": 1,
+        })
+        self.assert_failed_observation(metrics, "request_invalid", secret)
+        self.assertEqual([call["modelId"] for call in client.calls], [MODEL])
+        self.assertEqual(budget.calls, 1)
 
     def test_native_schema_error_preserves_verified_top_up_work_without_fallback(self):
         from botocore.exceptions import ClientError
