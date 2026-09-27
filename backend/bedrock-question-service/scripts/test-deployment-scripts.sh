@@ -123,8 +123,8 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 69 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 69"
+[[ "${#sam_arguments[@]}" -eq 70 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 70"
 expected_prefix=(
   deploy
   --stack-name checkpoint-test
@@ -147,7 +147,7 @@ done
   fail "worker model override was not forwarded"
 [[ " ${sam_arguments[*]} " == *" QuestionBankMaxFailedGenerationJobs=3 "* ]] || \
   fail "bank failed-job ceiling override was not forwarded"
-for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerAuthorCardinalityContract=array QuestionBankWorkerFeedbackContract=reviewer_written QuestionBankWorkerTaskOnlyNumericalGoalSHA256= QuestionBankWorkerConstructedAuthorBatchSize=0 QuestionBankWorkerConstructedAuthorBatchGoalSHA256= QuestionBankWorkerMappedFixedFiveGoalSHA256= QuestionBankWorkerMappedFixedFiveScopeSHA256= QuestionBankWorkerMappedAgreementTasks=disabled; do
+for setting in BedrockThinkingMaxTokens=16000 BedrockKimiThinking=disabled BedrockClaudeThinking=disabled QuestionBankWorkerClaudeThinking=inherit BedrockClaudeEffort=high BedrockStructuredOutputMode=legacy QuestionBankWorkerStructuredOutputMode=inherit QuestionAuthorMode=prose QuestionBankWorkerAuthorMode=inherit QuestionBankWorkerAuthorCardinalityContract=array QuestionBankWorkerFeedbackContract=reviewer_written QuestionBankWorkerTaskOnlyNumericalGoalSHA256= QuestionBankWorkerConstructedAuthorBatchSize=0 QuestionBankWorkerConstructedAuthorBatchGoalSHA256= QuestionBankWorkerMappedFixedFiveGoalSHA256= QuestionBankWorkerMappedFixedFiveScopeSHA256= QuestionBankWorkerMappedAgreementTasks=disabled QuestionBankWorkerMappedQuantitativeFamilies=disabled; do
   [[ " ${sam_arguments[*]} " == *" $setting "* ]] || fail "reasoning setting $setting was not forwarded"
 done
 
@@ -204,6 +204,34 @@ for checked_script in validate-deployment-config.sh deploy-sam.sh; do
       fail "$checked_script accepted invalid mapped agreement case $case_name"
     fi
     [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid mapped agreement case $case_name"
+  done
+  family_settings=("${mapped_settings[@]}" QUESTION_BANK_WORKER_MAPPED_QUANTITATIVE_FAMILIES=enabled)
+  env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" "${family_settings[@]}" \
+    "$script_dir/$checked_script"
+  if [[ "$checked_script" == deploy-sam.sh ]]; then
+    mapfile -d '' -t family_arguments < "$sam_capture"
+    [[ " ${family_arguments[*]} " == *" QuestionBankWorkerMappedQuantitativeFamilies=enabled "* ]] || \
+      fail "mapped quantitative family setting was not forwarded"
+  fi
+  for case_name in invalid_mode empty_mode missing_agreement; do
+    case_settings=("${family_settings[@]}")
+    case "$case_name" in
+      invalid_mode) case_settings+=(QUESTION_BANK_WORKER_MAPPED_QUANTITATIVE_FAMILIES=ENABLED) ;;
+      empty_mode) case_settings+=(QUESTION_BANK_WORKER_MAPPED_QUANTITATIVE_FAMILIES=) ;;
+      missing_agreement)
+        case_settings+=(QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS=disabled
+          QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256=
+          QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256=)
+        ;;
+    esac
+    rm -f "$sam_capture"
+    if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+      "${deployment_environment[@]}" "${case_settings[@]}" \
+      "$script_dir/$checked_script" >"$test_directory/family-error" 2>&1; then
+      fail "$checked_script accepted invalid mapped quantitative family case $case_name"
+    fi
+    [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid mapped quantitative family case $case_name"
   done
 done
 

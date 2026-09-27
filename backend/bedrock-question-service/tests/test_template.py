@@ -396,6 +396,23 @@ class BackendInfrastructureTemplateTests(unittest.TestCase):
             self.assertIn(f'!Equals [!Ref {parameter}, ""]', rule)
             self.assertIn(f'!Not [!Equals [!Ref {parameter}, ""]]', rule)
 
+    def test_mapped_quantitative_families_are_dormant_and_require_agreement(self):
+        parameter = "QuestionBankWorkerMappedQuantitativeFamilies"
+        runtime = "QUESTION_MAPPED_QUANTITATIVE_FAMILIES"
+        workflow = "QUESTION_BANK_WORKER_MAPPED_QUANTITATIVE_FAMILIES"
+        configured = _indented_block(self.template, parameter)
+        self.assertIn("Default: disabled", configured)
+        self.assertIn("AllowedValues: [disabled, enabled]", configured)
+        api = _indented_block(self.template, "CheckpointQuestionFunction")
+        worker = _indented_block(self.template, "QuestionBankWorkerFunction")
+        self.assertNotIn(runtime + ":", api)
+        self.assertIn(f"{runtime}: !Ref {parameter}", worker)
+        self.assertIn(f"{workflow}: ${{{{ vars.{workflow} || 'disabled' }}}}", self.deploy_workflow)
+        self.assertIn(f'"{parameter}=${{{workflow}-disabled}}"', self.deploy_script)
+        rule = _indented_block(self.template, "WorkerMappedQuantitativeFamiliesRequiresAgreement")
+        self.assertIn(f"RuleCondition: !Equals [!Ref {parameter}, enabled]", rule)
+        self.assertIn("!Equals [!Ref QuestionBankWorkerMappedAgreementTasks, enabled]", rule)
+
     def test_worker_generation_chunk_size_defaults_to_one_checkpoint(self):
         parameter = self.template.split(
             "  QuestionBankGenerationChunkSize:", maxsplit=1

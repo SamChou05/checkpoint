@@ -33,6 +33,7 @@ parameters=(
   "QuestionBankWorkerMappedFixedFiveGoalSHA256=${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_GOAL_SHA256:-}"
   "QuestionBankWorkerMappedFixedFiveScopeSHA256=${QUESTION_BANK_WORKER_MAPPED_FIXED_FIVE_SCOPE_SHA256:-}"
   "QuestionBankWorkerMappedAgreementTasks=${QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS-disabled}"
+  "QuestionBankWorkerMappedQuantitativeFamilies=${QUESTION_BANK_WORKER_MAPPED_QUANTITATIVE_FAMILIES-disabled}"
   "BedrockGuardrailIdentifier=$BEDROCK_GUARDRAIL_IDENTIFIER"
   "BedrockGuardrailVersion=$BEDROCK_GUARDRAIL_VERSION"
   "BedrockGuardrailArn=$BEDROCK_GUARDRAIL_ARN"

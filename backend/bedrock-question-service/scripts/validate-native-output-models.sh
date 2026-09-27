@@ -183,8 +183,26 @@ validate_worker_mapped_agreement() {
   esac
 }
 
+validate_worker_mapped_quantitative_families() {
+  local mode="${QUESTION_BANK_WORKER_MAPPED_QUANTITATIVE_FAMILIES-disabled}"
+  case "$mode" in
+    disabled) ;;
+    enabled)
+      if [[ "${QUESTION_BANK_WORKER_MAPPED_AGREEMENT_TASKS-disabled}" != enabled ]]; then
+        echo "Mapped quantitative families require enabled worker mapped agreement." >&2
+        return 1
+      fi
+      ;;
+    *)
+      echo "QUESTION_BANK_WORKER_MAPPED_QUANTITATIVE_FAMILIES must be enabled or disabled." >&2
+      return 1
+      ;;
+  esac
+}
+
 validate_worker_read_timeout
 validate_skill_map_override
 validate_native_output_models
 validate_worker_exact_goal_scopes
 validate_worker_mapped_agreement
+validate_worker_mapped_quantitative_families

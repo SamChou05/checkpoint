@@ -29,11 +29,11 @@ fails the one-pass batch explicitly without another provider call.
 `QUESTION_MAPPED_QUANTITATIVE_FAMILIES=enabled` requires the mapped agreement
 route, its exact goal and full-request hashes, the pinned arithmetic objective,
 native transport, constructed quantitative authoring, immutable feedback,
-minimum difficulty 2 and no fallback. The flag defaults to `disabled` and is
-not present in SAM or the deployment workflow. The previous mapped agreement
-schema and prompt hashes are unchanged. This option is not deployed; one
-full-request hash does not authorize subsequent refill states with changed
-history.
+minimum difficulty 2 and no fallback. The worker-only SAM/workflow setting
+`QUESTION_BANK_WORKER_MAPPED_QUANTITATIVE_FAMILIES` defaults to `disabled` and
+requires enabled mapped agreement. The previous mapped agreement schema and
+prompt hashes are unchanged. This option is not deployed; one full-request
+hash does not authorize subsequent refill states with changed history.
 
 Offline verification compiled all 208 allowed operand combinations and checked
 that each has exactly four distinct choices, one matching expected answer and
