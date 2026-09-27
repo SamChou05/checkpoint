@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 
-FAMILIES = ("fraction_evaluation", "bounded_equation", "bounded_inequality")
+FAMILIES = ("fraction_evaluation", "bounded_equation", "bounded_ratio_threshold")
 SUPPORTED_TOPIC = "Exact arithmetic"
 SUPPORTED_OBJECTIVE = "Evaluate an exact rational expression or explicit bounded condition"
 OPERANDS = tuple(range(2, 10))
@@ -61,16 +61,23 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
             _literal(b), _literal(b + 2), _binary("div", 3, 4),
             _binary("add", 2, 5), _literal(3), _binary("mul", 6, 7),
         ], "root": 8}
-    # b is the exact solution or inclusive upper boundary. The coefficient a
-    # is positive, so ax+(a+3)=ab+(a+3) has one domain solution; <= has b as
-    # its maximum solution. Both domains include many false competitors.
-    offset = a + 3
-    task = {"kind": "scalar_condition", "unit": "unitless", "nodes": [
-        _literal(a), {"kind": "variable"}, _binary("mul", 0, 1),
-        _literal(offset), _binary("add", 2, 3),
-        _literal(a * b + offset),
-    ], "condition": {"left": 4, "relation": "eq" if slot == 1 else "le", "right": 5},
-        "selection": "any_satisfying" if slot == 1 else "maximum",
-        "domain": {"kind": "integer_interval", "lower": 0,
-                   "upper": 15 if slot == 1 else b + 3}}
-    return task
+    if slot == 1:
+        # ax+(a+3)=ab+(a+3) has the unique solution x=b in 0..15.
+        offset = a + 3
+        return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
+            _literal(a), {"kind": "variable"}, _binary("mul", 0, 1),
+            _literal(offset), _binary("add", 2, 3),
+            _literal(a * b + offset),
+        ], "condition": {"left": 4, "relation": "eq", "right": 5},
+            "selection": "any_satisfying",
+            "domain": {"kind": "integer_interval", "lower": 0, "upper": 15}}
+    # The ratio x/(x+a) reaches b/(b+a) first at x=b for positive a.
+    # Its entire interval is positive-denominator; the three smaller domain
+    # values are all explicitly checked in the compiler's worked teaching.
+    return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
+        {"kind": "variable"}, _literal(a), _binary("add", 0, 1),
+        _binary("div", 0, 2), _literal(b), _literal(b + a),
+        _binary("div", 4, 5),
+    ], "condition": {"left": 3, "relation": "ge", "right": 6},
+        "selection": "minimum",
+        "domain": {"kind": "integer_interval", "lower": b - 3, "upper": b + 3}}

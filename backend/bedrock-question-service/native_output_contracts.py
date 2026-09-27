@@ -626,8 +626,9 @@ def native_prompt(system_prompt: str, contract: NativeContract) -> str:
                     "code evaluates a two-fraction expression. "
                     'Slot 1 is {"family":"bounded_equation","a":2..9,"b":3..11}: '
                     "code asks for the unique solution of a two-step equation on an explicit integer domain. "
-                    'Slot 2 is {"family":"bounded_inequality","a":2..9,"b":3..11}: '
-                    "code asks for the maximum integer satisfying a bounded linear inequality. "
+                    'Slot 2 is {"family":"bounded_ratio_threshold","a":2..9,"b":3..11}: '
+                    "code asks for the minimum integer whose variable ratio reaches a fixed ratio "
+                    "on an explicit short domain. "
                     'Slots 3 and 4 are {"kind":"agreement_pair_v1","scene":...,"order":...}; '
                     "slot 3 uses one of coach/librarian/chef/curator with an intervening near phrase, "
                     "and slot 4 uses one of " + "/".join(sorted(COMPOUND_SCENES))

@@ -112,8 +112,11 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                     self.assertEqual(learner["choices"].count(learner["expectedAnswer"]), 1)
                     self.assertEqual(set(learner["choiceExplanations"]), set(learner["choices"]))
                     self.assertEqual(proof.content(learner), learner)
+                    if slot in (1, 2):
+                        self.assertEqual(learner["expectedAnswer"], str(b))
                     if slot == 2:
-                        self.assertIn("The larger domain values fail:", learner["explanation"])
+                        self.assertIn("The smaller domain values fail:", learner["explanation"])
+                        self.assertIn(" / (x + ", learner["prompt"])
                     checked += 1
         self.assertEqual(checked, 208)
 
@@ -122,7 +125,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
         self.assertLess(len(schema_json.encode()), 3000)
-        self.assertEqual(len(schema_json.encode()), 1573)
+        self.assertEqual(len(schema_json.encode()), 1578)
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"][0] for i in range(3)], list(FAMILIES))
         self.assertNotIn("correctChoice", schema_json)
