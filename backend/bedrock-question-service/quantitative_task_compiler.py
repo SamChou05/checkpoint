@@ -215,6 +215,41 @@ def _unique_answer(supported):
     return supported[0]
 
 
+def _rational_equation_derivation(left, right, domain, answer, *, unit, relation, selection):
+    """Show algebra for (x+a)/(x+1) = p/q when its exact proof permits it.
+
+    The generic domain evaluation remains authoritative. Recognize only the
+    validated expression tree, and recompute the solution before presenting a
+    linear derivation; other scalar tasks retain their substitution teaching.
+    """
+    if (unit != "unitless" or relation != "eq" or selection != "any_satisfying"
+            or left[0] != "div" or right[0] != "div"
+            or left[1][0] != "add" or left[2][0] != "add"
+            or left[1][1] != ("variable",) or left[2][1] != ("variable",)
+            or left[1][2][0] != "constant" or left[2][2] != ("constant", Fraction(1))
+            or right[1][0] != "constant" or right[2][0] != "constant"
+            or not domain or domain[0] < 0 or answer.denominator != 1):
+        return None
+    offset = left[1][2][1]
+    if offset.denominator != 1 or offset <= 1:
+        return None
+    target = _evaluate(right)
+    numerator, denominator = target.numerator, target.denominator
+    coefficient = numerator - denominator
+    constant = denominator * offset - numerator
+    if (numerator <= denominator or coefficient <= 0 or constant <= 0
+            or constant != coefficient * answer):
+        return None
+    return (
+        f"Because x + 1 is nonzero throughout the domain, cross-multiply: "
+        f"{denominator}(x + {offset}) = {numerator}(x + 1). "
+        f"Expanding gives {denominator}x + {denominator * offset} = "
+        f"{numerator}x + {numerator}, so {constant} = {coefficient}x. "
+        f"Divide by {coefficient} to get x = {answer}. "
+        "The nonzero x coefficient makes this the only solution in the domain."
+    )
+
+
 def _root_distractor_reasons(expression):
     """Recognize exact values from common mistakes at the final operation.
 
@@ -402,7 +437,9 @@ def compile_question(spec):
         explicit_proof = f"The {direction} domain values fail: {comparisons}."
         if len(explanation_start) + len(explicit_proof) <= 420:
             proof = explicit_proof
-    explanation = explanation_start + proof
+    explanation = (_rational_equation_derivation(
+        left, right, domain, answer, unit=unit, relation=relation, selection=selection,
+    ) or explanation_start + proof)
     feedback = {}
     for value, shown in zip(choices, rendered, strict=True):
         if not in_domain(value):

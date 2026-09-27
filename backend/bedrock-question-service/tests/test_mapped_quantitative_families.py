@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import unittest
+from fractions import Fraction
 from unittest.mock import Mock, patch
 
 from botocore.session import get_session
@@ -132,6 +133,34 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         checked += 1
         self.assertEqual(checked, 696)
         self.assertEqual(len(numeric_variant_identities()), 696)
+
+    def test_every_bounded_rational_equation_teaches_its_verified_linear_solution(self):
+        for a in OPERANDS:
+            for b in BOUNDARIES:
+                with self.subTest(a=a, b=b):
+                    task = flat_task(1, {"family": "bounded_rational_equation", "a": a, "b": b})
+                    proof = _constructed_candidate(task)
+                    learner = proof.content()
+                    target = Fraction(b + a, b + 1)
+                    p, q = target.numerator, target.denominator
+                    explanation = learner["explanation"]
+                    self.assertIn(f"{q}(x + {a}) = {p}(x + 1)", explanation)
+                    self.assertIn(f"{q}x + {q * a} = {p}x + {p}", explanation)
+                    self.assertIn(f"{q * a - p} = {p - q}x", explanation)
+                    self.assertIn(f"Divide by {p - q} to get x = {b}.", explanation)
+                    self.assertIn("only solution in the domain", explanation)
+                    self.assertEqual((q * a - p) / (p - q), b)
+                    self.assertEqual(learner["expectedAnswer"], str(b))
+                    self.assertEqual(proof.content(learner), learner)
+                    tampered = {**learner, "explanation": "Substitute the answer and guess."}
+                    with self.assertRaisesRegex(Exception, "Compiled learner content changed"):
+                        proof.content(tampered)
+
+        sample = _constructed_candidate(flat_task(1, {
+            "family": "bounded_rational_equation", "a": 5, "b": 8,
+        })).content()
+        self.assertIn("9(x + 5) = 13(x + 1)", sample["explanation"])
+        self.assertIn("32 = 4x", sample["explanation"])
 
     def test_family_schema_is_small_closed_and_agreement_route_matches_current_contract(self):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
