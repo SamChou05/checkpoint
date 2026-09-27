@@ -1,0 +1,166 @@
+{
+  "status": "keyless",
+  "targetDifficulty": 2,
+  "items": [
+    {
+      "id": "Q01",
+      "prompt": "Mara told Nia, \"I will catalog your sketches after you photograph my model.\" Which account matches the two proposed actions and object owners?",
+      "choices": {
+        "A": "Mara would catalog Nia's sketches; Nia would photograph Mara's model.",
+        "B": "Nia would catalog Mara's sketches; Mara would photograph Nia's model.",
+        "C": "Mara would catalog Mara's sketches; Nia would photograph Nia's model.",
+        "D": "Nia would catalog Nia's sketches; Mara would photograph Mara's model."
+      }
+    },
+    {
+      "id": "Q02",
+      "prompt": "Mara told Nia, \"Before you photograph my model, I will catalog your sketches.\" Which account matches the two proposed actions and object owners?",
+      "choices": {
+        "A": "Nia would catalog Mara's sketches; Mara would photograph Nia's model.",
+        "B": "Mara would catalog Mara's sketches; Nia would photograph Nia's model.",
+        "C": "Nia would catalog Nia's sketches; Mara would photograph Mara's model.",
+        "D": "Mara would catalog Nia's sketches; Nia would photograph Mara's model."
+      }
+    },
+    {
+      "id": "Q03",
+      "prompt": "Eli told Ava, \"I will repair your bicycle after you inspect my helmet.\" Which account matches the two proposed actions and object owners?",
+      "choices": {
+        "A": "Eli would repair Eli's bicycle; Ava would inspect Ava's helmet.",
+        "B": "Ava would repair Ava's bicycle; Eli would inspect Eli's helmet.",
+        "C": "Eli would repair Ava's bicycle; Ava would inspect Eli's helmet.",
+        "D": "Ava would repair Eli's bicycle; Eli would inspect Ava's helmet."
+      }
+    },
+    {
+      "id": "Q04",
+      "prompt": "Eli told Ava, \"Before you inspect my helmet, I will repair your bicycle.\" Which account matches the two proposed actions and object owners?",
+      "choices": {
+        "A": "Ava would repair Ava's bicycle; Eli would inspect Eli's helmet.",
+        "B": "Eli would repair Ava's bicycle; Ava would inspect Eli's helmet.",
+        "C": "Ava would repair Eli's bicycle; Eli would inspect Ava's helmet.",
+        "D": "Eli would repair Eli's bicycle; Ava would inspect Ava's helmet."
+      }
+    },
+    {
+      "id": "Q05",
+      "prompt": "Leah told Theo, \"I will translate your notes after you review my draft.\" Which account matches the two proposed actions and object owners?",
+      "choices": {
+        "A": "Leah would translate Theo's notes; Theo would review Leah's draft.",
+        "B": "Theo would translate Leah's notes; Leah would review Theo's draft.",
+        "C": "Leah would translate Leah's notes; Theo would review Theo's draft.",
+        "D": "Theo would translate Theo's notes; Leah would review Leah's draft."
+      }
+    },
+    {
+      "id": "Q06",
+      "prompt": "Leah told Theo, \"Before you review my draft, I will translate your notes.\" Which account matches the two proposed actions and object owners?",
+      "choices": {
+        "A": "Theo would translate Leah's notes; Leah would review Theo's draft.",
+        "B": "Leah would translate Leah's notes; Theo would review Theo's draft.",
+        "C": "Theo would translate Theo's notes; Leah would review Leah's draft.",
+        "D": "Leah would translate Theo's notes; Theo would review Leah's draft."
+      }
+    },
+    {
+      "id": "Q07",
+      "prompt": "Sana told Remy, \"I will frame your drawing after you measure my canvas.\" Which account matches the two proposed actions and object owners?",
+      "choices": {
+        "A": "Sana would frame Sana's drawing; Remy would measure Remy's canvas.",
+        "B": "Remy would frame Remy's drawing; Sana would measure Sana's canvas.",
+        "C": "Sana would frame Remy's drawing; Remy would measure Sana's canvas.",
+        "D": "Remy would frame Sana's drawing; Sana would measure Remy's canvas."
+      }
+    },
+    {
+      "id": "Q08",
+      "prompt": "Sana told Remy, \"Before you measure my canvas, I will frame your drawing.\" Which account matches the two proposed actions and object owners?",
+      "choices": {
+        "A": "Remy would frame Remy's drawing; Sana would measure Sana's canvas.",
+        "B": "Sana would frame Remy's drawing; Remy would measure Sana's canvas.",
+        "C": "Remy would frame Sana's drawing; Sana would measure Remy's canvas.",
+        "D": "Sana would frame Sana's drawing; Remy would measure Remy's canvas."
+      }
+    },
+    {
+      "id": "Q09",
+      "prompt": "Iris: \"I will deliver your poster.\" Caleb: \"Use my cart for that delivery.\" Which account matches the plan and offer in this exchange?",
+      "choices": {
+        "A": "Iris plans to deliver Caleb's poster; Caleb offers Caleb's cart.",
+        "B": "Caleb plans to deliver Iris's poster; Caleb offers Iris's cart.",
+        "C": "Iris plans to deliver Iris's poster; Caleb offers Caleb's cart.",
+        "D": "Iris plans to deliver Caleb's poster; Caleb offers Iris's cart."
+      }
+    },
+    {
+      "id": "Q10",
+      "prompt": "Caleb: \"Use my cart when you deliver the poster.\" Iris: \"I will deliver your poster.\" Which account matches the plan and offer in this exchange?",
+      "choices": {
+        "A": "Caleb plans to deliver Iris's poster; Caleb offers Iris's cart.",
+        "B": "Iris plans to deliver Iris's poster; Caleb offers Caleb's cart.",
+        "C": "Iris plans to deliver Caleb's poster; Caleb offers Iris's cart.",
+        "D": "Iris plans to deliver Caleb's poster; Caleb offers Caleb's cart."
+      }
+    },
+    {
+      "id": "Q11",
+      "prompt": "Nora: \"I will move your boxes.\" Omar: \"Use my trolley for that move.\" Which account matches the plan and offer in this exchange?",
+      "choices": {
+        "A": "Nora plans to move Nora's boxes; Omar offers Omar's trolley.",
+        "B": "Nora plans to move Omar's boxes; Omar offers Nora's trolley.",
+        "C": "Nora plans to move Omar's boxes; Omar offers Omar's trolley.",
+        "D": "Omar plans to move Nora's boxes; Omar offers Nora's trolley."
+      }
+    },
+    {
+      "id": "Q12",
+      "prompt": "Omar: \"Use my trolley when you move the boxes.\" Nora: \"I will move your boxes.\" Which account matches the plan and offer in this exchange?",
+      "choices": {
+        "A": "Nora plans to move Omar's boxes; Omar offers Nora's trolley.",
+        "B": "Nora plans to move Omar's boxes; Omar offers Omar's trolley.",
+        "C": "Omar plans to move Nora's boxes; Omar offers Nora's trolley.",
+        "D": "Nora plans to move Nora's boxes; Omar offers Omar's trolley."
+      }
+    },
+    {
+      "id": "Q13",
+      "prompt": "Aya: \"I will hang your painting.\" Leo: \"Use my ladder for that job.\" Which account matches the plan and offer in this exchange?",
+      "choices": {
+        "A": "Aya plans to hang Leo's painting; Leo offers Leo's ladder.",
+        "B": "Leo plans to hang Aya's painting; Leo offers Aya's ladder.",
+        "C": "Aya plans to hang Aya's painting; Leo offers Leo's ladder.",
+        "D": "Aya plans to hang Leo's painting; Leo offers Aya's ladder."
+      }
+    },
+    {
+      "id": "Q14",
+      "prompt": "Leo: \"Use my ladder when you hang the painting.\" Aya: \"I will hang your painting.\" Which account matches the plan and offer in this exchange?",
+      "choices": {
+        "A": "Leo plans to hang Aya's painting; Leo offers Aya's ladder.",
+        "B": "Aya plans to hang Aya's painting; Leo offers Leo's ladder.",
+        "C": "Aya plans to hang Leo's painting; Leo offers Aya's ladder.",
+        "D": "Aya plans to hang Leo's painting; Leo offers Leo's ladder."
+      }
+    },
+    {
+      "id": "Q15",
+      "prompt": "Nina: \"I will copy your notes.\" Eli: \"Use my printer for that task.\" Which account matches the plan and offer in this exchange?",
+      "choices": {
+        "A": "Nina plans to copy Nina's notes; Eli offers Eli's printer.",
+        "B": "Nina plans to copy Eli's notes; Eli offers Nina's printer.",
+        "C": "Nina plans to copy Eli's notes; Eli offers Eli's printer.",
+        "D": "Eli plans to copy Nina's notes; Eli offers Nina's printer."
+      }
+    },
+    {
+      "id": "Q16",
+      "prompt": "Eli: \"Use my printer when you copy the notes.\" Nina: \"I will copy your notes.\" Which account matches the plan and offer in this exchange?",
+      "choices": {
+        "A": "Nina plans to copy Eli's notes; Eli offers Nina's printer.",
+        "B": "Nina plans to copy Eli's notes; Eli offers Eli's printer.",
+        "C": "Eli plans to copy Nina's notes; Eli offers Nina's printer.",
+        "D": "Nina plans to copy Nina's notes; Eli offers Eli's printer."
+      }
+    }
+  ]
+}
