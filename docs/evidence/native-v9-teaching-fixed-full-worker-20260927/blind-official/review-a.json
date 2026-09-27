@@ -1,0 +1,152 @@
+{
+  "review_kind": "independent_answer_blind_content_review",
+  "reviewer": "blind_a",
+  "source_scope": [
+    "/private/tmp/checkpoint-native-v10-full-worker-20260927/docs/evidence/native-v9-teaching-fixed-full-worker-20260927/blind-official/worksheet.json",
+    "/private/tmp/checkpoint-native-v10-full-worker-20260927/docs/evidence/native-v9-teaching-fixed-full-worker-20260927/blind-official/RUBRIC.md"
+  ],
+  "worksheet_sha256_expected": "0cb3bc9eebc17805703b4d9760135b896d0258987b335f95254480c79af185f5",
+  "worksheet_sha256_observed": "0cb3bc9eebc17805703b4d9760135b896d0258987b335f95254480c79af185f5",
+  "answer_map_or_other_protected_material_opened": false,
+  "requested_slots": 5,
+  "readable_items": 5,
+  "unavailable_placeholders": 0,
+  "rubric_scale": "difficulty 1 to 5",
+  "objective_visibility_limit": "No separate source objectives are present in the permitted worksheet or rubric. Objective fit below assesses only the skill visible in each stem; alignment to an undisclosed source objective cannot be verified.",
+  "items": [
+    {
+      "id": "c1b4fa9e73de434842c81c98",
+      "display_position": 1,
+      "selected_key": "A",
+      "key_status": "unique_supported",
+      "answer_reason": "9(x+5)=13(x+1), so 9x+45=13x+13 and x=8. This is in the stated integer domain, and 8 is offered only as A.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "8 and 9 are different integers; only 8 solves the equation."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "8 and 6 are different integers; only 8 solves the equation."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "8 and 7 are different integers; only 8 solves the equation."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "9 and 6 give different substitutions and neither equals the solution."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "9 and 7 give different substitutions and neither equals the solution."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "6 and 7 give different substitutions and neither equals the solution."}
+      ],
+      "stem_self_contained": true,
+      "clarity": "Clear domain, equation, and requested value. x+1 is nonzero throughout the domain.",
+      "difficulty_1_to_5": 2,
+      "difficulty_2_to_3_fit": true,
+      "visible_objective_fit": "Fits solving a rational equation for an integer variable; separate target objective unavailable.",
+      "within_batch_novelty": "Moderate overlap with item 3 in x-domain framing and numerical choice format, but it requires equation solving rather than inequality maximization.",
+      "uncertainty": "Difficulty may be 3 for learners new to cross multiplication; no uncertainty about the key."
+    },
+    {
+      "id": "38cc15a571187b9ecaf65ef9",
+      "display_position": 2,
+      "selected_key": "B",
+      "key_status": "unique_supported",
+      "answer_reason": "The gerund phrase 'Preparing the meals' is singular, so it requires; 'the cooks' is plural, so they measure. The ordered pair is B.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "Both verb forms differ; A disagrees with both subjects while B agrees."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "The second verb differs: measures versus measure, changing agreement with cooks."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "The first verb differs: require versus requires, changing agreement with the gerund subject."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "The first verb differs; only B agrees with the singular gerund subject."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "The second verb differs; only B agrees with plural cooks."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "Both verb forms differ, yielding different agreement patterns."}
+      ],
+      "stem_self_contained": true,
+      "clarity": "The requested tense, dialect, and order of blanks are explicit. The two subjects are identifiable.",
+      "difficulty_1_to_5": 2,
+      "difficulty_2_to_3_fit": true,
+      "visible_objective_fit": "Directly tests subject-verb agreement in present tense; separate target objective unavailable.",
+      "within_batch_novelty": "Strong semantic overlap with item 4: both are two-blank, four-combination present-tense agreement checks with one plural and one singular subject.",
+      "uncertainty": "No uncertainty about the key; the amount of acceptable batch repetition depends on an undisclosed novelty threshold."
+    },
+    {
+      "id": "9fd1fff0a4a5520a137f0e80",
+      "display_position": 3,
+      "selected_key": "C",
+      "key_status": "unique_supported",
+      "answer_reason": "For x=7, x(x+3)=70, which satisfies the inequality. At x=8 it is 88, and the expression increases over the nonnegative domain, so no larger allowed x satisfies it. The maximum is 7, choice C.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "8 and 6 are different integer candidates; 8 fails and 6 satisfies but is below the maximum."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "8 fails the inequality while 7 is the maximum satisfying integer."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "8 and 9 are different values and have different products, though both fail."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "Both 6 and 7 satisfy the inequality, but only 7 is the maximum."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "6 satisfies the inequality whereas 9 fails."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "7 is the maximum satisfying value whereas 9 fails."}
+      ],
+      "stem_self_contained": true,
+      "clarity": "The inclusive integer domain, inequality, and maximum criterion are explicit.",
+      "difficulty_1_to_5": 3,
+      "difficulty_2_to_3_fit": true,
+      "visible_objective_fit": "Fits evaluating a quadratic inequality over an integer domain and choosing its maximum; separate target objective unavailable.",
+      "within_batch_novelty": "Moderate overlap with item 1 in x-domain framing and adjacent integer choices; the operation and requested conclusion differ.",
+      "uncertainty": "No uncertainty about the key; difficulty could be 2 if direct substitution is expected."
+    },
+    {
+      "id": "96f3c9035683595962bbb6ff",
+      "display_position": 4,
+      "selected_key": "D",
+      "key_status": "unique_supported",
+      "answer_reason": "The relative pronoun 'who' refers to plural editors, so they check. The head of 'One of the editors' is singular one, so that subject carries. The ordered pair is D.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "The first verb differs: checks versus check, changing agreement with plural editors."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "The second verb differs: carry versus carries, changing agreement with singular one."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "Both verb forms differ; A disagrees with both subjects while D agrees."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "Both verb forms differ, yielding distinct agreement patterns."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "The second verb differs; only D agrees with singular one."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "The first verb differs; only D agrees with plural editors."}
+      ],
+      "stem_self_contained": true,
+      "clarity": "The requested tense, dialect, and ordered-pair task are explicit. The first sentence has an unambiguous plural antecedent for who.",
+      "difficulty_1_to_5": 3,
+      "difficulty_2_to_3_fit": true,
+      "visible_objective_fit": "Directly tests present-tense subject-verb agreement with a relative clause and an 'one of' phrase; separate target objective unavailable.",
+      "within_batch_novelty": "Strong semantic overlap with item 2 in skill and answer format, despite different surface constructions.",
+      "uncertainty": "No uncertainty about the key; the repeated grammar objective is the main novelty concern."
+    },
+    {
+      "id": "36b23db42b56a00d757b3445",
+      "display_position": 5,
+      "selected_key": "B",
+      "key_status": "unique_supported",
+      "answer_reason": "(4/5)/(6/8)=(4/5)(8/6)=16/15; adding 1 gives 31/15, offered only as B.",
+      "choice_pairs": [
+        {"pair": "A-B", "meaningfully_distinct": true, "reason": "17/16 and 31/15 are unequal exact rational values."},
+        {"pair": "A-C", "meaningfully_distinct": true, "reason": "17/16 and 16/15 are close but unequal exact rational values."},
+        {"pair": "A-D", "meaningfully_distinct": true, "reason": "17/16 and 17/15 differ in denominator and exact value."},
+        {"pair": "B-C", "meaningfully_distinct": true, "reason": "31/15 includes the added 1; 16/15 is the intermediate quotient."},
+        {"pair": "B-D", "meaningfully_distinct": true, "reason": "31/15 and 17/15 have the same denominator but distinct numerators and values."},
+        {"pair": "C-D", "meaningfully_distinct": true, "reason": "16/15 and 17/15 are adjacent but unequal exact rational values."}
+      ],
+      "stem_self_contained": true,
+      "clarity": "The expression and request for an exact value are explicit; the nested parentheses specify operation order.",
+      "difficulty_1_to_5": 3,
+      "difficulty_2_to_3_fit": true,
+      "visible_objective_fit": "Fits exact fraction division and addition; separate target objective unavailable.",
+      "within_batch_novelty": "Distinct from the equation and inequality items in its exact arithmetic task.",
+      "uncertainty": "No uncertainty about the key. The close-valued distractors A, C, and D are still distinct exact answers."
+    }
+  ],
+  "cross_item_pairs": [
+    {"positions": [1, 2], "duplication": "none", "reason": "Algebraic equation solving versus verb agreement."},
+    {"positions": [1, 3], "duplication": "moderate", "reason": "Both present an integer x in a bounded domain with nearby numeric choices; one solves a rational equation and the other maximizes a quadratic inequality."},
+    {"positions": [1, 4], "duplication": "none", "reason": "Algebraic equation solving versus verb agreement."},
+    {"positions": [1, 5], "duplication": "none", "reason": "Both are math, but solving for x in an equation differs from evaluating a fixed fraction expression."},
+    {"positions": [2, 3], "duplication": "none", "reason": "Verb agreement versus an integer inequality."},
+    {"positions": [2, 4], "duplication": "strong", "reason": "Both ask for an ordered pair of present-tense verbs, with four choices spanning the two singular/plural combinations; both test one singular and one plural subject."},
+    {"positions": [2, 5], "duplication": "none", "reason": "Verb agreement versus fraction arithmetic."},
+    {"positions": [3, 4], "duplication": "none", "reason": "Integer inequality versus verb agreement."},
+    {"positions": [3, 5], "duplication": "none", "reason": "Maximizing an integer under an inequality versus evaluating an exact fraction."},
+    {"positions": [4, 5], "duplication": "none", "reason": "Verb agreement versus fraction arithmetic."}
+  ],
+  "overall_conclusion": {
+    "unique_supported_keys": 5,
+    "ambiguous_or_unsupported_keys": 0,
+    "meaningfully_distinct_choice_pairs": 30,
+    "total_choice_pairs": 30,
+    "all_stems_self_contained": true,
+    "all_items_difficulty_2_or_3": true,
+    "cross_item_strong_duplication_pairs": [[2, 4]],
+    "cross_item_moderate_duplication_pairs": [[1, 3]],
+    "primary_concern": "Items 2 and 4 substantially repeat the same two-blank subject-verb agreement task. Items 1 and 3 also share mathematical framing, but assess different reasoning.",
+    "limit": "The permitted materials do not expose independent source objectives, so external objective alignment remains unverified."
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "all_25_candidate_learner_fields_match_provenance": true,
+  "authored_teaching_review": "pending_manual_post_lock",
+  "capture_sha256": "a880fcf748b75f2c9ebcd7170edeb412b4f83712602ee3becdee7de929bf874a",
+  "english_linguistic_review": "separate_locked_blind_reviews",
+  "literal_choice_pairs_checked": 30,
+  "numeric_semantic_choice_pairs_checked": 18,
+  "original_slots": 5,
+  "plan_sha256": "5a6b2a1e6eb63c5803ceb8e155fe29d486bea0dc7c5ac2d5081a030fe8858003",
+  "provider_calls": 3,
+  "returned_original_slots": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "rows": [
+    {
+      "key_occurrences": 1,
+      "literal_choice_pairs_distinct": 6,
+      "numeric_proof": {
+        "independent_answer": "31/15",
+        "kind": "exact_value"
+      },
+      "original_slot": 0,
+      "provenance_fields_match": true,
+      "status": "returned"
+    },
+    {
+      "key_occurrences": 1,
+      "literal_choice_pairs_distinct": 6,
+      "numeric_proof": {
+        "independent_answer": "8",
+        "kind": "scalar_condition",
+        "offered_truth": {
+          "6": false,
+          "7": false,
+          "8": true,
+          "9": false
+        },
+        "satisfying_domain_values": [
+          8
+        ],
+        "selection": "any_satisfying"
+      },
+      "original_slot": 1,
+      "provenance_fields_match": true,
+      "status": "returned"
+    },
+    {
+      "key_occurrences": 1,
+      "literal_choice_pairs_distinct": 6,
+      "numeric_proof": {
+        "independent_answer": "7",
+        "kind": "scalar_condition",
+        "offered_truth": {
+          "6": true,
+          "7": true,
+          "8": false,
+          "9": false
+        },
+        "satisfying_domain_values": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "selection": "maximum"
+      },
+      "original_slot": 2,
+      "provenance_fields_match": true,
+      "status": "returned"
+    },
+    {
+      "english_proof_type": "code_owned_agreement_task",
+      "key_occurrences": 1,
+      "literal_choice_pairs_distinct": 6,
+      "original_slot": 3,
+      "provenance_fields_match": true,
+      "status": "returned"
+    },
+    {
+      "english_proof_type": "code_owned_agreement_task",
+      "key_occurrences": 1,
+      "literal_choice_pairs_distinct": 6,
+      "original_slot": 4,
+      "provenance_fields_match": true,
+      "status": "returned"
+    }
+  ],
+  "sanitized_candidates": 5,
+  "unfilled_original_slots": []
+}

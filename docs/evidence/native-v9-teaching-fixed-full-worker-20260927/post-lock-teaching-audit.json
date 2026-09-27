@@ -1,0 +1,419 @@
+{
+  "kind": "independent_post_lock_teaching_and_content_audit",
+  "scope": "Five returned original live-worker slots; five main explanations; all twenty choice-specific feedback strings; key, alternatives, blind reviews and reviewer veto behavior.",
+  "sources": {
+    "capture": {
+      "path": "/private/tmp/checkpoint-native-v10-full-worker-20260927/docs/evidence/native-v9-teaching-fixed-full-worker-20260927/capture.json",
+      "sha256": "a880fcf748b75f2c9ebcd7170edeb412b4f83712602ee3becdee7de929bf874a",
+      "verified": true
+    },
+    "blind_a": {
+      "path": "/private/tmp/checkpoint-native-v10-full-worker-blind-a.json",
+      "sha256": "3b347a51c700adbb40531552284ff8073380e3e45579ceb3ca9960e06c321a57",
+      "verified": true
+    },
+    "blind_b": {
+      "path": "/private/tmp/checkpoint-native-v10-full-worker-blind-b.json",
+      "sha256": "d37cb13dad220a8c6022fd79e64ec5d34b89ba781acf87d49c3e56db9db4c286",
+      "verified": true
+    },
+    "private_map": {
+      "path": "/private/tmp/checkpoint-native-v10-full-worker-20260927/docs/evidence/native-v9-teaching-fixed-full-worker-20260927/blind-private-returned_output.json",
+      "sha256": "28947f7a2fdf8d5cdd3719ece015ce64b0a310883e3cf13bb98dff83ca3e3f5c",
+      "verified": true
+    },
+    "worksheet": {
+      "path": "/private/tmp/checkpoint-native-v10-full-worker-20260927/docs/evidence/native-v9-teaching-fixed-full-worker-20260927/blind-official/worksheet.json",
+      "sha256": "0cb3bc9eebc17805703b4d9760135b896d0258987b335f95254480c79af185f5",
+      "verified": true
+    }
+  },
+  "conclusion": {
+    "teaching_and_feedback": "pass_with_minor_wording_caveat",
+    "items_audited": 5,
+    "main_explanations_factually_correct_and_sufficient": 5,
+    "choice_feedback_entries_factually_correct_and_key_consistent": 20,
+    "alternative_correct_choices": 0,
+    "material_teaching_errors": 0,
+    "shuffle_safety_violations": 0,
+    "qualification_note": "This audit supports the teaching and keyed-content gate. The repeated two-blank grammar construction remains a batch-novelty quality concern shared by both blind reviewers; whether it crosses the qualification novelty threshold requires the overall adjudication, not a claim of factual teaching failure."
+  },
+  "items": [
+    {
+      "original_slot": 0,
+      "blind_id": "36b23db42b56a00d757b3445",
+      "prompt": "Let q be a unitless number, defined by q = (((4 / 5) / (6 / 8)) + 1). What is its exact value?",
+      "source_key": "31/15",
+      "blind_display_key": "B",
+      "both_blind_keys_match": true,
+      "main_explanation": {
+        "text": "Multiply by the reciprocal: 4 / 5 = 4 * (1/5) = 4/5. Multiply by the reciprocal: 6 / 8 = 6 * (1/8) = 6/8 = 3/4. Multiply by the reciprocal: (4/5) / (3/4) = (4/5) * (4/3) = 16/15. Common denominator 15: (16/15) + 1 = (16/15) + (15/15) = 31/15. The answer is 31/15.",
+        "verdict": "factually_correct_and_sufficient",
+        "audit": "All equalities are exact: 4/5 divided by 6/8 equals 16/15; adding 15/15 gives 31/15. Repeating “Multiply by the reciprocal” for the simple fractions 4/5 and 6/8 is awkward teaching language, but those equalities are valid and the decisive reciprocal step is shown correctly."
+      },
+      "independent_proof": {
+        "derivation": "(4/5)/(6/8)+1=(4/5)*(8/6)+1=16/15+15/15=31/15",
+        "alternative_correct_choices": []
+      },
+      "per_choice_feedback": [
+        {
+          "choice": "17/16",
+          "is_correct_choice": false,
+          "text": "17/16: This can come from combining the numerators and denominators separately. (16/15) + 1 = 31/15, not 17/16.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Correctly treats 17/16 as a possible componentwise-addition error: 16/15 + 1/1 would become (16+1)/(15+1). The mechanism is plausible but tersely described."
+        },
+        {
+          "choice": "31/15",
+          "is_correct_choice": true,
+          "text": "The expression evaluates exactly to 31/15; 31/15 is the requested value.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Correctly identifies the exact result; the main explanation supplies the calculation."
+        },
+        {
+          "choice": "16/15",
+          "is_correct_choice": false,
+          "text": "16/15: This stops at the left operand before the final operation. (16/15) + 1 = 31/15, not 16/15.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Correctly identifies the intermediate quotient before adding 1."
+        },
+        {
+          "choice": "17/15",
+          "is_correct_choice": false,
+          "text": "17/15: This can come from using a common denominator without scaling the numerators. (16/15) + 1 = 31/15, not 17/15.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Correctly describes the erroneous step of treating 1 as 1/15 while keeping denominator 15; proper addition gives 31/15."
+        }
+      ],
+      "feedback_coverage": "all_four_exact_choice_strings",
+      "shuffle_safety": "pass_exact_choice_keys_and_no_display_letter_references",
+      "alternative_correct_choice_found": false
+    },
+    {
+      "original_slot": 1,
+      "blind_id": "c1b4fa9e73de434842c81c98",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 5) / (x + 1)) = (13 / 9). Which offered value of x satisfies the condition?",
+      "source_key": "8",
+      "blind_display_key": "A",
+      "both_blind_keys_match": true,
+      "main_explanation": {
+        "text": "Because x + 1 is nonzero throughout the domain, cross-multiply: 9(x + 5) = 13(x + 1). Expanding gives 9x + 45 = 13x + 13, so 32 = 4x. Divide by 4 to get x = 8. The nonzero x coefficient makes this the only solution in the domain.",
+        "verdict": "factually_correct_and_sufficient",
+        "audit": "x+1 ranges from 1 to 16 and never vanishes. Reversible cross multiplication gives 9x+45=13x+13, hence 4x=32 and the sole domain solution x=8."
+      },
+      "independent_proof": {
+        "derivation": "9(x+5)=13(x+1) because x+1>=1; 9x+45=13x+13; 4x=32; x=8. Direct substitutions: x=9 -> 7/5, x=8 -> 13/9, x=7 -> 3/2, x=6 -> 11/7.",
+        "alternative_correct_choices": []
+      },
+      "per_choice_feedback": [
+        {
+          "choice": "9",
+          "is_correct_choice": false,
+          "text": "At x = 9, 7/5 = 13/9 is false. This value does not satisfy the condition.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "(9+5)/(9+1)=14/10=7/5, which differs from 13/9."
+        },
+        {
+          "choice": "8",
+          "is_correct_choice": true,
+          "text": "At x = 8, 13/9 = 13/9 is true. This is the only offered value satisfying the condition.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "(8+5)/(8+1)=13/9; the equation has no other solution in the domain."
+        },
+        {
+          "choice": "7",
+          "is_correct_choice": false,
+          "text": "At x = 7, 3/2 = 13/9 is false. This value does not satisfy the condition.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "(7+5)/(7+1)=12/8=3/2, which differs from 13/9."
+        },
+        {
+          "choice": "6",
+          "is_correct_choice": false,
+          "text": "At x = 6, 11/7 = 13/9 is false. This value does not satisfy the condition.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "(6+5)/(6+1)=11/7, which differs from 13/9."
+        }
+      ],
+      "feedback_coverage": "all_four_exact_choice_strings",
+      "shuffle_safety": "pass_exact_choice_keys_and_no_display_letter_references",
+      "alternative_correct_choice_found": false
+    },
+    {
+      "original_slot": 2,
+      "blind_id": "9fd1fff0a4a5520a137f0e80",
+      "prompt": "Let x be a unitless number. Its domain is integers from 4 through 10, inclusive. Condition: (x * (x + 3)) <= 70. What is the maximum x in this domain satisfying the condition?",
+      "source_key": "7",
+      "blind_display_key": "C",
+      "both_blind_keys_match": true,
+      "main_explanation": {
+        "text": "At x = 7, 70 <= 70 is true. 7 is the maximum value satisfying the condition in this domain. The larger domain values fail: x = 8: 88 <= 70 is false; x = 9: 108 <= 70 is false; x = 10: 130 <= 70 is false.",
+        "verdict": "factually_correct_and_sufficient",
+        "audit": "The explanation checks 7 and exhaustively checks every larger domain integer 8, 9 and 10. This is sufficient to prove maximality without checking 4–6."
+      },
+      "independent_proof": {
+        "derivation": "For x=4..10, x(x+3) is 28,40,54,70,88,108,130 respectively. The largest satisfying x is 7.",
+        "alternative_correct_choices": []
+      },
+      "per_choice_feedback": [
+        {
+          "choice": "8",
+          "is_correct_choice": false,
+          "text": "At x = 8, 88 <= 70 is false. This value does not satisfy the condition.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "8(8+3)=88>70, so the offered value fails."
+        },
+        {
+          "choice": "7",
+          "is_correct_choice": true,
+          "text": "At x = 7, 70 <= 70 is true. This is the maximum value satisfying the condition in this domain.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "7(7+3)=70, and all greater domain values 8, 9, and 10 fail; the maximum claim is true."
+        },
+        {
+          "choice": "6",
+          "is_correct_choice": false,
+          "text": "At x = 6, 54 <= 70 is true. The question asks for the maximum; that value is 7.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "6(6+3)=54<=70, but 7 is a larger satisfying domain value."
+        },
+        {
+          "choice": "9",
+          "is_correct_choice": false,
+          "text": "At x = 9, 108 <= 70 is false. This value does not satisfy the condition.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "9(9+3)=108>70, so the offered value fails."
+        }
+      ],
+      "feedback_coverage": "all_four_exact_choice_strings",
+      "shuffle_safety": "pass_exact_choice_keys_and_no_display_letter_references",
+      "alternative_correct_choice_found": false
+    },
+    {
+      "original_slot": 3,
+      "blind_id": "96f3c9035683595962bbb6ff",
+      "prompt": "Fill both blanks with present-tense forms in standard written American English. The editors who ___ the proofs are here. One of the editors ___ a notebook. Which ordered pair fills the blanks?",
+      "source_key": "check; carries",
+      "blind_display_key": "D",
+      "both_blind_keys_match": true,
+      "main_explanation": {
+        "text": "The relative pronoun \"who\" refers to plural \"editors\"; the relative-clause verb is \"check\". The main-clause subject is singular \"One\"; the main-clause verb is \"carries\". Therefore the ordered pair is check; carries.",
+        "verdict": "factually_correct_and_sufficient",
+        "audit": "Who has plural antecedent editors, so check; the head of One of the editors is singular One, so carries. The explanation identifies both governing subjects."
+      },
+      "independent_proof": {
+        "derivation": "The editors who check the proofs are here. One of the editors carries a notebook.",
+        "alternative_correct_choices": []
+      },
+      "per_choice_feedback": [
+        {
+          "choice": "checks; carries",
+          "is_correct_choice": false,
+          "text": "\"checks\" does not agree with plural \"editors\"; use \"check\". The main-clause subject is singular \"One\"; the main-clause verb is \"carries\".",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "The relative-clause subject is plural editors, requiring check; carries agrees with singular One."
+        },
+        {
+          "choice": "check; carry",
+          "is_correct_choice": false,
+          "text": "The relative pronoun \"who\" refers to plural \"editors\"; the relative-clause verb is \"check\". \"carry\" does not agree with singular \"One\"; use \"carries\".",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Check agrees with plural editors; carry fails to agree with singular One."
+        },
+        {
+          "choice": "check; carries",
+          "is_correct_choice": true,
+          "text": "The relative pronoun \"who\" refers to plural \"editors\"; the relative-clause verb is \"check\". The main-clause subject is singular \"One\"; the main-clause verb is \"carries\".",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Both forms agree: plural editors check, singular One carries."
+        },
+        {
+          "choice": "checks; carry",
+          "is_correct_choice": false,
+          "text": "\"checks\" does not agree with plural \"editors\"; use \"check\". \"carry\" does not agree with singular \"One\"; use \"carries\".",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Both verbs disagree with their respective subjects."
+        }
+      ],
+      "feedback_coverage": "all_four_exact_choice_strings",
+      "shuffle_safety": "pass_exact_choice_keys_and_no_display_letter_references",
+      "alternative_correct_choice_found": false
+    },
+    {
+      "original_slot": 4,
+      "blind_id": "38cc15a571187b9ecaf65ef9",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Preparing the meals ___ planning, and the cooks ___ the ingredients. Which ordered pair fills the blanks?",
+      "source_key": "requires; measure",
+      "blind_display_key": "B",
+      "both_blind_keys_match": true,
+      "main_explanation": {
+        "text": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees. Therefore the ordered pair is requires; measure.",
+        "verdict": "factually_correct_and_sufficient",
+        "audit": "Preparing the meals is a singular gerund phrase with plural object meals; the cooks is plural. Requires; measure follows."
+      },
+      "independent_proof": {
+        "derivation": "Preparing the meals requires planning, and the cooks measure the ingredients.",
+        "alternative_correct_choices": []
+      },
+      "per_choice_feedback": [
+        {
+          "choice": "requires; measure",
+          "is_correct_choice": true,
+          "text": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "The gerund phrase Preparing the meals is the singular subject; cooks is plural. Both forms agree."
+        },
+        {
+          "choice": "requires; measures",
+          "is_correct_choice": false,
+          "text": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\".",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Requires agrees with the singular gerund subject; measures disagrees with plural cooks."
+        },
+        {
+          "choice": "require; measure",
+          "is_correct_choice": false,
+          "text": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Require disagrees with the singular gerund subject; measure agrees with plural cooks."
+        },
+        {
+          "choice": "require; measures",
+          "is_correct_choice": false,
+          "text": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\".",
+          "verdict": "factually_correct_and_key_consistent",
+          "audit": "Both forms disagree with their respective subjects."
+        }
+      ],
+      "feedback_coverage": "all_four_exact_choice_strings",
+      "shuffle_safety": "pass_exact_choice_keys_and_no_display_letter_references",
+      "alternative_correct_choice_found": false
+    }
+  ],
+  "blind_review_reconciliation": {
+    "both_reviews_locked_and_hashed_before_private_map_opened": true,
+    "blind_a_keys_by_display_order": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "B"
+    ],
+    "blind_b_keys_by_display_order": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "B"
+    ],
+    "mapped_keys_by_display_order": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "B"
+    ],
+    "all_match": true,
+    "blind_a_result": "Five unique supported keys; thirty distinct pairs; strong duplication concern for display items 2 and 4.",
+    "blind_b_result": "Five unique defensible keys; two weak choice pairs (inequality 8 versus 9; fraction 17/16 versus 16/15); substantial repetition of display items 2 and 4.",
+    "post_unblind_adjudication": "The two grammar items use the same two-blank present-tense agreement matrix, but different governing subject constructions: relative-clause editors plus One of, versus a gerund phrase plus plural cooks. They are not exact or merely cosmetic copies. The weak distractor pairs are unequal and represent different exact responses; their pedagogical separation is modest."
+  },
+  "reviewer_veto_audit": {
+    "captured_contract": "authored_solution_reviewer_v3_n5",
+    "captured_declarations_by_original_slot": {
+      "0": {
+        "valid": true,
+        "answer": "31/15",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      "1": {
+        "valid": true,
+        "answer": "8",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      "2": {
+        "valid": true,
+        "answer": "7",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      "3": {
+        "valid": true,
+        "answer": "check; carries",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      },
+      "4": {
+        "valid": true,
+        "answer": "requires; measure",
+        "difficulty": 3,
+        "explanationSupport": "supported",
+        "issueFlags": {
+          "answer_or_ambiguity": false,
+          "explanation": false,
+          "distractors": false,
+          "scope_assignment": false,
+          "novelty": false,
+          "other": false
+        }
+      }
+    },
+    "all_five_valid_supported_all_flags_false": true,
+    "application_veto_path": "The native issueFlags adapter maps each true flag to an issue. The authored-review rejection function vetoes unsupported or uncertain explanation, any issue, invalid verdict, or key mismatch. No such declaration occurred; all five were accepted. Agreement reviewer difficulty 3 versus calibrated 2 was recorded twice as advisory disagreement because reviewer ratings 2 or 3 are allowed.",
+    "review_scope_limit": "The captured reviewer request included exact stems, choices, objectives and main explanations, but omitted keys, author difficulty, solver decisions, and all choiceExplanations. Its acceptance therefore cannot certify the twenty per-choice feedback strings; the independent post-lock audit above checks them.",
+    "batch_novelty_limit": "The reviewer request listed existingQuestions as empty, so its all-false novelty flags do not resolve the within-batch repetition raised by both separate blind reviewers.",
+    "source_files_sha256_match_frozen_plan": true
+  },
+  "minor_non_veto_caveats": [
+    {
+      "slot": 0,
+      "type": "teaching_wording",
+      "detail": "The first two “Multiply by the reciprocal” statements restate 4/5 and 6/8 as multiplication by unit fractions. They are mathematically true but less direct than simplifying 6/8 first."
+    },
+    {
+      "slot": 0,
+      "type": "feedback_specificity",
+      "detail": "The 17/16 feedback gives a plausible componentwise-addition error but does not explicitly write (16+1)/(15+1). The correct calculation immediately follows."
+    },
+    {
+      "slot": 2,
+      "type": "distractor_similarity",
+      "detail": "Both 8 and 9 are too-large inequality distractors, as blind reviewer B noted; they are distinct values and substitutions."
+    }
+  ],
+  "limitations": "This is a content audit of one synthetic live-worker return and its captured reviewer behavior. It does not establish repeatability or independently validate provider transport or deployment."
+}
