@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 import question_generation as generation
+from question_batch_diversity import _reserve_mechanism_signature
 from lambda_test_support import FakeLambdaContext, _raw_question, _request_payload
 from request_contract import _normalize_request
 from service_errors import ProviderCallBudgetExceededError, ProviderDeadlineExceededError
@@ -141,6 +142,72 @@ class GenericProseReserveTests(unittest.TestCase):
                     self.assertEqual([q["explanation"] for q in result],
                                      [q["explanation"] for q in surviving])
                 self.assertEqual(len(client.calls), 5)
+
+    def test_verified_money_repeat_uses_spare_candidate_without_false_probability_pair(self):
+        self.questions[3].update({
+            "prompt": "A game pays $8 on heads and $0 on tails. Each play costs $3. What is the expected net gain?",
+            "choices": ["$1", "$4", "-$1", "$0"],
+            "expectedAnswer": "$1",
+            "explanation": "Expected payout is $4; subtracting the $3 cost gives $1 net gain.",
+        })
+        self.questions[5].update({
+            "prompt": "A lottery ticket wins $50 with probability 1/20 and nothing otherwise. What is the expected value of the winnings?",
+            "choices": ["$2.50", "$5.00", "$0.50", "$50.00"],
+            "expectedAnswer": "$2.50",
+            "explanation": "One twentieth of $50 is $2.50 in expected winnings per ticket.",
+        })
+        first_probability = {
+            "prompt": "A fair die is rolled twice. What is the probability both rolls are even?",
+            "choices": ["1/4", "1/2", "1/3", "2/3"],
+        }
+        second_probability = {
+            "prompt": "A bag has five green and seven other marbles. What is the probability of not green?",
+            "choices": ["7/12", "5/12", "1/3", "5/7"],
+        }
+        self.assertIsNone(_reserve_mechanism_signature(first_probability))
+        self.assertIsNone(_reserve_mechanism_signature(second_probability))
+        self.assertIsNone(_reserve_mechanism_signature({
+            "prompt": "A fair coin is tossed ten times. What is the expected number of heads?",
+            "choices": ["5", "4", "6", "10"],
+        }))
+        self.assertIsNone(_reserve_mechanism_signature({
+            "prompt": "A lottery offers prizes. What is the expected value of a ticket?",
+            "choices": ["one dollar", "two dollars", "three dollars", "four dollars"],
+        }))
+        self.assertIsNone(_reserve_mechanism_signature({
+            "prompt": "A raffle organizer expected 100 people. Each ticket costs $3 and the prize costs $50. "
+                      "If all 100 attend, what is the organizer's profit?",
+            "choices": ["$250", "$300", "$50", "$200"],
+        }))
+        self.assertIsNone(_reserve_mechanism_signature({
+            "prompt": "The expected winnings per ticket are $5. If 20 tickets are sold, "
+                      "what is the total payout?",
+            "choices": ["$100", "$50", "$25", "$200"],
+        }))
+        self.assertIsNone(_reserve_mechanism_signature({
+            "prompt": "If expected winnings are $5 per ticket, what is the total payout for 20 tickets?",
+            "choices": ["$100", "$50", "$25", "$200"],
+        }))
+        self.assertIsNone(_reserve_mechanism_signature({
+            "prompt": "A raffle ticket wins $10 half the time and $0 otherwise. "
+                      "What is the ticket price if the expected net gain per ticket is $3?",
+            "choices": ["$2", "$3", "$5", "$7"],
+        }))
+        metrics = {"ProviderCalls": 0, "BedrockInputTokens": 0, "BedrockOutputTokens": 0}
+        client = self.client(review_rejected={0})
+        result = generation._generate_sanitized_questions(
+            self.request, client, generation.ProviderCallBudget(6), metrics,
+        )
+        self.assertEqual([q["prompt"] for q in result],
+                         [self.questions[index]["prompt"] for index in (1, 2, 3, 4, 6)])
+        self.assertEqual(metrics["QuestionQuality"]["reserve"],
+                         {"repeated_expected_money": 1})
+        self.assertEqual(len(client.calls), 5)
+        underfilled = generation._generate_sanitized_questions(
+            self.request, self.client(review_rejected={0, 1}),
+            generation.ProviderCallBudget(6),
+        )
+        self.assertEqual(underfilled, [])
 
     def test_solver_rejection_uses_dense_review_count_and_original_key(self):
         client = self.client(solver_rejected={2})

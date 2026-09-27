@@ -59,6 +59,7 @@ QUALITY_REASONS = {
         "native_incomplete", "native_contract_invalid", "native_request_invalid",
         "native_grammar_too_large",
     },
+    "reserve": {"repeated_expected_money"},
 }
 
 

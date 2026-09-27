@@ -9,6 +9,7 @@ import time
 from typing import Any, Callable
 
 from generation_diagnostics import quality_summary, record_quality
+from question_batch_diversity import keep_varied_reserve_questions
 from agreement_task_constructor import (
     SUPPORTED_OBJECTIVE as MAPPED_AGREEMENT_OBJECTIVE,
     SUPPORTED_TOPIC as MAPPED_AGREEMENT_TOPIC,
@@ -478,6 +479,15 @@ def _generate_sanitized_questions(
                         for question in verified_first
                     ]
                     generated_questions.extend(verify_batch(second_batch, second_request))
+                # A model reviewer missed two expected-dollar-value tasks in
+                # different chunks, and a dedicated pairwise model probe also
+                # produced a false positive on distinct probability methods.
+                # Apply only this supported high-precision code-owned signature
+                # to verified survivors, preserving source order and the
+                # all-or-nothing five-question return below.
+                generated_questions = keep_varied_reserve_questions(
+                    generated_questions, request_metrics,
+                )
             else:
                 generated_questions = verify_batch(candidates, current_request)
         except DurableProviderCallBudgetExceededError:

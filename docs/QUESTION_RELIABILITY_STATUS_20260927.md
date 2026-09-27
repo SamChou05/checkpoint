@@ -299,7 +299,14 @@ on another six-question worksheet caught that batch's expected-money repeat
 but also flagged two different probability operations as one strong repeat.
 The model-only pairwise gate is therefore not enabled: it improves recall in
 these samples but can falsely suppress a valid five-item batch. A narrower
-code-owned mechanism check is being evaluated separately.
+code-owned [expected-money mechanism gate](evidence/generic-reserve-monetary-gate-20260927/RESULTS.md)
+is now implemented **only within the disabled-by-default reserve**. It
+filters verified survivors before the five-item return and excludes Trial
+04's repeated expected-winnings item in an offline replay, retaining source
+ordinals 1,2,3,4,6. Independent review supplied three false-positive
+counterexamples, all now covered by regressions. Source ordinal 6 was not in
+Trial 04's returned-five blind worksheet, so this replay is not a new content
+qualification or a general novelty guarantee.
 A separate disabled-thinking author-only trial added the explicit probability
 directive: it completed seven native rows in 19.641 seconds, but the existing
 sanitizer rejected one for duplicate choices. Two [independent blind
