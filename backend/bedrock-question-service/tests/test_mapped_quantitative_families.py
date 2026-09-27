@@ -146,8 +146,11 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                     explanation = learner["explanation"]
                     self.assertIn(f"{q}(x + {a}) = {p}(x + 1)", explanation)
                     self.assertIn(f"{q}x + {q * a} = {p}x + {p}", explanation)
-                    self.assertIn(f"{q * a - p} = {p - q}x", explanation)
-                    self.assertIn(f"Divide by {p - q} to get x = {b}.", explanation)
+                    if p - q == 1:
+                        self.assertIn(f"{q * a - p} = x, giving x = {b}.", explanation)
+                    else:
+                        self.assertIn(f"{q * a - p} = {p - q}x", explanation)
+                        self.assertIn(f"Divide by {p - q} to get x = {b}.", explanation)
                     self.assertIn("only solution in the domain", explanation)
                     self.assertEqual((q * a - p) / (p - q), b)
                     self.assertEqual(learner["expectedAnswer"], str(b))

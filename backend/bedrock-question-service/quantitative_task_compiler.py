@@ -240,12 +240,13 @@ def _rational_equation_derivation(left, right, domain, answer, *, unit, relation
     if (numerator <= denominator or coefficient <= 0 or constant <= 0
             or constant != coefficient * answer):
         return None
+    solved_step = (f"so {constant} = x, giving x = {answer}. " if coefficient == 1 else
+                   f"so {constant} = {coefficient}x. Divide by {coefficient} to get x = {answer}. ")
     return (
         f"Because x + 1 is nonzero throughout the domain, cross-multiply: "
         f"{denominator}(x + {offset}) = {numerator}(x + 1). "
         f"Expanding gives {denominator}x + {denominator * offset} = "
-        f"{numerator}x + {numerator}, so {constant} = {coefficient}x. "
-        f"Divide by {coefficient} to get x = {answer}. "
+        f"{numerator}x + {numerator}, {solved_step}"
         "The nonzero x coefficient makes this the only solution in the domain."
     )
 
