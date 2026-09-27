@@ -412,7 +412,7 @@ def _compile_sentence_selection_question(scene_id: str, order: str) -> dict:
               f"{correlative.plural_subject}, and {gerund.activity.lower()}. "
               "Which sentence uses present-tense subject-verb agreement correctly "
               "in standard written American English?")
-    explanation = (f"Only {answer} is grammatical. {reasons[correct_rule]} "
+    explanation = (f'Only "{answer}" is grammatical. {reasons[correct_rule]} '
                    "Each other sentence uses the wrong verb form for its subject.")
     if (len(set(choices)) != 4 or choices.count(answer) != 1
             or len(prompt) > 320 or len(explanation) > 420
