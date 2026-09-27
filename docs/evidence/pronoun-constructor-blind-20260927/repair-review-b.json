@@ -1,0 +1,65 @@
+{
+  "reviewer": "B",
+  "status": "locked_blind_repair_review",
+  "repairedPromptsSha256": "b3c6b2d8338ed277064838969877f1ee5c844523136d46da483a196afe8aeab6",
+  "scope": "REPAIR_CHECK.md, repaired-prompts.json, and original keyless worksheet choices Q01–Q08 only; no constructor source, private answer map, or review A inspected.",
+  "items": [
+    {
+      "id": "Q01",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestRoleMapAnswer": "A",
+      "roleMapUnambiguous": true,
+      "finding": "The phrase “If the actions occur” makes both actions hypothetical; the question asks only who would perform them and who owns the objects. It no longer says the addressee proposed, promised, or definitely will perform the temporal-clause action."
+    },
+    {
+      "id": "Q02",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestRoleMapAnswer": "D",
+      "roleMapUnambiguous": true,
+      "finding": "The phrase “If the actions occur” makes both actions hypothetical; the question asks only who would perform them and who owns the objects. It no longer says the addressee proposed, promised, or definitely will perform the temporal-clause action."
+    },
+    {
+      "id": "Q03",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestRoleMapAnswer": "C",
+      "roleMapUnambiguous": true,
+      "finding": "The phrase “If the actions occur” makes both actions hypothetical; the question asks only who would perform them and who owns the objects. It no longer says the addressee proposed, promised, or definitely will perform the temporal-clause action."
+    },
+    {
+      "id": "Q04",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestRoleMapAnswer": "B",
+      "roleMapUnambiguous": true,
+      "finding": "The phrase “If the actions occur” makes both actions hypothetical; the question asks only who would perform them and who owns the objects. It no longer says the addressee proposed, promised, or definitely will perform the temporal-clause action."
+    },
+    {
+      "id": "Q05",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestRoleMapAnswer": "A",
+      "roleMapUnambiguous": true,
+      "finding": "The phrase “If the actions occur” makes both actions hypothetical; the question asks only who would perform them and who owns the objects. It no longer says the addressee proposed, promised, or definitely will perform the temporal-clause action."
+    },
+    {
+      "id": "Q06",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestRoleMapAnswer": "D",
+      "roleMapUnambiguous": true,
+      "finding": "The phrase “If the actions occur” makes both actions hypothetical; the question asks only who would perform them and who owns the objects. It no longer says the addressee proposed, promised, or definitely will perform the temporal-clause action."
+    },
+    {
+      "id": "Q07",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestRoleMapAnswer": "C",
+      "roleMapUnambiguous": true,
+      "finding": "The phrase “If the actions occur” makes both actions hypothetical; the question asks only who would perform them and who owns the objects. It no longer says the addressee proposed, promised, or definitely will perform the temporal-clause action."
+    },
+    {
+      "id": "Q08",
+      "avoidsIndependentAddresseeProposalOrCommitment": true,
+      "oneBestRoleMapAnswer": "B",
+      "roleMapUnambiguous": true,
+      "finding": "The phrase “If the actions occur” makes both actions hypothetical; the question asks only who would perform them and who owns the objects. It no longer says the addressee proposed, promised, or definitely will perform the temporal-clause action."
+    }
+  ],
+  "overall": "All eight amended prompts resolve the conditional-action overclaim and retain one clear role-map answer against the unchanged choices. The repair does not address the previously observed across-item repetition; that is outside this targeted check."
+}
