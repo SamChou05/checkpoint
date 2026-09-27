@@ -1,0 +1,15 @@
+# Post-lock authored teaching and source-alignment audit
+
+This audit was performed after both answer-blind reviews were locked. It uses the captured code-owned provenance and final model review, which were hidden from blind reviewers. The [verification record](blind-verification.json) binds both reviews, the worksheet, private display map, frozen plan and capture by SHA-256.
+
+| Original slot | Worker status | Main explanation and four feedback entries | Finding |
+| --- | --- | --- | --- |
+| 0, exact fraction value | Returned | Computes `(4/5)/(6/8)+1 = 31/15`; feedback identifies each distinct wrong exact value or its likely error. | Correct. The intermediate reciprocal explanation is verbose but sound. |
+| 1, bounded rational equation | **Unfilled** | Substitutes `x=8` into `(x+5)/(x+1)=13/9`; feedback substitutes all four offered values. | The key and every evaluation are correct. The main explanation checks candidates rather than deriving `x=8` algebraically. The model reviewer marked it unsupported without a free-text rationale, so the precise expectation behind the veto is unknown. |
+| 2, bounded rational inequality | Returned | Shows `x=7` satisfies `x/(x+3) >= 7/10`, checks every smaller domain value 4–6, and distinguishes the valid but nonminimal choice 8. | Correct and complete for a minimum-in-domain question. |
+| 3, relative-clause and one-of agreement | Returned | Identifies plural `editors` as the antecedent of `who`, and singular `One` as the second subject; feedback addresses both blanks in every choice. | Correct standard written American English agreement. |
+| 4, compound and every-subject agreement | Returned | Identifies plural `Leah and Omar` and singular `Every visitor`; explains that the nearby nouns do not control the verbs; feedback addresses both blanks in every choice. | Correct standard written American English agreement. |
+
+The offline Fraction audit independently solves all three quantitative tasks; for rejected slot 1, `x=8` is the only solution even across the full stated integer domain 0–15. The candidate audit matches all 25 learner fields to private code-owned provenance. A separate local check found feedback for exactly the four offered literals in each candidate and **zero answer-position references** across all five main explanations and 20 feedback entries. This supports shuffle safety, though the answer-position detector is a bounded pattern check rather than a full language parser.
+
+After unblinding, the source assignments match the frozen objectives: slots 0–2 evaluate an exact rational expression or bounded condition, and slots 3–4 test subject–verb agreement. Blind reviewers could judge only the skills visible in stems. They both solved all four returned items, found the 24 returned choice pairs meaningful, rated the four items level 2, and flagged the two agreement questions' shared two-blank/four-pair answer pattern as limited novelty. The English questions test different agreement constructions, but that pattern can make a larger bank feel repetitive. These content findings do not alter the official **4/5** return failure.

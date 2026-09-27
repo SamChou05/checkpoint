@@ -1,0 +1,87 @@
+{
+  "reviewer": "blind_a",
+  "worksheet_sha256": "50012e6299b5507855559611772bd4c617a30c3e808d4c7781810d1e5939b4c6",
+  "rubric_sha256": "0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2",
+  "requested_slots": 5,
+  "readable_items": 4,
+  "unfilled_slots": 1,
+  "items": [
+    {
+      "id": "5e2b09b15ad6a314751781b3",
+      "status": "readable",
+      "correct_letter": "C",
+      "answer_basis": "The compound subject Leah and Omar takes close; the singular subject every visitor takes holds. The intervening near phrases do not change agreement.",
+      "pairwise_meaningful_distinctness": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "pairwise_note": "Each option represents a different combination of the two agreement decisions.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "matches_target_difficulty_2_of_5": true,
+      "visible_objective_fit": "Strong fit for present-tense subject-verb agreement with intervening phrases.",
+      "within_batch_novelty": "Low relative to item 774906289af1682fad6f24fd: both are two-blank present-tense agreement questions with a plural verb, a singular verb, and all four binary combinations.",
+      "uncertainty": "Low for answer and choice distinctness; explicit learning objective and learner level were not supplied."
+    },
+    {
+      "id": "d1cc82fa06ca5cbe83c6f8b5",
+      "status": "readable",
+      "correct_letter": "C",
+      "answer_basis": "(4/5)/(6/8) = (4/5)(8/6) = 16/15; adding 1 gives 31/15.",
+      "pairwise_meaningful_distinctness": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "pairwise_note": "All choices are different rational numbers. A reflects omitting the final addition; the error path for B and D is less clear, but they are still meaningful numeric alternatives.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "matches_target_difficulty_2_of_5": true,
+      "visible_objective_fit": "Strong fit for exact fraction arithmetic and order of operations.",
+      "within_batch_novelty": "Distinct from the other readable math item, which asks for a minimum integer satisfying an inequality.",
+      "uncertainty": "Low for answer; difficulty is borderline 2 to 3 depending on familiarity with division of fractions. Explicit learning objective and learner level were not supplied."
+    },
+    {
+      "id": "5e981f5fccb01a3ec0a32046",
+      "status": "unavailable_unfilled",
+      "correct_letter": null,
+      "pairwise_meaningful_distinctness": null,
+      "self_contained": null,
+      "difficulty_1_to_5": null,
+      "matches_target_difficulty_2_of_5": null,
+      "visible_objective_fit": null,
+      "within_batch_novelty": null,
+      "uncertainty": "No stem or choices are available, so content cannot be judged."
+    },
+    {
+      "id": "774906289af1682fad6f24fd",
+      "status": "readable",
+      "correct_letter": "C",
+      "answer_basis": "Editors is plural, so the relative clause uses check; one is singular, so it uses carries.",
+      "pairwise_meaningful_distinctness": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "pairwise_note": "Each option represents a different combination of the two agreement decisions.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "matches_target_difficulty_2_of_5": true,
+      "visible_objective_fit": "Strong fit for present-tense subject-verb agreement in a relative clause and a phrase beginning with one of.",
+      "within_batch_novelty": "Low relative to item 5e2b09b15ad6a314751781b3: same two-blank agreement task and four-way choice design, despite different sentence contexts.",
+      "uncertainty": "Low for answer and choice distinctness; explicit learning objective and learner level were not supplied."
+    },
+    {
+      "id": "1c9df427317d03ed71c953da",
+      "status": "readable",
+      "correct_letter": "D",
+      "answer_basis": "Because x+3 is positive throughout the domain, 10x >= 7(x+3), hence x >= 7; 7 is in the domain and is its minimum qualifying value.",
+      "pairwise_meaningful_distinctness": {"A-B": true, "A-C": true, "A-D": true, "B-C": true, "B-D": true, "C-D": true},
+      "pairwise_note": "All four integers differ. Five and six are below the threshold; eight satisfies the inequality but is not the minimum.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "matches_target_difficulty_2_of_5": true,
+      "visible_objective_fit": "Strong fit for comparing a rational expression against a threshold over a finite integer domain.",
+      "within_batch_novelty": "Distinct from the fraction-arithmetic item and both grammar items.",
+      "uncertainty": "Low for answer; some learners may rate the rational inequality as 3/5. Explicit learning objective and learner level were not supplied."
+    }
+  ],
+  "overall": {
+    "correct_and_unambiguous_readable_items": 4,
+    "all_six_choice_pairs_meaningfully_distinct_for_each_readable_item": true,
+    "all_readable_stems_self_contained": true,
+    "target_difficulty_assessment": "All four are reasonably near 2/5, with the two math items potentially 3/5 for learners without the relevant prerequisite practice.",
+    "within_batch_novelty_concern": "The two grammar items substantially repeat the same assessment pattern.",
+    "completion_concern": "One of five originally requested slots is unavailable and therefore unfilled.",
+    "scope_limit": "Objective fit is inferred from visible stems because no explicit objective list or learner profile was provided."
+  }
+}

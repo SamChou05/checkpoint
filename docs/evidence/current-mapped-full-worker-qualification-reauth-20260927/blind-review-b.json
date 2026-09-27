@@ -1,0 +1,120 @@
+{
+  "reviewer": "blind_b",
+  "review_scope": "worksheet.json and rubric.md only; no source, answer key, private map, capture, or other evidence inspected",
+  "input_sha256": {
+    "worksheet.json": "50012e6299b5507855559611772bd4c617a30c3e808d4c7781810d1e5939b4c6",
+    "rubric.md": "0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2"
+  },
+  "requested_slots": 5,
+  "readable_items": 4,
+  "unfilled_slots": 1,
+  "objective_fit_scope": "No external learning-objective labels were visible. Objective fit below judges only the objective apparent from each stem; alignment to any hidden assigned objective is unverified.",
+  "items": [
+    {
+      "id": "5e2b09b15ad6a314751781b3",
+      "status": "readable",
+      "answer": "C",
+      "answer_basis": "The compound subject Leah and Omar takes close; every visitor takes holds. Nearby nouns do not control either verb.",
+      "choice_pairs": {
+        "A-B": {"meaningfully_distinct": true, "basis": "Second verb differs: hold versus holds."},
+        "A-C": {"meaningfully_distinct": true, "basis": "Both verb forms differ."},
+        "A-D": {"meaningfully_distinct": true, "basis": "First verb differs: closes versus close."},
+        "B-C": {"meaningfully_distinct": true, "basis": "First verb differs: closes versus close."},
+        "B-D": {"meaningfully_distinct": true, "basis": "Both verb forms differ."},
+        "C-D": {"meaningfully_distinct": true, "basis": "Second verb differs: holds versus hold."}
+      },
+      "self_contained": true,
+      "self_containment_basis": "The dialect, tense, subjects, and requested order are explicit.",
+      "estimated_difficulty_1_to_5": 2,
+      "target_difficulty_2_of_5_fit": true,
+      "visible_objective_fit": "yes: two instances of present-tense subject-verb agreement with intervening phrases",
+      "within_batch_novelty": "limited: the other readable grammar item uses the same two-blank agreement task and four-choice verb-form grid, though its sentence structures differ",
+      "uncertainty": "Low on answer and pair distinctness; moderate on novelty and any hidden objective alignment."
+    },
+    {
+      "id": "d1cc82fa06ca5cbe83c6f8b5",
+      "status": "readable",
+      "answer": "C",
+      "answer_basis": "(4/5)/(6/8) = (4/5)(8/6) = 16/15, then adding 1 gives 31/15.",
+      "choice_pairs": {
+        "A-B": {"meaningfully_distinct": true, "basis": "16/15 and 17/16 are unequal exact values."},
+        "A-C": {"meaningfully_distinct": true, "basis": "16/15 and 31/15 are unequal; A omits the final addition."},
+        "A-D": {"meaningfully_distinct": true, "basis": "16/15 and 17/15 are unequal exact values."},
+        "B-C": {"meaningfully_distinct": true, "basis": "17/16 and 31/15 are unequal exact values."},
+        "B-D": {"meaningfully_distinct": true, "basis": "17/16 and 17/15 are unequal exact values."},
+        "C-D": {"meaningfully_distinct": true, "basis": "31/15 and 17/15 are unequal exact values."}
+      },
+      "self_contained": true,
+      "self_containment_basis": "The full arithmetic expression and exact-value request are supplied.",
+      "estimated_difficulty_1_to_5": 2,
+      "target_difficulty_2_of_5_fit": true,
+      "visible_objective_fit": "yes: exact evaluation of a nested fraction expression",
+      "within_batch_novelty": "adequate: it uses fraction division and addition, distinct from the integer-domain inequality item",
+      "uncertainty": "Low on answer, distinctness, and self-containment; moderate on whether each incorrect value reflects a specific misconception."
+    },
+    {
+      "id": "5e981f5fccb01a3ec0a32046",
+      "status": "unavailable_placeholder",
+      "unfilled": true,
+      "answer": null,
+      "choice_pairs": null,
+      "self_contained": null,
+      "estimated_difficulty_1_to_5": null,
+      "target_difficulty_2_of_5_fit": null,
+      "visible_objective_fit": null,
+      "within_batch_novelty": "unassessable",
+      "uncertainty": "No stem or choices provided; no content judgment possible."
+    },
+    {
+      "id": "774906289af1682fad6f24fd",
+      "status": "readable",
+      "answer": "C",
+      "answer_basis": "The plural editors who check the proofs take check; the singular subject one takes carries.",
+      "choice_pairs": {
+        "A-B": {"meaningfully_distinct": true, "basis": "Second verb differs: carry versus carries."},
+        "A-C": {"meaningfully_distinct": true, "basis": "Both verb forms differ."},
+        "A-D": {"meaningfully_distinct": true, "basis": "First verb differs: checks versus check."},
+        "B-C": {"meaningfully_distinct": true, "basis": "First verb differs: checks versus check."},
+        "B-D": {"meaningfully_distinct": true, "basis": "Both verb forms differ."},
+        "C-D": {"meaningfully_distinct": true, "basis": "Second verb differs: carries versus carry."}
+      },
+      "self_contained": true,
+      "self_containment_basis": "The dialect, tense, two sentences, and ordered-pair request are explicit.",
+      "estimated_difficulty_1_to_5": 2,
+      "target_difficulty_2_of_5_fit": true,
+      "visible_objective_fit": "yes: agreement in a relative clause and a singular one-of construction",
+      "within_batch_novelty": "limited: overlaps strongly in skill, format, choice structure, and correct-form pattern with item 5e2b09b15ad6a314751781b3; syntactic details differ",
+      "uncertainty": "Low on answer and pair distinctness; moderate on whether the differing constructions provide enough novelty."
+    },
+    {
+      "id": "1c9df427317d03ed71c953da",
+      "status": "readable",
+      "answer": "D",
+      "answer_basis": "Since x is 4 through 10, x+3 is positive. Multiplying yields 10x >= 7x+21, so x >= 7; the minimum allowed solution is 7.",
+      "choice_pairs": {
+        "A-B": {"meaningfully_distinct": true, "basis": "8 and 6 are different candidate minima."},
+        "A-C": {"meaningfully_distinct": true, "basis": "8 and 5 are different candidate minima."},
+        "A-D": {"meaningfully_distinct": true, "basis": "8 and 7 are different candidate minima."},
+        "B-C": {"meaningfully_distinct": true, "basis": "6 and 5 are different candidate minima."},
+        "B-D": {"meaningfully_distinct": true, "basis": "6 and 7 are different candidate minima."},
+        "C-D": {"meaningfully_distinct": true, "basis": "5 and 7 are different candidate minima."}
+      },
+      "self_contained": true,
+      "self_containment_basis": "The domain, inequality, and minimum criterion are specified; the positive denominator is implied by the domain.",
+      "estimated_difficulty_1_to_5": 2,
+      "target_difficulty_2_of_5_fit": true,
+      "visible_objective_fit": "yes: solving a simple rational inequality over a bounded integer domain",
+      "within_batch_novelty": "adequate: distinct operation and reasoning from the fraction-evaluation item",
+      "uncertainty": "Low on answer and distinctness; modest on difficulty, which could be rated 3/5 for learners new to inequalities."
+    }
+  ],
+  "overall": {
+    "single_correct_answers_for_readable_items": true,
+    "all_readable_choice_pairs_meaningfully_distinct": true,
+    "all_readable_stems_self_contained": true,
+    "all_readable_items_at_target_difficulty_2_of_5": "plausibly yes; inequality rating has some uncertainty",
+    "batch_novelty_concern": "The two grammar items substantially repeat the same two-blank agreement format and answer pattern.",
+    "five_slot_fulfillment": false,
+    "conclusion": "Four readable items are answerable and self-contained; one original slot is unavailable and therefore unfilled."
+  }
+}
