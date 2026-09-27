@@ -1,0 +1,45 @@
+{
+  "sourceCommit": "27822513dcbb688881c4014bf7c14f9df8e31fd8",
+  "items": [
+    {
+      "id": "Q01",
+      "prompt": "An editor compares sentences about Maya and Theo, the assistants, and proofreading the reports. Which sentence uses present-tense subject-verb agreement correctly in standard written American English?",
+      "choices": [
+        "Maya and Theo each prepare lunch.",
+        "Each of the guests receive a plate.",
+        "Neither the curator nor the assistants sorts the records.",
+        "Proofreading the reports require patience."
+      ]
+    },
+    {
+      "id": "Q02",
+      "prompt": "An editor compares sentences about Nora and Eli, the volunteers, and cataloging the books. Which sentence uses present-tense subject-verb agreement correctly in standard written American English?",
+      "choices": [
+        "Nora and Eli each folds the maps.",
+        "Each of the guides wears a badge.",
+        "Neither the librarian nor the volunteers arranges the returns.",
+        "Cataloging the books help readers."
+      ]
+    },
+    {
+      "id": "Q03",
+      "prompt": "An editor compares sentences about Leah and Omar, the actors, and preparing the meals. Which sentence uses present-tense subject-verb agreement correctly in standard written American English?",
+      "choices": [
+        "Leah and Omar each closes the doors.",
+        "Each of the visitors hold a ticket.",
+        "Neither the director nor the actors move the props.",
+        "Preparing the meals require planning."
+      ]
+    },
+    {
+      "id": "Q04",
+      "prompt": "An editor compares sentences about Ava and Ben, the technicians, and drawing the maps. Which sentence uses present-tense subject-verb agreement correctly in standard written American English?",
+      "choices": [
+        "Ava and Ben each reviews the forms.",
+        "Each of the clerks keep a copy.",
+        "Neither the scientist nor the technicians labels the samples.",
+        "Drawing the maps requires accuracy."
+      ]
+    }
+  ]
+}
