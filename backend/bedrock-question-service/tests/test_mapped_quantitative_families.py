@@ -201,6 +201,34 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             "outputConfig": native.native_output_config(self.contract()),
         }, shape)
 
+    def test_every_schema_admitted_english_scene_reaches_the_full_compiler(self):
+        contract = self.contract()
+        schema = json.loads(native.native_output_config(contract)["textFormat"]["structure"]
+                            ["jsonSchema"]["schema"])
+        validator = Draft202012Validator(schema)
+        slots = schema["properties"]["questions"]["properties"]
+        checked = 0
+        for slot in (3, 4):
+            slot_schema = slots[str(slot)]
+            for scene in slot_schema["properties"]["scene"]["enum"]:
+                for order in slot_schema["properties"]["order"]["enum"]:
+                    with self.subTest(slot=slot, scene=scene, order=order):
+                        raw = self.raw()
+                        source = _agreement(scene, order)
+                        raw["questions"][str(slot)] = source
+                        validator.validate(raw)
+                        adapted = json.loads(native.adapt_native_response(json.dumps(raw), contract))
+                        rows, numeric, english, failures = prepare_mapped_agreement_rows(adapted, contract)
+                        self.assertEqual(failures, [])
+                        self.assertEqual(set(numeric), {0, 1, 2})
+                        self.assertEqual(set(english), {3, 4})
+                        self.assertEqual(json.loads(english[slot].source_task_json), source)
+                        self.assertEqual(json.loads(english[slot].task_json), source)
+                        self.assertEqual(rows[slot]["expectedAnswer"],
+                                         english[slot].content()["expectedAnswer"])
+                        checked += 1
+        self.assertEqual(checked, 56)
+
     def test_adapter_rejects_cross_family_and_forged_payloads(self):
         adapted = json.loads(native.adapt_native_response(json.dumps(self.raw()), self.contract()))
         self.assertEqual([row["kind"] for row in adapted["questions"]],
