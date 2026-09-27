@@ -1,0 +1,692 @@
+{
+  "review": "A",
+  "source": "Only the frozen keyless worksheet and its README; no source, private map, or other review consulted.",
+  "worksheet_sha256": "0da3ddc7f43b28e2eb1ee296211999fa7c97045ff3ded9af33ad882e38080517",
+  "rubric": "Strong repetition requires the same central solving decision and substantially the same answer representation/error pattern; changed values alone do not create a new task. Watch pairs share format or broad topic but require a different central decision.",
+  "items": [
+    {
+      "id": "M01",
+      "supported_choice": "A",
+      "difficulty_1_to_5": 2,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "x = 4 gives (4 + 6)(4 + 1) = 50; each other offered integer fails.",
+      "choice_quality": "All four values differ; distractors are nearby guesses rather than identifiable misconception types. No answer cue."
+    },
+    {
+      "id": "M02",
+      "supported_choice": "D",
+      "difficulty_1_to_5": 3,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "A = 19/15 and B = 5/4, so A - B = 1/60.",
+      "choice_quality": "Each direction-and-gap combination asserts a different result. The 1/6 alternative is a plausible size error; no duplicate or answer cue."
+    },
+    {
+      "id": "M03",
+      "supported_choice": "C",
+      "difficulty_1_to_5": 2,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "Multiplication first gives 2/5; then 3/4 + 2/5 = 23/20.",
+      "choice_quality": "A misadds numerators and denominators; B miscomputes the product; D adds before multiplying. These are distinct erroneous worked paths. No unsupported step in C."
+    },
+    {
+      "id": "M04",
+      "supported_choice": "A",
+      "difficulty_1_to_5": 3,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "The expression is (x - 5)(x - 12), zero at 5 and 12. The 4-through-13 domain has 10 integers; 8 satisfy != 0.",
+      "choice_quality": "Four different counts, but the distractors are adjacent counts and do not reveal specific mathematical errors. No answer cue."
+    },
+    {
+      "id": "M05",
+      "supported_choice": "A",
+      "difficulty_1_to_5": 3,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "A = 15/28 and B = 1/2 = 14/28, so A exceeds B by 1/28.",
+      "choice_quality": "All four direction-and-gap combinations differ; no duplicate or answer cue."
+    },
+    {
+      "id": "M06",
+      "supported_choice": "D",
+      "difficulty_1_to_5": 3,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "Division first gives (2/3) / (4/5) = 5/6; then 3/5 + 5/6 = 43/30.",
+      "choice_quality": "A adds first; B misadds numerators and denominators after a correct quotient; C treats division as multiplication. These are distinct erroneous worked paths. No unsupported step in D."
+    },
+    {
+      "id": "M07",
+      "supported_choice": "D",
+      "difficulty_1_to_5": 2,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "10(x + 4) = 13(x + 1), so 27 = 3x and x = 9. All domain denominators are nonzero.",
+      "choice_quality": "All four offered integers differ; adjacent-value distractors are weakly diagnostic but valid. No answer cue."
+    },
+    {
+      "id": "M08",
+      "supported_choice": "B",
+      "difficulty_1_to_5": 3,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "A = 53/35 and B = 3/2, so A - B = 1/70.",
+      "choice_quality": "Each direction-and-gap combination is distinct. The 2/15 gap is a plausible calculation error; no answer cue."
+    },
+    {
+      "id": "M09",
+      "supported_choice": "A",
+      "difficulty_1_to_5": 2,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "Multiplication first gives 1/2; then 2/5 + 1/2 = 9/10.",
+      "choice_quality": "B adds first; C misadds numerators and denominators after the correct product; D miscomputes the product. These are distinct erroneous worked paths. No unsupported step in A."
+    },
+    {
+      "id": "M10",
+      "supported_choice": "A",
+      "difficulty_1_to_5": 2,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "3(x + 2) - 2x = x + 6 <= 14 means x <= 8; integers 4, 5, 6, 7, 8 give a count of 5.",
+      "choice_quality": "Four different counts, but all distractors are adjacent counts with no clear misconception mapping. No answer cue."
+    },
+    {
+      "id": "M11",
+      "supported_choice": "D",
+      "difficulty_1_to_5": 2,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "5(x + 2) + 8 = 4x + 21 simplifies to x = 3.",
+      "choice_quality": "All four offered integers differ; adjacent-value distractors are weakly diagnostic but valid. No answer cue."
+    },
+    {
+      "id": "M12",
+      "supported_choice": "D",
+      "difficulty_1_to_5": 3,
+      "meaningful_choice_pairs_of_6": 6,
+      "reason": "(x - 5)^2 < 49 gives -2 < x < 12, hence the 13 integers -1 through 11.",
+      "choice_quality": "Four different counts. The adjacent counts can reflect endpoint errors but do not isolate a misconception uniquely. No answer cue."
+    }
+  ],
+  "all_66_cross_item_pairs_assessed": true,
+  "cross_item_pairs": [
+    {
+      "pair": [
+        "M01",
+        "M02"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M01",
+        "M03"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M01",
+        "M04"
+      ],
+      "classification": "not_strong",
+      "reason": "Both use bare integers, but one selects x satisfying an equation and the other counts members of a domain."
+    },
+    {
+      "pair": [
+        "M01",
+        "M05"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M01",
+        "M06"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M01",
+        "M07"
+      ],
+      "classification": "watch_not_strong",
+      "reason": "Same choose-x integer format, but candidate substitution or quadratic product differs from a rational equality that reduces linearly."
+    },
+    {
+      "pair": [
+        "M01",
+        "M08"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M01",
+        "M09"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M01",
+        "M10"
+      ],
+      "classification": "not_strong",
+      "reason": "Both use bare integers, but one selects x satisfying an equation and the other counts members of a domain."
+    },
+    {
+      "pair": [
+        "M01",
+        "M11"
+      ],
+      "classification": "watch_not_strong",
+      "reason": "Same choose-x integer format, but a quadratic product equation differs from the linear equation."
+    },
+    {
+      "pair": [
+        "M01",
+        "M12"
+      ],
+      "classification": "not_strong",
+      "reason": "Both use bare integers, but one selects x satisfying an equation and the other counts members of a domain."
+    },
+    {
+      "pair": [
+        "M02",
+        "M03"
+      ],
+      "classification": "not_strong",
+      "reason": "Both involve fraction arithmetic, but one compares two named values and reports a gap; the other chooses a worked order-of-operations evaluation."
+    },
+    {
+      "pair": [
+        "M02",
+        "M04"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M02",
+        "M05"
+      ],
+      "classification": "strong",
+      "reason": "Both calculate two fractions, choose which named expression is larger, and report an exact gap using the same four direction-by-gap prose choices; sums versus products change only the preliminary arithmetic."
+    },
+    {
+      "pair": [
+        "M02",
+        "M06"
+      ],
+      "classification": "not_strong",
+      "reason": "Both involve fraction arithmetic, but one compares two named values and reports a gap; the other chooses a worked order-of-operations evaluation."
+    },
+    {
+      "pair": [
+        "M02",
+        "M07"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M02",
+        "M08"
+      ],
+      "classification": "strong",
+      "reason": "Near-isomorphic: compare two sums of fractions, compute a small exact gap, and select from the same direction-by-gap four-choice pattern."
+    },
+    {
+      "pair": [
+        "M02",
+        "M09"
+      ],
+      "classification": "not_strong",
+      "reason": "Both involve fraction arithmetic, but one compares two named values and reports a gap; the other chooses a worked order-of-operations evaluation."
+    },
+    {
+      "pair": [
+        "M02",
+        "M10"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M02",
+        "M11"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M02",
+        "M12"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M03",
+        "M04"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M03",
+        "M05"
+      ],
+      "classification": "not_strong",
+      "reason": "Both involve fraction arithmetic, but one compares two named values and reports a gap; the other chooses a worked order-of-operations evaluation."
+    },
+    {
+      "pair": [
+        "M03",
+        "M06"
+      ],
+      "classification": "strong",
+      "reason": "Both select a two-step worked fraction evaluation by applying multiplication/division before addition; distractors repeat wrong-order, wrong-operation, and naive-fraction-addition error types."
+    },
+    {
+      "pair": [
+        "M03",
+        "M07"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M03",
+        "M08"
+      ],
+      "classification": "not_strong",
+      "reason": "Both involve fraction arithmetic, but one compares two named values and reports a gap; the other chooses a worked order-of-operations evaluation."
+    },
+    {
+      "pair": [
+        "M03",
+        "M09"
+      ],
+      "classification": "strong",
+      "reason": "Near-isomorphic: both evaluate fraction addition with an intervening multiplication, and select a worked two-step solution from the same error-pattern format."
+    },
+    {
+      "pair": [
+        "M03",
+        "M10"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M03",
+        "M11"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M03",
+        "M12"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M04",
+        "M05"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M04",
+        "M06"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M04",
+        "M07"
+      ],
+      "classification": "not_strong",
+      "reason": "Both use bare integers, but one selects x satisfying an equation and the other counts members of a domain."
+    },
+    {
+      "pair": [
+        "M04",
+        "M08"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M04",
+        "M09"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M04",
+        "M10"
+      ],
+      "classification": "watch_not_strong",
+      "reason": "Same count-in-domain numeral format, but excluding two polynomial zeros differs from solving a linear upper bound."
+    },
+    {
+      "pair": [
+        "M04",
+        "M11"
+      ],
+      "classification": "not_strong",
+      "reason": "Both use bare integers, but one selects x satisfying an equation and the other counts members of a domain."
+    },
+    {
+      "pair": [
+        "M04",
+        "M12"
+      ],
+      "classification": "watch_not_strong",
+      "reason": "Same count-in-domain numeral format and a quadratic-looking predicate, but excluding isolated zeros differs from counting an interval inside a squared inequality."
+    },
+    {
+      "pair": [
+        "M05",
+        "M06"
+      ],
+      "classification": "not_strong",
+      "reason": "Both involve fraction arithmetic, but one compares two named values and reports a gap; the other chooses a worked order-of-operations evaluation."
+    },
+    {
+      "pair": [
+        "M05",
+        "M07"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M05",
+        "M08"
+      ],
+      "classification": "strong",
+      "reason": "Both calculate two named fraction values, choose the larger and an exact gap in the same direction-by-gap prose format; product versus sum is a preliminary arithmetic variation."
+    },
+    {
+      "pair": [
+        "M05",
+        "M09"
+      ],
+      "classification": "not_strong",
+      "reason": "Both involve fraction arithmetic, but one compares two named values and reports a gap; the other chooses a worked order-of-operations evaluation."
+    },
+    {
+      "pair": [
+        "M05",
+        "M10"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M05",
+        "M11"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M05",
+        "M12"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M06",
+        "M07"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M06",
+        "M08"
+      ],
+      "classification": "not_strong",
+      "reason": "Both involve fraction arithmetic, but one compares two named values and reports a gap; the other chooses a worked order-of-operations evaluation."
+    },
+    {
+      "pair": [
+        "M06",
+        "M09"
+      ],
+      "classification": "strong",
+      "reason": "Both select a two-step worked fraction evaluation by applying multiplication/division before addition; distractors repeat wrong-order, wrong-operation, and naive-fraction-addition error types."
+    },
+    {
+      "pair": [
+        "M06",
+        "M10"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M06",
+        "M11"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M06",
+        "M12"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M07",
+        "M08"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M07",
+        "M09"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M07",
+        "M10"
+      ],
+      "classification": "not_strong",
+      "reason": "Both use bare integers, but one selects x satisfying an equation and the other counts members of a domain."
+    },
+    {
+      "pair": [
+        "M07",
+        "M11"
+      ],
+      "classification": "strong",
+      "reason": "Both reduce a displayed equality to one linear value of x and choose that value from four bare integers; the equations differ in surface syntax."
+    },
+    {
+      "pair": [
+        "M07",
+        "M12"
+      ],
+      "classification": "not_strong",
+      "reason": "Both use bare integers, but one selects x satisfying an equation and the other counts members of a domain."
+    },
+    {
+      "pair": [
+        "M08",
+        "M09"
+      ],
+      "classification": "not_strong",
+      "reason": "Both involve fraction arithmetic, but one compares two named values and reports a gap; the other chooses a worked order-of-operations evaluation."
+    },
+    {
+      "pair": [
+        "M08",
+        "M10"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M08",
+        "M11"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M08",
+        "M12"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M09",
+        "M10"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M09",
+        "M11"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M09",
+        "M12"
+      ],
+      "classification": "not_strong",
+      "reason": "The core mathematical decision and answer representation differ."
+    },
+    {
+      "pair": [
+        "M10",
+        "M11"
+      ],
+      "classification": "not_strong",
+      "reason": "Both use bare integers, but one selects x satisfying an equation and the other counts members of a domain."
+    },
+    {
+      "pair": [
+        "M10",
+        "M12"
+      ],
+      "classification": "watch_not_strong",
+      "reason": "Same count-in-domain numeral format and an inequality boundary, but a linear one-sided cutoff differs from a two-sided squared interval."
+    },
+    {
+      "pair": [
+        "M11",
+        "M12"
+      ],
+      "classification": "not_strong",
+      "reason": "Both use bare integers, but one selects x satisfying an equation and the other counts members of a domain."
+    }
+  ],
+  "strong_repetition_pairs": [
+    {
+      "pair": [
+        "M02",
+        "M05"
+      ],
+      "reason": "Both calculate two fractions, choose which named expression is larger, and report an exact gap using the same four direction-by-gap prose choices; sums versus products change only the preliminary arithmetic."
+    },
+    {
+      "pair": [
+        "M02",
+        "M08"
+      ],
+      "reason": "Near-isomorphic: compare two sums of fractions, compute a small exact gap, and select from the same direction-by-gap four-choice pattern."
+    },
+    {
+      "pair": [
+        "M03",
+        "M06"
+      ],
+      "reason": "Both select a two-step worked fraction evaluation by applying multiplication/division before addition; distractors repeat wrong-order, wrong-operation, and naive-fraction-addition error types."
+    },
+    {
+      "pair": [
+        "M03",
+        "M09"
+      ],
+      "reason": "Near-isomorphic: both evaluate fraction addition with an intervening multiplication, and select a worked two-step solution from the same error-pattern format."
+    },
+    {
+      "pair": [
+        "M05",
+        "M08"
+      ],
+      "reason": "Both calculate two named fraction values, choose the larger and an exact gap in the same direction-by-gap prose format; product versus sum is a preliminary arithmetic variation."
+    },
+    {
+      "pair": [
+        "M06",
+        "M09"
+      ],
+      "reason": "Both select a two-step worked fraction evaluation by applying multiplication/division before addition; distractors repeat wrong-order, wrong-operation, and naive-fraction-addition error types."
+    },
+    {
+      "pair": [
+        "M07",
+        "M11"
+      ],
+      "reason": "Both reduce a displayed equality to one linear value of x and choose that value from four bare integers; the equations differ in surface syntax."
+    }
+  ],
+  "bank_observations": [
+    "All 12 questions have one supported choice; all 72 within-item unordered choice pairs differ semantically. No duplicate choice, unsupported correct worked step, or explicit correct-answer cue was found.",
+    "The three exact-gap comparison questions all resolve to A being larger by a small gap, and the three worked-evaluation questions all use precedence before addition. The bank therefore feels repetitive despite distinct literal values and operations.",
+    "Bare-integer x/count alternatives are mostly adjacent numbers, which are distinct but weakly diagnostic as distractors.",
+    "The independently inferred answer letters are A five times, D five times, and B/C once each; answer-position balancing or shuffling would matter for an exposed sequence."
+  ]
+}
