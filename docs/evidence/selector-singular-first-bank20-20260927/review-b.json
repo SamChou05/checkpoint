@@ -1,0 +1,522 @@
+{
+  "reviewer": "blind_b",
+  "worksheetSha256": "cde2879885d7c8404067052931be110deaca7e224671ad6a9234ccb9b5cf07d6",
+  "reviewScope": "Answer-blind worksheet only; no answer map, source compiler, or earlier reviewer output consulted.",
+  "methodology": "Solved each item directly under standard written American English or exact rational/integer arithmetic. Compared all four responses for one correct choice and all six within-item response pairs for a semantic difference. Examined all 190 unordered cross-item pairs; marked strong repetition when the prompt and response skeleton recur, or the same pair of grammar rules recurs across formats. Other pairs are not classified as strong under this rubric.",
+  "summary": {
+    "itemsReviewed": 20,
+    "uniqueKeyItems": 20,
+    "plausibleDifficulty2to3Items": 20,
+    "meaningfullyDistinctWithinChoicePairs": 120,
+    "withinChoicePairsReviewed": 120,
+    "crossItemPairsReviewed": 190,
+    "strongRepetitionPairCount": 31,
+    "nonStrongRepetitionPairCount": 159,
+    "assessment": "All twenty are mechanically answerable with one key, but repeated format families make the bank feel templated. The two sentence-selection questions are especially close in underlying rule menu."
+  },
+  "items": [
+    {
+      "id": "Q01",
+      "selectedKey": "B",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "The plural clerks sort; the head One is singular and holds."
+    },
+    {
+      "id": "Q02",
+      "selectedKey": "C",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "Cooks is plural and prepare; chef is singular and plans, despite nearby nouns."
+    },
+    {
+      "id": "Q03",
+      "selectedKey": "A",
+      "plausibleDifficulty": 3,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "x=4 makes (4+6)(4+1)=50; the other offered values do not."
+    },
+    {
+      "id": "Q04",
+      "selectedKey": "C",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "6/7+1/2=19/14, then multiply by 3 to get 57/14."
+    },
+    {
+      "id": "Q05",
+      "selectedKey": "B",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "5/6 times 7/9 is 35/54; 1 minus that is 19/54."
+    },
+    {
+      "id": "Q06",
+      "selectedKey": "A",
+      "plausibleDifficulty": 3,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "The expression factors as (x-5)(x-12); ten domain integers exclude two zeros, leaving eight."
+    },
+    {
+      "id": "Q07",
+      "selectedKey": "C",
+      "plausibleDifficulty": 3,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "Only the plural compound subject Maya and Theo takes prepare; the other sentences mismatch their singular or nearer plural subjects."
+    },
+    {
+      "id": "Q08",
+      "selectedKey": "D",
+      "plausibleDifficulty": 3,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "10(x+4)=13(x+1), so x=9."
+    },
+    {
+      "id": "Q09",
+      "selectedKey": "B",
+      "plausibleDifficulty": 3,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "The gerund phrase Drawing the maps is singular and takes requires; the other choices mismatch subject number."
+    },
+    {
+      "id": "Q10",
+      "selectedKey": "D",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "8/9+4/6=14/9; its reciprocal is 9/14."
+    },
+    {
+      "id": "Q11",
+      "selectedKey": "B",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "Each of the clerks is singular and keeps; Ava and Ben is plural and review, even with each after it."
+    },
+    {
+      "id": "Q12",
+      "selectedKey": "B",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "(7/8)/(3/5)=35/24; adding 1 gives 59/24."
+    },
+    {
+      "id": "Q13",
+      "selectedKey": "A",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "The inequality reduces to x<=8; integers 4 through 8 give five."
+    },
+    {
+      "id": "Q14",
+      "selectedKey": "D",
+      "plausibleDifficulty": 3,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "With x+4 positive on the domain, 7x>=3(x+4), hence x>=3 and the minimum is 3."
+    },
+    {
+      "id": "Q15",
+      "selectedKey": "B",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "Letters is plural and include; mail is singular and arrives."
+    },
+    {
+      "id": "Q16",
+      "selectedKey": "A",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "The gerund phrase Preparing the meals is singular and requires; cooks is plural and measure."
+    },
+    {
+      "id": "Q17",
+      "selectedKey": "D",
+      "plausibleDifficulty": 2,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "5x+18=4x+21 implies x=3."
+    },
+    {
+      "id": "Q18",
+      "selectedKey": "A",
+      "plausibleDifficulty": 3,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "In the inverted clauses, returns is plural and book is singular; are; is is the only matching pair."
+    },
+    {
+      "id": "Q19",
+      "selectedKey": "D",
+      "plausibleDifficulty": 3,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "The value 4 gives 36 and 5 gives 50, so the maximum satisfying integer is 4."
+    },
+    {
+      "id": "Q20",
+      "selectedKey": "D",
+      "plausibleDifficulty": 3,
+      "uniqueCorrectAnswer": true,
+      "withinChoiceMeaningfulPairs": 6,
+      "withinChoiceTotalPairs": 6,
+      "reason": "(x-5)^2<49 means -2<x<12; integers -1 through 11 yield thirteen."
+    }
+  ],
+  "crossItemStrongRepetitionPairs": [
+    {
+      "pair": [
+        "Q01",
+        "Q02"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q11"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q15"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q16"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q01",
+        "Q18"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q11"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q15"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q16"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q02",
+        "Q18"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q08"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "offered_integer_satisfies_equation"
+    },
+    {
+      "pair": [
+        "Q03",
+        "Q17"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "offered_integer_satisfies_equation"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q05"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "exact_fraction_value"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q10"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "exact_fraction_value"
+    },
+    {
+      "pair": [
+        "Q04",
+        "Q12"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "exact_fraction_value"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q10"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "exact_fraction_value"
+    },
+    {
+      "pair": [
+        "Q05",
+        "Q12"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "exact_fraction_value"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q13"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "count_integer_domain_solutions"
+    },
+    {
+      "pair": [
+        "Q06",
+        "Q20"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "count_integer_domain_solutions"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q09"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "sentence_selection_agreement"
+    },
+    {
+      "pair": [
+        "Q07",
+        "Q11"
+      ],
+      "basis": [
+        "same_each_of_and_compound_each_agreement_rules"
+      ],
+      "family": "cross_format_rule_overlap"
+    },
+    {
+      "pair": [
+        "Q08",
+        "Q17"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "offered_integer_satisfies_equation"
+    },
+    {
+      "pair": [
+        "Q09",
+        "Q11"
+      ],
+      "basis": [
+        "same_each_of_and_compound_each_agreement_rules"
+      ],
+      "family": "cross_format_rule_overlap"
+    },
+    {
+      "pair": [
+        "Q10",
+        "Q12"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "exact_fraction_value"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q15"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q16"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q11",
+        "Q18"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q13",
+        "Q20"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "count_integer_domain_solutions"
+    },
+    {
+      "pair": [
+        "Q14",
+        "Q19"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "integer_domain_endpoint"
+    },
+    {
+      "pair": [
+        "Q15",
+        "Q16"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q15",
+        "Q18"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    },
+    {
+      "pair": [
+        "Q16",
+        "Q18"
+      ],
+      "basis": [
+        "same_prompt_and_response_format"
+      ],
+      "family": "two_blank_agreement"
+    }
+  ],
+  "repetitionNotes": [
+    "The six two-blank agreement items generate fifteen same-format pairs, although their governing grammar rules differ.",
+    "The four exact-fraction items, three offered-solution items, three count-domain items, and two endpoint items repeat their prompt/response skeletons despite changed operations.",
+    "Q07 and Q09 use the same four agreement-rule families in sentence selection with lexical substitutions; Q11 reprises both each-of and compound-each in a different response format.",
+    "Across the bank, eight grammar items and twelve math items use a small set of prompt and answer layouts. Structural uniqueness of stems alone does not establish variety."
+  ],
+  "distractorQualityNotes": [
+    "Q04 choice B (57) is far outside the reasonable magnitude of roughly four and may be easy to discard without computing.",
+    "Q05 choice D (34/53) and Q12 choice D (36/25) are numerically distinct but their connection to common mistakes is unclear; this is a plausibility issue, not a uniqueness failure."
+  ],
+  "limitations": "This is a blind human-style content audit of offline candidates. It does not test Bedrock author/reviewer acceptance, adaptive targeting, deployed app behavior, or learner calibration."
+}

@@ -1,0 +1,2107 @@
+{
+  "reviewer": "A",
+  "reviewType": "answer_blind_independent_solution_with_prior_novelty_context",
+  "worksheetSha256": "cde2879885d7c8404067052931be110deaca7e224671ad6a9234ccb9b5cf07d6",
+  "rubric": {
+    "uniqueKey": "Solve every prompt independently and test every offered choice for a second defensible answer in standard written American English or exact arithmetic.",
+    "difficulty": "1=immediate recognition, 2=one or two familiar steps, 3=several linked steps or nontrivial agreement trap, 4=advanced, 5=very advanced; target 2-3.",
+    "choiceDistinctness": "Each of the six choice pairs must make a different exact numerical claim, ordered verb assignment, or complete-sentence grammatical claim. This does not imply equal distractor plausibility.",
+    "crossItemRatings": "Strong method means substantially repeated operation or grammar-trap set; strong response format means the same requested answer frame. Overall strong requires both. Moderate method denotes the same broad skill or operation class with materially changed rule/operation. Shared numeric answer type or subject alone receives low/none.",
+    "blindness": "Current worksheet answers were hidden: I did not open the current private answer map, construction source, or keyed evaluation before locking. For rubric context I did read a prior published blind review and its predecessor-bank summary, which disclosed four predecessor strong-overlap pairs; this limits independence of the cross-item novelty ratings, although current keys were solved from the keyless worksheet."
+  },
+  "coverage": {
+    "items": 20,
+    "withinItemChoicePairs": 120,
+    "crossItemPairs": 190
+  },
+  "items": [
+    {
+      "id": "Q01",
+      "selectedChoice": "B",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "The plural clerks sort; singular one holds.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q02",
+      "selectedChoice": "C",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "The plural cooks prepare; singular chef plans. Nearby prepositional phrases do not change either subject.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q03",
+      "selectedChoice": "A",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "At x=4, (x+6)(x+1)=10*5=50; the other offered integers do not satisfy it.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q04",
+      "selectedChoice": "C",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "6/7+2/4=19/14, and three times that is 57/14.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q05",
+      "selectedChoice": "B",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "(5/6)(7/9)=35/54, so 1-35/54=19/54.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q06",
+      "selectedChoice": "A",
+      "additionalViableChoices": [],
+      "difficulty1To5": 3,
+      "independentSolution": "The polynomial factors as (x-5)(x-12). Of ten integers from 4 through 13, only 5 and 12 make it zero; eight satisfy !=0.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q07",
+      "selectedChoice": "C",
+      "additionalViableChoices": [],
+      "difficulty1To5": 3,
+      "independentSolution": "Maya and Theo is plural despite each; prepare agrees. The other sentences require receives, requires, and sort.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q08",
+      "selectedChoice": "D",
+      "additionalViableChoices": [],
+      "difficulty1To5": 3,
+      "independentSolution": "The positive denominator permits 10(x+4)=13(x+1), giving 27=3x and x=9.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q09",
+      "selectedChoice": "B",
+      "additionalViableChoices": [],
+      "difficulty1To5": 3,
+      "independentSolution": "Drawing the maps is a singular gerund phrase, so requires agrees. The alternatives require review, label, and keeps.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q10",
+      "selectedChoice": "D",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "8/9+4/6=14/9, whose reciprocal is 9/14.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q11",
+      "selectedChoice": "B",
+      "additionalViableChoices": [],
+      "difficulty1To5": 3,
+      "independentSolution": "Each of the clerks is singular and keeps; Ava and Ben is plural despite each and review.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q12",
+      "selectedChoice": "B",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "(7/8)/(3/5)=35/24; adding one gives 59/24.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q13",
+      "selectedChoice": "A",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "3(x+2)-2x=x+6<=14 gives x<=8, hence five integers from 4 through 8.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q14",
+      "selectedChoice": "D",
+      "additionalViableChoices": [],
+      "difficulty1To5": 3,
+      "independentSolution": "x+4 is positive on the domain. 7x>=3(x+4) gives x>=3, so the minimum is 3.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q15",
+      "selectedChoice": "B",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "Most of the letters is plural and include; most of the mail is singular and arrives.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q16",
+      "selectedChoice": "A",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "Preparing the meals is one singular activity and requires; the plural cooks measure.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q17",
+      "selectedChoice": "D",
+      "additionalViableChoices": [],
+      "difficulty1To5": 2,
+      "independentSolution": "5(x+2)+8=4x+21 reduces to x+18=21, hence x=3.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q18",
+      "selectedChoice": "A",
+      "additionalViableChoices": [],
+      "difficulty1To5": 3,
+      "independentSolution": "In the inverted clauses, plural returns requires are and singular book requires is.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q19",
+      "selectedChoice": "D",
+      "additionalViableChoices": [],
+      "difficulty1To5": 3,
+      "independentSolution": "For positive domain values x(x+5) increases; x=4 gives 36 and x=5 exceeds 36, so maximum is 4.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    },
+    {
+      "id": "Q20",
+      "selectedChoice": "D",
+      "additionalViableChoices": [],
+      "difficulty1To5": 3,
+      "independentSolution": "(x-5)^2<49 means -2<x<12; the integers -1 through 11 give thirteen solutions.",
+      "choicePairDistinctness": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choicePairReason": "Different exact numeric values, different ordered verb assignments, or different complete grammatical claims."
+    }
+  ],
+  "crossItemPairs": [
+    {
+      "items": [
+        "Q01",
+        "Q02"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q03"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q04"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q05"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q06"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q07"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q08"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q09"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q10"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q11"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q12"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q13"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q14"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q15"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q16"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q17"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q18"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q19"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q01",
+        "Q20"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q03"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q04"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q05"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q06"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q07"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q08"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q09"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q10"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q11"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q12"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q13"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q14"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q15"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q16"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q17"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q18"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q19"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q02",
+        "Q20"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q04"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q05"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q06"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q07"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q08"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q09"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q10"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q11"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q12"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q13"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q14"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q15"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q16"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q17"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q19"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q03",
+        "Q20"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q05"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q06"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q07"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q08"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q09"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q10"
+      ],
+      "method": "strong",
+      "responseFormat": "strong",
+      "overall": "strong"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q11"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q12"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q13"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q14"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q15"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q16"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q17"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q19"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q04",
+        "Q20"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q06"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q07"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q08"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q09"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q10"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q11"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q12"
+      ],
+      "method": "strong",
+      "responseFormat": "strong",
+      "overall": "strong"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q13"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q14"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q15"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q16"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q17"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q19"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q05",
+        "Q20"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q07"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q08"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q09"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q10"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q11"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q12"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q13"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q14"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q15"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q16"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q17"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q19"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q06",
+        "Q20"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q08"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q09"
+      ],
+      "method": "strong",
+      "responseFormat": "strong",
+      "overall": "strong"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q10"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q11"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q12"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q13"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q14"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q15"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q16"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q17"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q18"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q19"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q07",
+        "Q20"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q09"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q10"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q11"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q12"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q13"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q14"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q15"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q16"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q17"
+      ],
+      "method": "strong",
+      "responseFormat": "strong",
+      "overall": "strong"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q19"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q08",
+        "Q20"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q10"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q11"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q12"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q13"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q14"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q15"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q16"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q17"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q18"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q19"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q09",
+        "Q20"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q11"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q12"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q13"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q14"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q15"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q16"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q17"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q19"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q10",
+        "Q20"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q11",
+        "Q12"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q11",
+        "Q13"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q11",
+        "Q14"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q11",
+        "Q15"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q11",
+        "Q16"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q11",
+        "Q17"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q11",
+        "Q18"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q11",
+        "Q19"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q11",
+        "Q20"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q12",
+        "Q13"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q12",
+        "Q14"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q12",
+        "Q15"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q12",
+        "Q16"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q12",
+        "Q17"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q12",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q12",
+        "Q19"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q12",
+        "Q20"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q13",
+        "Q14"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q13",
+        "Q15"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q13",
+        "Q16"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q13",
+        "Q17"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q13",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q13",
+        "Q19"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q13",
+        "Q20"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q14",
+        "Q15"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q14",
+        "Q16"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q14",
+        "Q17"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q14",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q14",
+        "Q19"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q14",
+        "Q20"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q15",
+        "Q16"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q15",
+        "Q17"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q15",
+        "Q18"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q15",
+        "Q19"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q15",
+        "Q20"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q16",
+        "Q17"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q16",
+        "Q18"
+      ],
+      "method": "moderate",
+      "responseFormat": "strong",
+      "overall": "moderate"
+    },
+    {
+      "items": [
+        "Q16",
+        "Q19"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q16",
+        "Q20"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q17",
+        "Q18"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q17",
+        "Q19"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q17",
+        "Q20"
+      ],
+      "method": "low",
+      "responseFormat": "low",
+      "overall": "low"
+    },
+    {
+      "items": [
+        "Q18",
+        "Q19"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q18",
+        "Q20"
+      ],
+      "method": "none",
+      "responseFormat": "none",
+      "overall": "none"
+    },
+    {
+      "items": [
+        "Q19",
+        "Q20"
+      ],
+      "method": "moderate",
+      "responseFormat": "low",
+      "overall": "moderate"
+    }
+  ],
+  "findings": {
+    "uniqueIndependentKeys": 20,
+    "additionalViableChoices": 0,
+    "difficulty2Or3Items": 20,
+    "meaningfullyDistinctWithinItemPairs": 120,
+    "crossItemRatingCounts": {
+      "method": {
+        "moderate": 45,
+        "none": 96,
+        "low": 45,
+        "strong": 4
+      },
+      "responseFormat": {
+        "strong": 29,
+        "none": 96,
+        "low": 65
+      },
+      "overall": {
+        "moderate": 45,
+        "none": 96,
+        "low": 45,
+        "strong": 4
+      }
+    },
+    "strongCrossItemPairs": [
+      [
+        "Q04",
+        "Q10"
+      ],
+      [
+        "Q05",
+        "Q12"
+      ],
+      [
+        "Q07",
+        "Q09"
+      ],
+      [
+        "Q08",
+        "Q17"
+      ]
+    ],
+    "repeatedResponseFrames": {
+      "twoBlankAgreementItems": 6,
+      "completeSentenceAgreementItems": 2,
+      "fractionEvaluationItems": 4,
+      "chooseEquationRootItems": 3,
+      "countIntegerSolutionsItems": 3,
+      "inequalityExtremumItems": 2
+    },
+    "qualityLimits": [
+      "Literal choice distinctness does not establish strong distractors: the two-blank grammar alternatives often differ only by verb endings, and count questions often offer nearby consecutive integers.",
+      "The two full-sentence items repeat the same four agreement constructions with different nouns and with a different one correct.",
+      "This is a human answer-blind review of offline candidates, not a full-worker qualification or a guarantee that future model output is correct."
+    ]
+  }
+}
