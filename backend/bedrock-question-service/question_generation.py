@@ -164,10 +164,15 @@ def _generate_provider_payload(
     task_only = _task_only_numerical_author(request, author_mode, cardinality_mode)
     mapped_assignments = _mapped_fixed_slot_assignments(request, author_mode, cardinality_mode)
     mapped_agreement = _mapped_agreement_route(request, mapped_assignments)
+    mapped_quantitative_families = _mapped_quantitative_family_route(
+        request, mapped_assignments, mapped_agreement,
+    )
     if task_only:
         author_contract: NativeContract = TASK_ONLY_AUTHOR_CONTRACT
     elif mapped_assignments is not None:
-        author_contract = _mapped_author_contract(request, mapped_assignments, mapped_agreement)
+        author_contract = _mapped_author_contract(
+            request, mapped_assignments, mapped_agreement, mapped_quantitative_families,
+        )
     elif output_mode() != "native":
         author_contract: NativeContract = "question_author_v1"
     elif cardinality_mode == "count_bound":
@@ -279,6 +284,9 @@ def _generate_sanitized_questions(
         request, author_mode, _author_cardinality_mode(),
     )
     mapped_agreement = _mapped_agreement_route(request, mapped_initial_assignments)
+    mapped_quantitative_families = _mapped_quantitative_family_route(
+        request, mapped_initial_assignments, mapped_agreement,
+    )
     mixed_quantitative = author_mode in {"mixed_quantitative", "constructed_quantitative"}
     # Native fixed slots hide the sanitizer's correct-answer-first ordering and
     # make four choice judgments plus six unordered pair judgments explicit.
@@ -325,7 +333,9 @@ def _generate_sanitized_questions(
             if mixed_quantitative:
                 try:
                     if mapped_agreement:
-                        contract = _mapped_author_contract(request, mapped_initial_assignments, True)
+                        contract = _mapped_author_contract(
+                            request, mapped_initial_assignments, True, mapped_quantitative_families,
+                        )
                         raw_questions, compiled_candidates, agreement_candidates, failures = (
                             prepare_mapped_agreement_rows(
                                 provider_payload, contract,
@@ -990,14 +1000,36 @@ def _mapped_agreement_route(
     return True
 
 
+def _mapped_quantitative_family_route(
+    request: dict[str, Any], assignments: MappedAssignments | None, mapped_agreement: bool,
+) -> bool:
+    """Opt in only for the exact pinned math objective in the mapped pilot."""
+    mode = os.getenv("QUESTION_MAPPED_QUANTITATIVE_FAMILIES", "disabled").strip().lower()
+    if mode not in {"disabled", "enabled"}:
+        raise ServiceConfigurationError(
+            "QUESTION_MAPPED_QUANTITATIVE_FAMILIES must be enabled or disabled."
+        )
+    if mode == "disabled" or assignments is None:
+        return False
+    from mapped_quantitative_families import SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC
+    math = list(assignments.values())[0]
+    if not mapped_agreement or math[:2] != (SUPPORTED_TOPIC, SUPPORTED_OBJECTIVE):
+        raise ServiceConfigurationError(
+            "Mapped quantitative families require the pinned level-2 arithmetic objective."
+        )
+    return True
+
+
 def _mapped_author_contract(
     request: dict[str, Any], assignments: MappedAssignments, agreement_tasks: bool,
+    quantitative_families: bool = False,
 ) -> AuthorSlotContract:
     return AuthorSlotContract(request["targetCount"], "constructed_quantitative", tuple(
         (skill_id, objective_id, skill_name, objective_name, count)
         for (skill_id, objective_id), (skill_name, objective_name, count)
         in assignments.items()
-    ), next(iter(assignments))[0], request["minimumDifficulty"], agreement_tasks)
+    ), next(iter(assignments))[0], request["minimumDifficulty"], agreement_tasks,
+        quantitative_families)
 
 
 def _validate_mapped_fixed_slot_rows(

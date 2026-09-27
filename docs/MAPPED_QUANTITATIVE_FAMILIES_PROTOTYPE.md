@@ -1,0 +1,42 @@
+# Closed quantitative families for the mapped pilot
+
+The latest five-question worker trial returned sound keys and distinct options,
+but an independent blind reviewer rated its first arithmetic expression level
+1 against a requested minimum of 2. Its first two arithmetic items also shared
+the same short expression format. This source-only prototype changes the
+numeric authoring task in the exact mapped 3:2 pilot: slots 0, 1 and 2 use
+different closed families rather than model-written expression graphs.
+
+The model supplies only a family label fixed by the original slot and two
+bounded integers. Code expands slot 0 to an exact two-fraction expression,
+slot 1 to a linear equation with a unique solution in an explicit integer
+domain, and slot 2 to the maximum integer satisfying a bounded inequality.
+The existing quantitative compiler derives the stem, four distinct choices,
+answer, main explanation and per-choice feedback. The model cannot supply a
+key, choice, domain, graph or learner text. Existing blind solving, immutable
+review and private provenance checks still apply. The English agreement slots
+and their full-bank history/fingerprint selection are unchanged.
+
+`QUESTION_MAPPED_QUANTITATIVE_FAMILIES=enabled` requires the mapped agreement
+route, its exact goal and full-request hashes, the pinned arithmetic objective,
+native transport, constructed quantitative authoring, immutable feedback,
+minimum difficulty 2 and no fallback. The flag defaults to `disabled` and is
+not present in SAM or the deployment workflow. The previous mapped agreement
+schema and prompt hashes are unchanged. This option is not deployed or
+qualified; one full-request hash does not authorize subsequent refill states
+with changed history.
+
+Offline verification compiled all 208 allowed operand combinations and checked
+that each has exactly four distinct choices, one matching expected answer and
+recomputable feedback. A fake-provider five-slot pass used three calls and
+retained the original slot assignments, quantitative/English private proofs,
+answer-blind solver and final reviewer. Another pass checked full-bank
+agreement history and blocked fingerprints. The 1,573-byte native author
+schema passed JSON Schema and botocore Converse-shape validation. The complete
+backend suite passed 1,415 tests with Ruff and `git diff --check`.
+
+These checks establish finite-domain construction and integration behavior.
+They do not establish that Bedrock accepts the new schema, that all three math
+questions are level 2 to independent reviewers, that distractors teach well,
+or that a repeated bank has enough novelty. A bounded live worker trial and
+blind content review must pass before any worker activation is considered.
