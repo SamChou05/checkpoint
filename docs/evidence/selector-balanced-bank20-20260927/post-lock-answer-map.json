@@ -1,0 +1,286 @@
+{
+  "items": {
+    "Q01": {
+      "batch": 4,
+      "choiceExplanations": {
+        "A": "The relative pronoun \"who\" refers to plural \"clerks\"; the relative-clause verb is \"sort\". \"hold\" does not agree with singular \"One\"; use \"holds\".",
+        "B": "The relative pronoun \"who\" refers to plural \"clerks\"; the relative-clause verb is \"sort\". The main-clause subject is singular \"One\"; the main-clause verb is \"holds\".",
+        "C": "\"sorts\" does not agree with plural \"clerks\"; use \"sort\". The main-clause subject is singular \"One\"; the main-clause verb is \"holds\".",
+        "D": "\"sorts\" does not agree with plural \"clerks\"; use \"sort\". \"hold\" does not agree with singular \"One\"; use \"holds\"."
+      },
+      "expectedAnswer": "sort; holds",
+      "key": "B",
+      "mainExplanation": "The relative pronoun \"who\" refers to plural \"clerks\"; the relative-clause verb is \"sort\". The main-clause subject is singular \"One\"; the main-clause verb is \"holds\". Therefore the ordered pair is sort; holds.",
+      "scene": "relative_clerks",
+      "slot": 3
+    },
+    "Q02": {
+      "batch": 2,
+      "choiceExplanations": {
+        "A": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. \"prepares\" does not agree; use \"prepare\". The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. The form \"plans\" agrees.",
+        "B": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. The form \"prepare\" agrees. The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. \"plan\" does not agree; use \"plans\".",
+        "C": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. The form \"prepare\" agrees. The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. The form \"plans\" agrees.",
+        "D": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. \"prepares\" does not agree; use \"prepare\". The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. \"plan\" does not agree; use \"plans\"."
+      },
+      "expectedAnswer": "prepare; plans",
+      "key": "C",
+      "mainExplanation": "The first head subject \"the cooks\" is plural; \"near the chef\" does not change that. The form \"prepare\" agrees. The second head subject \"the chef\" is singular; \"near the cooks\" does not change that. The form \"plans\" agrees. Therefore the ordered pair is prepare; plans.",
+      "scene": "chef",
+      "slot": 3
+    },
+    "Q03": {
+      "batch": 3,
+      "choiceExplanations": {
+        "A": "At x = 4, 50 = 50 is true. This is the only offered value satisfying the condition.",
+        "B": "At x = 3, 36 = 50 is false. This value does not satisfy the condition.",
+        "C": "At x = 5, 66 = 50 is false. This value does not satisfy the condition.",
+        "D": "At x = 2, 24 = 50 is false. This value does not satisfy the condition."
+      },
+      "expectedAnswer": "4",
+      "key": "A",
+      "mainExplanation": "On this nonnegative domain, x + 6 and x + 1 are positive and strictly increase with x, so their product increases strictly. At x = 4, (4 + 6)(4 + 1) = 50. Therefore x = 4 is the only solution in the stated domain.",
+      "scene": null,
+      "slot": 1
+    },
+    "Q04": {
+      "batch": 2,
+      "choiceExplanations": {
+        "A": "19/42: This can come from multiplying the denominator by 3 instead of the numerator. (19/14) * 3 = 57/14, not 19/42.",
+        "B": "57: This can come from dropping the denominator 14 of 19/14. (19/14) * 3 = 57/14, not 57.",
+        "C": "The expression evaluates exactly to 57/14; 57/14 is the requested value.",
+        "D": "3/14: This can come from dropping the numerator 19 of 19/14. (19/14) * 3 = 57/14, not 3/14."
+      },
+      "expectedAnswer": "57/14",
+      "key": "C",
+      "mainExplanation": "Multiply by the reciprocal: 6 / 7 = 6 * (1/7) = 6/7. Multiply by the reciprocal: 2 / 4 = 2 * (1/4) = 2/4 = 1/2. Common denominator 14: (6/7) + (1/2) = (12/14) + (7/14) = 19/14. Multiply numerators and denominators: (19/14) * 3 = 57/14. The answer is 57/14.",
+      "scene": null,
+      "slot": 0
+    },
+    "Q05": {
+      "batch": 1,
+      "choiceExplanations": {
+        "A": "-17/27: This can come from using a common denominator without scaling the numerators. 1 - (35/54) = 19/54, not -17/27.",
+        "B": "The expression evaluates exactly to 19/54; 19/54 is the requested value.",
+        "C": "1: This stops at the left operand before the final operation. 1 - (35/54) = 19/54, not 1.",
+        "D": "34/53: This can come from combining the numerators and denominators separately. 1 - (35/54) = 19/54, not 34/53."
+      },
+      "expectedAnswer": "19/54",
+      "key": "B",
+      "mainExplanation": "Multiply by the reciprocal: 5 / 6 = 5 * (1/6) = 5/6. Multiply by the reciprocal: 7 / 9 = 7 * (1/9) = 7/9. Multiply numerators and denominators: (5/6) * (7/9) = 35/54. Common denominator 54: 1 - (35/54) = (54/54) - (35/54) = 19/54. The answer is 19/54.",
+      "scene": null,
+      "slot": 0
+    },
+    "Q06": {
+      "batch": 4,
+      "choiceExplanations": {
+        "A": "Exactly 8 domain integers satisfy the condition; 8 is the count.",
+        "B": "Exactly 8 domain integers satisfy the condition; 7 counts too few.",
+        "C": "Exactly 8 domain integers satisfy the condition; 9 counts too many.",
+        "D": "Exactly 8 domain integers satisfy the condition; 6 counts too few."
+      },
+      "expectedAnswer": "8",
+      "key": "A",
+      "mainExplanation": "The quadratic factors as (x - 5)(x - 12). It is zero exactly at x = 5 and x = 12; both are in the 10-integer domain. Every other domain integer is nonzero, so 10 - 2 = 8 satisfy the condition.",
+      "scene": null,
+      "slot": 1
+    },
+    "Q07": {
+      "batch": 1,
+      "choiceExplanations": {
+        "A": "This sentence does not agree. \"Maya and Theo\" is a plural joined subject; the following \"each\" does not make it singular, so use \"prepare\".",
+        "B": "This sentence agrees. With \"neither...nor,\" the nearer subject \"the assistants\" is plural, so use \"sort\".",
+        "C": "This sentence does not agree. \"Each\" is the singular head of \"Each of the guests\"; the plural noun after \"of\" does not control the verb, so use \"receives\".",
+        "D": "This sentence does not agree. The whole -ing activity \"Verifying the totals\" is one singular subject, even though it contains a plural noun, so use \"demands\"."
+      },
+      "expectedAnswer": "Neither the curator nor the assistants sort the records.",
+      "key": "B",
+      "mainExplanation": "Only \"Neither the curator nor the assistants sort the records.\" is grammatical. With \"neither...nor,\" the nearer subject \"the assistants\" is plural, so use \"sort\". Each other sentence uses the wrong verb form for its subject.",
+      "scene": "select_archive",
+      "slot": 4
+    },
+    "Q08": {
+      "batch": 1,
+      "choiceExplanations": {
+        "A": "At x = 7, 11/8 = 13/10 is false. This value does not satisfy the condition.",
+        "B": "At x = 10, 14/11 = 13/10 is false. This value does not satisfy the condition.",
+        "C": "At x = 8, 4/3 = 13/10 is false. This value does not satisfy the condition.",
+        "D": "At x = 9, 13/10 = 13/10 is true. This is the only offered value satisfying the condition."
+      },
+      "expectedAnswer": "9",
+      "key": "D",
+      "mainExplanation": "Because x + 1 is nonzero throughout the domain, cross-multiply: 10(x + 4) = 13(x + 1). Expanding gives 10x + 40 = 13x + 13, so 27 = 3x. Divide by 3 to get x = 9. The nonzero x coefficient makes this the only solution in the domain.",
+      "scene": null,
+      "slot": 1
+    },
+    "Q09": {
+      "batch": 4,
+      "choiceExplanations": {
+        "A": "This sentence does not agree. The whole -ing activity \"Checking the routes\" is one singular subject, even though it contains a plural noun, so use \"takes\".",
+        "B": "This sentence does not agree. With \"neither...nor,\" the nearer subject \"the technicians\" is plural, so use \"label\".",
+        "C": "This sentence does not agree. \"Ava and Ben\" is a plural joined subject; the following \"each\" does not make it singular, so use \"review\".",
+        "D": "This sentence agrees. \"Each\" is the singular head of \"Each of the clerks\"; the plural noun after \"of\" does not control the verb, so use \"keeps\"."
+      },
+      "expectedAnswer": "Each of the clerks keeps a copy.",
+      "key": "D",
+      "mainExplanation": "Only \"Each of the clerks keeps a copy.\" is grammatical. \"Each\" is the singular head of \"Each of the clerks\"; the plural noun after \"of\" does not control the verb, so use \"keeps\". Each other sentence uses the wrong verb form for its subject.",
+      "scene": "select_lab",
+      "slot": 4
+    },
+    "Q10": {
+      "batch": 4,
+      "choiceExplanations": {
+        "A": "14/9: This can come from multiplying by 14/9 instead of dividing by it. 1 / (14/9) = 9/14, not 14/9.",
+        "B": "23/9: This can come from using + at the final step instead of /. 1 / (14/9) = 9/14, not 23/9.",
+        "C": "1: This stops at the left operand before the final operation. 1 / (14/9) = 9/14, not 1.",
+        "D": "The expression evaluates exactly to 9/14; 9/14 is the requested value."
+      },
+      "expectedAnswer": "9/14",
+      "key": "D",
+      "mainExplanation": "Multiply by the reciprocal: 8 / 9 = 8 * (1/9) = 8/9. Multiply by the reciprocal: 4 / 6 = 4 * (1/6) = 4/6 = 2/3. Common denominator 9: (8/9) + (2/3) = (8/9) + (6/9) = 14/9. Multiply by the reciprocal: 1 / (14/9) = 1 * (9/14) = 9/14. The answer is 9/14.",
+      "scene": null,
+      "slot": 0
+    },
+    "Q11": {
+      "batch": 3,
+      "choiceExplanations": {
+        "A": "First, \"Each of the clerks\" has singular \"Each\"; \"the clerks\" follows \"of\". \"keep\" does not agree; use \"keeps\". Second, \"Ava and Ben\" is a plural joined subject; the following \"each\" does not replace it. The form \"review\" agrees.",
+        "B": "First, \"Each of the clerks\" has singular \"Each\"; \"the clerks\" follows \"of\". The form \"keeps\" agrees. Second, \"Ava and Ben\" is a plural joined subject; the following \"each\" does not replace it. The form \"review\" agrees.",
+        "C": "First, \"Each of the clerks\" has singular \"Each\"; \"the clerks\" follows \"of\". The form \"keeps\" agrees. Second, \"Ava and Ben\" is a plural joined subject; the following \"each\" does not replace it. \"reviews\" does not agree; use \"review\".",
+        "D": "First, \"Each of the clerks\" has singular \"Each\"; \"the clerks\" follows \"of\". \"keep\" does not agree; use \"keeps\". Second, \"Ava and Ben\" is a plural joined subject; the following \"each\" does not replace it. \"reviews\" does not agree; use \"review\"."
+      },
+      "expectedAnswer": "keeps; review",
+      "key": "B",
+      "mainExplanation": "First, \"Each of the clerks\" has singular \"Each\"; \"the clerks\" follows \"of\". The form \"keeps\" agrees. Second, \"Ava and Ben\" is a plural joined subject; the following \"each\" does not replace it. The form \"review\" agrees. Therefore the ordered pair is keeps; review.",
+      "scene": "compound_clerks",
+      "slot": 4
+    },
+    "Q12": {
+      "batch": 3,
+      "choiceExplanations": {
+        "A": "3/2: This can come from using a common denominator without scaling the numerators. (35/24) + 1 = 59/24, not 3/2.",
+        "B": "The expression evaluates exactly to 59/24; 59/24 is the requested value.",
+        "C": "35/24: This stops at the left operand before the final operation. (35/24) + 1 = 59/24, not 35/24.",
+        "D": "36/25: This can come from combining the numerators and denominators separately. (35/24) + 1 = 59/24, not 36/25."
+      },
+      "expectedAnswer": "59/24",
+      "key": "B",
+      "mainExplanation": "Multiply by the reciprocal: 7 / 8 = 7 * (1/8) = 7/8. Multiply by the reciprocal: 3 / 5 = 3 * (1/5) = 3/5. Multiply by the reciprocal: (7/8) / (3/5) = (7/8) * (5/3) = 35/24. Common denominator 24: (35/24) + 1 = (35/24) + (24/24) = 59/24. The answer is 59/24.",
+      "scene": null,
+      "slot": 0
+    },
+    "Q13": {
+      "batch": 1,
+      "choiceExplanations": {
+        "A": "Exactly 5 domain integers satisfy the condition; 5 is the count.",
+        "B": "Exactly 5 domain integers satisfy the condition; 3 counts too few.",
+        "C": "Exactly 5 domain integers satisfy the condition; 6 counts too many.",
+        "D": "Exactly 5 domain integers satisfy the condition; 4 counts too few."
+      },
+      "expectedAnswer": "5",
+      "key": "A",
+      "mainExplanation": "Check every integer: x = 4: 10 <= 14 is true; x = 5: 11 <= 14 is true; x = 6: 12 <= 14 is true; x = 7: 13 <= 14 is true; x = 8: 14 <= 14 is true; x = 9: 15 <= 14 is false; x = 10: 16 <= 14 is false; x = 11: 17 <= 14 is false. Exactly 5 satisfy the condition.",
+      "scene": null,
+      "slot": 2
+    },
+    "Q14": {
+      "batch": 2,
+      "choiceExplanations": {
+        "A": "At x = 2, 1/3 >= 3/7 is false. This value does not satisfy the condition.",
+        "B": "At x = 4, 1/2 >= 3/7 is true. The question asks for the minimum; that value is 3.",
+        "C": "At x = 1, 1/5 >= 3/7 is false. This value does not satisfy the condition.",
+        "D": "At x = 3, 3/7 >= 3/7 is true. This is the minimum value satisfying the condition in this domain."
+      },
+      "expectedAnswer": "3",
+      "key": "D",
+      "mainExplanation": "At x = 3, 3/7 >= 3/7 is true. 3 is the minimum value satisfying the condition in this domain. The smaller domain values fail: x = 0: 0 >= 3/7 is false; x = 1: 1/5 >= 3/7 is false; x = 2: 1/3 >= 3/7 is false.",
+      "scene": null,
+      "slot": 2
+    },
+    "Q15": {
+      "batch": 3,
+      "choiceExplanations": {
+        "A": "First, \"Most of the letters\" refers to multiple countable items, so it takes a plural verb. \"includes\" does not agree; use \"include\". Second, \"Most of the mail\" refers to an amount of uncountable material, so it takes a singular verb. The form \"arrives\" agrees.",
+        "B": "First, \"Most of the letters\" refers to multiple countable items, so it takes a plural verb. The form \"include\" agrees. Second, \"Most of the mail\" refers to an amount of uncountable material, so it takes a singular verb. The form \"arrives\" agrees.",
+        "C": "First, \"Most of the letters\" refers to multiple countable items, so it takes a plural verb. The form \"include\" agrees. Second, \"Most of the mail\" refers to an amount of uncountable material, so it takes a singular verb. \"arrive\" does not agree; use \"arrives\".",
+        "D": "First, \"Most of the letters\" refers to multiple countable items, so it takes a plural verb. \"includes\" does not agree; use \"include\". Second, \"Most of the mail\" refers to an amount of uncountable material, so it takes a singular verb. \"arrive\" does not agree; use \"arrives\"."
+      },
+      "expectedAnswer": "include; arrives",
+      "key": "B",
+      "mainExplanation": "First, \"Most of the letters\" refers to multiple countable items, so it takes a plural verb. The form \"include\" agrees. Second, \"Most of the mail\" refers to an amount of uncountable material, so it takes a singular verb. The form \"arrives\" agrees. Therefore the ordered pair is include; arrives.",
+      "scene": "partitive_mail",
+      "slot": 3
+    },
+    "Q16": {
+      "batch": 2,
+      "choiceExplanations": {
+        "A": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+        "B": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+        "C": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\".",
+        "D": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\"."
+      },
+      "expectedAnswer": "requires; measure",
+      "key": "A",
+      "mainExplanation": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees. Therefore the ordered pair is requires; measure.",
+      "scene": "gerund_meals",
+      "slot": 4
+    },
+    "Q17": {
+      "batch": 2,
+      "choiceExplanations": {
+        "A": "At x = 4, 38 = 37 is false. This value does not satisfy the condition.",
+        "B": "At x = 1, 23 = 25 is false. This value does not satisfy the condition.",
+        "C": "At x = 2, 28 = 29 is false. This value does not satisfy the condition.",
+        "D": "At x = 3, 33 = 33 is true. This is the only offered value satisfying the condition."
+      },
+      "expectedAnswer": "3",
+      "key": "D",
+      "mainExplanation": "At x = 3, 33 = 33 is true. 3 is the only offered value satisfying the condition. Every other offered value is outside the domain or fails the condition.",
+      "scene": null,
+      "slot": 1
+    },
+    "Q18": {
+      "batch": 1,
+      "choiceExplanations": {
+        "A": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees.",
+        "B": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. \"are\" does not agree; use \"is\".",
+        "C": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. \"is\" does not agree; use \"are\". Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. \"are\" does not agree; use \"is\".",
+        "D": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. \"is\" does not agree; use \"are\". Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees."
+      },
+      "expectedAnswer": "are; is",
+      "key": "A",
+      "mainExplanation": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees. Therefore the ordered pair is are; is.",
+      "scene": "inversion_library",
+      "slot": 3
+    },
+    "Q19": {
+      "batch": 3,
+      "choiceExplanations": {
+        "A": "At x = 3, 24 <= 36 is true. The question asks for the maximum; that value is 4.",
+        "B": "At x = 5, 50 <= 36 is false. This value does not satisfy the condition.",
+        "C": "At x = 6, 66 <= 36 is false. This value does not satisfy the condition.",
+        "D": "At x = 4, 36 <= 36 is true. This is the maximum value satisfying the condition in this domain."
+      },
+      "expectedAnswer": "4",
+      "key": "D",
+      "mainExplanation": "At x = 4, 36 <= 36 is true. 4 is the maximum value satisfying the condition in this domain. The larger domain values fail: x = 5: 50 <= 36 is false; x = 6: 66 <= 36 is false; x = 7: 84 <= 36 is false.",
+      "scene": null,
+      "slot": 2
+    },
+    "Q20": {
+      "batch": 4,
+      "choiceExplanations": {
+        "A": "Exactly 13 domain integers satisfy the condition; 11 counts too few.",
+        "B": "Exactly 13 domain integers satisfy the condition; 12 counts too few.",
+        "C": "Exactly 13 domain integers satisfy the condition; 14 counts too many.",
+        "D": "Exactly 13 domain integers satisfy the condition; 13 is the count."
+      },
+      "expectedAnswer": "13",
+      "key": "D",
+      "mainExplanation": "(x - 5) squared is less than 7 squared exactly when -7 < x - 5 < 7. The satisfying integers run from -1 through 11, inclusive. There are 13 such integers; the four other domain values fail the strict bound.",
+      "scene": null,
+      "slot": 2
+    }
+  },
+  "sourceCommit": "01439703d647ab17246c4f9c821a4dd05b5b2a99",
+  "worksheetSha256": "987217dc30c7694f3afb57c1c932a0595244002f281fa4ccb0437c04ff430587"
+}

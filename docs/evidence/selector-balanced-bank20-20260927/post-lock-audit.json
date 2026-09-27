@@ -1,0 +1,1036 @@
+{
+  "auditType": "post_lock_selector_balanced_bank20",
+  "worksheetSha256": "987217dc30c7694f3afb57c1c932a0595244002f281fa4ccb0437c04ff430587",
+  "sourcesChecked": [
+    "worksheet.json",
+    "blind-review-a.json",
+    "blind-review-b.json",
+    "private answer-map.json"
+  ],
+  "coverage": {
+    "items": 20,
+    "withinItemChoicePairsPerReviewer": 120,
+    "crossItemPairsPerReviewer": 190,
+    "mainExplanations": 20,
+    "perChoiceExplanations": 80,
+    "allReviewerKeysMatchCodeOwnedKeys": true,
+    "allMainExplanationsFactuallyCorrectAndKeyPreserving": true,
+    "allPerChoiceExplanationsFactuallyCorrectAndKeyPreserving": true,
+    "allWorksheetChoicesMatchCodeOwnedDisplayChoices": true
+  },
+  "itemAudits": [
+    {
+      "itemId": "Q01",
+      "worksheetChoiceKey": "B",
+      "codeOwnedExpectedAnswer": "sort; holds",
+      "reviewerAKey": "B",
+      "reviewerBKey": "B",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "Plural clerks sort; singular One holds.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q02",
+      "worksheetChoiceKey": "C",
+      "codeOwnedExpectedAnswer": "prepare; plans",
+      "reviewerAKey": "C",
+      "reviewerBKey": "C",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "Plural cooks prepare; singular chef plans despite the near phrases.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q03",
+      "worksheetChoiceKey": "A",
+      "codeOwnedExpectedAnswer": "4",
+      "reviewerAKey": "A",
+      "reviewerBKey": "A",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "The increasing product is 50 only at x = 4 in the domain.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q04",
+      "worksheetChoiceKey": "C",
+      "codeOwnedExpectedAnswer": "57/14",
+      "reviewerAKey": "C",
+      "reviewerBKey": "C",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "6/7 + 2/4 = 19/14; tripling gives 57/14.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q05",
+      "worksheetChoiceKey": "B",
+      "codeOwnedExpectedAnswer": "19/54",
+      "reviewerAKey": "B",
+      "reviewerBKey": "B",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "(5/6)(7/9) = 35/54; subtracting from 1 gives 19/54.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q06",
+      "worksheetChoiceKey": "A",
+      "codeOwnedExpectedAnswer": "8",
+      "reviewerAKey": "A",
+      "reviewerBKey": "A",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "(x-5)(x-12) excludes two of ten integers, leaving eight.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q07",
+      "worksheetChoiceKey": "B",
+      "codeOwnedExpectedAnswer": "Neither the curator nor the assistants sort the records.",
+      "reviewerAKey": "B",
+      "reviewerBKey": "B",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "Only the neither/nor sentence agrees with its nearer plural subject.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q08",
+      "worksheetChoiceKey": "D",
+      "codeOwnedExpectedAnswer": "9",
+      "reviewerAKey": "D",
+      "reviewerBKey": "D",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "Cross multiplication gives 3x = 27, hence x = 9.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q09",
+      "worksheetChoiceKey": "D",
+      "codeOwnedExpectedAnswer": "Each of the clerks keeps a copy.",
+      "reviewerAKey": "D",
+      "reviewerBKey": "D",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "Only the singular Each of the clerks keeps a copy agrees.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q10",
+      "worksheetChoiceKey": "D",
+      "codeOwnedExpectedAnswer": "9/14",
+      "reviewerAKey": "D",
+      "reviewerBKey": "D",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "8/9 + 4/6 = 14/9; reciprocal is 9/14.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q11",
+      "worksheetChoiceKey": "B",
+      "codeOwnedExpectedAnswer": "keeps; review",
+      "reviewerAKey": "B",
+      "reviewerBKey": "B",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "Singular Each keeps; plural Ava and Ben review.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q12",
+      "worksheetChoiceKey": "B",
+      "codeOwnedExpectedAnswer": "59/24",
+      "reviewerAKey": "B",
+      "reviewerBKey": "B",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "(7/8)/(3/5) = 35/24; adding one gives 59/24.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q13",
+      "worksheetChoiceKey": "A",
+      "codeOwnedExpectedAnswer": "5",
+      "reviewerAKey": "A",
+      "reviewerBKey": "A",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "The true integer inputs are 4 through 8, yielding five.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q14",
+      "worksheetChoiceKey": "D",
+      "codeOwnedExpectedAnswer": "3",
+      "reviewerAKey": "D",
+      "reviewerBKey": "D",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "x = 3 is the first satisfying integer; smaller domain integers fail.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q15",
+      "worksheetChoiceKey": "B",
+      "codeOwnedExpectedAnswer": "include; arrives",
+      "reviewerAKey": "B",
+      "reviewerBKey": "B",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "Plural letters include; singular mass mail arrives.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q16",
+      "worksheetChoiceKey": "A",
+      "codeOwnedExpectedAnswer": "requires; measure",
+      "reviewerAKey": "A",
+      "reviewerBKey": "A",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "Gerund activity requires; plural cooks measure.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q17",
+      "worksheetChoiceKey": "D",
+      "codeOwnedExpectedAnswer": "3",
+      "reviewerAKey": "D",
+      "reviewerBKey": "D",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "The equality reduces to x = 3; other offered values fail.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q18",
+      "worksheetChoiceKey": "A",
+      "codeOwnedExpectedAnswer": "are; is",
+      "reviewerAKey": "A",
+      "reviewerBKey": "A",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "Inverted plural returns are; singular book is.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q19",
+      "worksheetChoiceKey": "D",
+      "codeOwnedExpectedAnswer": "4",
+      "reviewerAKey": "D",
+      "reviewerBKey": "D",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "x = 4 satisfies the upper threshold and all larger domain values fail.",
+      "choiceExplanationsChecked": 4
+    },
+    {
+      "itemId": "Q20",
+      "worksheetChoiceKey": "D",
+      "codeOwnedExpectedAnswer": "13",
+      "reviewerAKey": "D",
+      "reviewerBKey": "D",
+      "mainExplanationFactuallyCorrect": true,
+      "mainExplanationPreservesKey": true,
+      "mainExplanationCheckedFact": "-2 < x < 12 gives thirteen integers from -1 through 11.",
+      "choiceExplanationsChecked": 4
+    }
+  ],
+  "choiceExplanationAudits": [
+    {
+      "itemId": "Q01",
+      "choice": "A",
+      "choiceText": "sort; hold",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q01",
+      "choice": "B",
+      "choiceText": "sort; holds",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "2 of 2 verb forms agree; 0 disagree."
+    },
+    {
+      "itemId": "Q01",
+      "choice": "C",
+      "choiceText": "sorts; holds",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q01",
+      "choice": "D",
+      "choiceText": "sorts; hold",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "0 of 2 verb forms agree; 2 disagree."
+    },
+    {
+      "itemId": "Q02",
+      "choice": "A",
+      "choiceText": "prepares; plans",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q02",
+      "choice": "B",
+      "choiceText": "prepare; plan",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q02",
+      "choice": "C",
+      "choiceText": "prepare; plans",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "2 of 2 verb forms agree; 0 disagree."
+    },
+    {
+      "itemId": "Q02",
+      "choice": "D",
+      "choiceText": "prepares; plan",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "0 of 2 verb forms agree; 2 disagree."
+    },
+    {
+      "itemId": "Q03",
+      "choice": "A",
+      "choiceText": "4",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 4 satisfies the equality."
+    },
+    {
+      "itemId": "Q03",
+      "choice": "B",
+      "choiceText": "3",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 3 does not satisfy the equality."
+    },
+    {
+      "itemId": "Q03",
+      "choice": "C",
+      "choiceText": "5",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 5 does not satisfy the equality."
+    },
+    {
+      "itemId": "Q03",
+      "choice": "D",
+      "choiceText": "2",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 2 does not satisfy the equality."
+    },
+    {
+      "itemId": "Q04",
+      "choice": "A",
+      "choiceText": "19/42",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "19/42 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q04",
+      "choice": "B",
+      "choiceText": "57",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "57 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q04",
+      "choice": "C",
+      "choiceText": "57/14",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "57/14 equals the exact expression value."
+    },
+    {
+      "itemId": "Q04",
+      "choice": "D",
+      "choiceText": "3/14",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "3/14 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q05",
+      "choice": "A",
+      "choiceText": "-17/27",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "-17/27 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q05",
+      "choice": "B",
+      "choiceText": "19/54",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "19/54 equals the exact expression value."
+    },
+    {
+      "itemId": "Q05",
+      "choice": "C",
+      "choiceText": "1",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q05",
+      "choice": "D",
+      "choiceText": "34/53",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "34/53 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q06",
+      "choice": "A",
+      "choiceText": "8",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "8 is the correct count."
+    },
+    {
+      "itemId": "Q06",
+      "choice": "B",
+      "choiceText": "7",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "7 is below the correct count."
+    },
+    {
+      "itemId": "Q06",
+      "choice": "C",
+      "choiceText": "9",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "9 is above the correct count."
+    },
+    {
+      "itemId": "Q06",
+      "choice": "D",
+      "choiceText": "6",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "6 is below the correct count."
+    },
+    {
+      "itemId": "Q07",
+      "choice": "A",
+      "choiceText": "Maya and Theo each prepares lunch.",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "incorrect: joined Maya and Theo takes prepare"
+    },
+    {
+      "itemId": "Q07",
+      "choice": "B",
+      "choiceText": "Neither the curator nor the assistants sort the records.",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "correct: nearer plural assistants takes sort"
+    },
+    {
+      "itemId": "Q07",
+      "choice": "C",
+      "choiceText": "Each of the guests receive a plate.",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "incorrect: singular Each takes receives"
+    },
+    {
+      "itemId": "Q07",
+      "choice": "D",
+      "choiceText": "Verifying the totals demand careful work.",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "incorrect: gerund phrase Verifying the totals takes demands"
+    },
+    {
+      "itemId": "Q08",
+      "choice": "A",
+      "choiceText": "7",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 7 does not satisfy the equality."
+    },
+    {
+      "itemId": "Q08",
+      "choice": "B",
+      "choiceText": "10",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 10 does not satisfy the equality."
+    },
+    {
+      "itemId": "Q08",
+      "choice": "C",
+      "choiceText": "8",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 8 does not satisfy the equality."
+    },
+    {
+      "itemId": "Q08",
+      "choice": "D",
+      "choiceText": "9",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 9 satisfies the equality."
+    },
+    {
+      "itemId": "Q09",
+      "choice": "A",
+      "choiceText": "Checking the routes take time.",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "incorrect: gerund phrase Checking the routes takes takes"
+    },
+    {
+      "itemId": "Q09",
+      "choice": "B",
+      "choiceText": "Neither the scientist nor the technicians labels the samples.",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "incorrect: nearer plural technicians takes label"
+    },
+    {
+      "itemId": "Q09",
+      "choice": "C",
+      "choiceText": "Ava and Ben each reviews the forms.",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "incorrect: joined Ava and Ben takes review"
+    },
+    {
+      "itemId": "Q09",
+      "choice": "D",
+      "choiceText": "Each of the clerks keeps a copy.",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "correct: singular Each takes keeps"
+    },
+    {
+      "itemId": "Q10",
+      "choice": "A",
+      "choiceText": "14/9",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "14/9 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q10",
+      "choice": "B",
+      "choiceText": "23/9",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "23/9 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q10",
+      "choice": "C",
+      "choiceText": "1",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q10",
+      "choice": "D",
+      "choiceText": "9/14",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "9/14 equals the exact expression value."
+    },
+    {
+      "itemId": "Q11",
+      "choice": "A",
+      "choiceText": "keep; review",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q11",
+      "choice": "B",
+      "choiceText": "keeps; review",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "2 of 2 verb forms agree; 0 disagree."
+    },
+    {
+      "itemId": "Q11",
+      "choice": "C",
+      "choiceText": "keeps; reviews",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q11",
+      "choice": "D",
+      "choiceText": "keep; reviews",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "0 of 2 verb forms agree; 2 disagree."
+    },
+    {
+      "itemId": "Q12",
+      "choice": "A",
+      "choiceText": "3/2",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "3/2 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q12",
+      "choice": "B",
+      "choiceText": "59/24",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "59/24 equals the exact expression value."
+    },
+    {
+      "itemId": "Q12",
+      "choice": "C",
+      "choiceText": "35/24",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "35/24 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q12",
+      "choice": "D",
+      "choiceText": "36/25",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "36/25 does not equal the exact expression value."
+    },
+    {
+      "itemId": "Q13",
+      "choice": "A",
+      "choiceText": "5",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "5 is the correct count."
+    },
+    {
+      "itemId": "Q13",
+      "choice": "B",
+      "choiceText": "3",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "3 is below the correct count."
+    },
+    {
+      "itemId": "Q13",
+      "choice": "C",
+      "choiceText": "6",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "6 is above the correct count."
+    },
+    {
+      "itemId": "Q13",
+      "choice": "D",
+      "choiceText": "4",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "4 is below the correct count."
+    },
+    {
+      "itemId": "Q14",
+      "choice": "A",
+      "choiceText": "2",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 2 fails the condition; minimum satisfying x is 3."
+    },
+    {
+      "itemId": "Q14",
+      "choice": "B",
+      "choiceText": "4",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 4 satisfies the condition; minimum satisfying x is 3."
+    },
+    {
+      "itemId": "Q14",
+      "choice": "C",
+      "choiceText": "1",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 1 fails the condition; minimum satisfying x is 3."
+    },
+    {
+      "itemId": "Q14",
+      "choice": "D",
+      "choiceText": "3",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 3 satisfies the condition; minimum satisfying x is 3."
+    },
+    {
+      "itemId": "Q15",
+      "choice": "A",
+      "choiceText": "includes; arrives",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q15",
+      "choice": "B",
+      "choiceText": "include; arrives",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "2 of 2 verb forms agree; 0 disagree."
+    },
+    {
+      "itemId": "Q15",
+      "choice": "C",
+      "choiceText": "include; arrive",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q15",
+      "choice": "D",
+      "choiceText": "includes; arrive",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "0 of 2 verb forms agree; 2 disagree."
+    },
+    {
+      "itemId": "Q16",
+      "choice": "A",
+      "choiceText": "requires; measure",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "2 of 2 verb forms agree; 0 disagree."
+    },
+    {
+      "itemId": "Q16",
+      "choice": "B",
+      "choiceText": "require; measure",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q16",
+      "choice": "C",
+      "choiceText": "requires; measures",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q16",
+      "choice": "D",
+      "choiceText": "require; measures",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "0 of 2 verb forms agree; 2 disagree."
+    },
+    {
+      "itemId": "Q17",
+      "choice": "A",
+      "choiceText": "4",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 4 does not satisfy the equality."
+    },
+    {
+      "itemId": "Q17",
+      "choice": "B",
+      "choiceText": "1",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 1 does not satisfy the equality."
+    },
+    {
+      "itemId": "Q17",
+      "choice": "C",
+      "choiceText": "2",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 2 does not satisfy the equality."
+    },
+    {
+      "itemId": "Q17",
+      "choice": "D",
+      "choiceText": "3",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 3 satisfies the equality."
+    },
+    {
+      "itemId": "Q18",
+      "choice": "A",
+      "choiceText": "are; is",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "2 of 2 verb forms agree; 0 disagree."
+    },
+    {
+      "itemId": "Q18",
+      "choice": "B",
+      "choiceText": "are; are",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q18",
+      "choice": "C",
+      "choiceText": "is; are",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "0 of 2 verb forms agree; 2 disagree."
+    },
+    {
+      "itemId": "Q18",
+      "choice": "D",
+      "choiceText": "is; is",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "1 of 2 verb forms agree; 1 disagree."
+    },
+    {
+      "itemId": "Q19",
+      "choice": "A",
+      "choiceText": "3",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 3 satisfies the condition; maximum satisfying x is 4."
+    },
+    {
+      "itemId": "Q19",
+      "choice": "B",
+      "choiceText": "5",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 5 fails the condition; maximum satisfying x is 4."
+    },
+    {
+      "itemId": "Q19",
+      "choice": "C",
+      "choiceText": "6",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 6 fails the condition; maximum satisfying x is 4."
+    },
+    {
+      "itemId": "Q19",
+      "choice": "D",
+      "choiceText": "4",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "x = 4 satisfies the condition; maximum satisfying x is 4."
+    },
+    {
+      "itemId": "Q20",
+      "choice": "A",
+      "choiceText": "11",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "11 is below the correct count."
+    },
+    {
+      "itemId": "Q20",
+      "choice": "B",
+      "choiceText": "12",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "12 is below the correct count."
+    },
+    {
+      "itemId": "Q20",
+      "choice": "C",
+      "choiceText": "14",
+      "isKey": false,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "14 is above the correct count."
+    },
+    {
+      "itemId": "Q20",
+      "choice": "D",
+      "choiceText": "13",
+      "isKey": true,
+      "factuallyCorrect": true,
+      "preservesKey": true,
+      "checkedFact": "13 is the correct count."
+    }
+  ],
+  "consensusStrongOverlapPairs": [
+    {
+      "items": [
+        "Q04",
+        "Q10"
+      ],
+      "reason": "Both add unlike fractions, apply an outer operation, and ask for one exact rational value."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q12"
+      ],
+      "reason": "Both combine two fractions, adjust by one, and ask for one exact rational value; the operations differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q09"
+      ],
+      "reason": "Both select one grammatical full sentence from the same four agreement patterns."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q17"
+      ],
+      "reason": "Both reduce to a linear equation and select the offered value of x."
+    }
+  ],
+  "strongOverlapRatingCounts": {
+    "reviewerA": {
+      "strong": 4,
+      "moderate": 32,
+      "low": 58,
+      "none": 96
+    },
+    "reviewerB": {
+      "strong": 52,
+      "moderate": 6,
+      "low": 8,
+      "none": 124
+    },
+    "consensusStrong": 4,
+    "interpretation": "Reviewer B marks identical response frames strong more often; reviewer A reserves overall strong for closer method overlap. These are ratings of this one worksheet, not a matched before/after comparison."
+  },
+  "weaknesses": [
+    {
+      "itemId": "Q17",
+      "severity": "minor wording",
+      "finding": "The main explanation says other offered values are outside the domain or fail. All three other offered values are inside the domain and fail, so the statement is true but needlessly suggests an out-of-domain distractor."
+    },
+    {
+      "itemIds": [
+        "Q06",
+        "Q13",
+        "Q20"
+      ],
+      "severity": "minor teaching depth",
+      "finding": "The per-choice count feedback gives only the true count and whether a distractor is too high or low. The main explanations provide the underlying derivation."
+    },
+    {
+      "itemIds": [
+        "Q07",
+        "Q09"
+      ],
+      "severity": "content repetition",
+      "finding": "The two full-sentence items reuse the same four grammar patterns; both blind reviewers rated this pair strongly overlapping."
+    }
+  ],
+  "conclusion": "All 20 code-owned keys agree with both locked independent reviewers. All 20 main explanations and 80 choice explanations are factually correct and preserve those keys. The noted weaknesses concern wording, feedback depth, and repetition rather than answer correctness."
+}

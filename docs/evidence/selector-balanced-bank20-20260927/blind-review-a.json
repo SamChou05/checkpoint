@@ -1,0 +1,3112 @@
+{
+  "reviewer": "A",
+  "reviewType": "independent_answer_blind",
+  "source": {
+    "file": "worksheet.json",
+    "sha256": "987217dc30c7694f3afb57c1c932a0595244002f281fa4ccb0437c04ff430587",
+    "targetDifficulty": "2–3"
+  },
+  "coverage": {
+    "items": 20,
+    "withinItemChoicePairs": 120,
+    "crossItemPairs": 190
+  },
+  "ratingScale": {
+    "strong": "Same central solving procedure and response form, or a near template match.",
+    "moderate": "Shared task pattern or substantial method overlap, with a different substep or response form.",
+    "low": "Only broad topic or numeric/grammar presentation overlaps.",
+    "none": "No meaningful overlap in solving method or requested answer form."
+  },
+  "items": [
+    {
+      "id": "Q01",
+      "selectedChoice": "B",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Two ordinary agreement decisions, with one-of as the only subtlety.",
+      "independentSolution": "The plural clerks sort; the singular head one holds.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "selectedChoice": "C",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Two clauses require ignoring nearby prepositional-phrase nouns.",
+      "independentSolution": "The plural cooks prepare; the singular chef plans, despite the nearby nouns.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "selectedChoice": "A",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "A quadratic equation or four substitutions are needed.",
+      "independentSolution": "(x+6)(x+1)=50 gives x^2+7x-44=(x-4)(x+11)=0; only x=4 is in the domain.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "selectedChoice": "C",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Common denominator followed by multiplication.",
+      "independentSolution": "6/7+2/4=19/14; multiplying by 3 gives 57/14.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "selectedChoice": "B",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Fraction multiplication followed by subtraction from one.",
+      "independentSolution": "(5/6)(7/9)=35/54; subtracting from 1 gives 19/54.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "selectedChoice": "A",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "Factor a quadratic, exclude two roots, and count a bounded domain.",
+      "independentSolution": "x^2-17x+60=(x-5)(x-12), so 5 and 12 fail; 8 of the 10 domain integers remain.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "selectedChoice": "B",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "Several subject forms must be checked across four complete sentences.",
+      "independentSolution": "Neither...nor agrees with the nearer plural assistants: sort. The other sentences misuse agreement with a compound subject, each, or a gerund.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "selectedChoice": "D",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "Clear denominators and solve a linear equation.",
+      "independentSolution": "10(x+4)=13(x+1), so 3x=27 and x=9.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q09",
+      "selectedChoice": "D",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "Several subject forms must be checked across four complete sentences.",
+      "independentSolution": "Each is the singular subject of keeps. The other sentences misuse agreement with a gerund, a nearer plural noun, or a compound subject.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives are different complete sentences with different subject–verb agreement claims."
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "selectedChoice": "D",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Add unlike fractions and take the reciprocal.",
+      "independentSolution": "8/9+4/6=14/9; its reciprocal is 9/14.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q11",
+      "selectedChoice": "B",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "Distinguish each of from a compound subject modified by each.",
+      "independentSolution": "Each of the clerks keeps; the compound subject Ava and Ben each review.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        }
+      ]
+    },
+    {
+      "id": "Q12",
+      "selectedChoice": "B",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Divide fractions and add one.",
+      "independentSolution": "(7/8)/(3/5)=35/24; adding 1 gives 59/24.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q13",
+      "selectedChoice": "A",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Simplify a linear inequality and count five integers.",
+      "independentSolution": "3(x+2)-2x=x+6, so x<=8; the domain integers 4 through 8 total 5.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q14",
+      "selectedChoice": "D",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "Solve a rational inequality and identify the first valid integer.",
+      "independentSolution": "Because x+4 is positive on the domain, 7x>=3(x+4) gives x>=3; the minimum is 3.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q15",
+      "selectedChoice": "B",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Distinguish plural letters from singular mass mail.",
+      "independentSolution": "Plural letters include; the mass noun mail takes singular arrives.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        }
+      ]
+    },
+    {
+      "id": "Q16",
+      "selectedChoice": "A",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Recognize a gerund phrase as singular and cooks as plural.",
+      "independentSolution": "The gerund phrase preparing the meals requires; plural cooks measure.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        }
+      ]
+    },
+    {
+      "id": "Q17",
+      "selectedChoice": "D",
+      "secondViableKey": null,
+      "difficulty1To5": 2,
+      "difficultyRelativeToTarget2To3": "Simplify and solve a short linear equation.",
+      "independentSolution": "5(x+2)+8=4x+21 simplifies to x=3.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q18",
+      "selectedChoice": "A",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "Two inverted clauses require finding subjects after the verbs.",
+      "independentSolution": "In the inverted clauses, plural returns take are and singular book takes is.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the first verb form, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in both verb forms, changing the agreement claim."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The pairs differ in the second verb form, changing the agreement claim."
+        }
+      ]
+    },
+    {
+      "id": "Q19",
+      "selectedChoice": "D",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "Locate the quadratic inequality boundary in a small integer domain.",
+      "independentSolution": "For positive domain integers, x(x+5) rises with x; x=4 gives 36 and x=5 exceeds it, so the maximum is 4.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    },
+    {
+      "id": "Q20",
+      "selectedChoice": "D",
+      "secondViableKey": null,
+      "difficulty1To5": 3,
+      "difficultyRelativeToTarget2To3": "Turn a strict square bound into an open interval, then count integers.",
+      "independentSolution": "(x-5)^2<49 implies -2<x<12; integers -1 through 11 are 13 values.",
+      "choicePairAssessments": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfullyDistinct": true,
+          "rationale": "The alternatives give different numerical values for the requested result."
+        }
+      ]
+    }
+  ],
+  "crossItemPairAssessments": [
+    {
+      "items": [
+        "Q01",
+        "Q02"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q01 uses relative-clause plural plus one-of singular agreement and Q02 uses head-noun agreement despite nearby prepositional phrases. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q03"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q03 uses quadratic equation by factoring or candidate substitution. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q04"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q04 uses fraction addition then multiplication. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q05"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q05 uses fraction multiplication then subtraction from one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q06"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q06 uses factor quadratic and exclude roots from an integer domain. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q07"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both test agreement, but Q01 uses relative-clause plural plus one-of singular agreement and Q07 uses compare each, neither-nor, gerund, and compound-subject agreement. The response forms are two ordered present-tense verb forms and one complete grammatical sentence."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q08"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q08 uses cross-multiply a rational linear equation. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q09"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both test agreement, but Q01 uses relative-clause plural plus one-of singular agreement and Q09 uses compare each, neither-nor, gerund, and compound-subject agreement. The response forms are two ordered present-tense verb forms and one complete grammatical sentence."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q10"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q10 uses fraction addition then reciprocal. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both require treating an of-phrase head as singular, while their other blanks use different subjects. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q12 uses fraction division then addition of one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q13 uses linear inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q14 uses rational inequality then find minimum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q01 uses relative-clause plural plus one-of singular agreement and Q15 uses plural count noun versus singular mass-noun agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q01 uses relative-clause plural plus one-of singular agreement and Q16 uses gerund singular versus plural-noun agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q17 uses linear equation simplification. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q01 uses relative-clause plural plus one-of singular agreement and Q18 uses inverted-clause subject agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q19 uses quadratic inequality then find maximum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q01",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q01 tests subject–verb agreement; Q20 uses squared strict inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q03"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q03 uses quadratic equation by factoring or candidate substitution. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q04"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q04 uses fraction addition then multiplication. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q05"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q05 uses fraction multiplication then subtraction from one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q06"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q06 uses factor quadratic and exclude roots from an integer domain. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q07"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both test agreement, but Q02 uses head-noun agreement despite nearby prepositional phrases and Q07 uses compare each, neither-nor, gerund, and compound-subject agreement. The response forms are two ordered present-tense verb forms and one complete grammatical sentence."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q08"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q08 uses cross-multiply a rational linear equation. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q09"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both test agreement, but Q02 uses head-noun agreement despite nearby prepositional phrases and Q09 uses compare each, neither-nor, gerund, and compound-subject agreement. The response forms are two ordered present-tense verb forms and one complete grammatical sentence."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q10"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q10 uses fraction addition then reciprocal. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q02 uses head-noun agreement despite nearby prepositional phrases and Q11 uses each-of singular versus compound-subject agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q12 uses fraction division then addition of one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q13 uses linear inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q14 uses rational inequality then find minimum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q02 uses head-noun agreement despite nearby prepositional phrases and Q15 uses plural count noun versus singular mass-noun agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both use plural cooks and a contrasting singular subject, with different singular constructions. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q17 uses linear equation simplification. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both resist attraction to a nearby noun, though Q18 also inverts verb and subject. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q19 uses quadratic inequality then find maximum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q02",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q02 tests subject–verb agreement; Q20 uses squared strict inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q04"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q03 uses quadratic equation by factoring or candidate substitution and Q04 uses fraction addition then multiplication. The response forms are one offered x value and one exact rational value."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q05"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q03 uses quadratic equation by factoring or candidate substitution and Q05 uses fraction multiplication then subtraction from one. The response forms are one offered x value and one exact rational value."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q06"
+      ],
+      "solvingMethodSimilarity": "strong",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "moderate",
+      "rationale": "Both quadratic expressions factor into integer roots; Q03 selects an equality root while Q06 excludes two zeroes and counts. The response forms are one offered x value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q07"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q03 uses quadratic equation by factoring or candidate substitution. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q08"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both solve an equation for x, but Q03 is quadratic and Q08 becomes linear after clearing denominators. Both request one offered x value."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q09"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q03 uses quadratic equation by factoring or candidate substitution. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q10"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q03 uses quadratic equation by factoring or candidate substitution and Q10 uses fraction addition then reciprocal. The response forms are one offered x value and one exact rational value."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q03 uses quadratic equation by factoring or candidate substitution. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q03 uses quadratic equation by factoring or candidate substitution and Q12 uses fraction division then addition of one. The response forms are one offered x value and one exact rational value."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q03 uses quadratic equation by factoring or candidate substitution and Q13 uses linear inequality then count bounded integers. The response forms are one offered x value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q03 uses quadratic equation by factoring or candidate substitution and Q14 uses rational inequality then find minimum bounded integer. The response forms are one offered x value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q03 uses quadratic equation by factoring or candidate substitution. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q03 uses quadratic equation by factoring or candidate substitution. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both solve an equation for x, but one is quadratic and one linear. Both request one offered x value."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q03 uses quadratic equation by factoring or candidate substitution. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both inspect a quadratic expression in a bounded integer domain, but equality and inequality require different endpoint reasoning. The response forms are one offered x value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q03",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q03 uses quadratic equation by factoring or candidate substitution and Q20 uses squared strict inequality then count bounded integers. The response forms are one offered x value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q05"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both evaluate nested exact fraction arithmetic, but their operations differ. Both request one exact rational value."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q06"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q04 uses fraction addition then multiplication and Q06 uses factor quadratic and exclude roots from an integer domain. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q07"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q04 uses fraction addition then multiplication. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q08"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q04 uses fraction addition then multiplication and Q08 uses cross-multiply a rational linear equation. The response forms are one exact rational value and one offered x value."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q09"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q04 uses fraction addition then multiplication. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q10"
+      ],
+      "solvingMethodSimilarity": "strong",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "strong",
+      "rationale": "Both first add unlike fractions and then apply one outer operation to obtain an exact rational value; Q04 multiplies and Q10 reciprocates. Both request one exact rational value."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q04 uses fraction addition then multiplication. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both evaluate nested exact fraction arithmetic, but their operations differ. Both request one exact rational value."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q04 uses fraction addition then multiplication and Q13 uses linear inequality then count bounded integers. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q04 uses fraction addition then multiplication and Q14 uses rational inequality then find minimum bounded integer. The response forms are one exact rational value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q04 uses fraction addition then multiplication. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q04 uses fraction addition then multiplication. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q04 uses fraction addition then multiplication and Q17 uses linear equation simplification. The response forms are one exact rational value and one offered x value."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q04 uses fraction addition then multiplication. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q04 uses fraction addition then multiplication and Q19 uses quadratic inequality then find maximum bounded integer. The response forms are one exact rational value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q04",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q04 uses fraction addition then multiplication and Q20 uses squared strict inequality then count bounded integers. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q06"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q05 uses fraction multiplication then subtraction from one and Q06 uses factor quadratic and exclude roots from an integer domain. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q07"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q05 uses fraction multiplication then subtraction from one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q08"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q05 uses fraction multiplication then subtraction from one and Q08 uses cross-multiply a rational linear equation. The response forms are one exact rational value and one offered x value."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q09"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q05 uses fraction multiplication then subtraction from one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q10"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both evaluate nested exact fraction arithmetic, but their operations differ. Both request one exact rational value."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q05 uses fraction multiplication then subtraction from one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "strong",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "strong",
+      "rationale": "Both combine two fractions and then adjust by one to obtain an exact rational value; multiplication/subtraction differs from division/addition. Both request one exact rational value."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q05 uses fraction multiplication then subtraction from one and Q13 uses linear inequality then count bounded integers. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q05 uses fraction multiplication then subtraction from one and Q14 uses rational inequality then find minimum bounded integer. The response forms are one exact rational value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q05 uses fraction multiplication then subtraction from one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q05 uses fraction multiplication then subtraction from one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q05 uses fraction multiplication then subtraction from one and Q17 uses linear equation simplification. The response forms are one exact rational value and one offered x value."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q05 uses fraction multiplication then subtraction from one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q05 uses fraction multiplication then subtraction from one and Q19 uses quadratic inequality then find maximum bounded integer. The response forms are one exact rational value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q05",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q05 uses fraction multiplication then subtraction from one and Q20 uses squared strict inequality then count bounded integers. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q07"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q06 uses factor quadratic and exclude roots from an integer domain. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q08"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q06 uses factor quadratic and exclude roots from an integer domain and Q08 uses cross-multiply a rational linear equation. The response forms are one count of satisfying integers and one offered x value."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q09"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q06 uses factor quadratic and exclude roots from an integer domain. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q10"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q06 uses factor quadratic and exclude roots from an integer domain and Q10 uses fraction addition then reciprocal. The response forms are one count of satisfying integers and one exact rational value."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q06 uses factor quadratic and exclude roots from an integer domain. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q06 uses factor quadratic and exclude roots from an integer domain and Q12 uses fraction division then addition of one. The response forms are one count of satisfying integers and one exact rational value."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both count integers in a finite domain after simplifying a condition; one excludes roots, one bounds an interval. Both request one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q06 uses factor quadratic and exclude roots from an integer domain and Q14 uses rational inequality then find minimum bounded integer. The response forms are one count of satisfying integers and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q06 uses factor quadratic and exclude roots from an integer domain. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q06 uses factor quadratic and exclude roots from an integer domain. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q06 uses factor quadratic and exclude roots from an integer domain and Q17 uses linear equation simplification. The response forms are one count of satisfying integers and one offered x value."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q06 uses factor quadratic and exclude roots from an integer domain. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both analyze roots or a boundary of a quadratic expression over bounded integers. The response forms are one count of satisfying integers and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q06",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both count integers remaining after applying a quadratic condition to a bounded domain. Both request one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q08"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q08 uses cross-multiply a rational linear equation. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q09"
+      ],
+      "solvingMethodSimilarity": "strong",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "strong",
+      "rationale": "Both present the same four agreement traps—gerund, neither-nor, compound subject with each, and each-of—in a sentence-selection task. Both request one complete grammatical sentence."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q10"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q10 uses fraction addition then reciprocal. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "strong",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "moderate",
+      "rationale": "Q07 contains both the each-of and compound-subject-with-each traps that Q11 tests directly. The response forms are one complete grammatical sentence and two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q12 uses fraction division then addition of one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q13 uses linear inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q14 uses rational inequality then find minimum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both test agreement, but Q07 uses compare each, neither-nor, gerund, and compound-subject agreement and Q15 uses plural count noun versus singular mass-noun agreement. The response forms are one complete grammatical sentence and two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both require a singular verb for a gerund phrase, amid different other agreement checks. The response forms are one complete grammatical sentence and two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q17 uses linear equation simplification. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both test agreement, but Q07 uses compare each, neither-nor, gerund, and compound-subject agreement and Q18 uses inverted-clause subject agreement. The response forms are one complete grammatical sentence and two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q19 uses quadratic inequality then find maximum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q07",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q07 tests subject–verb agreement; Q20 uses squared strict inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q09"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q08 uses cross-multiply a rational linear equation. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q10"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q08 uses cross-multiply a rational linear equation and Q10 uses fraction addition then reciprocal. The response forms are one offered x value and one exact rational value."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q08 uses cross-multiply a rational linear equation. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q08 uses cross-multiply a rational linear equation and Q12 uses fraction division then addition of one. The response forms are one offered x value and one exact rational value."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both reduce an algebraic condition to a linear bound or equality for x. The response forms are one offered x value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "moderate",
+      "rationale": "Both clear a positive rational denominator and compare linear expressions, then interpret the result differently. The response forms are one offered x value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q08 uses cross-multiply a rational linear equation. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q08 uses cross-multiply a rational linear equation. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "strong",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "strong",
+      "rationale": "Both simplify an equality to a linear equation, isolate x, and choose its offered integer value. Both request one offered x value."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q08 uses cross-multiply a rational linear equation. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q08 uses cross-multiply a rational linear equation and Q19 uses quadratic inequality then find maximum bounded integer. The response forms are one offered x value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q08",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q08 uses cross-multiply a rational linear equation and Q20 uses squared strict inequality then count bounded integers. The response forms are one offered x value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q10"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q10 uses fraction addition then reciprocal. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "strong",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "moderate",
+      "rationale": "Q09 contains both the each-of and compound-subject-with-each traps that Q11 tests directly. The response forms are one complete grammatical sentence and two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q12 uses fraction division then addition of one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q13 uses linear inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q14 uses rational inequality then find minimum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both test agreement, but Q09 uses compare each, neither-nor, gerund, and compound-subject agreement and Q15 uses plural count noun versus singular mass-noun agreement. The response forms are one complete grammatical sentence and two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both require a singular verb for a gerund phrase, amid different other agreement checks. The response forms are one complete grammatical sentence and two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q17 uses linear equation simplification. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both test agreement, but Q09 uses compare each, neither-nor, gerund, and compound-subject agreement and Q18 uses inverted-clause subject agreement. The response forms are one complete grammatical sentence and two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q19 uses quadratic inequality then find maximum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q09",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q09 tests subject–verb agreement; Q20 uses squared strict inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q11"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q10 uses fraction addition then reciprocal. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both evaluate nested exact fraction arithmetic, but their operations differ. Both request one exact rational value."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q10 uses fraction addition then reciprocal and Q13 uses linear inequality then count bounded integers. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q10 uses fraction addition then reciprocal and Q14 uses rational inequality then find minimum bounded integer. The response forms are one exact rational value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q10 uses fraction addition then reciprocal. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q10 uses fraction addition then reciprocal. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q10 uses fraction addition then reciprocal and Q17 uses linear equation simplification. The response forms are one exact rational value and one offered x value."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q10 uses fraction addition then reciprocal. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q10 uses fraction addition then reciprocal and Q19 uses quadratic inequality then find maximum bounded integer. The response forms are one exact rational value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q10",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q10 uses fraction addition then reciprocal and Q20 uses squared strict inequality then count bounded integers. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q12"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q12 uses fraction division then addition of one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q13 uses linear inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q14 uses rational inequality then find minimum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q11 uses each-of singular versus compound-subject agreement and Q15 uses plural count noun versus singular mass-noun agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q11 uses each-of singular versus compound-subject agreement and Q16 uses gerund singular versus plural-noun agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q17 uses linear equation simplification. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q11 uses each-of singular versus compound-subject agreement and Q18 uses inverted-clause subject agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q19 uses quadratic inequality then find maximum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q11",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q11 tests subject–verb agreement; Q20 uses squared strict inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q13"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q12 uses fraction division then addition of one and Q13 uses linear inequality then count bounded integers. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q12 uses fraction division then addition of one and Q14 uses rational inequality then find minimum bounded integer. The response forms are one exact rational value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q12 uses fraction division then addition of one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q12 uses fraction division then addition of one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q12 uses fraction division then addition of one and Q17 uses linear equation simplification. The response forms are one exact rational value and one offered x value."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q12 uses fraction division then addition of one. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q12 uses fraction division then addition of one and Q19 uses quadratic inequality then find maximum bounded integer. The response forms are one exact rational value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q12",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q12 uses fraction division then addition of one and Q20 uses squared strict inequality then count bounded integers. The response forms are one exact rational value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q14"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "moderate",
+      "rationale": "Both solve an inequality to establish an integer threshold in a bounded domain. The response forms are one count of satisfying integers and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q13 uses linear inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q13 uses linear inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both simplify linear expressions in x; one counts inequality solutions and one selects the equation root. The response forms are one count of satisfying integers and one offered x value."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q13 uses linear inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "moderate",
+      "rationale": "Both solve a bounded-domain inequality, then count solutions or find an extreme. The response forms are one count of satisfying integers and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q13",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both count integer solutions of an inequality in a finite domain, though one inequality is linear and the other squared. Both request one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q15"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q14 uses rational inequality then find minimum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q14 uses rational inequality then find minimum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q14 uses rational inequality then find minimum bounded integer and Q17 uses linear equation simplification. The response forms are one extremal satisfying integer and one offered x value."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q14 uses rational inequality then find minimum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both solve an inequality over a bounded integer domain and report an extremal satisfying x. Both request one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q14",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q14 uses rational inequality then find minimum bounded integer and Q20 uses squared strict inequality then count bounded integers. The response forms are one extremal satisfying integer and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q16"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q15 uses plural count noun versus singular mass-noun agreement and Q16 uses gerund singular versus plural-noun agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q17 uses linear equation simplification. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q15 uses plural count noun versus singular mass-noun agreement and Q18 uses inverted-clause subject agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q19 uses quadratic inequality then find maximum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q15",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q15 tests subject–verb agreement; Q20 uses squared strict inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q16",
+        "Q17"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q17 uses linear equation simplification. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q16",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "low",
+      "responseFormatSimilarity": "strong",
+      "overallSimilarity": "moderate",
+      "rationale": "Both test agreement, but Q16 uses gerund singular versus plural-noun agreement and Q18 uses inverted-clause subject agreement. Both request two ordered present-tense verb forms."
+    },
+    {
+      "items": [
+        "Q16",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q19 uses quadratic inequality then find maximum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q16",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q16 tests subject–verb agreement; Q20 uses squared strict inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q17",
+        "Q18"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q17 uses linear equation simplification. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q17",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q17 uses linear equation simplification and Q19 uses quadratic inequality then find maximum bounded integer. The response forms are one offered x value and one extremal satisfying integer."
+    },
+    {
+      "items": [
+        "Q17",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "low",
+      "rationale": "Both use numerical choices, but Q17 uses linear equation simplification and Q20 uses squared strict inequality then count bounded integers. The response forms are one offered x value and one count of satisfying integers."
+    },
+    {
+      "items": [
+        "Q18",
+        "Q19"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q19 uses quadratic inequality then find maximum bounded integer. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q18",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "none",
+      "responseFormatSimilarity": "none",
+      "overallSimilarity": "none",
+      "rationale": "Q18 tests subject–verb agreement; Q20 uses squared strict inequality then count bounded integers. Their requested answer forms differ."
+    },
+    {
+      "items": [
+        "Q19",
+        "Q20"
+      ],
+      "solvingMethodSimilarity": "moderate",
+      "responseFormatSimilarity": "low",
+      "overallSimilarity": "moderate",
+      "rationale": "Both interpret a quadratic inequality over bounded integers; one reports the maximum and one counts an interval. The response forms are one extremal satisfying integer and one count of satisfying integers."
+    }
+  ],
+  "findings": {
+    "secondViableKeys": 0,
+    "meaningfullyDistinctWithinItemPairs": 120,
+    "crossItemOverallSimilarityCounts": {
+      "strong": 4,
+      "moderate": 32,
+      "low": 58,
+      "none": 96
+    },
+    "strongCrossItemPairs": [
+      [
+        "Q04",
+        "Q10"
+      ],
+      [
+        "Q05",
+        "Q12"
+      ],
+      [
+        "Q07",
+        "Q09"
+      ],
+      [
+        "Q08",
+        "Q17"
+      ]
+    ]
+  }
+}
