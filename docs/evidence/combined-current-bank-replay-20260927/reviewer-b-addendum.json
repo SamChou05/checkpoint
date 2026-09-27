@@ -1,0 +1,12 @@
+{
+  "reviewer": "B",
+  "worksheetSha256": "265579e1a486435975e723e23b5364e4d72d9883ebd2ae3c87cb0f31bc4a48ed",
+  "frozenReview": "blind-review-b.json",
+  "correction": {
+    "itemId": "Q08",
+    "field": "answer",
+    "recorded": "B",
+    "correct": "C",
+    "reason": "The condition simplifies to x + 6 <= 14, hence x <= 8. The integers 4, 5, 6, 7, and 8 satisfy it, so the count is 5. On the worksheet, C is 5 and B is 3. The frozen review's arithmetic rationale was correct; its answer letter was transcribed incorrectly."
+  }
+}

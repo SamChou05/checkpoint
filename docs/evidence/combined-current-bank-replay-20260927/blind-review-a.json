@@ -1,0 +1,2175 @@
+{
+  "reviewType": "answer-blind independent review",
+  "worksheetSha256": "265579e1a486435975e723e23b5364e4d72d9883ebd2ae3c87cb0f31bc4a48ed",
+  "targetDifficulty": "2–3 on a 1–5 scale",
+  "scale": {
+    "difficulty": "1 easiest; 5 hardest",
+    "crossItemOverlap": "strong = substantially repeated method or near-duplicate; moderate = shared template/procedure with material variation; low = topic only; none = no notable overlap"
+  },
+  "itemJudgments": [
+    {
+      "itemId": "Q01",
+      "chosenKey": "C",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 2,
+      "targetDifficultyFit": "within_target",
+      "reason": "Relative who takes plural clerks: sort. One of the clerks is singular: holds."
+    },
+    {
+      "itemId": "Q02",
+      "chosenKey": "D",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "|x-5|<7 gives -2<x<12; integers -1 through 11 total 13."
+    },
+    {
+      "itemId": "Q03",
+      "chosenKey": "B",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 2,
+      "targetDifficultyFit": "within_target",
+      "reason": "x²-17x+60=(x-5)(x-12); the smaller in-domain root is 5."
+    },
+    {
+      "itemId": "Q04",
+      "chosenKey": "C",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "With neither/nor and either/or, the nearer subject controls: assistants sort; curator checks."
+    },
+    {
+      "itemId": "Q05",
+      "chosenKey": "C",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "x²-21x+90=(x-6)(x-15); exclude 6 and 15 from the 12 integers 5–16, leaving 10."
+    },
+    {
+      "itemId": "Q06",
+      "chosenKey": "D",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 2,
+      "targetDifficultyFit": "within_target",
+      "reason": "7(x+2)+x≤62 reduces to 8x≤48, so the maximum in-domain value is 6."
+    },
+    {
+      "itemId": "Q07",
+      "chosenKey": "B",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "x+4 is positive on the domain; 7x≥3(x+4) gives x≥3, so minimum 3."
+    },
+    {
+      "itemId": "Q08",
+      "chosenKey": "C",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 2,
+      "targetDifficultyFit": "within_target",
+      "reason": "3(x+2)-2x≤14 reduces to x≤8; integers 4–8 total 5."
+    },
+    {
+      "itemId": "Q09",
+      "chosenKey": "D",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "The postverbal subjects govern the verbs: plural returns are; singular book is."
+    },
+    {
+      "itemId": "Q10",
+      "chosenKey": "C",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 2,
+      "targetDifficultyFit": "within_target",
+      "reason": "Gerund phrase Preparing the meals is singular: requires. Plural cooks measure."
+    },
+    {
+      "itemId": "Q11",
+      "chosenKey": "B",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 2,
+      "targetDifficultyFit": "within_target",
+      "reason": "At x=4, (x+6)(x+1)=10·5=50; the other offered values fail."
+    },
+    {
+      "itemId": "Q12",
+      "chosenKey": "A",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 2,
+      "targetDifficultyFit": "within_target",
+      "reason": "The heads, not the nouns in near-phrases, govern: cooks prepare; chef plans."
+    },
+    {
+      "itemId": "Q13",
+      "chosenKey": "A",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "Each of the clerks is singular: keeps. Compound subject Ava and Ben remains plural with each: review."
+    },
+    {
+      "itemId": "Q14",
+      "chosenKey": "A",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "10(x+4)=13(x+1) gives 27=3x, hence x=9."
+    },
+    {
+      "itemId": "Q15",
+      "chosenKey": "D",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "Only D has agreement: plural assistants sort after nor; A, B, and C each use a singular/plural mismatch."
+    },
+    {
+      "itemId": "Q16",
+      "chosenKey": "C",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 2,
+      "targetDifficultyFit": "within_target",
+      "reason": "(6/7+2/4)·3=(12/14+7/14)·3=57/14."
+    },
+    {
+      "itemId": "Q17",
+      "chosenKey": "C",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "(7/8)÷(3/5)+1=35/24+24/24=59/24."
+    },
+    {
+      "itemId": "Q18",
+      "chosenKey": "A",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "8/9+4/6=8/9+6/9=14/9; its reciprocal is 9/14."
+    },
+    {
+      "itemId": "Q19",
+      "chosenKey": "D",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 2,
+      "targetDifficultyFit": "within_target",
+      "reason": "1-(5/6)(7/9)=1-35/54=19/54."
+    },
+    {
+      "itemId": "Q20",
+      "chosenKey": "B",
+      "otherViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty": 3,
+      "targetDifficultyFit": "within_target",
+      "reason": "Most of the letters takes plural include; most of the mass noun mail takes singular arrives."
+    }
+  ],
+  "choicePairJudgments": [
+    {
+      "itemId": "Q01",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (14 versus 11)."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (14 versus 12)."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (14 versus 13)."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (11 versus 12)."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (11 versus 13)."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (12 versus 13)."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (12 versus 5)."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (12 versus 4)."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (12 versus 6)."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (5 versus 4)."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (5 versus 6)."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (4 versus 6)."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (9 versus 11)."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (9 versus 10)."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (9 versus 8)."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (11 versus 10)."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (11 versus 8)."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (10 versus 8)."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (8 versus 5)."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (8 versus 7)."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (8 versus 6)."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (5 versus 7)."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (5 versus 6)."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (7 versus 6)."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (1 versus 3)."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (1 versus 4)."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (1 versus 2)."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3 versus 4)."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3 versus 2)."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (4 versus 2)."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (4 versus 3)."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (4 versus 5)."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (4 versus 6)."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3 versus 5)."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3 versus 6)."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (5 versus 6)."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (2 versus 4)."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (2 versus 3)."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (2 versus 5)."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (4 versus 3)."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (4 versus 5)."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3 versus 5)."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (9 versus 8)."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (9 versus 7)."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (9 versus 10)."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (8 versus 7)."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (8 versus 10)."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (7 versus 10)."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different full sentences with different subject and verb constructions."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different full sentences with different subject and verb constructions."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different full sentences with different subject and verb constructions."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different full sentences with different subject and verb constructions."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different full sentences with different subject and verb constructions."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different full sentences with different subject and verb constructions."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3/14 versus 57)."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3/14 versus 57/14)."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3/14 versus 19/42)."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (57 versus 57/14)."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (57 versus 19/42)."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (57/14 versus 19/42)."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (36/25 versus 3/2)."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (36/25 versus 59/24)."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (36/25 versus 35/24)."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3/2 versus 59/24)."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (3/2 versus 35/24)."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (59/24 versus 35/24)."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (9/14 versus 23/9)."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (9/14 versus 14/9)."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (9/14 versus 1)."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (23/9 versus 14/9)."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (23/9 versus 1)."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (14/9 versus 1)."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (-17/27 versus 34/53)."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (-17/27 versus 1)."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (-17/27 versus 19/54)."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (34/53 versus 1)."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (34/53 versus 19/54)."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Different exact numerical values (1 versus 19/54)."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 2."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "Changes agreement in blank 1 and 2."
+    }
+  ],
+  "crossItemPairJudgments": [
+    {
+      "itemA": "Q01",
+      "itemB": "Q02",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q03",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q04",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; relative-pronoun and one-of agreement versus nearest-subject agreement with neither/nor and either/or."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q05",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q06",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q07",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q08",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q09",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; relative-pronoun and one-of agreement versus agreement with inverted subjects."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q10",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; relative-pronoun and one-of agreement versus gerund-phrase and plural-subject agreement."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q11",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q12",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; relative-pronoun and one-of agreement versus agreement despite intervening near-phrases."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q13",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; relative-pronoun and one-of agreement versus each-of versus compound-subject-each agreement."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q14",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q15",
+      "overlap": "low",
+      "reason": "Both test subject-verb agreement, but one selects a full sentence and the other fills two verb blanks."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q20",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; relative-pronoun and one-of agreement versus count-plural versus mass-singular agreement."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q03",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; strict squared inequality and integer counting versus factoring a quadratic and choosing the minimum root."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q04",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q05",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; strict squared inequality and integer counting versus factoring a quadratic and excluding its roots from a domain."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q06",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; strict squared inequality and integer counting versus linear inequality and maximum feasible integer."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q07",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; strict squared inequality and integer counting versus rational inequality and minimum feasible integer."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q08",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; strict squared inequality and integer counting versus linear inequality and counting feasible integers."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q09",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q10",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q11",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; strict squared inequality and integer counting versus factored quadratic equation and offered-root selection."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q12",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q13",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q14",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; strict squared inequality and integer counting versus rational equation and offered-root selection."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q15",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q04",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q05",
+      "overlap": "strong",
+      "reason": "Both expand to monic quadratics with two integer roots and require factoring before applying the domain condition."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q06",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; factoring a quadratic and choosing the minimum root versus linear inequality and maximum feasible integer."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q07",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; factoring a quadratic and choosing the minimum root versus rational inequality and minimum feasible integer."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q08",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; factoring a quadratic and choosing the minimum root versus linear inequality and counting feasible integers."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q09",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q10",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q11",
+      "overlap": "strong",
+      "reason": "Both seek a valid root of a factorable quadratic in a restricted integer domain; Q11 presents the factors directly."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q12",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q13",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q14",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; factoring a quadratic and choosing the minimum root versus rational equation and offered-root selection."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q15",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q05",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q06",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q07",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q08",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q09",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; nearest-subject agreement with neither/nor and either/or versus agreement with inverted subjects."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q10",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; nearest-subject agreement with neither/nor and either/or versus gerund-phrase and plural-subject agreement."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q11",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q12",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; nearest-subject agreement with neither/nor and either/or versus agreement despite intervening near-phrases."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q13",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; nearest-subject agreement with neither/nor and either/or versus each-of versus compound-subject-each agreement."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q14",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q15",
+      "overlap": "strong",
+      "reason": "Q15 repeats Q04’s exact neither-the-curator-nor-the-assistants-sort sentence as its correct choice."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q20",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; nearest-subject agreement with neither/nor and either/or versus count-plural versus mass-singular agreement."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q06",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; factoring a quadratic and excluding its roots from a domain versus linear inequality and maximum feasible integer."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q07",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; factoring a quadratic and excluding its roots from a domain versus rational inequality and minimum feasible integer."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q08",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; factoring a quadratic and excluding its roots from a domain versus linear inequality and counting feasible integers."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q09",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q10",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q11",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; factoring a quadratic and excluding its roots from a domain versus factored quadratic equation and offered-root selection."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q12",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q13",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q14",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; factoring a quadratic and excluding its roots from a domain versus rational equation and offered-root selection."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q15",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q07",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; linear inequality and maximum feasible integer versus rational inequality and minimum feasible integer."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q08",
+      "overlap": "strong",
+      "reason": "Both simplify a linear expression to an upper bound on x and apply it to a short inclusive integer domain."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q09",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q10",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q11",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; linear inequality and maximum feasible integer versus factored quadratic equation and offered-root selection."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q12",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q13",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q14",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; linear inequality and maximum feasible integer versus rational equation and offered-root selection."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q15",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q08",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; rational inequality and minimum feasible integer versus linear inequality and counting feasible integers."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q09",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q10",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q11",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; rational inequality and minimum feasible integer versus factored quadratic equation and offered-root selection."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q12",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q13",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q14",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; rational inequality and minimum feasible integer versus rational equation and offered-root selection."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q15",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q16",
+      "overlap": "low",
+      "reason": "Both use fractions, but one solves for an integer x and the other evaluates a fixed expression."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q17",
+      "overlap": "low",
+      "reason": "Both use fractions, but one solves for an integer x and the other evaluates a fixed expression."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q18",
+      "overlap": "low",
+      "reason": "Both use fractions, but one solves for an integer x and the other evaluates a fixed expression."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q19",
+      "overlap": "low",
+      "reason": "Both use fractions, but one solves for an integer x and the other evaluates a fixed expression."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q09",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q10",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q11",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; linear inequality and counting feasible integers versus factored quadratic equation and offered-root selection."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q12",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q13",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q14",
+      "overlap": "moderate",
+      "reason": "Same restricted-integer-domain and symbolic-condition format; linear inequality and counting feasible integers versus rational equation and offered-root selection."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q15",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q10",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; agreement with inverted subjects versus gerund-phrase and plural-subject agreement."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q11",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q12",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; agreement with inverted subjects versus agreement despite intervening near-phrases."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q13",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; agreement with inverted subjects versus each-of versus compound-subject-each agreement."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q14",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q15",
+      "overlap": "low",
+      "reason": "Both test subject-verb agreement, but one selects a full sentence and the other fills two verb blanks."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q20",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; agreement with inverted subjects versus count-plural versus mass-singular agreement."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q11",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q12",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; gerund-phrase and plural-subject agreement versus agreement despite intervening near-phrases."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q13",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; gerund-phrase and plural-subject agreement versus each-of versus compound-subject-each agreement."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q14",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q15",
+      "overlap": "strong",
+      "reason": "Both test whether a gerund phrase is a singular subject; Q15 presents the corresponding wrong verb form."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q20",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; gerund-phrase and plural-subject agreement versus count-plural versus mass-singular agreement."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q12",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q13",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q14",
+      "overlap": "strong",
+      "reason": "Both use the same 0–15 integer-domain stem and ask which offered x satisfies a displayed equation."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q15",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q13",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; agreement despite intervening near-phrases versus each-of versus compound-subject-each agreement."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q14",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q15",
+      "overlap": "low",
+      "reason": "Both test subject-verb agreement, but one selects a full sentence and the other fills two verb blanks."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q20",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; agreement despite intervening near-phrases versus count-plural versus mass-singular agreement."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q14",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q15",
+      "overlap": "strong",
+      "reason": "Q15 directly reprises both Q13 traps: Each of ... with a plural verb and two people each with a singular verb."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q20",
+      "overlap": "moderate",
+      "reason": "Same two-blank, four-combination agreement format; each-of versus compound-subject-each agreement versus count-plural versus mass-singular agreement."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q15",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q16",
+      "overlap": "low",
+      "reason": "Both use fractions, but one solves for an integer x and the other evaluates a fixed expression."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q17",
+      "overlap": "low",
+      "reason": "Both use fractions, but one solves for an integer x and the other evaluates a fixed expression."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q18",
+      "overlap": "low",
+      "reason": "Both use fractions, but one solves for an integer x and the other evaluates a fixed expression."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q19",
+      "overlap": "low",
+      "reason": "Both use fractions, but one solves for an integer x and the other evaluates a fixed expression."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q16",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q17",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q18",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q19",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q20",
+      "overlap": "low",
+      "reason": "Both test subject-verb agreement, but one selects a full sentence and the other fills two verb blanks."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q17",
+      "overlap": "moderate",
+      "reason": "Same exact-value fraction-expression format; adding fractions then multiplying versus dividing fractions then adding one."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q18",
+      "overlap": "strong",
+      "reason": "Both require adding two unequal-denominator fractions and then applying one outer operation to the sum."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q19",
+      "overlap": "moderate",
+      "reason": "Same exact-value fraction-expression format; adding fractions then multiplying versus multiplying fractions then subtracting from one."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q17",
+      "itemB": "Q18",
+      "overlap": "moderate",
+      "reason": "Same exact-value fraction-expression format; dividing fractions then adding one versus adding fractions then taking a reciprocal."
+    },
+    {
+      "itemA": "Q17",
+      "itemB": "Q19",
+      "overlap": "moderate",
+      "reason": "Same exact-value fraction-expression format; dividing fractions then adding one versus multiplying fractions then subtracting from one."
+    },
+    {
+      "itemA": "Q17",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q18",
+      "itemB": "Q19",
+      "overlap": "moderate",
+      "reason": "Same exact-value fraction-expression format; adding fractions then taking a reciprocal versus multiplying fractions then subtracting from one."
+    },
+    {
+      "itemA": "Q18",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    },
+    {
+      "itemA": "Q19",
+      "itemB": "Q20",
+      "overlap": "none",
+      "reason": "No repeated solving method or near-duplicate question format."
+    }
+  ]
+}

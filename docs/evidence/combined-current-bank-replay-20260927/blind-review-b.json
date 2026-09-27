@@ -1,0 +1,2450 @@
+{
+  "reviewType": "independent_answer_blind_review_b",
+  "worksheetSha256": "265579e1a486435975e723e23b5364e4d72d9883ebd2ae3c87cb0f31bc4a48ed",
+  "worksheetItemCount": 20,
+  "ratingScale": "none < low < moderate < strong; method and format rated separately, overall is the greater of the two",
+  "choicePairCriterion": "Meaningfully distinct means the alternatives assert different verb assignments, grammatical claims, or exact numerical values; plausibility is separately discussed in findings.",
+  "questions": [
+    {
+      "itemId": "Q01",
+      "answer": "C",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 2,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "The relative pronoun who refers to plural clerks, so sort; one is singular, so holds."
+    },
+    {
+      "itemId": "Q02",
+      "answer": "D",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "The strict inequality gives -2 < x < 12; the domain contributes integers -1 through 11, thirteen in all."
+    },
+    {
+      "itemId": "Q03",
+      "answer": "B",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "x² - 17x + 60 = (x - 5)(x - 12), so the smaller permitted root is 5."
+    },
+    {
+      "itemId": "Q04",
+      "answer": "C",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "In each nor/or construction, agreement follows the nearer subject: assistants sort and curator checks."
+    },
+    {
+      "itemId": "Q05",
+      "answer": "C",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "x² - 21x + 90 = (x - 6)(x - 15); only 6 and 15 fail the nonzero test, leaving 10 of 12 integers."
+    },
+    {
+      "itemId": "Q06",
+      "answer": "D",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 2,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "The inequality reduces to 8x + 14 ≤ 62, hence x ≤ 6; the maximum permitted value is 6."
+    },
+    {
+      "itemId": "Q07",
+      "answer": "B",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "Because x + 4 is positive throughout the domain, cross multiplication yields 7x ≥ 3x + 12, or x ≥ 3."
+    },
+    {
+      "itemId": "Q08",
+      "answer": "B",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 2,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "The left side simplifies to x + 6, so x ≤ 8; integers 4 through 8 give five values."
+    },
+    {
+      "itemId": "Q09",
+      "answer": "D",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "In each inverted clause the postverbal subject controls agreement: returns are and book is."
+    },
+    {
+      "itemId": "Q10",
+      "answer": "C",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 2,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "The gerund phrase Preparing the meals is singular and takes requires; plural cooks takes measure."
+    },
+    {
+      "itemId": "Q11",
+      "answer": "B",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 2,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "At x = 4, (x + 6)(x + 1) = 10 × 5 = 50; no other offered value works."
+    },
+    {
+      "itemId": "Q12",
+      "answer": "A",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 2,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "The heads cooks and chef govern the verbs despite their nearby prepositional phrases: prepare and plans."
+    },
+    {
+      "itemId": "Q13",
+      "answer": "A",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "Each of the clerks is singular and takes keeps; Ava and Ben is a plural subject and takes review despite each."
+    },
+    {
+      "itemId": "Q14",
+      "answer": "A",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "10(x + 4) = 13(x + 1) gives 3x = 27 and x = 9."
+    },
+    {
+      "itemId": "Q15",
+      "answer": "D",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "The plural assistants nearest nor takes sort. A needs receives; B needs prepare; C needs demands."
+    },
+    {
+      "itemId": "Q16",
+      "answer": "C",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 2,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "6/7 + 2/4 = 12/14 + 7/14 = 19/14, and tripling gives 57/14."
+    },
+    {
+      "itemId": "Q17",
+      "answer": "C",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "(7/8) ÷ (3/5) = 35/24; adding 1 gives 59/24."
+    },
+    {
+      "itemId": "Q18",
+      "answer": "A",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "8/9 + 4/6 = 8/9 + 2/3 = 14/9, whose reciprocal is 9/14."
+    },
+    {
+      "itemId": "Q19",
+      "answer": "D",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 2,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "(5/6)(7/9) = 35/54; 1 - 35/54 = 19/54."
+    },
+    {
+      "itemId": "Q20",
+      "answer": "B",
+      "additionalViableKeys": [],
+      "answerStatus": "unique",
+      "difficulty1to5": 3,
+      "targetDifficulty": "2-3",
+      "difficultyJudgment": "within target",
+      "rationale": "Most of the letters refers to plural countable letters and takes include; most of the mail takes singular arrives."
+    }
+  ],
+  "choicePairs": [
+    {
+      "itemId": "Q01",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A and B differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A and C differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A and D differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B and C differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B and D differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q01",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C and D differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 14 and B = 11 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 14 and C = 12 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 14 and D = 13 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 11 and C = 12 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 11 and D = 13 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q02",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 12 and D = 13 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 12 and B = 5 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 12 and C = 4 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 12 and D = 6 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 5 and C = 4 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 5 and D = 6 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q03",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 4 and D = 6 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A and B differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A and C differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A and D differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B and C differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B and D differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q04",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C and D differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 9 and B = 11 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 9 and C = 10 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 9 and D = 8 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 11 and C = 10 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 11 and D = 8 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q05",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 10 and D = 8 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 8 and B = 5 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 8 and C = 7 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 8 and D = 6 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 5 and C = 7 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 5 and D = 6 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q06",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 7 and D = 6 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 1 and B = 3 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 1 and C = 4 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 1 and D = 2 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 3 and C = 4 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 3 and D = 2 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q07",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 4 and D = 2 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 4 and B = 3 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 4 and C = 5 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 4 and D = 6 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 3 and C = 5 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 3 and D = 6 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q08",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 5 and D = 6 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A and B differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A and C differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A and D differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B and C differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B and D differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q09",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C and D differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A and B differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A and C differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A and D differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B and C differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B and D differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q10",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C and D differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 2 and B = 4 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 2 and C = 3 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 2 and D = 5 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 4 and C = 3 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 4 and D = 5 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q11",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 3 and D = 5 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A and B differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A and C differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A and D differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B and C differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B and D differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q12",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C and D differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A and B differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A and C differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A and D differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B and C differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B and D differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q13",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C and D differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 9 and B = 8 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 9 and C = 7 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 9 and D = 10 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 8 and C = 7 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 8 and D = 10 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q14",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 7 and D = 10 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A tests each of plus a singular verb; B tests a plural compound subject with each. These are separate agreement claims."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A tests each of plus a singular verb; C tests a gerund phrase as subject. These are separate agreement claims."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A tests each of plus a singular verb; D tests nearest-subject agreement after nor. These are separate agreement claims."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B tests a plural compound subject with each; C tests a gerund phrase as subject. These are separate agreement claims."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B tests a plural compound subject with each; D tests nearest-subject agreement after nor. These are separate agreement claims."
+    },
+    {
+      "itemId": "Q15",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C tests a gerund phrase as subject; D tests nearest-subject agreement after nor. These are separate agreement claims."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 3/14 and B = 57 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 3/14 and C = 57/14 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 3/14 and D = 19/42 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 57 and C = 57/14 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 57 and D = 19/42 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q16",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 57/14 and D = 19/42 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 36/25 and B = 3/2 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 36/25 and C = 59/24 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 36/25 and D = 35/24 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 3/2 and C = 59/24 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 3/2 and D = 35/24 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q17",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 59/24 and D = 35/24 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = 9/14 and B = 23/9 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = 9/14 and C = 14/9 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = 9/14 and D = 1 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 23/9 and C = 14/9 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 23/9 and D = 1 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q18",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 14/9 and D = 1 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A = -17/27 and B = 34/53 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A = -17/27 and C = 1 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A = -17/27 and D = 19/54 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B = 34/53 and C = 1 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B = 34/53 and D = 19/54 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q19",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C = 1 and D = 19/54 are different exact numerical answers."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "A",
+      "choiceB": "B",
+      "meaningfullyDistinct": true,
+      "reason": "A and B differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "A",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "A and C differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "A",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "A and D differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "B",
+      "choiceB": "C",
+      "meaningfullyDistinct": true,
+      "reason": "B and C differ in the second verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "B",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "B and D differ in the first verb decision; the resulting subject-verb assignments differ."
+    },
+    {
+      "itemId": "Q20",
+      "choiceA": "C",
+      "choiceB": "D",
+      "meaningfullyDistinct": true,
+      "reason": "C and D differ in the first and second verb decision; the resulting subject-verb assignments differ."
+    }
+  ],
+  "crossItemPairs": [
+    {
+      "itemA": "Q01",
+      "itemB": "Q02",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q03",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q04",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q01 tests relative-clause plural plus singular one of, while Q04 tests correlative nearest-subject agreement."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q05",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q06",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q07",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q08",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q09",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q01 tests relative-clause plural plus singular one of, while Q09 tests two inverted-clause subject agreements."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q10",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q01 tests relative-clause plural plus singular one of, while Q10 tests gerund-phrase singular plus plural subject."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q11",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q12",
+      "methodRepetition": "strong",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both require rejecting a nearby noun as the controller of a verb and yield a plural first verb plus singular second verb. Both also use the two-blank agreement-choice format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q13",
+      "methodRepetition": "strong",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both contrast a plural subject with a singular quantifier phrase (one of or each of) across the two blanks. Both also use the two-blank agreement-choice format."
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q14",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q15",
+      "methodRepetition": "moderate",
+      "formatRepetition": "low",
+      "overallRepetition": "moderate"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q01",
+      "itemB": "Q20",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q01 tests relative-clause plural plus singular one of, while Q20 tests most of with plural letters and singular mass mail."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q03",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q02 tests square inequality and integer count, while Q03 tests quadratic roots and minimum."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q04",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q05",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q02 tests square inequality and integer count, while Q05 tests quadratic zero exclusions and integer count."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q06",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q02 tests square inequality and integer count, while Q06 tests linear inequality and maximum."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q07",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q02 tests square inequality and integer count, while Q07 tests rational inequality and minimum."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q08",
+      "methodRepetition": "strong",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q02 tests square inequality and integer count, while Q08 tests linear inequality and integer count. Both solve an inequality for an integer interval, intersect it with an inclusive domain, and count admissible integers; Q02 has two square-derived bounds and Q08 one linear bound."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q09",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q10",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q11",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q02 tests square inequality and integer count, while Q11 tests product equation and offered-value selection."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q12",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q13",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q14",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q02 tests square inequality and integer count, while Q14 tests rational equation and offered-value selection."
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q15",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q02",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q04",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q05",
+      "methodRepetition": "strong",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q03 tests quadratic roots and minimum, while Q05 tests quadratic zero exclusions and integer count. Both find the integer roots of a monic quadratic by factoring; Q03 selects the smaller root while Q05 excludes its two roots from a count."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q06",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q03 tests quadratic roots and minimum, while Q06 tests linear inequality and maximum."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q07",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q03 tests quadratic roots and minimum, while Q07 tests rational inequality and minimum."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q08",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q03 tests quadratic roots and minimum, while Q08 tests linear inequality and integer count."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q09",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q10",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q11",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q03 tests quadratic roots and minimum, while Q11 tests product equation and offered-value selection."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q12",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q13",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q14",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q03 tests quadratic roots and minimum, while Q14 tests rational equation and offered-value selection."
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q15",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q03",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q05",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q06",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q07",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q08",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q09",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q04 tests correlative nearest-subject agreement, while Q09 tests two inverted-clause subject agreements."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q10",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q04 tests correlative nearest-subject agreement, while Q10 tests gerund-phrase singular plus plural subject."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q11",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q12",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q04 tests correlative nearest-subject agreement, while Q12 tests head nouns obscured by near phrases."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q13",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q04 tests correlative nearest-subject agreement, while Q13 tests singular each of versus plural compound each."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q14",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q15",
+      "methodRepetition": "strong",
+      "formatRepetition": "low",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Q15 repeats Q04’s exact neither the curator nor the assistants sort the records construction as its correct sentence."
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q04",
+      "itemB": "Q20",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q04 tests correlative nearest-subject agreement, while Q20 tests most of with plural letters and singular mass mail."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q06",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q05 tests quadratic zero exclusions and integer count, while Q06 tests linear inequality and maximum."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q07",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q05 tests quadratic zero exclusions and integer count, while Q07 tests rational inequality and minimum."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q08",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q05 tests quadratic zero exclusions and integer count, while Q08 tests linear inequality and integer count."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q09",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q10",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q11",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q05 tests quadratic zero exclusions and integer count, while Q11 tests product equation and offered-value selection."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q12",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q13",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q14",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q05 tests quadratic zero exclusions and integer count, while Q14 tests rational equation and offered-value selection."
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q15",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q05",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q07",
+      "methodRepetition": "strong",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q06 tests linear inequality and maximum, while Q07 tests rational inequality and minimum. Both isolate x in an inequality and choose an extreme satisfying integer; Q07 first clears a denominator that stays positive in its domain."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q08",
+      "methodRepetition": "strong",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q06 tests linear inequality and maximum, while Q08 tests linear inequality and integer count. Both simplify a linear inequality to x ≤ a bound and inspect an inclusive integer domain; Q06 reports the maximum and Q08 counts the values."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q09",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q10",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q11",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q06 tests linear inequality and maximum, while Q11 tests product equation and offered-value selection."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q12",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q13",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q14",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q06 tests linear inequality and maximum, while Q14 tests rational equation and offered-value selection."
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q15",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q06",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q08",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q07 tests rational inequality and minimum, while Q08 tests linear inequality and integer count."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q09",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q10",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q11",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q07 tests rational inequality and minimum, while Q11 tests product equation and offered-value selection."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q12",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q13",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q14",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q07 tests rational inequality and minimum, while Q14 tests rational equation and offered-value selection."
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q15",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q17",
+      "methodRepetition": "low",
+      "formatRepetition": "none",
+      "overallRepetition": "low"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q18",
+      "methodRepetition": "low",
+      "formatRepetition": "none",
+      "overallRepetition": "low"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q07",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q09",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q10",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q11",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q08 tests linear inequality and integer count, while Q11 tests product equation and offered-value selection."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q12",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q13",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q14",
+      "methodRepetition": "low",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q08 tests linear inequality and integer count, while Q14 tests rational equation and offered-value selection."
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q15",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q08",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q10",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q09 tests two inverted-clause subject agreements, while Q10 tests gerund-phrase singular plus plural subject."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q11",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q12",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q09 tests two inverted-clause subject agreements, while Q12 tests head nouns obscured by near phrases."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q13",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q09 tests two inverted-clause subject agreements, while Q13 tests singular each of versus plural compound each."
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q14",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q15",
+      "methodRepetition": "low",
+      "formatRepetition": "low",
+      "overallRepetition": "low"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q09",
+      "itemB": "Q20",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q09 tests two inverted-clause subject agreements, while Q20 tests most of with plural letters and singular mass mail."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q11",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q12",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q10 tests gerund-phrase singular plus plural subject, while Q12 tests head nouns obscured by near phrases."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q13",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q10 tests gerund-phrase singular plus plural subject, while Q13 tests singular each of versus plural compound each."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q14",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q15",
+      "methodRepetition": "strong",
+      "formatRepetition": "low",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Q15 tests a singular gerund phrase, Verifying the totals, just as Q10 tests Preparing the meals as a singular subject."
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q10",
+      "itemB": "Q20",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q10 tests gerund-phrase singular plus plural subject, while Q20 tests most of with plural letters and singular mass mail."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q12",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q13",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q14",
+      "methodRepetition": "strong",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless x, inclusive integer-domain, symbolic Condition stem with short numerical choices; Q11 tests product equation and offered-value selection, while Q14 tests rational equation and offered-value selection. Both ask which offered integer satisfies an equality and can be solved by substituting the four choices; Q11 uses a product and Q14 a ratio."
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q15",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q11",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q13",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q12 tests head nouns obscured by near phrases, while Q13 tests singular each of versus plural compound each."
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q14",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q15",
+      "methodRepetition": "low",
+      "formatRepetition": "low",
+      "overallRepetition": "low"
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q12",
+      "itemB": "Q20",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q12 tests head nouns obscured by near phrases, while Q20 tests most of with plural letters and singular mass mail."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q14",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q15",
+      "methodRepetition": "strong",
+      "formatRepetition": "low",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Q15 repeats both of Q13’s each patterns: each of a plural noun is singular, while a plural compound subject followed by each stays plural."
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q13",
+      "itemB": "Q20",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use two agreement blanks with all four ordered verb-form combinations; Q13 tests singular each of versus plural compound each, while Q20 tests most of with plural letters and singular mass mail."
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q15",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q17",
+      "methodRepetition": "low",
+      "formatRepetition": "none",
+      "overallRepetition": "low"
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q18",
+      "methodRepetition": "low",
+      "formatRepetition": "none",
+      "overallRepetition": "low"
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q14",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q16",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q17",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q18",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q19",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q15",
+      "itemB": "Q20",
+      "methodRepetition": "low",
+      "formatRepetition": "low",
+      "overallRepetition": "low"
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q17",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless q = nested rational expression and exact-value question with four numeric choices; Q16 tests fraction addition followed by multiplication, while Q17 tests fraction division followed by addition."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q18",
+      "methodRepetition": "strong",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless q = nested rational expression and exact-value question with four numeric choices; Q16 tests fraction addition followed by multiplication, while Q18 tests fraction addition followed by reciprocal. Both first add unlike fractions using a common denominator, then apply an outer operation; Q16 multiplies the sum by 3 and Q18 takes its reciprocal."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q19",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless q = nested rational expression and exact-value question with four numeric choices; Q16 tests fraction addition followed by multiplication, while Q19 tests fraction multiplication followed by subtraction."
+    },
+    {
+      "itemA": "Q16",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q17",
+      "itemB": "Q18",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless q = nested rational expression and exact-value question with four numeric choices; Q17 tests fraction division followed by addition, while Q18 tests fraction addition followed by reciprocal."
+    },
+    {
+      "itemA": "Q17",
+      "itemB": "Q19",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless q = nested rational expression and exact-value question with four numeric choices; Q17 tests fraction division followed by addition, while Q19 tests fraction multiplication followed by subtraction."
+    },
+    {
+      "itemA": "Q17",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q18",
+      "itemB": "Q19",
+      "methodRepetition": "moderate",
+      "formatRepetition": "strong",
+      "overallRepetition": "strong",
+      "strongPairExplanation": "Both use the same unitless q = nested rational expression and exact-value question with four numeric choices; Q18 tests fraction addition followed by reciprocal, while Q19 tests fraction multiplication followed by subtraction."
+    },
+    {
+      "itemA": "Q18",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    },
+    {
+      "itemA": "Q19",
+      "itemB": "Q20",
+      "methodRepetition": "none",
+      "formatRepetition": "none",
+      "overallRepetition": "none"
+    }
+  ],
+  "findings": {
+    "uniqueAnswerCount": 20,
+    "ambiguousOrUnanswerableItems": [],
+    "additionalViableKeysFound": [],
+    "difficultyOutsideTarget": [],
+    "distinctChoicePairs": 120,
+    "strongCrossItemPairs": 58,
+    "candidAssessment": "All 20 items have one defensible key and all 120 within-item choice pairs are substantively distinct. The bank is repetitive in format: seven agreement items reuse the two-blank/four-combination grid, eight algebra items reuse the unitless-x/domain/Condition stem, and four fraction items reuse the unitless-q/exact-value stem. Q15 directly reuses agreement constructs from Q04, Q10, and Q13. This format saturation is the main quality concern despite varied arithmetic and grammar subskills. Some fraction distractors (notably 57 in Q16 and 34/53 in Q19) are distinct but weakly motivated."
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "capture_sha256": "78a25d2c636c6246ab55cb0757c67b817590cd285fea0ba1784e92035cc9efe0",
+  "minimumDifficulty": 2,
+  "questions": [
+    {
+      "id": "Q01",
+      "objective": "Evaluate an exact rational expression or explicit bounded condition",
+      "prompt": "Let q be a unitless number, defined by q = (1 - ((3 / 4) * (4 / 6))). What is its exact value?",
+      "choices": {
+        "A": "1",
+        "B": "1/2",
+        "C": "3/2",
+        "D": "0"
+      }
+    },
+    {
+      "id": "Q02",
+      "objective": "Evaluate an exact rational expression or explicit bounded condition",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 5) / (x + 1)) = (12 / 8). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "5",
+        "B": "8",
+        "C": "7",
+        "D": "6"
+      }
+    },
+    {
+      "id": "Q03",
+      "objective": "Evaluate an exact rational expression or explicit bounded condition",
+      "prompt": "Let x be a unitless number. Its domain is integers from 3 through 15, inclusive. Condition: ((x - 9) * (x - 9)) < 25. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "8",
+        "B": "10",
+        "C": "9",
+        "D": "7"
+      }
+    },
+    {
+      "id": "Q04",
+      "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the librarian ___ the returns from the library, while near the volunteers ___ the book from the library. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "is; is",
+        "B": "are; are",
+        "C": "are; is",
+        "D": "is; are"
+      }
+    },
+    {
+      "id": "Q05",
+      "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Preparing the meals ___ planning, and the cooks ___ the ingredients. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "requires; measure",
+        "B": "requires; measures",
+        "C": "require; measure",
+        "D": "require; measures"
+      }
+    }
+  ]
+}

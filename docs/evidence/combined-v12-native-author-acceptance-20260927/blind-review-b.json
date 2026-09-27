@@ -1,0 +1,106 @@
+{
+  "reviewType": "independent_answer_blind",
+  "reviewer": "B",
+  "worksheetSha256": "34972f8b8f672fdee17a84ccd6e78d8d1078df75b845b6987f0cbc186ea98462",
+  "difficultyScale": "1=very easy, 5=very hard; minimum=2",
+  "questions": [
+    {
+      "id": "Q01",
+      "answer": "B",
+      "secondViableKey": null,
+      "reason": "(3/4)(4/6)=1/2, and 1-1/2=1/2.",
+      "difficulty": 2,
+      "meetsMinimumDifficulty": true,
+      "difficultyReason": "Requires a fraction product followed by subtraction; cancellation keeps the arithmetic accessible.",
+      "withinChoicePairs": [
+        {"pair":"A-B","meaningfullyDistinct":true,"reason":"1 and 1/2 are different exact values."},
+        {"pair":"A-C","meaningfullyDistinct":true,"reason":"1 and 3/2 are different exact values."},
+        {"pair":"A-D","meaningfullyDistinct":true,"reason":"1 and 0 are different exact values."},
+        {"pair":"B-C","meaningfullyDistinct":true,"reason":"1/2 and 3/2 are different exact values."},
+        {"pair":"B-D","meaningfullyDistinct":true,"reason":"1/2 and 0 are different exact values."},
+        {"pair":"C-D","meaningfullyDistinct":true,"reason":"3/2 and 0 are different exact values."}
+      ]
+    },
+    {
+      "id": "Q02",
+      "answer": "C",
+      "secondViableKey": null,
+      "reason": "12/8=3/2, so 2(x+5)=3(x+1), giving x=7, which is in the stated domain.",
+      "difficulty": 2,
+      "meetsMinimumDifficulty": true,
+      "difficultyReason": "Solving or checking a linear rational equality requires more than direct recall; all denominators in the domain are nonzero.",
+      "withinChoicePairs": [
+        {"pair":"A-B","meaningfullyDistinct":true,"reason":"5 and 8 are distinct candidate integers; only one can satisfy this equation."},
+        {"pair":"A-C","meaningfullyDistinct":true,"reason":"5 and 7 are distinct candidate integers; substitution gives different ratios."},
+        {"pair":"A-D","meaningfullyDistinct":true,"reason":"5 and 6 are distinct candidate integers; substitution gives different ratios."},
+        {"pair":"B-C","meaningfullyDistinct":true,"reason":"8 and 7 are distinct candidate integers; substitution gives different ratios."},
+        {"pair":"B-D","meaningfullyDistinct":true,"reason":"8 and 6 are distinct candidate integers; substitution gives different ratios."},
+        {"pair":"C-D","meaningfullyDistinct":true,"reason":"7 and 6 are distinct candidate integers; substitution gives different ratios."}
+      ]
+    },
+    {
+      "id": "Q03",
+      "answer": "C",
+      "secondViableKey": null,
+      "reason": "(x-9)^2<25 means |x-9|<5, hence 4<x<14; the integers 5 through 13 total 9.",
+      "difficulty": 3,
+      "meetsMinimumDifficulty": true,
+      "difficultyReason": "Requires interpreting a strict squared inequality and counting integer values without including either boundary.",
+      "withinChoicePairs": [
+        {"pair":"A-B","meaningfullyDistinct":true,"reason":"Counts 8 and 10 differ by two integers."},
+        {"pair":"A-C","meaningfullyDistinct":true,"reason":"Counts 8 and 9 differ by one boundary or counting error."},
+        {"pair":"A-D","meaningfullyDistinct":true,"reason":"Counts 8 and 7 are distinct possible tallies."},
+        {"pair":"B-C","meaningfullyDistinct":true,"reason":"Counts 10 and 9 differ by one boundary or counting error."},
+        {"pair":"B-D","meaningfullyDistinct":true,"reason":"Counts 10 and 7 are distinct possible tallies."},
+        {"pair":"C-D","meaningfullyDistinct":true,"reason":"Counts 9 and 7 differ by two integers."}
+      ]
+    },
+    {
+      "id": "Q04",
+      "answer": "C",
+      "secondViableKey": null,
+      "reason": "The first inverted clause has plural subject 'the returns' and takes 'are'; the second has singular subject 'the book' and takes 'is'.",
+      "difficulty": 3,
+      "meetsMinimumDifficulty": true,
+      "difficultyReason": "Both subjects follow their verbs, so the nearby nouns in the opening phrases can mislead agreement.",
+      "withinChoicePairs": [
+        {"pair":"A-B","meaningfullyDistinct":true,"reason":"Both blank positions differ: is/is versus are/are."},
+        {"pair":"A-C","meaningfullyDistinct":true,"reason":"The first blank differs: is/is versus are/is."},
+        {"pair":"A-D","meaningfullyDistinct":true,"reason":"The second blank differs: is/is versus is/are."},
+        {"pair":"B-C","meaningfullyDistinct":true,"reason":"The second blank differs: are/are versus are/is."},
+        {"pair":"B-D","meaningfullyDistinct":true,"reason":"The first blank differs: are/are versus is/are."},
+        {"pair":"C-D","meaningfullyDistinct":true,"reason":"Both blank positions differ: are/is versus is/are."}
+      ]
+    },
+    {
+      "id": "Q05",
+      "answer": "A",
+      "secondViableKey": null,
+      "reason": "The gerund phrase 'Preparing the meals' is singular and takes 'requires'; plural 'the cooks' takes 'measure'.",
+      "difficulty": 2,
+      "meetsMinimumDifficulty": true,
+      "difficultyReason": "Requires identifying the gerund phrase as the first subject and applying ordinary plural agreement to the second.",
+      "withinChoicePairs": [
+        {"pair":"A-B","meaningfullyDistinct":true,"reason":"The second verb differs: measure versus measures."},
+        {"pair":"A-C","meaningfullyDistinct":true,"reason":"The first verb differs: requires versus require."},
+        {"pair":"A-D","meaningfullyDistinct":true,"reason":"Both verb forms differ."},
+        {"pair":"B-C","meaningfullyDistinct":true,"reason":"Both verb forms differ."},
+        {"pair":"B-D","meaningfullyDistinct":true,"reason":"The first verb differs: requires versus require."},
+        {"pair":"C-D","meaningfullyDistinct":true,"reason":"The second verb differs: measure versus measures."}
+      ]
+    }
+  ],
+  "crossItemPairs": [
+    {"pair":"Q01-Q02","solvingMethodSimilarity":"moderate","formatSimilarity":"moderate","reason":"Both use fractions and a numeric four-choice answer; Q01 evaluates a fixed expression, whereas Q02 solves for an integer in a stated domain."},
+    {"pair":"Q01-Q03","solvingMethodSimilarity":"low","formatSimilarity":"moderate","reason":"Both show symbolic arithmetic with numeric choices, but direct fraction evaluation differs from solving a strict squared inequality and counting integers."},
+    {"pair":"Q01-Q04","solvingMethodSimilarity":"none","formatSimilarity":"low","reason":"Arithmetic evaluation versus verb agreement; one numeric value versus an ordered verb pair in a two-blank sentence."},
+    {"pair":"Q01-Q05","solvingMethodSimilarity":"none","formatSimilarity":"low","reason":"Arithmetic evaluation versus verb agreement; one numeric value versus an ordered verb pair in a two-blank sentence."},
+    {"pair":"Q02-Q03","solvingMethodSimilarity":"moderate","formatSimilarity":"strong","reason":"Both specify an integer domain and mathematical condition with numeric choices; Q02 finds one solution of a rational equality, whereas Q03 counts solutions of a squared inequality."},
+    {"pair":"Q02-Q04","solvingMethodSimilarity":"none","formatSimilarity":"low","reason":"Rational equation versus inverted-clause agreement; numeric single-value options versus ordered verb pairs."},
+    {"pair":"Q02-Q05","solvingMethodSimilarity":"none","formatSimilarity":"low","reason":"Rational equation versus gerund and plural-subject agreement; numeric single-value options versus ordered verb pairs."},
+    {"pair":"Q03-Q04","solvingMethodSimilarity":"none","formatSimilarity":"low","reason":"Integer count from an inequality versus inverted-clause agreement; numeric tally versus ordered verb pairs."},
+    {"pair":"Q03-Q05","solvingMethodSimilarity":"none","formatSimilarity":"low","reason":"Integer count from an inequality versus gerund and plural-subject agreement; numeric tally versus ordered verb pairs."},
+    {"pair":"Q04-Q05","solvingMethodSimilarity":"moderate","formatSimilarity":"strong","reason":"Both choose two agreeing present-tense verbs from four ordered pairs, but Q04 resolves postposed subjects in inverted clauses while Q05 resolves a gerund phrase and an ordinary plural subject."}
+  ],
+  "overallAssessment": "All five items have one clear key, six meaningfully distinct choice pairs, and difficulty at or above the stated minimum. Q02 and Q03 share a conspicuous domain-and-condition presentation, and Q04 and Q05 share a strong two-blank ordered-pair format; their actual solving steps differ."
+}

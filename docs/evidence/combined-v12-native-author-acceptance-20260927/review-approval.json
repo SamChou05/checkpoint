@@ -1,0 +1,6 @@
+{
+  "plan_sha256": "663bea09f568c49e1e20adf543c61178d28963b8161f6ff299c1dea929902a7b",
+  "harness_sha256": "872ccfe4a470430eb25377812dc0236a0d856addc7842709d67c9bb11a9a84c0",
+  "root_go": true,
+  "independent_go": true
+}

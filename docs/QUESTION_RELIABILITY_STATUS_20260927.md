@@ -118,8 +118,22 @@ gave slot 4 four full-sentence options instead of another two-blank ordered
 pair. Two blind reviewers found all four sample keys unique and choices
 distinct at the target difficulty; all four were low-overlap against the old
 slot-3 format, but strongly repetitive among themselves. The merged native
-schema is now 2,357 bytes, version 12. Local tests pass; its live Bedrock
-acceptance and repeated-bank yield still need qualification.
+schema is now 2,357 bytes, version 12. A separately frozen
+[one-call live author trial](evidence/combined-v12-native-author-acceptance-20260927/RESULTS.md)
+confirmed that Bedrock accepts it. All five tasks compiled, including one of
+the new centered-square numeric tasks. Two answer-blind reviewers chose all
+five code-owned keys and found distinct within-item choices, but both flagged
+repeated English format. This is author-only evidence; full-worker and
+repeated-bank yield still need qualification.
+
+The [current combined-source offline replay](evidence/combined-current-bank-replay-20260927/RESULTS.md)
+constructed 20/40/80 unique exact stems, but found 1/14/78 same numeric
+solve-signature pairs and 30/133/561 same prompt-format pairs within slots.
+Two independent blind reviews of a stratified 20-item sample found all keys
+unique and all choices distinct after one reviewer corrected a recorded
+key-letter transcription error. Both called the same eight cross-item pairs
+strong repeats. Adding inventory and maintaining full-bank stem history alone
+do not deliver a varied bank.
 
 ## Established causes and fixes
 
@@ -155,8 +169,8 @@ objectives and question formats for a 40/80-item bank, with full-bank
 history and answer-blind cross-bank review. The 2,156-byte source passed one
 full-worker trial with its own solver/reviewer calls and independent content
 review; the 2,226-byte source passed one author/schema trial but not the full
-worker. The current 2,357-byte combined schema awaits live acceptance. A
-repeated-bank trial must
+worker. The current 2,357-byte source passed one author/schema trial but not
+the full worker. A repeated-bank trial must
 hold the key, difficulty, teaching, distinctness, and deadline properties over
 the desired inventory size. Schema compliance or one successful batch cannot
 replace those tests.

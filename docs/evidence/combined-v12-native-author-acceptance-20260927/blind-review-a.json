@@ -1,0 +1,286 @@
+{
+  "review_type": "independent answer-blind live worksheet review",
+  "source": {
+    "path": "/Users/samchou/.codex/worktrees/question-reliability-next/Checkpoint/docs/evidence/combined-v12-native-author-acceptance-20260927/worksheet.json",
+    "sha256": "34972f8b8f672fdee17a84ccd6e78d8d1078df75b845b6987f0cbc186ea98462",
+    "hash_verified": true
+  },
+  "minimum_difficulty": 2,
+  "questions": [
+    {
+      "id": "Q01",
+      "selected_answer": "B",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution_reason": "(3/4)(4/6) = 1/2, and 1 - 1/2 = 1/2.",
+      "difficulty_1_to_5": 2,
+      "minimum_difficulty_2_met": true,
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "1 and 1/2 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "1 and 3/2 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "1 and 0 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "1/2 and 3/2 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "1/2 and 0 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "3/2 and 0 are different exact numeric responses to the same requested quantity."
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "selected_answer": "C",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution_reason": "12/8 = 3/2. Cross-multiplication gives 2x + 10 = 3x + 3, hence x = 7, which is in the stated domain.",
+      "difficulty_1_to_5": 2,
+      "minimum_difficulty_2_met": true,
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "5 and 8 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "5 and 7 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "5 and 6 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "8 and 7 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "8 and 6 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "7 and 6 are different exact numeric responses to the same requested quantity."
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "selected_answer": "C",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution_reason": "(x - 9)^2 < 25 means 4 < x < 14. The integers 5 through 13 inclusive give a count of 9.",
+      "difficulty_1_to_5": 3,
+      "minimum_difficulty_2_met": true,
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "8 and 10 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "8 and 9 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "8 and 7 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "10 and 9 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "10 and 7 are different exact numeric responses to the same requested quantity."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "9 and 7 are different exact numeric responses to the same requested quantity."
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "selected_answer": "C",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution_reason": "The inverted first clause has plural subject the returns, requiring are; the inverted second clause has singular subject the book, requiring is.",
+      "difficulty_1_to_5": 3,
+      "minimum_difficulty_2_met": true,
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1 and blank 2; they produce different completed sentence forms."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1; they produce different completed sentence forms."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 2; they produce different completed sentence forms."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 2; they produce different completed sentence forms."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1; they produce different completed sentence forms."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1 and blank 2; they produce different completed sentence forms."
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "selected_answer": "A",
+      "uncertain": false,
+      "second_viable_key": null,
+      "solution_reason": "The gerund phrase Preparing the meals is singular and takes requires; plural the cooks takes measure.",
+      "difficulty_1_to_5": 2,
+      "minimum_difficulty_2_met": true,
+      "choice_pairs": [
+        {
+          "pair": "A-B",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 2; they produce different completed sentence forms."
+        },
+        {
+          "pair": "A-C",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1; they produce different completed sentence forms."
+        },
+        {
+          "pair": "A-D",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1 and blank 2; they produce different completed sentence forms."
+        },
+        {
+          "pair": "B-C",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1 and blank 2; they produce different completed sentence forms."
+        },
+        {
+          "pair": "B-D",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1; they produce different completed sentence forms."
+        },
+        {
+          "pair": "C-D",
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 2; they produce different completed sentence forms."
+        }
+      ]
+    }
+  ],
+  "cross_item_pairs": [
+    {
+      "pair": "Q01-Q02",
+      "similarity": "moderate",
+      "reason": "Both involve exact rational arithmetic, but Q01 evaluates an expression directly while Q02 solves a rational equation for an offered integer."
+    },
+    {
+      "pair": "Q01-Q03",
+      "similarity": "low",
+      "reason": "Both return a numeric choice, but fraction evaluation and counting integers inside a strict squared inequality require different solve paths and formats."
+    },
+    {
+      "pair": "Q01-Q04",
+      "similarity": "none",
+      "reason": "A direct numeric fraction evaluation and a two-blank English agreement completion share neither solve method nor response format."
+    },
+    {
+      "pair": "Q01-Q05",
+      "similarity": "none",
+      "reason": "A direct numeric fraction evaluation and a two-blank English agreement completion share neither solve method nor response format."
+    },
+    {
+      "pair": "Q02-Q03",
+      "similarity": "moderate",
+      "reason": "Both use an explicitly bounded integer x and a displayed condition, but Q02 finds the one value satisfying a rational equality whereas Q03 counts all values satisfying a strict squared inequality."
+    },
+    {
+      "pair": "Q02-Q04",
+      "similarity": "none",
+      "reason": "Solving a bounded rational equation for x and choosing a pair of agreement forms have unrelated solve paths and response formats."
+    },
+    {
+      "pair": "Q02-Q05",
+      "similarity": "none",
+      "reason": "Solving a bounded rational equation for x and choosing a pair of agreement forms have unrelated solve paths and response formats."
+    },
+    {
+      "pair": "Q03-Q04",
+      "similarity": "none",
+      "reason": "Counting integer solutions to a squared inequality and choosing a pair of agreement forms have unrelated solve paths and response formats."
+    },
+    {
+      "pair": "Q03-Q05",
+      "similarity": "none",
+      "reason": "Counting integer solutions to a squared inequality and choosing a pair of agreement forms have unrelated solve paths and response formats."
+    },
+    {
+      "pair": "Q04-Q05",
+      "similarity": "strong",
+      "reason": "Both ask for an ordered pair of present-tense verbs to fill two blanks and use four paired-form choices. Q04 requires locating inverted subjects; Q05 uses a gerund subject and a plural subject."
+    }
+  ],
+  "coverage": {
+    "questions": 5,
+    "within_item_choice_pairs_per_question": {
+      "Q01": 6,
+      "Q02": 6,
+      "Q03": 6,
+      "Q04": 6,
+      "Q05": 6
+    },
+    "within_item_choice_pairs_total": 30,
+    "cross_item_pairs": 10
+  },
+  "overall_findings": [
+    "Each question has one defensible answer; no second viable key found.",
+    "All five items meet the stated minimum difficulty of 2 on this 1-5 scale.",
+    "All six choices pairs within every item yield different numeric values or different ordered verb forms.",
+    "Q04 and Q05 have strong response-format similarity despite requiring different agreement constructions; the remaining cross-domain pairs have no meaningful solve/format similarity."
+  ]
+}

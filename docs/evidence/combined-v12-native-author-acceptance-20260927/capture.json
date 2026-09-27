@@ -1,0 +1,51 @@
+{
+  "plan_sha256": "663bea09f568c49e1e20adf543c61178d28963b8161f6ff299c1dea929902a7b",
+  "status": "completed",
+  "sts_calls": 1,
+  "converse_calls": 1,
+  "author_response": {
+    "output": {
+      "message": {
+        "content": [
+          {
+            "text": "{\"questions\":{\"0\":{\"family\":\"fraction_product_complement\",\"a\":3,\"b\":4},\"1\":{\"family\":\"bounded_rational_equation\",\"a\":5,\"b\":7},\"2\":{\"family\":\"bounded_centered_square_count\",\"a\":4,\"b\":9},\"3\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"inversion_library\",\"order\":\"plural_first\"},\"4\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"gerund_meals\",\"order\":\"singular_first\"}}}"
+          }
+        ]
+      }
+    },
+    "stopReason": "end_turn",
+    "usage": {
+      "inputTokens": 3101,
+      "outputTokens": 914,
+      "totalTokens": 4015,
+      "cacheReadInputTokens": 0,
+      "cacheWriteInputTokens": 0
+    },
+    "metrics": {
+      "latencyMs": 22851
+    },
+    "safeResponseMetadata": {
+      "requestId": "0ff30c17-0415-4f84-91c4-48dd80c92347",
+      "httpStatus": 200
+    }
+  },
+  "credential_remaining_seconds_at_dispatch": 883,
+  "reasoning_blocks_omitted": 1,
+  "chosen_families": {
+    "0": "fraction_product_complement",
+    "1": "bounded_rational_equation",
+    "2": "bounded_centered_square_count"
+  },
+  "chosen_scenes": {
+    "3": "inversion_library",
+    "4": "gerund_meals"
+  },
+  "offline_compilation": {
+    "rows": 5,
+    "numeric_proofs": 3,
+    "english_proofs": 2,
+    "failures": []
+  },
+  "elapsed_seconds": 23.851,
+  "within_deadline": true
+}

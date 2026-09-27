@@ -1,0 +1,66 @@
+{
+  "worksheet_sha256": "34972f8b8f672fdee17a84ccd6e78d8d1078df75b845b6987f0cbc186ea98462",
+  "capture_sha256": "78a25d2c636c6246ab55cb0757c67b817590cd285fea0ba1784e92035cc9efe0",
+  "items": {
+    "Q01": {
+      "code_owned_key": "B",
+      "expected_answer": "1/2",
+      "difficulty": 2,
+      "explanation": "Multiply by the reciprocal: 3 / 4 = 3 * (1/4) = 3/4. Multiply by the reciprocal: 4 / 6 = 4 * (1/6) = 4/6 = 2/3. Multiply numerators and denominators: (3/4) * (2/3) = 6/12 = 1/2. Common denominator 2: 1 - (1/2) = (2/2) - (1/2) = 1/2. The answer is 1/2.",
+      "choice_explanations": {
+        "A": "1: This stops at the left operand before the final operation. 1 - (1/2) = 1/2, not 1.",
+        "B": "The expression evaluates exactly to 1/2; 1/2 is the requested value.",
+        "C": "3/2: This can come from using + at the final step instead of -. 1 - (1/2) = 1/2, not 3/2.",
+        "D": "0: This can come from combining the numerators and denominators separately. 1 - (1/2) = 1/2, not 0."
+      }
+    },
+    "Q02": {
+      "code_owned_key": "C",
+      "expected_answer": "7",
+      "difficulty": 2,
+      "explanation": "Because x + 1 is nonzero throughout the domain, cross-multiply: 2(x + 5) = 3(x + 1). Expanding gives 2x + 10 = 3x + 3, so 7 = x, giving x = 7. The nonzero x coefficient makes this the only solution in the domain.",
+      "choice_explanations": {
+        "A": "At x = 5, 5/3 = 3/2 is false. This value does not satisfy the condition.",
+        "B": "At x = 8, 13/9 = 3/2 is false. This value does not satisfy the condition.",
+        "C": "At x = 7, 3/2 = 3/2 is true. This is the only offered value satisfying the condition.",
+        "D": "At x = 6, 11/7 = 3/2 is false. This value does not satisfy the condition."
+      }
+    },
+    "Q03": {
+      "code_owned_key": "C",
+      "expected_answer": "9",
+      "difficulty": 2,
+      "explanation": "(x - 9) squared is less than 5 squared exactly when -5 < x - 9 < 5. The satisfying integers run from 5 through 13, inclusive. There are 9 such integers; the four other domain values fail the strict bound.",
+      "choice_explanations": {
+        "A": "Exactly 9 domain integers satisfy the condition; 8 counts too few.",
+        "B": "Exactly 9 domain integers satisfy the condition; 10 counts too many.",
+        "C": "Exactly 9 domain integers satisfy the condition; 9 is the count.",
+        "D": "Exactly 9 domain integers satisfy the condition; 7 counts too few."
+      }
+    },
+    "Q04": {
+      "code_owned_key": "C",
+      "expected_answer": "are; is",
+      "difficulty": 2,
+      "explanation": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees. Therefore the ordered pair is are; is.",
+      "choice_explanations": {
+        "A": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. \"is\" does not agree; use \"are\". Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees.",
+        "B": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. \"are\" does not agree; use \"is\".",
+        "C": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. The form \"are\" agrees. Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. The form \"is\" agrees.",
+        "D": "First, the plural subject \"the returns\" follows the blank; \"near the librarian\" is not the subject. \"is\" does not agree; use \"are\". Second, the singular subject \"the book\" follows the blank; \"near the volunteers\" is not the subject. \"are\" does not agree; use \"is\"."
+      }
+    },
+    "Q05": {
+      "code_owned_key": "A",
+      "expected_answer": "requires; measure",
+      "difficulty": 2,
+      "explanation": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees. Therefore the ordered pair is requires; measure.",
+      "choice_explanations": {
+        "A": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+        "B": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. The form \"requires\" agrees. Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\".",
+        "C": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. The form \"measure\" agrees.",
+        "D": "First, the activity \"Preparing the meals\" is one singular subject, even though it contains a plural object. \"require\" does not agree; use \"requires\". Second, the subject \"the cooks\" is plural. \"measures\" does not agree; use \"measure\"."
+      }
+    }
+  }
+}
