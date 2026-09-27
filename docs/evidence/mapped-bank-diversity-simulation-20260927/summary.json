@@ -1,0 +1,107 @@
+{
+  "baselineSourceCommit": "b86fc09",
+  "checkpoints": [
+    {
+      "batches": 8,
+      "items": 40,
+      "sameSlotFamilyPairsBySlot": {
+        "0": 12,
+        "1": 12,
+        "2": 12,
+        "3": 12,
+        "4": 12
+      },
+      "sameSlotFamilyPairsTotal": 60,
+      "slotSpecificFamilyCounts": {
+        "0": {
+          "fraction_evaluation": 4,
+          "fraction_quotient": 4
+        },
+        "1": {
+          "bounded_equation": 4,
+          "bounded_quadratic_equation": 4
+        },
+        "2": {
+          "bounded_quadratic_maximum": 4,
+          "bounded_ratio_threshold": 4
+        },
+        "3": {
+          "inversion": 4,
+          "proximity": 4
+        },
+        "4": {
+          "compound": 4,
+          "number": 4
+        }
+      },
+      "uniqueExactStems": 40
+    },
+    {
+      "batches": 16,
+      "items": 80,
+      "sameSlotFamilyPairsBySlot": {
+        "0": 56,
+        "1": 56,
+        "2": 56,
+        "3": 56,
+        "4": 56
+      },
+      "sameSlotFamilyPairsTotal": 280,
+      "slotSpecificFamilyCounts": {
+        "0": {
+          "fraction_evaluation": 8,
+          "fraction_quotient": 8
+        },
+        "1": {
+          "bounded_equation": 8,
+          "bounded_quadratic_equation": 8
+        },
+        "2": {
+          "bounded_quadratic_maximum": 8,
+          "bounded_ratio_threshold": 8
+        },
+        "3": {
+          "inversion": 8,
+          "proximity": 8
+        },
+        "4": {
+          "compound": 8,
+          "number": 8
+        }
+      },
+      "uniqueExactStems": 80
+    }
+  ],
+  "post80FailureReasons": [
+    "agreement_novelty_exhausted",
+    "agreement_novelty_exhausted"
+  ],
+  "providerCalls": 0,
+  "sourceTaskSeed": {
+    "0": {
+      "a": 4,
+      "b": 5,
+      "family": "fraction_evaluation"
+    },
+    "1": {
+      "a": 6,
+      "b": 8,
+      "family": "bounded_equation"
+    },
+    "2": {
+      "a": 3,
+      "b": 7,
+      "family": "bounded_ratio_threshold"
+    },
+    "3": {
+      "kind": "agreement_pair_v1",
+      "order": "singular_first",
+      "scene": "coach"
+    },
+    "4": {
+      "kind": "agreement_pair_v1",
+      "order": "plural_first",
+      "scene": "compound_every"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "baselineSourceCommit": "b86fc09",
+  "batchSize": 5,
+  "checkpoints": [8, 16],
+  "sourceTasks": {
+    "0": {"family": "fraction_evaluation", "a": 4, "b": 5},
+    "1": {"family": "bounded_equation", "a": 6, "b": 8},
+    "2": {"family": "bounded_ratio_threshold", "a": 3, "b": 7},
+    "3": {"kind": "agreement_pair_v1", "scene": "coach", "order": "singular_first"},
+    "4": {"kind": "agreement_pair_v1", "scene": "compound_every", "order": "plural_first"}
+  }
+}
