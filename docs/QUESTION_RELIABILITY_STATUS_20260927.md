@@ -48,8 +48,12 @@ about bank-level repetition: one rated five overlaps moderate; the other
 rated three of nine overlaps strong. Two of that reviewer's strong pairs
 crossed the old/new bank boundary. This is an author-only result, not a
 five-question verified worker return or evidence of an 80-item varied bank.
-The mapped schema changed again as the finite repertoire expanded; its newest
-version still needs live provider acceptance.
+The mapped schema changed again as the finite repertoire expanded. A
+[one-call current-schema probe](evidence/native-transport-author-probe-20260927/RESULTS.md)
+then confirmed Bedrock accepted the 2,013-byte declaration and returned five
+tasks that compiled into five sanitized candidates in 27.598 seconds. That
+remains author-only evidence: the downstream worker and bank diversity were
+not exercised in that call.
 
 ## Established causes and fixes
 
@@ -62,6 +66,7 @@ version still needs live provider acceptance.
 | Downstream review and deadlines reduce worker yield. | A mapped worker returned 3/5 when a model difficulty rating vetoed two code-owned English items; a later narrowly calibrated run returned 5/5 mechanically but failed blind level-2 content at 4/5. A refill returned 0/5 after its reviewer timed out. | The proof-scoped difficulty rule and deadline-clamped worker read setting already exist. Widening the rule or increasing timeout alone would not make the failed content qualify. See [difficulty trial](evidence/agreement-difficulty-calibration-qualification-20260927/RESULTS.md) and [refill trial](evidence/mapped-refill-qualification-20260927/RESULTS.md). |
 | Reuse history and repertoire were insufficient for a large bank. | The refill's five new candidates were rated strong near-duplicates of earlier items by both blind reviewers. Older linear stems dropped out of numeric history after a template upgrade. The original [offline 40/80-item simulation](evidence/mapped-bank-diversity-simulation-20260927/RESULTS.md) had 60/280 same-slot-family pairs and exhausted both English inventories after 80. | Full-bank history, alternate numeric/grammar structures, and the 72-stem historical numeric mapping are now on `main`. The [current capacity gate](MAPPED_BANK_CAPACITY_GATE.md) reaches 85 unique exact stems with 35/175/200 same-slot-family pairs at 40/80/85, but each slot still reuses only three mechanisms and the strict family-use gate fails. |
 | Structural families do not capture all semantic repetition. | In a [15-item blind sample](evidence/mapped-combined-bank-blind-20260927/RESULTS.md), both reviewers selected every code-owned key and found distinct choices, yet agreed on four strong near-duplicate pairs across English slots or named numeric families. A separate [slot-4 blind review](evidence/slot4-correlative-blind-20260927/RESULTS.md) found all eight new keys sound but four clause-order mirror pairs and somewhat constructed wording. | Keep the mapped route opt-in. The next selector and qualification must consider cross-slot/cross-family mechanisms and independent full-bank content judgments, not only exact stem or family counters. |
+| Rebalancing a finite repertoire cannot eliminate repeated decisions. | The [cross-slot audit](evidence/mapped-cross-slot-mechanism-audit-20260927/RESULTS.md) counts 2/18/76 structural pair patterns at 15/40/80 items that resemble earlier blind-rated strong overlaps. A trial selector reduced maximum-decision pairings but created near-identical minimum-ratio tasks; it was reverted. | These counts are heuristic warnings, not newly blind-confirmed duplicates. Expand substantively different, code-owned objectives and require repeated-bank blind review; do not promote a selector that merely moves the repetition. |
 | Passing local tests does not update TestFlight. | The active workflow is manual, has never run, and the required protected environment and AWS OIDC identity were absent in the read-only audit. | [Release audit](evidence/testflight-release-readiness-20260927/RESULTS.md), [scoped bootstrap](../infra/TESTFLIGHT_DEPLOY_BOOTSTRAP.md), and [service-role design](../infra/TESTFLIGHT_EXECUTION_ROLE.md) specify the identity, protected variables, role boundary, rollback artifacts, and live-setting comparison. Nothing was deployed. |
 
 The integrated backend passed **1,449 unit tests**, Ruff on changed Python
