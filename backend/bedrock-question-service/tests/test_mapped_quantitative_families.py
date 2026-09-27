@@ -214,6 +214,35 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         self.assertIn("9(x + 5) = 13(x + 1)", sample["explanation"])
         self.assertIn("32 = 4x", sample["explanation"])
 
+    def test_every_expanded_two_root_minimum_has_checked_roots_and_teaching(self):
+        for a in OPERANDS:
+            for b in BOUNDARIES:
+                with self.subTest(a=a, b=b):
+                    task = flat_task(1, {
+                        "family": "bounded_two_root_minimum", "a": a, "b": b,
+                    })
+                    proof = _constructed_candidate(task)
+                    learner = proof.content()
+                    coefficient, product = 2 * b + a, b * (b + a)
+                    domain = range(task["domain"]["lower"], task["domain"]["upper"] + 1)
+                    roots = [x for x in domain if x * x - coefficient * x + product == 0]
+                    self.assertEqual(roots, [b, b + a])
+                    self.assertEqual(learner["expectedAnswer"], str(b))
+                    self.assertEqual(len(set(learner["choices"])), 4)
+                    self.assertIn(str(b + a), learner["choices"])
+                    self.assertIn(f"add to {coefficient} and multiply to {product}",
+                                  learner["explanation"])
+                    self.assertIn(f"(x - {b})(x - {b + a}) = 0", learner["explanation"])
+                    self.assertIn(f"the minimum is {b}", learner["explanation"])
+                    self.assertIn("minimum", learner["choiceExplanations"][str(b + a)])
+                    self.assertEqual(proof.content(learner), learner)
+
+        sample = _constructed_candidate(flat_task(1, {
+            "family": "bounded_two_root_minimum", "a": 7, "b": 5,
+        })).content()
+        self.assertIn("((x * x) - (17 * x)) + 60", sample["prompt"])
+        self.assertNotIn("(x - 5) * (x - 12)", sample["prompt"])
+
     def test_count_family_is_available_only_to_the_closed_mapped_route(self):
         task = flat_task(2, {"family": "bounded_solution_count", "a": 4, "b": 8})
         row = {"kind": "quantitative", "task": task, "topic": SUPPORTED_TOPIC,
@@ -475,11 +504,22 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         current_identity = _normalized_stem_identity(current_prompt)
         self.assertNotEqual(old_identity, current_identity)
         historical = historical_variant_identity_map()
-        self.assertEqual(len(historical), len(OPERANDS) * len(BOUNDARIES))
+        self.assertEqual(len(historical), 2 * len(OPERANDS) * len(BOUNDARIES))
         self.assertEqual(len(set(historical.values())), len(historical))
         self.assertFalse(set(historical) & numeric_variant_identities())
         self.assertTrue(set(historical.values()) <= numeric_variant_identities())
         self.assertEqual(historical[old_identity], current_identity)
+
+        old_two_root_prompt = (
+            "Let x be a unitless number. Its domain is integers from 0 through 14, "
+            "inclusive. Condition: ((x - 5) * (x - 12)) = 0. What is the minimum "
+            "x in this domain satisfying the condition?"
+        )
+        expanded = _constructed_candidate(flat_task(1, {
+            "family": "bounded_two_root_minimum", "a": 7, "b": 5,
+        })).content()["prompt"]
+        self.assertEqual(historical[_normalized_stem_identity(old_two_root_prompt)],
+                         _normalized_stem_identity(expanded))
 
         items = [{"questionJSON": {"S": json.dumps({"prompt": old_linear_prompt})}}]
         items.extend({"questionJSON": {"S": json.dumps({

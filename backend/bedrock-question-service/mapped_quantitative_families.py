@@ -136,14 +136,15 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
             "selection": "any_satisfying",
             "domain": {"kind": "integer_interval", "lower": 0, "upper": 15}}
     if family == "bounded_two_root_minimum":
-        # Exactly two roots lie in the stated domain: b and b+a. Unlike the
-        # unique-solution families, the learner must identify both and apply
-        # the explicit minimum selection to distinguish the answer.
+        # Expand (x-b)(x-(b+a)) so the coefficients, rather than two visible
+        # factors, determine the two roots. Both lie in the stated domain;
+        # the learner must solve the equation and select the smaller root.
         return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
-            {"kind": "variable"}, _literal(b), _binary("sub", 0, 1),
-            _literal(b + a), _binary("sub", 0, 3), _binary("mul", 2, 4),
-            _literal(0),
-        ], "condition": {"left": 5, "relation": "eq", "right": 6},
+            {"kind": "variable"}, _binary("mul", 0, 0),
+            _literal(2 * b + a), _binary("mul", 2, 0),
+            _binary("sub", 1, 3), _literal(b * (b + a)),
+            _binary("add", 4, 5), _literal(0),
+        ], "condition": {"left": 6, "relation": "eq", "right": 7},
             "selection": "minimum",
             "domain": {"kind": "integer_interval", "lower": 0, "upper": b + a + 2}}
     if family == "bounded_quadratic_maximum":
@@ -223,13 +224,14 @@ def canonical_variant_identities() -> frozenset[str]:
 
 @lru_cache(maxsize=1)
 def historical_variant_identity_map() -> dict[str, str]:
-    """Map the released one-sided linear frame to its current variant.
+    """Map released numeric frames to their current variants.
 
     The bounded-equation frame gained distribution on both sides in f48440e.
     Older ready/claimed questions still belong to the same family and operand
     pair even though their exact stems no longer occur in the current inventory.
-    Projecting them onto current identities preserves full-bank novelty after
-    a source upgrade without admitting arbitrary historical prose as a block.
+    The two-root frame later changed from visible factors to an expanded
+    quadratic. Projecting both onto current identities preserves full-bank
+    novelty after a source upgrade without admitting arbitrary prose as a block.
     """
     from quantitative_authoring import _constructed_candidate
 
@@ -251,6 +253,23 @@ def historical_variant_identity_map() -> dict[str, str]:
             current_task = flat_task(1, {"family": FAMILIES[1], "a": a, "b": b})
             current_prompt = _constructed_candidate(current_task).content()["prompt"]
             variants[_normalized_stem_identity(prompt)] = _normalized_stem_identity(current_prompt)
+            old_two_root_task = {
+                "kind": "scalar_condition", "unit": "unitless", "nodes": [
+                    {"kind": "variable"}, _literal(b), _binary("sub", 0, 1),
+                    _literal(b + a), _binary("sub", 0, 3), _binary("mul", 2, 4),
+                    _literal(0),
+                ], "condition": {"left": 5, "relation": "eq", "right": 6},
+                "selection": "minimum",
+                "domain": {"kind": "integer_interval", "lower": 0,
+                           "upper": b + a + 2},
+            }
+            old_prompt = _constructed_candidate(old_two_root_task).content()["prompt"]
+            current_task = flat_task(1, {
+                "family": "bounded_two_root_minimum", "a": a, "b": b,
+            })
+            current_prompt = _constructed_candidate(current_task).content()["prompt"]
+            variants[_normalized_stem_identity(old_prompt)] = _normalized_stem_identity(
+                current_prompt)
     return variants
 
 

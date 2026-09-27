@@ -6,7 +6,7 @@ free-form scenario is accepted. No provider, routing, or policy dependencies.
 """
 
 from fractions import Fraction
-from math import lcm
+from math import isqrt, lcm
 import re
 
 
@@ -251,6 +251,43 @@ def _rational_equation_derivation(left, right, domain, answer, *, unit, relation
     )
 
 
+def _expanded_two_root_derivation(left, right, domain, feasible, answer, *,
+                                  unit, relation, selection):
+    """Factor a checked monic quadratic only when its two roots are proven.
+
+    This recognizes the closed mapped family's expanded expression without
+    trusting a task-supplied answer or offering a heuristic factorization for
+    arbitrary scalar conditions. Domain evaluation remains authoritative.
+    """
+    variable = ("variable",)
+    if (unit != "unitless" or relation != "eq" or selection != "minimum"
+            or right != ("constant", Fraction(0)) or left[0] != "add"
+            or left[1][0] != "sub" or left[2][0] != "constant"
+            or left[1][1] != ("mul", variable, variable)
+            or left[1][2][0] != "mul" or left[1][2][1][0] != "constant"
+            or left[1][2][2] != variable):
+        return None
+    coefficient, product = left[1][2][1][1], left[2][1]
+    if (coefficient.denominator != 1 or product.denominator != 1
+            or coefficient <= 0 or product <= 0):
+        return None
+    discriminant = coefficient * coefficient - 4 * product
+    if discriminant <= 0 or discriminant.denominator != 1:
+        return None
+    gap = isqrt(discriminant.numerator)
+    if gap * gap != discriminant.numerator:
+        return None
+    smaller, larger = (coefficient - gap) / 2, (coefficient + gap) / 2
+    if (smaller.denominator != 1 or larger.denominator != 1
+            or smaller not in domain or larger not in domain
+            or set(feasible) != {smaller, larger} or answer != smaller):
+        return None
+    return (f"The integers {smaller} and {larger} add to {coefficient} and "
+            f"multiply to {product}, so the equation factors as "
+            f"(x - {smaller})(x - {larger}) = 0. Both roots are in the domain; "
+            f"the minimum is {smaller}.")
+
+
 def _root_distractor_reasons(expression):
     """Recognize exact values from common mistakes at the final operation.
 
@@ -464,7 +501,10 @@ def compile_question(spec):
         explicit_proof = f"The {direction} domain values fail: {comparisons}."
         if len(explanation_start) + len(explicit_proof) <= 420:
             proof = explicit_proof
-    explanation = (_rational_equation_derivation(
+    explanation = (_expanded_two_root_derivation(
+        left, right, domain, feasible, answer, unit=unit, relation=relation,
+        selection=selection,
+    ) or _rational_equation_derivation(
         left, right, domain, answer, unit=unit, relation=relation, selection=selection,
     ) or explanation_start + proof)
     feedback = {}
