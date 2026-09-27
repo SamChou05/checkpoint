@@ -1,0 +1,42 @@
+{
+  "plan_sha256": "fdaf5ba1558c578aec177ba289f894577d65ddc57de1e86177fa5550d7d2d9ab",
+  "status": "failed",
+  "sts_calls": 1,
+  "converse_calls": 1,
+  "author_response": {
+    "output": {
+      "message": {
+        "content": [
+          {
+            "text": "{\"questions\":{\"0\":{\"family\":\"fraction_product_complement\",\"a\":5,\"b\":7},\"1\":{\"family\":\"bounded_rational_equation\",\"a\":4,\"b\":9},\"2\":{\"family\":\"bounded_solution_count\",\"a\":3,\"b\":8},\"3\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"inversion_library\",\"order\":\"plural_first\"},\"4\":{\"kind\":\"agreement_pair_v1\",\"scene\":\"gerund_meals\",\"order\":\"singular_first\"}}}"
+          }
+        ]
+      }
+    },
+    "stopReason": "end_turn",
+    "usage": {
+      "inputTokens": 2927,
+      "outputTokens": 399,
+      "totalTokens": 3326,
+      "cacheReadInputTokens": 0,
+      "cacheWriteInputTokens": 0
+    },
+    "metrics": {
+      "latencyMs": 18861
+    },
+    "safeResponseMetadata": {
+      "requestId": "9e8d9b72-4f7e-4315-a335-e618fd731ef0",
+      "httpStatus": 200
+    }
+  },
+  "reasoning_blocks_omitted": 1,
+  "error": {
+    "type": "TypeError",
+    "code": null,
+    "message": null,
+    "request_id": null,
+    "http_status": null
+  },
+  "elapsed_seconds": 19.756,
+  "within_deadline": true
+}

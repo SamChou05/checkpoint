@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "kind": "author_only_offline_compiled_candidate_review",
+  "candidate_count": 5,
+  "items": [
+    {
+      "id": "52f63c0975cfdbc7879aaafa",
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Preparing the meals ___ planning, and the cooks ___ the ingredients. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "require; measures",
+        "B": "requires; measure",
+        "C": "requires; measures",
+        "D": "require; measure"
+      }
+    },
+    {
+      "id": "2d9255a666051fe3c94134a6",
+      "stem": "Let q be a unitless number, defined by q = (1 - ((5 / 6) * (7 / 9))). What is its exact value?",
+      "choices": {
+        "A": "-17/27",
+        "B": "19/54",
+        "C": "1",
+        "D": "34/53"
+      }
+    },
+    {
+      "id": "09d0f1f297ef778df2bd29e8",
+      "stem": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 4) / (x + 1)) = (13 / 10). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "8",
+        "B": "7",
+        "C": "10",
+        "D": "9"
+      }
+    },
+    {
+      "id": "35c6d7321662113606a722d0",
+      "stem": "Let x be a unitless number. Its domain is integers from 4 through 11, inclusive. Condition: ((3 * (x + 2)) - (2 * x)) <= 14. How many integers in this domain satisfy the condition?",
+      "choices": {
+        "A": "4",
+        "B": "5",
+        "C": "6",
+        "D": "3"
+      }
+    },
+    {
+      "id": "c20ebc072c19fdbdc214aa60",
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the librarian ___ the returns from the library, while near the volunteers ___ the book from the library. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "is; is",
+        "B": "are; are",
+        "C": "is; are",
+        "D": "are; is"
+      }
+    }
+  ]
+}
