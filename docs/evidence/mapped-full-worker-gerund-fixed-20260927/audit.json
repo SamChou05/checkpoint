@@ -1,0 +1,22 @@
+{
+  "bedrock_converse_calls": 0,
+  "capture_created": false,
+  "content_gates_assessed": false,
+  "credential_snapshot_remaining_seconds_at_precheck": "less_than_360",
+  "credential_values_recorded": false,
+  "execute_invoked": false,
+  "harness_sha256": "2b3a34a3d3050f8b7ad08f48b4bd72dc4c14439845bcb29c9d791643a3ba89d1",
+  "intended_account": "239342516379",
+  "launch_precheck_attempt_sha256": "17f129d9ba62cbb0c7fc91e80121adba8e404988181cb3eacd7d826897541644",
+  "launch_precheck_passed": false,
+  "plan_sha256": "a52b41981368e50132c5988f597e839288f45a9de6855e7179c39624b7048f70",
+  "pretrial_sts_identity_verified": true,
+  "pretrial_sts_requests": 1,
+  "recorded_at": "2026-09-27T08:27:16.355908+00:00",
+  "retry_or_relaunch_performed": false,
+  "returned_original_slots": [],
+  "review_lock_sha256": "2cd29546470510e2d00a042f0c7c51b33ca4f009149b88e8d7ad2c178e86bfae",
+  "source_commit": "b6cb661062ad0c0e3e03316127515ba5a93130ef",
+  "status": "credential_freshness_precheck_failed_before_bedrock",
+  "trial_id": "mapped-3x2-gerund-fixed-20260927-01"
+}
