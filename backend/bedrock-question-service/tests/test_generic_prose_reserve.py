@@ -116,10 +116,6 @@ class GenericProseReserveTests(unittest.TestCase):
         self.assertEqual(set(author_schema["properties"]["questions"]["required"]),
                          set(map(str, range(7))))
         self.assertIn('"6"', client.calls[0]["system"][0]["text"])
-        for call in (client.calls[2], client.calls[4]):
-            self.assertIn("Compare every supplied item", call["system"][0]["text"])
-            self.assertIn("same central learner decision", call["system"][0]["text"])
-            self.assertIn("issueFlags.novelty=true", call["system"][0]["text"])
         self.assertEqual([row["prompt"] for row in result], [q["prompt"] for q in self.questions[:5]])
         for result_row, authored in zip(result, self.questions[:5], strict=True):
             self.assertEqual(result_row["expectedAnswer"], authored["expectedAnswer"])
@@ -193,8 +189,6 @@ class GenericProseReserveTests(unittest.TestCase):
             )
             self.assertEqual(len(result), 5)
             self.assertEqual(task_data(client.calls[0], "generation_request_json")["targetCount"], 5)
-            self.assertNotIn("GENERIC RESERVE BATCH DIVERSITY AUDIT",
-                             client.calls[2]["system"][0]["text"])
         for change in (
             {"skillMap": {"skills": []}},
             {"requestedSkillAllocation": {"skill": 5}},

@@ -285,6 +285,13 @@ below the requested level and identified a strong expected-money/answer-format
 repeat. The authored teaching for all five matched the key on post-lock
 inspection. This is a live transport/yield success and a **content-gate
 failure**, so the generic reserve remains opt-in and disabled by default.
+A [frozen one-call replay](evidence/generic-reserve-diversity-review-replay-20260927/RESULTS.md)
+added an explicit material-repetition instruction to the same second-reviewer
+request. Sonnet still set every novelty flag false, including the repeat
+identified by both blind reviewers. The ineffective instruction was removed;
+the code now shows that reviewer only verified first-chunk survivors, avoiding
+false suppression by rejected candidates. A separate pairwise reviewer is
+being evaluated before the worker's spare sixth call is used.
 A separate disabled-thinking author-only trial added the explicit probability
 directive: it completed seven native rows in 19.641 seconds, but the existing
 sanitizer rejected one for duplicate choices. Two [independent blind

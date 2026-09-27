@@ -10,7 +10,23 @@ import time
 from botocore.config import Config
 
 from bounded_bedrock_capture import credential_session, safe_error, safe_response
-from question_generation import GENERIC_RESERVE_DIVERSITY_AUDIT
+
+
+# Frozen experiment text. The unsuccessful instruction was removed from the
+# worker after this diagnostic; keep the probe independently reproducible.
+GENERIC_RESERVE_DIVERSITY_AUDIT = """
+
+GENERIC RESERVE BATCH DIVERSITY AUDIT: Compare every supplied item with each
+other supplied item and with every existingQuestions descriptor. A later item
+is a material repeat when it asks for the same central learner decision or
+calculation AND uses the same answer format, even when the objects, wording,
+numbers, story, or number of arithmetic steps differ. Set
+issueFlags.novelty=true and valid=false on the later supplied item (or on the
+supplied item when its counterpart is in existingQuestions). Do not reject
+different operations or response formats merely because they share a topic.
+This batch-diversity rule is stricter than the general exact/cosmetic-repeat
+rule above; use it for this reserve pass.
+"""
 
 
 HERE = Path(__file__).resolve().parent

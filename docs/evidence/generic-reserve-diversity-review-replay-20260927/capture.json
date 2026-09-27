@@ -1,0 +1,33 @@
+{
+  "status": "completed",
+  "response": {
+    "output": {
+      "message": {
+        "content": [
+          {
+            "text": "{\"reviews\":{\"0\":{\"valid\":true,\"answer\":\"3/10\",\"difficulty\":3,\"explanationSupport\":\"supported\",\"issueFlags\":{\"answer_or_ambiguity\":false,\"explanation\":false,\"distractors\":false,\"scope_assignment\":false,\"novelty\":false,\"other\":false}},\"1\":{\"valid\":true,\"answer\":\"$2.50\",\"difficulty\":2,\"explanationSupport\":\"supported\",\"issueFlags\":{\"answer_or_ambiguity\":false,\"explanation\":false,\"distractors\":false,\"scope_assignment\":false,\"novelty\":false,\"other\":false}},\"2\":{\"valid\":true,\"answer\":\"If one student is chosen at random, the probability of selecting a student who passed is 3/5.\",\"difficulty\":2,\"explanationSupport\":\"supported\",\"issueFlags\":{\"answer_or_ambiguity\":false,\"explanation\":false,\"distractors\":false,\"scope_assignment\":false,\"novelty\":false,\"other\":false}}}}"
+          }
+        ]
+      }
+    },
+    "stopReason": "end_turn",
+    "usage": {
+      "inputTokens": 2939,
+      "outputTokens": 222,
+      "totalTokens": 3161,
+      "cacheReadInputTokens": 0,
+      "cacheWriteInputTokens": 0
+    },
+    "metrics": {
+      "latencyMs": 2095
+    },
+    "safeResponseMetadata": {
+      "requestId": "00e5f075-fd0a-4405-9a93-128fac979625",
+      "httpStatus": 200
+    }
+  },
+  "reasoning_blocks_omitted": 0,
+  "probe_id": "generic-reserve-diversity-review-replay-20260927-01",
+  "plan_sha256": "01617897a9cd3b07f23075b9988439937ef0a42f67c1240fb53d759c6b189805",
+  "elapsed_seconds": 2.337087
+}
