@@ -19,6 +19,7 @@ from verification_policy import MAX_SUPPORTED_VERIFICATION_POLICY_REVISION, meet
 from agreement_task_constructor import canonical_variant_identities
 from mapped_quantitative_families import (
     canonical_variant_identities as canonical_quantitative_variant_identities,
+    historical_variant_identity_map,
 )
 
 from question_bank_common import (
@@ -151,11 +152,14 @@ def _agreement_variant_history(existing_items: list[dict[str, Any]]) -> list[str
 def _mapped_quantitative_variant_history(existing_items: list[dict[str, Any]]) -> list[str]:
     """Project the entire durable bank onto its finite numeric stem library."""
     canonical = canonical_quantitative_variant_identities()
+    historical = historical_variant_identity_map()
     identities = set()
     for item in existing_items:
         identity = _stored_variant_identity(item)
         if identity in canonical:
             identities.add(identity)
+        elif identity in historical:
+            identities.add(historical[identity])
     return sorted(identities)
 
 

@@ -23,11 +23,11 @@ from lambda_test_support import _request_payload
 from mapped_quantitative_families import (
     BOUNDARIES, FAMILIES, OPERANDS, SLOT_FAMILIES, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
     MappedQuantitativeFamilyError, canonical_variant_identities as numeric_variant_identities,
-    flat_task, select_novel_task,
+    flat_task, historical_variant_identity_map, select_novel_task,
 )
 from native_output_contracts import AuthorSlotContract
 from quantitative_authoring import _constructed_candidate
-from question_bank_common import _stem_fingerprint
+from question_bank_common import _normalized_stem_identity, _stem_fingerprint
 from question_quality import _sanitize_questions
 from request_contract import _normalize_request
 from service_errors import ProviderError, ServiceConfigurationError
@@ -317,6 +317,50 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             )
         self.assertEqual([row["prompt"] for row in piped], [row["prompt"] for row in rows])
         self.assertEqual(len(client.calls), 1)
+
+    def test_released_linear_stem_survives_template_upgrade_outside_recent_window(self):
+        # This exact stem was returned in the archived mapped-family live seed
+        # before f48440e changed the linear frame to distribute on both sides.
+        old_linear_prompt = (
+            "Let x be a unitless number. Its domain is integers from 0 through 15, "
+            "inclusive. Condition: ((4 * x) + 7) = 35. Which offered value of x "
+            "satisfies the condition?"
+        )
+        old_identity = _normalized_stem_identity(old_linear_prompt)
+        current_task = flat_task(1, {"family": FAMILIES[1], "a": 4, "b": 7})
+        current_prompt = _constructed_candidate(current_task).content()["prompt"]
+        current_identity = _normalized_stem_identity(current_prompt)
+        self.assertNotEqual(old_identity, current_identity)
+        historical = historical_variant_identity_map()
+        self.assertEqual(len(historical), len(OPERANDS) * len(BOUNDARIES))
+        self.assertEqual(len(set(historical.values())), len(historical))
+        self.assertFalse(set(historical) & numeric_variant_identities())
+        self.assertTrue(set(historical.values()) <= numeric_variant_identities())
+        self.assertEqual(historical[old_identity], current_identity)
+
+        items = [{"questionJSON": {"S": json.dumps({"prompt": old_linear_prompt})}}]
+        items.extend({"questionJSON": {"S": json.dumps({
+            "prompt": f"Other bank question {index}"})}}
+                     for index in range(30))
+        other_seed_prompts = [
+            _constructed_candidate(flat_task(slot, row)).content()["prompt"]
+            for slot, row in ((0, {"family": FAMILIES[0], "a": 5, "b": 3}),
+                              (2, {"family": FAMILIES[2], "a": 3, "b": 8}))
+        ]
+        items.extend({"questionJSON": {"S": json.dumps({"prompt": prompt})}}
+                     for prompt in other_seed_prompts)
+        projected = question_bank._mapped_quantitative_variant_history(items)
+        self.assertEqual(set(projected), {current_identity, *map(
+            _normalized_stem_identity, other_seed_prompts,
+        )})
+        selected = select_novel_task(
+            1, current_task, existing_prompts=(), blocked_fingerprints=(),
+            fingerprint_version=1, blocked_variant_identities=tuple(projected),
+        )
+        self.assertNotEqual(selected, current_task)
+        self.assertIn(selected, [flat_task(1, {
+            "family": "bounded_quadratic_equation", "a": a, "b": b,
+        }) for a in OPERANDS for b in BOUNDARIES])
 
     def test_first_refill_rotates_all_three_solve_structures_and_keeps_five_slots(self):
         source = self.raw()

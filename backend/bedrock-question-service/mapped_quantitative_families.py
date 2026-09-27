@@ -145,6 +145,39 @@ def canonical_variant_identities() -> frozenset[str]:
                      for _, _, _, identity in _inventory(slot))
 
 
+@lru_cache(maxsize=1)
+def historical_variant_identity_map() -> dict[str, str]:
+    """Map the released one-sided linear frame to its current variant.
+
+    The bounded-equation frame gained distribution on both sides in f48440e.
+    Older ready/claimed questions still belong to the same family and operand
+    pair even though their exact stems no longer occur in the current inventory.
+    Projecting them onto current identities preserves full-bank novelty after
+    a source upgrade without admitting arbitrary historical prose as a block.
+    """
+    from quantitative_authoring import _constructed_candidate
+
+    variants = {}
+    for a in OPERANDS:
+        for b in BOUNDARIES:
+            offset = a + 3
+            old_task = {
+                "kind": "scalar_condition", "unit": "unitless", "nodes": [
+                    _literal(a), {"kind": "variable"}, _binary("mul", 0, 1),
+                    _literal(offset), _binary("add", 2, 3),
+                    _literal(a * b + offset),
+                ],
+                "condition": {"left": 4, "relation": "eq", "right": 5},
+                "selection": "any_satisfying",
+                "domain": {"kind": "integer_interval", "lower": 0, "upper": 15},
+            }
+            prompt = _constructed_candidate(old_task).content()["prompt"]
+            current_task = flat_task(1, {"family": FAMILIES[1], "a": a, "b": b})
+            current_prompt = _constructed_candidate(current_task).content()["prompt"]
+            variants[_normalized_stem_identity(prompt)] = _normalized_stem_identity(current_prompt)
+    return variants
+
+
 def select_novel_task(
     slot: int, source_task: dict, *, existing_prompts: tuple[str, ...],
     blocked_fingerprints: tuple[str, ...], fingerprint_version: int,
