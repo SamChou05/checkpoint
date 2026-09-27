@@ -809,7 +809,9 @@ def _prompt_without_trailing_choice_echo(prompt: Any, raw_choices: Any) -> str:
     ):
         # A label must be the matching ordinal followed by whitespace. Decimal
         # literals and subject text such as C. elegans are not arbitrary labels.
-        label = rf"(?:[{chr(65 + index)}{index + 1}][).:]|\([{chr(65 + index)}{index + 1}]\)|\[[{chr(65 + index)}{index + 1}]\])\s+"
+        letter = chr(65 + index)
+        labels = f"{letter}{letter.lower()}{index + 1}"
+        label = rf"(?:[{labels}][).:]|\([{labels}]\)|\[[{labels}]\])\s+"
         without_label = re.sub("^" + label, "", line, count=1)
         if (
             _choice_uniqueness_key(line) != choice
@@ -826,8 +828,14 @@ def _prompt_contains_embedded_options(prompt: str) -> bool:
     # structure is evidence here; matching trailing choice echoes are removed
     # separately using the actual offered choices.
     normalized = prompt.lower()
+    nonempty_lines = [line.strip() for line in prompt.splitlines() if line.strip()]
+    trailing_letter_choices = len(nonempty_lines) > 4 and all(
+        re.match(rf"^{chr(97 + index)}[).:][ \t]+\S", line)
+        for index, line in enumerate(nonempty_lines[-4:])
+    )
     return bool(
         "options:" in normalized
+        or trailing_letter_choices
         or re.search(r"\b(?:option|choice)\s+[a-d1-4][\).:]", normalized)
         or re.search(r"(?:^|\s)1[\).]\s+.+\s+2[\).]\s+", prompt)
         or re.search(r"(?:^|\s)A[\).]\s+.+\s+B[\).]\s+", prompt)

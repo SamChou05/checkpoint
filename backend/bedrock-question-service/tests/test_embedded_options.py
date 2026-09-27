@@ -96,9 +96,11 @@ class EmbeddedOptionsTests(unittest.TestCase):
 
     def test_exact_choice_echoes_are_removed_without_erasing_call_parentheses(self):
         question = FIXTURES["valid_questions"][0]
-        for labeled in (False, True):
+        for label_style in ("bare", "upper", "lower", "lower_paren"):
             echo = "\n".join(
-                (f"{chr(65 + index)}. " if labeled else "") + choice
+                ({"bare": "", "upper": f"{chr(65 + index)}. ",
+                  "lower": f"{chr(97 + index)}. ",
+                  "lower_paren": f"{chr(97 + index)}) "}[label_style]) + choice
                 for index, choice in enumerate(question["choices"])
             )
             echoed = {**question, "prompt": question["prompt"] + "\n\n" + echo}
@@ -112,3 +114,12 @@ class EmbeddedOptionsTests(unittest.TestCase):
             accepted = _sanitize_questions([echoed], request)
             self.assertEqual(len(accepted), 1)
             self.assertEqual(accepted[0]["prompt"], question["prompt"])
+
+    def test_unmatched_lowercase_choice_block_is_rejected(self):
+        question = FIXTURES["valid_questions"][0]
+        prompt = question["prompt"] + "\na) first\nb) second\nc) third\nd) fourth"
+        self.assertTrue(_prompt_contains_embedded_options(prompt))
+        self.assertEqual(_sanitize_questions(
+            [{**question, "prompt": prompt}],
+            _normalize_request(_request_payload(target_count=1)),
+        ), [])
