@@ -1,0 +1,56 @@
+{
+  "status": "keyless_full_worker_pending_content_review",
+  "requestedDifficulty": 2,
+  "items": [
+    {
+      "id": "Q01",
+      "prompt": "A box holds 5 cards labeled 1, 2, 3, 4, 5. Two cards are drawn one at a time without replacement. What is the probability that both cards show an odd number? (Odd numbers: 1, 3, 5.)",
+      "choices": {
+        "A": "3/10",
+        "B": "1/5",
+        "C": "2/5",
+        "D": "9/25"
+      }
+    },
+    {
+      "id": "Q02",
+      "prompt": "A game pays $8 if a fair coin lands heads and $0 if it lands tails. Each play costs $3. What is the expected net gain per play?",
+      "choices": {
+        "A": "$0",
+        "B": "-$1",
+        "C": "$4",
+        "D": "$1"
+      }
+    },
+    {
+      "id": "Q03",
+      "prompt": "A lottery ticket wins $50 with probability 1/20 and wins nothing otherwise. What is the expected value of the winnings from one ticket?",
+      "choices": {
+        "A": "$2.50",
+        "B": "$5.00",
+        "C": "$50.00",
+        "D": "$0.50"
+      }
+    },
+    {
+      "id": "Q04",
+      "prompt": "A spinner has 5 equally sized sectors numbered 1 through 5. Event A: the result is odd. Event B: the result is greater than 3. Are A and B independent? P(A)=3/5, P(B)=2/5, P(A and B)=1/5.",
+      "choices": {
+        "A": "Yes, because P(A and B) = P(A)\u00b7P(B)",
+        "B": "No, because P(A) \u2260 P(B)",
+        "C": "Yes, because A and B share no outcomes",
+        "D": "No, because P(A and B) \u2260 P(A)\u00b7P(B)"
+      }
+    },
+    {
+      "id": "Q05",
+      "prompt": "A standard six-sided die (faces 1\u20136) is rolled once. Given that the result is even, what is the probability that it is greater than 2?",
+      "choices": {
+        "A": "1/6",
+        "B": "1/3",
+        "C": "1/2",
+        "D": "2/3"
+      }
+    }
+  ]
+}

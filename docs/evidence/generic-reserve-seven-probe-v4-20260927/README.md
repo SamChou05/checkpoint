@@ -13,4 +13,5 @@ the harness SHA-256 is
 Independent exact-hash review approved the disabled-thinking wire and
 4+1/2/3 source-ordinal behavior. All 22 socket-free tests, preflight, Ruff,
 and `git diff --check` passed before freezing. No AWS call has run yet for
-this trial ID.
+this trial ID. The one-shot worker has now completed; see the [machine result](RESULTS.md)
+and [blind-review rubric](BLIND_REVIEW.md) before judging content.

@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "plan_sha256": "835f1115960e9da9fa3be7dc0643799986097f1e08f559e1a1a7be7d6454d536",
+  "checked_at": "2026-09-27T15:41:29.330078+00:00",
+  "credential_expires_at": "2026-09-27T15:56:22+00:00",
+  "credential_lifetime_seconds": 892,
+  "account": "239342516379",
+  "pretrial_sts_requests": 1,
+  "botocore_signin_refresh_operations": 0,
+  "provider_calls": 0
+}
