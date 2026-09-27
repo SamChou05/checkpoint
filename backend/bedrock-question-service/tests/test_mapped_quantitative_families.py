@@ -206,7 +206,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             } for item in items}}
 
         client = ScriptedNativeClient(
-            (self.contract().name, self.raw()),
+            (self.contract().transport_name, self.raw()),
             ("complete_choice_solver_v5_n2", solver),
             ("authored_solution_reviewer_v3_n5", audit),
         )
@@ -258,7 +258,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             } for item in items}}
 
         client = ScriptedNativeClient(
-            (self.contract().name, source),
+            (self.contract().transport_name, source),
             ("complete_choice_solver_v5_n2", solver),
             ("authored_solution_reviewer_v3_n5", audit),
         )
@@ -308,7 +308,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         self.assertEqual(math_output, math_proof)
         self.assertEqual(english_output, english_proof)
 
-        client = ScriptedNativeClient((self.contract().name, source))
+        client = ScriptedNativeClient((self.contract().transport_name, source))
         with (patch.dict(os.environ, {
             "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(request),
         }), patch.object(generation, "verify_questions", side_effect=lambda items, *_a, **_k: items)):
@@ -408,7 +408,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             } for item in items}}
 
         client = ScriptedNativeClient(
-            (self.contract().name, source),
+            (self.contract().transport_name, source),
             ("complete_choice_solver_v5_n2", solver),
             ("authored_solution_reviewer_v3_n5", audit),
         )
@@ -508,7 +508,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                     preserve_authored_explanation=True,
                 )
                 self.assertEqual(len(selected), 5)
-                client = ScriptedNativeClient((self.contract().name, source))
+                client = ScriptedNativeClient((self.contract().transport_name, source))
                 with (patch.dict(os.environ, {
                     "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(request),
                 }), patch.object(generation, "verify_questions", side_effect=lambda items, *_a, **_k: items)):
@@ -529,7 +529,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             with self.subTest(field=field):
                 request = copy.deepcopy(self.request)
                 request[field] = value
-                client = ScriptedNativeClient((self.contract().name, source))
+                client = ScriptedNativeClient((self.contract().transport_name, source))
                 with (patch.dict(os.environ, {
                     "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(request),
                 }), patch.object(generation, "verify_questions", side_effect=lambda items, *_a, **_k: items)):
@@ -559,7 +559,7 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         request = copy.deepcopy(self.request)
         request["blockedStemFingerprints"] = list(blocked)
         request["stemFingerprintVersion"] = 2
-        client = ScriptedNativeClient((self.contract().name, source))
+        client = ScriptedNativeClient((self.contract().transport_name, source))
         with (patch.dict(os.environ, {
             "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(request),
         }), patch.object(generation, "verify_questions") as verify,

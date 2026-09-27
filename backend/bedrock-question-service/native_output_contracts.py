@@ -146,6 +146,17 @@ class AuthorSlotContract:
         }[self.mode]
         return f"{prefix}_n{self.count}"
 
+    @property
+    def transport_name(self) -> str:
+        """Keep identical mapped grammars stable without changing prompt identity."""
+        if self.mapped_assignments is None:
+            return self.name
+        if self.mapped_agreement_tasks:
+            if self.mapped_quantitative_families:
+                return f"question_author_constructed_mapped_families_v2_n{self.count}"
+            return f"question_author_constructed_mapped_agreement_v2_n{self.count}"
+        return f"question_author_constructed_mapped_compact_v1_n{self.count}"
+
 
 @dataclass(frozen=True)
 class AuthoredSolutionReviewContract:
@@ -542,7 +553,8 @@ def native_output_config(contract: NativeContract) -> dict[str, Any]:
         schema = json.dumps(task_only_author_schema(prose["properties"]["questions"]["items"], shared=True),
                             separators=(",", ":"))
     return {"textFormat": {"type": "json_schema", "structure": {"jsonSchema": {
-        "name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract, "schema": schema,
+        "name": (contract.transport_name if isinstance(contract, AuthorSlotContract) else
+                 contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract), "schema": schema,
     }}}}
 
 

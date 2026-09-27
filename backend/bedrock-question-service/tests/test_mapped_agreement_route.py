@@ -205,7 +205,7 @@ class MappedAgreementRouteTests(unittest.TestCase):
             } for item in items}}
 
         client = ScriptedNativeClient(
-            (self.contract().name, self.raw()),
+            (self.contract().transport_name, self.raw()),
             ("complete_choice_solver_v5_n2", solver),
             ("authored_solution_reviewer_v3_n5", audit),
         )
@@ -485,7 +485,7 @@ class MappedAgreementRouteTests(unittest.TestCase):
                 } for item in items}}
 
             client = ScriptedNativeClient(
-                (self.contract().name, self.raw()),
+                (self.contract().transport_name, self.raw()),
                 ("complete_choice_solver_v5_n2", solver),
                 ("authored_solution_reviewer_v3_n4" if bad_stage == "solver"
                  else "authored_solution_reviewer_v3_n5", audit),
