@@ -1,0 +1,462 @@
+{
+  "bankWrites": 0,
+  "providerCalls": 0,
+  "snapshots": [
+    {
+      "crossFamilySameNumericSolveSignaturePairsBySlot": {
+        "0": 0,
+        "1": 1,
+        "2": 0
+      },
+      "familyUsesBySlot": {
+        "0": {
+          "fraction_evaluation": 1,
+          "fraction_product_complement": 1,
+          "fraction_quotient": 1,
+          "fraction_reciprocal_sum": 1
+        },
+        "1": {
+          "bounded_equation": 1,
+          "bounded_quadratic_equation": 1,
+          "bounded_rational_equation": 1,
+          "bounded_two_root_minimum": 1
+        },
+        "2": {
+          "bounded_centered_square_count": 1,
+          "bounded_quadratic_maximum": 1,
+          "bounded_ratio_threshold": 1,
+          "bounded_solution_count": 1
+        },
+        "3": {
+          "inversion": 1,
+          "partitive": 1,
+          "proximity": 1,
+          "relative": 1
+        },
+        "4": {
+          "compound": 1,
+          "correlative": 1,
+          "gerund": 1,
+          "number": 1
+        }
+      },
+      "items": 20,
+      "numericSignaturesSpanningFamiliesBySlot": {
+        "0": {},
+        "1": {
+          "scalar:integer_interval:eq:polynomial_degree_2": [
+            "bounded_quadratic_equation",
+            "bounded_two_root_minimum"
+          ]
+        },
+        "2": {}
+      },
+      "numericSolveSignatureUsesBySlot": {
+        "0": {
+          "exact:add(div(div(c,c),div(c,c)),c)": 1,
+          "exact:div(c,add(div(c,c),div(c,c)))": 1,
+          "exact:mul(add(div(c,c),div(c,c)),c)": 1,
+          "exact:sub(c,mul(div(c,c),div(c,c)))": 1
+        },
+        "1": {
+          "scalar:integer_interval:eq:polynomial_degree_1": 1,
+          "scalar:integer_interval:eq:polynomial_degree_2": 2,
+          "scalar:integer_interval:eq:rational_variable_denominator": 1
+        },
+        "2": {
+          "scalar:integer_interval:ge:rational_variable_denominator": 1,
+          "scalar:integer_interval:le:polynomial_degree_1": 1,
+          "scalar:integer_interval:le:polynomial_degree_2": 1,
+          "scalar:integer_interval:lt:polynomial_degree_2": 1
+        }
+      },
+      "promptFormatUsesBySlot": {
+        "0": {
+          "exact_rational_expression": 4
+        },
+        "1": {
+          "bounded_condition": 4
+        },
+        "2": {
+          "bounded_condition": 4
+        },
+        "3": {
+          "two_blank_agreement": 4
+        },
+        "4": {
+          "two_blank_agreement": 4
+        }
+      },
+      "sameFamilyPairsBySlot": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "sameNumericSolveSignaturePairsAcrossNumericSlots": 1,
+      "sameNumericSolveSignaturePairsBySlot": {
+        "0": 0,
+        "1": 1,
+        "2": 0
+      },
+      "samePromptFormatPairsBySlot": {
+        "0": 6,
+        "1": 6,
+        "2": 6,
+        "3": 6,
+        "4": 6
+      },
+      "sceneUsesByEnglishSlot": {
+        "3": {
+          "chef": 1,
+          "inversion_library": 1,
+          "partitive_mail": 1,
+          "relative_clerks": 1
+        },
+        "4": {
+          "compound_clerks": 1,
+          "gerund_meals": 1,
+          "number_readers": 1,
+          "or_archive": 1
+        }
+      },
+      "uniqueExactStems": 20,
+      "uniqueKeysAndFourLiteralDistinctChoices": 20
+    },
+    {
+      "crossFamilySameNumericSolveSignaturePairsBySlot": {
+        "0": 0,
+        "1": 2,
+        "2": 2
+      },
+      "familyUsesBySlot": {
+        "0": {
+          "fraction_evaluation": 2,
+          "fraction_product_complement": 2,
+          "fraction_quotient": 2,
+          "fraction_reciprocal_sum": 2
+        },
+        "1": {
+          "bounded_equation": 2,
+          "bounded_quadratic_equation": 2,
+          "bounded_quadratic_exclusion_count": 1,
+          "bounded_rational_equation": 2,
+          "bounded_two_root_minimum": 1
+        },
+        "2": {
+          "bounded_centered_square_count": 1,
+          "bounded_linear_budget_maximum": 2,
+          "bounded_quadratic_maximum": 2,
+          "bounded_ratio_threshold": 2,
+          "bounded_solution_count": 1
+        },
+        "3": {
+          "inversion": 2,
+          "partitive": 2,
+          "proximity": 2,
+          "relative": 2
+        },
+        "4": {
+          "compound": 2,
+          "correlative": 1,
+          "gerund": 2,
+          "number": 2,
+          "sentence_selection": 1
+        }
+      },
+      "items": 40,
+      "numericSignaturesSpanningFamiliesBySlot": {
+        "0": {},
+        "1": {
+          "scalar:integer_interval:eq:polynomial_degree_2": [
+            "bounded_quadratic_equation",
+            "bounded_two_root_minimum"
+          ]
+        },
+        "2": {
+          "scalar:integer_interval:le:polynomial_degree_1": [
+            "bounded_linear_budget_maximum",
+            "bounded_solution_count"
+          ]
+        }
+      },
+      "numericSolveSignatureUsesBySlot": {
+        "0": {
+          "exact:add(div(div(c,c),div(c,c)),c)": 2,
+          "exact:div(c,add(div(c,c),div(c,c)))": 2,
+          "exact:mul(add(div(c,c),div(c,c)),c)": 2,
+          "exact:sub(c,mul(div(c,c),div(c,c)))": 2
+        },
+        "1": {
+          "scalar:integer_interval:eq:polynomial_degree_1": 2,
+          "scalar:integer_interval:eq:polynomial_degree_2": 3,
+          "scalar:integer_interval:eq:rational_variable_denominator": 2,
+          "scalar:integer_interval:ne:polynomial_degree_2": 1
+        },
+        "2": {
+          "scalar:integer_interval:ge:rational_variable_denominator": 2,
+          "scalar:integer_interval:le:polynomial_degree_1": 3,
+          "scalar:integer_interval:le:polynomial_degree_2": 2,
+          "scalar:integer_interval:lt:polynomial_degree_2": 1
+        }
+      },
+      "promptFormatUsesBySlot": {
+        "0": {
+          "exact_rational_expression": 8
+        },
+        "1": {
+          "bounded_condition": 8
+        },
+        "2": {
+          "bounded_condition": 8
+        },
+        "3": {
+          "two_blank_agreement": 8
+        },
+        "4": {
+          "full_sentence_selection": 1,
+          "two_blank_agreement": 7
+        }
+      },
+      "sameFamilyPairsBySlot": {
+        "0": 4,
+        "1": 3,
+        "2": 3,
+        "3": 4,
+        "4": 3
+      },
+      "sameNumericSolveSignaturePairsAcrossNumericSlots": 14,
+      "sameNumericSolveSignaturePairsBySlot": {
+        "0": 4,
+        "1": 5,
+        "2": 5
+      },
+      "samePromptFormatPairsBySlot": {
+        "0": 28,
+        "1": 28,
+        "2": 28,
+        "3": 28,
+        "4": 21
+      },
+      "sceneUsesByEnglishSlot": {
+        "3": {
+          "chef": 1,
+          "coach": 1,
+          "inversion_archive": 1,
+          "inversion_library": 1,
+          "partitive_mail": 1,
+          "partitive_paint": 1,
+          "relative_clerks": 1,
+          "relative_editors": 1
+        },
+        "4": {
+          "compound_clerks": 1,
+          "compound_every": 1,
+          "gerund_books": 1,
+          "gerund_meals": 1,
+          "number_readers": 1,
+          "number_students": 1,
+          "or_archive": 1,
+          "select_archive": 1
+        }
+      },
+      "uniqueExactStems": 40,
+      "uniqueKeysAndFourLiteralDistinctChoices": 40
+    },
+    {
+      "crossFamilySameNumericSolveSignaturePairsBySlot": {
+        "0": 0,
+        "1": 9,
+        "2": 9
+      },
+      "familyUsesBySlot": {
+        "0": {
+          "fraction_evaluation": 4,
+          "fraction_product_complement": 4,
+          "fraction_quotient": 4,
+          "fraction_reciprocal_sum": 4
+        },
+        "1": {
+          "bounded_equation": 3,
+          "bounded_quadratic_equation": 3,
+          "bounded_quadratic_exclusion_count": 3,
+          "bounded_rational_equation": 4,
+          "bounded_two_root_minimum": 3
+        },
+        "2": {
+          "bounded_centered_square_count": 4,
+          "bounded_linear_budget_maximum": 3,
+          "bounded_quadratic_maximum": 3,
+          "bounded_ratio_threshold": 3,
+          "bounded_solution_count": 3
+        },
+        "3": {
+          "inversion": 4,
+          "partitive": 4,
+          "proximity": 4,
+          "relative": 4
+        },
+        "4": {
+          "compound": 4,
+          "correlative": 3,
+          "gerund": 3,
+          "number": 3,
+          "sentence_selection": 3
+        }
+      },
+      "items": 80,
+      "numericSignaturesSpanningFamiliesBySlot": {
+        "0": {},
+        "1": {
+          "scalar:integer_interval:eq:polynomial_degree_2": [
+            "bounded_quadratic_equation",
+            "bounded_two_root_minimum"
+          ]
+        },
+        "2": {
+          "scalar:integer_interval:le:polynomial_degree_1": [
+            "bounded_linear_budget_maximum",
+            "bounded_solution_count"
+          ]
+        }
+      },
+      "numericSolveSignatureUsesBySlot": {
+        "0": {
+          "exact:add(div(div(c,c),div(c,c)),c)": 4,
+          "exact:div(c,add(div(c,c),div(c,c)))": 4,
+          "exact:mul(add(div(c,c),div(c,c)),c)": 4,
+          "exact:sub(c,mul(div(c,c),div(c,c)))": 4
+        },
+        "1": {
+          "scalar:integer_interval:eq:polynomial_degree_1": 3,
+          "scalar:integer_interval:eq:polynomial_degree_2": 6,
+          "scalar:integer_interval:eq:rational_variable_denominator": 4,
+          "scalar:integer_interval:ne:polynomial_degree_2": 3
+        },
+        "2": {
+          "scalar:integer_interval:ge:rational_variable_denominator": 3,
+          "scalar:integer_interval:le:polynomial_degree_1": 6,
+          "scalar:integer_interval:le:polynomial_degree_2": 3,
+          "scalar:integer_interval:lt:polynomial_degree_2": 4
+        }
+      },
+      "promptFormatUsesBySlot": {
+        "0": {
+          "exact_rational_expression": 16
+        },
+        "1": {
+          "bounded_condition": 16
+        },
+        "2": {
+          "bounded_condition": 16
+        },
+        "3": {
+          "two_blank_agreement": 16
+        },
+        "4": {
+          "full_sentence_selection": 3,
+          "two_blank_agreement": 13
+        }
+      },
+      "sameFamilyPairsBySlot": {
+        "0": 24,
+        "1": 18,
+        "2": 18,
+        "3": 24,
+        "4": 18
+      },
+      "sameNumericSolveSignaturePairsAcrossNumericSlots": 78,
+      "sameNumericSolveSignaturePairsBySlot": {
+        "0": 24,
+        "1": 27,
+        "2": 27
+      },
+      "samePromptFormatPairsBySlot": {
+        "0": 120,
+        "1": 120,
+        "2": 120,
+        "3": 120,
+        "4": 81
+      },
+      "sceneUsesByEnglishSlot": {
+        "3": {
+          "chef": 1,
+          "coach": 1,
+          "curator": 1,
+          "inversion_archive": 1,
+          "inversion_lab": 1,
+          "inversion_library": 1,
+          "inversion_studio": 1,
+          "librarian": 1,
+          "partitive_mail": 1,
+          "partitive_paint": 1,
+          "partitive_rice": 1,
+          "partitive_water": 1,
+          "relative_clerks": 1,
+          "relative_editors": 1,
+          "relative_guides": 1,
+          "relative_technicians": 1
+        },
+        "4": {
+          "compound_clerks": 1,
+          "compound_every": 1,
+          "compound_guides": 1,
+          "compound_visitors": 1,
+          "gerund_books": 1,
+          "gerund_maps": 1,
+          "gerund_meals": 1,
+          "number_readers": 1,
+          "number_students": 1,
+          "number_volunteers": 1,
+          "or_archive": 1,
+          "or_lab": 1,
+          "or_library": 1,
+          "select_archive": 1,
+          "select_lab": 1,
+          "select_library": 1
+        }
+      },
+      "uniqueExactStems": 80,
+      "uniqueKeysAndFourLiteralDistinctChoices": 80
+    }
+  ],
+  "sourceCaptureSha256": "17575d5a62b1fde235c3d43c7c9bc1d9e40385466e30b973fde1ca9cf1bbc9aa",
+  "sourceCommit": "1dc91bf50d85c644488c9eda96de513954f5d969",
+  "sourceTaskSeedSha256": "24cb7f0e438c5c72b743ddbada4676cdc0d53edb2291183d6cb6ba109064e7f5",
+  "workerCalls": 0,
+  "worksheetFamilyRoster": {
+    "0": [
+      "fraction_evaluation",
+      "fraction_product_complement",
+      "fraction_quotient",
+      "fraction_reciprocal_sum"
+    ],
+    "1": [
+      "bounded_quadratic_equation",
+      "bounded_rational_equation",
+      "bounded_two_root_minimum",
+      "bounded_quadratic_exclusion_count"
+    ],
+    "2": [
+      "bounded_ratio_threshold",
+      "bounded_linear_budget_maximum",
+      "bounded_solution_count",
+      "bounded_centered_square_count"
+    ],
+    "3": [
+      "inversion",
+      "partitive",
+      "proximity",
+      "relative"
+    ],
+    "4": [
+      "compound",
+      "correlative",
+      "gerund",
+      "sentence_selection"
+    ]
+  },
+  "worksheetSampling": "one earliest occurrence per named family from first 40 items",
+  "worksheetSha256": "265579e1a486435975e723e23b5364e4d72d9883ebd2ae3c87cb0f31bc4a48ed"
+}
