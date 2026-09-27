@@ -1,0 +1,169 @@
+{
+  "plan_sha256": "771538ec09d7e88d0e555020c20806d4b0a9bab40dfe58aea31631ee9ddae12d",
+  "trial_id": "generic-prose-seven-reserve-probability-20260927-01",
+  "source_commit": "a6448403e3067354e040d7386822549f9d9f24bc",
+  "started_at": "2026-09-27T14:30:21.507786+00:00",
+  "status": "failed",
+  "global_stop": "request_or_provenance_integrity",
+  "original_rows": [
+    {
+      "ordinal": 0,
+      "status": "unfilled_unattempted"
+    },
+    {
+      "ordinal": 1,
+      "status": "unfilled_unattempted"
+    },
+    {
+      "ordinal": 2,
+      "status": "unfilled_unattempted"
+    },
+    {
+      "ordinal": 3,
+      "status": "unfilled_unattempted"
+    },
+    {
+      "ordinal": 4,
+      "status": "unfilled_unattempted"
+    },
+    {
+      "ordinal": 5,
+      "status": "unfilled_unattempted"
+    },
+    {
+      "ordinal": 6,
+      "status": "unfilled_unattempted"
+    }
+  ],
+  "call_slots": [
+    {
+      "ordinal": 0,
+      "status": "reserved"
+    },
+    {
+      "ordinal": 1,
+      "status": "unattempted"
+    },
+    {
+      "ordinal": 2,
+      "status": "unattempted"
+    },
+    {
+      "ordinal": 3,
+      "status": "unattempted"
+    },
+    {
+      "ordinal": 4,
+      "status": "unattempted"
+    },
+    {
+      "ordinal": 5,
+      "status": "unattempted"
+    }
+  ],
+  "calls": [],
+  "reservations": [
+    {
+      "ordinal": 0
+    }
+  ],
+  "jobs": [
+    {
+      "id": "original",
+      "status": "failed",
+      "returned": [],
+      "returned_source_ordinals": [],
+      "accepted_source_ordinals": [],
+      "metrics": {
+        "ProviderCalls": 1,
+        "BedrockInputTokens": 0,
+        "BedrockOutputTokens": 0,
+        "QuestionQuality": {
+          "provider": {
+            "request_failed": 1
+          }
+        },
+        "ProviderObservations": [
+          {
+            "model": "us.anthropic.claude-sonnet-4-6",
+            "elapsedSeconds": 0.001,
+            "outcome": "request_failed",
+            "structuredOutput": {
+              "mode": "native",
+              "name": "question_author_v4_n7",
+              "version": "4",
+              "sha256": "48c4cebb7cf7478f7a049d9ca795ce366b3cb4f47488ac05f1301a10b6a34408"
+            }
+          }
+        ]
+      },
+      "error": {
+        "type": "ProviderError",
+        "code": null
+      },
+      "provider_calls": 1,
+      "elapsed_seconds": 1.082209,
+      "within_deadline": true,
+      "stage_names": [
+        "question_author_v4_n7"
+      ]
+    }
+  ],
+  "identity_check": {
+    "profile": "default",
+    "account": "239342516379",
+    "endpoint": "https://sts.us-east-1.amazonaws.com",
+    "status": "verified",
+    "requests_reserved": 1
+  },
+  "whole_execute_seconds": 1.327618,
+  "summary": {
+    "original_jobs": 1,
+    "authored_source_ordinals": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "accepted_source_ordinals": [],
+    "returned_source_ordinals": [],
+    "returned_questions": 0,
+    "provider_calls": 0,
+    "provider_reservations": 1,
+    "original_rows": [
+      {
+        "ordinal": 0,
+        "status": "unfilled_unattempted"
+      },
+      {
+        "ordinal": 1,
+        "status": "unfilled_unattempted"
+      },
+      {
+        "ordinal": 2,
+        "status": "unfilled_unattempted"
+      },
+      {
+        "ordinal": 3,
+        "status": "unfilled_unattempted"
+      },
+      {
+        "ordinal": 4,
+        "status": "unfilled_unattempted"
+      },
+      {
+        "ordinal": 5,
+        "status": "unfilled_unattempted"
+      },
+      {
+        "ordinal": 6,
+        "status": "unfilled_unattempted"
+      }
+    ],
+    "blind_review_pending": true,
+    "qualification": "failed"
+  }
+}
