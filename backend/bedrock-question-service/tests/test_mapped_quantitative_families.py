@@ -14,7 +14,7 @@ from jsonschema import Draft202012Validator
 import native_output_contracts as native
 import question_generation as generation
 from agreement_task_constructor import (
-    COMPOUND_SCENE, COMPOUND_SCENES, LEARNER_FIELDS,
+    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, LEARNER_FIELDS,
     blocked_fingerprint_variant_identities, compile_question,
     prepare_mapped_agreement_rows,
 )
@@ -26,6 +26,7 @@ from mapped_quantitative_families import (
 from native_output_contracts import AuthorSlotContract
 from quantitative_authoring import _constructed_candidate
 from question_bank_common import _stem_fingerprint
+from question_quality import _sanitize_questions
 from request_contract import _normalize_request
 from service_errors import ProviderError, ServiceConfigurationError
 from test_mapped_agreement_route import ENGLISH, ENGLISH_OBJECTIVE, MATH, MATH_OBJECTIVE
@@ -264,6 +265,133 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
             self.assertEqual({field: result[slot][field] for field in LEARNER_FIELDS},
                              {field: proof.content()[field] for field in LEARNER_FIELDS})
         self.assertEqual(client.steps, [])
+
+    def test_repeated_numeric_source_selects_unused_same_family_with_proof(self):
+        source = self.raw()
+        original = copy.deepcopy(source)
+        adapted = json.loads(native.adapt_native_response(json.dumps(source), self.contract()))
+        before, before_proof, _, failures = prepare_mapped_agreement_rows(adapted, self.contract())
+        self.assertEqual(failures, [])
+        blocked_prompt = before[0]["prompt"]
+        rows, math_proof, english_proof, failures = prepare_mapped_agreement_rows(
+            adapted, self.contract(), existing_prompts=(blocked_prompt,),
+        )
+        self.assertEqual(failures, [])
+        self.assertNotEqual(rows[0]["prompt"], blocked_prompt)
+        self.assertEqual([rows[i]["prompt"] for i in (1, 2)],
+                         [before[i]["prompt"] for i in (1, 2)])
+        self.assertEqual([math_proof[i] for i in (1, 2)], [before_proof[i] for i in (1, 2)])
+        self.assertEqual(source, original)
+        for ordinal, proof in math_proof.items():
+            self.assertEqual(proof.content(rows[ordinal]),
+                             {field: rows[ordinal][field] for field in proof.content()})
+
+        request = copy.deepcopy(self.request)
+        request["existingPrompts"] = [blocked_prompt]
+        math_output, english_output = {}, {}
+        selected = _sanitize_questions(
+            rows, request, compiled_candidates=math_proof, compiled_output=math_output,
+            agreement_candidates=english_proof, agreement_output=english_output,
+            preserve_authored_explanation=True,
+        )
+        self.assertEqual(len(selected), 5)
+        self.assertEqual(math_output, math_proof)
+        self.assertEqual(english_output, english_proof)
+
+        client = ScriptedNativeClient((self.contract().name, source))
+        with (patch.dict(os.environ, {
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(request),
+        }), patch.object(generation, "verify_questions", side_effect=lambda items, *_a, **_k: items)):
+            piped = generation._generate_sanitized_questions(
+                request, client, generation.ProviderCallBudget(6),
+            )
+        self.assertEqual([row["prompt"] for row in piped], [row["prompt"] for row in rows])
+        self.assertEqual(len(client.calls), 1)
+
+    def test_numeric_fingerprint_block_uses_requested_version(self):
+        source = self.raw()
+        adapted = json.loads(native.adapt_native_response(json.dumps(source), self.contract()))
+        original, _, _, _ = prepare_mapped_agreement_rows(adapted, self.contract())
+        for version in (1, 2):
+            with self.subTest(version=version):
+                blocked = _stem_fingerprint(original[1]["prompt"], version=version)
+                rows, math_proof, english_proof, failures = prepare_mapped_agreement_rows(
+                    adapted, self.contract(), blocked_stem_fingerprints=(blocked,),
+                    stem_fingerprint_version=version,
+                )
+                self.assertEqual(failures, [])
+                self.assertNotEqual(rows[1]["prompt"], original[1]["prompt"])
+                self.assertEqual([rows[i]["prompt"] for i in (0, 2)],
+                                 [original[i]["prompt"] for i in (0, 2)])
+                request = copy.deepcopy(self.request)
+                request["blockedStemFingerprints"] = [blocked]
+                request["stemFingerprintVersion"] = version
+                selected = _sanitize_questions(
+                    rows, request, compiled_candidates=math_proof, compiled_output={},
+                    agreement_candidates=english_proof, agreement_output={},
+                    preserve_authored_explanation=True,
+                )
+                self.assertEqual(len(selected), 5)
+                client = ScriptedNativeClient((self.contract().name, source))
+                with (patch.dict(os.environ, {
+                    "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(request),
+                }), patch.object(generation, "verify_questions", side_effect=lambda items, *_a, **_k: items)):
+                    piped = generation._generate_sanitized_questions(
+                        request, client, generation.ProviderCallBudget(6),
+                    )
+                self.assertEqual([item["prompt"] for item in piped],
+                                 [item["prompt"] for item in rows])
+                self.assertEqual(len(client.calls), 1)
+
+    def test_reported_and_coverage_history_reuse_numeric_selector(self):
+        source = self.raw()
+        adapted = json.loads(native.adapt_native_response(json.dumps(source), self.contract()))
+        original, _, _, _ = prepare_mapped_agreement_rows(adapted, self.contract())
+        blocked_prompt = original[0]["prompt"]
+        for field, value in (("reportedPrompts", [blocked_prompt]),
+                             ("existingQuestionCoverage", [{"prompt": blocked_prompt}])):
+            with self.subTest(field=field):
+                request = copy.deepcopy(self.request)
+                request[field] = value
+                client = ScriptedNativeClient((self.contract().name, source))
+                with (patch.dict(os.environ, {
+                    "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(request),
+                }), patch.object(generation, "verify_questions", side_effect=lambda items, *_a, **_k: items)):
+                    result = generation._generate_sanitized_questions(
+                        request, client, generation.ProviderCallBudget(6),
+                    )
+                self.assertEqual(len(result), 5)
+                self.assertNotEqual(result[0]["prompt"], blocked_prompt)
+                self.assertEqual(len(client.calls), 1)
+
+    def test_exhausted_numeric_family_fails_explicitly_without_extra_calls(self):
+        source = self.raw()
+        adapted = json.loads(native.adapt_native_response(json.dumps(source), self.contract()))
+        prompts = tuple(_constructed_candidate(flat_task(0, {
+            "family": FAMILIES[0], "a": a, "b": b,
+        })).content()["prompt"] for a in OPERANDS for b in OPERANDS)
+        blocked = tuple(_stem_fingerprint(prompt, version=2) for prompt in prompts)
+        self.assertEqual(len(set(blocked)), len(OPERANDS) ** 2)
+        with self.assertRaisesRegex(AgreementTaskError, "inventory exhausted") as caught:
+            prepare_mapped_agreement_rows(
+                adapted, self.contract(), blocked_stem_fingerprints=blocked,
+                stem_fingerprint_version=2,
+            )
+        self.assertIsInstance(caught.exception.__cause__, MappedQuantitativeFamilyError)
+
+        request = copy.deepcopy(self.request)
+        request["blockedStemFingerprints"] = list(blocked)
+        request["stemFingerprintVersion"] = 2
+        client = ScriptedNativeClient((self.contract().name, source))
+        with (patch.dict(os.environ, {
+            "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": generation._mapped_author_scope_sha256(request),
+        }), patch.object(generation, "verify_questions") as verify,
+              self.assertRaises(ProviderError)):
+            generation._generate_sanitized_questions(
+                request, client, generation.ProviderCallBudget(6),
+            )
+        self.assertEqual(len(client.calls), 1)
+        verify.assert_not_called()
 
     def test_flag_requires_exact_scope_and_is_disabled_by_default(self):
         assignments = generation._mapped_fixed_slot_assignments(

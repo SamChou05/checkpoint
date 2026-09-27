@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from question_bank_common import _normalized_stem_identity, _stem_fingerprint
+
 
 FAMILIES = ("fraction_evaluation", "bounded_equation", "bounded_ratio_threshold")
 SUPPORTED_TOPIC = "Exact arithmetic"
@@ -81,3 +83,45 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
     ], "condition": {"left": 3, "relation": "ge", "right": 6},
         "selection": "minimum",
         "domain": {"kind": "integer_interval", "lower": b - 3, "upper": b + 3}}
+
+
+def select_novel_task(
+    slot: int, source_task: dict, *, existing_prompts: tuple[str, ...],
+    blocked_fingerprints: tuple[str, ...], fingerprint_version: int,
+) -> dict[str, Any]:
+    """Keep fresh model operands; otherwise search this slot's finite family.
+
+    Search starts at the source pair and wraps in fixed parameter order. Every
+    candidate is compiled before its stem is compared with the same recent and
+    full-bank identities used by sanitization. Exhaustion fails the whole mapped
+    pass rather than emitting a known duplicate or changing its assigned family.
+    """
+    from quantitative_authoring import _constructed_candidate
+
+    if (type(slot) is not int or slot not in (0, 1, 2)
+            or type(source_task) is not dict or type(existing_prompts) is not tuple
+            or any(type(prompt) is not str for prompt in existing_prompts)
+            or type(blocked_fingerprints) is not tuple
+            or any(type(value) is not str for value in blocked_fingerprints)):
+        raise MappedQuantitativeFamilyError("Invalid quantitative novelty input.")
+    try:
+        _stem_fingerprint("", version=fingerprint_version)
+    except ValueError as error:
+        raise MappedQuantitativeFamilyError("Invalid fingerprint version.") from error
+    pairs = [(a, b) for a in OPERANDS
+             for b in (OPERANDS if slot == 0 else BOUNDARIES)]
+    tasks = [flat_task(slot, {"family": FAMILIES[slot], "a": a, "b": b})
+             for a, b in pairs]
+    try:
+        start = tasks.index(source_task)
+    except ValueError as error:
+        raise MappedQuantitativeFamilyError("Source task is outside its assigned family.") from error
+    blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
+    fingerprints = set(blocked_fingerprints)
+    for offset in range(len(tasks)):
+        candidate = tasks[(start + offset) % len(tasks)]
+        prompt = _constructed_candidate(candidate).content()["prompt"]
+        if (_normalized_stem_identity(prompt) not in blocked
+                and _stem_fingerprint(prompt, version=fingerprint_version) not in fingerprints):
+            return candidate
+    raise MappedQuantitativeFamilyError("Quantitative family inventory exhausted.")

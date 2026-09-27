@@ -1,7 +1,7 @@
 # Closed quantitative families for the mapped pilot
 
 The latest five-question worker trial returned sound keys and distinct options,
-but an independent blind reviewer rated its first arithmetic expression level
+but an independent blind reviewer rated one arithmetic expression level
 1 against a requested minimum of 2. Its first two arithmetic items also shared
 the same short expression format. This source-only prototype changes the
 numeric authoring task in the exact mapped 3:2 pilot: slots 0, 1 and 2 use
@@ -20,6 +20,12 @@ key, choice, domain, graph or learner text. Existing blind solving, immutable
 review and private provenance checks still apply. The English agreement slots
 and their full-bank history/fingerprint selection are unchanged.
 
+Fresh numerical operands are retained. If a compiled prompt is in recent or
+reported history, existing bank coverage, or the blocked fingerprint set,
+code searches unused parameter pairs in that same original slot and family.
+Each replacement passes the compiler and private proof. Exhausting a family
+fails the one-pass batch explicitly without another provider call.
+
 `QUESTION_MAPPED_QUANTITATIVE_FAMILIES=enabled` requires the mapped agreement
 route, its exact goal and full-request hashes, the pinned arithmetic objective,
 native transport, constructed quantitative authoring, immutable feedback,
@@ -34,12 +40,13 @@ that each has exactly four distinct choices, one matching expected answer and
 recomputable feedback. A fake-provider five-slot pass used three calls and
 retained the original slot assignments, quantitative/English private proofs,
 answer-blind solver and final reviewer. Another pass checked full-bank
-agreement history and blocked fingerprints. The 1,573-byte native author
+agreement history and blocked fingerprints. The 1,578-byte native author
 schema passed JSON Schema and botocore Converse-shape validation. The complete
-backend suite passed 1,415 tests with Ruff and `git diff --check`.
+backend suite passed 1,419 tests and 4,800 subtests; no new Ruff findings or
+`git diff --check` errors were introduced.
 
 These checks establish finite-domain construction and integration behavior.
 They do not establish that Bedrock accepts the new schema, that all three math
 questions are level 2 to independent reviewers, that distractors teach well,
-or that a repeated bank has enough novelty. A bounded live worker trial and
-blind content review must pass before any worker activation is considered.
+or that a repeated bank can always find unused variants. A bounded live worker
+trial and blind content review must pass before any worker activation is considered.

@@ -357,6 +357,7 @@ def compile_mapped_english_slots(
 def prepare_mapped_agreement_rows(
     payload: dict, contract: AuthorSlotContract, *, existing_prompts: tuple[str, ...] = (),
     blocked_variant_identities: tuple[str, ...] = (),
+    blocked_stem_fingerprints: tuple[str, ...] = (), stem_fingerprint_version: int = 1,
 ):
     """Compile a complete 3:2 native batch without relabeling source ordinals.
 
@@ -383,9 +384,26 @@ def prepare_mapped_agreement_rows(
             "kind", "task", "topic", "skillID", "objectiveID", "objective"
         }:
             raise AgreementTaskError("Agreement row contains model-authored learner fields.")
+    quantitative_sources = rows[:3]
+    if contract.mapped_quantitative_families:
+        from mapped_quantitative_families import (
+            MappedQuantitativeFamilyError,
+            select_novel_task,
+        )
+        try:
+            quantitative_sources = [
+                {**row, "task": select_novel_task(
+                    ordinal, row["task"], existing_prompts=existing_prompts,
+                    blocked_fingerprints=blocked_stem_fingerprints,
+                    fingerprint_version=stem_fingerprint_version,
+                )}
+                for ordinal, row in enumerate(quantitative_sources)
+            ]
+        except MappedQuantitativeFamilyError as error:
+            raise AgreementTaskError(str(error)) from error
     try:
         quantitative_rows, quantitative_proof, failures = prepare_mixed_rows(
-            {"questions": rows[:3]}, construct_choices=True,
+            {"questions": quantitative_sources}, construct_choices=True,
         )
     except QuantitativeAuthoringError as error:
         raise AgreementTaskError("Quantitative mapped rows violated their closed contract.") from error

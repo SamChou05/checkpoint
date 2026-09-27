@@ -353,6 +353,12 @@ def _generate_sanitized_questions(
                                         current_request.get("stemFingerprintVersion", 1),
                                     )
                                 )),
+                                blocked_stem_fingerprints=tuple(current_request.get(
+                                    "blockedStemFingerprints", []
+                                )),
+                                stem_fingerprint_version=current_request.get(
+                                    "stemFingerprintVersion", 1
+                                ),
                             )
                         )
                     else:
