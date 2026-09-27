@@ -106,6 +106,17 @@ cannot establish broader model or full-worker reliability. It does show that
 correct keys and schema compliance are different from requested difficulty and
 bank variety.
 
+A [bounded mapped refill trial](evidence/mapped-refill-qualification-20260927/RESULTS.md)
+then used the worker's real 3:2 allocation and five prior ready questions. It
+failed operational qualification: the third and final model call timed out, so
+zero refill questions were verified. Offline compilation found five exact-key,
+distinct-choice candidates, and two locked answer-blind reviews selected all
+five new keys and rated their difficulty 2. Both reviewers independently
+identified the same five strong near-duplicate pairs, each connecting a new
+question to the previous question in its assigned slot. Exact stem uniqueness
+therefore did not deliver repeated-bank variety. This is candidate-only content
+evidence, not a successful worker return; the route remains disabled.
+
 Two later deterministic gaps were closed in source. Legacy author parsing now
 requires the whole response to be one JSON object (or a sole JSON fence), so
 contradictory surrounding prose and arrays take the bounded retry path instead
