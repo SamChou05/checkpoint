@@ -1,0 +1,234 @@
+{
+  "review_type": "blind_official_five_item_review",
+  "sources_read": [
+    "worksheet.json",
+    "RUBRIC.md"
+  ],
+  "source_note": "Adjacent rubric was RUBRIC.md; rubric.json was absent.",
+  "locked_without_answer_key_or_other_repo_files": true,
+  "difficulty_scale": "1=very easy, 5=very hard; target level 2",
+  "items": [
+    {
+      "id": "68b2b844b55d13fbb7e928f0",
+      "answer": "A",
+      "answer_status": "single_correct",
+      "reasoning": "8(x+4)=11(x+1), giving x=7.",
+      "stem_self_contained": true,
+      "difficulty": 2,
+      "level_2_fit": "yes",
+      "visible_objective_fit": "Solving a one-variable rational equation. External objective was not disclosed.",
+      "naturalness": "Clear but formulaic; 'unitless number' and explicit domain are stilted.",
+      "teaching_present": false,
+      "choice_pairs": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "7≠8"
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "7≠6"
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "7≠5"
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "8≠6"
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "8≠5"
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "6≠5"
+        }
+      },
+      "uncertainty": "Low on answer; curriculum calibration unavailable."
+    },
+    {
+      "id": "184e194715f3e9dc57bbf377",
+      "answer": "A",
+      "answer_status": "single_correct",
+      "reasoning": "The postverbal subjects are plural notes and singular sample, giving are; is.",
+      "stem_self_contained": true,
+      "difficulty": 3,
+      "level_2_fit": "borderline",
+      "visible_objective_fit": "Present-tense agreement with inverted word order. External objective was not disclosed.",
+      "naturalness": "Grammatical but contrived: two parallel inversions and repeated 'from the lab'.",
+      "teaching_present": false,
+      "choice_pairs": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "second verb differs"
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "both verbs differ"
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "first verb differs"
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "first verb differs"
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "both verbs differ"
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "second verb differs"
+        }
+      },
+      "uncertainty": "Low on answer; moderate on difficulty because inversion may be level 2 in a curriculum that has taught it."
+    },
+    {
+      "id": "f133ea5a2ba3538a7c60da8f",
+      "answer": "C",
+      "answer_status": "single_correct",
+      "reasoning": "(3/4)/(5/7)=21/20; adding 1 gives 41/20.",
+      "stem_self_contained": true,
+      "difficulty": 2,
+      "level_2_fit": "yes",
+      "visible_objective_fit": "Exact fraction division followed by addition. External objective was not disclosed.",
+      "naturalness": "Clear, although nested parentheses make a simple expression visually busy.",
+      "teaching_present": false,
+      "choice_pairs": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "21/20≠22/21"
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "21/20≠41/20"
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "21/20≠11/10"
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "22/21≠41/20"
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "22/21≠11/10"
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "41/20≠11/10"
+        }
+      },
+      "uncertainty": "Low on answer; curriculum calibration unavailable."
+    },
+    {
+      "id": "59865b790ff36f1011c785f9",
+      "answer": "A",
+      "answer_status": "single_correct",
+      "reasoning": "At x=8 the expression is 104; at x=9 it is 126 and it increases throughout the positive domain.",
+      "stem_self_contained": true,
+      "difficulty": 2,
+      "level_2_fit": "yes",
+      "visible_objective_fit": "Finite-domain integer inequality and maximum. External objective was not disclosed.",
+      "naturalness": "Clear but repeats the first math item's unitless-number/domain formula.",
+      "teaching_present": false,
+      "choice_pairs": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "8≠7"
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "8≠9"
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "8≠10"
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "7≠9"
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "7≠10"
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "9≠10"
+        }
+      },
+      "uncertainty": "Low on answer; curriculum calibration unavailable."
+    },
+    {
+      "id": "eb1037712e5ce7a49e2cb9a9",
+      "answer": "C",
+      "answer_status": "single_correct",
+      "reasoning": "The gerund phrase Preparing the meals is singular and takes requires; plural cooks takes measure.",
+      "stem_self_contained": true,
+      "difficulty": 2,
+      "level_2_fit": "yes",
+      "visible_objective_fit": "Present-tense agreement with a gerund phrase and plural subject. External objective was not disclosed.",
+      "naturalness": "Filled sentence is fairly natural, though the second clause connects loosely to the first.",
+      "teaching_present": false,
+      "choice_pairs": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "first verb differs"
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "both verbs differ"
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "second verb differs"
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "second verb differs"
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "both verbs differ"
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "first verb differs"
+        }
+      },
+      "uncertainty": "Low on answer; curriculum calibration unavailable."
+    }
+  ],
+  "batch": {
+    "readable_items": 5,
+    "requested_slots": 5,
+    "filled_slots": 5,
+    "all_items_single_correct": true,
+    "all_30_choice_pairs_meaningfully_distinct": true,
+    "strong_near_duplicate_pairs": [
+      {
+        "ids": [
+          "184e194715f3e9dc57bbf377",
+          "eb1037712e5ce7a49e2cb9a9"
+        ],
+        "reason": "Strong format and objective overlap: identical opening instruction, two present-tense agreement blanks, an ordered-pair prompt, and a complete 2x2 agreement-choice grid. The subject structures differ (inversion versus gerund plus plural noun)."
+      }
+    ],
+    "other_repetition": [
+      {
+        "ids": [
+          "68b2b844b55d13fbb7e928f0",
+          "59865b790ff36f1011c785f9"
+        ],
+        "reason": "Moderate template repetition: unitless integer x, inclusive domain, condition, nearby integer options. The operations and requested decisions differ, so this is not a strong near-duplicate."
+      }
+    ],
+    "teaching_audit": "No authored teaching or feedback appears in the worksheet; the rubric places that audit after review lock.",
+    "uncertainty": "External learning objectives and intended difficulty calibration were not provided; objective and level judgments use only the visible items."
+  }
+}

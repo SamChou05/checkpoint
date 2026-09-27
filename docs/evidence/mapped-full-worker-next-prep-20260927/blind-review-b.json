@@ -1,0 +1,133 @@
+{
+  "review_type": "independent_blind_worksheet_review",
+  "reviewer": "fresh_worker_blind_b",
+  "inputs_read": [
+    "/private/tmp/checkpoint-full-worker-next-prep-20260927/docs/evidence/mapped-full-worker-next-prep-20260927/blind-official/worksheet.json",
+    "/private/tmp/checkpoint-full-worker-next-prep-20260927/docs/evidence/mapped-full-worker-next-prep-20260927/blind-official/RUBRIC.md"
+  ],
+  "requested_slots": 5,
+  "readable_items": 5,
+  "unfilled_slots": 0,
+  "answer_key_consulted": false,
+  "items": [
+    {
+      "id": "68b2b844b55d13fbb7e928f0",
+      "selected_answer": "A",
+      "answer_reason": "8(x + 4) = 11(x + 1) gives x = 7, which is in the stated domain.",
+      "answer_status": "single_supported_answer",
+      "stem_self_contained": true,
+      "difficulty_1_to_5": 2,
+      "fits_difficulty_level_2": true,
+      "visible_objective_fit": "Solves a rational equality within a finite integer domain.",
+      "naturalness": "Clear mathematical prompt; the repeated unitless/domain framing is somewhat mechanical.",
+      "teaching_present": false,
+      "choice_pair_meaningfully_distinct": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "uncertainty": "None about the answer."
+    },
+    {
+      "id": "184e194715f3e9dc57bbf377",
+      "selected_answer": "A",
+      "answer_reason": "The postverbal subjects are plural notes and singular sample, requiring are; is.",
+      "answer_status": "single_supported_answer",
+      "stem_self_contained": true,
+      "difficulty_1_to_5": 2,
+      "fits_difficulty_level_2": true,
+      "visible_objective_fit": "Tests subject-verb agreement when a locative phrase precedes the verb and subject.",
+      "naturalness": "Grammatical but noticeably constructed; repeating 'from the lab' in both clauses sounds unnatural.",
+      "teaching_present": false,
+      "choice_pair_meaningfully_distinct": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "uncertainty": "Difficulty is near the upper edge of level 2 because both clauses use inverted order."
+    },
+    {
+      "id": "f133ea5a2ba3538a7c60da8f",
+      "selected_answer": "C",
+      "answer_reason": "(3/4) divided by (5/7) is 21/20; adding 1 gives 41/20.",
+      "answer_status": "single_supported_answer",
+      "stem_self_contained": true,
+      "difficulty_1_to_5": 2,
+      "fits_difficulty_level_2": true,
+      "visible_objective_fit": "Computes an exact fraction division followed by addition.",
+      "naturalness": "Clear, though the nested parentheses are visually dense for a short calculation.",
+      "teaching_present": false,
+      "choice_pair_meaningfully_distinct": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "choice_quality_note": "All six pairs are numerically distinct. A is a traceable intermediate result; the error paths behind B and D are less clear.",
+      "uncertainty": "None about the answer."
+    },
+    {
+      "id": "59865b790ff36f1011c785f9",
+      "selected_answer": "A",
+      "answer_reason": "At x = 8 the product is 8(13) = 104; every larger x in the stated domain gives a larger product.",
+      "answer_status": "single_supported_answer",
+      "stem_self_contained": true,
+      "difficulty_1_to_5": 2,
+      "fits_difficulty_level_2": true,
+      "visible_objective_fit": "Finds the largest allowed integer satisfying a quadratic inequality.",
+      "naturalness": "Clear mathematical prompt; 'unitless number' and 'Condition' sound templated.",
+      "teaching_present": false,
+      "choice_pair_meaningfully_distinct": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "uncertainty": "None about the answer."
+    },
+    {
+      "id": "eb1037712e5ce7a49e2cb9a9",
+      "selected_answer": "C",
+      "answer_reason": "The gerund phrase 'Preparing the meals' is singular and takes requires; plural cooks takes measure.",
+      "answer_status": "single_supported_answer",
+      "stem_self_contained": true,
+      "difficulty_1_to_5": 2,
+      "fits_difficulty_level_2": true,
+      "visible_objective_fit": "Tests agreement with a gerund phrase and a plural noun subject.",
+      "naturalness": "Grammatical and reasonably natural, if somewhat exercise-like.",
+      "teaching_present": false,
+      "choice_pair_meaningfully_distinct": {
+        "A-B": true,
+        "A-C": true,
+        "A-D": true,
+        "B-C": true,
+        "B-D": true,
+        "C-D": true
+      },
+      "uncertainty": "None about the answer."
+    }
+  ],
+  "strong_near_duplicate_question_pairs": [
+    {
+      "ids": ["184e194715f3e9dc57bbf377", "eb1037712e5ce7a49e2cb9a9"],
+      "reason": "Both have the same two-blank present-tense agreement task and exhaust all four combinations of singular and plural verb forms. They test different subject structures, but the question format and required skill overlap strongly."
+    }
+  ],
+  "other_batch_overlap": [
+    {
+      "ids": ["68b2b844b55d13fbb7e928f0", "59865b790ff36f1011c785f9"],
+      "assessment": "Shared integer-domain template, but different operations and requested reasoning; not a strong near-duplicate."
+    }
+  ],
+  "overall": "Five readable, self-contained items each have one supported answer. All 30 unordered within-item choice pairs are meaningfully distinct. All five are approximately difficulty level 2. One grammar pair has strong format and skill overlap; the second grammar item is the more natural sentence. No authored teaching or feedback is visible for audit."
+}

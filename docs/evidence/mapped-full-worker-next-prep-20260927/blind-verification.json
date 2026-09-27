@@ -1,0 +1,101 @@
+{
+  "both_reviewers_correct_single_keys": 5,
+  "both_reviewers_flag_grammar_near_duplicate": true,
+  "both_reviewers_self_contained": 5,
+  "difficulty_review_a": [
+    2,
+    2,
+    2,
+    3,
+    2
+  ],
+  "difficulty_review_b": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "meaningfully_distinct_pairs_per_reviewer": 30,
+  "original_requested_slots": 5,
+  "returned_slots": 5,
+  "review_input_binding": "IDs, displayed labels, and external locked file hashes; reviews do not embed worksheet SHA-256",
+  "reviewers_saw_authored_teaching": false,
+  "reviewers_saw_hidden_objective_assignments": false,
+  "rows": [
+    {
+      "both_reviews_choose_key": true,
+      "both_reviews_say_self_contained": true,
+      "both_reviews_say_single_answer": true,
+      "both_reviews_say_six_meaningfully_distinct_pairs": true,
+      "correct_display_label": "A",
+      "objective_id": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+      "original_slot": 1,
+      "review_a_difficulty": 2,
+      "review_b_difficulty": 2,
+      "skill_id": "11111111-1111-4111-8111-111111111111",
+      "worksheet_id": "68b2b844b55d13fbb7e928f0"
+    },
+    {
+      "both_reviews_choose_key": true,
+      "both_reviews_say_self_contained": true,
+      "both_reviews_say_single_answer": true,
+      "both_reviews_say_six_meaningfully_distinct_pairs": true,
+      "correct_display_label": "A",
+      "objective_id": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+      "original_slot": 3,
+      "review_a_difficulty": 3,
+      "review_b_difficulty": 2,
+      "skill_id": "22222222-2222-4222-8222-222222222222",
+      "worksheet_id": "184e194715f3e9dc57bbf377"
+    },
+    {
+      "both_reviews_choose_key": true,
+      "both_reviews_say_self_contained": true,
+      "both_reviews_say_single_answer": true,
+      "both_reviews_say_six_meaningfully_distinct_pairs": true,
+      "correct_display_label": "C",
+      "objective_id": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+      "original_slot": 0,
+      "review_a_difficulty": 2,
+      "review_b_difficulty": 2,
+      "skill_id": "11111111-1111-4111-8111-111111111111",
+      "worksheet_id": "f133ea5a2ba3538a7c60da8f"
+    },
+    {
+      "both_reviews_choose_key": true,
+      "both_reviews_say_self_contained": true,
+      "both_reviews_say_single_answer": true,
+      "both_reviews_say_six_meaningfully_distinct_pairs": true,
+      "correct_display_label": "A",
+      "objective_id": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+      "original_slot": 2,
+      "review_a_difficulty": 2,
+      "review_b_difficulty": 2,
+      "skill_id": "11111111-1111-4111-8111-111111111111",
+      "worksheet_id": "59865b790ff36f1011c785f9"
+    },
+    {
+      "both_reviews_choose_key": true,
+      "both_reviews_say_self_contained": true,
+      "both_reviews_say_single_answer": true,
+      "both_reviews_say_six_meaningfully_distinct_pairs": true,
+      "correct_display_label": "C",
+      "objective_id": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+      "original_slot": 4,
+      "review_a_difficulty": 2,
+      "review_b_difficulty": 2,
+      "skill_id": "22222222-2222-4222-8222-222222222222",
+      "worksheet_id": "eb1037712e5ce7a49e2cb9a9"
+    }
+  ],
+  "source_sha256": {
+    "blind-official/RUBRIC.md": "0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2",
+    "blind-official/worksheet.json": "e3ef5bc39766b81bd0ed7655f68e246b635e769bab13cfdf883ff4c38e51a8d5",
+    "blind-private-returned_output.json": "1ec235e7ea4ac922c6ac595fec26ad33e794a048be4f1c9d9eec91374e673bdc",
+    "blind-review-a.json": "0ede220154a8bce51f02e89e57aff12184e80fec607b0063f0e2634a1b792175",
+    "blind-review-b.json": "68ce3f66abf50d8bca2c0969b219b6438249a0c782b219061408ab1b63243dcb",
+    "capture.json": "1ab308db5ea2aeedea0655a7886886c4851fbfa9278b22b5c9413cacaf45af4a",
+    "plan.json": "7be1e0b7079d4007623d39481189db48de016c459af89766d49367ae1a5d0bdb"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "bank_queue_or_deployment_qualified": false,
+  "capture_qualified_field_remains": false,
+  "capture_status_remains": "completed_pending_review",
+  "known_batch_novelty_limitation": "Both reviewers flagged English slots 3 and 4 as strong near-duplicates in two-blank agreement format, despite different subject structures.",
+  "manual_judgment": "Five explanations and 20 literal-choice feedback entries are mathematically/grammatically sound and complete; see teaching-audit.md.",
+  "manual_teaching_audit_sha256": "cc0643dc1dd6588fa06a2220cc737a707a4c1a31d7e704e6e05502d224c9cb51",
+  "population_reliability_established": false,
+  "prespecified_gate_result": {
+    "all_six_choice_pairs_pass": true,
+    "blind_reviews_locked": true,
+    "blind_reviews_pass": true,
+    "elapsed_seconds": 59.227442,
+    "independent_keys_pass": true,
+    "provider_calls": 3,
+    "requested_skill_allocation_exact": true,
+    "returned_original_slots": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "teaching_audit_pass": true,
+    "unresolved_content_uncertainty": 0,
+    "verification_policy_revisions_by_slot": [
+      8,
+      8,
+      8,
+      10,
+      10
+    ],
+    "within_execute_deadline": true
+  },
+  "qualified_under_prespecified_single_trial_gate": true,
+  "resolved_difficulty_difference": "Blind reviewer A rated original slot 3 level 3 and B level 2; both are in frozen allowed 2\u20133 range."
+}
