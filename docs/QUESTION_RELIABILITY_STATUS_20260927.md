@@ -287,9 +287,16 @@ inspection. This is a live transport/yield success and a **content-gate
 failure**, so the generic reserve remains opt-in and disabled by default.
 A separate disabled-thinking author-only trial added the explicit probability
 directive: it completed seven native rows in 19.641 seconds, but the existing
-sanitizer rejected one for duplicate choices. The six survivors are awaiting
-independent blind content review. Neither this author-only trial nor one
-completed worker batch establishes reliable arbitrary-topic MCQs.
+sanitizer rejected one for duplicate choices. Two [independent blind
+reviews](evidence/generic-author-no-thinking-directive-probe-20260927/RESULTS.md)
+of the six survivors found that one had **no correct offered choice**: its
+asserted key was `−$0.50`, while its own explanation calculated the correct
+expected net gain as `−$1.00`. Both also found a below-level item and a strong
+expected-money repeat. The mandatory solver was not run in this author-only
+probe, so this demonstrates the exact author error that downstream
+verification must catch; it does not establish a final worker escape.
+Neither this author-only trial nor one completed worker batch establishes
+reliable arbitrary-topic MCQs.
 
 Two standalone math response-format constructors were compared against six
 quarantined level-2 examples in a [frozen 12-item blind worksheet](evidence/math-format-mixed-blind-20260927/RESULTS.md).
