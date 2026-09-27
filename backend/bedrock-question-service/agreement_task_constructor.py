@@ -6,6 +6,7 @@ quality of the opt-in route require separate qualification.
 """
 
 from dataclasses import dataclass
+import hashlib
 import json
 
 from native_output_contracts import AuthorSlotContract
@@ -45,6 +46,25 @@ class _CompoundScene:
     compound_third: str
     distributive_base: str
     distributive_third: str
+
+
+@dataclass(frozen=True)
+class _InversionScene:
+    singular_subject: str
+    plural_attractor: str
+    plural_subject: str
+    singular_attractor: str
+    location: str
+
+
+@dataclass(frozen=True)
+class _NumberScene:
+    people: str
+    singular_attractor: str
+    things: str
+    plural_attractor: str
+    plural_complement: str
+    singular_complement: str
 
 
 @dataclass(frozen=True)
@@ -93,6 +113,18 @@ COMPOUND_SCENES = {
         "review", "reviews", "keep", "keeps",
     ),
 }
+INVERSION_SCENES = {
+    "inversion_archive": _InversionScene("the report", "the interns", "the records", "the curator", "the archive"),
+    "inversion_studio": _InversionScene("the script", "the actors", "the props", "the director", "the studio"),
+    "inversion_library": _InversionScene("the book", "the volunteers", "the returns", "the librarian", "the library"),
+    "inversion_lab": _InversionScene("the sample", "the technicians", "the notes", "the scientist", "the lab"),
+}
+NUMBER_SCENES = {
+    "number_volunteers": _NumberScene("volunteers", "the curator", "tickets", "the guides", "waiting", "limited"),
+    "number_workers": _NumberScene("workers", "the manager", "reports", "the assistants", "ready", "fixed"),
+    "number_readers": _NumberScene("readers", "the author", "copies", "the editors", "present", "known"),
+    "number_students": _NumberScene("students", "the tutor", "forms", "the teachers", "available", "clear"),
+}
 
 
 class AgreementTaskError(ValueError):
@@ -105,7 +137,8 @@ def task_schema() -> dict:
         "type": "object", "additionalProperties": False,
         "properties": {
             "kind": {"type": "string", "enum": [TASK_KIND]},
-            "scene": {"type": "string", "enum": sorted((*SCENES, *COMPOUND_SCENES))},
+            "scene": {"type": "string", "enum": sorted((*SCENES, *COMPOUND_SCENES,
+                                                       *INVERSION_SCENES, *NUMBER_SCENES))},
             "order": {"type": "string", "enum": ["singular_first", "plural_first"]},
         },
         "required": ["kind", "scene", "order"],
@@ -115,7 +148,9 @@ def task_schema() -> dict:
 def _checked_task(task: object) -> tuple[str, str]:
     if (type(task) is not dict or set(task) != {"kind", "scene", "order"}
             or type(task["kind"]) is not str or task["kind"] != TASK_KIND
-            or type(task["scene"]) is not str or task["scene"] not in {*SCENES, *COMPOUND_SCENES}
+            or type(task["scene"]) is not str or task["scene"] not in {
+                *SCENES, *COMPOUND_SCENES, *INVERSION_SCENES, *NUMBER_SCENES,
+            }
             or type(task["order"]) is not str
             or task["order"] not in {"singular_first", "plural_first"}):
         raise AgreementTaskError("Unsupported or model-extended agreement task.")
@@ -143,6 +178,30 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
             scene.distributive_base, scene.distributive_third, True,
             scene.distributive_subject, scene.plural_attractor, rule="every",
         )
+    elif scene_id in INVERSION_SCENES:
+        scene = INVERSION_SCENES[scene_id]
+        first = _Clause(
+            f"Near {scene.plural_attractor} ___ {scene.singular_subject} from {scene.location}",
+            "are", "is", True, scene.singular_subject, scene.plural_attractor,
+            rule="inversion",
+        )
+        second = _Clause(
+            f"Near {scene.singular_attractor} ___ {scene.plural_subject} from {scene.location}",
+            "are", "is", False, scene.plural_subject, scene.singular_attractor,
+            rule="inversion",
+        )
+    elif scene_id in NUMBER_SCENES:
+        scene = NUMBER_SCENES[scene_id]
+        first = _Clause(
+            f"A number of {scene.people} near {scene.singular_attractor} ___ {scene.plural_complement}",
+            "are", "is", False, f"A number of {scene.people}", scene.singular_attractor,
+            rule="number_plural",
+        )
+        second = _Clause(
+            f"The number of {scene.things} near {scene.plural_attractor} ___ {scene.singular_complement}",
+            "are", "is", True, f"The number of {scene.things}", scene.plural_attractor,
+            rule="number_singular",
+        )
     else:
         scene = SCENES[scene_id]
         first = _Clause(
@@ -157,7 +216,7 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
         )
     clauses = (first, second) if order == "singular_first" else (second, first)
     following = clauses[1].text
-    if following.startswith(("The ", "Every ")):
+    if following.startswith(("The ", "Every ", "Near ", "A ")):
         following = following[0].lower() + following[1:]
     prompt = ("Fill both blanks with the present-tense verb forms that agree with "
               "the subjects in standard written American English. "
@@ -188,9 +247,18 @@ def compile_question(task: dict, *, ordinal: int) -> dict:
         elif clause.rule == "compound":
             support = (f'{position.capitalize()}, the subject "{clause.subject}" is plural '
                        f'("and" joins two); "near {clause.attractor}" does not change it.')
-        else:
+        elif clause.rule == "every":
             support = (f'{position.capitalize()}, the subject "{clause.subject}" is singular; '
                        f'"near {clause.attractor}" does not change it.')
+        elif clause.rule == "inversion":
+            support = (f'{position.capitalize()}, the {number} subject "{clause.subject}" '
+                       f'follows the blank; "near {clause.attractor}" is not the subject.')
+        elif clause.rule == "number_plural":
+            support = (f'{position.capitalize()}, "{clause.subject}" means several and takes '
+                       f'a plural verb; "near {clause.attractor}" does not change it.')
+        else:
+            support = (f'{position.capitalize()}, "{clause.subject}" has the singular head '
+                       f'"number"; "near {clause.attractor}" does not change it.')
         judgment = (f'The form "{selected_form}" agrees.'
                     if selected_third == should_be_third else
                     f'"{selected_form}" does not agree; use "{correct_form}".')
@@ -219,6 +287,7 @@ class CompiledAgreementCandidate:
     ordinal: int
     task_json: str
     source_task_json: str
+    source_task_sha256: str
     novelty_prompts: tuple[str, ...]
     blocked_variant_identities: tuple[str, ...]
     novelty_exhausted: bool
@@ -226,6 +295,8 @@ class CompiledAgreementCandidate:
     learner_json: str
 
     def content(self, question: dict | None = None) -> dict:
+        if hashlib.sha256(self.source_task_json.encode()).hexdigest() != self.source_task_sha256:
+            raise AgreementTaskError("Agreement source task provenance changed.")
         selected, exhausted = _select_novel_task(
             json.loads(self.source_task_json), self.ordinal, self.novelty_prompts,
             self.blocked_variant_identities,
@@ -252,7 +323,8 @@ def canonical_variant_identities() -> frozenset[str]:
         _normalized_stem_identity(compile_question(
             {"kind": TASK_KIND, "scene": scene, "order": order}, ordinal=slot,
         )["prompt"])
-        for slot, scenes in ((3, SCENES), (4, COMPOUND_SCENES))
+        for slot, scenes in ((3, (*SCENES, *INVERSION_SCENES)),
+                             (4, (*COMPOUND_SCENES, *NUMBER_SCENES)))
         for scene in scenes
         for order in ("singular_first", "plural_first")
     )
@@ -274,14 +346,15 @@ def _select_novel_task(
 ) -> tuple[dict, bool]:
     """Keep a fresh authored task, otherwise choose a fresh code-owned variant.
 
-    Prefer a new scene over swapping the clauses in an already seen scene. If
-    the finite inventory is exhausted, retain the authored task so the normal
-    per-item duplicate filter can reject it without discarding the batch.
+    Prefer an unseen solve mechanism, then a new scene, before swapping
+    clauses in an already seen scene. If the finite inventory is exhausted,
+    retain the authored task for the normal per-item duplicate filter.
     """
     scene, _ = _checked_task(task)
     if ordinal not in (3, 4):
         raise AgreementTaskError("Agreement pilot supports original slots 3 and 4 only.")
-    allowed = SCENES if ordinal == 3 else COMPOUND_SCENES
+    allowed = ({**SCENES, **INVERSION_SCENES} if ordinal == 3
+               else {**COMPOUND_SCENES, **NUMBER_SCENES})
     if scene not in allowed:
         raise AgreementTaskError("Agreement task is outside its mapped slot.")
     blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
@@ -304,7 +377,19 @@ def _select_novel_task(
     ]
     if not fresh:
         return task, True
+    family_by_scene = {
+        candidate_scene: ("inversion" if candidate_scene in INVERSION_SCENES else
+                          "number" if candidate_scene in NUMBER_SCENES else
+                          "compound" if candidate_scene in COMPOUND_SCENES else "proximity")
+        for candidate_scene in allowed
+    }
+    used_families = {
+        family_by_scene[candidate["scene"]]
+        for candidate in variants
+        if _normalized_stem_identity(compile_question(candidate, ordinal=ordinal)["prompt"]) in blocked
+    }
     selected = min(fresh, key=lambda candidate: (
+        family_by_scene[candidate["scene"]] in used_families,
         by_scene[candidate["scene"]], candidate != task,
         candidate["scene"], candidate["order"],
     ))
@@ -327,8 +412,10 @@ def compile_mapped_english_slots(
     if type(tasks_by_slot) is not dict or set(tasks_by_slot) != {"3", "4"}:
         raise AgreementTaskError("Both original English slots must be present.")
     scenes = [_checked_task(tasks_by_slot[str(slot)])[0] for slot in (3, 4)]
-    if scenes[0] not in SCENES or scenes[1] not in COMPOUND_SCENES:
-        raise AgreementTaskError("Original slot 3 requires proximity and slot 4 requires compound agreement.")
+    if scenes[0] not in {*SCENES, *INVERSION_SCENES} or scenes[1] not in {
+        *COMPOUND_SCENES, *NUMBER_SCENES,
+    }:
+        raise AgreementTaskError("Original English slots require their closed agreement families.")
     if type(existing_prompts) is not tuple or any(type(prompt) is not str for prompt in existing_prompts):
         raise AgreementTaskError("Agreement novelty history must contain exact prompt strings.")
     if (type(blocked_variant_identities) is not tuple
@@ -343,9 +430,10 @@ def compile_mapped_english_slots(
             source_task, slot, existing_prompts, blocked_variant_identities,
         )
         learner = compile_question(task, ordinal=slot)
+        source_json = json.dumps(source_task, sort_keys=True, separators=(",", ":"))
         candidate = CompiledAgreementCandidate(
             slot, json.dumps(task, sort_keys=True, separators=(",", ":")),
-            json.dumps(source_task, sort_keys=True, separators=(",", ":")),
+            source_json, hashlib.sha256(source_json.encode()).hexdigest(),
             existing_prompts, blocked_variant_identities, exhausted, assignment,
             json.dumps(learner, sort_keys=True, separators=(",", ":")),
         )

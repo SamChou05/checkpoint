@@ -122,26 +122,26 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                     checked += 1
         self.assertEqual(checked, 208)
 
-    def test_family_schema_is_small_closed_and_old_route_unchanged(self):
+    def test_family_schema_is_small_closed_and_agreement_route_matches_current_contract(self):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
         self.assertLess(len(schema_json.encode()), 3000)
-        self.assertEqual(len(schema_json.encode()), 1578)
+        self.assertEqual(len(schema_json.encode()), 1725)
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"][0] for i in range(3)], list(FAMILIES))
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
         self.assertEqual(native.contract_metadata(self.contract())["version"], "3")
-        old = self.contract(False)
-        old_schema = native.native_output_config(old)["textFormat"]["structure"]["jsonSchema"]["schema"]
-        self.assertEqual(len(old_schema.encode()), 2757)
-        self.assertEqual(hashlib.sha256(old_schema.encode()).hexdigest(),
-                         "2a11817d040fe0fb34a413604b9b8ee3118fb631944c2bbf038c54076a95156d")
+        agreement = self.contract(False)
+        agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
+        self.assertEqual(len(agreement_schema.encode()), 2904)
+        self.assertEqual(hashlib.sha256(agreement_schema.encode()).hexdigest(),
+                         "09804777dc8113e5167d3ec29656a7d0ea27ae362c99f9e367e9b821cf2c5bf3")
         self.assertEqual(hashlib.sha256(native.native_prompt(
-            generation._system_prompt(), old,
+            generation._system_prompt(), agreement,
         ).encode()).hexdigest(),
-                         "016e595b20d7b2b1a6c8b94880ea4f3800de9105a740b35263a1521f380bed5a")
+                         "8b5e972e1f9b0467e4899654dcac068aa1088209dc8f89c73a824c121e84c6bf")
         family_prompt = native.native_prompt(generation._system_prompt(), self.contract())
         self.assertTrue(all(scene in family_prompt for scene in COMPOUND_SCENES))
         shape = get_session().get_service_model("bedrock-runtime").operation_model("Converse").input_shape

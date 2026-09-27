@@ -17,7 +17,8 @@ import native_output_contracts as native
 import question_bank
 import question_generation as generation
 from agreement_task_constructor import (
-    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, LEARNER_FIELDS,
+    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, INVERSION_SCENES,
+    NUMBER_SCENES, SCENES, LEARNER_FIELDS,
     SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
     blocked_fingerprint_variant_identities, checked_agreement_provenance,
     compile_mapped_english_slots, compile_question, prepare_mapped_agreement_rows,
@@ -113,12 +114,12 @@ class MappedAgreementRouteTests(unittest.TestCase):
         self.assertLess(len(schema_json.encode()), 3000)
         self.assertEqual(set(schema["$defs"]), {"node", "task", "proximityTask", "compoundTask"})
         self.assertEqual(schema["$defs"]["proximityTask"]["properties"]["scene"]["enum"],
-                         ["chef", "coach", "curator", "librarian"])
+                         sorted((*SCENES, *INVERSION_SCENES)))
         self.assertEqual(schema["$defs"]["compoundTask"]["properties"]["scene"]["enum"],
-                         sorted(COMPOUND_SCENES))
+                         sorted((*COMPOUND_SCENES, *NUMBER_SCENES)))
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(new)["version"], "2")
+        self.assertEqual(native.contract_metadata(new)["version"], "3")
         old = self.contract(False)
         self.assertEqual(native.contract_metadata(old)["version"], "1")
         old_schema = native.native_output_config(old)["textFormat"]["structure"]["jsonSchema"]["schema"]
@@ -233,18 +234,18 @@ class MappedAgreementRouteTests(unittest.TestCase):
         self.assertEqual([row["skillID"] for row in result], [MATH] * 3 + [ENGLISH] * 2)
         self.assertEqual(client.steps, [])
 
-    def test_bank_history_keeps_eighth_unique_pair_beyond_recent_thirty(self):
+    def test_bank_history_keeps_sixteenth_unique_pair_beyond_recent_thirty(self):
         source = {"3": agreement("coach"), "4": agreement(COMPOUND_SCENE)}
         bank_id = "a" * 64
         existing_items = []
         chosen = {3: [], 4: []}
-        for batch in range(8):
+        for batch in range(16):
             recent = question_bank._recent_question_items(existing_items, 30)
             recent_prompts = tuple(
                 question_bank._question_from_item(item)["prompt"] for item in recent
             )
             full_identities = tuple(question_bank._agreement_variant_history(existing_items))
-            self.assertLessEqual(len(full_identities), 16)
+            self.assertLessEqual(len(full_identities), 32)
             if batch == 7:
                 self.assertEqual(len(existing_items), 35)
                 self.assertEqual(len(recent), 30)
@@ -278,8 +279,8 @@ class MappedAgreementRouteTests(unittest.TestCase):
                 "questionJSON": {"S": json.dumps(question)},
             } for slot, question in enumerate(prepared))
 
-        self.assertEqual(len(set(chosen[3])), 8)
-        self.assertEqual(len(set(chosen[4])), 8)
+        self.assertEqual(len(set(chosen[3])), 16)
+        self.assertEqual(len(set(chosen[4])), 16)
         exhausted = compile_mapped_english_slots(
             source, self.contract(),
             blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),

@@ -5,8 +5,10 @@ import json
 import unittest
 
 from agreement_task_constructor import (
-    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, LEARNER_FIELDS, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
-    TASK_KIND, compile_mapped_english_slots, compile_question, task_schema,
+    AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, INVERSION_SCENES,
+    LEARNER_FIELDS, NUMBER_SCENES, SUPPORTED_OBJECTIVE, SUPPORTED_TOPIC,
+    TASK_KIND, canonical_variant_identities, compile_mapped_english_slots,
+    compile_question, task_schema,
 )
 from native_output_contracts import AuthorSlotContract
 
@@ -35,6 +37,9 @@ def contract():
 
 
 class AgreementTaskConstructorTests(unittest.TestCase):
+    def test_all_slot_variants_have_distinct_canonical_stems(self):
+        self.assertEqual(len(canonical_variant_identities()), 32)
+
     def test_every_closed_scene_and_order_has_one_exact_grammatical_pair(self):
         for scene, correct in EXPECTED.items():
             for order in ("singular_first", "plural_first"):
@@ -115,6 +120,33 @@ class AgreementTaskConstructorTests(unittest.TestCase):
                 self.assertLessEqual(len(result["explanation"]), 420)
                 self.assertTrue(all(len(value) <= 280 for value in result["choiceExplanations"].values()))
 
+    def test_alternate_agreement_structures_have_exact_keys_and_feedback(self):
+        for scenes, slot, initial_key, explanation_signal in (
+            (INVERSION_SCENES, 3, "is; are", "follows the blank"),
+            (NUMBER_SCENES, 4, "are; is", 'singular head "number"'),
+        ):
+            for scene in scenes:
+                for order in ("singular_first", "plural_first"):
+                    with self.subTest(scene=scene, order=order):
+                        result = compile_question(task(scene, order), ordinal=slot)
+                        expected = initial_key if order == "singular_first" else "; ".join(
+                            reversed(initial_key.split("; ")))
+                        self.assertEqual(result["expectedAnswer"], expected)
+                        self.assertEqual(len(result["choices"]), 4)
+                        self.assertEqual(len(set(result["choices"])), 4)
+                        self.assertEqual(set(result["choiceExplanations"]), set(result["choices"]))
+                        self.assertEqual(result["prompt"].count("___"), 2)
+                        self.assertIn(explanation_signal, result["explanation"])
+                        self.assertLessEqual(len(result["prompt"]), 320)
+                        self.assertLessEqual(len(result["explanation"]), 420)
+                        self.assertTrue(all(len(value) <= 280 for value in
+                                            result["choiceExplanations"].values()))
+                        for choice in result["choices"]:
+                            self.assertEqual(result["choiceExplanations"][choice].count(
+                                "does not agree"), sum(
+                                    selected != correct for selected, correct in zip(
+                                        choice.split("; "), expected.split("; "), strict=True)))
+
     def test_exhaustive_compound_choices_and_feedback_survive_choice_shuffle(self):
         facts = {
             COMPOUND_SCENE: ("Maya and Theo", "the cook", "prepare", "prepares",
@@ -183,6 +215,8 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         self.assertEqual(json.loads(candidates[4].source_task_json), source["4"])
         self.assertNotEqual(json.loads(candidates[3].task_json)["scene"], "coach")
         self.assertNotEqual(json.loads(candidates[4].task_json)["scene"], COMPOUND_SCENE)
+        self.assertIn(json.loads(candidates[3].task_json)["scene"], INVERSION_SCENES)
+        self.assertIn(json.loads(candidates[4].task_json)["scene"], NUMBER_SCENES)
         self.assertTrue(all(candidate.content()["prompt"] not in prior for candidate in candidates.values()))
         self.assertTrue(all(not candidate.novelty_exhausted for candidate in candidates.values()))
         with self.assertRaises(AgreementTaskError):
@@ -190,10 +224,22 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         with self.assertRaises(AgreementTaskError):
             replace(candidates[4], task_json=json.dumps(source["4"])).content()
 
+    def test_first_refill_switches_both_english_solve_mechanisms(self):
+        source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
+        history = tuple(compile_question(source[str(slot)], ordinal=slot)["prompt"]
+                        for slot in (3, 4))
+        candidates = compile_mapped_english_slots(
+            source, contract(), existing_prompts=history)
+        self.assertIn(json.loads(candidates[3].task_json)["scene"], INVERSION_SCENES)
+        self.assertIn(json.loads(candidates[4].task_json)["scene"], NUMBER_SCENES)
+        self.assertTrue(all(candidate.content()["prompt"] not in history
+                            for candidate in candidates.values()))
+
     def test_finite_inventory_exhaustion_keeps_original_task_for_item_filter(self):
         history = tuple(
             compile_question(task(scene, order), ordinal=4)["prompt"]
-            for scene in COMPOUND_SCENES for order in ("singular_first", "plural_first")
+            for scene in (*COMPOUND_SCENES, *NUMBER_SCENES)
+            for order in ("singular_first", "plural_first")
         )
         source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
         candidates = compile_mapped_english_slots(source, contract(), existing_prompts=history)
@@ -201,11 +247,11 @@ class AgreementTaskConstructorTests(unittest.TestCase):
         self.assertEqual(json.loads(candidates[4].task_json), source["4"])
         self.assertFalse(candidates[3].novelty_exhausted)
 
-    def test_history_selection_yields_all_eight_compound_stems_before_exhaustion(self):
+    def test_history_selection_yields_all_sixteen_slot_four_stems_before_exhaustion(self):
         source = {"3": task("coach"), "4": task(COMPOUND_SCENE)}
         history = []
         chosen_scenes = []
-        for _ in range(8):
+        for _ in range(16):
             candidate = compile_mapped_english_slots(
                 source, contract(), existing_prompts=tuple(history),
             )[4]
@@ -214,8 +260,9 @@ class AgreementTaskConstructorTests(unittest.TestCase):
             self.assertNotIn(prompt, history)
             history.append(prompt)
             chosen_scenes.append(json.loads(candidate.task_json)["scene"])
-        self.assertEqual(len(set(chosen_scenes[:4])), 4)
-        self.assertEqual(len(set(history)), 8)
+        self.assertEqual(chosen_scenes[0], COMPOUND_SCENE)
+        self.assertIn(chosen_scenes[1], NUMBER_SCENES)
+        self.assertEqual(len(set(history)), 16)
         exhausted = compile_mapped_english_slots(
             source, contract(), existing_prompts=tuple(history),
         )[4]
