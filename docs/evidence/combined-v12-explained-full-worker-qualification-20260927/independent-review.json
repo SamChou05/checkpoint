@@ -1,0 +1,30 @@
+{
+  "checks": {
+    "accepted_v12_author_wire_sha256": "0317c2b75115c309232c02e6eddcedd230461fc63f5d18da7312502868092a0a",
+    "accepted_v12_schema_sha256": "495db717d6b3fd6cc5272cdb289c7d77d9ca2e275b7c1d3f0cb856c1a18b6934",
+    "all_45_pinned_source_path_hashes_match": true,
+    "capture_created_exclusively_before_execute_credentials_or_sts": true,
+    "exact_hash_two_reviewer_lock_before_precheck_or_execute_aws": true,
+    "fake_provider_checks_all_four_main_explanation_corrections_and_original_slots": true,
+    "first_and_second_v12_predecessor_trials_remain_four_of_five": true,
+    "fresh_build_plan_matches_frozen_plan": true,
+    "live_capture_absent_at_review": true,
+    "max_one_attempt_converse_calls": 6,
+    "no_retry_fallback_topup_bank_queue_or_deploy": true,
+    "original_five_slot_criterion_and_3_to_2_allocation": true,
+    "pushed_source_commit_and_predecessor_frozen": true,
+    "ruff": "passed",
+    "socket_free_preflight": "10 tests passed; zero provider calls",
+    "whole_execute_deadline_seconds": 240
+  },
+  "decision": "GO",
+  "harness_sha256": "d6a861a2134699c66f02bbacab95303b55cb230b180930ecd660c3108911968f",
+  "limits": "GO applies only to this exact frozen plan/harness/source. Live reviewer acceptance, five-of-five return, independent content review, and total execute duration remain unproven until the one-shot trial completes.",
+  "plan_sha256": "7e8c98159f28e0dfd8269fee708731377f1d4cf7b76898340fefa04ecc8d106d",
+  "predecessor_capture_sha256": {
+    "first_v12": "fe66f66fe9bc1b8eefa62c167447e73a62d41cf362850a3db8cbc912298af31d",
+    "immediate": "d23f4fb1ac51d672a9ab9b2e4d95ca26c184dab0a2fb9631a11c2287a6b9f62f"
+  },
+  "scope": "Exact-hash independent offline preparation review only; no live dispatch or qualification performed.",
+  "source_commit": "67fee6e0bcbccc5e0e051bb857f672b965072f7d"
+}
