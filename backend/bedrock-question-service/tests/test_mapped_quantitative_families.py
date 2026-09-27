@@ -1,6 +1,7 @@
 """Bounded family variety in one pinned mapped 3:2 author pass."""
 
 import copy
+from collections import Counter
 import hashlib
 import json
 import os
@@ -126,20 +127,22 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         if family == "bounded_quadratic_maximum":
                             self.assertIn("The larger domain values fail:", learner["explanation"])
                         checked += 1
-        self.assertEqual(checked, 416)
-        self.assertEqual(len(numeric_variant_identities()), 416)
+        self.assertEqual(checked, 624)
+        self.assertEqual(len(numeric_variant_identities()), 624)
 
     def test_family_schema_is_small_closed_and_agreement_route_matches_current_contract(self):
         schema_json = native.native_output_config(self.contract())["textFormat"]["structure"]["jsonSchema"]["schema"]
         schema = json.loads(schema_json)
         Draft202012Validator.check_schema(schema)
-        self.assertLess(len(schema_json.encode()), 3000)
+        self.assertEqual(len(schema_json.encode()), 1888)
+        self.assertEqual(hashlib.sha256(schema_json.encode()).hexdigest(),
+                         "6f2adb240e75098162ed4002346a50b31d4ce118d6f4a9aa6e62065b63c8b59d")
         self.assertEqual([schema["properties"]["questions"]["properties"][str(i)]
                           ["properties"]["family"]["enum"] for i in range(3)],
                          [list(families) for families in SLOT_FAMILIES])
         self.assertNotIn("correctChoice", schema_json)
         self.assertNotIn("explanation", schema_json)
-        self.assertEqual(native.contract_metadata(self.contract())["version"], "4")
+        self.assertEqual(native.contract_metadata(self.contract())["version"], "5")
         agreement = self.contract(False)
         agreement_schema = native.native_output_config(agreement)["textFormat"]["structure"]["jsonSchema"]["schema"]
         self.assertEqual(len(agreement_schema.encode()), 2904)
@@ -429,7 +432,8 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
         existing_items = []
         chosen = {slot: [] for slot in range(3)}
         chosen_families = {slot: [] for slot in range(3)}
-        for batch in range(8):
+        pair_counts = {}
+        for batch in range(16):
             recent = question_bank._recent_question_items(existing_items, 30)
             recent_prompts = tuple(question_bank._question_from_item(item)["prompt"]
                                    for item in recent)
@@ -469,9 +473,19 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                 "createdAt": {"N": str(batch * 5 + slot)},
                 "questionJSON": {"S": json.dumps(question)},
             } for slot, question in enumerate(generated))
-        self.assertEqual([len(set(chosen[slot])) for slot in range(3)], [8] * 3)
+            if batch + 1 in (8, 16):
+                pair_counts[batch + 1] = sum(
+                    count * (count - 1) // 2
+                    for slot in range(3)
+                    for count in Counter(chosen_families[slot]).values()
+                )
+        self.assertEqual([len(set(chosen[slot])) for slot in range(3)], [16] * 3)
         for slot in range(3):
-            self.assertEqual(chosen_families[slot], list(SLOT_FAMILIES[slot]) * 4)
+            self.assertEqual(chosen_families[slot], list(SLOT_FAMILIES[slot]) * 5
+                             + [SLOT_FAMILIES[slot][0]])
+        # The previous two-family inventory required 36/168 numeric
+        # same-family pairs in 40/80 items; all exact stems remain unique.
+        self.assertEqual(pair_counts, {8: 21, 16: 105})
         request = {**self.request,
                    "_mappedQuantitativeVariantIdentities": list(full_identities)}
         self.assertEqual(generation._mapped_author_scope_sha256(request),

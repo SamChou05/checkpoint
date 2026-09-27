@@ -19,9 +19,9 @@ FAMILIES = ("fraction_evaluation", "bounded_equation", "bounded_ratio_threshold"
 # mathematical decision on a refill. Operands within one family are examples
 # of the same decision, not evidence of bank-level variety.
 SLOT_FAMILIES = (
-    (FAMILIES[0], "fraction_quotient"),
-    (FAMILIES[1], "bounded_quadratic_equation"),
-    (FAMILIES[2], "bounded_quadratic_maximum"),
+    (FAMILIES[0], "fraction_quotient", "fraction_reciprocal_sum"),
+    (FAMILIES[1], "bounded_quadratic_equation", "bounded_rational_equation"),
+    (FAMILIES[2], "bounded_quadratic_maximum", "bounded_linear_budget_maximum"),
 )
 SUPPORTED_TOPIC = "Exact arithmetic"
 SUPPORTED_OBJECTIVE = "Evaluate an exact rational expression or explicit bounded condition"
@@ -81,6 +81,15 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
             _literal(b), _literal(b + 2), _binary("div", 3, 4),
             _binary("div", 2, 5), _literal(1), _binary("add", 6, 7),
         ], "root": 8}
+    if family == "fraction_reciprocal_sum":
+        # Find the reciprocal of a sum of two nonintegral fractions. Unlike
+        # sum-and-scale or quotient-and-add, the final division applies to
+        # the entire exact sum, not to either original fraction.
+        return {"kind": "exact_value", "unit": "unitless", "nodes": [
+            _literal(a), _literal(a + 1), _binary("div", 0, 1),
+            _literal(b), _literal(b + 2), _binary("div", 3, 4),
+            _binary("add", 2, 5), _literal(1), _binary("div", 7, 6),
+        ], "root": 8}
     if family == FAMILIES[1]:
         # a(x+2)+(a+3)=(a-1)x+(b+3a+3) reduces to x=b. The variable
         # appears on both sides, so the learner must distribute and collect.
@@ -103,6 +112,16 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
         ], "condition": {"left": 5, "relation": "eq", "right": 6},
             "selection": "any_satisfying",
             "domain": {"kind": "integer_interval", "lower": 0, "upper": 15}}
+    if family == "bounded_rational_equation":
+        # (x+a)/(x+1) strictly decreases on nonnegative integers because
+        # a > 1. Equality with its value at b therefore has one solution.
+        return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
+            {"kind": "variable"}, _literal(a), _binary("add", 0, 1),
+            _literal(1), _binary("add", 0, 3), _binary("div", 2, 4),
+            _literal(b + a), _literal(b + 1), _binary("div", 6, 7),
+        ], "condition": {"left": 5, "relation": "eq", "right": 8},
+            "selection": "any_satisfying",
+            "domain": {"kind": "integer_interval", "lower": 0, "upper": 15}}
     if family == "bounded_quadratic_maximum":
         # x(x+a) is strictly increasing on this nonnegative interval. The
         # greatest integer satisfying its bound is therefore x=b.
@@ -110,6 +129,16 @@ def flat_task(slot: int, row: object) -> dict[str, Any]:
             {"kind": "variable"}, _literal(a), _binary("add", 0, 1),
             _binary("mul", 0, 2), _literal(b * (b + a)),
         ], "condition": {"left": 3, "relation": "le", "right": 4},
+            "selection": "maximum",
+            "domain": {"kind": "integer_interval", "lower": b - 3, "upper": b + 3}}
+    if family == "bounded_linear_budget_maximum":
+        # Distribute and collect terms in a(x+2)+x <= a(b+2)+b. Since a+1
+        # is positive, b is the unique greatest satisfying integer.
+        return {"kind": "scalar_condition", "unit": "unitless", "nodes": [
+            _literal(a), {"kind": "variable"}, _literal(2),
+            _binary("add", 1, 2), _binary("mul", 0, 3), _binary("add", 4, 1),
+            _literal(a * (b + 2) + b),
+        ], "condition": {"left": 5, "relation": "le", "right": 6},
             "selection": "maximum",
             "domain": {"kind": "integer_interval", "lower": b - 3, "upper": b + 3}}
     # The ratio x/(x+a) reaches b/(b+a) first at x=b for positive a.
