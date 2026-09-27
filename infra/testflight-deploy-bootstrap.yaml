@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: GitHub Actions OIDC deploy identity for the existing Checkpoint TestFlight backend stack
+
+Parameters:
+  CloudFormationExecutionRoleArn:
+    Type: String
+    Description: Existing independently reviewed CloudFormation service role for this stack.
+    AllowedPattern: 'arn:aws:iam::[0-9]{12}:role/[A-Za-z0-9_+=,.@/-]+'
+
+Resources:
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  ArtifactBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ArtifactBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: RequireTls
+            Effect: Deny
+            Principal: '*'
+            Action: s3:*
+            Resource:
+              - !GetAtt ArtifactBucket.Arn
+              - !Sub ${ArtifactBucket.Arn}/*
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+
+  GitHubActionsOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+
+  TestFlightDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Restricted SAM deploy identity for SamChou05/checkpoint backend-testflight jobs
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GitHubActionsOidcProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: repo:SamChou05/checkpoint:environment:backend-testflight
+      Policies:
+        - PolicyName: testflight-stack-and-artifact-only
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ExistingTestFlightStackOnly
+                Effect: Allow
+                Action:
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:DescribeStacks
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:DescribeStackResources
+                  - cloudformation:GetTemplate
+                Resource: !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/checkpoint-question-service-testflight/*
+              - Sid: SamTransformOnly
+                Effect: Allow
+                Action: cloudformation:CreateChangeSet
+                Resource: !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:aws:transform/Serverless-2016-10-31
+              - Sid: ValidateTemplate
+                Effect: Allow
+                Action: cloudformation:ValidateTemplate
+                Resource: '*'
+              - Sid: PassOnlyReviewedCloudFormationRole
+                Effect: Allow
+                Action: iam:PassRole
+                Resource: !Ref CloudFormationExecutionRoleArn
+                Condition:
+                  StringEquals:
+                    iam:PassedToService: cloudformation.amazonaws.com
+              - Sid: LocateArtifactBucket
+                Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:ListBucket
+                Resource: !GetAtt ArtifactBucket.Arn
+              - Sid: UploadAndReadOnlyTestFlightArtifacts
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Sub ${ArtifactBucket.Arn}/checkpoint-question-service-testflight/*
+
+Outputs:
+  DeployRoleArn:
+    Description: Set as AWS_DEPLOY_ROLE_ARN in the protected backend-testflight GitHub environment.
+    Value: !GetAtt TestFlightDeployRole.Arn
+  OidcProviderArn:
+    Value: !Ref GitHubActionsOidcProvider
+  ArtifactBucketName:
+    Description: Set as SAM_ARTIFACT_BUCKET in the protected backend-testflight GitHub environment.
+    Value: !Ref ArtifactBucket

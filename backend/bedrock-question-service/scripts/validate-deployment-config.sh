@@ -14,9 +14,24 @@ missing=()
 [[ -n "$QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS" ]] || missing+=(QUESTION_BANK_WORKER_INVOKE_RESOURCE_ARNS)
 [[ -n "$BEDROCK_VERIFICATION_MODEL_ARN" ]] || missing+=(BEDROCK_VERIFICATION_MODEL_ARN)
 [[ -n "$BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS" ]] || missing+=(BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS)
+[[ -n "$RESERVED_CONCURRENCY" ]] || missing+=(RESERVED_CONCURRENCY)
+[[ -n "$QUESTION_BANK_WORKER_RESERVED_CONCURRENCY" ]] || missing+=(QUESTION_BANK_WORKER_RESERVED_CONCURRENCY)
+[[ -n "$QUESTION_BANK_MAX_RECEIVE_COUNT" ]] || missing+=(QUESTION_BANK_MAX_RECEIVE_COUNT)
+[[ -n "$BEDROCK_REASONING_EFFORT" ]] || missing+=(BEDROCK_REASONING_EFFORT)
+[[ -n "$MONTHLY_BEDROCK_BUDGET_USD" ]] || missing+=(MONTHLY_BEDROCK_BUDGET_USD)
+if [[ "$DEPLOYMENT_ENVIRONMENT" == testflight ]]; then
+  [[ -n "$SAM_ARTIFACT_BUCKET" ]] || missing+=(SAM_ARTIFACT_BUCKET)
+  [[ -n "$CLOUDFORMATION_EXECUTION_ROLE_ARN" ]] || missing+=(CLOUDFORMATION_EXECUTION_ROLE_ARN)
+fi
 if (( ${#missing[@]} > 0 )); then
   printf 'Missing required environment secrets or variables: %s\n' "${missing[*]}" >&2
   exit 1
+fi
+if [[ "$DEPLOYMENT_ENVIRONMENT" == testflight ]]; then
+  [[ "$AWS_REGION" == us-east-1 ]] || { echo 'TestFlight requires AWS_REGION=us-east-1.' >&2; exit 1; }
+  [[ "$SAM_STACK_NAME" == checkpoint-question-service-testflight ]] || { echo 'TestFlight requires the existing stack name.' >&2; exit 1; }
+  [[ "$SAM_ARTIFACT_BUCKET" =~ ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$ ]] || { echo 'SAM_ARTIFACT_BUCKET must be an S3 bucket name.' >&2; exit 1; }
+  [[ "$CLOUDFORMATION_EXECUTION_ROLE_ARN" =~ ^arn:aws:iam::[0-9]{12}:role/[A-Za-z0-9_+=,.@/-]+$ ]] || { echo 'CLOUDFORMATION_EXECUTION_ROLE_ARN must be an IAM role ARN.' >&2; exit 1; }
 fi
 if (( ${#CHECKPOINT_BACKEND_TOKEN} < 32 )); then
   echo "CHECKPOINT_BACKEND_TOKEN must contain at least 32 characters." >&2

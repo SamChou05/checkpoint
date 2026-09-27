@@ -3,9 +3,9 @@
 set -e -o pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=validate-native-output-models.sh
+# shellcheck source=validate-deployment-config.sh
 # shellcheck source-path=SCRIPTDIR
-source "$script_dir/validate-native-output-models.sh"
+source "$script_dir/validate-deployment-config.sh"
 
 parameters=(
   "BackendToken=$CHECKPOINT_BACKEND_TOKEN"
@@ -70,10 +70,23 @@ parameters=(
   "MonthlyBedrockBudgetUSD=$MONTHLY_BEDROCK_BUDGET_USD"
 )
 
+sam_storage_args=(--resolve-s3)
+if [[ "$DEPLOYMENT_ENVIRONMENT" == testflight ]]; then
+  [[ -n "${SAM_ARTIFACT_BUCKET:-}" && -n "${CLOUDFORMATION_EXECUTION_ROLE_ARN:-}" ]] || {
+    echo 'TestFlight requires SAM_ARTIFACT_BUCKET and CLOUDFORMATION_EXECUTION_ROLE_ARN.' >&2
+    exit 1
+  }
+  sam_storage_args=(
+    --s3-bucket "$SAM_ARTIFACT_BUCKET"
+    --s3-prefix "$SAM_STACK_NAME"
+    --role-arn "$CLOUDFORMATION_EXECUTION_ROLE_ARN"
+  )
+fi
+
 sam deploy \
   --stack-name "$SAM_STACK_NAME" \
   --region "$AWS_REGION" \
-  --resolve-s3 \
+  "${sam_storage_args[@]}" \
   --capabilities CAPABILITY_IAM \
   --no-confirm-changeset \
   --no-fail-on-empty-changeset \

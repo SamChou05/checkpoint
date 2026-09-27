@@ -24,7 +24,9 @@ other_scope_hash=497824fdd8fd85389f03d435d44e44147260c9d600fca3538e0a515dacdb53e
 deployment_environment=(
   "AWS_DEPLOY_ROLE_ARN=arn:aws:iam::123456789012:role/checkpoint-deploy"
   "AWS_REGION=us-east-1"
-  "SAM_STACK_NAME=checkpoint-test"
+  "SAM_STACK_NAME=checkpoint-question-service-testflight"
+  "SAM_ARTIFACT_BUCKET=checkpoint-test-artifacts"
+  "CLOUDFORMATION_EXECUTION_ROLE_ARN=arn:aws:iam::123456789012:role/checkpoint-testflight-cfn"
   "CHECKPOINT_BACKEND_TOKEN=$backend_token"
   "QUOTA_HASH_SECRET=$quota_secret"
   "BEDROCK_MODEL_ARN=$api_model"
@@ -34,7 +36,7 @@ deployment_environment=(
   "BEDROCK_VERIFICATION_MODEL_ARN=$worker_model"
   "BEDROCK_VERIFICATION_INVOKE_RESOURCE_ARNS=$worker_model"
   "BEDROCK_FALLBACK_MODEL_ARN="
-  "BEDROCK_REASONING_EFFORT=low"
+  "BEDROCK_REASONING_EFFORT=none"
   "BEDROCK_GUARDRAIL_IDENTIFIER="
   "BEDROCK_GUARDRAIL_VERSION="
   "BEDROCK_GUARDRAIL_ARN="
@@ -55,14 +57,14 @@ deployment_environment=(
   "API_STAGE_NAME=prod"
   "API_THROTTLE_RATE_LIMIT=5"
   "API_THROTTLE_BURST_LIMIT=10"
-  "RESERVED_CONCURRENCY=5"
-  "QUESTION_BANK_WORKER_RESERVED_CONCURRENCY=2"
+  "RESERVED_CONCURRENCY=2"
+  "QUESTION_BANK_WORKER_RESERVED_CONCURRENCY=1"
   "QUESTION_BANK_WORKER_READ_TIMEOUT_SECONDS=75"
   "QUESTION_BANK_GENERATION_CHUNK_SIZE=5"
   "LOG_RETENTION_DAYS=14"
   "ALERT_EMAIL="
   "BUDGET_ALERT_EMAIL="
-  "MONTHLY_BEDROCK_BUDGET_USD=25"
+  "MONTHLY_BEDROCK_BUDGET_USD=10"
 )
 
 env -i "PATH=$PATH" "${deployment_environment[@]}" \
@@ -94,6 +96,31 @@ printf '%s\n' \
 chmod 0755 "$test_bin/sam"
 
 sam_capture="$test_directory/sam-arguments"
+for required in SAM_ARTIFACT_BUCKET CLOUDFORMATION_EXECUTION_ROLE_ARN \
+  RESERVED_CONCURRENCY QUESTION_BANK_WORKER_RESERVED_CONCURRENCY \
+  QUESTION_BANK_MAX_RECEIVE_COUNT BEDROCK_REASONING_EFFORT MONTHLY_BEDROCK_BUDGET_USD; do
+  rm -f "$sam_capture"
+  if env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
+    "${deployment_environment[@]}" "$required=" \
+    "$script_dir/deploy-sam.sh" > "$test_directory/missing-testflight-setting" 2>&1; then
+    fail "deploy-sam.sh accepted missing TestFlight setting $required"
+  fi
+  [[ ! -e "$sam_capture" ]] || fail "SAM ran with missing TestFlight setting $required"
+  [[ "$(cat "$test_directory/missing-testflight-setting")" == *"$required"* ]] || \
+    fail "missing TestFlight setting $required was not identified"
+done
+
+for required in RESERVED_CONCURRENCY QUESTION_BANK_WORKER_RESERVED_CONCURRENCY \
+  QUESTION_BANK_MAX_RECEIVE_COUNT BEDROCK_REASONING_EFFORT MONTHLY_BEDROCK_BUDGET_USD; do
+  if output="$(env -i "PATH=$PATH" "${deployment_environment[@]}" \
+    DEPLOYMENT_ENVIRONMENT=production "$required=" \
+    "$script_dir/validate-deployment-config.sh" 2>&1)"; then
+    fail "production accepted missing operational setting $required"
+  fi
+  [[ "$output" == *"Missing required environment secrets or variables: $required"* ]] || \
+    fail "production did not identify missing operational setting $required"
+done
+
 for checked_script in validate-deployment-config.sh deploy-sam.sh; do
   for timeout in 20 75 99.5 200; do
     rm -f "$sam_capture"
@@ -123,13 +150,15 @@ env -i "PATH=$test_bin:$PATH" "SAM_CAPTURE=$sam_capture" \
   "${deployment_environment[@]}" \
   "$script_dir/deploy-sam.sh"
 mapfile -d '' -t sam_arguments < "$sam_capture"
-[[ "${#sam_arguments[@]}" -eq 71 ]] || \
-  fail "SAM received ${#sam_arguments[@]} arguments instead of 71"
+[[ "${#sam_arguments[@]}" -eq 76 ]] || \
+  fail "SAM received ${#sam_arguments[@]} arguments instead of 76"
 expected_prefix=(
   deploy
-  --stack-name checkpoint-test
+  --stack-name checkpoint-question-service-testflight
   --region us-east-1
-  --resolve-s3
+  --s3-bucket checkpoint-test-artifacts
+  --s3-prefix checkpoint-question-service-testflight
+  --role-arn arn:aws:iam::123456789012:role/checkpoint-testflight-cfn
   --capabilities CAPABILITY_IAM
   --no-confirm-changeset
   --no-fail-on-empty-changeset
@@ -298,7 +327,7 @@ for checked_script in validate-deployment-config.sh deploy-sam.sh; do
     [[ ! -e "$sam_capture" ]] || fail "SAM ran for invalid worker scope case $case_name"
   done
 done
-for argument in "${sam_arguments[@]:11}"; do
+for argument in "${sam_arguments[@]:${#expected_prefix[@]}}"; do
   [[ "$argument" == *=* && "$argument" != *'$'* ]] || \
     fail "unexpanded or malformed parameter override: $argument"
 done
@@ -561,6 +590,20 @@ printf '%s\n' \
   'printf '\''%s\0'\'' "$@" >> "$PYTHON_CAPTURE"' \
   > "$test_bin/python"
 chmod 0755 "$test_bin/aws" "$test_bin/python"
+
+safe_stack_values=$'BedrockReasoningEffort\tnone\nMonthlyBedrockBudgetUSD\t10\nQuestionBankMaxReceiveCount\t5\nQuestionBankWorkerReservedConcurrency\t1\nReservedConcurrency\t2'
+env -i "PATH=$test_bin:$PATH" "AWS_STUB_OUTPUT=$safe_stack_values" \
+  "${deployment_environment[@]}" \
+  "$script_dir/check-testflight-live-settings.sh" > "$test_directory/live-check-output"
+[[ "$(cat "$test_directory/live-check-output")" == *'match the five checked live stack parameters'* ]] || \
+  fail "matching live TestFlight settings were rejected"
+if env -i "PATH=$test_bin:$PATH" "AWS_STUB_OUTPUT=$safe_stack_values" \
+  "${deployment_environment[@]}" "RESERVED_CONCURRENCY=5" \
+  "$script_dir/check-testflight-live-settings.sh" > "$test_directory/live-check-output" 2>&1; then
+  fail "changed TestFlight concurrency was accepted"
+fi
+[[ "$(cat "$test_directory/live-check-output")" == *'RESERVED_CONCURRENCY differs'* ]] || \
+  fail "live configuration mismatch did not identify the variable"
 
 python_capture="$test_directory/python-call"
 smoke_output="$(

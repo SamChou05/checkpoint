@@ -4,6 +4,8 @@ For the service contract, runtime configuration, and request behavior, see the [
 
 The protected GitHub workflow keeps its environment choice, OIDC permissions, and secret/variable mappings in YAML. Focused scripts under `scripts/` validate that configuration, assemble the SAM overrides, and run the opt-in authenticated smoke check.
 
+The [TestFlight OIDC bootstrap](../../../infra/TESTFLIGHT_DEPLOY_BOOTSTRAP.md) records the required protected GitHub environment, stack-scoped deploy identity, private SAM artifact bucket, and current operational-value check. The stack has no CloudFormation service role, so review an independent least-privilege execution role before attaching it to this existing stack. The workflow stays manual and the unqualified native and mapped generation modes stay disabled.
+
 ## Deploy with AWS SAM
 
 ```bash
