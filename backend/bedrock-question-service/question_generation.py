@@ -82,6 +82,7 @@ MIN_BEDROCK_READ_TIMEOUT_SECONDS = 2.0
 DEFAULT_PROVIDER_CLIENT_SETUP_MILLISECONDS = 1_000
 DEFAULT_PROVIDER_DEADLINE_SAFETY_MILLISECONDS = 2_000
 DEFAULT_MIN_PROVIDER_REMAINING_MILLISECONDS = 0
+MappedAssignments = dict[tuple[str, str], tuple[str, str, int]]
 
 
 class ProviderCallBudget:
@@ -155,8 +156,15 @@ def _generate_provider_payload(
     author_mode = _author_mode()
     cardinality_mode = _author_cardinality_mode()
     task_only = _task_only_numerical_author(request, author_mode, cardinality_mode)
+    mapped_assignments = _mapped_fixed_slot_assignments(request, author_mode, cardinality_mode)
     if task_only:
         author_contract: NativeContract = TASK_ONLY_AUTHOR_CONTRACT
+    elif mapped_assignments is not None:
+        author_contract = AuthorSlotContract(request["targetCount"], "constructed_quantitative", tuple(
+            (skill_id, objective_id, skill_name, objective_name, count)
+            for (skill_id, objective_id), (skill_name, objective_name, count)
+            in mapped_assignments.items()
+        ), next(iter(mapped_assignments))[0], request["minimumDifficulty"])
     elif output_mode() != "native":
         author_contract: NativeContract = "question_author_v1"
     elif cardinality_mode == "count_bound":
@@ -190,10 +198,25 @@ def _generate_provider_payload(
             continue
 
         try:
-            return _extract_json_object(raw_text)
+            payload = _extract_json_object(raw_text)
         except ProviderError as first_error:
             record_quality(request_metrics, "provider", "invalid_json")
             errors.append(first_error)
+            if mapped_assignments is not None:
+                raise
+        else:
+            try:
+                _validate_mapped_fixed_slot_rows(
+                    payload, mapped_assignments,
+                    author_contract.mapped_quantitative_skill_id if mapped_assignments is not None else None,
+                )
+            except ProviderError as first_error:
+                record_quality(request_metrics, "provider", "invalid_allocation")
+                errors.append(first_error)
+                if mapped_assignments is not None:
+                    raise
+            else:
+                return payload
 
         try:
             retry_text = _generate_with_bedrock(
@@ -218,10 +241,21 @@ def _generate_provider_payload(
             continue
 
         try:
-            return _extract_json_object(retry_text)
+            payload = _extract_json_object(retry_text)
         except ProviderError as second_error:
             record_quality(request_metrics, "provider", "invalid_json")
             errors.append(second_error)
+        else:
+            try:
+                _validate_mapped_fixed_slot_rows(
+                    payload, mapped_assignments,
+                    author_contract.mapped_quantitative_skill_id if mapped_assignments is not None else None,
+                )
+            except ProviderError as second_error:
+                record_quality(request_metrics, "provider", "invalid_allocation")
+                errors.append(second_error)
+            else:
+                return payload
 
     raise (
         errors[-1] if errors else ProviderError("Provider response was not valid JSON.")
@@ -236,6 +270,9 @@ def _generate_sanitized_questions(
 ) -> list[dict[str, Any]]:
     feedback_contract = _feedback_contract()
     author_mode = _author_mode()
+    mapped_initial_assignments = _mapped_fixed_slot_assignments(
+        request, author_mode, _author_cardinality_mode(),
+    )
     mixed_quantitative = author_mode in {"mixed_quantitative", "constructed_quantitative"}
     # Native fixed slots hide the sanitizer's correct-answer-first ordering and
     # make four choice judgments plus six unordered pair judgments explicit.
@@ -244,6 +281,8 @@ def _generate_sanitized_questions(
     questions: list[dict[str, Any]] = []
     attempts = _int_env("GENERATION_ATTEMPTS", DEFAULT_GENERATION_ATTEMPTS, maximum=5)
     author_batch_size = _constructed_author_batch_size(request, author_mode)
+    if mapped_initial_assignments is not None and author_batch_size != 5:
+        raise ServiceConfigurationError("Compact mapped author requires the full five-slot batch.")
     current_request = copy.deepcopy(request)
     current_request["targetCount"] = min(target_count, author_batch_size)
     rejected_prompts: list[str] = []
@@ -357,6 +396,10 @@ def _generate_sanitized_questions(
                 break
             raise
         questions.extend(generated_questions)
+        # This exact five-slot pilot is one author batch. A partial verified
+        # return cannot be relabeled as original slots by an untracked top-up.
+        if mapped_initial_assignments is not None:
+            break
         approved_prompts = {question["prompt"] for question in generated_questions}
         rejected_prompts.extend(
             question["prompt"]
@@ -807,6 +850,120 @@ def _task_only_numerical_author(
     ):
         raise ServiceConfigurationError("Task-only author cannot serve mapped or source-bound requests.")
     return True
+
+
+_MAPPED_SCOPE_FIELDS = (
+    "goal", "skillMap", "desiredSkillAllocation", "requestedSkillAllocation",
+    "requestedObjectiveAllocation", "adaptiveSkillPlans", "requiresFullObjectiveCoverage",
+    "minimumDifficulty", "difficultyGuidance", "sourceDocuments", "competencies", "targetCount",
+)
+def _mapped_author_scope_json(request: dict[str, Any]) -> str:
+    """Canonical initial request scope; order within the skill map is significant."""
+    return json.dumps({key: request[key] for key in _MAPPED_SCOPE_FIELDS if key in request},
+                      sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False)
+
+
+def _mapped_author_scope_sha256(request: dict[str, Any]) -> str:
+    return hashlib.sha256(_mapped_author_scope_json(request).encode()).hexdigest()
+
+
+def _mapped_fixed_slot_assignments(
+    request: dict[str, Any], author_mode: str, cardinality_mode: str,
+) -> MappedAssignments | None:
+    """Select only the exact initial five-slot 3:2 request, never a top-up."""
+    setting = "QUESTION_MAPPED_FIXED_FIVE_GOAL_SHA256"
+    if setting not in os.environ:
+        return None
+    configured = os.environ[setting].strip().lower()
+    if len(configured) != 64 or any(char not in "0123456789abcdef" for char in configured):
+        raise ServiceConfigurationError(f"{setting} is invalid.")
+    scope_setting = "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256"
+    scoped = os.getenv(scope_setting, "").strip().lower()
+    if len(scoped) != 64 or any(char not in "0123456789abcdef" for char in scoped):
+        raise ServiceConfigurationError(f"{scope_setting} is missing or invalid.")
+    goal = request.get("goal")
+    if type(goal) is not dict:
+        raise ServiceConfigurationError("Mapped fixed-five author requires a normalized goal.")
+    digest = hashlib.sha256(json.dumps(goal, sort_keys=True, separators=(",", ":"),
+                                       ensure_ascii=True, allow_nan=False).encode()).hexdigest()
+    if digest != configured:
+        return None
+    if request.get("sourceDocuments") or request.get("competencies"):
+        return None
+    target_count = request.get("targetCount")
+    if type(target_count) is not int or target_count != 5:
+        return None
+    if _mapped_author_scope_sha256(request) != scoped:
+        return None
+    if (output_mode() != "native" or author_mode != "constructed_quantitative"
+            or cardinality_mode != "array" or _feedback_contract() != "authored_solution"):
+        raise ServiceConfigurationError("Mapped fixed-five author requires native constructed array mode and authored-solution feedback.")
+    skill_map = request.get("skillMap")
+    skills = skill_map.get("skills") if type(skill_map) is dict else None
+    if type(skills) is not list or len(skills) != 2:
+        raise ServiceConfigurationError("Mapped fixed-five author requires two mapped skills.")
+    allocation = request.get("requestedSkillAllocation")
+    if (type(allocation) is not dict or len(allocation) != 2
+            or any(type(count) is not int or count < 1 for count in allocation.values())
+            or sum(allocation.values()) != target_count):
+        raise ServiceConfigurationError("Mapped author requires an exact 3:2 skill allocation.")
+    assignments: MappedAssignments = {}
+    mapped: MappedAssignments = {}
+    for skill in skills:
+        if type(skill) is not dict or type(skill.get("objectives")) is not list or len(skill["objectives"]) != 1:
+            raise ServiceConfigurationError("Mapped fixed-five author requires one objective per skill.")
+        objective = skill["objectives"][0]
+        skill_id, skill_name = skill.get("id"), skill.get("name")
+        if (type(skill_id) is not str or type(skill_name) is not str
+                or type(objective) is not dict or type(objective.get("id")) is not str
+                or type(objective.get("name")) is not str):
+            raise ServiceConfigurationError("Mapped fixed-five author has invalid skill or objective tags.")
+        pair = (skill_id, objective["id"])
+        mapped[pair] = (skill_name, objective["name"], allocation.get(skill_id, 0))
+        if allocation.get(skill_id, 0):
+            assignments[pair] = mapped[pair]
+    if len(mapped) != 2 or set(allocation) != {skill_id for skill_id, _ in assignments}:
+        raise ServiceConfigurationError("Mapped fixed-five author allocation does not match the skill map.")
+    if [item[2] for item in mapped.values()] != [3, 2]:
+        raise ServiceConfigurationError("Compact mapped author requires quantitative slots 0-2 and prose slots 3-4.")
+    objective_allocation = request.get("requestedObjectiveAllocation")
+    if objective_allocation is not None:
+        expected = {(skill_id, objective_id): count for (skill_id, objective_id), (_, _, count) in assignments.items()}
+        if (type(objective_allocation) is not list or len(objective_allocation) != len(assignments)
+                or any(type(item) is not dict or type(item.get("skillID")) is not str
+                       or type(item.get("objectiveID")) is not str or type(item.get("count")) is not int
+                       for item in objective_allocation)
+                or {(item["skillID"], item["objectiveID"]): item["count"]
+                    for item in objective_allocation} != expected):
+            raise ServiceConfigurationError("Mapped fixed-five author objective allocation differs from its skill allocation.")
+    return assignments
+
+
+def _validate_mapped_fixed_slot_rows(
+    payload: dict[str, Any], assignments: MappedAssignments | None,
+    quantitative_skill_id: str | None,
+) -> None:
+    """Reject the whole authored batch before compilation if any tag is absent or wrong."""
+    if assignments is None:
+        return
+    rows = payload.get("questions")
+    if type(rows) is not list or len(rows) != sum(item[2] for item in assignments.values()):
+        raise ProviderError("Mapped fixed-five author returned an incomplete batch.")
+    expected = [pair for pair, (_, _, count) in assignments.items() for _ in range(count)]
+    for index, row in enumerate(rows):
+        if type(row) is not dict:
+            raise ProviderError("Mapped fixed-five author returned a malformed row.")
+        tagged = row.get("question") if row.get("kind") == "prose" else row
+        if type(tagged) is not dict or row.get("kind") not in {"prose", "quantitative"}:
+            raise ProviderError("Mapped fixed-five author returned a malformed row.")
+        if type(tagged.get("skillID")) is not str or type(tagged.get("objectiveID")) is not str:
+            raise ProviderError("Mapped fixed-five author omitted an assigned skill or objective.")
+        pair = (tagged["skillID"], tagged["objectiveID"])
+        assignment = assignments.get(pair)
+        if (pair != expected[index] or row["kind"] != ("quantitative" if pair[0] == quantitative_skill_id else "prose")
+                or assignment is None or tagged.get("topic") != assignment[0]
+                or tagged.get("objective") != assignment[1]):
+            raise ProviderError("Mapped fixed-five author omitted or changed an assigned skill or objective.")
 
 
 def _conversation_prompt(user_prompt: str, system_prompt: str | None = None) -> str:

@@ -79,6 +79,9 @@ class AuthorSlotContract:
 
     count: int
     mode: Literal["prose", "mixed_quantitative", "constructed_quantitative"] = "prose"
+    mapped_assignments: tuple[tuple[str, str, str, str, int], ...] | None = None
+    mapped_quantitative_skill_id: str | None = None
+    mapped_quantitative_difficulty: int | None = None
 
     def __post_init__(self) -> None:
         if type(self.count) is not int or not 1 <= self.count <= MAX_AUTHOR_BATCH_COUNT:
@@ -87,6 +90,26 @@ class AuthorSlotContract:
             "prose", "mixed_quantitative", "constructed_quantitative"
         }:
             raise ServiceConfigurationError("Unknown native author mode.")
+        if self.mapped_assignments is not None:
+            assignments = self.mapped_assignments
+            if (self.count != 5 or self.mode != "constructed_quantitative"
+                    or type(assignments) is not tuple or len(assignments) != 2
+                    or any(type(item) is not tuple or len(item) != 5
+                           or any(type(value) is not str or not value for value in item[:4])
+                           or type(item[4]) is not int or not 1 <= item[4] <= 3
+                           for item in assignments)
+                    or [item[4] for item in assignments] != [3, 2]
+                    or len({item[0] for item in assignments}) != len(assignments)
+                    or len({(item[0], item[1]) for item in assignments}) != len(assignments)):
+                raise ServiceConfigurationError("Mapped native author requires exactly five 3:2 assigned slots.")
+            if type(self.mapped_quantitative_skill_id) is not str or not self.mapped_quantitative_skill_id:
+                raise ServiceConfigurationError("Mapped native author requires its trusted quantitative skill identity.")
+            if type(self.mapped_quantitative_difficulty) is not int or not 1 <= self.mapped_quantitative_difficulty <= 5:
+                raise ServiceConfigurationError("Mapped native author requires its trusted quantitative difficulty.")
+            if self.mapped_quantitative_skill_id != assignments[0][0]:
+                raise ServiceConfigurationError("Mapped initial slots must start with the quantitative skill.")
+        elif self.mapped_quantitative_skill_id is not None or self.mapped_quantitative_difficulty is not None:
+            raise ServiceConfigurationError("Unmapped author cannot set mapped metadata.")
 
     @property
     def base_contract(self) -> Contract:
@@ -98,6 +121,11 @@ class AuthorSlotContract:
 
     @property
     def name(self) -> str:
+        if self.mapped_assignments is not None:
+            digest = hashlib.sha256(json.dumps((self.mapped_assignments, self.mapped_quantitative_skill_id,
+                                                self.mapped_quantitative_difficulty), separators=(",", ":"),
+                                               ensure_ascii=True).encode()).hexdigest()[:16]
+            return f"question_author_constructed_mapped_compact_v1_n{self.count}_{digest}"
         prefix = {
             "prose": "question_author_v4",
             "mixed_quantitative": "question_author_mixed_v2",
@@ -296,6 +324,12 @@ def output_mode() -> str:
 
 def _contract_schema(contract: NativeContract) -> dict[str, Any]:
     if isinstance(contract, AuthorSlotContract):
+        if contract.mapped_assignments is not None:
+            rows = {
+                str(index): _compact_mapped_slot(kind, shared=False)
+                for index, (kind, _) in enumerate(_mapped_slot_kinds(contract))
+            }
+            return _object({"questions": _object(rows)})
         row = _SCHEMAS[contract.base_contract]["properties"]["questions"]["items"]
         return _object({"questions": _object({
             str(index): copy.deepcopy(row) for index in range(contract.count)
@@ -361,8 +395,47 @@ def _solver_slot_transport_schema(contract: SolverSlotContract) -> dict[str, Any
     return schema
 
 
+def _mapped_slot_kinds(contract: AuthorSlotContract) -> list[tuple[str, tuple[str, str, str, str, int]]]:
+    return [
+        ("quantitative" if assignment[0] == contract.mapped_quantitative_skill_id else "prose", assignment)
+        for assignment in contract.mapped_assignments or () for _ in range(assignment[4])
+    ]
+
+
+def _without_server_metadata(row: dict[str, Any]) -> dict[str, Any]:
+    row = copy.deepcopy(row)
+    for field in ("topic", "skillID", "objectiveID", "objective"):
+        row["properties"].pop(field, None)
+        if field in row["required"]:
+            row["required"].remove(field)
+    return row
+
+
+def _compact_mapped_slot(kind: str, *, shared: bool) -> dict[str, Any]:
+    if kind == "quantitative":
+        prose = _SCHEMAS["question_author_v3"]["properties"]["questions"]["items"]
+        return copy.deepcopy(task_only_author_schema(prose, shared=shared)
+                             ["properties"]["questions"]["items"]["properties"]["task"])
+    prose = _without_server_metadata(
+        _SCHEMAS["question_author_v3"]["properties"]["questions"]["items"]
+    )
+    return prose
+
+
 def _author_slot_transport_schema(contract: AuthorSlotContract) -> dict[str, Any]:
     """Share one ordered author row while retaining the base mode's definitions."""
+    if contract.mapped_assignments is not None:
+        slots = {str(index): {"$ref": "#/$defs/task" if kind == "quantitative"
+                              else "#/$defs/proseQuestion"}
+                 for index, (kind, _) in enumerate(_mapped_slot_kinds(contract))}
+        task_schema = task_only_author_schema(
+            _SCHEMAS["question_author_v3"]["properties"]["questions"]["items"], shared=True,
+        )
+        definitions = {**task_schema["$defs"],
+                       "proseQuestion": _compact_mapped_slot("prose", shared=True)}
+        schema = _object({"questions": _object(slots)})
+        schema["$defs"] = definitions
+        return schema
     base = native_output_config(contract.base_contract)
     source = json.loads(base["textFormat"]["structure"]["jsonSchema"]["schema"])
     row = source["properties"]["questions"]["items"]
@@ -429,7 +502,8 @@ def contract_metadata(contract: NativeContract) -> dict[str, str]:
     config = native_output_config(contract)
     schema = config["textFormat"]["structure"]["jsonSchema"]["schema"]
     return {"name": contract.name if isinstance(contract, _COUNT_BOUND_CONTRACTS) else contract,
-            "version": ("4" if isinstance(contract, AuthorSlotContract) and contract.mode == "prose" else
+            "version": ("1" if isinstance(contract, AuthorSlotContract) and contract.mapped_assignments is not None else
+                        "4" if isinstance(contract, AuthorSlotContract) and contract.mode == "prose" else
                         "2" if isinstance(contract, AuthorSlotContract) else
                         "3" if isinstance(contract, AuthoredSolutionFlagReviewContract) else
                         "2" if isinstance(contract, AuthoredSolutionReviewContract) else
@@ -493,6 +567,32 @@ def _authored_flag_review_prompt(system_prompt: str, contract: AuthoredSolutionF
 
 def native_prompt(system_prompt: str, contract: NativeContract) -> str:
     if isinstance(contract, AuthorSlotContract):
+        if contract.mapped_assignments is not None:
+            marker = "\n\nReturn only one JSON object:"
+            if system_prompt.count(marker) != 1 or system_prompt.count(_LEGACY_AUTHOR_EXAMPLE) != 1:
+                raise ServiceConfigurationError("Compact mapped author requires the owned base security prompt.")
+            assignments = _mapped_slot_kinds(contract)
+            slots = "; ".join(
+                f'{index}: {kind} task for {assignment[2]} / {assignment[3]}'
+                for index, (kind, assignment) in enumerate(assignments)
+            )
+            return (system_prompt.split(marker, 1)[0] + "\n\n"
+                    + f"COMPACT MAPPED AUTHOR ({contract.name}): Return exactly one questions object "
+                    + f"with keys {', '.join(json.dumps(str(i)) for i in range(contract.count))}. "
+                    + "The required slot types and assigned objectives are: " + slots + ". "
+                    + "The application supplies topic, skillID, objectiveID, objective "
+                    + "and quantitative difficulty from the trusted request; never write them or an index. "
+                    + "Numeric slots contain only the typed task object, with kind exact_value "
+                    + "or scalar_condition. Prose slots contain only the question object with "
+                    + "prompt, choices a/b/c/d, explanation, correctChoice, difficulty "
+                    + "and format:Multiple Choice. "
+                    + "For prose, ensure exactly one choice "
+                    + "answers the self-contained stem, all six choice pairs differ in meaning, "
+                    + "and the explanation supports the selected key. Do not duplicate or pad rows. "
+                    + "For quantitative tasks, do not author choices, key, stem or teaching; code "
+                    + "constructs them and rejects unsupported tasks. "
+                    + "Task kind exact_value uses"
+                    + TASK_ONLY_AUTHOR_INSTRUCTIONS.split("Task kind exact_value uses", 1)[1])
         prompt = native_prompt(system_prompt, contract.base_contract)
         examples = [line for line in prompt.splitlines() if line.startswith('{"questions":')]
         if len(examples) != 1:
@@ -668,9 +768,22 @@ def adapt_native_response(raw: str, contract: NativeContract) -> str:
     if isinstance(contract, AuthorSlotContract):
         # Full closed-map validation precedes adaptation. Never salvage a
         # partial batch, trust model-written indexes, or change source ordinals.
-        restored = {"questions": [
-            payload["questions"][str(index)] for index in range(contract.count)
-        ]}
+        rows = [copy.deepcopy(payload["questions"][str(index)]) for index in range(contract.count)]
+        if contract.mapped_assignments is not None:
+            restored_rows = []
+            for row, (kind, assignment) in zip(rows, _mapped_slot_kinds(contract), strict=True):
+                if kind == "quantitative":
+                    restored_rows.append({"kind": "quantitative", "task": row,
+                                          "difficulty": contract.mapped_quantitative_difficulty,
+                                          "topic": assignment[2], "skillID": assignment[0],
+                                          "objectiveID": assignment[1], "objective": assignment[3]})
+                else:
+                    restored_rows.append({"kind": "prose", "question": {
+                        **row, "topic": assignment[2], "skillID": assignment[0],
+                        "objectiveID": assignment[1], "objective": assignment[3],
+                    }})
+            rows = restored_rows
+        restored = {"questions": rows}
         return adapt_native_response(json.dumps(restored, ensure_ascii=False, allow_nan=False),
                                      contract.base_contract)
     if isinstance(contract, SolverSlotContract):
