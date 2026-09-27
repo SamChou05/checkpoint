@@ -1,0 +1,231 @@
+{
+  "reviewer": "B",
+  "review_type": "independent_answer_blind_locked",
+  "worksheet_sha256": "65ed30beb66ad63c7cbc85fc404d38577df6ac8c0b1f4b2b493a352f5fca33e7",
+  "rubric_sha256": "0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2",
+  "kind": "prespecified_returned_output",
+  "requested_slots": 5,
+  "readable_items": 5,
+  "unavailable_items": 0,
+  "items": [
+    {
+      "id": "ad2df40e30798b7d822ae5ee",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "D",
+      "answer_basis": "4x + 7 = 35 gives 4x = 28 and x = 7; 7 is within the given integer domain.",
+      "stem_self_contained": true,
+      "premise_note": "The equation, integer domain, units and requested choice are explicit; no outside data are needed.",
+      "visible_objective_fit": true,
+      "objective_note": "Directly tests solving a one-variable linear equation and selecting the satisfying value.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "6 and 5 are different exact candidate values for x in the displayed equation."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "6 and 8 are different exact candidate values for x in the displayed equation."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "6 and 7 are different exact candidate values for x in the displayed equation."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "5 and 8 are different exact candidate values for x in the displayed equation."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "5 and 7 are different exact candidate values for x in the displayed equation."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "8 and 7 are different exact candidate values for x in the displayed equation."
+        }
+      },
+      "difficulty_1_to_5": 2,
+      "difficulty_note": "A direct add/subtract then divide solution, with a simple domain check.",
+      "within_batch_novelty_note": "Shares the integer-domain x framing with 9655c897a2899a62d33f9ead, but uses a linear equality rather than a rational inequality and asks for any satisfying offered value.",
+      "uncertainty": "None material."
+    },
+    {
+      "id": "6c44f044d36a8017ecad9eee",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "A",
+      "answer_basis": "Volunteers is the plural head of the first subject, so sort; librarian is the singular head of the second, so organizes. Each near-phrase leaves its head unchanged.",
+      "stem_self_contained": true,
+      "premise_note": "The full subjects, blank positions, tense and standard written American English convention are supplied.",
+      "visible_objective_fit": true,
+      "objective_note": "Directly tests present-tense subject–verb agreement in the presence of nearby nouns with different number.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 2; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1 and 2; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1 and 2; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 2; changing its singular/plural form changes agreement with that blank's subject."
+        }
+      },
+      "difficulty_1_to_5": 2,
+      "difficulty_note": "Identify each head subject and apply singular/plural agreement; the nearby nouns are modest distractors.",
+      "within_batch_novelty_note": "Closely parallels 66cec9b0ebfe7be775205d93: two present-tense blanks, a while clause, near-phrase distractors, and opposed plural/singular subjects. This item reverses the order of the nearby singular/plural nouns and uses different lexical content.",
+      "uncertainty": "None material."
+    },
+    {
+      "id": "c4819b8f686711394fe3039b",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "C",
+      "answer_basis": "5/6 + 3/5 = 25/30 + 18/30 = 43/30; multiplying by 3 yields 43/10.",
+      "stem_self_contained": true,
+      "premise_note": "The complete expression and exact-value request are visible; ordinary fraction arithmetic suffices.",
+      "visible_objective_fit": true,
+      "objective_note": "Directly tests exact evaluation of a parenthesized fraction expression.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "129 and 1/10 are different exact candidate values for q in the displayed expression."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "129 and 43/10 are different exact candidate values for q in the displayed expression."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "129 and 43/90 are different exact candidate values for q in the displayed expression."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "1/10 and 43/10 are different exact candidate values for q in the displayed expression."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "1/10 and 43/90 are different exact candidate values for q in the displayed expression."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "43/10 and 43/90 are different exact candidate values for q in the displayed expression."
+        }
+      },
+      "difficulty_1_to_5": 2,
+      "difficulty_note": "Apply a common denominator, add, multiply, and simplify in an explicit operation order.",
+      "within_batch_novelty_note": "The only exact-value fraction computation in this visible batch; distinct from the two x problems and the agreement pair.",
+      "uncertainty": "None material."
+    },
+    {
+      "id": "9655c897a2899a62d33f9ead",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "B",
+      "answer_basis": "The domain makes x + 3 positive. Multiplying by 11(x + 3) gives 11x >= 8x + 24, hence x >= 8. The minimum allowed satisfying integer is 8.",
+      "stem_self_contained": true,
+      "premise_note": "The inequality, domain, positivity of x + 3 within that domain, and minimum criterion are all established by the stem.",
+      "visible_objective_fit": true,
+      "objective_note": "Directly tests solving a rational inequality over a stated integer domain and selecting its minimum solution.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "6 and 8 are different exact candidate values for the minimum satisfying x."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "6 and 7 are different exact candidate values for the minimum satisfying x."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "6 and 9 are different exact candidate values for the minimum satisfying x."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "8 and 7 are different exact candidate values for the minimum satisfying x."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "8 and 9 are different exact candidate values for the minimum satisfying x."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "7 and 9 are different exact candidate values for the minimum satisfying x."
+        }
+      },
+      "difficulty_1_to_5": 2,
+      "difficulty_note": "A direct positive-denominator cross multiplication and integer threshold check; the stem supplies a domain that removes sign ambiguity.",
+      "within_batch_novelty_note": "Shares integer-domain x notation with ad2df40e30798b7d822ae5ee, but differs in rational-inequality reasoning and a minimum-solution criterion.",
+      "uncertainty": "None material."
+    },
+    {
+      "id": "66cec9b0ebfe7be775205d93",
+      "status": "readable",
+      "answer_judgment": "single_best_literal_choice",
+      "best_answer": "C",
+      "answer_basis": "Maya and Theo is a coordinated plural subject, so prepare; every guest is singular, so receives. The near-phrases do not alter those subjects.",
+      "stem_self_contained": true,
+      "premise_note": "The full subjects, blank positions, tense and standard written American English convention are supplied.",
+      "visible_objective_fit": true,
+      "objective_note": "Directly tests present-tense subject–verb agreement for a coordinated subject and an every-subject despite nearby nouns.",
+      "all_six_choice_pairs_meaningfully_distinct": true,
+      "choice_pair_audit": {
+        "A-B": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "A-C": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 2; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "A-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1 and 2; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "B-C": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1 and 2; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "B-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 2; changing its singular/plural form changes agreement with that blank's subject."
+        },
+        "C-D": {
+          "meaningfully_distinct": true,
+          "reason": "The ordered verb pairs differ in blank 1; changing its singular/plural form changes agreement with that blank's subject."
+        }
+      },
+      "difficulty_1_to_5": 2,
+      "difficulty_note": "Identify plural coordination and singular every, then select the respective present-tense forms; nearby nouns add a modest distractor.",
+      "within_batch_novelty_note": "Closely parallels 6c44f044d36a8017ecad9eee in its two-blank, while-clause, near-phrase agreement format; this item adds coordination and every as different subject constructions.",
+      "uncertainty": "None material."
+    }
+  ],
+  "batch_assessment": {
+    "literal_answerability": "All five visible items have a single correct A–D choice; none is ambiguous or unsupported.",
+    "stem_self_containment": "Each item shows all premises required to solve it.",
+    "choice_pair_distinction": "All six unordered choice pairs are meaningfully distinct within each item. The numeric alternatives differ in value, and grammar alternatives differ in at least one ordered verb form. Some wrong numerical options may share a failure type, but none duplicates another offered answer.",
+    "visible_objective_fit": "Each item directly assesses the skill stated by its stem. No separate external learning objective is visible for further alignment judgment.",
+    "difficulty": "All five are rated 2 of 5: direct application of supplied arithmetic, algebra, or agreement rules.",
+    "novelty": "The batch covers three visible skills: two algebra conditions over integer domains, two closely parallel two-blank agreement questions, and one fraction-expression evaluation. The grammar pair has the clearest within-batch repetition; the two algebra items differ substantially in method.",
+    "uncertainty": "No material answer or premise uncertainty. Broader objective alignment cannot be checked without an external objective statement."
+  }
+}

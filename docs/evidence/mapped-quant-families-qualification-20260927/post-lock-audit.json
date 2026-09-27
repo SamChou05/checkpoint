@@ -1,0 +1,118 @@
+{
+  "kind": "locked_post_trial_offline_audit",
+  "source_commit": "bd7d90980d42f13f4a4576288b7d91c9a7cf20d6",
+  "locked_file_hashes": {
+    "plan.json": "4a26cee369744fd7f6aed2e60522608b40faa0d17a99d3f65a6f493e872ad6ce",
+    "capture.json": "f9e81f34f19e4829b49587c3919d77bae2595784064e063631d3515b61e009fa",
+    "official-worksheet.json": "65ed30beb66ad63c7cbc85fc404d38577df6ac8c0b1f4b2b493a352f5fca33e7",
+    "official-RUBRIC.md": "0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2",
+    "blind-private-returned_output.json": "31ece675a9749505dd1bd42fe020a2a5018fb656d37b78b2795c0f848d623b11",
+    "blind-review-a.json": "72639aff8ddacbde1233f000003e91a41e8eddb7f1e5e73a2cd6a7b8f99f3f69",
+    "blind-review-b.json": "87b396c1da4e06c0c564f93e779c50031f872a5f103908b15e2c0cf775263adf"
+  },
+  "mechanical_return": "5/5_original_slots",
+  "three_expected_converse_calls": true,
+  "six_reservation_slots_bounded": true,
+  "execute_elapsed_seconds": 81.341951,
+  "native_author_response_readapted_exactly": true,
+  "all_25_learner_fields_exactly_recompiled": true,
+  "five_independently_rechecked_keys": true,
+  "both_reviewers_match_all_five_keys": true,
+  "both_reviewers_find_all_30_pairs_distinct": true,
+  "per_reviewer_minimum_difficulty_2_passed_slots": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "per_reviewer_minimum_difficulty_2_passed_count": 5,
+  "prespecified_content_gate": "PASS",
+  "slots": [
+    {
+      "original_slot": 0,
+      "opaque_id": "c4819b8f686711394fe3039b",
+      "correct_display_label": "C",
+      "key": "43/10",
+      "policy_revision": 8,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 2,
+      "returned_difficulty_metadata": 2,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    },
+    {
+      "original_slot": 1,
+      "opaque_id": "ad2df40e30798b7d822ae5ee",
+      "correct_display_label": "D",
+      "key": "7",
+      "policy_revision": 8,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 2,
+      "returned_difficulty_metadata": 2,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    },
+    {
+      "original_slot": 2,
+      "opaque_id": "9655c897a2899a62d33f9ead",
+      "correct_display_label": "B",
+      "key": "8",
+      "policy_revision": 8,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 3,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    },
+    {
+      "original_slot": 3,
+      "opaque_id": "6c44f044d36a8017ecad9eee",
+      "correct_display_label": "A",
+      "key": "sort; organizes",
+      "policy_revision": 10,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 2,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    },
+    {
+      "original_slot": 4,
+      "opaque_id": "66cec9b0ebfe7be775205d93",
+      "correct_display_label": "C",
+      "key": "prepare; receives",
+      "policy_revision": 10,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 2,
+      "all_five_learner_fields_exactly_recompiled": true,
+      "independent_key_check": true,
+      "feedback_complete_and_position_free": true,
+      "target_objective_assignment_matches": true
+    }
+  ]
+}

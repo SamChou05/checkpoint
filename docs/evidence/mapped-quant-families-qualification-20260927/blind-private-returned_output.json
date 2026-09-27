@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "kind": "prespecified_returned_output",
+  "capture_sha256": "f9e81f34f19e4829b49587c3919d77bae2595784064e063631d3515b61e009fa",
+  "plan_sha256": "4a26cee369744fd7f6aed2e60522608b40faa0d17a99d3f65a6f493e872ad6ce",
+  "worksheet_sha256": "65ed30beb66ad63c7cbc85fc404d38577df6ac8c0b1f4b2b493a352f5fca33e7",
+  "mapping": {
+    "c4819b8f686711394fe3039b": {
+      "original_slot": 0,
+      "display_to_source_index": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "correct_display_label": "C"
+    },
+    "ad2df40e30798b7d822ae5ee": {
+      "original_slot": 1,
+      "display_to_source_index": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "correct_display_label": "D"
+    },
+    "9655c897a2899a62d33f9ead": {
+      "original_slot": 2,
+      "display_to_source_index": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "correct_display_label": "B"
+    },
+    "6c44f044d36a8017ecad9eee": {
+      "original_slot": 3,
+      "display_to_source_index": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "correct_display_label": "A"
+    },
+    "66cec9b0ebfe7be775205d93": {
+      "original_slot": 4,
+      "display_to_source_index": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "correct_display_label": "C"
+    }
+  }
+}

@@ -1,0 +1,369 @@
+{
+  "reviewer": "A",
+  "review_type": "independent_answer_blind",
+  "worksheet_sha256": "65ed30beb66ad63c7cbc85fc404d38577df6ac8c0b1f4b2b493a352f5fca33e7",
+  "rubric_sha256": "0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2",
+  "items": [
+    {
+      "id": "ad2df40e30798b7d822ae5ee",
+      "status": "readable",
+      "best_literal_answer": "D",
+      "answer_verdict": "single_supported_answer",
+      "answer_reasoning": "4x + 7 = 35 gives 4x = 28 and x = 7, which lies in the stated domain.",
+      "difficulty_1_to_5": 2,
+      "difficulty_basis": "Short direct application of an explicitly stated arithmetic, algebra, or grammar condition.",
+      "stem_self_contained": true,
+      "self_containment_basis": "The stem states the condition, domain or language convention as needed, and the requested result; no external passage or figure is required.",
+      "objective_fit": {
+        "visible_inferred_objective": "solve a one-variable linear equation in a bounded integer domain",
+        "fits_visible_inferred_objective": true,
+        "explicit_learning_objective_supplied": false,
+        "fit_to_unseen_objective": "not_assessable"
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        }
+      ],
+      "all_six_pairs_meaningfully_distinct": true,
+      "within_batch_novelty": "Distinct equality-solving task; the ratio-boundary item also seeks an x value, but requires an inequality and a minimum rather than equality.",
+      "uncertainty": "none"
+    },
+    {
+      "id": "6c44f044d36a8017ecad9eee",
+      "status": "readable",
+      "best_literal_answer": "A",
+      "answer_verdict": "single_supported_answer",
+      "answer_reasoning": "The head subject volunteers is plural, so sort; librarian is singular, so organizes. The nearby prepositional phrases do not change agreement.",
+      "difficulty_1_to_5": 2,
+      "difficulty_basis": "Short direct application of an explicitly stated arithmetic, algebra, or grammar condition.",
+      "stem_self_contained": true,
+      "self_containment_basis": "The stem states the condition, domain or language convention as needed, and the requested result; no external passage or figure is required.",
+      "objective_fit": {
+        "visible_inferred_objective": "apply present-tense subject-verb agreement despite intervening nouns",
+        "fits_visible_inferred_objective": true,
+        "explicit_learning_objective_supplied": false,
+        "fit_to_unseen_objective": "not_assessable"
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 2; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 1 and 2; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 1; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 1; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 1 and 2; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 2; the options express different agreement judgments."
+        }
+      ],
+      "all_six_pairs_meaningfully_distinct": true,
+      "within_batch_novelty": "Low novelty relative to 66cec9b0ebfe7be775205d93: both use two clauses with a plural head near a singular noun and a singular head near a plural noun.",
+      "uncertainty": "none"
+    },
+    {
+      "id": "c4819b8f686711394fe3039b",
+      "status": "readable",
+      "best_literal_answer": "C",
+      "answer_verdict": "single_supported_answer",
+      "answer_reasoning": "5/6 + 3/5 = 25/30 + 18/30 = 43/30; multiplying by 3 gives 43/10.",
+      "difficulty_1_to_5": 2,
+      "difficulty_basis": "Short direct application of an explicitly stated arithmetic, algebra, or grammar condition.",
+      "stem_self_contained": true,
+      "self_containment_basis": "The stem states the condition, domain or language convention as needed, and the requested result; no external passage or figure is required.",
+      "objective_fit": {
+        "visible_inferred_objective": "evaluate an exact arithmetic expression involving fractions",
+        "fits_visible_inferred_objective": true,
+        "explicit_learning_objective_supplied": false,
+        "fit_to_unseen_objective": "not_assessable"
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        }
+      ],
+      "all_six_pairs_meaningfully_distinct": true,
+      "within_batch_novelty": "Only exact fraction-expression evaluation item in this five-item batch.",
+      "uncertainty": "none"
+    },
+    {
+      "id": "9655c897a2899a62d33f9ead",
+      "status": "readable",
+      "best_literal_answer": "B",
+      "answer_verdict": "single_supported_answer",
+      "answer_reasoning": "For x in 5 through 11, x + 3 is positive. Multiplying by 11(x + 3) gives 11x >= 8x + 24, hence x >= 8; the minimum in the domain is 8.",
+      "difficulty_1_to_5": 2,
+      "difficulty_basis": "Short direct application of an explicitly stated arithmetic, algebra, or grammar condition.",
+      "stem_self_contained": true,
+      "self_containment_basis": "The stem states the condition, domain or language convention as needed, and the requested result; no external passage or figure is required.",
+      "objective_fit": {
+        "visible_inferred_objective": "solve a rational inequality on a positive integer domain and select the minimum satisfying value",
+        "fits_visible_inferred_objective": true,
+        "explicit_learning_objective_supplied": false,
+        "fit_to_unseen_objective": "not_assessable"
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different exact numerical values; the options express different outcomes for the requested calculation or boundary."
+        }
+      ],
+      "all_six_pairs_meaningfully_distinct": true,
+      "within_batch_novelty": "Distinct ratio and inequality boundary mechanism; it overlaps the equality item only in solving for x from a stated condition.",
+      "uncertainty": "none; positivity of x + 3 follows directly from the stated domain"
+    },
+    {
+      "id": "66cec9b0ebfe7be775205d93",
+      "status": "readable",
+      "best_literal_answer": "C",
+      "answer_verdict": "single_supported_answer",
+      "answer_reasoning": "Maya and Theo is a plural compound subject, so prepare; every guest is singular, so receives. Nearby nouns do not change agreement.",
+      "difficulty_1_to_5": 2,
+      "difficulty_basis": "Short direct application of an explicitly stated arithmetic, algebra, or grammar condition.",
+      "stem_self_contained": true,
+      "self_containment_basis": "The stem states the condition, domain or language convention as needed, and the requested result; no external passage or figure is required.",
+      "objective_fit": {
+        "visible_inferred_objective": "apply present-tense subject-verb agreement to compound and every subjects despite intervening nouns",
+        "fits_visible_inferred_objective": true,
+        "explicit_learning_objective_supplied": false,
+        "fit_to_unseen_objective": "not_assessable"
+      },
+      "choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 1; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 2; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 1 and 2; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 1 and 2; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 2; the options express different agreement judgments."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "meaningfully_distinct": true,
+          "reason": "Different verb form in blank 1; the options express different agreement judgments."
+        }
+      ],
+      "all_six_pairs_meaningfully_distinct": true,
+      "within_batch_novelty": "Low novelty relative to 6c44f044d36a8017ecad9eee: the plural-then-singular two-clause agreement structure and near-phrase distractors repeat.",
+      "uncertainty": "none"
+    }
+  ],
+  "batch_judgment": {
+    "requested_slots": 5,
+    "readable_items": 5,
+    "unavailable_items": 0,
+    "single_supported_answers": 5,
+    "items_with_six_meaningfully_distinct_pairs": 5,
+    "self_contained_items": 5,
+    "difficulty_summary": "All five are rated 2/5: direct application with short routine work.",
+    "objective_limit": "No explicit learning objectives are visible; objective fit is assessed against skills inferred from the stems.",
+    "novelty_summary": "The two subject-verb agreement items closely repeat a plural-then-singular two-clause pattern. The linear equation, fraction expression, and rational inequality use separate mathematical mechanisms, though the equation and inequality both ask for x."
+  }
+}

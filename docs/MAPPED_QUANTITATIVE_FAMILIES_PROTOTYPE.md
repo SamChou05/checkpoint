@@ -31,9 +31,9 @@ route, its exact goal and full-request hashes, the pinned arithmetic objective,
 native transport, constructed quantitative authoring, immutable feedback,
 minimum difficulty 2 and no fallback. The flag defaults to `disabled` and is
 not present in SAM or the deployment workflow. The previous mapped agreement
-schema and prompt hashes are unchanged. This option is not deployed or
-qualified; one full-request hash does not authorize subsequent refill states
-with changed history.
+schema and prompt hashes are unchanged. This option is not deployed; one
+full-request hash does not authorize subsequent refill states with changed
+history.
 
 Offline verification compiled all 208 allowed operand combinations and checked
 that each has exactly four distinct choices, one matching expected answer and
@@ -46,7 +46,11 @@ backend suite passed 1,419 tests and 4,800 subtests; no new Ruff findings or
 `git diff --check` errors were introduced.
 
 These checks establish finite-domain construction and integration behavior.
-They do not establish that Bedrock accepts the new schema, that all three math
-questions are level 2 to independent reviewers, that distractors teach well,
-or that a repeated bank can always find unused variants. A bounded live worker
-trial and blind content review must pass before any worker activation is considered.
+A [bounded live worker trial](evidence/mapped-quant-families-qualification-20260927/RESULTS.md)
+accepted the schema and returned all five original slots in three calls. Two
+independent blind reviewers chose every code-supported key, found all 30
+within-item choice pairs distinct and rated all five items level 2. All 25
+learner fields recompiled exactly and the teaching passed post-lock review.
+The trial used empty bank history; the English pair remained similar in
+format. One passing sample does not establish repeat reliability, broad topic
+coverage, or deployment readiness, and finite inventories can exhaust.

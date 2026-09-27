@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "prespecified_returned_output",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "ad2df40e30798b7d822ae5ee",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((4 * x) + 7) = 35. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "6",
+        "B": "5",
+        "C": "8",
+        "D": "7"
+      }
+    },
+    {
+      "id": "6c44f044d36a8017ecad9eee",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The volunteers near the librarian ___ the returns, while the librarian near the volunteers ___ the books. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "sort; organizes",
+        "B": "sort; organize",
+        "C": "sorts; organize",
+        "D": "sorts; organizes"
+      }
+    },
+    {
+      "id": "c4819b8f686711394fe3039b",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((5 / 6) + (3 / 5)) * 3). What is its exact value?",
+      "choices": {
+        "A": "129",
+        "B": "1/10",
+        "C": "43/10",
+        "D": "43/90"
+      }
+    },
+    {
+      "id": "9655c897a2899a62d33f9ead",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: (x / (x + 3)) >= (8 / 11). What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "6",
+        "B": "8",
+        "C": "7",
+        "D": "9"
+      }
+    },
+    {
+      "id": "66cec9b0ebfe7be775205d93",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Maya and Theo near the cook ___ lunch, while every guest near the servers ___ a plate. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "prepare; receive",
+        "B": "prepares; receive",
+        "C": "prepare; receives",
+        "D": "prepares; receives"
+      }
+    }
+  ]
+}
