@@ -69,7 +69,6 @@ def _worked_choices(scene: _Scene) -> tuple[tuple[str, str, str, str], tuple[Fra
     base, left, right = scene.base, scene.left, scene.right
     multiply = scene.operation == "multiply"
     symbol = "×" if multiply else "÷"
-    verb = "Multiply" if multiply else "Divide"
     intermediate = left * right if multiply else left / right
     correct = base + intermediate
     early_sum = base + left
@@ -87,17 +86,17 @@ def _worked_choices(scene: _Scene) -> tuple[tuple[str, str, str, str], tuple[Fra
         raise MathReasoningTaskError("A flawed derivation collides with another result.")
 
     choices = (
-        f"{verb} first: {left} {symbol} {right} = {intermediate}; "
+        f"{left} {symbol} {right} = {intermediate}; "
         f"{base} + {intermediate} = {correct}.",
-        f"Add first: {base} + {left} = {early_sum}; "
+        f"{base} + {left} = {early_sum}; "
         f"{early_sum} {symbol} {right} = {early_result}.",
-        f"Add tops and bottoms: {left} {symbol} {right} = {intermediate}; "
+        f"{left} {symbol} {right} = {intermediate}; "
         f"({base.numerator}+{intermediate.numerator})/"
         f"({base.denominator}+{intermediate.denominator}) = {crossed_sum}.",
-        (f"Add factor denominators: {left} {symbol} {right} = "
+        (f"{left} {symbol} {right} = "
          f"{false_inner_numerator}/{false_inner_denominator}; "
          f"{base} + {false_inner} = {false_inner_result}." if multiply else
-         f"Multiply instead of divide: {left} {symbol} {right} = {false_inner}; "
+         f"{left} {symbol} {right} = {false_inner}; "
          f"{base} + {false_inner} = {false_inner_result}."),
     )
     return choices, outcomes

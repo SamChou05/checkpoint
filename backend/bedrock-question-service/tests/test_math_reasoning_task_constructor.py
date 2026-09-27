@@ -66,6 +66,9 @@ class MathReasoningTaskConstructorTests(unittest.TestCase):
                 self.assertEqual(len(choices), 4)
                 self.assertEqual(len(set(choices)), 4)
                 self.assertEqual(tuple(str(result_of(choice)) for choice in choices), expected)
+                self.assertTrue(all(not choice.startswith(("Multiply first:", "Divide first:",
+                                                           "Add first:", "Multiply instead of divide:"))
+                                    for choice in choices))
                 self.assertEqual(len({result_of(choice) for choice in choices}), 4)
                 self.assertEqual(question["expectedAnswer"], choices[0])
                 self.assertEqual(sum(result_of(choice) == Fraction(expected[0])

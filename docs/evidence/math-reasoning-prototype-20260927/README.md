@@ -4,4 +4,6 @@ This prototype covers the mapped level-2 objective “Evaluate an exact rational
 
 Three scenes use multiplication before addition and three use division before addition. The flawed options perform addition first, add fraction numerators and denominators separately, or misuse multiplication/division inside the expression. `Fraction` computes all outcomes exactly. The constructor rejects any scene in which an incorrect method reaches the true result or two methods reach the same result. The tests pin independently calculated results for all six scenes and rotate the correct option across all four positions.
 
+The choice text presents only the two calculation steps. It does not label a method as correct or name its mistake, because such labels would give away the answer without evaluating the arithmetic.
+
 This is **not production-wired**. It has no native provider acceptance check, blind learner review, bank novelty evidence, or live worker qualification. The six scenes may repeat the same solve pattern too often in a larger bank; passing deterministic arithmetic tests alone does not establish level-2 difficulty or adequate cross-question variety.
