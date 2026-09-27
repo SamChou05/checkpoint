@@ -1,0 +1,309 @@
+{
+  "review_type": "answer_blind_independent_content_review",
+  "reviewer": "b",
+  "review_locked": true,
+  "rubric_sha256": "0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2",
+  "worksheet_sha256": "e0896bdcf33c763fa9f27b4f0bee79aa364d8a51d91cc9464ae6f86114e62721",
+  "requested_slots": 5,
+  "readable_items": 5,
+  "unfilled_slots": 0,
+  "difficulty_scale_assumption": "1 easiest, 5 hardest; the supplied rubric gives no further anchors.",
+  "batch_assessment": "All five items are readable and self-contained. Each of the 30 within-item choice pairs is meaningfully distinct; no equivalent options found. Topic novelty is limited by two closely parallel fraction arithmetic items and two subject–verb agreement items; the inequality item adds a third skill. Target objectives are not visible, so prespecified objective fit is unassessable.",
+  "items": [
+    {
+      "id": "199ee7c2835dcded3f3f05f3",
+      "answer": "A",
+      "solution": "The head subject volunteers is plural, so sort; the head subject librarian is singular, so organizes. Each near phrase is a modifier.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Two clauses and intervening near phrases require identifying each head subject, but the agreement rule is direct.",
+      "apparent_objective": "Present-tense subject–verb agreement with intervening modifiers.",
+      "fit_to_apparent_objective": "strong",
+      "novelty_within_batch": "moderate",
+      "novelty_reason": "Shares a two-blank agreement format with 943a2c343e8baffcc9490745, but tests intervening near phrases rather than a compound subject and every.",
+      "uncertainty": {
+        "answer": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no explicit objective is supplied"
+      },
+      "readable": true,
+      "stem_self_contained": true,
+      "stem_self_containment_reason": "The stem supplies the task, relevant conventions or domain where needed, and all data required for a unique answer.",
+      "fit_to_stated_objective": null,
+      "stated_objective_note": "No target objective appears in the supplied worksheet or rubric; fit can only be judged against the apparent skill in the stem.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "Both verb forms differ."
+        },
+        {
+          "pair": "AC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "The first verb form differs."
+        },
+        {
+          "pair": "AD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "The second verb form differs."
+        },
+        {
+          "pair": "BC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "The second verb form differs."
+        },
+        {
+          "pair": "BD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "The first verb form differs."
+        },
+        {
+          "pair": "CD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "Both verb forms differ."
+        }
+      ]
+    },
+    {
+      "id": "407588605e6c4559445250db",
+      "answer": "A",
+      "solution": "3/4 + 5/6 = 19/12; multiplying by 8 gives 38/3.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Requires a common denominator followed by multiplication and simplification.",
+      "apparent_objective": "Exact arithmetic with fractions and order of operations.",
+      "fit_to_apparent_objective": "strong",
+      "novelty_within_batch": "low",
+      "novelty_reason": "Closely repeats the unitless-q exact-fraction calculation format of 5ff65fa88f84ed33bd59be97, changing the operations and numbers.",
+      "uncertainty": {
+        "answer": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no explicit objective is supplied"
+      },
+      "readable": true,
+      "stem_self_contained": true,
+      "stem_self_containment_reason": "The stem supplies the task, relevant conventions or domain where needed, and all data required for a unique answer.",
+      "fit_to_stated_objective": null,
+      "stated_objective_note": "No target objective appears in the supplied worksheet or rubric; fit can only be judged against the apparent skill in the stem.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "A is 38/3 and B is 19/96; these are different exact values."
+        },
+        {
+          "pair": "AC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "A is 38/3 and C is 2/3; these are different exact values."
+        },
+        {
+          "pair": "AD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "A is 38/3 and D is 152; these are different exact values."
+        },
+        {
+          "pair": "BC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "B is 19/96 and C is 2/3; these are different exact values."
+        },
+        {
+          "pair": "BD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "B is 19/96 and D is 152; these are different exact values."
+        },
+        {
+          "pair": "CD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "C is 2/3 and D is 152; these are different exact values."
+        }
+      ]
+    },
+    {
+      "id": "5ff65fa88f84ed33bd59be97",
+      "answer": "A",
+      "solution": "9/4 - 2/3 + 1/2 = 27/12 - 8/12 + 6/12 = 25/12.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Requires a common denominator across three fractions and two arithmetic steps.",
+      "apparent_objective": "Exact arithmetic with fractions and order of operations.",
+      "fit_to_apparent_objective": "strong",
+      "novelty_within_batch": "low",
+      "novelty_reason": "Closely repeats the unitless-q exact-fraction calculation format of 407588605e6c4559445250db, changing the operations and numbers.",
+      "uncertainty": {
+        "answer": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no explicit objective is supplied"
+      },
+      "readable": true,
+      "stem_self_contained": true,
+      "stem_self_containment_reason": "The stem supplies the task, relevant conventions or domain where needed, and all data required for a unique answer.",
+      "fit_to_stated_objective": null,
+      "stated_objective_note": "No target objective appears in the supplied worksheet or rubric; fit can only be judged against the apparent skill in the stem.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "A is 25/12 and B is 10/7; these are different exact values."
+        },
+        {
+          "pair": "AC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "A is 25/12 and C is 5/3; these are different exact values."
+        },
+        {
+          "pair": "AD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "A is 25/12 and D is 19/12; these are different exact values."
+        },
+        {
+          "pair": "BC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "B is 10/7 and C is 5/3; these are different exact values."
+        },
+        {
+          "pair": "BD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "B is 10/7 and D is 19/12; these are different exact values."
+        },
+        {
+          "pair": "CD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "C is 5/3 and D is 19/12; these are different exact values."
+        }
+      ]
+    },
+    {
+      "id": "5e3a413241b03672ad262071",
+      "answer": "D",
+      "solution": "4x - 3 <= 25 implies x <= 7. The stated integer domain contains 7, so the maximum is 7.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "A short linear inequality plus the request for the largest allowed integer.",
+      "apparent_objective": "Solving a linear inequality and selecting the maximum from an integer domain.",
+      "fit_to_apparent_objective": "strong",
+      "novelty_within_batch": "high",
+      "novelty_reason": "Only inequality/domain item in the five-slot batch.",
+      "uncertainty": {
+        "answer": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no explicit objective is supplied"
+      },
+      "readable": true,
+      "stem_self_contained": true,
+      "stem_self_containment_reason": "The stem supplies the task, relevant conventions or domain where needed, and all data required for a unique answer.",
+      "fit_to_stated_objective": null,
+      "stated_objective_note": "No target objective appears in the supplied worksheet or rubric; fit can only be judged against the apparent skill in the stem.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "A is 8 and B is 5; these are different exact values."
+        },
+        {
+          "pair": "AC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "A is 8 and C is 6; these are different exact values."
+        },
+        {
+          "pair": "AD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "A is 8 and D is 7; these are different exact values."
+        },
+        {
+          "pair": "BC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "B is 5 and C is 6; these are different exact values."
+        },
+        {
+          "pair": "BD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "B is 5 and D is 7; these are different exact values."
+        },
+        {
+          "pair": "CD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "C is 6 and D is 7; these are different exact values."
+        }
+      ]
+    },
+    {
+      "id": "943a2c343e8baffcc9490745",
+      "answer": "D",
+      "solution": "Maya and Theo is a compound plural subject, so prepare; every guest is singular, so receives.",
+      "difficulty_1_to_5": 1,
+      "difficulty_reason": "The relevant subjects are adjacent or nearly adjacent to the blanks, with no distracting modifier.",
+      "apparent_objective": "Present-tense subject–verb agreement for a compound subject and every plus a singular noun.",
+      "fit_to_apparent_objective": "strong",
+      "novelty_within_batch": "moderate",
+      "novelty_reason": "Shares a two-blank agreement format with 199ee7c2835dcded3f3f05f3, but uses different subject structures.",
+      "uncertainty": {
+        "answer": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no explicit objective is supplied"
+      },
+      "readable": true,
+      "stem_self_contained": true,
+      "stem_self_containment_reason": "The stem supplies the task, relevant conventions or domain where needed, and all data required for a unique answer.",
+      "fit_to_stated_objective": null,
+      "stated_objective_note": "No target objective appears in the supplied worksheet or rubric; fit can only be judged against the apparent skill in the stem.",
+      "choice_pairs": [
+        {
+          "pair": "AB",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "The second verb form differs."
+        },
+        {
+          "pair": "AC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "Both verb forms differ."
+        },
+        {
+          "pair": "AD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "The first verb form differs."
+        },
+        {
+          "pair": "BC",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "The first verb form differs."
+        },
+        {
+          "pair": "BD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "Both verb forms differ."
+        },
+        {
+          "pair": "CD",
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "reason": "The second verb form differs."
+        }
+      ]
+    }
+  ]
+}

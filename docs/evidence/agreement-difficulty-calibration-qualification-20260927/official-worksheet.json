@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "prespecified_returned_output",
+  "requested_slots": 5,
+  "items": [
+    {
+      "id": "199ee7c2835dcded3f3f05f3",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The volunteers near the librarian ___ the returns, while the librarian near the volunteers ___ the books. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "sort; organizes",
+        "B": "sorts; organize",
+        "C": "sorts; organizes",
+        "D": "sort; organize"
+      }
+    },
+    {
+      "id": "407588605e6c4559445250db",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((3 / 4) + (5 / 6)) * 8). What is its exact value?",
+      "choices": {
+        "A": "38/3",
+        "B": "19/96",
+        "C": "2/3",
+        "D": "152"
+      }
+    },
+    {
+      "id": "5ff65fa88f84ed33bd59be97",
+      "requested_slot": true,
+      "stem": "Let q be a unitless number, defined by q = (((9 / 4) - (2 / 3)) + (1 / 2)). What is its exact value?",
+      "choices": {
+        "A": "25/12",
+        "B": "10/7",
+        "C": "5/3",
+        "D": "19/12"
+      }
+    },
+    {
+      "id": "5e3a413241b03672ad262071",
+      "requested_slot": true,
+      "stem": "Let x be a unitless number. Its domain is integers from 1 through 10, inclusive. Condition: ((4 * x) - 3) <= 25. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "5",
+        "C": "6",
+        "D": "7"
+      }
+    },
+    {
+      "id": "943a2c343e8baffcc9490745",
+      "requested_slot": true,
+      "stem": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Maya and Theo ___ lunch, while every guest ___ a plate. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "prepares; receives",
+        "B": "prepares; receive",
+        "C": "prepare; receive",
+        "D": "prepare; receives"
+      }
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "kind": "post_lock_offline_audit",
+  "source_commit": "22aec98b5ba7685a30218441029d0f7299776a35",
+  "capture_sha256": "f8a912da0c29df783303d9afca5f0af0b559408f80ff6b37eae7755a285ff145",
+  "worksheet_sha256": "e0896bdcf33c763fa9f27b4f0bee79aa364d8a51d91cc9464ae6f86114e62721",
+  "review_a_sha256": "2424af66093316eecd26ceaf17fdc76f56e90956a3785adb6b494b815ac9b86a",
+  "review_b_sha256": "1350cf9288cc5f603ae474fbb834c8221cd5b771513c4295c34fcb7c0a0cdf16",
+  "mechanical_return": "5/5_original_slots",
+  "provider_calls": 3,
+  "execute_elapsed_seconds": 92.08736,
+  "all_25_learner_fields_exactly_recompiled": true,
+  "both_reviewers_match_all_five_keys": true,
+  "both_reviewers_find_all_30_pairs_distinct": true,
+  "blind_level_two_consensus_slots": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "blind_level_two_consensus_count": 4,
+  "prespecified_level_two_content_gate": "FAIL",
+  "slots": [
+    {
+      "original_slot": 0,
+      "opaque_id": "407588605e6c4559445250db",
+      "key": "38/3",
+      "display_key": "A",
+      "policy_revision": 8,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 3,
+      "learner_fields_recompiled_exactly": true,
+      "choice_feedback_complete_and_position_free": true,
+      "objective_assignment_matches": true
+    },
+    {
+      "original_slot": 1,
+      "opaque_id": "5ff65fa88f84ed33bd59be97",
+      "key": "25/12",
+      "display_key": "A",
+      "policy_revision": 8,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 3,
+      "learner_fields_recompiled_exactly": true,
+      "choice_feedback_complete_and_position_free": true,
+      "objective_assignment_matches": true
+    },
+    {
+      "original_slot": 2,
+      "opaque_id": "5e3a413241b03672ad262071",
+      "key": "7",
+      "display_key": "D",
+      "policy_revision": 8,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 2,
+      "returned_difficulty_metadata": 2,
+      "learner_fields_recompiled_exactly": true,
+      "choice_feedback_complete_and_position_free": true,
+      "objective_assignment_matches": true
+    },
+    {
+      "original_slot": 3,
+      "opaque_id": "199ee7c2835dcded3f3f05f3",
+      "key": "sort; organizes",
+      "display_key": "A",
+      "policy_revision": 10,
+      "reviewer_difficulties": {
+        "a": 2,
+        "b": 2
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 2,
+      "learner_fields_recompiled_exactly": true,
+      "choice_feedback_complete_and_position_free": true,
+      "objective_assignment_matches": true
+    },
+    {
+      "original_slot": 4,
+      "opaque_id": "943a2c343e8baffcc9490745",
+      "key": "prepare; receives",
+      "display_key": "D",
+      "policy_revision": 10,
+      "reviewer_difficulties": {
+        "a": 1,
+        "b": 1
+      },
+      "model_reviewer_difficulty": 3,
+      "returned_difficulty_metadata": 2,
+      "learner_fields_recompiled_exactly": true,
+      "choice_feedback_complete_and_position_free": true,
+      "objective_assignment_matches": true
+    }
+  ]
+}

@@ -1,0 +1,429 @@
+{
+  "review_type": "independent_answer_blind",
+  "worksheet_sha256": "e0896bdcf33c763fa9f27b4f0bee79aa364d8a51d91cc9464ae6f86114e62721",
+  "rubric_sha256": "0ab4d3c62d3a0212fea5bf80c2d64a31ad4281e235af17b2b5b56ab35aacebd2",
+  "requested_slots": 5,
+  "readable_items": 5,
+  "unfilled_slots": 0,
+  "overall": "All five visible stems are self-contained and have one supported answer. All 30 unordered choice pairs have distinct responses. The two fraction-evaluation items repeat a close template; the two grammar items share a two-blank format but test different subject constructions. Target-objective alignment cannot be confirmed from the blinded worksheet.",
+  "items": [
+    {
+      "id": "199ee7c2835dcded3f3f05f3",
+      "answer": "A",
+      "solution": "The head subject volunteers is plural, so sort; the head subject librarian is singular, so organizes.",
+      "stem_self_contained": true,
+      "stem_note": "The variety of English, tense, task, and ordered-pair response format are specified; no outside context is needed.",
+      "apparent_objective": "Present-tense subject–verb agreement when nearby prepositional phrases contain nouns of the opposite number.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Requires identifying each head subject despite an intervening prepositional phrase, but the inflections are familiar.",
+      "within_batch_novelty": {
+        "rating": "moderate",
+        "overlap_with_ids": [
+          "943a2c343e8baffcc9490745"
+        ],
+        "reason": "Both grammar items use two blanks and four combinations of singular/plural forms; this item adds intervening prepositional phrases."
+      },
+      "uncertainty": {
+        "answer": "low",
+        "choice_distinctness": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no target objective is supplied"
+      },
+      "resolution": "single_correct_choice",
+      "six_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "sort; organizes versus sorts; organize; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "sort; organizes versus sorts; organizes; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "sort; organizes versus sort; organize; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "sorts; organize versus sorts; organizes; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "sorts; organize versus sort; organize; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "sorts; organizes versus sort; organize; distinct ordered verb forms."
+        }
+      ],
+      "visible_objective_fit": {
+        "status": "cannot_determine_against_target",
+        "reason": "The worksheet shows no target learning objective. The apparent objective is inferred from the visible stem, so alignment to an intended objective cannot be verified."
+      }
+    },
+    {
+      "id": "407588605e6c4559445250db",
+      "answer": "A",
+      "solution": "3/4 + 5/6 = 19/12, and 8 × 19/12 = 38/3.",
+      "stem_self_contained": true,
+      "stem_note": "The expression is fully parenthesized and asks for an exact unitless value.",
+      "apparent_objective": "Exact arithmetic with fractions, including addition and multiplication by an integer.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Two standard fraction operations with an explicit order of operations.",
+      "within_batch_novelty": {
+        "rating": "low",
+        "overlap_with_ids": [
+          "5ff65fa88f84ed33bd59be97"
+        ],
+        "reason": "Both q items use the same unitless-number stem and ask for exact evaluation of a parenthesized fraction expression; the operations differ."
+      },
+      "uncertainty": {
+        "answer": "low",
+        "choice_distinctness": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no target objective is supplied"
+      },
+      "resolution": "single_correct_choice",
+      "six_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "38/3 versus 19/96; distinct numeric values."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "38/3 versus 2/3; distinct numeric values."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "38/3 versus 152; distinct numeric values."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "19/96 versus 2/3; distinct numeric values."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "19/96 versus 152; distinct numeric values."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "2/3 versus 152; distinct numeric values."
+        }
+      ],
+      "visible_objective_fit": {
+        "status": "cannot_determine_against_target",
+        "reason": "The worksheet shows no target learning objective. The apparent objective is inferred from the visible stem, so alignment to an intended objective cannot be verified."
+      }
+    },
+    {
+      "id": "5ff65fa88f84ed33bd59be97",
+      "answer": "A",
+      "solution": "9/4 − 2/3 + 1/2 = 27/12 − 8/12 + 6/12 = 25/12.",
+      "stem_self_contained": true,
+      "stem_note": "The expression is fully parenthesized and asks for an exact unitless value.",
+      "apparent_objective": "Exact addition and subtraction of fractions with unlike denominators.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "Three fractions require a common denominator; the parentheses make operation order explicit.",
+      "within_batch_novelty": {
+        "rating": "low",
+        "overlap_with_ids": [
+          "407588605e6c4559445250db"
+        ],
+        "reason": "Both q items use the same unitless-number stem and ask for exact evaluation of a parenthesized fraction expression; the operations differ."
+      },
+      "uncertainty": {
+        "answer": "low",
+        "choice_distinctness": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no target objective is supplied"
+      },
+      "resolution": "single_correct_choice",
+      "six_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "25/12 versus 10/7; distinct numeric values."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "25/12 versus 5/3; distinct numeric values."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "25/12 versus 19/12; distinct numeric values."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "10/7 versus 5/3; distinct numeric values."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "10/7 versus 19/12; distinct numeric values."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "5/3 versus 19/12; distinct numeric values."
+        }
+      ],
+      "visible_objective_fit": {
+        "status": "cannot_determine_against_target",
+        "reason": "The worksheet shows no target learning objective. The apparent objective is inferred from the visible stem, so alignment to an intended objective cannot be verified."
+      }
+    },
+    {
+      "id": "5e3a413241b03672ad262071",
+      "answer": "D",
+      "solution": "4x − 3 ≤ 25 gives x ≤ 7; among the stated integers from 1 through 10, the maximum is 7.",
+      "stem_self_contained": true,
+      "stem_note": "The integer domain, inclusive endpoints, inequality, and maximum request are explicit.",
+      "apparent_objective": "Solve a linear inequality and select the greatest integer in a restricted domain.",
+      "difficulty_1_to_5": 2,
+      "difficulty_reason": "One rearrangement followed by checking the inclusive integer bound.",
+      "within_batch_novelty": {
+        "rating": "high",
+        "overlap_with_ids": [],
+        "reason": "Only inequality and integer-domain item in the batch."
+      },
+      "uncertainty": {
+        "answer": "low",
+        "choice_distinctness": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no target objective is supplied"
+      },
+      "resolution": "single_correct_choice",
+      "six_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "8 versus 5; distinct numeric values."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "8 versus 6; distinct numeric values."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "8 versus 7; distinct numeric values."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "5 versus 6; distinct numeric values."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "5 versus 7; distinct numeric values."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "6 versus 7; distinct numeric values."
+        }
+      ],
+      "visible_objective_fit": {
+        "status": "cannot_determine_against_target",
+        "reason": "The worksheet shows no target learning objective. The apparent objective is inferred from the visible stem, so alignment to an intended objective cannot be verified."
+      }
+    },
+    {
+      "id": "943a2c343e8baffcc9490745",
+      "answer": "D",
+      "solution": "Maya and Theo is a plural compound subject, so prepare; every guest is singular, so receives.",
+      "stem_self_contained": true,
+      "stem_note": "The variety of English, tense, task, and ordered-pair response format are specified; no outside context is needed.",
+      "apparent_objective": "Present-tense subject–verb agreement with a compound subject and singular every + noun.",
+      "difficulty_1_to_5": 1,
+      "difficulty_reason": "The compound and every-subject cues are direct, with no interrupting phrase.",
+      "within_batch_novelty": {
+        "rating": "moderate",
+        "overlap_with_ids": [
+          "199ee7c2835dcded3f3f05f3"
+        ],
+        "reason": "Both grammar items use two blanks and four combinations of singular/plural forms; the subject constructions differ."
+      },
+      "uncertainty": {
+        "answer": "low",
+        "choice_distinctness": "low",
+        "difficulty": "moderate",
+        "objective_fit": "high because no target objective is supplied"
+      },
+      "resolution": "single_correct_choice",
+      "six_choice_pairs": [
+        {
+          "choices": [
+            "A",
+            "B"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "prepares; receives versus prepares; receive; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "A",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "prepares; receives versus prepare; receive; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "A",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "prepares; receives versus prepare; receives; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "B",
+            "C"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "prepares; receive versus prepare; receive; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "B",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "prepares; receive versus prepare; receives; distinct ordered verb forms."
+        },
+        {
+          "choices": [
+            "C",
+            "D"
+          ],
+          "equivalent": false,
+          "meaningfully_distinct": true,
+          "basis": "prepare; receive versus prepare; receives; distinct ordered verb forms."
+        }
+      ],
+      "visible_objective_fit": {
+        "status": "cannot_determine_against_target",
+        "reason": "The worksheet shows no target learning objective. The apparent objective is inferred from the visible stem, so alignment to an intended objective cannot be verified."
+      }
+    }
+  ]
+}

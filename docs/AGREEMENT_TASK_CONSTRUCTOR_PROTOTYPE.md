@@ -46,10 +46,14 @@ correct keys, supported explanations and no issue flags. Two independent
 answer- and arm-blind content reviews rated all five pre-review drafts level 2
 and found their keys and alternatives sound. That evidence motivated moving
 the bounded English difficulty decision into the same closed constructor that
-owns its content. The change has only offline tests; the live qualification
-gate remains failed until a new bounded worker trial passes 5/5 and two blind
-reviews assess all keys, 30 pairs, teaching, scope, difficulty and novelty.
-Neither this trial nor the source change authorizes deployment. Worker-only
+owns its content. The subsequent [bounded full-worker trial](evidence/agreement-difficulty-calibration-qualification-20260927/RESULTS.md)
+returned 5/5 original slots, and two independent answer-blind reviewers
+selected all five keys and found all 30 within-item choice pairs distinct.
+Both reviewers rated the simple compound/`every` item level 1, below the
+requested minimum of 2, so the prespecified content gate failed at 4/5.
+They also found limited variety across fraction tasks and agreement frames.
+The route needs stronger level-2 templates and a new blind live qualification.
+Neither trial nor the source change authorizes deployment. Worker-only
 SAM and workflow settings exist but default to disabled with empty scope
 hashes; the deployed worker does not use this route. Code-owned answers in
 this subset do not prove broader language correctness, distractor usefulness,

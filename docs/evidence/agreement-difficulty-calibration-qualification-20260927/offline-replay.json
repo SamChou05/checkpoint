@@ -1,0 +1,23 @@
+{
+  "aws_provider_calls": 0,
+  "candidate_source_revision": "22aec98b5ba7685a30218441029d0f7299776a35",
+  "captured_responses_reused": 3,
+  "kind": "offline_regression_replay_not_fresh_qualification",
+  "prior_capture_sha256": "2bcb9b577d165b508debe70cf6d42b2cf749f006c03922650b9d154eab8ca251",
+  "prior_official_result": "3/5_original_slots_FAIL",
+  "replayed_original_slots": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "replayed_policy_revisions": [
+    8,
+    8,
+    8,
+    10,
+    10
+  ],
+  "result": "5/5_offline_regression_only"
+}
