@@ -1,0 +1,16 @@
+{
+  "bedrock_converse_calls": 1,
+  "capture_sha256": "5d4212bbc7dbc852645c99d7f737311957250239dded3aee9f785ae4a74405e3",
+  "cause": "slot4 compiler allowlist omits GERUND_SCENES while schema includes it",
+  "exception_message": "Original English slots require their closed agreement families.",
+  "exception_type": "AgreementTaskError",
+  "failure_stage": "compile_mapped_english_slots_before_sanitization",
+  "native_adapter_accepted": true,
+  "original_slots": 5,
+  "plan_sha256": "36f7a318314a7abccd822f23bfe3d06c729cee656e97218d1585f35c97316775",
+  "provider_retry_or_topup": false,
+  "raw_author_typed_slots": 5,
+  "returned_original_slots": [],
+  "slot4_scene": "gerund_meals",
+  "slot4_scene_allowed_by_native_schema": true
+}
