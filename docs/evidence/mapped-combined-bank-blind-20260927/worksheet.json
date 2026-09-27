@@ -1,0 +1,156 @@
+{
+  "status": "offline_code_owned_candidates_not_worker_verified",
+  "instructions": "Independently choose the one correct displayed answer for each item, or mark ambiguous/none. Judge whether the four choices are meaningfully distinct, self-containment, and difficulty 1-5 for a requested level 2. Identify moderate or strong near-duplicate pairs across all items by the reasoning task, even when operands or scene words differ. Do not inspect any source, private mapping, other reviews, or implementation before locking your review.",
+  "items": [
+    {
+      "id": "B01",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Every clerk near the visitors ___ a copy, while Ava and Ben near the clerk ___ the forms. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "keep; reviews",
+        "B": "keep; review",
+        "C": "keeps; review",
+        "D": "keeps; reviews"
+      }
+    },
+    {
+      "id": "B02",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 6) / (x + 1)) = (15 / 10). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "7",
+        "B": "8",
+        "C": "9",
+        "D": "10"
+      }
+    },
+    {
+      "id": "B03",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((6 * (x + 2)) + 9) = ((5 * x) + 29). Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "6",
+        "B": "7",
+        "C": "8",
+        "D": "9"
+      }
+    },
+    {
+      "id": "B04",
+      "prompt": "Let q be a unitless number, defined by q = (((4 / 5) + (5 / 7)) * 3). What is its exact value?",
+      "choices": {
+        "A": "159/35",
+        "B": "159",
+        "C": "3/35",
+        "D": "53/105"
+      }
+    },
+    {
+      "id": "B05",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the curator ___ the records from the archive, while near the interns ___ the report from the archive. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "are; are",
+        "B": "is; are",
+        "C": "is; is",
+        "D": "are; is"
+      }
+    },
+    {
+      "id": "B06",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 6) * (x + 1)) = 150. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "7",
+        "B": "8",
+        "C": "10",
+        "D": "9"
+      }
+    },
+    {
+      "id": "B07",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The coach near the players ___ the schedule, while the players near the coach ___ the drills. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "checks; practice",
+        "B": "checks; practices",
+        "C": "check; practices",
+        "D": "check; practice"
+      }
+    },
+    {
+      "id": "B08",
+      "prompt": "Let x be a unitless number. Its domain is integers from 4 through 10, inclusive. Condition: (x / (x + 3)) >= (7 / 10). What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "6",
+        "B": "7",
+        "C": "5",
+        "D": "8"
+      }
+    },
+    {
+      "id": "B09",
+      "prompt": "Fill both blanks with present-tense forms in standard written American English. The clerks who ___ the files are here. One of the clerks ___ a key. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "sorts; hold",
+        "B": "sort; hold",
+        "C": "sort; holds",
+        "D": "sorts; holds"
+      }
+    },
+    {
+      "id": "B10",
+      "prompt": "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: (x * (x + 3)) <= 88. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "7",
+        "B": "6",
+        "C": "9",
+        "D": "8"
+      }
+    },
+    {
+      "id": "B11",
+      "prompt": "Let q be a unitless number, defined by q = (1 / ((4 / 5) + (6 / 8))). What is its exact value?",
+      "choices": {
+        "A": "1",
+        "B": "20/31",
+        "C": "31/20",
+        "D": "51/20"
+      }
+    },
+    {
+      "id": "B12",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Every guest near the servers ___ a plate, while Maya and Theo near the cook ___ lunch. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "receives; prepare",
+        "B": "receives; prepares",
+        "C": "receive; prepares",
+        "D": "receive; prepare"
+      }
+    },
+    {
+      "id": "B13",
+      "prompt": "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: ((3 * (x + 2)) + x) <= 38. What is the maximum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "9",
+        "B": "7",
+        "C": "8",
+        "D": "6"
+      }
+    },
+    {
+      "id": "B14",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The number of copies near the editors ___ known, while a number of readers near the author ___ present. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "is; are",
+        "B": "are; are",
+        "C": "is; is",
+        "D": "are; is"
+      }
+    },
+    {
+      "id": "B15",
+      "prompt": "Let q be a unitless number, defined by q = (((4 / 5) / (6 / 8)) + 1). What is its exact value?",
+      "choices": {
+        "A": "31/15",
+        "B": "17/16",
+        "C": "16/15",
+        "D": "17/15"
+      }
+    }
+  ]
+}

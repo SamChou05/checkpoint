@@ -1,0 +1,37 @@
+{
+  "reviewer": "blind-b",
+  "worksheet_sha256": "2150bc0f199789e7a6a9345ea44912fb8c1d9b843c688f904e8f4f3dc5bedf85",
+  "locked": true,
+  "difficulty_scale": "1 very easy; 2 target level; 3 moderately above target; 4 hard; 5 very hard",
+  "items": [
+    {"id":"B01","answer":"C","self_contained":true,"choice_distinction":"meaningful","difficulty":2,"reason":"Every clerk is singular and keeps; Ava and Ben is plural and review."},
+    {"id":"B02","answer":"C","self_contained":true,"choice_distinction":"meaningful","difficulty":3,"reason":"2(x+6)=3(x+1), so x=9."},
+    {"id":"B03","answer":"C","self_contained":true,"choice_distinction":"meaningful","difficulty":2,"reason":"6x+21=5x+29, so x=8."},
+    {"id":"B04","answer":"A","self_contained":true,"choice_distinction":"meaningful","difficulty":2,"reason":"4/5+5/7=53/35; multiplying by 3 gives 159/35."},
+    {"id":"B05","answer":"D","self_contained":true,"choice_distinction":"meaningful","difficulty":3,"reason":"In the inverted clauses, records is plural and report is singular: are; is."},
+    {"id":"B06","answer":"D","self_contained":true,"choice_distinction":"meaningful","difficulty":3,"reason":"At x=9, (x+6)(x+1)=15*10=150; the other offered values do not satisfy it."},
+    {"id":"B07","answer":"A","self_contained":true,"choice_distinction":"meaningful","difficulty":2,"reason":"The coach is singular and checks; the players are plural and practice."},
+    {"id":"B08","answer":"B","self_contained":true,"choice_distinction":"meaningful","difficulty":3,"reason":"10x >= 7(x+3) gives x>=7, so the minimum is 7."},
+    {"id":"B09","answer":"C","self_contained":true,"choice_distinction":"meaningful","difficulty":2,"reason":"Who refers to plural clerks (sort); one is singular (holds)."},
+    {"id":"B10","answer":"D","self_contained":true,"choice_distinction":"meaningful","difficulty":3,"reason":"x=8 yields 8*11=88, while x=9 exceeds 88; maximum is 8."},
+    {"id":"B11","answer":"B","self_contained":true,"choice_distinction":"meaningful","difficulty":3,"reason":"4/5+6/8=31/20; its reciprocal is 20/31."},
+    {"id":"B12","answer":"A","self_contained":true,"choice_distinction":"meaningful","difficulty":2,"reason":"Every guest is singular and receives; Maya and Theo is plural and prepare."},
+    {"id":"B13","answer":"C","self_contained":true,"choice_distinction":"meaningful","difficulty":2,"reason":"3(x+2)+x <=38 reduces to 4x<=32, so maximum x is 8."},
+    {"id":"B14","answer":"A","self_contained":true,"choice_distinction":"meaningful","difficulty":3,"reason":"The number is singular (is); a number of readers takes plural agreement (are)."},
+    {"id":"B15","answer":"A","self_contained":true,"choice_distinction":"meaningful","difficulty":3,"reason":"(4/5)/(6/8)=16/15; adding 1 gives 31/15."}
+  ],
+  "near_duplicates": [
+    {"ids":["B01","B12"],"strength":"strong","reason":"Same two-blank template: every plus singular head near plural distractor, then two named people near singular distractor."},
+    {"ids":["B01","B07"],"strength":"strong","reason":"Same paired subject-verb agreement test, first singular head near plural noun and then plural head near singular noun."},
+    {"ids":["B07","B12"],"strength":"strong","reason":"Same paired singular-then-plural head noun agreement with intervening near phrases."},
+    {"ids":["B02","B06"],"strength":"moderate","reason":"Both reuse (x+6) and (x+1), seek one offered x, and resolve to x=9, although ratio versus product changes the calculation."},
+    {"ids":["B02","B03"],"strength":"moderate","reason":"Both ask for the single offered integer solving a one-variable equality over the same domain; rational versus distributed linear arithmetic differs."},
+    {"ids":["B04","B11"],"strength":"moderate","reason":"Both require exact fraction addition followed by an outer arithmetic operation."},
+    {"ids":["B05","B07"],"strength":"moderate","reason":"Both test two subject-verb choices against nearby distractor nouns; B05 adds inverted word order."},
+    {"ids":["B08","B10"],"strength":"moderate","reason":"Both ask for a boundary integer in a bounded domain satisfying an inequality; one asks minimum and the other maximum."},
+    {"ids":["B08","B13"],"strength":"moderate","reason":"Both solve a bounded-domain inequality and select the extremal satisfying integer, with different arithmetic forms."},
+    {"ids":["B10","B13"],"strength":"strong","reason":"Both ask for the maximum integer in a bounded domain satisfying an expression <= a limit; only the expression changes."},
+    {"ids":["B11","B15"],"strength":"moderate","reason":"Both evaluate a nested fraction expression using the exact operands 4/5 and 6/8; one reciprocates a sum and the other divides then adds."}
+  ],
+  "overall": "All 15 have exactly one displayed correct answer; all are self-contained and their choices are distinct and plausible enough to distinguish errors. Eight items rate 3 versus requested level 2, mainly because of inversion, inequalities, rational equations, quadratic checking, or nested fractions."
+}

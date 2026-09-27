@@ -1,0 +1,34 @@
+{
+  "reviewer": "blind-a",
+  "worksheet_sha256": "2150bc0f199789e7a6a9345ea44912fb8c1d9b843c688f904e8f4f3dc5bedf85",
+  "scale": "Self-containment and choice distinction: 1 (poor) to 5 (strong). Difficulty: 1 (easiest) to 5 (hardest); requested difficulty is 2.",
+  "items": [
+    {"id":"B01","answer":"C","self_containment":5,"choice_distinction":5,"difficulty":2,"note":"Every clerk is singular; Ava and Ben is plural."},
+    {"id":"B02","answer":"C","self_containment":5,"choice_distinction":4,"difficulty":2,"note":"2(x+6)=3(x+1), so x=9."},
+    {"id":"B03","answer":"C","self_containment":5,"choice_distinction":4,"difficulty":2,"note":"6x+21=5x+29, so x=8."},
+    {"id":"B04","answer":"A","self_containment":5,"choice_distinction":3,"difficulty":2,"note":"(28/35+25/35) times 3 is 159/35; some distractors are remote from the result."},
+    {"id":"B05","answer":"D","self_containment":5,"choice_distinction":5,"difficulty":3,"note":"The postposed subjects are records (plural) and report (singular)."},
+    {"id":"B06","answer":"D","self_containment":5,"choice_distinction":4,"difficulty":2,"note":"At x=9, (x+6)(x+1)=15 times 10=150; the nonnegative-domain solution is unique."},
+    {"id":"B07","answer":"A","self_containment":5,"choice_distinction":5,"difficulty":2,"note":"Coach is singular; players is plural."},
+    {"id":"B08","answer":"B","self_containment":5,"choice_distinction":4,"difficulty":3,"note":"The positive denominator permits 10x >= 7x+21, giving x >= 7."},
+    {"id":"B09","answer":"C","self_containment":5,"choice_distinction":5,"difficulty":2,"note":"The relative clause refers to plural clerks; one is singular."},
+    {"id":"B10","answer":"D","self_containment":5,"choice_distinction":4,"difficulty":2,"note":"x=8 yields 88, while x=9 exceeds it."},
+    {"id":"B11","answer":"B","self_containment":5,"choice_distinction":3,"difficulty":2,"note":"4/5+6/8=31/20, whose reciprocal is 20/31; some distractors are remote."},
+    {"id":"B12","answer":"A","self_containment":5,"choice_distinction":5,"difficulty":2,"note":"Every guest is singular; Maya and Theo is plural."},
+    {"id":"B13","answer":"C","self_containment":5,"choice_distinction":4,"difficulty":2,"note":"4x+6 <= 38 gives x <= 8."},
+    {"id":"B14","answer":"A","self_containment":5,"choice_distinction":5,"difficulty":3,"note":"The number takes singular is; a number of readers takes plural are."},
+    {"id":"B15","answer":"A","self_containment":5,"choice_distinction":3,"difficulty":2,"note":"(4/5)/(6/8)=16/15, then adding 1 gives 31/15; some distractors are less plausible."}
+  ],
+  "near_duplicates": [
+    {"ids":["B01","B12"],"strength":"strong","reason":"Same two-blank agreement template: every singular subject near a plural noun, then two named people near a singular noun."},
+    {"ids":["B01","B07"],"strength":"strong","reason":"Both ask for singular then plural verb agreement while intervening near-phrases suggest the opposite number."},
+    {"ids":["B07","B12"],"strength":"strong","reason":"Both ask for singular then plural verb agreement while intervening near-phrases suggest the opposite number."},
+    {"ids":["B10","B13"],"strength":"strong","reason":"Identical integer domain and maximum-x-under-a-<=-bound decision; only the expression and cutoff change."},
+    {"ids":["B08","B10"],"strength":"moderate","reason":"Both choose the integer boundary satisfying an inequality from nearby numeric choices, though the algebra and min/max direction differ."},
+    {"ids":["B08","B13"],"strength":"moderate","reason":"Both choose the integer boundary satisfying an inequality from nearby numeric choices, though the algebra and min/max direction differ."},
+    {"ids":["B02","B03"],"strength":"moderate","reason":"Both isolate x in a short equality and select it from consecutive integers; one equation is rational and the other linear."},
+    {"ids":["B02","B06"],"strength":"moderate","reason":"Both reuse the exact x+6 and x+1 operands and ask for the satisfying integer, although quotient and product require different reasoning."},
+    {"ids":["B11","B15"],"strength":"moderate","reason":"Both use the exact 4/5 and 6/8 operands in a short exact-fraction calculation, with different operations."}
+  ],
+  "summary": "All 15 have one correct displayed choice and are self-contained. Twelve appear near requested level 2; B05, B08, and B14 are level 3. The strongest repetition is B01/B07/B12 and B10/B13."
+}
