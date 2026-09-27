@@ -1,0 +1,33 @@
+{
+  "capture_sha256": "17c49df0d75cb8aab4cf90bc8816068099cc557b661c719f98ad4c234a0b7831",
+  "items": [
+    {
+      "id": "0004494bffe68e101101013e",
+      "requested_slot": 0,
+      "unavailable": true
+    },
+    {
+      "id": "7bb9f804e8896a25719cd0e9",
+      "requested_slot": 1,
+      "unavailable": true
+    },
+    {
+      "id": "08d9d22c6ecfe69c72c6331c",
+      "requested_slot": 2,
+      "unavailable": true
+    },
+    {
+      "id": "9e93b738687c7dacc396355e",
+      "requested_slot": 3,
+      "unavailable": true
+    },
+    {
+      "id": "7bfb3853dabecc9fc27ffc4e",
+      "requested_slot": 4,
+      "unavailable": true
+    }
+  ],
+  "plan_sha256": "ab83d05ca603f0a978e9018108bc2e89723ddc198f71cdfb9fa93c46b8cfed5d",
+  "requested_slots": 5,
+  "version": 1
+}

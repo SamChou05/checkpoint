@@ -1,0 +1,229 @@
+{
+  "state": "draft_offline_only",
+  "purpose": "One-shot mixed-only full-worker qualification of an exact fixed-five native author slot map with mandatory mapped tags",
+  "candidate_source_revision": "397f6a13112d967176b75f972ecbbe48f0aa6ef5",
+  "independent_source_review": "go",
+  "aws_launch_authorized": false,
+  "frozen_plan": false,
+  "baseline_commit": "35b1a0def5674f92fa299217bc308f5a5165d80a",
+  "original_jobs_path": "docs/evidence/mixed-fixed-slots-successor-qualification-20260926/jobs-draft.json",
+  "original_jobs_sha256": "5fff79cf4e7e115f8c836a39a63651ea9616cce1b809021ba7879e1428e6eda9",
+  "prior_evidence_sha256": {
+    "docs/evidence/task-only-full-worker-qualification-20260926/plan.json": "a8e9e39470704e3a83ec96febe6b402acb0df40fbbdb114de267265725bdf393",
+    "docs/evidence/task-only-full-worker-qualification-20260926/capture.json": "5278562961290acc3fac998a5429797aba55c100a3e9cc6a59a58b62692007f4",
+    "docs/evidence/task-only-full-worker-qualification-20260926/RESULTS.md": "a154a09e0bd30d10dcf9c568f6b35139fa7f971513d524a692202993c4bb3c76",
+    "docs/evidence/task-only-full-worker-qualification-20260926/DIAGNOSTIC_MIXED.md": "f4eb63296971c5d66a68831a2b274f656259be46cf3e8472f273a8a89c0b69d8",
+    "docs/evidence/task-only-full-worker-qualification-20260926/full_worker_probe.py": "afe23ef0378c6d5732bca77ad7da2787b30e00ea399a13d29a80a8c8e992c98b",
+    "docs/evidence/task-only-full-worker-qualification-20260926/jobs-draft.json": "c96252f3e3d73cf53893410e02202b1bec3767c4edf28545a2211f82135d19cc"
+  },
+  "source_acceptance": {
+    "scoped_to_exact_mapped_goal": true,
+    "native_author_questions_object_keys": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "mandatory_mapped_fields": [
+      "skillID",
+      "objectiveID",
+      "objective"
+    ],
+    "mapped_fields_nonempty_and_match_skill_map": true,
+    "count_bound_applies_to_each_top_up_request": true,
+    "python_and_unmapped_numerical_routes_unchanged": true,
+    "author_solver_reviewer_roles_unchanged": true
+  },
+  "limits": {
+    "original_jobs": 1,
+    "original_slots": 5,
+    "calls_per_job": 6,
+    "seconds_per_job": 240,
+    "sdk_attempts_per_call": 1,
+    "connect_timeout_seconds": 3,
+    "read_timeout_ceiling_seconds": 200,
+    "one_trial_execution": true
+  },
+  "gates": {
+    "original_slots_returned": 5,
+    "arithmetic_compiled_policy_8": 3,
+    "english_authored_prose_policy_7": 2,
+    "requested_skill_allocation_exact": true,
+    "mapped_tags_correct_on_every_return": true,
+    "every_key_matches_an_independent_solution": true,
+    "every_item_has_exactly_one_correct_literal_answer": true,
+    "all_four_choices_semantically_distinct": true,
+    "all_six_choice_pairs_independently_judged": true,
+    "wrong_choices_excluded_with_sound_teaching": true,
+    "main_teaching_sound_and_complete": true,
+    "compiled_learner_fields_recompile_exactly": true,
+    "prose_main_immutable_and_choice_feedback_empty": true,
+    "scope_difficulty_novelty_valid": true,
+    "unresolved_content_uncertainty": 0,
+    "deadline_and_call_budget_satisfied": true,
+    "source_request_schema_capture_provenance_pins_satisfied": true
+  },
+  "credential_window_seconds": {
+    "precheck_exported_snapshot_minimum": 360,
+    "remaining_before_freeze_and_execute": 330,
+    "execute_snapshot_minimum": 300
+  },
+  "claim_limit": "One mixed-job observation on reused assignments, not a population reliability estimate or a qualification of defaults, deployment, SQS, DynamoDB, inventory refill, Python or numerical-only routes.",
+  "source_hashes": {
+    "backend/bedrock-question-service/answer_position_references.py": "7afe3705ef5d87d2426a4c6dfb2ed53136dda92f082052f77cea30e3f85d00dc",
+    "backend/bedrock-question-service/complete_question_solution.py": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+    "backend/bedrock-question-service/execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "backend/bedrock-question-service/generation_diagnostics.py": "0b73f213a862135bc3f8cd3bb389aa1b77f68f27268128aa9900ddb06df053af",
+    "backend/bedrock-question-service/lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "backend/bedrock-question-service/native_output_contracts.py": "a345f5e6bf62d093aeaba10a72b7ced5647c3761e8b6ca26f19528a162c17e29",
+    "backend/bedrock-question-service/plain_scalar_choices.py": "29bf6f761ca04bfeaeaebed960e0ccb2b96cfd7869679100412a041dc0ead3f7",
+    "backend/bedrock-question-service/python_boolean_teaching.py": "d60e67101ee262bdad8c37c7b29ea319ee1966030fc57b7a8e4a119f9789069c",
+    "backend/bedrock-question-service/quantitative_authoring.py": "a1955dbbd6780a89d5b11ace1b6c72b05b43db2ce5f3b1002e18dfa776cfd2d4",
+    "backend/bedrock-question-service/quantitative_choice_construction.py": "d838c5c2dcedcd5bf5df6423156386ecae855b5f30111ed2a22e8af7d3b3c68c",
+    "backend/bedrock-question-service/quantitative_task_compiler.py": "19cf4acaf42e15cda8c1fe00abf6b7563b673f11affa4318aa6c52d944ed977a",
+    "backend/bedrock-question-service/question_bank.py": "96cd56b56c16738c76582f2c64506466835bdda2406bf318ca26026b3dae4549",
+    "backend/bedrock-question-service/question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "backend/bedrock-question-service/question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "backend/bedrock-question-service/question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "backend/bedrock-question-service/question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "backend/bedrock-question-service/question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "backend/bedrock-question-service/question_generation.py": "4e3e6e97ed83c243c26ed85f4db804434d2d7b856e55bc7b638e4cdd9a98a646",
+    "backend/bedrock-question-service/question_quality.py": "ff7d02429fe2d0f53636fb826608413c6f49c8302d511d09aadca87032922a8a",
+    "backend/bedrock-question-service/question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "backend/bedrock-question-service/question_teaching.py": "1979db933721b5735ecbaae5ab14a2c10a0fcb570911dbc324728af1483518f4",
+    "backend/bedrock-question-service/question_verification.py": "da455ba93530102766d55954117224685ceabe930a3f5f6478b8c7536f106eea",
+    "backend/bedrock-question-service/request_contract.py": "fcb425388a53b01abacb9a6e858ab44780b427ee182855c31ce99ed02c0ec954",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "backend/bedrock-question-service/skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "backend/bedrock-question-service/smoke_test_backend.py": "0f4f08b42fe9b1ff19e33d0fdaf4eab5ff11b2496aa85bf4262f537bb593e063",
+    "backend/bedrock-question-service/source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "backend/bedrock-question-service/verification_policy.py": "33941df8ea41d2317b964a3b19ccdf5dab0a1cc391ebdf34adeb3967f2e6d9f4",
+    "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "backend/bedrock-question-service/requirements.txt": "379a0ddfd75825884d6a17998e590374efa8af5f344dacefc3e7efa6ef21bc67",
+    "backend/bedrock-question-service/template.yaml": "61b0adcbea853a1d72ba1f03131f0e7bbf31e1b38cbdc46fd23239c4957939f8",
+    "backend/bedrock-question-service/evals/bounded_bedrock_capture.py": "cc547d6687ee81dc80c18615099d8b971955ceed95588acf8ab2d160cb3823f3"
+  },
+  "source_test_sha256": "35397742337b8a5fa7b79be795f040344af7a7a268581a49f07b4eae9696a678",
+  "trial_environment": {
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "QUESTION_AUTHOR_MODE": "constructed_quantitative",
+    "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "200",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "GENERATION_ATTEMPTS": "3",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "6",
+    "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "MAX_QUESTIONS_PER_BATCH": "20",
+    "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "array",
+    "QUESTION_MAPPED_FIXED_FIVE_GOAL_SHA256": "6730fa057871c71d661c6260040fab2713a58eff36d8319326b2fed7b67ddb46",
+    "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": "36bb86d352cd1b48f3ac77968c95c842ae4a4e4472d37849fb6cb479ba04736d"
+  },
+  "model_and_transport": {
+    "author_model": "us.anthropic.claude-sonnet-4-6",
+    "verification_model": "us.anthropic.claude-sonnet-4-6",
+    "fallback_model": "",
+    "bedrock_endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com",
+    "sts_endpoint": "https://sts.us-east-1.amazonaws.com",
+    "region": "us-east-1",
+    "aws_cli_path": "/opt/homebrew/Cellar/awscli/2.33.15/libexec/bin/aws",
+    "aws_cli_version": "2.33.15",
+    "python_version": "3.12.11",
+    "boto3_version": "1.43.91",
+    "botocore_version": "1.43.91",
+    "awscrt_version": "0.36.0",
+    "aws_config_sha256": "7f70246298d2f2897d39ee3a99a7353bfa9b83255ef95ba0db5f3a5623ea5f3d",
+    "aws_login_session_sha256": "8731d91a75118f0c6e502e84b95a999bbf68e2c825830881788660d6ee32e1f2",
+    "account": "239342516379"
+  },
+  "initial_author_pins": {
+    "goal_sha256": "6730fa057871c71d661c6260040fab2713a58eff36d8319326b2fed7b67ddb46",
+    "scope_sha256": "36bb86d352cd1b48f3ac77968c95c842ae4a4e4472d37849fb6cb479ba04736d",
+    "normalized_request_sha256": "212cea7d53ddefe17fbe8f2459705b46b871793e62e0e58b56cc11e3626e63ae",
+    "job_fixture_sha256": "5fff79cf4e7e115f8c836a39a63651ea9616cce1b809021ba7879e1428e6eda9",
+    "native_contract_name": "question_author_constructed_mapped_v1_n5_f9fed6abfb0926f8",
+    "system_prompt_sha256": "4f0c189169e32319a3e4489b30e06e6defd2ef22facb12083cbcb423328655fe",
+    "user_prompt_sha256": "358316024851b745bc5ecb525f562ce52d33d3e330f0fba7c353d4b4ba646c6d",
+    "native_schema_sha256": "316024552a9f67901c652c33ec73a9e311757e4efadd5a7b66bb97666cc2aebb",
+    "native_config_sha256": "9d089d7a30a8bcad801296b2decec7c0413c42ac48189c43b29d1e17a874c9a9"
+  },
+  "author_contract_pins": {
+    "0:1": {
+      "name": "question_author_constructed_mapped_v1_n1_883ca78ce61ef269",
+      "native_schema_sha256": "1a5f685a88696ac624df89c1cd4fdaae92f43365ea51b4e4d84d033ee0cb1d69",
+      "native_config_sha256": "215ae20f9c4b6d44e3d942ea2d301329c589bdc6153b432ed7e54fe437f093f4"
+    },
+    "0:2": {
+      "name": "question_author_constructed_mapped_v1_n2_ff387cfcaa113caf",
+      "native_schema_sha256": "b5c2547df9b7f6d0299761016c7d7c6d6b9e4e6009c1f79320cea20dc4fa706e",
+      "native_config_sha256": "413ef705f5518b73387088deccb95e14791f1d403706894cb024007f497ed0f0"
+    },
+    "1:0": {
+      "name": "question_author_constructed_mapped_v1_n1_5c667d5b60c1f850",
+      "native_schema_sha256": "e15d058fe00dd63548ea5cdaccc415a230d30d9b0902b708992f887c0842d868",
+      "native_config_sha256": "175abfd97164cca4815f77d0eefdc07c0590f11a179659b83ffe9edbf5edd181"
+    },
+    "1:1": {
+      "name": "question_author_constructed_mapped_v1_n2_818fdd4f4e30f53b",
+      "native_schema_sha256": "9a85309dfa146081441f4f2fa00e09d2f0a6a0f3aa148db925ccf76d0f7056a2",
+      "native_config_sha256": "7eece4e44555255eec2166b27cb014b038c56806ecea9f937462d9c1fb41598c"
+    },
+    "1:2": {
+      "name": "question_author_constructed_mapped_v1_n3_ac5d59f00c52d870",
+      "native_schema_sha256": "7511466eb492e9fd47788e3d76270d5b6b150ee1b15148cb5a7eebf97ea133d7",
+      "native_config_sha256": "1703df4b9732a24cf645f96941dea1e86638984d616fc0ea345cdfcfee52d564"
+    },
+    "2:0": {
+      "name": "question_author_constructed_mapped_v1_n2_104a1cf363cc23a7",
+      "native_schema_sha256": "8beeee96036166893c5a376e3b05c5feb2f6f89ac64805c68c0e5d2b376871c6",
+      "native_config_sha256": "b3ae6a2647f96d3105ef01a19885783ff0be4db9e53b06eb5f29457cad56edc9"
+    },
+    "2:1": {
+      "name": "question_author_constructed_mapped_v1_n3_31e0438b5f513363",
+      "native_schema_sha256": "53a528bc526473778fbf185be224cbb1ede2ae78fe7499c47f00b0104f3ec44e",
+      "native_config_sha256": "ca7a080f0df3f4fd25c1e06282597c4a470d0fb373b000d67a79eb5998893f7f"
+    },
+    "2:2": {
+      "name": "question_author_constructed_mapped_v1_n4_8b051a7523023027",
+      "native_schema_sha256": "3a13b246d19c98bbef7c6b5786588ae3add7165755dfff6626692befbf134fa9",
+      "native_config_sha256": "fb1327528c8c72329a3938be9237685750d6096b6da8256b4b5ab7603bba2ca0"
+    },
+    "3:0": {
+      "name": "question_author_constructed_mapped_v1_n3_67ab7c63a59e5363",
+      "native_schema_sha256": "75ba789a68a3d9a8a3d0f7379c014c606b51ae90dbf5a25b04904fb3f0e9887a",
+      "native_config_sha256": "3c38b08468e1fdaa052aa5c5d4bb86f385ca0ed4d55c151e39df5ee8cae3db2c"
+    },
+    "3:1": {
+      "name": "question_author_constructed_mapped_v1_n4_24d62203cf3c5f51",
+      "native_schema_sha256": "785f6f79e36f62496b149ed1d6d1c8894a7830f6521778343d7b672f0fe097e7",
+      "native_config_sha256": "4a61a51a344e2b52a43dbe4e9744ec661afdcd84ec1981a104f8e14bf421347a"
+    },
+    "3:2": {
+      "name": "question_author_constructed_mapped_v1_n5_f9fed6abfb0926f8",
+      "native_schema_sha256": "316024552a9f67901c652c33ec73a9e311757e4efadd5a7b66bb97666cc2aebb",
+      "native_config_sha256": "9d089d7a30a8bcad801296b2decec7c0413c42ac48189c43b29d1e17a874c9a9"
+    }
+  },
+  "harness_artifact_sha256": {
+    "docs/evidence/mixed-fixed-slots-successor-qualification-20260926/full_worker_probe.py": "9f8310b078b9f3f85d27a5c363e76e0ba009da52bd1c9d11e76ddc761b671cbc",
+    "docs/evidence/mixed-fixed-slots-successor-qualification-20260926/test_mixed_worker_probe.py": "5a84a25d303adfe503af7d1484597715f43a3cc5e88d26d3d361eca280e5e26a",
+    "docs/evidence/mixed-fixed-slots-successor-qualification-20260926/check_draft.py": "17f1467664b9976ea5a2c386b0dfd164e687e41af702a3fcd47fe68026b7eed9",
+    "docs/evidence/mixed-fixed-slots-successor-qualification-20260926/test_check_draft.py": "ef630386d2ff8e19053cf8c76dce8d9c8de98345d1468bcc71f6bf5aec5a6a1f",
+    "docs/evidence/mixed-fixed-slots-successor-qualification-20260926/PLAN.md": "34b3d184dfffd6a336d84181fc420b7656c7282ce9b7c0b5a93a694561aab5ac",
+    "docs/evidence/mixed-fixed-slots-successor-qualification-20260926/HARNESS_ADAPTATION.md": "24e3e1bb6bf167d08cbfb7a88dd41bc2dc2d79ce4c76ab08a12e5245f10fdd1e",
+    "docs/evidence/mixed-fixed-slots-successor-qualification-20260926/jobs-draft.json": "5fff79cf4e7e115f8c836a39a63651ea9616cce1b809021ba7879e1428e6eda9"
+  }
+}

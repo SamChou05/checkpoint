@@ -364,3 +364,26 @@ a truth certificate. An adversarial test deliberately remains eligible when a
 model cites an irrelevant but correctly identified source unit, demonstrating
 that identity binding cannot establish entailment. The change passed 1,351
 backend tests and Ruff; no provider call or deployment occurred.
+
+The [task-only full-worker qualification](evidence/task-only-full-worker-qualification-20260926/RESULTS.md)
+returned 10/15 independently sound questions: five numerical tasks compiled
+with exact policy-8 keys and choices, five Python prose questions passed policy
+7, and the mixed job returned none. Both blind reviewers agreed on all ten keys
+and all sixty choice-pair distinctions. The mixed author generated 37 complete
+rows plus a partial 38th and hit the 16,000-token output ceiling; its unbounded
+array was invalid JSON. A three-item exact-goal batch cap and worker-only
+deployment controls were verified and pushed to main, but this 10/15 result
+failed the qualification gate. The deployed worker and API remain on their
+September 11 legacy packages; no rollout occurred.
+
+The subsequent [fixed-slot mapped trial](evidence/mixed-fixed-slots-successor-qualification-20260926/RESULTS.md)
+kept the mixed 3:2 assignment and five required slots in native JSON Schema.
+It returned 0/5 because Bedrock rejected the first request before inference:
+“The compiled grammar is too large, which would cause performance issues.”
+The attempted schema was 5,519 bytes with repeated skill/objective enums.
+Local JSON Schema validation, SDK shape checks and 1,380 backend tests did not
+predict this service-side grammar limit. A [separate offline diagnosis](evidence/mixed-fixed-slots-successor-qualification-20260926/SCHEMA_DIAGNOSTIC.md)
+found a 2,601-byte direct typed-slot shape that keeps exact cardinality and
+the three numerical/two prose row types while injecting trusted assignment
+metadata in code. Its Bedrock acceptance and question quality are untested.
+The rejected candidate remains isolated and the frozen trial is closed.

@@ -1,0 +1,32 @@
+{
+  "capture_sha256": "17c49df0d75cb8aab4cf90bc8816068099cc557b661c719f98ad4c234a0b7831",
+  "mapping": {
+    "0004494bffe68e101101013e": {
+      "job_id": "mixed",
+      "original_slot_ordinal": 0,
+      "slot_status": "unfilled"
+    },
+    "08d9d22c6ecfe69c72c6331c": {
+      "job_id": "mixed",
+      "original_slot_ordinal": 2,
+      "slot_status": "unfilled"
+    },
+    "7bb9f804e8896a25719cd0e9": {
+      "job_id": "mixed",
+      "original_slot_ordinal": 1,
+      "slot_status": "unfilled"
+    },
+    "7bfb3853dabecc9fc27ffc4e": {
+      "job_id": "mixed",
+      "original_slot_ordinal": 4,
+      "slot_status": "unfilled"
+    },
+    "9e93b738687c7dacc396355e": {
+      "job_id": "mixed",
+      "original_slot_ordinal": 3,
+      "slot_status": "unfilled"
+    }
+  },
+  "version": 1,
+  "worksheet_sha256": "9673706406f406a828f9f73004f59ea6163c085229594bdbad5feca9c304bb79"
+}
