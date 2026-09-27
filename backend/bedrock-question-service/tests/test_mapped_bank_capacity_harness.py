@@ -30,11 +30,11 @@ class MappedBankCapacityHarnessTests(unittest.TestCase):
         # 20 items, at the cost of two more same-family pairs by 80 items.
         self.assertEqual(report["snapshots"][1]["slots"]["1"]["sameFamilyPairs"], 20)
         for snapshot in report["snapshots"]:
-            self.assertEqual(snapshot["slots"]["4"]["exactStemCapacity"], 40)
+            self.assertEqual(snapshot["slots"]["4"]["exactStemCapacity"], 32)
             self.assertIn("correlative", snapshot["slots"]["4"]["familyUses"])
             self.assertIn("gerund", snapshot["slots"]["4"]["familyUses"])
-            self.assertIn("sentence_selection", snapshot["slots"]["4"]["familyUses"])
-        self.assertEqual(report["snapshots"][2]["slots"]["4"]["remainingExactStems"], 23)
+            self.assertNotIn("sentence_selection", snapshot["slots"]["4"]["familyUses"])
+        self.assertEqual(report["snapshots"][2]["slots"]["4"]["remainingExactStems"], 15)
 
     def test_unique_stems_do_not_override_family_capacity_gate(self):
         report = {"targets": (40,), "exhaustion": None, "snapshots": [{
@@ -87,9 +87,9 @@ class MappedBankCapacityHarnessTests(unittest.TestCase):
         report = simulate((160, 165))
         self.assertEqual(report["exhaustion"]["atItems"], 160)
         self.assertEqual(report["exhaustion"]["failureReasons"],
-                         ["agreement_novelty_exhausted"])
+                         ["agreement_level2_inventory_exhausted"])
         self.assertEqual(report["snapshots"][0]["slots"]["3"]["remainingExactStems"], 0)
-        self.assertEqual(report["snapshots"][0]["slots"]["4"]["remainingExactStems"], 8)
+        self.assertEqual(report["snapshots"][0]["slots"]["4"]["remainingExactStems"], 0)
         self.assertTrue(any("165 items unavailable" in failure for failure in
                             qualification_failures(report)))
 

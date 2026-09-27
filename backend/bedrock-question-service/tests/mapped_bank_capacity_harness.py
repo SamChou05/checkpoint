@@ -57,7 +57,7 @@ def _catalog() -> dict[int, dict[str, str]]:
     if len(catalog_scenes) != len(set(catalog_scenes)) or set(catalog_scenes) != schema_scenes:
         raise CapacityError("Agreement schema scenes need an explicit family classification")
     for slot, permitted in ((3, {"proximity", "inversion", "relative", "partitive"}),
-                            (4, {"compound", "number", "correlative", "gerund", "sentence_selection"})):
+                            (4, {"compound", "number", "correlative", "gerund"})):
         variants = {}
         for family, scenes in named_families:
             if family not in permitted:
@@ -133,7 +133,14 @@ def simulate(targets: tuple[int, ...] = (40, 80)) -> dict:
         )
 
     for batch in range(1, max(targets) // 5 + 1):
-        rows, numeric_proof, english_proof, failures = prepare()
+        try:
+            rows, numeric_proof, english_proof, failures = prepare()
+        except agreement.AgreementTaskError as error:
+            if str(error) != "No eligible level-2 slot-4 agreement variant remains.":
+                raise
+            exhaustion = {"atItems": (batch - 1) * 5,
+                          "failureReasons": ["agreement_level2_inventory_exhausted"]}
+            break
         if failures or len(rows) != 5 or set(numeric_proof) != {0, 1, 2} or set(english_proof) != {3, 4}:
             exhaustion = {"atItems": (batch - 1) * 5,
                           "failureReasons": failures or ["incomplete_or_unproven_batch"]}
@@ -161,7 +168,12 @@ def simulate(targets: tuple[int, ...] = (40, 80)) -> dict:
             snapshots.append(_snapshot(stored, catalog, uses))
     next_batch_failures = None
     if exhaustion is None:
-        _, _, _, next_batch_failures = prepare()
+        try:
+            _, _, _, next_batch_failures = prepare()
+        except agreement.AgreementTaskError as error:
+            if str(error) != "No eligible level-2 slot-4 agreement variant remains.":
+                raise
+            next_batch_failures = ["agreement_level2_inventory_exhausted"]
     return {"targets": targets, "snapshots": snapshots, "exhaustion": exhaustion,
             "nextBatchFailureReasons": next_batch_failures, "providerCalls": 0}
 

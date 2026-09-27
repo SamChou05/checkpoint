@@ -681,11 +681,11 @@ def _select_novel_task(
 ) -> tuple[dict, bool]:
     """Choose a fresh code-owned variant and retain its authored source.
 
-    Slot 3 prefers the least-used solve mechanism. Slot 4 introduces its
-    scarce full-sentence scenes in the first batch and then spaces them among
-    two-blank families. A never-used scene takes priority over a second
-    variant of any scene. If the finite inventory is exhausted, retain the
-    authored task for the normal per-item duplicate filter.
+    Slot 3 prefers the least-used solve mechanism. The level-2 slot-4 route
+    uses only its two-blank families: full-sentence selection remains in the
+    schema and direct compiler for future calibration but is not eligible for
+    mapped level-2 selection. A never-used slot-4 scene takes priority over
+    a second variant of any scene. Exhausted slot 4 fails closed.
     """
     scene, _ = _checked_task(task)
     if ordinal not in (3, 4):
@@ -696,11 +696,15 @@ def _select_novel_task(
                      **GERUND_SCENES, **SENTENCE_SELECTION_SCENES})
     if scene not in allowed:
         raise AgreementTaskError("Agreement task is outside its mapped slot.")
+    eligible = (allowed if ordinal == 3 else {
+        candidate_scene: value for candidate_scene, value in allowed.items()
+        if candidate_scene not in SENTENCE_SELECTION_SCENES
+    })
     blocked = {_normalized_stem_identity(prompt) for prompt in existing_prompts}
     blocked.update(blocked_variant_identities)
     variants = [
         {"kind": TASK_KIND, "scene": candidate_scene, "order": order}
-        for candidate_scene in sorted(allowed)
+        for candidate_scene in sorted(eligible)
         for order in ("singular_first", "plural_first")
     ]
     by_scene = {
@@ -708,13 +712,15 @@ def _select_novel_task(
             _normalized_stem_identity(compile_question(candidate, ordinal=ordinal)["prompt"]) in blocked
             for candidate in variants if candidate["scene"] == candidate_scene
         )
-        for candidate_scene in allowed
+        for candidate_scene in eligible
     }
     fresh = [
         candidate for candidate in variants
         if _normalized_stem_identity(compile_question(candidate, ordinal=ordinal)["prompt"]) not in blocked
     ]
     if not fresh:
+        if ordinal == 4:
+            raise AgreementTaskError("No eligible level-2 slot-4 agreement variant remains.")
         return task, True
     family_by_scene = {
         candidate_scene: ("partitive" if candidate_scene in PARTITIVE_SCENES else
@@ -722,10 +728,9 @@ def _select_novel_task(
                           "inversion" if candidate_scene in INVERSION_SCENES else
                           "correlative" if candidate_scene in CORRELATIVE_SCENES else
                           "gerund" if candidate_scene in GERUND_SCENES else
-                          "sentence_selection" if candidate_scene in SENTENCE_SELECTION_SCENES else
                           "number" if candidate_scene in NUMBER_SCENES else
                           "compound" if candidate_scene in COMPOUND_SCENES else "proximity")
-        for candidate_scene in allowed
+        for candidate_scene in eligible
     }
     family_counts = {
         family: sum(
@@ -734,28 +739,11 @@ def _select_novel_task(
         )
         for family in set(family_by_scene.values())
     }
-    used_slot4 = sum(family_counts.values()) if ordinal == 4 else 0
-    sentence_uses = family_counts.get("sentence_selection", 0)
-    # Four distinct full-sentence scenes can appear at slot-4 positions
-    # 1, 4, 8, and 12 without clustering all four in the first four batches.
-    sentence_due = (ordinal == 4 and sentence_uses < min(
-        len(SENTENCE_SELECTION_SCENES), (used_slot4 + 5) // 4,
-    ))
-
     def priority(candidate: dict) -> tuple:
         candidate_scene = candidate["scene"]
         family_use = family_counts[family_by_scene[candidate_scene]]
         if ordinal == 4:
-            return (by_scene[candidate_scene],
-                    (candidate_scene in SENTENCE_SELECTION_SCENES) != sentence_due,
-                    family_use,
-                    # In the level-2 pilot, the first selected full-sentence
-                    # variant should use the order independently rated 2/2.
-                    # Keep an authored selection unchanged when it is fresh.
-                    (scene not in SENTENCE_SELECTION_SCENES
-                     and candidate_scene in SENTENCE_SELECTION_SCENES
-                     and candidate["order"] != "singular_first"),
-                    candidate != task,
+            return (by_scene[candidate_scene], family_use, candidate != task,
                     candidate_scene, candidate["order"])
         return (family_use, by_scene[candidate_scene], candidate != task,
                 candidate_scene, candidate["order"])

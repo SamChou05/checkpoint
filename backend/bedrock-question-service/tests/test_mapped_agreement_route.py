@@ -108,26 +108,31 @@ class MappedAgreementRouteTests(unittest.TestCase):
         self.assertEqual(set(agreement_proof), {3, 4})
         return rows, math_proof, agreement_proof
 
-    def test_level_two_first_sentence_selection_from_other_authored_family(self):
-        raw = self.raw()
-        raw["questions"]["4"] = agreement("gerund_meals")
-        adapted = json.loads(native.adapt_native_response(json.dumps(raw), self.contract()))
-        rows, math_proof, english_proof, failures = prepare_mapped_agreement_rows(
-            adapted, self.contract(),
-        )
-        self.assertEqual(failures, [])
-        self.assertEqual(json.loads(english_proof[4].task_json),
-                         agreement("select_archive", "singular_first"))
-        self.assertEqual(rows[4]["difficulty"], 2)
-        self.assertEqual(rows[4]["expectedAnswer"], "Maya and Theo each prepare lunch.")
-        english_output = {}
-        sanitized = _sanitize_questions(
-            rows, self.request, compiled_candidates=math_proof, compiled_output={},
-            agreement_candidates=english_proof, agreement_output=english_output,
-            preserve_authored_explanation=True,
-        )
-        self.assertEqual(len(sanitized), 5)
-        self.assertEqual(english_output[4].content(sanitized[4]), sanitized[4])
+    def test_level_two_slot_four_quarantines_sentence_selection(self):
+        for authored in (agreement("gerund_meals"), agreement("select_archive")):
+            with self.subTest(authored=authored):
+                raw = self.raw()
+                raw["questions"]["4"] = authored
+                adapted = json.loads(native.adapt_native_response(json.dumps(raw), self.contract()))
+                rows, math_proof, english_proof, failures = prepare_mapped_agreement_rows(
+                    adapted, self.contract(),
+                )
+                self.assertEqual(failures, [])
+                self.assertEqual(json.loads(english_proof[4].source_task_json), authored)
+                selected = json.loads(english_proof[4].task_json)
+                self.assertNotIn(selected["scene"], SENTENCE_SELECTION_SCENES)
+                self.assertIn("___", rows[4]["prompt"])
+                self.assertEqual(rows[4]["difficulty"], 2)
+                self.assertEqual(rows[4]["expectedAnswer"],
+                                 compile_question(selected, ordinal=4)["expectedAnswer"])
+                english_output = {}
+                sanitized = _sanitize_questions(
+                    rows, self.request, compiled_candidates=math_proof, compiled_output={},
+                    agreement_candidates=english_proof, agreement_output=english_output,
+                    preserve_authored_explanation=True,
+                )
+                self.assertEqual(len(sanitized), 5)
+                self.assertEqual(english_output[4].content(sanitized[4]), sanitized[4])
 
     def test_new_schema_is_closed_bounded_and_old_v1_bytes_unchanged(self):
         new = self.contract()
@@ -306,30 +311,11 @@ class MappedAgreementRouteTests(unittest.TestCase):
 
         self.assertEqual(len(set(chosen[3])), 32)
         self.assertEqual(len(set(chosen[4])), 32)
-        exhausted = compile_mapped_english_slots(
-            source, self.contract(),
-            blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),
-        )
-        self.assertTrue(exhausted[3].novelty_exhausted)
-        self.assertFalse(exhausted[4].novelty_exhausted)
-        remaining = [exhausted[4].content()["prompt"]]
-        for _ in range(7):
-            next_item = compile_mapped_english_slots(
+        with self.assertRaisesRegex(AgreementTaskError, "No eligible level-2 slot-4"):
+            compile_mapped_english_slots(
                 source, self.contract(),
                 blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),
-                existing_prompts=tuple(remaining),
-            )[4]
-            self.assertFalse(next_item.novelty_exhausted)
-            remaining.append(next_item.content()["prompt"])
-        exhausted = compile_mapped_english_slots(
-            source, self.contract(),
-            blocked_variant_identities=tuple(question_bank._agreement_variant_history(existing_items)),
-            existing_prompts=tuple(remaining),
-        )
-        self.assertTrue(exhausted[4].novelty_exhausted)
-        self.assertEqual(len(question_bank._prepare_questions(
-            bank_id, [exhausted[4].content()], existing_items,
-        )), 0)
+            )
 
     def test_fingerprint_only_block_and_private_history_preserve_scope_and_prompt(self):
         source = {"3": agreement("coach"), "4": agreement(COMPOUND_SCENE)}

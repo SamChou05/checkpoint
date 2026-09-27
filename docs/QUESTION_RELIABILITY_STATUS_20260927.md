@@ -160,6 +160,15 @@ explanations sound; every main explanation is 331–362 characters under the
 420-character limit. The reviewer’s uncertainty veto remains unchanged.
 This teaching revision has passed only local checks; it requires a fresh
 full-worker qualification before a live-yield claim.
+After two live full-worker reviewer vetoes involving the four-rule
+full-sentence format, the mapped level-2 slot-4 selector now quarantines all
+`select_*` variants, including an author-proposed one. Direct compilation and
+the schema retain the format for future level-3 calibration; reviewer key,
+difficulty, and explanation vetoes remain unchanged. The eligible slot-4
+inventory is 32 exact stems rather than 40, and it fails closed when those
+32 are used. The offline capacity replay still completes 20/40/80/85 items
+with unique exact stems, but four remaining slot-4 solve families repeat.
+This selection change has no new live full-worker qualification.
 An [offline single-rule full-sentence prototype](evidence/level2-sentence-selection-prototype-20260927/README.md)
 reached unique keys and level-2 ratings, but its best blind-reviewed version
 had only 3/6 and 5/6 meaningfully distinct choice pairs. It was not added to

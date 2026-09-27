@@ -18,6 +18,7 @@ import question_bank
 import question_generation as generation
 from agreement_task_constructor import (
     AgreementTaskError, COMPOUND_SCENE, COMPOUND_SCENES, GERUND_SCENES, LEARNER_FIELDS,
+    SENTENCE_SELECTION_SCENES,
     blocked_fingerprint_variant_identities, canonical_variant_identities, compile_question,
     prepare_mapped_agreement_rows,
 )
@@ -511,10 +512,9 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         raw["questions"][str(slot)] = source
                         validator.validate(raw)
                         adapted = json.loads(native.adapt_native_response(json.dumps(raw), contract))
-                        # The normal selector can replace a fresh authored scene to
-                        # vary response format. Leave only the two source English
-                        # variants fresh so this regression exercises every
-                        # schema-admitted scene through the final compiler.
+                        # The level-2 selector excludes full-sentence scenes.
+                        # Keep a two-blank fallback when the authored slot-4
+                        # scene is schema-admitted but quarantined.
                         source_identities = {
                             _normalized_stem_identity(compile_question(
                                 raw["questions"][str(english_slot)],
@@ -522,6 +522,12 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                             )["prompt"])
                             for english_slot in (3, 4)
                         }
+                        if slot == 4 and scene in SENTENCE_SELECTION_SCENES:
+                            direct = compile_question(source, ordinal=4)
+                            self.assertEqual(direct["choices"].count(direct["expectedAnswer"]), 1)
+                            source_identities.add(_normalized_stem_identity(compile_question(
+                                _agreement(COMPOUND_SCENE), ordinal=4,
+                            )["prompt"]))
                         blocked_english = tuple(sorted(
                             canonical_variant_identities() - source_identities
                         ))
@@ -533,7 +539,11 @@ class MappedQuantitativeFamilyTests(unittest.TestCase):
                         self.assertEqual(set(numeric), {0, 1, 2})
                         self.assertEqual(set(english), {3, 4})
                         self.assertEqual(json.loads(english[slot].source_task_json), source)
-                        self.assertEqual(json.loads(english[slot].task_json), source)
+                        if slot == 4 and scene in SENTENCE_SELECTION_SCENES:
+                            self.assertNotIn(json.loads(english[slot].task_json)["scene"],
+                                             SENTENCE_SELECTION_SCENES)
+                        else:
+                            self.assertEqual(json.loads(english[slot].task_json), source)
                         self.assertEqual(rows[slot]["expectedAnswer"],
                                          english[slot].content()["expectedAnswer"])
                         checked += 1
