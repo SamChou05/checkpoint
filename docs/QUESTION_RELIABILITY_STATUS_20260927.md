@@ -221,6 +221,19 @@ reviewer flagged 41/190 strong pairs using a broader format criterion, while
 the other flagged 7/190. The current bank therefore still fails a quality
 bar requiring no strong repetition, despite the narrow 5/5 live worker pass.
 
+A separate [closed pronoun-role prototype](evidence/pronoun-constructor-blind-20260927/RESULTS.md)
+has 16 scene/order variants across two response mechanisms. Two independent
+answer-blind reviewers matched all 16 code-owned keys and found all 96
+within-item choice pairs meaningful, but agreed that 56/120 cross-item pairs
+strongly repeat. Both caught an unsupported implication in the initial
+single-speaker prompt; that conditional wording was corrected and passed two
+targeted keyless reviews. The prototype remains outside the production schema
+and author route. An [opt-in generic seven-candidate reserve](evidence/generic-reserve-seven-probe-20260927/README.md)
+now runs the existing sanitizer, answer-blind solver, and reviewer once and
+returns five only if five survive. It is disabled by default, excludes mapped
+and source-bound requests, and has only socket-free tests so far. A live
+Bedrock trial is still needed to measure its yield and content quality.
+
 ## Established causes and fixes
 
 | Cause | Evidence | Current response |
@@ -238,12 +251,17 @@ bar requiring no strong repetition, despite the narrow 5/5 live worker pass.
 | Rebalancing a finite repertoire cannot eliminate repeated decisions. | The frozen [cross-slot audit](evidence/mapped-cross-slot-mechanism-audit-20260927/RESULTS.md) counted 2/18/76 structural pair patterns at 15/40/80 items that resemble earlier blind-rated strong overlaps. The new gerund family lowers this heuristic to 2/13/55, but its own blind review finds repeated templates. A trial selector reduced maximum-decision pairings but created near-identical minimum-ratio tasks; it was reverted. | These counts are heuristic warnings, not newly blind-confirmed duplicates. Expand substantively different, code-owned objectives and require repeated-bank blind review; do not promote a selector that merely moves the repetition. |
 | Passing local tests does not update TestFlight. | The active workflow is manual, has never run, and the required protected environment and AWS OIDC identity were absent in the read-only audit. | [Release audit](evidence/testflight-release-readiness-20260927/RESULTS.md), [scoped bootstrap](../infra/TESTFLIGHT_DEPLOY_BOOTSTRAP.md), and [service-role design](../infra/TESTFLIGHT_EXECUTION_ROLE.md) specify the identity, protected variables, role boundary, rollback artifacts, and live-setting comparison. Nothing was deployed. |
 
-The integrated backend passed **1,473 unit tests**, Ruff on changed Python
+The integrated backend passed **1,484 unit tests**, Ruff on changed Python
 files, and `git diff --check`. Both SAM templates passed lint; the deployment
 script suite, actionlint, shellcheck, and AWS's read-only CloudFormation
 template validation also passed. The earlier bootstrap audit compared five
 nonsecret live TestFlight settings. These checks verify deterministic behavior
 and packaging preparation; they are not a statistical model-quality measurement.
+An independent current-source iOS audit also ran the focused simulator
+answer-highlighting suite: 16/16 tests passed, including choice permutations,
+persistence, and legacy labels. The app preserves the backend's explicit key
+through shuffling; this does not establish that every backend-approved key is
+semantically right or update the older deployed TestFlight build.
 
 ## What would close the remaining gap
 
