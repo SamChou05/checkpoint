@@ -1,0 +1,73 @@
+{
+  "review_type": "independent_exact_hash_selector_first_full_worker_audit",
+  "reviewed_at_utc": "2026-09-27T12:47:29.100892+00:00",
+  "trial_id": "combined-v12-selector-first-mapped-3x2-full-worker-20260927-01",
+  "source_commit": "1eff0a24c5177c0df7c57284dbc724385637214d",
+  "decision": {
+    "frozen_preparation": "GO",
+    "independent_go_for_exact_hash_lock": true,
+    "live_dispatch_at_review_time": "NO_GO",
+    "live_dispatch_reason": "The new folder had no exact-hash review lock, launch-precheck attempt, freshness record, or capture at review time. Those are separate explicit launch gates."
+  },
+  "verified_hashes": {
+    "plan_sha256": "3221e3a37c5ff0e0574dea067f917bf6332e56f6438b17407e93041808a35fd0",
+    "harness_sha256": "2e7eaf5035f30a6c15cb01f0470c4c21145e268a3c0b17e5fe8133b1d4444fc0",
+    "tests_sha256": "0cafdd8110504430ae6cd8852130fee609ecb61721d275d51c0e6b11e64c77b1",
+    "request_bytes_sha256": "b6c0f712b693deeedbb03919a920499fa1d0d3abdfa97b857e68ad10d0bd1714",
+    "normalized_request_sha256": "212cea7d53ddefe17fbe8f2459705b46b871793e62e0e58b56cc11e3626e63ae",
+    "accepted_v12_author_wire_sha256": "0317c2b75115c309232c02e6eddcedd230461fc63f5d18da7312502868092a0a",
+    "accepted_v12_native_schema_sha256": "495db717d6b3fd6cc5272cdb289c7d77d9ca2e275b7c1d3f0cb856c1a18b6934",
+    "native_schema_bytes": 2357,
+    "system_prompt_sha256": "3bd6e28e9cacb12b8fdec9d34d4ca6410e81f86020c76fdbd48c9e4ee41ec4f6",
+    "user_prompt_sha256": "fb4a783e3e205d08ddf87f6595da72c78c6117be7caddb3b33da83bf49fae4d4",
+    "prior_v12_4_of_5_capture_sha256": "fe66f66fe9bc1b8eefa62c167447e73a62d41cf362850a3db8cbc912298af31d",
+    "prior_v12_4_of_5_results_sha256": "8f9377abdba9fdf1bb4120184a3c290e3337ab1281979a8542645c6f568e5912"
+  },
+  "checks": [
+    {
+      "gate": "source_commit_and_hashes",
+      "result": "PASS",
+      "evidence": "All 43 plan source hashes match current tree bytes; all 34 backend pins match blobs at source commit 1eff0a24c5177c0df7c57284dbc724385637214d. The selector commit 75f52cb is an ancestor of that source commit, which is contained in origin/main. The harness rejects backend differences and recomputes the plan before launch and dispatch."
+    },
+    {
+      "gate": "accepted_author_wire",
+      "result": "PASS",
+      "evidence": "Recomputed exact author wire SHA-256 0317c2b75115c309232c02e6eddcedd230461fc63f5d18da7312502868092a0a, 2,357-byte schema SHA-256 495db717d6b3fd6cc5272cdb289c7d77d9ca2e275b7c1d3f0cb856c1a18b6934, and matching system/user prompt hashes. All match the accepted v12 author plan; request bytes also match the previous trial."
+    },
+    {
+      "gate": "predecessor_preservation",
+      "result": "PASS",
+      "evidence": "Prior v12 capture and RESULTS.md retain their pinned hashes. The prior capture still reports four returned questions, returned ordinals 0–3, and original slot 4 unfilled. The new harness enforces those facts and uses separate paths in its new folder for capture, review lock, launch attempt, and freshness record."
+    },
+    {
+      "gate": "bounded_one_shot_execution",
+      "result": "PASS",
+      "evidence": "One mixed job has five original 3:2 slots and six durable Converse reservations at most. Each SDK client has one attempt, a three-second connect timeout, and at most a 200-second read timeout. The 240-second SIGALRM begins before execute credential export and STS. A second author pass, fallback, top-up, repeat job, bank/queue write, or deploy is outside this guarded path; capture creation is exclusive and precedes credentials."
+    },
+    {
+      "gate": "offline_fake_worker",
+      "result": "PASS",
+      "evidence": "Ten tests passed directly and under --preflight. The socket-blocked preflight also passed and reported provider_calls=0. The fake full route returns five original slots with policies 8/8/8/10/10 and selects the intended select_archive/singular_first task for slot 4 when another English family is authored."
+    },
+    {
+      "gate": "credential_boundaries",
+      "result": "PASS_WITH_DISCLOSED_LIMIT",
+      "evidence": "The pinned Boto3, Botocore, and awscrt versions (1.43.91/1.43.91/0.36.0), AWS CLI 2.33.15, default-profile file check, and CLI executable check all passed without sockets. Launch precheck is one-shot and requires at least 360 seconds of exported credential life, with 330 seconds still available at execute. Execute exports a new snapshot requiring at least 300 seconds and reserves one STS request. The AWS CLI export may perform a Signin refresh whose exact remote call count is not observed by the harness; this is disclosed in the frozen record and confined to one bounded export process."
+    }
+  ],
+  "limitations": [
+    {
+      "type": "content_efficacy",
+      "blocking_for_offline_review": false,
+      "detail": "The new selector preference applies when another English family is authored and first-batch history is empty; the live model may produce a different author payload. A fake five-slot return does not establish live 5/5 qualification."
+    },
+    {
+      "type": "credential_observability",
+      "blocking_for_offline_review": false,
+      "detail": "CLI Signin refresh count during credential export is not instrumented; the record states unobserved; bounded 0-1. No such export or AWS request was performed in this audit."
+    }
+  ],
+  "blocking_issues": [],
+  "provider_calls_made_by_reviewer": 0,
+  "aws_calls_made_by_reviewer": 0
+}
