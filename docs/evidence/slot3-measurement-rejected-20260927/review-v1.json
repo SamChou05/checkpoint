@@ -1,0 +1,439 @@
+{
+  "review_type": "answer-blind worksheet review",
+  "reviewed_inputs": [
+    "worksheet.json",
+    "RUBRIC.md"
+  ],
+  "answer_key_used": false,
+  "external_sources_used": [],
+  "items": [
+    {
+      "id": "M1",
+      "correct_choice_index_1_based": 2,
+      "correct_choice": "is; remain",
+      "reason": "Eight dollars denotes one admission price, so is agrees with the amount; eight tickets denotes eight individual tickets, so remain is plural.",
+      "choice_diagnoses": [
+        "both blanks have agreement errors",
+        "both blanks agree",
+        "the measured-amount blank has an agreement error",
+        "the counted-ticket blank has an agreement error"
+      ],
+      "naturalness": "Natural and idiomatic. The contrast between a price and physical tickets is clear.",
+      "level": "3 (within target 2–3): two ordinary agreement decisions, with the measured-amount singular providing the conceptual step.",
+      "ambiguity": "No material ambiguity in the stated price/ticket reading.",
+      "choices": [
+        "are; remains",
+        "is; remain",
+        "are; remain",
+        "is; remains"
+      ],
+      "pairwise_choice_distinctness": [
+        {
+          "pair": [
+            1,
+            2
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1,
+            2
+          ],
+          "assessment": "Different agreement form in both blanks; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            1,
+            3
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            2
+          ],
+          "assessment": "Different agreement form in blank 2; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            1,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1
+          ],
+          "assessment": "Different agreement form in blank 1; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            2,
+            3
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1
+          ],
+          "assessment": "Different agreement form in blank 1; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            2,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            2
+          ],
+          "assessment": "Different agreement form in blank 2; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            3,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1,
+            2
+          ],
+          "assessment": "Different agreement form in both blanks; the options are distinguishable although they express the same intended real-world situation."
+        }
+      ],
+      "all_six_pairs_checked": true,
+      "standard_written_american_english": "The keyed completion is grammatical in standard written American English; each alternative has at least one agreement error under the stipulated reading."
+    },
+    {
+      "id": "M2",
+      "correct_choice_index_1_based": 3,
+      "correct_choice": "wait; is",
+      "reason": "Twelve runners is a plural count of people, so wait is plural; twelve minutes denotes one span of time, so is agrees with the amount.",
+      "choice_diagnoses": [
+        "the counted-runner blank has an agreement error",
+        "the measured-time blank has an agreement error",
+        "both blanks agree",
+        "both blanks have agreement errors"
+      ],
+      "naturalness": "Grammatical and understandable. The present-simple “runners wait at the starting line” is a little scene-setting rather than the most conversational phrasing.",
+      "level": "3 (within target 2–3): the measured-time phrase must be interpreted as one duration.",
+      "ambiguity": "No material ambiguity; enough time frames twelve minutes as one amount.",
+      "choices": [
+        "waits; is",
+        "wait; are",
+        "wait; is",
+        "waits; are"
+      ],
+      "pairwise_choice_distinctness": [
+        {
+          "pair": [
+            1,
+            2
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1,
+            2
+          ],
+          "assessment": "Different agreement form in both blanks; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            1,
+            3
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1
+          ],
+          "assessment": "Different agreement form in blank 1; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            1,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            2
+          ],
+          "assessment": "Different agreement form in blank 2; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            2,
+            3
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            2
+          ],
+          "assessment": "Different agreement form in blank 2; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            2,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1
+          ],
+          "assessment": "Different agreement form in blank 1; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            3,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1,
+            2
+          ],
+          "assessment": "Different agreement form in both blanks; the options are distinguishable although they express the same intended real-world situation."
+        }
+      ],
+      "all_six_pairs_checked": true,
+      "standard_written_american_english": "The keyed completion is grammatical in standard written American English; each alternative has at least one agreement error under the stipulated reading."
+    },
+    {
+      "id": "M3",
+      "correct_choice_index_1_based": 4,
+      "correct_choice": "is; stand",
+      "reason": "Three miles denotes one distance, so is agrees with the amount; three trail markers denotes three individual markers, so stand is plural.",
+      "choice_diagnoses": [
+        "both blanks have agreement errors",
+        "the measured-distance blank has an agreement error",
+        "the counted-marker blank has an agreement error",
+        "both blanks agree"
+      ],
+      "naturalness": "Grammatical but somewhat stilted. “Three miles is the distance to the campground” sounds redundant, and “markers stand along the path” is possible but less natural than “are along the path.”",
+      "level": "3 (within target 2–3): the distance-as-one-unit reading is moderately subtle; the marker agreement is simple.",
+      "ambiguity": "No material ambiguity in the distance/marker contrast.",
+      "choices": [
+        "are; stands",
+        "are; stand",
+        "is; stands",
+        "is; stand"
+      ],
+      "pairwise_choice_distinctness": [
+        {
+          "pair": [
+            1,
+            2
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            2
+          ],
+          "assessment": "Different agreement form in blank 2; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            1,
+            3
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1
+          ],
+          "assessment": "Different agreement form in blank 1; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            1,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1,
+            2
+          ],
+          "assessment": "Different agreement form in both blanks; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            2,
+            3
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1,
+            2
+          ],
+          "assessment": "Different agreement form in both blanks; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            2,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1
+          ],
+          "assessment": "Different agreement form in blank 1; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            3,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            2
+          ],
+          "assessment": "Different agreement form in blank 2; the options are distinguishable although they express the same intended real-world situation."
+        }
+      ],
+      "all_six_pairs_checked": true,
+      "standard_written_american_english": "The keyed completion is grammatical in standard written American English; each alternative has at least one agreement error under the stipulated reading."
+    },
+    {
+      "id": "M4",
+      "correct_choice_index_1_based": 4,
+      "correct_choice": "are; is",
+      "reason": "Five packages denotes five individual packages, so are is plural; five pounds denotes one target weight per package, so is agrees with the amount.",
+      "choice_diagnoses": [
+        "both blanks have agreement errors",
+        "the measured-weight blank has an agreement error",
+        "the counted-package blank has an agreement error",
+        "both blanks agree"
+      ],
+      "naturalness": "Natural and idiomatic; “target weight for each package” clearly means a single weight.",
+      "level": "3 (within target 2–3): the weight-as-one-unit reading is the sole subtlety.",
+      "ambiguity": "No material ambiguity.",
+      "choices": [
+        "is; are",
+        "are; are",
+        "is; is",
+        "are; is"
+      ],
+      "pairwise_choice_distinctness": [
+        {
+          "pair": [
+            1,
+            2
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1
+          ],
+          "assessment": "Different agreement form in blank 1; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            1,
+            3
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            2
+          ],
+          "assessment": "Different agreement form in blank 2; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            1,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1,
+            2
+          ],
+          "assessment": "Different agreement form in both blanks; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            2,
+            3
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1,
+            2
+          ],
+          "assessment": "Different agreement form in both blanks; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            2,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            2
+          ],
+          "assessment": "Different agreement form in blank 2; the options are distinguishable although they express the same intended real-world situation."
+        },
+        {
+          "pair": [
+            3,
+            4
+          ],
+          "meaningfully_distinct_as_agreement_options": true,
+          "differing_blank_positions": [
+            1
+          ],
+          "assessment": "Different agreement form in blank 1; the options are distinguishable although they express the same intended real-world situation."
+        }
+      ],
+      "all_six_pairs_checked": true,
+      "standard_written_american_english": "The keyed completion is grammatical in standard written American English; each alternative has at least one agreement error under the stipulated reading."
+    }
+  ],
+  "cross_item_assessment": {
+    "distinct_mechanism_from_proximity_inversion_relative_clause_agreement": true,
+    "mechanism_explanation": "The quantity phrases themselves control singular agreement when construed as one amount, whereas counted individuals take plural agreement. This semantic-number choice is different from proximity, inverted word order, or identifying an antecedent in a relative clause.",
+    "set_repetitiveness": "High. All four use the same two-blank contrast, four-option 2×2 agreement grid, and the same measured-quantity-versus-counted-plural rule. Changing the units and reversing blank order does little to alter the reasoning.",
+    "strong_near_duplicate_pairs": [
+      {
+        "pair": [
+          "M1",
+          "M2"
+        ],
+        "strong_near_duplicate": true,
+        "reason": "Same contrast and option grid with blank order reversed; price/tickets becomes runners/duration."
+      },
+      {
+        "pair": [
+          "M1",
+          "M3"
+        ],
+        "strong_near_duplicate": true,
+        "reason": "Same measured quantity first, counted plural second, and equational amount clause; only context and verbs change."
+      },
+      {
+        "pair": [
+          "M1",
+          "M4"
+        ],
+        "strong_near_duplicate": true,
+        "reason": "Same contrast and option grid with blank order reversed; only context and verbs change."
+      },
+      {
+        "pair": [
+          "M2",
+          "M3"
+        ],
+        "strong_near_duplicate": true,
+        "reason": "Same contrast and option grid with blank order reversed; only context and verbs change."
+      },
+      {
+        "pair": [
+          "M2",
+          "M4"
+        ],
+        "strong_near_duplicate": true,
+        "reason": "Same counted plural first, measured quantity second; only context and verbs change."
+      },
+      {
+        "pair": [
+          "M3",
+          "M4"
+        ],
+        "strong_near_duplicate": true,
+        "reason": "Same contrast and option grid with blank order reversed; only context and verbs change."
+      }
+    ],
+    "recommendation": "Use at most one or two of these four if the larger set needs varied agreement mechanisms; M1 or M4 has the most natural wording."
+  }
+}

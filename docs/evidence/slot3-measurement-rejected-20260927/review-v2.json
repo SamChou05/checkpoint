@@ -1,0 +1,117 @@
+{
+  "review_type": "answer-blind grammar and set review",
+  "standard": "Standard written American English; sole-answer test includes defensible alternative readings.",
+  "items": [
+    {
+      "id": "M1",
+      "preferred_choice_1_based": 2,
+      "preferred_choice": "covers; remain",
+      "sole_correct_choice": 2,
+      "sole_choice_confidence": "high",
+      "choice_assessments": [
+        {"choice": 1, "text": "cover; remains", "judgment": "incorrect", "reason": "The sum of eight dollars normally takes singular covers, and eight tickets takes plural remain."},
+        {"choice": 2, "text": "covers; remain", "judgment": "correct and natural", "reason": "The price is one amount; the tickets are separate objects."},
+        {"choice": 3, "text": "cover; remain", "judgment": "not natural on the supplied amount reading", "reason": "Plural cover would require a strained reading of the dollars as separate objects rather than the price of admission."},
+        {"choice": 4, "text": "covers; remains", "judgment": "incorrect", "reason": "The counted tickets require remain."}
+      ],
+      "within_item_pairs": [
+        {"choices": [1, 2], "form_difference": "both verbs", "distinct_meanings": false},
+        {"choices": [1, 3], "form_difference": "ticket verb", "distinct_meanings": false},
+        {"choices": [1, 4], "form_difference": "dollar verb", "distinct_meanings": false},
+        {"choices": [2, 3], "form_difference": "dollar verb", "distinct_meanings": false},
+        {"choices": [2, 4], "form_difference": "ticket verb", "distinct_meanings": false},
+        {"choices": [3, 4], "form_difference": "both verbs", "distinct_meanings": false}
+      ],
+      "plural_quantity_agreement_defensible": "Only by construing eight separate dollar units as acting individually; the admission-price context does not naturally support that reading.",
+      "naturalness": "Natural enough, though 'Eight tickets remain at the entrance' lacks context for what the tickets are doing there.",
+      "level_2_3": "Yes; straightforward agreement contrast with two blanks."
+    },
+    {
+      "id": "M2",
+      "preferred_choice_1_based": 3,
+      "preferred_choice": "is; jog",
+      "sole_correct_choice": null,
+      "sole_choice_confidence": "fails: choice 4 is defensible",
+      "choice_assessments": [
+        {"choice": 1, "text": "are; jogs", "judgment": "incorrect", "reason": "Runners is plural, so jogs is wrong, whatever the first-blank reading."},
+        {"choice": 2, "text": "is; jogs", "judgment": "incorrect", "reason": "Runners is plural, so jogs is wrong."},
+        {"choice": 3, "text": "is; jog", "judgment": "preferred and natural", "reason": "Twelve minutes is construed as one period of sufficient length, and runners is plural."},
+        {"choice": 4, "text": "are; jog", "judgment": "defensible alternative", "reason": "The minutes can be construed as a plural collection that together suffice; 'twelve minutes are enough' is idiomatic for some writers."}
+      ],
+      "within_item_pairs": [
+        {"choices": [1, 2], "form_difference": "minute verb", "distinct_meanings": false},
+        {"choices": [1, 3], "form_difference": "both verbs", "distinct_meanings": false},
+        {"choices": [1, 4], "form_difference": "runner verb", "distinct_meanings": false},
+        {"choices": [2, 3], "form_difference": "runner verb", "distinct_meanings": false},
+        {"choices": [2, 4], "form_difference": "both verbs", "distinct_meanings": false},
+        {"choices": [3, 4], "form_difference": "minute verb", "distinct_meanings": false, "note": "Both agreement choices can convey the same sufficient-duration claim."}
+      ],
+      "plural_quantity_agreement_defensible": "Yes: 'Twelve minutes are enough for a warm-up' is a viable plural construal; this creates two acceptable answer pairs.",
+      "naturalness": "Both complete sentences are natural; the contrast between minutes and runners is clear.",
+      "level_2_3": "Yes in concept, but the multiple acceptable answers spoil single-choice scoring."
+    },
+    {
+      "id": "M3",
+      "preferred_choice_1_based": 1,
+      "preferred_choice": "rest; is",
+      "sole_correct_choice": null,
+      "sole_choice_confidence": "questionable: choice 3 is defensible",
+      "choice_assessments": [
+        {"choice": 1, "text": "rest; is", "judgment": "preferred and natural", "reason": "Hikers is plural; three miles is one remaining distance."},
+        {"choice": 2, "text": "rests; is", "judgment": "incorrect", "reason": "Three hikers requires rest."},
+        {"choice": 3, "text": "rest; are", "judgment": "defensible but less natural alternative", "reason": "A writer may construe the remaining miles as plural stretches, even though the route-distance reading favors is."},
+        {"choice": 4, "text": "rests; are", "judgment": "incorrect", "reason": "Three hikers requires rest, regardless of the distance reading."}
+      ],
+      "within_item_pairs": [
+        {"choices": [1, 2], "form_difference": "hiker verb", "distinct_meanings": false},
+        {"choices": [1, 3], "form_difference": "mile verb", "distinct_meanings": false, "note": "The quantity versus plural-stretches construal is subtle and does not change the practical claim."},
+        {"choices": [1, 4], "form_difference": "both verbs", "distinct_meanings": false},
+        {"choices": [2, 3], "form_difference": "both verbs", "distinct_meanings": false},
+        {"choices": [2, 4], "form_difference": "mile verb", "distinct_meanings": false},
+        {"choices": [3, 4], "form_difference": "hiker verb", "distinct_meanings": false}
+      ],
+      "plural_quantity_agreement_defensible": "Yes, though less strongly than in M2: 'Three miles are all that remains' can treat the remaining miles as multiple stretches. Singular is clearly preferable for one remaining distance.",
+      "naturalness": "The hiking context is natural. 'Three miles is all that remains to the next campsite' is slightly stiff; 'Three miles remain before the next campsite' would read more smoothly, but it would alter the test.",
+      "level_2_3": "Yes in concept; the plural-distance alternative weakens a single-answer item."
+    },
+    {
+      "id": "M4",
+      "preferred_choice_1_based": 4,
+      "preferred_choice": "is; need",
+      "sole_correct_choice": 4,
+      "sole_choice_confidence": "high",
+      "choice_assessments": [
+        {"choice": 1, "text": "are; needs", "judgment": "incorrect", "reason": "The limit is one five-pound weight, and parcels requires need."},
+        {"choice": 2, "text": "are; need", "judgment": "not natural on the supplied limit reading", "reason": "A single stated weight limit strongly calls for is; plural are would need a contrived reference to individual pounds."},
+        {"choice": 3, "text": "is; needs", "judgment": "incorrect", "reason": "Parcels requires need."},
+        {"choice": 4, "text": "is; need", "judgment": "correct and natural", "reason": "Five pounds names one weight threshold, whereas five parcels are counted objects."}
+      ],
+      "within_item_pairs": [
+        {"choices": [1, 2], "form_difference": "parcel verb", "distinct_meanings": false},
+        {"choices": [1, 3], "form_difference": "pound verb", "distinct_meanings": false},
+        {"choices": [1, 4], "form_difference": "both verbs", "distinct_meanings": false},
+        {"choices": [2, 3], "form_difference": "both verbs", "distinct_meanings": false},
+        {"choices": [2, 4], "form_difference": "pound verb", "distinct_meanings": false},
+        {"choices": [3, 4], "form_difference": "parcel verb", "distinct_meanings": false}
+      ],
+      "plural_quantity_agreement_defensible": "No plausible plural reading in the given sentence: the phrase denotes one weight limit for each parcel.",
+      "naturalness": "Natural, although 'Five parcels need labels before shipping' is generic and context-light.",
+      "level_2_3": "Yes; straightforward agreement contrast with two blanks."
+    }
+  ],
+  "set_assessment": {
+    "new_mechanism": "The quantity-as-one-unit versus counted-objects contrast is a genuine agreement mechanism distinct from proximity, inversion, and relative-clause agreement. It hinges on construal of a quantified noun phrase rather than identifying a displaced or embedded controller.",
+    "repetitiveness": "High. All four items repeat a quantified measure plus an equal-number plural count noun in two short independent sentences, with a two-by-two grid of singular/plural verb forms. Reversing sentence order in M3 does little to vary the reasoning. M2 and M4 are especially close; M1 and M4 share the same amount-first/count-first structure, as do M2 and M4.",
+    "strong_near_duplicate_cross_item_pairs": [
+      {"items": ["M2", "M4"], "strength": "very strong", "reason": "Same amount-first/count-second pattern, singular copula for a threshold or sufficiency judgment, then a plural count subject with a present-tense verb."},
+      {"items": ["M1", "M4"], "strength": "strong", "reason": "Both contrast a singularly construed amount with the same-number counted objects in adjacent sentences and test the same two agreement switches."},
+      {"items": ["M1", "M2"], "strength": "strong", "reason": "Same order and same repeated numeral pattern; lexical context alone changes."},
+      {"items": ["M2", "M3"], "strength": "strong", "reason": "Time and distance quantities are paired with people, with the two sentence types simply reversed."},
+      {"items": ["M3", "M4"], "strength": "strong", "reason": "Distance or weight as a singular quantity is paired with a counted plural noun; only order and setting vary."},
+      {"items": ["M1", "M3"], "strength": "strong", "reason": "Same mechanism and two-by-two distractor grid, with the order of amount and counted subject reversed."}
+    ],
+    "overall": "The set is suitable only as rough practice. It is too repetitive for four distinct assessment slots, and M2 and M3 lack a safely unique answer under a defensible plural-quantity reading.",
+    "recommendation": "Keep at most one of these items, preferably M4 or M1, and replace the others with genuinely different grammatical mechanisms or contexts that unambiguously force the intended reading."
+  },
+  "reference": {"title": "MLA Style Center, What Is the Difference between Fewer and Less?", "url": "https://style.mla.org/fewer-versus-less/", "relevance": "States that amounts of money, distance, and time construed as singular ideas take singular verbs; the review also checks whether each sentence permits a plural construal."}
+}

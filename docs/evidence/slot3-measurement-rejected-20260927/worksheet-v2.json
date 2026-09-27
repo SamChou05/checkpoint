@@ -1,0 +1,44 @@
+{
+  "items": [
+    {
+      "id": "M1",
+      "stem": "Fill both blanks with present-tense forms in standard written American English. At the museum, eight dollars ___ admission. Eight tickets ___ at the entrance. Which ordered pair fills the blanks?",
+      "choices": [
+        "cover; remains",
+        "covers; remain",
+        "cover; remain",
+        "covers; remains"
+      ]
+    },
+    {
+      "id": "M2",
+      "stem": "Fill both blanks with present-tense forms in standard written American English. During practice, twelve minutes ___ enough for a warm-up. Twelve runners ___ on the track. Which ordered pair fills the blanks?",
+      "choices": [
+        "are; jogs",
+        "is; jogs",
+        "is; jog",
+        "are; jog"
+      ]
+    },
+    {
+      "id": "M3",
+      "stem": "Fill both blanks with present-tense forms in standard written American English. Three hikers ___ near the trailhead. Three miles ___ all that remains to the next campsite. Which ordered pair fills the blanks?",
+      "choices": [
+        "rest; is",
+        "rests; is",
+        "rest; are",
+        "rests; are"
+      ]
+    },
+    {
+      "id": "M4",
+      "stem": "Fill both blanks with present-tense forms in standard written American English. Five pounds ___ the weight limit for each parcel. Five parcels ___ labels before shipping. Which ordered pair fills the blanks?",
+      "choices": [
+        "are; needs",
+        "are; need",
+        "is; needs",
+        "is; need"
+      ]
+    }
+  ]
+}

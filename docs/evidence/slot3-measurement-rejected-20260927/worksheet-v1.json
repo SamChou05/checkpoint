@@ -1,0 +1,44 @@
+{
+  "items": [
+    {
+      "id": "M1",
+      "stem": "Fill both blanks with present-tense forms in standard written American English. Eight dollars ___ the admission price, while eight tickets ___ at the front desk. Which ordered pair fills the blanks?",
+      "choices": [
+        "are; remains",
+        "is; remain",
+        "are; remain",
+        "is; remains"
+      ]
+    },
+    {
+      "id": "M2",
+      "stem": "Fill both blanks with present-tense forms in standard written American English. Twelve runners ___ at the starting line, while twelve minutes ___ enough time for a warm-up. Which ordered pair fills the blanks?",
+      "choices": [
+        "waits; is",
+        "wait; are",
+        "wait; is",
+        "waits; are"
+      ]
+    },
+    {
+      "id": "M3",
+      "stem": "Fill both blanks with present-tense forms in standard written American English. Three miles ___ the distance to the campground, while three trail markers ___ along the path. Which ordered pair fills the blanks?",
+      "choices": [
+        "are; stands",
+        "are; stand",
+        "is; stands",
+        "is; stand"
+      ]
+    },
+    {
+      "id": "M4",
+      "stem": "Fill both blanks with present-tense forms in standard written American English. Five packages ___ ready for shipping, while five pounds ___ the target weight for each package. Which ordered pair fills the blanks?",
+      "choices": [
+        "is; are",
+        "are; are",
+        "is; is",
+        "are; is"
+      ]
+    }
+  ]
+}
