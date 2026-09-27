@@ -1,0 +1,122 @@
+[
+  {
+    "id": "48928d79df",
+    "generation": "initial",
+    "slot": 0,
+    "key": "A",
+    "answer": "159/35",
+    "source": {
+      "family": "fraction_evaluation",
+      "a": 4,
+      "b": 5
+    }
+  },
+  {
+    "id": "cd475d54cd",
+    "generation": "initial",
+    "slot": 1,
+    "key": "D",
+    "answer": "8",
+    "source": {
+      "family": "bounded_equation",
+      "a": 6,
+      "b": 8
+    }
+  },
+  {
+    "id": "09a38e4b20",
+    "generation": "initial",
+    "slot": 2,
+    "key": "B",
+    "answer": "7",
+    "source": {
+      "family": "bounded_ratio_threshold",
+      "a": 3,
+      "b": 7
+    }
+  },
+  {
+    "id": "45790350d6",
+    "generation": "initial",
+    "slot": 3,
+    "key": "C",
+    "answer": "checks; practice",
+    "source": {
+      "kind": "agreement_pair_v1",
+      "scene": "coach",
+      "order": "singular_first"
+    }
+  },
+  {
+    "id": "1cf138ae02",
+    "generation": "initial",
+    "slot": 4,
+    "key": "A",
+    "answer": "receives; prepare",
+    "source": {
+      "kind": "agreement_pair_v1",
+      "scene": "compound_every",
+      "order": "plural_first"
+    }
+  },
+  {
+    "id": "d8b2863e44",
+    "generation": "refill",
+    "slot": 0,
+    "key": "A",
+    "answer": "31/15",
+    "source": {
+      "family": "fraction_evaluation",
+      "a": 4,
+      "b": 5
+    }
+  },
+  {
+    "id": "e08a110a0a",
+    "generation": "refill",
+    "slot": 1,
+    "key": "B",
+    "answer": "9",
+    "source": {
+      "family": "bounded_equation",
+      "a": 6,
+      "b": 8
+    }
+  },
+  {
+    "id": "e49f294171",
+    "generation": "refill",
+    "slot": 2,
+    "key": "B",
+    "answer": "8",
+    "source": {
+      "family": "bounded_ratio_threshold",
+      "a": 3,
+      "b": 7
+    }
+  },
+  {
+    "id": "543b496a51",
+    "generation": "refill",
+    "slot": 3,
+    "key": "D",
+    "answer": "are; is",
+    "source": {
+      "kind": "agreement_pair_v1",
+      "scene": "coach",
+      "order": "singular_first"
+    }
+  },
+  {
+    "id": "f4ef62b62c",
+    "generation": "refill",
+    "slot": 4,
+    "key": "B",
+    "answer": "is; are",
+    "source": {
+      "kind": "agreement_pair_v1",
+      "scene": "compound_every",
+      "order": "plural_first"
+    }
+  }
+]

@@ -72,6 +72,10 @@ five keys and rated the two strengthened agreement items level 2, but one
 reviewer rated a simple quantitative expression item level 1. The strict
 five-item content gate failed at 4/5. The route remains inactive while math
 task-family variety and difficulty are addressed.
+The expanded two-mechanism-per-slot English set also passed an
+[eight-item blind offline preflight](evidence/english-structure-preflight-20260927/RESULTS.md):
+two independent reviewers chose all eight code-owned keys and rated each
+question level 2, while finding strong repetition within the same mechanisms.
 Neither trial nor the source change authorizes deployment. Worker-only
 SAM and workflow settings exist but default to disabled with empty scope
 hashes; the deployed worker does not use this route. Code-owned answers in

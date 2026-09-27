@@ -1,0 +1,102 @@
+{
+  "worksheetSha256": "f4e8d70c19d42ab406677c0fbdc67d2268747ce81686cb10416d065b0d9a518a",
+  "reviewer": "general_architecture",
+  "choiceIdConvention": "A, B, C, D in the worksheet's listed order",
+  "items": [
+    {
+      "id": "33ee0a24b9",
+      "correctChoiceId": "C",
+      "correctChoiceIndex0Based": 2,
+      "ambiguous": false,
+      "fourDistinctOptions": true,
+      "difficulty1To5": 2,
+      "reason": "A number of workers takes are; the number of reports takes is. All four ordered pairs differ."
+    },
+    {
+      "id": "922cb67c5b",
+      "correctChoiceId": "A",
+      "correctChoiceIndex0Based": 0,
+      "ambiguous": false,
+      "fourDistinctOptions": true,
+      "difficulty1To5": 2,
+      "reason": "Nora and Eli is plural and takes fold; every guide is singular and takes wears."
+    },
+    {
+      "id": "063b1c168a",
+      "correctChoiceId": "A",
+      "correctChoiceIndex0Based": 0,
+      "ambiguous": false,
+      "fourDistinctOptions": true,
+      "difficulty1To5": 2,
+      "reason": "In the inverted clauses, the script takes is and the props takes are."
+    },
+    {
+      "id": "b014956de4",
+      "correctChoiceId": "D",
+      "correctChoiceIndex0Based": 3,
+      "ambiguous": false,
+      "fourDistinctOptions": true,
+      "difficulty1To5": 2,
+      "reason": "A number of volunteers takes are; the number of tickets takes is."
+    },
+    {
+      "id": "c928dca88d",
+      "correctChoiceId": "D",
+      "correctChoiceIndex0Based": 3,
+      "ambiguous": false,
+      "fourDistinctOptions": true,
+      "difficulty1To5": 2,
+      "reason": "The coach is singular and checks; the players are plural and practice."
+    },
+    {
+      "id": "580b718c9b",
+      "correctChoiceId": "A",
+      "correctChoiceIndex0Based": 0,
+      "ambiguous": false,
+      "fourDistinctOptions": true,
+      "difficulty1To5": 2,
+      "reason": "Maya and Theo is plural and takes prepare; every guest is singular and takes receives."
+    },
+    {
+      "id": "cf1984cc74",
+      "correctChoiceId": "B",
+      "correctChoiceIndex0Based": 1,
+      "ambiguous": false,
+      "fourDistinctOptions": true,
+      "difficulty1To5": 2,
+      "reason": "The librarian is singular and organizes; the volunteers are plural and sort."
+    },
+    {
+      "id": "b71929dc03",
+      "correctChoiceId": "B",
+      "correctChoiceIndex0Based": 1,
+      "ambiguous": false,
+      "fourDistinctOptions": true,
+      "difficulty1To5": 2,
+      "reason": "In the inverted clauses, the report takes is and the records takes are."
+    }
+  ],
+  "nearDuplicateMechanismPairs": [
+    {
+      "ids": ["33ee0a24b9", "b014956de4"],
+      "strength": "strong",
+      "reason": "Same a number of versus the number of contrast and same are; is answer; only scene nouns change."
+    },
+    {
+      "ids": ["922cb67c5b", "580b718c9b"],
+      "strength": "strong",
+      "reason": "Same compound subject versus every-singular contrast; only names, scene nouns, and lexical verbs change."
+    },
+    {
+      "ids": ["063b1c168a", "b71929dc03"],
+      "strength": "strong",
+      "reason": "Same inverted near-phrase construction with singular postverbal subject first and plural second; only scene nouns change."
+    },
+    {
+      "ids": ["c928dca88d", "cf1984cc74"],
+      "strength": "strong",
+      "reason": "Same singular subject plus plural attractor, then plural subject plus singular attractor; only scene nouns and lexical verbs change."
+    }
+  ],
+  "overall": "All eight have one defensible listed answer and four distinct ordered-pair options. All are level 2 applications of agreement, with the direct singular/plural items at the easy end. Four pairs are strong mechanism repeats despite changed words and answer order."
+}

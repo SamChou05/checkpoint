@@ -1,0 +1,107 @@
+{
+  "reviewer": "review_timeout_agent",
+  "review_status": "locked_answer_blind",
+  "worksheet_sha256": "f4e8d70c19d42ab406677c0fbdc67d2268747ce81686cb10416d065b0d9a518a",
+  "requested_difficulty": 2,
+  "items": [
+    {
+      "id": "33ee0a24b9",
+      "best_choice_index_zero_based": 2,
+      "best_choice": "are; is",
+      "difficulty": 2,
+      "self_contained": true,
+      "exactly_one_supported_choice": true,
+      "all_four_choices_distinct": true,
+      "reason": "A number of workers takes plural are; the number of reports takes singular is."
+    },
+    {
+      "id": "922cb67c5b",
+      "best_choice_index_zero_based": 0,
+      "best_choice": "fold; wears",
+      "difficulty": 2,
+      "self_contained": true,
+      "exactly_one_supported_choice": true,
+      "all_four_choices_distinct": true,
+      "reason": "Nora and Eli is a compound plural subject; every guide is singular. The nearby guide and hikers do not control those verbs."
+    },
+    {
+      "id": "063b1c168a",
+      "best_choice_index_zero_based": 0,
+      "best_choice": "is; are",
+      "difficulty": 2,
+      "self_contained": true,
+      "exactly_one_supported_choice": true,
+      "all_four_choices_distinct": true,
+      "reason": "The postposed subjects are the singular script and plural props; actors and director are objects of the fronted prepositional phrases."
+    },
+    {
+      "id": "b014956de4",
+      "best_choice_index_zero_based": 3,
+      "best_choice": "are; is",
+      "difficulty": 2,
+      "self_contained": true,
+      "exactly_one_supported_choice": true,
+      "all_four_choices_distinct": true,
+      "reason": "A number of volunteers takes plural are; the number of tickets takes singular is."
+    },
+    {
+      "id": "c928dca88d",
+      "best_choice_index_zero_based": 3,
+      "best_choice": "checks; practice",
+      "difficulty": 2,
+      "self_contained": true,
+      "exactly_one_supported_choice": true,
+      "all_four_choices_distinct": true,
+      "reason": "The singular coach checks; the plural players practice. Each near phrase supplies an irrelevant number attractor."
+    },
+    {
+      "id": "580b718c9b",
+      "best_choice_index_zero_based": 0,
+      "best_choice": "prepare; receives",
+      "difficulty": 2,
+      "self_contained": true,
+      "exactly_one_supported_choice": true,
+      "all_four_choices_distinct": true,
+      "reason": "Maya and Theo is a compound plural subject; every guest is singular. The nearby cook and servers do not control those verbs."
+    },
+    {
+      "id": "cf1984cc74",
+      "best_choice_index_zero_based": 1,
+      "best_choice": "organizes; sort",
+      "difficulty": 2,
+      "self_contained": true,
+      "exactly_one_supported_choice": true,
+      "all_four_choices_distinct": true,
+      "reason": "The singular librarian organizes; the plural volunteers sort. Each near phrase supplies an irrelevant number attractor."
+    },
+    {
+      "id": "b71929dc03",
+      "best_choice_index_zero_based": 1,
+      "best_choice": "is; are",
+      "difficulty": 2,
+      "self_contained": true,
+      "exactly_one_supported_choice": true,
+      "all_four_choices_distinct": true,
+      "reason": "The postposed subjects are the singular report and plural records; interns and curator are objects of the fronted prepositional phrases."
+    }
+  ],
+  "strong_near_duplicate_pairs": [
+    {
+      "ids": ["33ee0a24b9", "b014956de4"],
+      "reason": "Both contrast 'a number of' plural agreement against 'the number of' singular agreement in the same two-blank order; nouns and setting change only."
+    },
+    {
+      "ids": ["922cb67c5b", "580b718c9b"],
+      "reason": "Both use a compound named subject plus an every-subject with nearby number attractors; names and verbs change only."
+    },
+    {
+      "ids": ["063b1c168a", "b71929dc03"],
+      "reason": "Both front 'Near the ...' twice and require singular then plural agreement with postposed subjects; nouns and setting change only."
+    },
+    {
+      "ids": ["c928dca88d", "cf1984cc74"],
+      "reason": "Both place reciprocal singular and plural subjects near opposite-number nouns; one reverses clause order and changes labels and verbs."
+    }
+  ],
+  "mechanism_assessment": "The four pair groups test distinguishable grammatical constructions: a/the number quantification, compound subject plus every, fronted locative inversion, and ordinary head-subject agreement despite a nearby noun. Across all eight, the two-blank, two-clause present-tense agreement format and four binary-combination choices remain highly repetitive. Each strong pair repeats the same solve path."
+}

@@ -1,0 +1,102 @@
+[
+  {
+    "id": "09a38e4b20",
+    "prompt": "Let x be a unitless number. Its domain is integers from 4 through 10, inclusive. Condition: (x / (x + 3)) >= (7 / 10). What is the minimum x in this domain satisfying the condition?",
+    "choices": {
+      "A": "7",
+      "B": "8",
+      "C": "5",
+      "D": "6"
+    }
+  },
+  {
+    "id": "f4ef62b62c",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The number of copies near the editors ___ known, while a number of readers near the author ___ present. Which ordered pair fills the blanks?",
+    "choices": {
+      "A": "is; are",
+      "B": "are; is",
+      "C": "are; are",
+      "D": "is; is"
+    }
+  },
+  {
+    "id": "1cf138ae02",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Every guest near the servers ___ a plate, while Maya and Theo near the cook ___ lunch. Which ordered pair fills the blanks?",
+    "choices": {
+      "A": "receive; prepare",
+      "B": "receives; prepares",
+      "C": "receives; prepare",
+      "D": "receive; prepares"
+    }
+  },
+  {
+    "id": "1ee106bd01",
+    "prompt": "Let x be a unitless number. Its domain is integers from 4 through 10, inclusive. Condition: (x * (x + 3)) <= 70. What is the maximum x in this domain satisfying the condition?",
+    "choices": {
+      "A": "7",
+      "B": "5",
+      "C": "6",
+      "D": "8"
+    }
+  },
+  {
+    "id": "45790350d6",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The coach near the players ___ the schedule, while the players near the coach ___ the drills. Which ordered pair fills the blanks?",
+    "choices": {
+      "A": "check; practices",
+      "B": "checks; practice",
+      "C": "check; practice",
+      "D": "checks; practices"
+    }
+  },
+  {
+    "id": "6aa96ca08c",
+    "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((x + 6) * (x + 1)) = 126. Which offered value of x satisfies the condition?",
+    "choices": {
+      "A": "7",
+      "B": "8",
+      "C": "6",
+      "D": "9"
+    }
+  },
+  {
+    "id": "c4ab140a69",
+    "prompt": "Let q be a unitless number, defined by q = (((4 / 5) / (5 / 7)) + 1). What is its exact value?",
+    "choices": {
+      "A": "53/25",
+      "B": "29/26",
+      "C": "29/25",
+      "D": "28/25"
+    }
+  },
+  {
+    "id": "543b496a51",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the curator ___ the records from the archive, while near the interns ___ the report from the archive. Which ordered pair fills the blanks?",
+    "choices": {
+      "A": "are; is",
+      "B": "is; are",
+      "C": "are; are",
+      "D": "is; is"
+    }
+  },
+  {
+    "id": "48928d79df",
+    "prompt": "Let q be a unitless number, defined by q = (((4 / 5) + (5 / 7)) * 3). What is its exact value?",
+    "choices": {
+      "A": "159",
+      "B": "53/105",
+      "C": "3/35",
+      "D": "159/35"
+    }
+  },
+  {
+    "id": "dea3e58f12",
+    "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((6 * x) + 9) = 57. Which offered value of x satisfies the condition?",
+    "choices": {
+      "A": "9",
+      "B": "7",
+      "C": "8",
+      "D": "6"
+    }
+  }
+]

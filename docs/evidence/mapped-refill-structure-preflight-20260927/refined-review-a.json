@@ -1,0 +1,126 @@
+{
+  "worksheet_sha256": "578911da059e6312c5847f1e8a521ae88a3405d85d5325daee0f4b60c2546a81",
+  "review_scope": "Independent answer- and history-blind review of the ten randomized worksheet items only.",
+  "items": [
+    {
+      "id": "543b496a51",
+      "selected_answer": "D",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 3,
+      "rationale": "Locative inversion: the postverbal subjects are records (plural) and report (singular)."
+    },
+    {
+      "id": "48928d79df",
+      "selected_answer": "A",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "rationale": "4/5 + 5/7 = 53/35; multiplying by 3 gives 159/35."
+    },
+    {
+      "id": "f4ef62b62c",
+      "selected_answer": "B",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 3,
+      "rationale": "The number takes singular agreement; a number of readers takes plural agreement."
+    },
+    {
+      "id": "1cf138ae02",
+      "selected_answer": "A",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "rationale": "Every guest is singular; Maya and Theo is a compound plural subject."
+    },
+    {
+      "id": "e49f294171",
+      "selected_answer": "B",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "rationale": "At x = 8 the product is 88; the next integer exceeds 88."
+    },
+    {
+      "id": "d8b2863e44",
+      "selected_answer": "A",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "rationale": "(4/5) / (6/8) = 16/15; adding 1 gives 31/15."
+    },
+    {
+      "id": "e08a110a0a",
+      "selected_answer": "B",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "rationale": "At x = 9, (x + 6)(x + 1) = 15 × 10 = 150."
+    },
+    {
+      "id": "09a38e4b20",
+      "selected_answer": "B",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 3,
+      "rationale": "Within the positive domain, cross multiplication gives 10x ≥ 7x + 21, so x ≥ 7."
+    },
+    {
+      "id": "45790350d6",
+      "selected_answer": "C",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "rationale": "Coach is singular and players is plural; the near phrases do not change agreement."
+    },
+    {
+      "id": "cd475d54cd",
+      "selected_answer": "D",
+      "unique_correct_answer": true,
+      "answerable_as_written": true,
+      "four_responses_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "rationale": "6x + 21 = 5x + 29, so x = 8."
+    }
+  ],
+  "strong_near_duplicate_pairs": [
+    {
+      "ids": [
+        "1cf138ae02",
+        "45790350d6"
+      ],
+      "reason": "Both ask for a singular first verb and plural second verb in two clauses, each with a nearby noun of the opposite number that must be ignored."
+    },
+    {
+      "ids": [
+        "e49f294171",
+        "09a38e4b20"
+      ],
+      "reason": "Both require locating the inclusive integer threshold of an inequality, then returning the extremal qualifying value in a bounded domain."
+    },
+    {
+      "ids": [
+        "48928d79df",
+        "d8b2863e44"
+      ],
+      "reason": "Both are fixed rational-expression evaluations that rely on fraction arithmetic and operation order, with exact fraction answer choices."
+    }
+  ],
+  "overall": {
+    "unique_correct_count": 10,
+    "answerable_count": 10,
+    "meaningfully_different_choices_count": 10,
+    "ambiguity_flags": [],
+    "difficulty_note": "Mostly introductory (2/5); the locative inversion, number construction, and rational inequality are moderate (3/5)."
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "worksheet_sha256": "9920b8c37fce709d887253c44d7961034f4fba2dc396045973a93a66537bf525",
+  "review_type": "independent_blind_content_review",
+  "items": [
+    {
+      "id": "09a38e4b20",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 2,
+      "reason": "The inequality gives x >= 7 within the stated integer domain."
+    },
+    {
+      "id": "f4ef62b62c",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 3,
+      "reason": "The number takes singular is; a number of readers takes plural are."
+    },
+    {
+      "id": "1cf138ae02",
+      "correct_choice_id": "C",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 2,
+      "reason": "Every guest takes receives; the compound subject Maya and Theo takes prepare."
+    },
+    {
+      "id": "1ee106bd01",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 2,
+      "reason": "At x = 7 the product equals 70; larger values exceed it."
+    },
+    {
+      "id": "45790350d6",
+      "correct_choice_id": "B",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 2,
+      "reason": "The singular coach takes checks; the plural players takes practice."
+    },
+    {
+      "id": "6aa96ca08c",
+      "correct_choice_id": "B",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 3,
+      "reason": "x = 8 gives (14)(9) = 126; the other offered values do not."
+    },
+    {
+      "id": "c4ab140a69",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 2,
+      "reason": "(4/5)/(5/7) = 28/25, so adding 1 gives 53/25."
+    },
+    {
+      "id": "543b496a51",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 3,
+      "reason": "Inverted subjects are records (plural) and report (singular), yielding are; is."
+    },
+    {
+      "id": "48928d79df",
+      "correct_choice_id": "D",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 2,
+      "reason": "4/5 + 5/7 = 53/35, then multiplying by 3 gives 159/35."
+    },
+    {
+      "id": "dea3e58f12",
+      "correct_choice_id": "C",
+      "ambiguous": false,
+      "choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty_1_to_5": 1,
+      "reason": "6x + 9 = 57 gives x = 8."
+    }
+  ],
+  "strong_near_duplicate_pairs": [
+    {
+      "ids": [
+        "09a38e4b20",
+        "1ee106bd01"
+      ],
+      "reason": "Both ask for the extremal integer satisfying a monotonic inequality on the identical 4-through-10 domain, with x = 7 as the boundary."
+    },
+    {
+      "ids": [
+        "1cf138ae02",
+        "45790350d6"
+      ],
+      "reason": "Both ordered-pair grammar items resolve to singular then plural by matching each verb to the subject head while ignoring a misleading near-phrase."
+    }
+  ],
+  "additional_overlap_not_classed_strong": [
+    {
+      "ids": [
+        "c4ab140a69",
+        "48928d79df"
+      ],
+      "reason": "They reuse 4/5 and 5/7 but require different operations: division then addition versus addition then multiplication."
+    },
+    {
+      "ids": [
+        "6aa96ca08c",
+        "dea3e58f12"
+      ],
+      "reason": "Both yield x = 8 from an equation, but one is a product equation and one is linear."
+    }
+  ],
+  "summary": {
+    "item_count": 10,
+    "unambiguous_count": 10,
+    "meaningfully_distinct_choices_count": 10,
+    "answerable_without_explanation_count": 10,
+    "strong_near_duplicate_pair_count": 2
+  }
+}

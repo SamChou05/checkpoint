@@ -1,0 +1,114 @@
+[
+  {
+    "id": "c928dca88d",
+    "slot": 3,
+    "scene": "coach",
+    "expectedAnswer": "checks; practice",
+    "choiceIndex": 3,
+    "explanation": "The first head subject \"the coach\" is singular; \"near the players\" does not change that. The form \"checks\" agrees. The second head subject \"the players\" is plural; \"near the coach\" does not change that. The form \"practice\" agrees. Therefore the ordered pair is checks; practice.",
+    "choiceExplanations": {
+      "checks; practices": "The first head subject \"the coach\" is singular; \"near the players\" does not change that. The form \"checks\" agrees. The second head subject \"the players\" is plural; \"near the coach\" does not change that. \"practices\" does not agree; use \"practice\".",
+      "check; practice": "The first head subject \"the coach\" is singular; \"near the players\" does not change that. \"check\" does not agree; use \"checks\". The second head subject \"the players\" is plural; \"near the coach\" does not change that. The form \"practice\" agrees.",
+      "check; practices": "The first head subject \"the coach\" is singular; \"near the players\" does not change that. \"check\" does not agree; use \"checks\". The second head subject \"the players\" is plural; \"near the coach\" does not change that. \"practices\" does not agree; use \"practice\".",
+      "checks; practice": "The first head subject \"the coach\" is singular; \"near the players\" does not change that. The form \"checks\" agrees. The second head subject \"the players\" is plural; \"near the coach\" does not change that. The form \"practice\" agrees."
+    }
+  },
+  {
+    "id": "b71929dc03",
+    "slot": 3,
+    "scene": "inversion_archive",
+    "expectedAnswer": "is; are",
+    "choiceIndex": 1,
+    "explanation": "First, the singular subject \"the report\" follows the blank; \"near the interns\" is not the subject. The form \"is\" agrees. Second, the plural subject \"the records\" follows the blank; \"near the curator\" is not the subject. The form \"are\" agrees. Therefore the ordered pair is is; are.",
+    "choiceExplanations": {
+      "is; is": "First, the singular subject \"the report\" follows the blank; \"near the interns\" is not the subject. The form \"is\" agrees. Second, the plural subject \"the records\" follows the blank; \"near the curator\" is not the subject. \"is\" does not agree; use \"are\".",
+      "are; are": "First, the singular subject \"the report\" follows the blank; \"near the interns\" is not the subject. \"are\" does not agree; use \"is\". Second, the plural subject \"the records\" follows the blank; \"near the curator\" is not the subject. The form \"are\" agrees.",
+      "are; is": "First, the singular subject \"the report\" follows the blank; \"near the interns\" is not the subject. \"are\" does not agree; use \"is\". Second, the plural subject \"the records\" follows the blank; \"near the curator\" is not the subject. \"is\" does not agree; use \"are\".",
+      "is; are": "First, the singular subject \"the report\" follows the blank; \"near the interns\" is not the subject. The form \"is\" agrees. Second, the plural subject \"the records\" follows the blank; \"near the curator\" is not the subject. The form \"are\" agrees."
+    }
+  },
+  {
+    "id": "cf1984cc74",
+    "slot": 3,
+    "scene": "librarian",
+    "expectedAnswer": "organizes; sort",
+    "choiceIndex": 1,
+    "explanation": "The first head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. The form \"organizes\" agrees. The second head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. The form \"sort\" agrees. Therefore the ordered pair is organizes; sort.",
+    "choiceExplanations": {
+      "organizes; sorts": "The first head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. The form \"organizes\" agrees. The second head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. \"sorts\" does not agree; use \"sort\".",
+      "organize; sort": "The first head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. \"organize\" does not agree; use \"organizes\". The second head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. The form \"sort\" agrees.",
+      "organize; sorts": "The first head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. \"organize\" does not agree; use \"organizes\". The second head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. \"sorts\" does not agree; use \"sort\".",
+      "organizes; sort": "The first head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. The form \"organizes\" agrees. The second head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. The form \"sort\" agrees."
+    }
+  },
+  {
+    "id": "063b1c168a",
+    "slot": 3,
+    "scene": "inversion_studio",
+    "expectedAnswer": "is; are",
+    "choiceIndex": 0,
+    "explanation": "First, the singular subject \"the script\" follows the blank; \"near the actors\" is not the subject. The form \"is\" agrees. Second, the plural subject \"the props\" follows the blank; \"near the director\" is not the subject. The form \"are\" agrees. Therefore the ordered pair is is; are.",
+    "choiceExplanations": {
+      "is; is": "First, the singular subject \"the script\" follows the blank; \"near the actors\" is not the subject. The form \"is\" agrees. Second, the plural subject \"the props\" follows the blank; \"near the director\" is not the subject. \"is\" does not agree; use \"are\".",
+      "are; are": "First, the singular subject \"the script\" follows the blank; \"near the actors\" is not the subject. \"are\" does not agree; use \"is\". Second, the plural subject \"the props\" follows the blank; \"near the director\" is not the subject. The form \"are\" agrees.",
+      "are; is": "First, the singular subject \"the script\" follows the blank; \"near the actors\" is not the subject. \"are\" does not agree; use \"is\". Second, the plural subject \"the props\" follows the blank; \"near the director\" is not the subject. \"is\" does not agree; use \"are\".",
+      "is; are": "First, the singular subject \"the script\" follows the blank; \"near the actors\" is not the subject. The form \"is\" agrees. Second, the plural subject \"the props\" follows the blank; \"near the director\" is not the subject. The form \"are\" agrees."
+    }
+  },
+  {
+    "id": "580b718c9b",
+    "slot": 4,
+    "scene": "compound_every",
+    "expectedAnswer": "prepare; receives",
+    "choiceIndex": 0,
+    "explanation": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. The form \"prepare\" agrees. Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. The form \"receives\" agrees. Therefore the ordered pair is prepare; receives.",
+    "choiceExplanations": {
+      "prepare; receive": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. The form \"prepare\" agrees. Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. \"receive\" does not agree; use \"receives\".",
+      "prepare; receives": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. The form \"prepare\" agrees. Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. The form \"receives\" agrees.",
+      "prepares; receive": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. \"prepares\" does not agree; use \"prepare\". Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. \"receive\" does not agree; use \"receives\".",
+      "prepares; receives": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. \"prepares\" does not agree; use \"prepare\". Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. The form \"receives\" agrees."
+    }
+  },
+  {
+    "id": "b014956de4",
+    "slot": 4,
+    "scene": "number_volunteers",
+    "expectedAnswer": "are; is",
+    "choiceIndex": 3,
+    "explanation": "First, \"A number of volunteers\" means several and takes a plural verb; \"near the curator\" does not change it. The form \"are\" agrees. Second, \"The number of tickets\" has the singular head \"number\"; \"near the guides\" does not change it. The form \"is\" agrees. Therefore the ordered pair is are; is.",
+    "choiceExplanations": {
+      "are; are": "First, \"A number of volunteers\" means several and takes a plural verb; \"near the curator\" does not change it. The form \"are\" agrees. Second, \"The number of tickets\" has the singular head \"number\"; \"near the guides\" does not change it. \"are\" does not agree; use \"is\".",
+      "are; is": "First, \"A number of volunteers\" means several and takes a plural verb; \"near the curator\" does not change it. The form \"are\" agrees. Second, \"The number of tickets\" has the singular head \"number\"; \"near the guides\" does not change it. The form \"is\" agrees.",
+      "is; are": "First, \"A number of volunteers\" means several and takes a plural verb; \"near the curator\" does not change it. \"is\" does not agree; use \"are\". Second, \"The number of tickets\" has the singular head \"number\"; \"near the guides\" does not change it. \"are\" does not agree; use \"is\".",
+      "is; is": "First, \"A number of volunteers\" means several and takes a plural verb; \"near the curator\" does not change it. \"is\" does not agree; use \"are\". Second, \"The number of tickets\" has the singular head \"number\"; \"near the guides\" does not change it. The form \"is\" agrees."
+    }
+  },
+  {
+    "id": "922cb67c5b",
+    "slot": 4,
+    "scene": "compound_guides",
+    "expectedAnswer": "fold; wears",
+    "choiceIndex": 0,
+    "explanation": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. The form \"fold\" agrees. Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. The form \"wears\" agrees. Therefore the ordered pair is fold; wears.",
+    "choiceExplanations": {
+      "fold; wear": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. The form \"fold\" agrees. Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. \"wear\" does not agree; use \"wears\".",
+      "fold; wears": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. The form \"fold\" agrees. Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. The form \"wears\" agrees.",
+      "folds; wear": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. \"folds\" does not agree; use \"fold\". Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. \"wear\" does not agree; use \"wears\".",
+      "folds; wears": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. \"folds\" does not agree; use \"fold\". Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. The form \"wears\" agrees."
+    }
+  },
+  {
+    "id": "33ee0a24b9",
+    "slot": 4,
+    "scene": "number_workers",
+    "expectedAnswer": "are; is",
+    "choiceIndex": 2,
+    "explanation": "First, \"A number of workers\" means several and takes a plural verb; \"near the manager\" does not change it. The form \"are\" agrees. Second, \"The number of reports\" has the singular head \"number\"; \"near the assistants\" does not change it. The form \"is\" agrees. Therefore the ordered pair is are; is.",
+    "choiceExplanations": {
+      "are; are": "First, \"A number of workers\" means several and takes a plural verb; \"near the manager\" does not change it. The form \"are\" agrees. Second, \"The number of reports\" has the singular head \"number\"; \"near the assistants\" does not change it. \"are\" does not agree; use \"is\".",
+      "are; is": "First, \"A number of workers\" means several and takes a plural verb; \"near the manager\" does not change it. The form \"are\" agrees. Second, \"The number of reports\" has the singular head \"number\"; \"near the assistants\" does not change it. The form \"is\" agrees.",
+      "is; are": "First, \"A number of workers\" means several and takes a plural verb; \"near the manager\" does not change it. \"is\" does not agree; use \"are\". Second, \"The number of reports\" has the singular head \"number\"; \"near the assistants\" does not change it. \"are\" does not agree; use \"is\".",
+      "is; is": "First, \"A number of workers\" means several and takes a plural verb; \"near the manager\" does not change it. \"is\" does not agree; use \"are\". Second, \"The number of reports\" has the singular head \"number\"; \"near the assistants\" does not change it. The form \"is\" agrees."
+    }
+  }
+]

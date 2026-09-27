@@ -1,0 +1,82 @@
+[
+  {
+    "id": "33ee0a24b9",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. A number of workers near the manager ___ ready, while the number of reports near the assistants ___ fixed. Which ordered pair fills the blanks?",
+    "choices": [
+      "are; are",
+      "is; are",
+      "are; is",
+      "is; is"
+    ]
+  },
+  {
+    "id": "922cb67c5b",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Nora and Eli near the guide ___ the maps, while every guide near the hikers ___ a badge. Which ordered pair fills the blanks?",
+    "choices": [
+      "fold; wears",
+      "folds; wear",
+      "fold; wear",
+      "folds; wears"
+    ]
+  },
+  {
+    "id": "063b1c168a",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the actors ___ the script from the studio, while near the director ___ the props from the studio. Which ordered pair fills the blanks?",
+    "choices": [
+      "is; are",
+      "is; is",
+      "are; is",
+      "are; are"
+    ]
+  },
+  {
+    "id": "b014956de4",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. A number of volunteers near the curator ___ waiting, while the number of tickets near the guides ___ limited. Which ordered pair fills the blanks?",
+    "choices": [
+      "is; are",
+      "is; is",
+      "are; are",
+      "are; is"
+    ]
+  },
+  {
+    "id": "c928dca88d",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The coach near the players ___ the schedule, while the players near the coach ___ the drills. Which ordered pair fills the blanks?",
+    "choices": [
+      "check; practice",
+      "check; practices",
+      "checks; practices",
+      "checks; practice"
+    ]
+  },
+  {
+    "id": "580b718c9b",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Maya and Theo near the cook ___ lunch, while every guest near the servers ___ a plate. Which ordered pair fills the blanks?",
+    "choices": [
+      "prepare; receives",
+      "prepares; receive",
+      "prepares; receives",
+      "prepare; receive"
+    ]
+  },
+  {
+    "id": "cf1984cc74",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The librarian near the volunteers ___ the books, while the volunteers near the librarian ___ the returns. Which ordered pair fills the blanks?",
+    "choices": [
+      "organize; sort",
+      "organizes; sort",
+      "organize; sorts",
+      "organizes; sorts"
+    ]
+  },
+  {
+    "id": "b71929dc03",
+    "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Near the interns ___ the report from the archive, while near the curator ___ the records from the archive. Which ordered pair fills the blanks?",
+    "choices": [
+      "are; is",
+      "is; are",
+      "are; are",
+      "is; is"
+    ]
+  }
+]

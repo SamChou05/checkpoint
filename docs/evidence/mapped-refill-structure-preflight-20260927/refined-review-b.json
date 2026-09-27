@@ -1,0 +1,109 @@
+{
+  "reviewer": "blind_refined_b",
+  "worksheet_sha256": "578911da059e6312c5847f1e8a521ae88a3405d85d5325daee0f4b60c2546a81",
+  "review_scope": "Independent answer- and history-blind review of the ten randomized worksheet items.",
+  "items": [
+    {
+      "id": "543b496a51",
+      "correct_choice": "D",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 3,
+      "reason": "In each inverted clause, the subject follows the verb: records is plural (are), and report is singular (is)."
+    },
+    {
+      "id": "48928d79df",
+      "correct_choice": "A",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "reason": "4/5 + 5/7 = 53/35; multiplying by 3 gives 159/35."
+    },
+    {
+      "id": "f4ef62b62c",
+      "correct_choice": "B",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 3,
+      "reason": "The number of copies takes singular is; a number of readers takes plural are."
+    },
+    {
+      "id": "1cf138ae02",
+      "correct_choice": "A",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "reason": "Every guest is singular and receives; the compound subject Maya and Theo is plural and prepare."
+    },
+    {
+      "id": "e49f294171",
+      "correct_choice": "B",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "reason": "At x = 8 the product is 8(11) = 88; larger allowed integers exceed 88."
+    },
+    {
+      "id": "d8b2863e44",
+      "correct_choice": "A",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 3,
+      "reason": "(4/5) divided by (6/8) is 16/15; adding 1 gives 31/15."
+    },
+    {
+      "id": "e08a110a0a",
+      "correct_choice": "B",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "reason": "For x = 9, (9 + 6)(9 + 1) = 15(10) = 150; the other offered values fail."
+    },
+    {
+      "id": "09a38e4b20",
+      "correct_choice": "B",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 3,
+      "reason": "The denominator is positive throughout the domain. Cross-multiplying yields 10x >= 7x + 21, or x >= 7, so the minimum is 7."
+    },
+    {
+      "id": "45790350d6",
+      "correct_choice": "C",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "reason": "Coach is singular and checks; players is plural and practice. The intervening near-phrases do not govern agreement."
+    },
+    {
+      "id": "cd475d54cd",
+      "correct_choice": "D",
+      "unique_correct": true,
+      "answerable": true,
+      "all_four_choices_meaningfully_different": true,
+      "difficulty_1_to_5": 2,
+      "reason": "6x + 21 = 5x + 29 simplifies to x = 8."
+    }
+  ],
+  "strong_near_duplicate_pairs": [
+    {
+      "ids": ["1cf138ae02", "45790350d6"],
+      "reason": "Both are two-clause subject-verb agreement checks with a singular subject beside a plural noun in a near-phrase, then a plural subject beside a singular noun in a near-phrase. The solver ignores the neighboring noun and chooses the singular/plural verb pair."
+    },
+    {
+      "ids": ["e49f294171", "09a38e4b20"],
+      "reason": "Both use a short consecutive-integer domain, a monotone inequality, and a requested extremal satisfying value. The solver finds the threshold and selects the boundary integer from nearby offered values."
+    }
+  ],
+  "ambiguities": [],
+  "overall": "All ten items are answerable with a unique correct option. All four choices in each item are distinct and function as meaningful alternatives."
+}

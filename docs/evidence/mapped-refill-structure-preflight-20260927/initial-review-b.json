@@ -1,0 +1,115 @@
+{
+  "reviewer": "blind_combined_b",
+  "worksheet_sha256": "9920b8c37fce709d887253c44d7961034f4fba2dc396045973a93a66537bf525",
+  "scope": "Blind review of worksheet.json only",
+  "rating_scale": "Difficulty 1 (easiest) to 5 (hardest)",
+  "items": [
+    {
+      "id": "09a38e4b20",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 2,
+      "reason": "The denominator is positive throughout the domain; multiplying gives 10x >= 7(x+3), hence x >= 7. The minimum offered domain value is 7."
+    },
+    {
+      "id": "f4ef62b62c",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 3,
+      "reason": "The number of copies takes singular is; a number of readers takes plural are. Nearby plural and singular nouns do not change that agreement."
+    },
+    {
+      "id": "1cf138ae02",
+      "correct_choice_id": "C",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 2,
+      "reason": "Every guest is singular and takes receives; the compound subject Maya and Theo is plural and takes prepare."
+    },
+    {
+      "id": "1ee106bd01",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 2,
+      "reason": "At x = 7, x(x+3) = 70; the product increases over the stated nonnegative domain, so 7 is the maximum satisfying value."
+    },
+    {
+      "id": "45790350d6",
+      "correct_choice_id": "B",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 2,
+      "reason": "The singular subject coach takes checks; the plural subject players takes practice. The nearby nouns after near do not control agreement."
+    },
+    {
+      "id": "6aa96ca08c",
+      "correct_choice_id": "B",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 2,
+      "reason": "Substituting x = 8 gives (14)(9) = 126; none of the other offered values does."
+    },
+    {
+      "id": "c4ab140a69",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 2,
+      "reason": "(4/5)/(5/7) = (4/5)(7/5) = 28/25; adding 1 gives 53/25."
+    },
+    {
+      "id": "543b496a51",
+      "correct_choice_id": "A",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 3,
+      "reason": "In the inverted clauses, records is plural and takes are; report is singular and takes is."
+    },
+    {
+      "id": "48928d79df",
+      "correct_choice_id": "D",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 2,
+      "reason": "4/5 + 5/7 = 53/35; multiplying by 3 gives 159/35."
+    },
+    {
+      "id": "dea3e58f12",
+      "correct_choice_id": "C",
+      "ambiguous": false,
+      "all_four_choices_meaningfully_distinct": true,
+      "answerable_without_explanation": true,
+      "difficulty": 1,
+      "reason": "6x + 9 = 57 reduces to x = 8, which is offered."
+    }
+  ],
+  "strong_near_duplicate_pairs": [
+    {
+      "ids": [
+        "1cf138ae02",
+        "45790350d6"
+      ],
+      "reason": "Both are two-clause subject–verb agreement items with a near phrase between each subject and verb. Both are solved by ignoring the nearby noun and applying singular agreement to the first true subject and plural agreement to the second; their surface nouns and verb lexemes differ."
+    }
+  ],
+  "overall": {
+    "item_count": 10,
+    "unique_answer_count": 10,
+    "ambiguous_item_count": 0,
+    "choice_distinctness_failures": 0,
+    "explanation_free_answerability_failures": 0,
+    "strong_near_duplicate_pair_count": 1
+  }
+}

@@ -6,8 +6,8 @@ serializes a constrained response, runs an independent solver and a feedback
 writer, adapts their responses, persists questions, shuffles choices and grades
 against the stored key. Each boundary needs its own invariant.
 
-Current source verification passes **1,427 backend tests** and the latest full
-iOS suite completed **1,060 tests with one existing skip**. Verified changes
+Current source verification passes **1,434 backend tests** and the latest full
+iOS suite completed **1,061 tests with one existing skip**. Verified changes
 are pushed to main. The latest broad
 [current-source full-worker trial](evidence/current-source-worker-successor-qualification-20260926/RESULTS.md)
 failed qualification at 9/15 returns and three compiled items where six were
@@ -21,6 +21,15 @@ its 16,000-token allowance before closing JSON. The full worker remains unqualif
 The [last recorded TestFlight deployment check](evidence/deployment-refresh-20260926/RESULTS.md)
 found September 11 legacy API and worker packages. Pushing source to main does
 not deploy the opt-in routes or move bank inventory.
+
+The latest [offline mapped first-refill preflight](evidence/mapped-refill-structure-preflight-20260927/RESULTS.md)
+compared two source revisions in two locked blind reviews each. After a
+two-sided linear-equation and operand-selection refinement, both reviewers
+chose all ten code-owned keys, found four distinct meaningful choices per
+item, and rated all ten items at least level 2. Both still paired the old and
+new threshold questions as the same solve pattern. This fixes a concrete
+difficulty weakness in the opt-in route but fails its strict bank-variety
+gate; no new live worker qualification or deployment followed.
 
 The later [compact mapped trial](evidence/compact-typed-slots-qualification-20260926/RESULTS.md)
 proved that a smaller 2,664-byte native schema can force the exact five assigned
