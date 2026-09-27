@@ -1,0 +1,508 @@
+{
+  "status": "locked_independent_blind_review",
+  "worksheetSha256": "0da3ddc7f43b28e2eb1ee296211999fa7c97045ff3ded9af33ad882e38080517",
+  "reviewScope": "Worksheet and README only; no source, answer map, other review, or Git history consulted.",
+  "strongRepetitionRubric": "Strong means both the decision requested of the learner and the answer grammar repeat closely. Different operands or a different algebraic operator do not by themselves make the question type new.",
+  "items": [
+    {
+      "id": "M01",
+      "supportedAnswer": "A",
+      "difficulty": 2,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "(x+6)(x+1)=50 gives (x+11)(x-4)=0; only x=4 is in the stated domain and choices.",
+      "issues": "All four numeric choices are distinct. The close integer distractors are plausible but do not diagnose different misconceptions; the code-like parentheses and 'unitless number' add visual clutter."
+    },
+    {
+      "id": "M02",
+      "supportedAnswer": "D",
+      "difficulty": 3,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "A=19/15=76/60 and B=5/4=75/60, so A is larger by 1/60.",
+      "issues": "The two direction choices crossed with two distinct gap sizes yield four different claims. No duplicate or answer leakage observed."
+    },
+    {
+      "id": "M03",
+      "supportedAnswer": "C",
+      "difficulty": 2,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "Multiply first: 2/3 × 3/5=2/5; then 3/4+2/5=23/20.",
+      "issues": "A adds fraction numerators and denominators, B has an incorrect product, and D adds before multiplying. Their final results differ; the supported worked steps in C are correct."
+    },
+    {
+      "id": "M04",
+      "supportedAnswer": "A",
+      "difficulty": 3,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "x²−17x+60=(x−5)(x−12); of ten integers 4 through 13, only 5 and 12 fail the nonzero condition, leaving 8.",
+      "issues": "The four count choices are distinct, but adjacent counts are generic distractors. '!=' is programming notation rather than usual mathematical ≠ and may distract learners."
+    },
+    {
+      "id": "M05",
+      "supportedAnswer": "A",
+      "difficulty": 3,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "A=15/28 and B=1/2=14/28, so A is larger by 1/28.",
+      "issues": "The two directions and two different gap sizes make all four claims distinct. No invalid distractor or answer leakage observed."
+    },
+    {
+      "id": "M06",
+      "supportedAnswer": "D",
+      "difficulty": 3,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "Divide first: 2/3 ÷ 4/5=5/6; then 3/5+5/6=43/30.",
+      "issues": "A adds before dividing, B adds numerators and denominators after a correct quotient, and C computes the quotient as a product. The four worked evaluations are different; D's steps are supported."
+    },
+    {
+      "id": "M07",
+      "supportedAnswer": "D",
+      "difficulty": 3,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "10(x+4)=13(x+1), hence 27=3x and x=9.",
+      "issues": "The four offered x values are distinct. Dense parentheses and the 'unitless number' boilerplate make a short rational equation look more synthetic than necessary."
+    },
+    {
+      "id": "M08",
+      "supportedAnswer": "B",
+      "difficulty": 3,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "A=53/35=106/70 and B=3/2=105/70, so A is larger by 1/70.",
+      "issues": "All four direction-and-gap claims are distinct. No invalid distractor or answer leakage observed."
+    },
+    {
+      "id": "M09",
+      "supportedAnswer": "A",
+      "difficulty": 2,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "Multiply first: 3/4 × 2/3=1/2; then 2/5+1/2=9/10.",
+      "issues": "B adds before multiplying, C adds numerators and denominators after a correct product, and D uses a wrong product. All final values differ; A's two steps are correct."
+    },
+    {
+      "id": "M10",
+      "supportedAnswer": "A",
+      "difficulty": 2,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "3(x+2)−2x≤14 simplifies to x≤8, so five integers 4 through 8 satisfy the condition.",
+      "issues": "The four counts are distinct but adjacent, generic alternatives. '<=' is programming notation rather than the usual ≤."
+    },
+    {
+      "id": "M11",
+      "supportedAnswer": "D",
+      "difficulty": 2,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "5(x+2)+8=4x+21 simplifies to x=3.",
+      "issues": "All four offered x values are distinct. The repeated finite-domain boilerplate and dense parentheses are visually distracting."
+    },
+    {
+      "id": "M12",
+      "supportedAnswer": "D",
+      "difficulty": 3,
+      "withinItemMeaningfulChoicePairs": 6,
+      "basis": "(x−5)²<49 gives −2<x<12; the integers −1 through 11 inclusive total 13.",
+      "issues": "All four count choices are distinct but adjacent, generic alternatives. No answer leakage observed."
+    }
+  ],
+  "crossItemPairs": [
+    {
+      "left": "M01",
+      "right": "M02",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M01",
+      "right": "M03",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M01",
+      "right": "M04",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M01",
+      "right": "M05",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M01",
+      "right": "M06",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M01",
+      "right": "M07",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both ask which offered integer x satisfies an equation under essentially the same finite-domain stem and answer with a bare x value. The algebraic expression changes, but the selection decision and response grammar repeat."
+    },
+    {
+      "left": "M01",
+      "right": "M08",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M01",
+      "right": "M09",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M01",
+      "right": "M10",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M01",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both ask which offered integer x satisfies an equation under essentially the same finite-domain stem and answer with a bare x value. The algebraic expression changes, but the selection decision and response grammar repeat."
+    },
+    {
+      "left": "M01",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M02",
+      "right": "M03",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M02",
+      "right": "M04",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M02",
+      "right": "M05",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both compare named rational expressions A and B, then select direction plus exact gap from the same two-by-two claim format. Addition versus multiplication changes arithmetic, not the requested decision or response grammar."
+    },
+    {
+      "left": "M02",
+      "right": "M06",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M02",
+      "right": "M07",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M02",
+      "right": "M08",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both compare named rational expressions A and B, then select direction plus exact gap from the same two-by-two claim format. Addition versus multiplication changes arithmetic, not the requested decision or response grammar."
+    },
+    {
+      "left": "M02",
+      "right": "M09",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M02",
+      "right": "M10",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M02",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M02",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M03",
+      "right": "M04",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M03",
+      "right": "M05",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M03",
+      "right": "M06",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both ask for the correct two-step worked evaluation of a fraction expression with addition and a higher-precedence operation. The choices repeat the correct-step versus order/error patterns in sentence-equation form."
+    },
+    {
+      "left": "M03",
+      "right": "M07",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M03",
+      "right": "M08",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M03",
+      "right": "M09",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both ask for the correct two-step worked evaluation of a fraction expression with addition and a higher-precedence operation. The choices repeat the correct-step versus order/error patterns in sentence-equation form."
+    },
+    {
+      "left": "M03",
+      "right": "M10",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M03",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M03",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M04",
+      "right": "M05",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M04",
+      "right": "M06",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M04",
+      "right": "M07",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M04",
+      "right": "M08",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M04",
+      "right": "M09",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M04",
+      "right": "M10",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both specify a bounded integer domain and predicate, ask how many integers satisfy it, and offer four bare neighboring counts. The predicate changes, but the domain-filter/count decision and response grammar repeat."
+    },
+    {
+      "left": "M04",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M04",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both specify a bounded integer domain and predicate, ask how many integers satisfy it, and offer four bare neighboring counts. The predicate changes, but the domain-filter/count decision and response grammar repeat."
+    },
+    {
+      "left": "M05",
+      "right": "M06",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M05",
+      "right": "M07",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M05",
+      "right": "M08",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both compare named rational expressions A and B, then select direction plus exact gap from the same two-by-two claim format. Addition versus multiplication changes arithmetic, not the requested decision or response grammar."
+    },
+    {
+      "left": "M05",
+      "right": "M09",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M05",
+      "right": "M10",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M05",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M05",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M06",
+      "right": "M07",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M06",
+      "right": "M08",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M06",
+      "right": "M09",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both ask for the correct two-step worked evaluation of a fraction expression with addition and a higher-precedence operation. The choices repeat the correct-step versus order/error patterns in sentence-equation form."
+    },
+    {
+      "left": "M06",
+      "right": "M10",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M06",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M06",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M07",
+      "right": "M08",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M07",
+      "right": "M09",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M07",
+      "right": "M10",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M07",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both ask which offered integer x satisfies an equation under essentially the same finite-domain stem and answer with a bare x value. The algebraic expression changes, but the selection decision and response grammar repeat."
+    },
+    {
+      "left": "M07",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M08",
+      "right": "M09",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M08",
+      "right": "M10",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M08",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M08",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M09",
+      "right": "M10",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M09",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M09",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M10",
+      "right": "M11",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    },
+    {
+      "left": "M10",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": true,
+      "reason": "Both specify a bounded integer domain and predicate, ask how many integers satisfy it, and offer four bare neighboring counts. The predicate changes, but the domain-filter/count decision and response grammar repeat."
+    },
+    {
+      "left": "M11",
+      "right": "M12",
+      "strongRepetitionOfDecisionAndResponseFormat": false
+    }
+  ],
+  "summary": {
+    "supportedUniqueAnswers": 12,
+    "ambiguousItems": [],
+    "meaningfulWithinItemChoicePairs": 72,
+    "totalWithinItemChoicePairs": 72,
+    "crossItemPairsAssessed": 66,
+    "strongCrossItemPairs": 12,
+    "strongPairs": [
+      [
+        "M01",
+        "M07"
+      ],
+      [
+        "M01",
+        "M11"
+      ],
+      [
+        "M02",
+        "M05"
+      ],
+      [
+        "M02",
+        "M08"
+      ],
+      [
+        "M03",
+        "M06"
+      ],
+      [
+        "M03",
+        "M09"
+      ],
+      [
+        "M04",
+        "M10"
+      ],
+      [
+        "M04",
+        "M12"
+      ],
+      [
+        "M05",
+        "M08"
+      ],
+      [
+        "M06",
+        "M09"
+      ],
+      [
+        "M07",
+        "M11"
+      ],
+      [
+        "M10",
+        "M12"
+      ]
+    ],
+    "assessment": "All twelve items have one supported answer and distinct within-item choices, but each of four decision/response templates appears three times. These twelve same-template pairs are strong repetition under the stated rubric; the 54 cross-template pairs do not repeat both decision and format. The arithmetic within some templates is varied, so this is a question-type novelty finding, not a claim that every computation is identical.",
+    "otherConcerns": "The numeric offered-value and count distractors are mostly neighboring values rather than misconception-specific alternatives. Programming-style != and <= and repeated 'unitless number' boilerplate make some stems look synthetic. I found no unsupported worked step in the selected correct choices or external answer leakage."
+  }
+}
