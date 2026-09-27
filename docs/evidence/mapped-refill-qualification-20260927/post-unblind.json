@@ -1,0 +1,73 @@
+{
+  "status": "post_blind_unblind_complete",
+  "worksheet_sha256": "ff075ecd551b604ba84c8e57496733c69b7613102cb653c1d777a64dce90ae04",
+  "private_map_sha256": "32ef48da0dcd6891211ee8d68dcb0da8442f9f81e31a699bd537433e4810ad99",
+  "review_sha256": {
+    "review-codex-agreement-history.json": "32d34f5f8406327c131e0c2d528f6b9cd5c178544d847f61c598c450b61c3d33",
+    "blind-review-codex-independent.json": "4f54cfdc3745f95d81e4c65425e937c74d97f3ee29ba7e588286e3966d49d255"
+  },
+  "review_results": [
+    {
+      "review_file": "review-codex-agreement-history.json",
+      "all_items": 10,
+      "key_agreement": 10,
+      "refill_key_agreement": 5,
+      "minimum_difficulty": 2,
+      "near_duplicate_pairs": 5
+    },
+    {
+      "review_file": "blind-review-codex-independent.json",
+      "all_items": 10,
+      "key_agreement": 10,
+      "refill_key_agreement": 5,
+      "minimum_difficulty": 2,
+      "near_duplicate_pairs": 5
+    }
+  ],
+  "unanimous_cross_bank_near_duplicate_pairs": [
+    {
+      "opaque_ids": [
+        "R0532540504",
+        "R1fadbc6b16"
+      ],
+      "original_slot": 0,
+      "crosses_previous_and_refill": true
+    },
+    {
+      "opaque_ids": [
+        "R306f816e76",
+        "R5e2dd966a3"
+      ],
+      "original_slot": 3,
+      "crosses_previous_and_refill": true
+    },
+    {
+      "opaque_ids": [
+        "R5344d70a0e",
+        "R7269aad6d0"
+      ],
+      "original_slot": 4,
+      "crosses_previous_and_refill": true
+    },
+    {
+      "opaque_ids": [
+        "Ra61f54c5b2",
+        "Rc6f5aa9227"
+      ],
+      "original_slot": 1,
+      "crosses_previous_and_refill": true
+    },
+    {
+      "opaque_ids": [
+        "Rcd5d0f63cf",
+        "Rf2dd1f7383"
+      ],
+      "original_slot": 2,
+      "crosses_previous_and_refill": true
+    }
+  ],
+  "all_five_original_slots_pair_as_near_duplicates": true,
+  "operational_qualification": "FAIL_zero_verified_refill_return",
+  "content_diversity_qualification": "FAIL_five_of_five_cross_bank_near_duplicate_pairs",
+  "note": "Reviewer keys and level ratings apply to candidate worksheet, not to a verified worker return."
+}

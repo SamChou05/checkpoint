@@ -1,0 +1,106 @@
+{
+  "status": "candidate_only_reviewer_timeout_no_verified_refill_return",
+  "instructions": "For each item, select the best choice if one exists; rate self-containment and difficulty 1-5. Across all ten items, flag near-duplicate pairs and explain the repeated work. Item origin, key, model rating, and proof are hidden. The refill candidates were not verified because the reviewer provider call timed out.",
+  "items": [
+    {
+      "id": "R1fadbc6b16",
+      "prompt": "Let q be a unitless number, defined by q = (((5 / 6) + (3 / 5)) * 3). What is its exact value?",
+      "choices": {
+        "A": "129",
+        "B": "1/10",
+        "C": "43/10",
+        "D": "43/90"
+      }
+    },
+    {
+      "id": "R5344d70a0e",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Maya and Theo near the cook ___ lunch, while every guest near the servers ___ a plate. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "prepare; receive",
+        "B": "prepares; receives",
+        "C": "prepares; receive",
+        "D": "prepare; receives"
+      }
+    },
+    {
+      "id": "Ra61f54c5b2",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((4 * x) + 7) = 35. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "5",
+        "B": "6",
+        "C": "8",
+        "D": "7"
+      }
+    },
+    {
+      "id": "R0532540504",
+      "prompt": "Let q be a unitless number, defined by q = (((3 / 4) + (7 / 9)) * 3). What is its exact value?",
+      "choices": {
+        "A": "165",
+        "B": "1/12",
+        "C": "55/12",
+        "D": "55/108"
+      }
+    },
+    {
+      "id": "Rcd5d0f63cf",
+      "prompt": "Let x be a unitless number. Its domain is integers from 4 through 10, inclusive. Condition: (x / (x + 4)) >= (7 / 11). What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "8",
+        "B": "6",
+        "C": "7",
+        "D": "5"
+      }
+    },
+    {
+      "id": "Rf2dd1f7383",
+      "prompt": "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: (x / (x + 3)) >= (8 / 11). What is the minimum x in this domain satisfying the condition?",
+      "choices": {
+        "A": "9",
+        "B": "8",
+        "C": "6",
+        "D": "7"
+      }
+    },
+    {
+      "id": "R5e2dd966a3",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The players near the coach ___ the drills, while the coach near the players ___ the schedule. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "practices; checks",
+        "B": "practices; check",
+        "C": "practice; check",
+        "D": "practice; checks"
+      }
+    },
+    {
+      "id": "R306f816e76",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The volunteers near the librarian ___ the returns, while the librarian near the volunteers ___ the books. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "sorts; organizes",
+        "B": "sorts; organize",
+        "C": "sort; organize",
+        "D": "sort; organizes"
+      }
+    },
+    {
+      "id": "R7269aad6d0",
+      "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Nora and Eli near the guide ___ the maps, while every guide near the hikers ___ a badge. Which ordered pair fills the blanks?",
+      "choices": {
+        "A": "folds; wear",
+        "B": "fold; wear",
+        "C": "fold; wears",
+        "D": "folds; wears"
+      }
+    },
+    {
+      "id": "Rc6f5aa9227",
+      "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((5 * x) + 8) = 53. Which offered value of x satisfies the condition?",
+      "choices": {
+        "A": "7",
+        "B": "10",
+        "C": "8",
+        "D": "9"
+      }
+    }
+  ]
+}

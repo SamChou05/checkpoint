@@ -1,0 +1,67 @@
+{
+  "status": "offline_candidate_audit_passed_but_verified_refill_failed",
+  "plan_sha256": "5681a27a407aebfad3f3b8e2ec6422859a912c28b7a77c7b972492aa0c5d44e2",
+  "partial_capture_sha256": "f27a207c6039f54cd7ad3e640184e9cbbcb5b42940e23b683c08999635496ec5",
+  "worksheet_sha256": "ff075ecd551b604ba84c8e57496733c69b7613102cb653c1d777a64dce90ae04",
+  "author_rows": 5,
+  "compiler_rejections": [],
+  "sanitized_candidates": 5,
+  "numeric": [
+    {
+      "slot": 0,
+      "family": "fraction_evaluation",
+      "model_operands_preserved": true,
+      "selected_operands": [
+        3,
+        7
+      ],
+      "independent_key": "55/12"
+    },
+    {
+      "slot": 1,
+      "family": "bounded_equation",
+      "model_operands_preserved": true,
+      "selected_operands": [
+        5,
+        9
+      ],
+      "independent_key": "9"
+    },
+    {
+      "slot": 2,
+      "family": "bounded_ratio_threshold",
+      "model_operands_preserved": true,
+      "selected_operands": [
+        4,
+        7
+      ],
+      "independent_key": "7"
+    }
+  ],
+  "english": [
+    {
+      "slot": 3,
+      "model_task_preserved": true,
+      "selected_task": {
+        "kind": "agreement_pair_v1",
+        "order": "plural_first",
+        "scene": "coach"
+      }
+    },
+    {
+      "slot": 4,
+      "model_task_preserved": true,
+      "selected_task": {
+        "kind": "agreement_pair_v1",
+        "order": "singular_first",
+        "scene": "compound_guides"
+      }
+    }
+  ],
+  "all_ten_stems_distinct": true,
+  "candidate_choice_pair_checks": 30,
+  "candidate_choice_permutations_checked": 120,
+  "candidate_feedback_keys_complete": true,
+  "verified_returned_questions": 0,
+  "qualification": "FAIL_reviewer_read_timeout"
+}

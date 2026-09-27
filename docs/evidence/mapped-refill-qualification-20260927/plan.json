@@ -1,0 +1,349 @@
+{
+  "state": "frozen",
+  "source_commit": "9105289100fdccec807a2d99c33878bfd276b6e0",
+  "source_hashes": {
+    "backend/bedrock-question-service/agreement_task_constructor.py": "a68cfb63cc72aa577af5190e58f78aba2013c458c57af2500a3bd98527a9edb0",
+    "backend/bedrock-question-service/answer_position_references.py": "7afe3705ef5d87d2426a4c6dfb2ed53136dda92f082052f77cea30e3f85d00dc",
+    "backend/bedrock-question-service/complete_question_solution.py": "d7730418ceaa920377bbfb30839863163b953044e62a2f0edb18069dc6be9ccd",
+    "backend/bedrock-question-service/execution_evidence.py": "1ba4f85d5443c1be7658e900852347a3b48e3cc2605c3f41ce379254b316fccd",
+    "backend/bedrock-question-service/generation_diagnostics.py": "6a7132b3c314cf26f80c35443b347f25d7d2942df93bbb6bd3c78afc6db3014c",
+    "backend/bedrock-question-service/lambda_function.py": "3e1abfe4130bcfea03cf1b0cf5e206dd8809d89e6a22fa0d803c0678c1c6b267",
+    "backend/bedrock-question-service/mapped_quantitative_families.py": "997d44503f34316a57db4d4afd6c5753910ef0927ccba6f1d7e3db5a461d2982",
+    "backend/bedrock-question-service/native_output_contracts.py": "f3906b2b99ce3973ef5a68cb16e1fc70e7a9bf4ac1d2b47c156bbd8e778e460d",
+    "backend/bedrock-question-service/plain_scalar_choices.py": "29bf6f761ca04bfeaeaebed960e0ccb2b96cfd7869679100412a041dc0ead3f7",
+    "backend/bedrock-question-service/python_boolean_teaching.py": "d60e67101ee262bdad8c37c7b29ea319ee1966030fc57b7a8e4a119f9789069c",
+    "backend/bedrock-question-service/quantitative_authoring.py": "a1955dbbd6780a89d5b11ace1b6c72b05b43db2ce5f3b1002e18dfa776cfd2d4",
+    "backend/bedrock-question-service/quantitative_choice_construction.py": "d838c5c2dcedcd5bf5df6423156386ecae855b5f30111ed2a22e8af7d3b3c68c",
+    "backend/bedrock-question-service/quantitative_task_compiler.py": "45cb16754a96bde9d2337070f58bdc1e78895a44774914024be599fc83b9c34c",
+    "backend/bedrock-question-service/question_bank.py": "f593bc2183887c38ef8ee8aa02187c1153888c38c06271368ddacc1c5f701efc",
+    "backend/bedrock-question-service/question_bank_common.py": "314dedf4e6a966df5d4348ad1e3fe65746f11f670a7b2aebd6ae8c2afe4a66f8",
+    "backend/bedrock-question-service/question_bank_inventory.py": "05d90adae4dd838b933f929922f14127004eb3a7763421f23deedbc813a5323d",
+    "backend/bedrock-question-service/question_bank_store.py": "7a7e0a6aafa6d18e95662cdd4dff2ca522d27ebd14e5fdd5f6c71cea6fb069b7",
+    "backend/bedrock-question-service/question_bank_worker.py": "ed2ba8f9016cc6f33178e4fd01d1098a20b1831c758eb75ffc4c103186eab4c4",
+    "backend/bedrock-question-service/question_difficulty.py": "a248af47acef0425902f7606a4dd8408461ae1d4a95895c84be2c893cbb4c77b",
+    "backend/bedrock-question-service/question_generation.py": "97e3b69eb6ee6c17a423430014c1cbf5a2e64171911a6a0b542ec6fab79c0933",
+    "backend/bedrock-question-service/question_quality.py": "5ed229130cb7adee058a1b4c3c223ddb5cad1553b3b7b73021aff06959343800",
+    "backend/bedrock-question-service/question_rule_construction.py": "f3bdf1398a3c9fa5d321ef2f58a265f79ba934e7afa6a8730e16657f6b95a4d0",
+    "backend/bedrock-question-service/question_teaching.py": "cbc8df3cb2dfeda54ddf1d3f9acd85e7becacf48d3b10982eb7ae885ffe55415",
+    "backend/bedrock-question-service/question_verification.py": "03d452d40b49ff2e985707c6104b5f0196716753bc9dc4eceda01c9ce9c9985c",
+    "backend/bedrock-question-service/request_contract.py": "fcb425388a53b01abacb9a6e858ab44780b427ee182855c31ce99ed02c0ec954",
+    "backend/bedrock-question-service/service_errors.py": "35690c8622d2890cb72e55cb9561d123cfba78dd082c67c69f919fde80b9b1a0",
+    "backend/bedrock-question-service/skill_maps.py": "b07ec1fb7263efd6369706c6f638696b59dfe1ea8950fe4123e20fab7e5a539b",
+    "backend/bedrock-question-service/smoke_test_backend.py": "0f4f08b42fe9b1ff19e33d0fdaf4eab5ff11b2496aa85bf4262f537bb593e063",
+    "backend/bedrock-question-service/source_acquisition.py": "02fa470e2a347f87ff0d86d4dba05db713a2d4bc881bcea575e0f32125c1c328",
+    "backend/bedrock-question-service/verification_policy.py": "26d18cf8105cceba0cb694af85c044c2574d9b0080bd28f1d493035e29044519",
+    "backend/bedrock-question-service/web_source_search.py": "c1449aca0f4d36cecb361ef2b7d94daabdeeb486da5249aaecf32a1d4ddf8d5d",
+    "backend/bedrock-question-service/evals/bounded_bedrock_capture.py": "cc547d6687ee81dc80c18615099d8b971955ceed95588acf8ab2d160cb3823f3"
+  },
+  "harness_sha256": "ad80da7897f81f46416b91cc70e31689011ab9e5bee0449ea76aec5c6d991fdc",
+  "prior_plan_sha256": "4a26cee369744fd7f6aed2e60522608b40faa0d17a99d3f65a6f493e872ad6ce",
+  "prior_capture_sha256": "f9e81f34f19e4829b49587c3919d77bae2595784064e063631d3515b61e009fa",
+  "bank": {
+    "desired_count": 11,
+    "low_watermark": 0,
+    "history_rows": 5,
+    "initial_request": {
+      "goal": {
+        "title": "Arithmetic and English application practice",
+        "category": "",
+        "focusAreas": "",
+        "currentLevel": "",
+        "learningTarget": "Arithmetic and English application practice",
+        "contentTopics": [
+          "Exact arithmetic",
+          "Standard written English"
+        ],
+        "questionDirective": "Cover both assigned skills with self-contained application questions at difficulty 2 or 3. Arithmetic questions use complete exact expressions or explicitly bounded integer conditions. English questions supply complete sentences in standard written American English and make the tested agreement or pronoun-reference distinction explicit.",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "competencies": [],
+      "existingPrompts": [],
+      "existingQuestionCoverage": [],
+      "reportedPrompts": [],
+      "blockedStemFingerprints": [],
+      "stemFingerprintVersion": 1,
+      "sourceDocuments": [],
+      "targetCount": 5,
+      "minimumDifficulty": 2,
+      "requiresFullObjectiveCoverage": false,
+      "difficultyGuidance": "Apply one familiar rule directly.",
+      "skillMap": {
+        "version": 1,
+        "skills": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Exact arithmetic",
+            "objectives": [
+              {
+                "id": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+                "name": "Evaluate an exact rational expression or explicit bounded condition"
+              }
+            ]
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Standard written English",
+            "objectives": [
+              {
+                "id": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+                "name": "Apply subject-verb agreement or unambiguous pronoun reference"
+              }
+            ]
+          }
+        ]
+      },
+      "desiredSkillAllocation": {},
+      "requestedSkillAllocation": {
+        "11111111-1111-4111-8111-111111111111": 3,
+        "22222222-2222-4222-8222-222222222222": 2
+      },
+      "adaptiveSkillPlans": [],
+      "requestedObjectiveAllocation": [
+        {
+          "skillID": "11111111-1111-4111-8111-111111111111",
+          "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+          "count": 3
+        },
+        {
+          "skillID": "22222222-2222-4222-8222-222222222222",
+          "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+          "count": 2
+        }
+      ],
+      "_agreementVariantIdentities": []
+    },
+    "refill_request": {
+      "goal": {
+        "title": "Arithmetic and English application practice",
+        "category": "",
+        "focusAreas": "",
+        "currentLevel": "",
+        "learningTarget": "Arithmetic and English application practice",
+        "contentTopics": [
+          "Exact arithmetic",
+          "Standard written English"
+        ],
+        "questionDirective": "Cover both assigned skills with self-contained application questions at difficulty 2 or 3. Arithmetic questions use complete exact expressions or explicitly bounded integer conditions. English questions supply complete sentences in standard written American English and make the tested agreement or pronoun-reference distinction explicit.",
+        "needsSkillMap": false,
+        "preferredQuestionStyle": "Multiple Choice"
+      },
+      "competencies": [],
+      "existingPrompts": [
+        "Let q be a unitless number, defined by q = (((5 / 6) + (3 / 5)) * 3). What is its exact value?",
+        "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((4 * x) + 7) = 35. Which offered value of x satisfies the condition?",
+        "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: (x / (x + 3)) >= (8 / 11). What is the minimum x in this domain satisfying the condition?",
+        "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The volunteers near the librarian ___ the returns, while the librarian near the volunteers ___ the books. Which ordered pair fills the blanks?",
+        "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Maya and Theo near the cook ___ lunch, while every guest near the servers ___ a plate. Which ordered pair fills the blanks?"
+      ],
+      "existingQuestionCoverage": [
+        {
+          "topic": "Exact arithmetic",
+          "skillID": "11111111-1111-4111-8111-111111111111",
+          "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+          "objective": "Evaluate an exact rational expression or explicit bounded condition",
+          "prompt": "Let q be a unitless number, defined by q = (((5 / 6) + (3 / 5)) * 3). What is its exact value?",
+          "expectedAnswer": "43/10",
+          "choices": [
+            "129",
+            "1/10",
+            "43/10",
+            "43/90"
+          ],
+          "difficulty": 2
+        },
+        {
+          "topic": "Exact arithmetic",
+          "skillID": "11111111-1111-4111-8111-111111111111",
+          "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+          "objective": "Evaluate an exact rational expression or explicit bounded condition",
+          "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((4 * x) + 7) = 35. Which offered value of x satisfies the condition?",
+          "expectedAnswer": "7",
+          "choices": [
+            "7",
+            "6",
+            "8",
+            "5"
+          ],
+          "difficulty": 2
+        },
+        {
+          "topic": "Exact arithmetic",
+          "skillID": "11111111-1111-4111-8111-111111111111",
+          "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+          "objective": "Evaluate an exact rational expression or explicit bounded condition",
+          "prompt": "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: (x / (x + 3)) >= (8 / 11). What is the minimum x in this domain satisfying the condition?",
+          "expectedAnswer": "8",
+          "choices": [
+            "6",
+            "8",
+            "7",
+            "9"
+          ],
+          "difficulty": 3
+        },
+        {
+          "topic": "Standard written English",
+          "skillID": "22222222-2222-4222-8222-222222222222",
+          "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+          "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+          "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The volunteers near the librarian ___ the returns, while the librarian near the volunteers ___ the books. Which ordered pair fills the blanks?",
+          "expectedAnswer": "sort; organizes",
+          "choices": [
+            "sorts; organizes",
+            "sort; organize",
+            "sort; organizes",
+            "sorts; organize"
+          ],
+          "difficulty": 2
+        },
+        {
+          "topic": "Standard written English",
+          "skillID": "22222222-2222-4222-8222-222222222222",
+          "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+          "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+          "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Maya and Theo near the cook ___ lunch, while every guest near the servers ___ a plate. Which ordered pair fills the blanks?",
+          "expectedAnswer": "prepare; receives",
+          "choices": [
+            "prepare; receive",
+            "prepare; receives",
+            "prepares; receive",
+            "prepares; receives"
+          ],
+          "difficulty": 2
+        }
+      ],
+      "reportedPrompts": [
+        "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((4 * x) + 7) = 35. Which offered value of x satisfies the condition?"
+      ],
+      "blockedStemFingerprints": [
+        "f32aeb35c9da5098",
+        "62968951b5ea03f2"
+      ],
+      "stemFingerprintVersion": 1,
+      "sourceDocuments": [],
+      "targetCount": 5,
+      "minimumDifficulty": 2,
+      "requiresFullObjectiveCoverage": false,
+      "difficultyGuidance": "Apply one familiar rule directly.",
+      "skillMap": {
+        "version": 1,
+        "skills": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "name": "Exact arithmetic",
+            "objectives": [
+              {
+                "id": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+                "name": "Evaluate an exact rational expression or explicit bounded condition"
+              }
+            ]
+          },
+          {
+            "id": "22222222-2222-4222-8222-222222222222",
+            "name": "Standard written English",
+            "objectives": [
+              {
+                "id": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+                "name": "Apply subject-verb agreement or unambiguous pronoun reference"
+              }
+            ]
+          }
+        ]
+      },
+      "desiredSkillAllocation": {},
+      "requestedSkillAllocation": {
+        "11111111-1111-4111-8111-111111111111": 3,
+        "22222222-2222-4222-8222-222222222222": 2
+      },
+      "adaptiveSkillPlans": [],
+      "requestedObjectiveAllocation": [
+        {
+          "skillID": "11111111-1111-4111-8111-111111111111",
+          "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+          "count": 3
+        },
+        {
+          "skillID": "22222222-2222-4222-8222-222222222222",
+          "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+          "count": 2
+        }
+      ],
+      "_agreementVariantIdentities": [
+        "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Maya and Theo near the cook ___ lunch, while every guest near the servers ___ a plate. Which ordered pair fills the blanks?",
+        "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The volunteers near the librarian ___ the returns, while the librarian near the volunteers ___ the books. Which ordered pair fills the blanks?"
+      ]
+    },
+    "static_scope_sha256": "e7ee04d1079161ba077043bd688a83958a102320c9d53a837cb96cd8039a3bdb",
+    "full_initial_scope_sha256": "1ee323aadbf7f6f6fc2a64b726ada3015d62c683b7bca43d73f91f54597c0930",
+    "full_refill_scope_sha256": "552eebf057051f8803a9ef5f607c9516ec509ad9b774515650de0ec3f925dc14"
+  },
+  "environment": {
+    "BEDROCK_REGION": "us-east-1",
+    "BEDROCK_STRUCTURED_OUTPUT_MODE": "native",
+    "QUESTION_AUTHOR_MODE": "constructed_quantitative",
+    "QUESTION_FEEDBACK_CONTRACT": "authored_solution",
+    "BEDROCK_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_VERIFICATION_MODEL_ID": "us.anthropic.claude-sonnet-4-6",
+    "BEDROCK_FALLBACK_MODEL_ID": "",
+    "BEDROCK_CLAUDE_THINKING": "adaptive",
+    "BEDROCK_CLAUDE_EFFORT": "high",
+    "BEDROCK_MAX_TOKENS": "6000",
+    "BEDROCK_KIMI_THINKING": "disabled",
+    "BEDROCK_TEMPERATURE": "0.2",
+    "BEDROCK_THINKING_MAX_TOKENS": "16000",
+    "BEDROCK_CONNECT_TIMEOUT_SECONDS": "3",
+    "BEDROCK_READ_TIMEOUT_SECONDS": "70",
+    "BEDROCK_GUARDRAIL_IDENTIFIER": "",
+    "BEDROCK_GUARDRAIL_VERSION": "",
+    "GENERATION_ATTEMPTS": "1",
+    "MAX_PROVIDER_CALLS_PER_REQUEST": "3",
+    "MIN_PROVIDER_REMAINING_MILLISECONDS": "0",
+    "CHECKPOINT_PROMPT_VARIANT": "balanced",
+    "MAX_QUESTIONS_PER_BATCH": "20",
+    "QUESTION_AUTHOR_CARDINALITY_CONTRACT": "array",
+    "QUESTION_MAPPED_FIXED_FIVE_GOAL_SHA256": "6730fa057871c71d661c6260040fab2713a58eff36d8319326b2fed7b67ddb46",
+    "QUESTION_MAPPED_FIXED_FIVE_SCOPE_SHA256": "e7ee04d1079161ba077043bd688a83958a102320c9d53a837cb96cd8039a3bdb",
+    "QUESTION_MAPPED_AGREEMENT_TASKS": "enabled",
+    "QUESTION_MAPPED_QUANTITATIVE_FAMILIES": "enabled",
+    "QUESTION_MAPPED_FIXED_FIVE_SCOPE_MODE": "refill_history"
+  },
+  "author": {
+    "contract_name": "question_author_constructed_mapped_families_v1_n5_56d4204a9b0238f6",
+    "schema_sha256": "51fb4955dd0f52346c26fdb16dd31f53c64853773a90e1cf9a36e5097983bf5b",
+    "system_sha256": "ff0326207c9793f3c2f788814a3497429c3730f79f9195e026faf65a1ac03334",
+    "user_sha256": "eaaeb7b177940da22b41b0c94e94ac90c8cf7bc511e2c45655f6b4c717c6fa92",
+    "wire_sha256": "d9869d3d7d7cff21625499c9b0211b1d2fe3f7a6ed617427cf3bd5c69fd8cd94"
+  },
+  "limits": {
+    "new_provider_calls": 3,
+    "sdk_attempts_per_call": 1,
+    "generation_attempts": 1,
+    "fallback_model": "",
+    "connect_timeout_seconds": 3,
+    "read_timeout_seconds": 70,
+    "execute_deadline_seconds": 240,
+    "sts_identity_requests": 1,
+    "resume_or_top_up": false
+  },
+  "expected_stages": [
+    "question_author_constructed_mapped_families_v1_n5_56d4204a9b0238f6",
+    "complete_choice_solver_v5_n2",
+    "authored_solution_reviewer_v3_n5"
+  ],
+  "criteria": {
+    "returned_original_slots": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "quantitative_policy_8": 3,
+    "agreement_policy_10": 2,
+    "exact_keys_choices_feedback": true,
+    "cross_bank_stem_reuse": 0,
+    "blind_minimum_difficulty": 2,
+    "near_duplicates_reported_separately": true
+  }
+}

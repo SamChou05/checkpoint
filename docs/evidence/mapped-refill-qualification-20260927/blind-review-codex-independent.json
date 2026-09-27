@@ -1,0 +1,137 @@
+{
+  "reviewer": "Codex independent reviewer",
+  "review_type": "answer-blind candidate worksheet",
+  "worksheet_sha256": "ff075ecd551b604ba84c8e57496733c69b7613102cb653c1d777a64dce90ae04",
+  "scope": "candidate-worksheet.json only; no origin, private keys, capture, plan, results, or sibling reviews consulted",
+  "requested_difficulty": 2,
+  "items": [
+    {
+      "id": "R1fadbc6b16",
+      "best_choice": "C",
+      "single_supported_answer": true,
+      "answer_reason": "5/6 + 3/5 = 43/30, and multiplying by 3 gives 43/10.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "The four choices have different exact numerical values.",
+      "novelty_note": "Near duplicate of R0532540504: add two fractions and multiply the sum by 3, with the same answer and distractor structure."
+    },
+    {
+      "id": "R5344d70a0e",
+      "best_choice": "D",
+      "single_supported_answer": true,
+      "answer_reason": "The compound subject Maya and Theo takes prepare; every guest is singular and takes receives. Nearby nouns do not change either subject.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "Every ordered pair changes the number of at least one verb and thus makes a different agreement judgment.",
+      "novelty_note": "Near duplicate of R7269aad6d0: compound plural subject followed by every plus singular subject, each with a nearby opposite-number noun."
+    },
+    {
+      "id": "Ra61f54c5b2",
+      "best_choice": "D",
+      "single_supported_answer": true,
+      "answer_reason": "4x + 7 = 35 implies 4x = 28 and x = 7, which is in the stated domain.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "The offered integers are four different values; only 7 satisfies the equation.",
+      "novelty_note": "Near duplicate of Rc6f5aa9227: solve ax + b = c over the same integer domain and select the solution from four nearby integers."
+    },
+    {
+      "id": "R0532540504",
+      "best_choice": "C",
+      "single_supported_answer": true,
+      "answer_reason": "3/4 + 7/9 = 55/36, and multiplying by 3 gives 55/12.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "The four choices have different exact numerical values.",
+      "novelty_note": "Near duplicate of R1fadbc6b16: only the starting fractions change; the operation sequence and distractor pattern repeat."
+    },
+    {
+      "id": "Rcd5d0f63cf",
+      "best_choice": "C",
+      "single_supported_answer": true,
+      "answer_reason": "The denominator is positive throughout the domain, so 11x >= 7(x + 4) gives x >= 7; the minimum offered domain value is 7.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "The offered integers are distinct, with exactly one minimum satisfying the condition.",
+      "novelty_note": "Near duplicate of Rf2dd1f7383: solve an x/(x + constant) fractional threshold on a short positive integer interval and choose its minimum."
+    },
+    {
+      "id": "Rf2dd1f7383",
+      "best_choice": "B",
+      "single_supported_answer": true,
+      "answer_reason": "The denominator is positive throughout the domain, so 11x >= 8(x + 3) gives x >= 8; the minimum offered domain value is 8.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "The offered integers are distinct, with exactly one minimum satisfying the condition.",
+      "novelty_note": "Near duplicate of Rcd5d0f63cf: only the constants, interval, threshold, and correct integer change."
+    },
+    {
+      "id": "R5e2dd966a3",
+      "best_choice": "D",
+      "single_supported_answer": true,
+      "answer_reason": "Players is plural and takes practice; coach is singular and takes checks. The near phrases do not change the head subjects.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "Each ordered pair differs in at least one verb-number commitment.",
+      "novelty_note": "Near duplicate of R306f816e76: plural head near singular noun, then singular head near plural noun, with the same four-choice agreement matrix."
+    },
+    {
+      "id": "R306f816e76",
+      "best_choice": "D",
+      "single_supported_answer": true,
+      "answer_reason": "Volunteers is plural and takes sort; librarian is singular and takes organizes. The near phrases do not change the head subjects.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "Each ordered pair differs in at least one verb-number commitment.",
+      "novelty_note": "Near duplicate of R5e2dd966a3: the nouns and verbs change, but both head-number decisions and choice pattern repeat."
+    },
+    {
+      "id": "R7269aad6d0",
+      "best_choice": "C",
+      "single_supported_answer": true,
+      "answer_reason": "Nora and Eli is a compound plural subject and takes fold; every guide is singular and takes wears. The nearby nouns do not control agreement.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "Every ordered pair changes at least one verb-number judgment.",
+      "novelty_note": "Near duplicate of R5344d70a0e: the same compound-plus-every subject pattern appears with changed people, objects, and verbs."
+    },
+    {
+      "id": "Rc6f5aa9227",
+      "best_choice": "D",
+      "single_supported_answer": true,
+      "answer_reason": "5x + 8 = 53 implies 5x = 45 and x = 9, which is in the stated domain.",
+      "self_contained": true,
+      "difficulty_1_to_5": 2,
+      "level_2_fit": true,
+      "all_six_choice_pairs_distinct": true,
+      "choice_note": "The offered integers are four different values; only 9 satisfies the equation.",
+      "novelty_note": "Near duplicate of Ra61f54c5b2: the same equation-solving and multiple-choice work is repeated with changed constants."
+    }
+  ],
+  "near_duplicate_pairs": [
+    ["R1fadbc6b16", "R0532540504"],
+    ["R5344d70a0e", "R7269aad6d0"],
+    ["Ra61f54c5b2", "Rc6f5aa9227"],
+    ["Rcd5d0f63cf", "Rf2dd1f7383"],
+    ["R5e2dd966a3", "R306f816e76"]
+  ],
+  "overall_novelty": "All ten are self-contained and individually answerable at level 2. The five near-duplicate pairs repeat the substantive solve path or agreement rule; changed numbers and names do little to broaden practice. The four English items also share a two-blank ordered-pair format across the two grammar mechanisms."
+}

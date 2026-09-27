@@ -1,0 +1,150 @@
+{
+  "reviewer": "Codex agreement-history blind reviewer",
+  "status": "locked",
+  "worksheetSHA256": "ff075ecd551b604ba84c8e57496733c69b7613102cb653c1d777a64dce90ae04",
+  "scope": "Worksheet-only independent answer, level, choice-distinctness, and cross-item novelty review. Item origins and private keys were not consulted.",
+  "items": [
+    {
+      "id": "R1fadbc6b16",
+      "selectedChoice": "C",
+      "selectedAnswer": "43/10",
+      "reason": "5/6 + 3/5 = 43/30; multiplying by 3 gives 43/10.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["R0532540504"]
+    },
+    {
+      "id": "R5344d70a0e",
+      "selectedChoice": "D",
+      "selectedAnswer": "prepare; receives",
+      "reason": "Maya and Theo is plural, and every guest is singular; the nearby nouns do not control either verb.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["R7269aad6d0"]
+    },
+    {
+      "id": "Ra61f54c5b2",
+      "selectedChoice": "D",
+      "selectedAnswer": "7",
+      "reason": "4x + 7 = 35 implies 4x = 28 and x = 7, inside the stated domain.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["Rc6f5aa9227"]
+    },
+    {
+      "id": "R0532540504",
+      "selectedChoice": "C",
+      "selectedAnswer": "55/12",
+      "reason": "3/4 + 7/9 = 55/36; multiplying by 3 gives 55/12.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["R1fadbc6b16"]
+    },
+    {
+      "id": "Rcd5d0f63cf",
+      "selectedChoice": "C",
+      "selectedAnswer": "7",
+      "reason": "The denominator is positive throughout the domain. Cross multiplication gives 11x >= 7x + 28, so x >= 7; the minimum is 7.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["Rf2dd1f7383"]
+    },
+    {
+      "id": "Rf2dd1f7383",
+      "selectedChoice": "B",
+      "selectedAnswer": "8",
+      "reason": "The denominator is positive throughout the domain. Cross multiplication gives 11x >= 8x + 24, so x >= 8; the minimum is 8.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["Rcd5d0f63cf"]
+    },
+    {
+      "id": "R5e2dd966a3",
+      "selectedChoice": "D",
+      "selectedAnswer": "practice; checks",
+      "reason": "Players is plural and coach is singular; each nearby opposite-number noun is only an attractor.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["R306f816e76"]
+    },
+    {
+      "id": "R306f816e76",
+      "selectedChoice": "D",
+      "selectedAnswer": "sort; organizes",
+      "reason": "Volunteers is plural and librarian is singular; each nearby opposite-number noun is only an attractor.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["R5e2dd966a3"]
+    },
+    {
+      "id": "R7269aad6d0",
+      "selectedChoice": "C",
+      "selectedAnswer": "fold; wears",
+      "reason": "Nora and Eli is plural, and every guide is singular; the nearby nouns do not control either verb.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["R5344d70a0e"]
+    },
+    {
+      "id": "Rc6f5aa9227",
+      "selectedChoice": "D",
+      "selectedAnswer": "9",
+      "reason": "5x + 8 = 53 implies 5x = 45 and x = 9, inside the stated domain.",
+      "difficulty": 2,
+      "selfContained": true,
+      "withinItemChoicesDistinct": true,
+      "oneSupportedChoice": true,
+      "nearDuplicateIDs": ["Ra61f54c5b2"]
+    }
+  ],
+  "nearDuplicatePairs": [
+    {
+      "ids": ["R1fadbc6b16", "R0532540504"],
+      "repeatedWork": "The same add-two-fractions-then-multiply-by-3 expression and answer/distractor pattern; only the fraction operands change."
+    },
+    {
+      "ids": ["Ra61f54c5b2", "Rc6f5aa9227"],
+      "repeatedWork": "The same bounded-domain two-step linear equation; coefficients and constants change but solving work does not."
+    },
+    {
+      "ids": ["Rcd5d0f63cf", "Rf2dd1f7383"],
+      "repeatedWork": "The same x/(x + constant) ratio threshold and minimum-integer search; only parameters change."
+    },
+    {
+      "ids": ["R5e2dd966a3", "R306f816e76"],
+      "repeatedWork": "The same plural-first, singular-second subject-verb agreement with nearby opposite-number noun attractors; only the scene and verbs change."
+    },
+    {
+      "ids": ["R5344d70a0e", "R7269aad6d0"],
+      "repeatedWork": "The same compound plural subject followed by an every-singular subject, each with nearby noun attractors; only the scene and verbs change."
+    }
+  ],
+  "overall": {
+    "itemsReviewed": 10,
+    "itemsWithOneSupportedChoice": 10,
+    "itemsMeetingLevel2": 10,
+    "selfContainedItems": 10,
+    "itemsWithDistinctChoices": 10,
+    "strongNearDuplicatePairs": 5,
+    "noveltyJudgment": "The ten-item set contains five strong paired repeats of the same underlying work. The four grammar items also share a common two-blank response format, though the ordinary proximity and compound/distributive pairs test different agreement rules.",
+    "verificationLimit": "This blind worksheet review cannot establish which items were refill candidates or replace the timed-out provider verification."
+  }
+}

@@ -1,0 +1,299 @@
+{
+  "plan_sha256": "5681a27a407aebfad3f3b8e2ec6422859a912c28b7a77c7b972492aa0c5d44e2",
+  "partial_capture_sha256": "f27a207c6039f54cd7ad3e640184e9cbbcb5b42940e23b683c08999635496ec5",
+  "mapping": {
+    "R1fadbc6b16": {
+      "origin": "previous_verified",
+      "original_slot": 0,
+      "correct_display_choice": "C",
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = (((5 / 6) + (3 / 5)) * 3). What is its exact value?",
+        "expectedAnswer": "43/10",
+        "choices": [
+          "129",
+          "1/10",
+          "43/10",
+          "43/90"
+        ],
+        "explanation": "Multiply by the reciprocal: 5 / 6 = 5 * (1/6) = 5/6. Multiply by the reciprocal: 3 / 5 = 3 * (1/5) = 3/5. Common denominator 30: (5/6) + (3/5) = (25/30) + (18/30) = 43/30. Multiply numerators and denominators: (43/30) * 3 = 129/30 = 43/10. The answer is 43/10.",
+        "topic": "Exact arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "129": "129: This can come from dropping the denominator 30 of 43/30. (43/30) * 3 = 43/10, not 129.",
+          "1/10": "1/10: This can come from dropping the numerator 43 of 43/30. (43/30) * 3 = 43/10, not 1/10.",
+          "43/10": "The expression evaluates exactly to 43/10; 43/10 is the requested value.",
+          "43/90": "43/90: This can come from multiplying the denominator by 3 instead of the numerator. (43/30) * 3 = 43/10, not 43/90."
+        },
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 8
+      }
+    },
+    "R5344d70a0e": {
+      "origin": "previous_verified",
+      "original_slot": 4,
+      "correct_display_choice": "D",
+      "question": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Maya and Theo near the cook ___ lunch, while every guest near the servers ___ a plate. Which ordered pair fills the blanks?",
+        "expectedAnswer": "prepare; receives",
+        "choices": [
+          "prepare; receive",
+          "prepare; receives",
+          "prepares; receive",
+          "prepares; receives"
+        ],
+        "explanation": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. The form \"prepare\" agrees. Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. The form \"receives\" agrees. Therefore the ordered pair is prepare; receives.",
+        "topic": "Standard written English",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "prepare; receive": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. The form \"prepare\" agrees. Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. \"receive\" does not agree; use \"receives\".",
+          "prepare; receives": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. The form \"prepare\" agrees. Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. The form \"receives\" agrees.",
+          "prepares; receive": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. \"prepares\" does not agree; use \"prepare\". Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. \"receive\" does not agree; use \"receives\".",
+          "prepares; receives": "First, the subject \"Maya and Theo\" is plural (\"and\" joins two); \"near the cook\" does not change it. \"prepares\" does not agree; use \"prepare\". Second, the subject \"Every guest\" is singular; \"near the servers\" does not change it. The form \"receives\" agrees."
+        },
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 10
+      }
+    },
+    "Ra61f54c5b2": {
+      "origin": "previous_verified",
+      "original_slot": 1,
+      "correct_display_choice": "D",
+      "question": {
+        "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((4 * x) + 7) = 35. Which offered value of x satisfies the condition?",
+        "expectedAnswer": "7",
+        "choices": [
+          "7",
+          "6",
+          "8",
+          "5"
+        ],
+        "explanation": "At x = 7, 35 = 35 is true. 7 is the only offered value satisfying the condition. Every other offered value is outside the domain or fails the condition.",
+        "topic": "Exact arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "7": "At x = 7, 35 = 35 is true. This is the only offered value satisfying the condition.",
+          "6": "At x = 6, 31 = 35 is false. This value does not satisfy the condition.",
+          "8": "At x = 8, 39 = 35 is false. This value does not satisfy the condition.",
+          "5": "At x = 5, 27 = 35 is false. This value does not satisfy the condition."
+        },
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 8
+      }
+    },
+    "R0532540504": {
+      "origin": "refill_unverified_candidate",
+      "original_slot": 0,
+      "correct_display_choice": "C",
+      "question": {
+        "prompt": "Let q be a unitless number, defined by q = (((3 / 4) + (7 / 9)) * 3). What is its exact value?",
+        "expectedAnswer": "55/12",
+        "choices": [
+          "55/108",
+          "55/12",
+          "1/12",
+          "165"
+        ],
+        "explanation": "Multiply by the reciprocal: 3 / 4 = 3 * (1/4) = 3/4. Multiply by the reciprocal: 7 / 9 = 7 * (1/9) = 7/9. Common denominator 36: (3/4) + (7/9) = (27/36) + (28/36) = 55/36. Multiply numerators and denominators: (55/36) * 3 = 165/36 = 55/12. The answer is 55/12.",
+        "topic": "Exact arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "55/108": "55/108: This can come from multiplying the denominator by 3 instead of the numerator. (55/36) * 3 = 55/12, not 55/108.",
+          "55/12": "The expression evaluates exactly to 55/12; 55/12 is the requested value.",
+          "1/12": "1/12: This can come from dropping the numerator 55 of 55/36. (55/36) * 3 = 55/12, not 1/12.",
+          "165": "165: This can come from dropping the denominator 36 of 55/36. (55/36) * 3 = 55/12, not 165."
+        },
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition"
+      }
+    },
+    "Rcd5d0f63cf": {
+      "origin": "refill_unverified_candidate",
+      "original_slot": 2,
+      "correct_display_choice": "C",
+      "question": {
+        "prompt": "Let x be a unitless number. Its domain is integers from 4 through 10, inclusive. Condition: (x / (x + 4)) >= (7 / 11). What is the minimum x in this domain satisfying the condition?",
+        "expectedAnswer": "7",
+        "choices": [
+          "7",
+          "8",
+          "6",
+          "5"
+        ],
+        "explanation": "At x = 7, 7/11 >= 7/11 is true. 7 is the minimum value satisfying the condition in this domain. The smaller domain values fail: x = 4: 1/2 >= 7/11 is false; x = 5: 5/9 >= 7/11 is false; x = 6: 3/5 >= 7/11 is false.",
+        "topic": "Exact arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "7": "At x = 7, 7/11 >= 7/11 is true. This is the minimum value satisfying the condition in this domain.",
+          "8": "At x = 8, 2/3 >= 7/11 is true. The question asks for the minimum; that value is 7.",
+          "6": "At x = 6, 3/5 >= 7/11 is false. This value does not satisfy the condition.",
+          "5": "At x = 5, 5/9 >= 7/11 is false. This value does not satisfy the condition."
+        },
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition"
+      }
+    },
+    "Rf2dd1f7383": {
+      "origin": "previous_verified",
+      "original_slot": 2,
+      "correct_display_choice": "B",
+      "question": {
+        "prompt": "Let x be a unitless number. Its domain is integers from 5 through 11, inclusive. Condition: (x / (x + 3)) >= (8 / 11). What is the minimum x in this domain satisfying the condition?",
+        "expectedAnswer": "8",
+        "choices": [
+          "6",
+          "8",
+          "7",
+          "9"
+        ],
+        "explanation": "At x = 8, 8/11 >= 8/11 is true. 8 is the minimum value satisfying the condition in this domain. The smaller domain values fail: x = 5: 5/8 >= 8/11 is false; x = 6: 2/3 >= 8/11 is false; x = 7: 7/10 >= 8/11 is false.",
+        "topic": "Exact arithmetic",
+        "difficulty": 3,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "6": "At x = 6, 2/3 >= 8/11 is false. This value does not satisfy the condition.",
+          "8": "At x = 8, 8/11 >= 8/11 is true. This is the minimum value satisfying the condition in this domain.",
+          "7": "At x = 7, 7/10 >= 8/11 is false. This value does not satisfy the condition.",
+          "9": "At x = 9, 3/4 >= 8/11 is true. The question asks for the minimum; that value is 8."
+        },
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition",
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 8
+      }
+    },
+    "R5e2dd966a3": {
+      "origin": "refill_unverified_candidate",
+      "original_slot": 3,
+      "correct_display_choice": "D",
+      "question": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The players near the coach ___ the drills, while the coach near the players ___ the schedule. Which ordered pair fills the blanks?",
+        "expectedAnswer": "practice; checks",
+        "choices": [
+          "practices; checks",
+          "practice; check",
+          "practice; checks",
+          "practices; check"
+        ],
+        "explanation": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. The form \"practice\" agrees. The second head subject \"the coach\" is singular; \"near the players\" does not change that. The form \"checks\" agrees. Therefore the ordered pair is practice; checks.",
+        "topic": "Standard written English",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "practices; checks": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. \"practices\" does not agree; use \"practice\". The second head subject \"the coach\" is singular; \"near the players\" does not change that. The form \"checks\" agrees.",
+          "practice; check": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. The form \"practice\" agrees. The second head subject \"the coach\" is singular; \"near the players\" does not change that. \"check\" does not agree; use \"checks\".",
+          "practice; checks": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. The form \"practice\" agrees. The second head subject \"the coach\" is singular; \"near the players\" does not change that. The form \"checks\" agrees.",
+          "practices; check": "The first head subject \"the players\" is plural; \"near the coach\" does not change that. \"practices\" does not agree; use \"practice\". The second head subject \"the coach\" is singular; \"near the players\" does not change that. \"check\" does not agree; use \"checks\"."
+        },
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference"
+      }
+    },
+    "R306f816e76": {
+      "origin": "previous_verified",
+      "original_slot": 3,
+      "correct_display_choice": "D",
+      "question": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. The volunteers near the librarian ___ the returns, while the librarian near the volunteers ___ the books. Which ordered pair fills the blanks?",
+        "expectedAnswer": "sort; organizes",
+        "choices": [
+          "sorts; organizes",
+          "sort; organize",
+          "sort; organizes",
+          "sorts; organize"
+        ],
+        "explanation": "The first head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. The form \"sort\" agrees. The second head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. The form \"organizes\" agrees. Therefore the ordered pair is sort; organizes.",
+        "topic": "Standard written English",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "sorts; organizes": "The first head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. \"sorts\" does not agree; use \"sort\". The second head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. The form \"organizes\" agrees.",
+          "sort; organize": "The first head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. The form \"sort\" agrees. The second head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. \"organize\" does not agree; use \"organizes\".",
+          "sort; organizes": "The first head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. The form \"sort\" agrees. The second head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. The form \"organizes\" agrees.",
+          "sorts; organize": "The first head subject \"the volunteers\" is plural; \"near the librarian\" does not change that. \"sorts\" does not agree; use \"sort\". The second head subject \"the librarian\" is singular; \"near the volunteers\" does not change that. \"organize\" does not agree; use \"organizes\"."
+        },
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference",
+        "verificationVersion": 1,
+        "verificationPolicyRevision": 10
+      }
+    },
+    "R7269aad6d0": {
+      "origin": "refill_unverified_candidate",
+      "original_slot": 4,
+      "correct_display_choice": "C",
+      "question": {
+        "prompt": "Fill both blanks with the present-tense verb forms that agree with the subjects in standard written American English. Nora and Eli near the guide ___ the maps, while every guide near the hikers ___ a badge. Which ordered pair fills the blanks?",
+        "expectedAnswer": "fold; wears",
+        "choices": [
+          "fold; wear",
+          "fold; wears",
+          "folds; wear",
+          "folds; wears"
+        ],
+        "explanation": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. The form \"fold\" agrees. Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. The form \"wears\" agrees. Therefore the ordered pair is fold; wears.",
+        "topic": "Standard written English",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "fold; wear": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. The form \"fold\" agrees. Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. \"wear\" does not agree; use \"wears\".",
+          "fold; wears": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. The form \"fold\" agrees. Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. The form \"wears\" agrees.",
+          "folds; wear": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. \"folds\" does not agree; use \"fold\". Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. \"wear\" does not agree; use \"wears\".",
+          "folds; wears": "First, the subject \"Nora and Eli\" is plural (\"and\" joins two); \"near the guide\" does not change it. \"folds\" does not agree; use \"fold\". Second, the subject \"Every guide\" is singular; \"near the hikers\" does not change it. The form \"wears\" agrees."
+        },
+        "skillID": "22222222-2222-4222-8222-222222222222",
+        "objectiveID": "BBBBBBBB-BBBB-4BBB-8BBB-BBBBBBBBBBBB",
+        "objective": "Apply subject-verb agreement or unambiguous pronoun reference"
+      }
+    },
+    "Rc6f5aa9227": {
+      "origin": "refill_unverified_candidate",
+      "original_slot": 1,
+      "correct_display_choice": "D",
+      "question": {
+        "prompt": "Let x be a unitless number. Its domain is integers from 0 through 15, inclusive. Condition: ((5 * x) + 8) = 53. Which offered value of x satisfies the condition?",
+        "expectedAnswer": "9",
+        "choices": [
+          "10",
+          "7",
+          "8",
+          "9"
+        ],
+        "explanation": "At x = 9, 53 = 53 is true. 9 is the only offered value satisfying the condition. Every other offered value is outside the domain or fails the condition.",
+        "topic": "Exact arithmetic",
+        "difficulty": 2,
+        "format": "Multiple Choice",
+        "choiceExplanations": {
+          "10": "At x = 10, 58 = 53 is false. This value does not satisfy the condition.",
+          "7": "At x = 7, 43 = 53 is false. This value does not satisfy the condition.",
+          "8": "At x = 8, 48 = 53 is false. This value does not satisfy the condition.",
+          "9": "At x = 9, 53 = 53 is true. This is the only offered value satisfying the condition."
+        },
+        "skillID": "11111111-1111-4111-8111-111111111111",
+        "objectiveID": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA",
+        "objective": "Evaluate an exact rational expression or explicit bounded condition"
+      }
+    }
+  },
+  "compiler_failures": [],
+  "prior_prompt_count": 5,
+  "blocked_agreement_identities": 2
+}
